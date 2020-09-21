@@ -132,8 +132,8 @@ Create PG dump
 */
 def createPgDump() {
     // Get db url ans pass
-    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n ${env.ghprbTargetBranch} | base64 --decode | rev | cut -f1 -d\'=\' | rev | tr -d \'\n\'')
-    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n ${env.ghprbTargetBranch} | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
+    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n \${env.ghprbTargetBranch} | base64 --decode | rev | cut -f1 -d\'=\' | rev | tr -d \'\n\'')
+    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n \${env.ghprbTargetBranch} | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
     sh """
         set +x
         export PGPASSWORD="${dbpass}" 
