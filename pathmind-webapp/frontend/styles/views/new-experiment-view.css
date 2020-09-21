@@ -60,6 +60,7 @@
 }
 
 .new-experiment-view .reward-variables-table .header-row span {
+    line-height: 1;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }

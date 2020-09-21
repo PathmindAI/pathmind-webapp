@@ -22,6 +22,7 @@ public class Model extends ArchivableData
 	private long projectId;
 	private String userNotes;
 	private boolean draft;
+	private boolean hasGoals;
 	private int rewardVariablesCount;
 	private String packageName;
 	private int invalidModel;

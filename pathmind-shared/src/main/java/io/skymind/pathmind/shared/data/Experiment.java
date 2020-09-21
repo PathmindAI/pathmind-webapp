@@ -20,6 +20,8 @@ public class Experiment extends ArchivableData
 	private LocalDateTime lastActivityDate;
     private String userNotes;
     private boolean isFavorite;
+    private boolean hasGoals;
+    private boolean goalsReached;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;

@@ -31,7 +31,7 @@
 :host(.reward-variable-name-field) [part="input-field"] {
     height: 1.75rem;
     padding: 0.4em;
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 var(--lumo-border-radius-s) var(--lumo-border-radius-s) 0;
     border: 1px solid var(--pm-gray-color);
 }
 

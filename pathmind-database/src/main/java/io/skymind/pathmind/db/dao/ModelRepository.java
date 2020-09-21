@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 
@@ -15,7 +17,7 @@ class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -42,7 +44,7 @@ class ModelRepository
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
 		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS,
-				MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
+				MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -65,7 +67,15 @@ class ModelRepository
 		return mod.key().get(MODEL.ID);
 	}
 
-	protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
+
+    protected static void updateHasGoals(DSLContext ctx, long modelId, boolean hasGoals) {
+        ctx.update(MODEL)
+                .set(MODEL.HAS_GOALS, hasGoals)
+                .where(MODEL.ID.eq(modelId))
+                .execute();
+    }
+
+    protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
 		ctx.update(MODEL)
 				.set(MODEL.USER_NOTES, userNotes)
 				.where(MODEL.ID.eq(modelId))
@@ -83,7 +93,7 @@ class ModelRepository
 	public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
 		return Optional.ofNullable(ctx
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.PACKAGE_NAME, MODEL.ARCHIVED,
-						MODEL.USER_NOTES, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE)
+						MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE)
 				.from(MODEL)
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(MODEL.ID.eq(modelId))
@@ -98,5 +108,14 @@ class ModelRepository
                 .leftJoin(MODEL).on(MODEL.PROJECT_ID.eq(PROJECT.ID))
                 .where(MODEL.ID.eq(modelId))
                 .fetchOne(PROJECT.PATHMIND_USER_ID);
+    }
+    
+    protected static Model getLastModelForProject(DSLContext ctx, long projectId, long currentModelId) {
+        return ctx.select(MODEL.asterisk())
+                .from(MODEL)
+                .where(MODEL.PROJECT_ID.eq(projectId).and(MODEL.ID.lessThan(currentModelId)))
+                .orderBy(MODEL.ID.desc())
+                .limit(1)
+                .fetchAnyInto(Model.class);
     }
 }

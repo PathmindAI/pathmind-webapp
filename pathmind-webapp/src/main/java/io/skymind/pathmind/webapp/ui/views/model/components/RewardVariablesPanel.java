@@ -21,13 +21,12 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class RewardVariablesPanel extends VerticalLayout
 {
-	private VerticalLayout formPanel = new VerticalLayout();
-	private RewardVariablesTable rewardVariablesTable;
+	private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
+    private RewardVariablesTable rewardVariablesTable;
 
 	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
 
-	public RewardVariablesPanel()
-	{
+	public RewardVariablesPanel(){
 		setupForm();
 		nextStepButton.setIconAfterText(true);
 		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -38,26 +37,34 @@ public class RewardVariablesPanel extends VerticalLayout
 
 		add(rewardVariablesNameLine,
 				GuiUtils.getFullWidthHr(),
-				formPanel,
+		        new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation."),
+		        new Paragraph("The reward variables will be used as simulation metrics to track experiment results. You can add a goal for each metric to define what success will look like for this model."),
+                formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
 		setWidthFull();
 		setPadding(false);
 		setSpacing(false);
 	}
-
+	
 	public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
 		nextStepButton.addClickListener(listener);
 	}
 
 	private void setupForm() {
-        rewardVariablesTable = new RewardVariablesTable();
-		formPanel.add(new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation:"));
+        rewardVariablesTable = new RewardVariablesTable(() -> {
+            nextStepButton.setEnabled(canSaveChanges());
+        });
 		formPanel.setPadding(false);
-		formPanel.add(rewardVariablesTable);
+        formPanel.add(rewardVariablesTable);
 	}
 
-	public void setupRewardVariablesTable(int rewardVariablesCount, List<RewardVariable> rewardVariables) {
+	public void setupRewardVariables(List<RewardVariable> rewardVariables) {
 	    rewardVariablesTable.setRewardVariables(rewardVariables);
-	}
+	    rewardVariablesTable.makeEditable();
+    }
+	
+	public boolean canSaveChanges() {
+        return rewardVariablesTable.canSaveChanges();
+    }
 }

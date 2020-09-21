@@ -15,6 +15,7 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +32,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -43,7 +45,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -74,6 +75,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	@Autowired
 	private ModelService modelService;
 
+	@Autowired
+	private ModelDAO modelDAO;
+	
 	@Autowired
 	private RewardVariableDAO rewardVariablesDAO;
 
@@ -207,7 +211,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (isResumeUpload()) {
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-			this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
+            this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -219,14 +223,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private boolean isResumeUpload() {
 		return modelId != -1;
-	}
+    }
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 	}
 
 	private void handleRewardVariablesClicked() {
-        saveAndNavigateToNewExperiment();
+	    if (rewardVariablesPanel.canSaveChanges()) {
+	        rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
+	        saveAndNavigateToNewExperiment();
+	    }
     }
 
 	private void handleModelDetailsClicked()
@@ -243,8 +250,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		modelService.updateDraftModel(model, modelNotes);
-		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-		setVisibleWizardPanel(rewardVariablesPanel);
+		rewardVariablesPanel.setupRewardVariables(rewardVariables);
+        setVisibleWizardPanel(rewardVariablesPanel);
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
@@ -305,13 +312,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
-			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+            RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariablesDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
+			rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
 			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<Observation> convertToObservations(List<String> observationNames) {
+    private List<Observation> convertToObservations(List<String> observationNames) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
         for (String name: observationNames) {
             if (VariableParserUtils.isArray(name)) {
