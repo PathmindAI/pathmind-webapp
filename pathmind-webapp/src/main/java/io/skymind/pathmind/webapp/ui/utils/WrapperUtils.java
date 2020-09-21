@@ -123,6 +123,10 @@ public class WrapperUtils
 		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.HORIZONTAL);
 	}
 
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
+		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.VERTICAL);
+	}
+
 	private static SplitLayout wrapCenterAlignmentFullSplitLayout(Component primaryComponent, Component secondaryComponent, double splitterPosition, SplitLayout.Orientation orientation) {
 		SplitLayout splitLayout = new SplitLayout(primaryComponent, secondaryComponent);
 		splitLayout.setOrientation(orientation);
