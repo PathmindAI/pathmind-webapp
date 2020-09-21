@@ -46,7 +46,7 @@ Feature: Save Model draft
     When Click the model name 2
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
-    And Check that there is a variable named kitchen_cleanliness
+    And Check that there is a variable named kitchenCleanlinessLevel
     When Click wizard reward variables next btn
     When Open projects page
     When Open project AutotestProject on projects page
