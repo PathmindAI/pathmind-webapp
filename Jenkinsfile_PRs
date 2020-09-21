@@ -133,8 +133,9 @@ Create PG dump
 def createPgDump() {
     // Get db url ans pass
     sh "echo ${env.ghprbTargetBranch}"
-    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n \${env.ghprbTargetBranch} | base64 --decode | rev | cut -f1 -d\'=\' | rev | tr -d \'\n\'')
-    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n \${env.ghprbTargetBranch} | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
+    branch = ${env.ghprbTargetBranch}
+    dbpass = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n "${branch}' | base64 --decode | rev | cut -f1 -d\'=\' | rev | tr -d \'\n\'')
+    dburl = sh(returnStdout: true, script: 'kubectl get secret dburlcli  -o=jsonpath=\'{.data.DB_URL_CLI}\' -n "${branch}" | base64 --decode | sed \'s@ *password=.*@@g\' | sed \'s@ @ --@g\'')
     sh """
         set -x
         export PGPASSWORD="${dbpass}" 
@@ -206,6 +207,7 @@ pipeline {
                 setGitHubStatus("PENDING")
                 echo "Check out code"
                 checkout scm
+                createPgDump()
                 script {
                     // Define a unique name for the tests container and helm release
                     RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
