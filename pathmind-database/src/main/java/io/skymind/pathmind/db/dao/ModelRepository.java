@@ -17,7 +17,7 @@ class ModelRepository
 {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE)
+				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE, MODEL.MODEL_TYPE)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
 				.fetchInto(Model.class);
@@ -44,7 +44,7 @@ class ModelRepository
 	 */
 	protected static Model getModel(DSLContext ctx, long modelId) {
 		return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS,
-				MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL)
+				MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL, MODEL.MODEL_TYPE)
 				.from(MODEL)
 				.where(MODEL.ID.eq(modelId))
 				.fetchOneInto(Model.class);
@@ -63,6 +63,7 @@ class ModelRepository
 		mod.setUserNotes(userNotes);
 		mod.setPackageName(model.getPackageName());
 		mod.setActionTupleSize(-1);
+		mod.setModelType(model.getModelType());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}
@@ -109,7 +110,7 @@ class ModelRepository
                 .where(MODEL.ID.eq(modelId))
                 .fetchOne(PROJECT.PATHMIND_USER_ID);
     }
-    
+
     protected static Model getLastModelForProject(DSLContext ctx, long projectId, long currentModelId) {
         return ctx.select(MODEL.asterisk())
                 .from(MODEL)

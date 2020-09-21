@@ -1,37 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
-
-import java.util.*;
-
-import com.vaadin.flow.component.html.Span;
-
-import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.VariableParserUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
-
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -41,11 +16,15 @@ import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.ObservationDataType;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.VariableParserUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -59,8 +38,14 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.unit.DataSize;
+
+import java.util.*;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
@@ -77,7 +62,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ModelDAO modelDAO;
-	
+
 	@Autowired
 	private RewardVariableDAO rewardVariablesDAO;
 
@@ -307,6 +292,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			    observationList = convertToObservations(alResult.getObservationNames());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
+                model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
 			}
 			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 

@@ -27,4 +27,7 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "rewardFunction cannot be blank")
     private String rewardFunction;
+
+    @NotBlank(message = "mode(modelType) cannot be blank")
+    private String mode;
 }
