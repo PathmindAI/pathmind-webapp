@@ -304,6 +304,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 "Stop Training",
                 (e) -> {
                     trainingService.stopRun(experiment);
+                    stopTrainingButton.setVisible(false);
+                    trainingStartingPlaceholder.setVisible(false);
+                    policyChartPanel.setVisible(true);
                     fireEvents();
                     confirmDialog.close();
                 },
