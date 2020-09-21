@@ -162,6 +162,13 @@ background-color: var(--pm-gray-color-light);
     vertical-align: text-top;
 }
 
+.model-view [icon="vaadin:close"],
+.model-view [icon="vaadin:check"] {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
+    vertical-align: text-top;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {
@@ -418,6 +425,7 @@ background-color: var(--pm-gray-color-light);
 
 .model-view .model-reward-variables {
     max-height: 180px;
+    line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
 }
@@ -561,6 +569,12 @@ account-view {
 .warning-label {
     background: var(--pm-gold-color);
     color: var(--lumo-body-text-color);
+}
+.success-text {
+    color: var(--lumo-success-color);
+}
+.failure-text {
+    color: var(--lumo-error-color);
 }
 /* Primary Button Styles */
 .button-link {

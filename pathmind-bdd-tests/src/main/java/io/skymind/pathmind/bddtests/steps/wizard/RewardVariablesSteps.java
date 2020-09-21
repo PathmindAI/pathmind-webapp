@@ -16,4 +16,19 @@ public class RewardVariablesSteps {
     public void checkThatThereIsAVariableNamed(String variableName) {
         rewardVariablesPage.checkThatThereIsAVariableNamed(variableName);
     }
+
+    @Step
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
+        rewardVariablesPage.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    }
+
+    @Step
+    public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
+        rewardVariablesPage.checkWizardRewardVariableErrorIsShown(variable, error);
+    }
+
+    @Step
+    public void checkWizardNextButtonIsDisabled() {
+        rewardVariablesPage.checkWizardNextButtonIsDisabled();
+    }
 }

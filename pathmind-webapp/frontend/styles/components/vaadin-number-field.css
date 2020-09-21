@@ -1,0 +1,9 @@
+:host {
+    padding: 0;
+}
+
+:host(.goal-field) [part="input-field"] {
+    height: 2em;
+    border-left: none;
+    border-radius: 0 var(--lumo-border-radius) var(--lumo-border-radius) 0;
+}

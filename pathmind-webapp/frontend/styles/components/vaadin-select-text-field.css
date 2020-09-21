@@ -1,3 +1,7 @@
+:host {
+    padding: 0;
+}
+
 :host([theme~="searchBox"]) [part="input-field"] {
     height: 100%;
     background: transparent;
@@ -13,6 +17,7 @@
     width: var(--vaadin-text-field-default-width, 8em);
 }
 
+:host([theme~="goals"]) [part="input-field"] ::slotted([part="value"]),
 :host([theme~="searchBox"]) [part="input-field"] ::slotted([part="value"]) {
     --_lumo-text-field-overflow-mask-image: none;
     -webkit-mask-image: none;
@@ -25,4 +30,18 @@
 
 :host(:hover:not([readonly]):not([focused])[theme~="searchBox"]) [part="input-field"]::after {
     opacity: 0;
+}
+
+/* Goals */
+:host([theme~="goals"]) .vaadin-text-field-container {
+    width: 5em;
+}
+
+:host([theme~="goals"]) [part="input-field"] {
+    height: var(--lumo-text-field-size);
+    border-radius: var(--lumo-border-radius);
+}
+
+:host([theme~="goals"][theme~="not-none"]) [part="input-field"] {
+    border-radius: var(--lumo-border-radius) 0 0 var(--lumo-border-radius);
 }

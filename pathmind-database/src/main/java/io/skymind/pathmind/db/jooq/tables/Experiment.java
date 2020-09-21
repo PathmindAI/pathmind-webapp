@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1069011889;
+    private static final long serialVersionUID = 1057148463;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -102,6 +102,16 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.is_favorite</code>.
      */
     public final TableField<ExperimentRecord, Boolean> IS_FAVORITE = createField(DSL.name("is_favorite"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_reached</code>.
+     */
+    public final TableField<ExperimentRecord, Boolean> GOALS_REACHED = createField(DSL.name("goals_reached"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.experiment.has_goals</code>.
+     */
+    public final TableField<ExperimentRecord, Boolean> HAS_GOALS = createField(DSL.name("has_goals"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -197,11 +207,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row11<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

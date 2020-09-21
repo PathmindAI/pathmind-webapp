@@ -1701,6 +1701,44 @@
             <where>INVALID_MODEL IS NULL</where>
         </update>
     </changeSet>
+    
+    <changeSet id="20200902-01" author="onur@vaadin.com">
+        <comment>
+             Add goals for reward variables  
+        </comment>
+        <addColumn tableName="REWARD_VARIABLE">
+            <column name="GOAL_CONDITION_TYPE" type="VARCHAR(16)"/>
+            <column name="GOAL_VALUE" type="DOUBLE"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="20200904-01" author="onur@vaadin.com">
+        <comment>
+             Add a goal reached flag to experiment table  
+        </comment>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_REACHED" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="20200911-01" author="bruno.rezende@ext.vaadin.com">
+        <comment>
+            Add a has goals flag to model and experiment table
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
     <changeSet id="20200918-01" author="daehyun@skymind.io">
         <comment>
