@@ -411,7 +411,6 @@ background-color: var(--pm-gray-color-light);
 }
 
 .project-view .notes-block vaadin-text-area {
-    max-height: 5.3rem;
     border: none;
     border-left: 1px solid var(--pm-gray-color-lightest);
     border-radius: 0;
@@ -436,17 +435,19 @@ background-color: var(--pm-gray-color-light);
 }
 
 .models-navbar {
+    height: calc(100vh - 10.5rem);
     background-color: var(--pm-app-bg-color);
     border-right: 1px solid var(--pm-gray-color-lightest);
+}
+
+.models-navbar-items {
+    height: 100%;
+    overflow: auto;
 }
 
 .models-navbar > vaadin-button {
     border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
     margin: 0;
-}
-
-.models-navbar ~ vaadin-vertical-layout {
-    padding: var(--lumo-space-m);
 }
 
 .card p,
@@ -464,13 +465,11 @@ background-color: var(--pm-gray-color-light);
 }
 
 .project-view .section-subtitle-label,
-.model-view .section-subtitle-label,
 .search-results-view .section-subtitle-label {
     color: var(--lumo-secondary-text-color);
 }
 
-.project-view .section-subtitle-label + tag-label,
-.model-view .section-subtitle-label + tag-label {
+.project-view .section-subtitle-label + tag-label {
     margin-left: var(--lumo-space-xs);
 }
 
@@ -479,8 +478,7 @@ background-color: var(--pm-gray-color-light);
     width: auto;
 }
 
-.project-view .section-title-label + vaadin-button,
-.model-view .section-title-label + vaadin-button {
+.project-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
     line-height: calc(1.4rem - 2px);
@@ -490,30 +488,33 @@ background-color: var(--pm-gray-color-light);
     margin: 0 0 0 var(--lumo-space-xs);
 }
 
-.model-view .model-reward-variables {
-    max-height: 180px;
+.project-view .reward-variables-table {
+    max-height: 16rem;
     line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
 }
 
-.model-view .model-reward-variables span:first-child {
+.project-view .model-reward-variables span:first-child {
     display: inline-block;
     width: 30px;
     color: var(--lumo-secondary-text-color);
 }
-.model-view .model-reward-variables .reward-variables-table[readonly] vaadin-horizontal-layout {
+.project-view .model-reward-variables .reward-variables-table[readonly] vaadin-horizontal-layout {
     height: auto;
     line-height: 1.1;
 }
 
-.project-view .notes-field-wrapper,
-.model-view .notes-field-wrapper {
+.project-view .notes-field-wrapper {
     flex: 1 1 auto;
 }
 
-.model-view .notes-field-wrapper {
-    margin-top: var(--lumo-space-m);
+.project-view .model-wrapper {
+    height: auto !important;
+}
+
+.project-view .reward-variables-table .header-row span:last-child {
+    justify-content: flex-end;
 }
 
 .no-shrink {

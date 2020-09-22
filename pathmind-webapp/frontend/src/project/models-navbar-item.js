@@ -13,6 +13,10 @@ class ModelsNavbarItem extends PolymerElement {
             modelPackageName: {
                 type: String,
             },
+            modelPackageNameInBrackets: {
+                type: String,
+                computed: 'modelPackageNameText(modelPackageName)',
+            },
             createdDate: {
                 type: String,
             },
@@ -98,7 +102,7 @@ class ModelsNavbarItem extends PolymerElement {
                 <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
                 <tag-label text="[[tagArchivedText]]" size="small"></tag-label>
             </div>
-            <p>Model #[[modelName]] ([[modelPackageName]])</p>
+            <p>Model #[[modelName]] [[modelPackageNameInBrackets]]</p>
             <p>Created [[createdDate]]</p>
         </div>
         <vaadin-button
@@ -132,6 +136,10 @@ class ModelsNavbarItem extends PolymerElement {
 
     tagLabelArchivedText(isArchived) {
         return isArchived ? "Archived" : "";
+    }
+
+    modelPackageNameText(modelPackageName) {
+        return modelPackageName ? `(${modelPackageName})` : "";
     }
 }
 

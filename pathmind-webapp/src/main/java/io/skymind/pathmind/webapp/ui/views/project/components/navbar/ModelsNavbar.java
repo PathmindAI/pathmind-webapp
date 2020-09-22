@@ -6,6 +6,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.bus.EventBus;
 
 import java.util.ArrayList;
@@ -26,13 +27,14 @@ public class ModelsNavbar extends VerticalLayout
 	private Consumer<Model> selectModelConsumer;
     private ModelsNavbarItem currentModelNavItem;
     private UploadModelButton newModelButton;
+    private SegmentIntegrator segmentIntegrator;
 
     public long modelId;
 
     private ModelDAO modelDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, Consumer<Model> selectModelConsumer)
+    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, Consumer<Model> selectModelConsumer, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.modelDAO = modelDAO;
@@ -40,6 +42,7 @@ public class ModelsNavbar extends VerticalLayout
 	    this.selectedModel = selectedModel;
 	    this.modelId = selectedModel.getId();
         this.selectModelConsumer = selectModelConsumer;
+        this.segmentIntegrator = segmentIntegrator;
 
         rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("models-navbar-items");
@@ -83,7 +86,7 @@ public class ModelsNavbar extends VerticalLayout
 	}
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, selectModelConsumer);
+        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, selectModelConsumer, segmentIntegrator);
     }
 
     public void setCurrentModel(Model newCurrentModel) {

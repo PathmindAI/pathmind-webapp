@@ -29,8 +29,14 @@ public class NotesField extends HorizontalLayout {
     private Span warningWrapper;
     private Icon savedIcon;
     private Consumer<String> saveConsumer;
+    private Boolean autoHeight = false;
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
+        this(title, notesText, saveConsumer, false);
+    }
+
+    public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean autoHeight) {
+        this.autoHeight = autoHeight;
         this.notesText = notesText;
         this.title = title;
         this.saveConsumer = saveConsumer;
@@ -62,6 +68,9 @@ public class NotesField extends HorizontalLayout {
         // make sure the value change event will be triggered whenever the user type something
         blockEditableField.setValueChangeMode(ValueChangeMode.EAGER);
         blockEditableField.addThemeName("notes");
+        if (autoHeight) {
+            blockEditableField.addThemeName("autoheight");
+        }
         blockEditableField.addBlurListener(event -> {
             if (canSave(blockEditableField.getValue())) {
                 saveButton.click();

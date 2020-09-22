@@ -10,6 +10,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -24,13 +25,15 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     private ModelDAO modelDAO;
     private Model model;
     private Consumer<Model> selectModelConsumer;
+    private SegmentIntegrator segmentIntegrator;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, Consumer<Model> selectModelConsumer) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, Consumer<Model> selectModelConsumer, SegmentIntegrator segmentIntegrator) {
         this.modelsNavbar = modelsNavbar;
         this.getUISupplier = getUISupplier;
 	    this.modelDAO = modelDAO;
 	    this.model = model;
         this.selectModelConsumer = selectModelConsumer;
+        this.segmentIntegrator = segmentIntegrator;
 
         UI.getCurrent().getUI().ifPresent(ui -> setModelDetails(ui, model));
     }
@@ -44,12 +47,14 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     @EventHandler
     private void onArchiveButtonClicked() {
         modelDAO.archive(model.getId(), true);
+        segmentIntegrator.archived(Model.class, true);
         getModel().setIsArchived(true);
     }
 
     @EventHandler
     private void onUnarchiveButtonClicked() {
         modelDAO.archive(model.getId(), false);
+        segmentIntegrator.archived(Model.class, false);
         getModel().setIsArchived(false);
     }
 
