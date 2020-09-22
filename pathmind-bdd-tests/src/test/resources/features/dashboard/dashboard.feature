@@ -8,7 +8,7 @@ Feature: Dashboard page
     When Open dashboard page
     Then Check AutotestProject stage Set up simulation is stage-active
     When <Click action>
-    Then Check that model details page is opened
+    Then Check that wizard upload alp file page is opened
 
     Examples:
       | Click action                              |

@@ -74,6 +74,9 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'Ok' button
     Then Check that 'Experiment #1' exist on the experiment page
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
 
   @otherView
   Scenario: Check experiment side bar when an experiment is created in other tab (few experiments)

@@ -4,6 +4,7 @@ import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -14,6 +15,14 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.*;
+
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.*;
@@ -55,6 +64,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.Simulati
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
@@ -84,6 +95,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
+    private Anchor downloadModelAlpLink;
 
     private long experimentId = -1;
     private long modelId = -1;
@@ -114,6 +126,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private StoppedTrainingNotification stoppedTrainingNotification;
     private SimulationMetricsPanel simulationMetricsPanel;
 
+    @Autowired
+    private ModelService modelService;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -192,8 +206,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
+        // It is the same for all experiments from the same model so it doesn't have to be updated as long
+        // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
+        // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
+        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
+
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, trainingStatusDetailsPanel, getButtonsWrapper()),
+                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
                 stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,

@@ -27,4 +27,19 @@ public class ModelUploadStepDefinitions {
     public void checkErrorMessage(String errorMessage) {
         modelUploadSteps.checkErrorMessageInModelCheckPanel(errorMessage);
     }
+
+    @When("^Upload ALP file '(.*)'$")
+    public void uploadALPFile(String alpFile) {
+        modelUploadSteps.uploadALPFile(alpFile);
+    }
+
+    @When("^Click wizard upload ALP next btn$")
+    public void clickWizardUploadALPNextBtn() {
+        modelUploadSteps.clickAlpUploadStepNextBtn();
+    }
+
+    @Then("^Check that wizard upload alp file page is opened$")
+    public void checkThatWizardUploadAlpFilePageIsOpened() {
+        modelUploadSteps.checkThatWizardUploadAlpFilePageIsOpened();
+    }
 }

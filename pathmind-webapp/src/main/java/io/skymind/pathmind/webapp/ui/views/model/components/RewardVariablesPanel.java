@@ -7,10 +7,7 @@ import java.util.List;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -18,18 +15,18 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
 public class RewardVariablesPanel extends VerticalLayout
 {
 	private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
     private RewardVariablesTable rewardVariablesTable;
 
-	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+	private Button nextStepButton;
 
 	public RewardVariablesPanel(){
 		setupForm();
-		nextStepButton.setIconAfterText(true);
-		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        nextStepButton = UploadModelView.createNextStepButton();
 
 		HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
 				LabelFactory.createLabel("Reward Variable Names", NO_TOP_MARGIN_LABEL));

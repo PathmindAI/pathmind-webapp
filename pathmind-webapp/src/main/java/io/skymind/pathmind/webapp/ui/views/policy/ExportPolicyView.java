@@ -14,6 +14,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.flow.component.Component;
@@ -30,6 +31,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
@@ -40,6 +42,8 @@ import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalid
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
 {
+    @Autowired
+    private ModelService modelService;
 	@Autowired
 	private PolicyDAO policyDAO;
 	@Autowired
@@ -49,14 +53,16 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
 	private Button exportButton;
 	private Anchor exportLink;
-	private Button cancelButton;
+    private Button cancelButton;
+    private Anchor downloadModelAlpLink;
 	
 	private long policyId;
 	private Policy policy;
 
 	public ExportPolicyView()
 	{
-		super();
+        super();
+        addClassName("export-policy-view");
 	}
 
 	@Override
@@ -75,7 +81,9 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		exportButton.addClickListener(evt -> {
 			policyDAO.updateExportedDate(policyId);
 			segmentIntegrator.policyExported();
-		});
+        });
+
+        downloadModelAlpLink = new DownloadModelAlpLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true);
 
 		exportLink = new Anchor();
 		exportLink.add(exportButton);
@@ -94,7 +102,8 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 						LabelFactory.createLabel(policyFileName),
 						createInstructionsDiv(),
 						learnMoreLink,
-						exportLink);
+                        exportLink,
+                        downloadModelAlpLink);
 		wrapperContent.setClassName("view-section");
 		return WrapperUtils.wrapCenterVertical("100%", 
 				wrapperContent,

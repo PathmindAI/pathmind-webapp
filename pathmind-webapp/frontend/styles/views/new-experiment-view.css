@@ -148,3 +148,7 @@
     box-sizing: border-box;
     width: 100%;
 }
+
+.new-experiment-view .download-alp-link {
+    align-self: center;
+}
