@@ -36,8 +36,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
+    private MetricChartPanel metricChartPanel;
     private Dialog metricChartDialog;
-    private Button metricChartDialogCloseButton;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
 
@@ -62,7 +62,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         addClassName("simulation-metrics-table-wrapper");
 
         createEnlargedChartDialog();
-        createEnlargedChartDialogCloseButton();
 
         rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
@@ -163,8 +162,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
                         enlargeButton.addClickListener(event -> {
                             Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, policy);
-                            MetricChartPanel metricChartPanel = new MetricChartPanel(sparklineData, rewardVariable, reachedGoal);
-                            addChartToDialog(metricChartPanel);
+                            metricChartPanel.setGoals(rewardVariable, reachedGoal);
+                            metricChartPanel.setupChart(sparklineData, rewardVariable);
                             metricChartDialog.open();
                         });
                         VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -183,17 +182,12 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     }
 
     private void createEnlargedChartDialog() {
+        metricChartPanel = new MetricChartPanel();
+        Button metricChartDialogCloseButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+        metricChartDialogCloseButton.addClickListener(event -> metricChartDialog.close());
         metricChartDialog = new Dialog();
         metricChartDialog.setWidth("60vw");
+        metricChartDialog.add(metricChartPanel, metricChartDialogCloseButton);
     }
 
-    private void createEnlargedChartDialogCloseButton() {
-        metricChartDialogCloseButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-        metricChartDialogCloseButton.addClickListener(event -> metricChartDialog.close());
-    }
-
-    private void addChartToDialog(MetricChartPanel chartPanel) {
-        metricChartDialog.removeAll();
-        metricChartDialog.add(chartPanel, metricChartDialogCloseButton);
-    }
 }
