@@ -138,7 +138,6 @@ public class NewExperimentPage extends PageObject {
     public void clickSideBarExperiment(String experimentName) {
         waitABit(2000);
         utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();
-        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='" + experimentName + "']")).click();
     }
 
     public void clickObservationsCheckbox(String checkbox) {
