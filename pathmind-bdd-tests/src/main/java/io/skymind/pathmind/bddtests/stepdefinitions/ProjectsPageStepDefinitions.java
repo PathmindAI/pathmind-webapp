@@ -36,7 +36,7 @@ public class ProjectsPageStepDefinitions {
 
     @When("^Open project (.*) on projects page$")
     public void openProjectOnProjectsPage(String projectName) {
-        projectsPageSteps.openProjectOnProjectsPage(projectName + Serenity.sessionVariableCalled("randomNumber"));
+        projectsPageSteps.openProjectOnProjectsPage(projectName);
     }
 
     @When("^Open projects tab$")
