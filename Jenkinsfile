@@ -77,8 +77,8 @@ pipeline {
 
     }
 
-    //all is built and run from the prod
-    agent { node { label 'prod' } }
+    //all is built and run from the master
+    agent { node { label 'master' } }
 
     // Pipeline stages
     stages {
@@ -330,4 +330,3 @@ pipeline {
         }
     }
 }
-
