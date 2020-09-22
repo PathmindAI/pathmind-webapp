@@ -17,30 +17,34 @@ import java.util.Map;
 
 public class MetricChartPanel extends VerticalLayout {
 
+    private HorizontalLayout titleWrapper;
+    private TagLabel goalLabel;
     private SparklineChart chart = new SparklineChart();
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
     private Paragraph description = new Paragraph("This chart is a screenshot at the time of opening. It does not update automatically.");
 
-    public MetricChartPanel(Map<Integer, Double> sparklineData, RewardVariable rewardVariable, Boolean reachedGoal) {
-        setupChart(sparklineData, rewardVariable);
-        HorizontalLayout titleWrapper = WrapperUtils.wrapWidthFullHorizontal(chartLabel);
+    public MetricChartPanel() {
+        titleWrapper = WrapperUtils.wrapWidthFullHorizontal(chartLabel);
         titleWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
-        String goalCondition = rewardVariable.getGoalConditionTypeEnum() != null ? rewardVariable.getGoalConditionTypeEnum().toString() : null;
-        Double goalValue = rewardVariable.getGoalValue();
-        if (goalCondition != null && goalValue != null) {
-            TagLabel goalLabel = new TagLabel("Goal: "+goalCondition+goalValue, true, "small");
-            if (reachedGoal) {
-                goalLabel.addClassName("success-text");
-            } else {
-                goalLabel.addClassName("failure-text");
-            }
-            titleWrapper.add(goalLabel);
-        }
-
+        goalLabel = new TagLabel("", true, "small");
+        titleWrapper.add(goalLabel);
         add(titleWrapper, description, chart);
         setPadding(false);
         setSpacing(false);
         addClassName("metric-chart-panel");
+    }
+
+    public void setGoals(RewardVariable rewardVariable, Boolean reachedGoal) {
+        String goalCondition = rewardVariable.getGoalConditionTypeEnum() != null ? rewardVariable.getGoalConditionTypeEnum().toString() : null;
+        Double goalValue = rewardVariable.getGoalValue();
+        if (goalCondition != null && goalValue != null) {
+            goalLabel.setText("Goal: "+goalCondition+goalValue);
+            if (reachedGoal) {
+                goalLabel.setClassName("success-text");
+            } else {
+                goalLabel.setClassName("failure-text");
+            }
+        }
     }
 
     public void setupChart(Map<Integer, Double> sparklineData, RewardVariable rewardVariable) {
