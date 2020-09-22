@@ -8,10 +8,6 @@
     line-height: 1;
 }
 
-.dashboard-view .create-project-link {
-    margin-left: 0.4em;
-}
-
 .dashboard + vaadin-horizontal-layout {
     padding: var(--lumo-space-s) 0 var(--lumo-space-l);
 }
@@ -28,17 +24,6 @@
 }
 .dashboard-line:hover {
     box-shadow: 0 4px 7px var(--lumo-shade-30pct);
-}
-.dashboard-placeholder {
-    width: auto !important;
-    margin: 90px auto 0;
-}
-.dashboard-placeholder vaadin-horizontal-layout {
-    flex-wrap: wrap;
-}
-
-.dashboard-placeholder vaadin-horizontal-layout .button-link {
-    margin: var(--lumo-space-m);
 }
 
 .dashboard-item-main {
@@ -112,25 +97,31 @@
 }
 
 .stages-container {
+    justify-content: space-between;
     width: 100%;
     font-size: var(--lumo-font-size-xs);
 }
 .stages-container > span {
     display: flex;
-    align-items: center;
-    width: 28%;
+    flex-direction: column;
+    /* width: 28%; */
     text-align: center;
 }
 .stages-container > span:nth-child(4) {
-    width: 16%;
+    /* width: 16%; */
 }
-.stages-container > span:not(:first-child) {
+.stages-container > span > span {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+.stages-container > span > span:not(:first-child) {
     justify-content: center;
     margin-left: 0;
 }
-.stages-container > span > iron-icon {
-    width: 20px;
-    height: 20px;
+.stages-container > span > span > iron-icon {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
     margin-right: 4px;
 }
 .stages-container > span:nth-child(3) div span:first-child {
@@ -170,15 +161,15 @@
     color: var(--lumo-body-text-color);
 }
 .stage-stopped .icon-stopped {
-    width: 20px;
-    height: 20px;
+    width: var(--lumo-font-size-m);
+    height: var(--lumo-font-size-m);
     margin-right: 4px;
 }
 .stage-stopped .icon-stopped::after {
-    width: 10px;
-    height: 10px;
-    top: 5px;
-    left: 5px;
+    width: calc(var(--lumo-font-size-m) / 2);
+    height: calc(var(--lumo-font-size-m) / 2);
+    top: calc(var(--lumo-font-size-m) / 4);
+    left: calc(var(--lumo-font-size-m) / 4);
 }
 .stage-stopped .hint-label {
     color: var(--lumo-body-text-color);

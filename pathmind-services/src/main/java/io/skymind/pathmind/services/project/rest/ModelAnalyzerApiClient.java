@@ -2,8 +2,6 @@ package io.skymind.pathmind.services.project.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -31,19 +29,16 @@ public class ModelAnalyzerApiClient {
     private final String token;
     private final ObjectMapper objectMapper;
     private final WebClient client;
-    private final FeatureManager featureManager;
 
     public ModelAnalyzerApiClient(
             @Value("${skymind.model.analyzer.base-url}") String url,
             @Value("${skymind.model.analyzer.token}") String token,
-            FeatureManager featureManager,
             ObjectMapper objectMapper,
             WebClient.Builder webClientBuilder
     ) {
         this.url = url;
         this.token = token;
         this.objectMapper = objectMapper;
-        this.featureManager = featureManager;
 
         client = webClientBuilder
                 .baseUrl(this.url)
@@ -70,11 +65,6 @@ public class ModelAnalyzerApiClient {
     }
 
     public HyperparametersDTO analyze(File file) {
-        if (featureManager.isEnabled(Feature.MULTI_AGENT_TRAINING)) {
-            log.warn("Skip model analysis in multi-agent mode");
-            return null;
-        }
-
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
         post.setEntity(MultipartEntityBuilder.create()
                 .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())

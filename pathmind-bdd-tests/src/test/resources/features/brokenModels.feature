@@ -18,6 +18,7 @@ Feature: Broken Models tests
     When Upload model problematic_models/215mbFile
     Then Check that error message in model check panel is "The file is too big. Please contact support@pathmind.com."
 
+#TO DO, need more problematic models
   Scenario Outline: Upload model file without the required info
     Given Login to the pathmind
     When Open projects page
@@ -29,7 +30,7 @@ Feature: Broken Models tests
 
     Examples:
       | Model File                                      | Error Message                                                                            |
-      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
-      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
-      | problematic_models/ProblemModel#1480.zip        | Unable to analyze the model.                                                             |
+#      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
+#      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
+      | problematic_models/ProblemModel#1480.zip        | Model needs to be updated. You can take a look at this article for upgrade instructions. |
       | problematic_models/NonTupleModel.zip            | Model needs to be updated. You can take a look at this article for upgrade instructions. |

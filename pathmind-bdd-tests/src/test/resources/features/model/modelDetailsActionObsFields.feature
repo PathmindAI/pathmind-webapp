@@ -16,11 +16,12 @@ Feature: Check Model Details Actions/Observations fields
     When Open projects page
     When Open project <project name> on projects page
     When Click the model name 1
-    Then Check model page model details actions is <actions>
     Then Check model page model details observations is <observations>
 
     Examples:
-      | project name    | model                                       | reward function file                                             | actions | observations |
-      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | 5       | 60            |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | 4       | 5            |
-      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | 6       | 21            |
+      | project name    | model                             | reward function file                                                        | observations |
+      | AutotestProject | tuple_models/MoonLanding.zip      | tuple_models/MoonLandingRewardFunction.txt                                  | 9            |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt | 5            |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | tuple_models/SimpleStochasticRewardFunction.txt                             | 3            |
+      | AutotestProject | tuple_models/ProductDelivery.zip  | tuple_models/ProductDeliveryRewardFunction.txt                              | 24           |
+      | AutotestProject | tuple_models/Warehouse.zip        | tuple_models/WarehouseRewardFunction.txt                                    | 2            |

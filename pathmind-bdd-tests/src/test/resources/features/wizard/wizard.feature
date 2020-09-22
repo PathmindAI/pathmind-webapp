@@ -39,7 +39,7 @@ Feature: Wizard page
     Then Check that new experiment AutotestProject page is opened
     Then Check Reward Function default value <>
 
-  Scenario: Check tuple article link on model upload step
+  Scenario: Check update model article link on model upload step
     Given Login to the pathmind
     When Open projects page
     When Click create new project button
@@ -48,8 +48,7 @@ Feature: Wizard page
     Then Wait for text "Checking your model" to disappear
     When Click in 'this article' button
     When Open tab 1
-    Then Check page url is https://help.pathmind.com/en/articles/4219921-converting-models-to-support-tuples
-    Then Check Converting models to support Tuples page elements
+    Then Check page url is https://help.pathmind.com/en/articles/4408884-how-to-update-your-model-to-the-latest-version
 
   Scenario: Check wizard Reward Variables not required
     Given Login to the pathmind
@@ -61,20 +60,28 @@ Feature: Wizard page
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
-    Then Check experiment page reward variables is var-0,var-1,var-2,var-3
+    Then Check experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
 
-  Scenario: Check wizard Reward Variables not required after edit
+  Scenario: Check goals error msg
     Given Login to the pathmind
-    When Open projects page
-    When Click create new project button
-    When Input name of the new project AutotestProject and click Create project button
-    When Upload model tuple_models/CoffeeShopTuple.zip
-    When Check that model successfully uploaded
+    When Create new CoffeeShop project with draft model
     When Click wizard model details next btn
-    When Input reward variable names ,text, ,error
-    When Wait a bit 1500 ms
-    When Input reward variable names , ,,test
-    When Wait a bit 3500 ms
+    When Input reward variable 'kitchen_cleanliness' goal '≥' value ' '
+    When Input reward variable 'successful_customers' goal '≤' value ' '
+    When Input reward variable 'balked_customers' goal '≥' value ' '
+    When Input reward variable 'service_time' goal '≤' value ' '
+    Then Check wizard reward variable 'kitchen_cleanliness' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'successful_customers' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'balked_customers' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'service_time' error is shown 'Enter a goal value'
+    When Check wizard next button is disabled
+    When Input reward variable 'kitchen_cleanliness' goal '≤' value '1'
+    When Input reward variable 'successful_customers' goal '≥' value '2'
+    When Input reward variable 'balked_customers' goal '≤' value '3'
+    When Input reward variable 'service_time' goal '≥' value '4'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
-    Then Check experiment page reward variables is var-0,var-1,var-2,test
+    Then Check that new experiment reward variable 'kitchen_cleanliness' goal is '≤' and value '1.0'
+    Then Check that new experiment reward variable 'successful_customers' goal is '≥' and value '2.0'
+    Then Check that new experiment reward variable 'balked_customers' goal is '≤' and value '3.0'
+    Then Check that new experiment reward variable 'service_time' goal is '≥' and value '4.0'

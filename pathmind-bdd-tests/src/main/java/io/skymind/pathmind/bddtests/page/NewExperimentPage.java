@@ -46,7 +46,7 @@ public class NewExperimentPage extends PageObject {
             System.out.println("No file");
         } else {
             try {
-                rewardField.sendKeys(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8));
+                utils.sendKeysCarefully(FileUtils.readFileToString(new File("models/" + rewardFile), StandardCharsets.UTF_8), rewardField);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -136,6 +136,14 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickSideBarExperiment(String experimentName) {
-        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='"+ experimentName +"']")).click();
+        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='" + experimentName + "']")).click();
+    }
+
+    public void clickObservationsCheckbox(String checkbox) {
+        getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + checkbox + "']")).click();
+    }
+
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='"+rewardVariable+"']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign+goal));
     }
 }

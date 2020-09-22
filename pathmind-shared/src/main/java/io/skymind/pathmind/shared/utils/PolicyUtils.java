@@ -1,19 +1,18 @@
 package io.skymind.pathmind.shared.utils;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -84,6 +83,89 @@ public class PolicyUtils
         if(!ObjectUtils.allNotNull(policy, policy.getProject(), policy.getModel(), policy.getExperiment())) {
             return "-";
         }
-        return removeInvalidChars(String.format("%s-M%sE%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getExperiment().getName()));
+        return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
+    }
+
+    public static Policy selectBestPolicy(List<Policy> policies) {
+        return policies.stream()
+                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
+                .orElse(null);
+    }
+
+    public static void updateSimulationMetricsData(Policy policy) {
+        List<Metrics> metricsList = policy == null ? null : policy.getMetrics();
+        policy.getSparklinesData().clear();
+        policy.getSimulationMetrics().clear();
+        policy.getUncertainty().clear();
+
+        if (metricsList != null && metricsList.size() > 0) {
+            // set the last metrics
+            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+            lastMetrics.getMetricsThisIter().stream()
+                    .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
+
+            // index, metrics list
+            Map<Integer, List<Double>> sparkLineMap = new HashMap<>();
+            metricsList.stream().forEach(metrics ->
+                    metrics.getMetricsThisIter().forEach(mIter -> {
+                        int index = mIter.getIndex();
+
+                        List<Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new ArrayList<>();
+                        data.add(mIter.getMean());
+                        sparkLineMap.put(index, data);
+                    })
+            );
+
+            // convert List<Double> to double[] because sparLine needs an array of primitive types
+            sparkLineMap.entrySet().stream()
+                    .map(e -> e.getValue().stream().mapToDouble(Double::doubleValue).toArray())
+                    .forEach(arr -> policy.getSparklinesData().add(arr));
+        }
+
+        List<MetricsRaw> metricsRawList = policy == null ? null : policy.getMetricsRaws();
+        if (metricsRawList != null && metricsRawList.size() > 0) {
+            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
+            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
+
+            policy.setUncertainty(uncertaintyMap.values().stream()
+                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                    .collect(Collectors.toList()));
+        }
+    }
+    
+    public static boolean isGoalReached(RewardVariable rv, Policy policy) {
+        Double metricValue = 0.0, uncertaintyValue = 0.0;
+        if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
+            // No data to calculate yet
+            if (policy.getUncertainty().size() <= rv.getArrayIndex()) {
+                return false;
+            }
+            String metricValueWithUncertainty = policy.getUncertainty().get(rv.getArrayIndex());
+            Double[] metricAndUncertainity = parseMetricAndUncertainity(metricValueWithUncertainty);
+            metricValue = metricAndUncertainity[0];
+            // todo https://github.com/SkymindIO/pathmind-webapp/pull/2063#issuecomment-693542915
+            // https://github.com/SkymindIO/pathmind-webapp/issues/2108
+            // uncertaintyValue = metricAndUncertainity[1];
+        } else {
+            // No data to calculate yet
+            if (policy.getSimulationMetrics().size() <= rv.getArrayIndex()) {
+                return false;
+            }
+            metricValue = policy.getSimulationMetrics().get(rv.getArrayIndex());
+        }
+        if (rv.getGoalConditionTypeEnum() != null){
+            if (rv.getGoalConditionTypeEnum().equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
+                return metricValue + uncertaintyValue >= rv.getGoalValue();
+            } else {
+                return metricValue - uncertaintyValue <= rv.getGoalValue();
+            }
+        }
+        return false;
+    }
+    
+    private static Double[] parseMetricAndUncertainity(String metricValueWithUncertainty) {
+        String[] actualMetricBreakdown = metricValueWithUncertainty.split("\u2800\u00B1\u2800");
+        return new Double[] {Double.parseDouble(actualMetricBreakdown[0]), Double.parseDouble(actualMetricBreakdown[1])};
     }
 }

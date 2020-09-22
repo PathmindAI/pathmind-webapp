@@ -1630,5 +1630,126 @@
             <dropColumn tableName="EXPERIMENT" columnName="IS_FAVORITE" />
         </rollback>
     </changeSet>
+    
+    <changeSet id="20200805-01" author="onur@vaadin.com">
+        <addColumn tableName="REWARD_VARIABLE">
+            <column name="DATA_TYPE" type="VARCHAR(16)">
+            </column>
+        </addColumn>
+        <addColumn tableName="MODEL">
+            <column name="INVALID_MODEL" type="INT">
+            </column>
+        </addColumn>
+        <update tableName="REWARD_VARIABLE">
+            <!-- the data type of all current variables are double -->
+            <column name="DATA_TYPE" value="double"/>
+        </update>
+        <update tableName="MODEL">
+            <!-- Set all existing models as invalid -->
+            <column name="INVALID_MODEL" value="1"/>
+        </update>
+        <rollback>
+            <dropColumn tableName="REWARD_VARIABLE" columnName="DATA_TYPE" />
+            <dropColumn tableName="MODEL" columnName="INVALID_MODEL" />
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200821-01" author="bruno.rezende@ext.vaadin.com">
+        <dropColumn tableName="MODEL" columnName="NUMBER_OF_POSSIBLE_ACTIONS" />
+    </changeSet>
+
+    <changeSet id="20200821-02" author="bruno.rezende@ext.vaadin.com">
+        <dropTable tableName="ACTION"/>
+    </changeSet>
+    
+    <changeSet id="20200827-01" author="onur@vaadin.com">
+        <createTable tableName="EXPERIMENT_OBSERVATION">
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_EXPERIMENT_OBSERVATION" foreignKeyName="PM_FK_EO_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="OBSERVATION_ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_EXPERIMENT_OBSERVATION" foreignKeyName="PM_FK_EO_OBSERVATION" references="OBSERVATION(ID)"/>
+            </column>
+        </createTable>
+        <createIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <createIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX">
+            <column name="OBSERVATION_ID"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_EXPERIMENT_ID_INDEX" />
+            <dropIndex tableName="EXPERIMENT_OBSERVATION" indexName="EXPERIMENT_OBSERVATION_OBSERVATION_ID_INDEX" />
+            <dropTable tableName="EXPERIMENT_OBSERVATION"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="20200831-01" author="onur@vaadin.com">
+        <comment>
+             Change observation variable column length in DB as 100 (same as reward variable name) 
+        </comment> 
+        <modifyDataType tableName="OBSERVATION" columnName="VARIABLE" newDataType="VARCHAR(100)"/>
+    </changeSet>
+    
+    <changeSet id="20200831-02" author="onur@vaadin.com">
+        <comment>
+             Mark all valid models with invalid (InvalidModelType.MISSING_OBSERVATIONS : 2), so that they will be re-uploaded  
+        </comment> 
+        <update tableName="MODEL">
+            <!-- Set all existing models as invalid -->
+            <column name="INVALID_MODEL" value="2"/>
+            <where>INVALID_MODEL IS NULL</where>
+        </update>
+    </changeSet>
+    
+    <changeSet id="20200902-01" author="onur@vaadin.com">
+        <comment>
+             Add goals for reward variables  
+        </comment>
+        <addColumn tableName="REWARD_VARIABLE">
+            <column name="GOAL_CONDITION_TYPE" type="VARCHAR(16)"/>
+            <column name="GOAL_VALUE" type="DOUBLE"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="20200904-01" author="onur@vaadin.com">
+        <comment>
+             Add a goal reached flag to experiment table  
+        </comment>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_REACHED" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet id="20200911-01" author="bruno.rezende@ext.vaadin.com">
+        <comment>
+            Add a has goals flag to model and experiment table
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="HAS_GOALS" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20200918-01" author="daehyun@skymind.io">
+        <comment>
+            Add model type(single or multi) for MODEL
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="MODEL_TYPE" type="INT" defaultValue="0"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="MODEL_TYPE"/>
+        </rollback>
+    </changeSet>
 
 </databaseChangeLog>

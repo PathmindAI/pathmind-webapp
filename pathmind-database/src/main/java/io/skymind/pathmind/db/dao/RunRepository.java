@@ -90,7 +90,7 @@ class RunRepository
     
     protected static List<Run> getExecutingRuns(DSLContext ctx) {
         return ctx.select(RUN.ID, RUN.NAME, RUN.EXPERIMENT_ID, RUN.JOB_ID, RUN.NOTIFICATION_SENT_AT, RUN.EC2_CREATED_AT, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
-        		.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.MODEL_ID, EXPERIMENT.DATE_CREATED, EXPERIMENT.LAST_ACTIVITY_DATE)
+        		.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.MODEL_ID, EXPERIMENT.HAS_GOALS, EXPERIMENT.DATE_CREATED, EXPERIMENT.LAST_ACTIVITY_DATE)
         		.select(MODEL.ID, MODEL.NAME)
         		.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
         		.from(RUN)
@@ -101,7 +101,8 @@ class RunRepository
     					RunStatus.Starting.getValue(), 
     					RunStatus.Running.getValue(),
     					RunStatus.Restarting.getValue(),
-    					RunStatus.Stopping.getValue())
+    					RunStatus.Stopping.getValue(),
+                        RunStatus.Completing.getValue())
 					.or(RUN.ID.in(
 						DSL.select(POLICY.RUN_ID)
 							.from(POLICY)

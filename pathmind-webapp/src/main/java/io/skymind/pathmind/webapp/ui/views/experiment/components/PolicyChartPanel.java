@@ -1,37 +1,30 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import static io.skymind.pathmind.webapp.utils.ChartUtils.createActiveSeriesPlotOptions;
-import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlotOptions;
-
-import java.util.List;
-
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.utils.ChartUtils;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.Accessibility;
-import com.vaadin.flow.component.charts.model.ChartType;
-import com.vaadin.flow.component.charts.model.DataSeries;
-import com.vaadin.flow.component.charts.model.Marker;
-import com.vaadin.flow.component.charts.model.PlotOptionsSeries;
-import com.vaadin.flow.component.charts.model.XAxis;
-import com.vaadin.flow.component.charts.model.YAxis;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
-import io.skymind.pathmind.webapp.bus.EventBus;
-
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.utils.ChartUtils.createActiveSeriesPlotOptions;
+import static io.skymind.pathmind.webapp.utils.ChartUtils.createPassiveSeriesPlotOptions;
 
-public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubscriber
+public class PolicyChartPanel extends VerticalLayout
 {
     private Object experimentLock = new Object();
 
@@ -72,7 +65,7 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
 
     private void setupChart() {
         XAxis xAxis = new XAxis();
-        xAxis.setTitle("Iterations");
+        xAxis.setTitle("Iteration");
         xAxis.setAllowDecimals(false);
 
         YAxis yAxis = new YAxis();
@@ -140,27 +133,30 @@ public class PolicyChartPanel extends VerticalLayout implements PolicyUpdateSubs
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this);
+        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(() -> getUI()));
     }
 
-    @Override
-    public void handleBusEvent(PolicyUpdateBusEvent event) {
-        synchronized (experimentLock) {
-            // We need to check after the lock is acquired as changing experiments can take up to several seconds.
-            if (event.getExperimentId() != experiment.getId())
-                return;
-            PushUtils.push(this, () -> updatedPolicyChart(event.getPolicies()));
+    class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
+
+        public PolicyChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
         }
-    }
 
-    @Override
-    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-        return experiment.getId() == event.getExperimentId();
-    }
+        @Override
+        public void handleBusEvent(PolicyUpdateBusEvent event) {
+            synchronized (experimentLock) {
+                // We need to check after the lock is acquired as changing experiments can take up to several seconds.
+                if (event.getExperimentId() != experiment.getId())
+                    return;
+                PushUtils.push(getUiSupplier(), () -> updatedPolicyChart(event.getPolicies()));
+            }
+        }
 
-    @Override
-    public boolean isAttached() {
-        return getUI().isPresent();
+        @Override
+        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+            return experiment.getId() == event.getExperimentId();
+        }
+
     }
 }
 

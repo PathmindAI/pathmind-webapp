@@ -1,16 +1,12 @@
 package io.skymind.pathmind.services;
 
 import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Action;
 import io.skymind.pathmind.shared.data.Observation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PolicyServerFilesCreatorTest {
     private PolicyServerFilesCreator policyServerFilesCreator;
@@ -18,22 +14,6 @@ public class PolicyServerFilesCreatorTest {
     @Before
     public void setup() {
         policyServerFilesCreator = new PolicyServerFilesCreator();
-    }
-
-    @Test
-    public void testOutputYamlCreation() {
-        List<Action> actions = Stream.of("the first", " second   ", "Third")
-                .map(name -> {
-                    Action action = new Action();
-                    action.setName(name);
-                    return action;
-                })
-                .collect(Collectors.toList());
-        String yaml = policyServerFilesCreator.createOutputYaml(actions);
-        String expected = "0: the first\n" +
-                "1: second\n" +
-                "2: Third";
-        Assert.assertEquals(expected, yaml);
     }
 
     @Test

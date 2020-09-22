@@ -79,7 +79,7 @@ Feature: Experiment favorite feature
     When Click experiment page Experiment #1 star button
     When Click side nav archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
-    When Click in 'Model #1 (coffeeshop_v1)' button
+    When Click in 'Model #1 (coffeeshop)' button
     When Open projects/model/experiment archived tab
     Then Check model page experiment '1 ' is favorite true
     When Click the experiment name 1

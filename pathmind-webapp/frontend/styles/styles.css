@@ -81,6 +81,7 @@ html {
     --lumo-body-text-color: var(--pm-text-color);
     --lumo-secondary-text-color: var(--pm-gray-color-dark);
     --lumo-tertiary-text-color: #d7d7d7;
+    --lumo-disabled-text-color: var(--pm-gray-color);
     --lumo-base-color: #ffffff;
     --lumo-primary-text-color: var(--pm-primary-color);
     --lumo-primary-color-75pct: rgba(79, 151, 170, 0.75);
@@ -158,6 +159,13 @@ background-color: var(--pm-gray-color-light);
 .model-view [icon="vaadin:star"] {
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
+    vertical-align: text-top;
+}
+
+.model-view [icon="vaadin:close"],
+.model-view [icon="vaadin:check"] {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
     vertical-align: text-top;
 }
 
@@ -323,7 +331,7 @@ background-color: var(--pm-gray-color-light);
     margin-bottom: var(--lumo-space-m);
 }
 
-.page-content-header vaadin-button {
+.page-content-header > vaadin-button {
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
@@ -404,7 +412,8 @@ background-color: var(--pm-gray-color-light);
     width: auto;
 }
 
-.project-view .section-title-label + vaadin-button {
+.project-view .section-title-label + vaadin-button,
+.model-view .section-title-label + vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
     line-height: calc(1.4rem - 2px);
@@ -416,6 +425,7 @@ background-color: var(--pm-gray-color-light);
 
 .model-view .model-reward-variables {
     max-height: 180px;
+    line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
 }
@@ -456,22 +466,6 @@ background-color: var(--pm-gray-color-light);
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
     margin-top: var(--lumo-space-xl);
-}
-
-/* Upload Model View Reward Variable Names */
-.upload-model-view vaadin-custom-field {
-    box-sizing: border-box;
-    flex: 1;
-    width: 100%;
-    max-height: 280px;
-    line-height: 1;
-    padding: 0 var(--lumo-space-s) var(--lumo-space-s);
-    border: 1px solid var(--pm-gray-color);
-    border-radius: var(--lumo-border-radius);
-    overflow-y: auto;
-}
-.upload-model-view .observations-table {
-    max-height: 560px;
 }
 
 account-view {
@@ -575,6 +569,12 @@ account-view {
 .warning-label {
     background: var(--pm-gold-color);
     color: var(--lumo-body-text-color);
+}
+.success-text {
+    color: var(--lumo-success-color);
+}
+.failure-text {
+    color: var(--lumo-error-color);
 }
 /* Primary Button Styles */
 .button-link {

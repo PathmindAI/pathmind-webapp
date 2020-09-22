@@ -90,10 +90,10 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
-            - name: MULTI_AGENT
-              value: "{{ .Values.env.MULTI_AGENT }}"
             - name: JOB_MOCK_CYCLE
               value: "{{ .Values.env.JOB_MOCK_CYCLE }}"
+            - name: JOB_MOCK_MAX_MIN
+              value: "{{ .Values.env.JOB_MOCK_MAX_MIN }}"
             - name: SQS_UPDATER_URL
               value: "{{ .Values.env.SQS_UPDATER_URL }}"
             - name: SNS_UPDATER_TOPIC_ARN

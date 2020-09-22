@@ -10,14 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class FeatureManager {
 
-    private final boolean multiAgentEnabled;
     private final boolean simulationMetrics;
 
     public FeatureManager(
-            @Value("${pathmind.toggle.multiagent:false}") boolean multiAgentEnabled,
             @Value("${pathmind.toggle.simulation-metrics:true}") boolean simulationMetrics
             ) {
-        this.multiAgentEnabled = multiAgentEnabled;
         this.simulationMetrics = simulationMetrics;
 
         log.info("Toggles: {}", this);
@@ -25,12 +22,8 @@ public class FeatureManager {
 
     public boolean isEnabled(Feature feature) {
         switch (feature) {
-            case ACTIONS_AND_OBSERVATION_FEATURE:
-                return false;
             case SEARCH:
                 return true;
-            case MULTI_AGENT_TRAINING:
-                return multiAgentEnabled;
             case ACCOUNT_UPGRADE:
                 return false;
             case SIMULATION_METRICS:

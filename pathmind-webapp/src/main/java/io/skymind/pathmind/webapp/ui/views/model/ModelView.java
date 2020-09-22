@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Experiment;
@@ -9,8 +8,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +42,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.model.components.ArchiveButton;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -59,7 +57,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
-    private NonTupleModelService nonTupleModelService;
+    private ModelCheckerService modelCheckerService;
 
     private long modelId;
     private Model model;
@@ -73,7 +71,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
     private Span createdDate;
     private TagLabel archivedLabel;
     private Paragraph packageNameText;
-    private Paragraph actionsText;
     private Paragraph observationsText;
     private Div rewardVariableNamesText;
 
@@ -90,9 +87,17 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
+		ArchiveButton archiveButton = new ArchiveButton(model.isArchived(), () -> {
+            Boolean toBeArchived = !model.isArchived();
+            modelDAO.archive(model.getId(), toBeArchived);
+            model.setArchived(toBeArchived);
+            archivedLabel.setVisible(toBeArchived);
+            segmentIntegrator.archived(Model.class, toBeArchived);
+        });
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(modelName, 
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName, archiveButton),
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
             ),
             new NewExperimentButton(experimentDAO, modelId));
@@ -112,9 +117,8 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private FlexLayout createRightPanel() {
         Span panelTitle = LabelFactory.createLabel("Model Details", CssPathmindStyles.SECTION_TITLE_LABEL);
-        Span errorMessage = nonTupleModelService.createNonTupleErrorLabel(model);
+        Span errorMessage = modelCheckerService.createInvalidErrorLabel(model);
         packageNameText = new Paragraph(LabelFactory.createLabel("Package Name", CssPathmindStyles.BOLD_LABEL));
-        actionsText = new Paragraph(LabelFactory.createLabel("Actions", CssPathmindStyles.BOLD_LABEL));
         observationsText = new Paragraph(LabelFactory.createLabel("Observations", CssPathmindStyles.BOLD_LABEL));
         rewardVariableNamesText = new Div();
         rewardVariableNamesText.addClassName("model-reward-variables");
@@ -124,7 +128,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 panelTitle,
                 errorMessage,
                 packageNameText,
-                actionsText,
                 observationsText,
                 new Div(LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL), rewardVariableNamesText),
                 notesField);
@@ -155,7 +158,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
 
     private void setupExperimentListPanel() {
         experimentGrid = new ExperimentGrid(experimentDAO);
-        experimentGrid.addItemClickListener(event -> handleExperimentClick(event.getItem()));
+        experimentGrid.addItemClickListener(event -> ExperimentUtils.navigateToExperiment(getUI(), event.getItem()));
     }
 
     private NotesField createViewNotesField() {
@@ -167,14 +170,6 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 segmentIntegrator.updatedNotesExperimentsView();
             }
         );
-    }
-
-    private void handleExperimentClick(Experiment experiment) {
-        if (ExperimentUtils.isDraftRunType(experiment)) {
-            getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
-        } else {
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-        }
     }
 
     @Override
@@ -209,18 +204,13 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
             createdDate.setText(String.format("Uploaded on %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(dateCreatedData, timeZoneId)));
         });
         packageNameText.add(packageName);
-        actionsText.add(""+model.getNumberOfPossibleActions());
         observationsText.add(""+model.getNumberOfObservations());
 
         if (rewardVariableNames.size() > 0) {
             RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setIsReadOnly(true);
-            rewardVariableNames.sort(Comparator.comparingInt(RewardVariable::getArrayIndex));
-            rewardVariablesTable.setVariableSize(model.getRewardVariablesCount());
-            rewardVariablesTable.setValue(rewardVariableNames);
+            rewardVariablesTable.setRewardVariables(rewardVariableNames);
+            rewardVariablesTable.setCompactMode();
             rewardVariableNamesText.add(rewardVariablesTable);
-        } else {
-            rewardVariableNamesText.add("All reward variables are unnamed. You can name them when you create a new experiment for this model.");
         }
         archivesTabPanel.initData(event.getUI());
 

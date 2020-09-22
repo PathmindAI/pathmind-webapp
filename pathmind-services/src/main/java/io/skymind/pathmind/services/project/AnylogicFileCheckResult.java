@@ -9,11 +9,11 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private boolean modelJarFilePresent;
     private List<String> zipContentFileNames;
     private List<String> definedHelpers;
-    private int numAction;
     private int numObservation;
     private String rewardVariableFunction;
-    private int rewardVariablesCount;
-    private int actionTupleSize;
+    private List<String> rewardVariables;
+    private List<String> observationNames;
+    private String modelType;
 
     @Override
     public boolean isFileCheckComplete() {
@@ -90,14 +90,6 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         this.definedHelpers = definedHelpers;
     }
 
-    public int getNumAction() {
-        return numAction;
-    }
-
-    public void setNumAction(int numAction) {
-        this.numAction = numAction;
-    }
-
     public int getNumObservation() {
         return numObservation;
     }
@@ -114,20 +106,27 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         this.rewardVariableFunction = rewardVariableFunction;
     }
 
-    public int getRewardVariablesCount() {
-        return rewardVariablesCount;
+    public List<String> getRewardVariables() {
+        return rewardVariables;
     }
 
-    public void setRewardVariablesCount(int rewardVariablesCount) {
-        this.rewardVariablesCount = rewardVariablesCount;
+    public void setRewardVariables(List<String> rewardVariables) {
+        this.rewardVariables = rewardVariables;
     }
 
-    public int getActionTupleSize() {
-        return actionTupleSize;
+    public List<String> getObservationNames() {
+        return observationNames;
     }
 
-    public void setActionTupleSize(int actionTupleSize) {
-        this.actionTupleSize = actionTupleSize;
+    public void setObservationNames(List<String> observationNames) {
+        this.observationNames = observationNames;
     }
 
+    public String getModelType() {
+        return this.modelType;
+    }
+
+    public void setModelType(String modelType) {
+        this.modelType = modelType;
+    }
 }

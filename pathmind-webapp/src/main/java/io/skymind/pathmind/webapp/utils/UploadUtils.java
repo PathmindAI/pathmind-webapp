@@ -11,15 +11,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-
 public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
-	private static String[] ALLOW_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
+    private static String[] ALLOW_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
+    private static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -61,17 +63,15 @@ public class UploadUtils {
             	}
             	enu = zipFile.entries();
             	while (enu.hasMoreElements()) {
-            		ZipEntry zipEntry = (ZipEntry) enu.nextElement();
-            		for (String dbfile: Arrays.asList(ALLOW_LIST)) {
-            			if (zipEntry.getName().length() > rootFolder.length()) {
-            				String filename = zipEntry.getName().substring(rootFolder.length());
-            				if (filename.equalsIgnoreCase(dbfile)) {
-            					ZipEntry entry = new ZipEntry(dbfile);
-            					zos.putNextEntry(entry);
-            					zos.write(readZipEntryContent(zipFile, zipEntry));
-            				}
-            			}
-					}
+                    ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+                        if (zipEntry.getName().length() > rootFolder.length()) {
+                            String filename = zipEntry.getName().substring(rootFolder.length());
+                            if (Arrays.asList(ALLOW_LIST).contains(filename) || XLS_MATCH.test(filename)) {
+                                ZipEntry entry = new ZipEntry(filename);
+                                zos.putNextEntry(entry);
+                                zos.write(readZipEntryContent(zipFile, zipEntry));
+                            }
+                        }
             	}
             }catch (Exception e) {
             	e.printStackTrace();

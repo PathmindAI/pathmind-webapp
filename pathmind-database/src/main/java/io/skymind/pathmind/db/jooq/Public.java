@@ -4,8 +4,8 @@
 package io.skymind.pathmind.db.jooq;
 
 
-import io.skymind.pathmind.db.jooq.tables.Action;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
+import io.skymind.pathmind.db.jooq.tables.ExperimentObservation;
 import io.skymind.pathmind.db.jooq.tables.Metrics;
 import io.skymind.pathmind.db.jooq.tables.MetricsRaw;
 import io.skymind.pathmind.db.jooq.tables.Model;
@@ -27,7 +27,6 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 
 import org.jooq.Catalog;
-import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -45,7 +44,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 719977124;
+    private static final long serialVersionUID = 273411045;
 
     /**
      * The reference instance of <code>public</code>
@@ -53,14 +52,14 @@ public class Public extends SchemaImpl {
     public static final Public PUBLIC = new Public();
 
     /**
-     * The table <code>public.action</code>.
-     */
-    public final Action ACTION = io.skymind.pathmind.db.jooq.tables.Action.ACTION;
-
-    /**
      * The table <code>public.experiment</code>.
      */
     public final Experiment EXPERIMENT = io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
+
+    /**
+     * The table <code>public.experiment_observation</code>.
+     */
+    public final ExperimentObservation EXPERIMENT_OBSERVATION = io.skymind.pathmind.db.jooq.tables.ExperimentObservation.EXPERIMENT_OBSERVATION;
 
     /**
      * The table <code>public.metrics</code>.
@@ -141,27 +140,6 @@ public class Public extends SchemaImpl {
     }
 
     @Override
-    public final List<Sequence<?>> getSequences() {
-        List result = new ArrayList();
-        result.addAll(getSequences0());
-        return result;
-    }
-
-    private final List<Sequence<?>> getSequences0() {
-        return Arrays.<Sequence<?>>asList(
-            Sequences.ACTION_ID_SEQ,
-            Sequences.EXPERIMENT_ID_SEQ,
-            Sequences.MODEL_ID_SEQ,
-            Sequences.OBSERVATION_ID_SEQ,
-            Sequences.PATHMIND_USER_ID_SEQ,
-            Sequences.POLICY_ID_SEQ,
-            Sequences.PROJECT_ID_SEQ,
-            Sequences.REWARD_VARIABLE_ID_SEQ,
-            Sequences.RUN_ID_SEQ,
-            Sequences.TRAINING_ERROR_ID_SEQ);
-    }
-
-    @Override
     public final List<Table<?>> getTables() {
         List result = new ArrayList();
         result.addAll(getTables0());
@@ -170,8 +148,8 @@ public class Public extends SchemaImpl {
 
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
-            Action.ACTION,
             Experiment.EXPERIMENT,
+            ExperimentObservation.EXPERIMENT_OBSERVATION,
             Metrics.METRICS,
             MetricsRaw.METRICS_RAW,
             Model.MODEL,

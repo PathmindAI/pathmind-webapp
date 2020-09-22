@@ -86,4 +86,9 @@ public class NewExperimentStepDefinition {
     public void clickSideBarExperiment(String experimentName) {
         newExperimentSteps.clickSideBarExperiment(experimentName);
     }
+
+    @Then("^Check that new experiment reward variable '(.*)' goal is '(.*)' and value '(.*)'$")
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
+        newExperimentSteps.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
+    }
 }

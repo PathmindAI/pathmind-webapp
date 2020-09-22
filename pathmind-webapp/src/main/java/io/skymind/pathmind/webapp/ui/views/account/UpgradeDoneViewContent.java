@@ -19,7 +19,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 
 @Tag("upgrade-done-view-content")
-@JsModule("./src/account/upgrade-done-view-content.js")
+@JsModule("./src/pages/account/upgrade-done-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewContent.Model> {

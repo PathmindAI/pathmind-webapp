@@ -1,6 +1,9 @@
 package io.skymind.pathmind.shared.services.training;
 
+import java.util.List;
+
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +24,7 @@ public class JobSpec {
     private final String reward;
     private final String metrics = ""; // Disabled for now. Proper Metrics support will probably need a bit of
                                        // re-engineering across the webapp, Pathmind Helper and NativeRL
-    private final int actions;
-    private final int observations;
+    private final List<Observation> selectedObservations;
     private final int iterations;
 
     private final ExecutionEnvironment env;
@@ -36,10 +38,10 @@ public class JobSpec {
     private final boolean resume;
     private final int checkpointFrequency;
     private final boolean userLog;
-    private final int actionTupleSize;
-    private final boolean recordMetricsRaw;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, int actions, int observations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, int actionTupleSize, boolean recordMetricsRaw) {
+    private final boolean recordMetricsRaw;
+    private final boolean namedVariables;
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -48,8 +50,7 @@ public class JobSpec {
         this.variables = variables;
         this.reset = reset;
         this.reward = reward;
-        this.actions = actions;
-        this.observations = observations;
+        this.selectedObservations = selectedObservations;
         this.iterations = iterations;
         this.env = env;
         this.type = type;
@@ -59,7 +60,7 @@ public class JobSpec {
         this.resume = resume;
         this.checkpointFrequency = checkpointFrequency;
         this.userLog = userLog;
-        this.actionTupleSize = actionTupleSize;
         this.recordMetricsRaw = recordMetricsRaw;
+        this.namedVariables = namedVariables;
     }
 }

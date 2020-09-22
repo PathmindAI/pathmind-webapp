@@ -12,8 +12,6 @@ Feature: Check Model Details package name field
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
     Then Check model page model breadcrumb package name is <package name>
-    Then Input from file reward function <reward function file>
-    When Click project save draft btn
     When Open dashboard page
     Then Check dashboard <project name> model breadcrumb <package name>
     When Open projects page
@@ -24,7 +22,9 @@ Feature: Check Model Details package name field
     Then Check model page model breadcrumb package name is <package name>
 
     Examples:
-      | project name    | model                                       | reward function file                                             | package name            |
-      | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | interconnected_cc_tuple |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | coffeeshop_v1           |
-      | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Production_Single_Agent_Reward.txt       | simplescheduling_tuple  |
+      | project name    | model                             | package name            |
+      | AutotestProject | tuple_models/MoonLanding.zip      | moonLanding             |
+      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | coffeeshop              |
+      | AutotestProject | tuple_models/SimpleStochastic.zip | simple_stochastic_model |
+      | AutotestProject | tuple_models/ProductDelivery.zip  | product_delivery        |
+      | AutotestProject | tuple_models/Warehouse.zip        | warehouse_pathmind_demo |

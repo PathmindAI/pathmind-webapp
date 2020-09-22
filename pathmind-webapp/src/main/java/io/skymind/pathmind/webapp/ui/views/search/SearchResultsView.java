@@ -111,11 +111,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
                     break;
                 case EXPERIMENT:
                     Experiment experiment = experimentDAO.getExperimentWithRuns(item.getItemId()).get();
-                    if (ExperimentUtils.isDraftRunType(experiment)) {
-                        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getItemId()));
-                    } else {
-                        getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, item.getItemId()));
-                    }
+                    ExperimentUtils.navigateToExperiment(getUI(), experiment);
                     break;
             }
         });

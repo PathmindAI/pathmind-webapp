@@ -104,4 +104,14 @@ public class ModelStepDefinitions {
     public void clickModelPageExperimentArchiveBtn(String experiment) {
         modelPageSteps.clickModelPageExperimentArchiveBtn(experiment);
     }
+
+    @When("^Click model page model archive/unarchive button$")
+    public void clickModelPageModelArchiveButton() {
+        modelPageSteps.clickModelPageModelArchiveButton();
+    }
+
+    @Then("^Check model page model archived tag is shown (.*)$")
+    public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
+        modelPageSteps.checkModelPageModelArchivedTagIsShown(archived);
+    }
 }

@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
@@ -23,7 +26,9 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 
 public class ExperimentUtils
 {
@@ -200,5 +205,55 @@ public class ExperimentUtils
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getRunId() == run.getId())
                 .forEach(policy -> policy.setRun(run));
+    }
+
+    public static boolean isRunning(Experiment experiment) {
+	    if(experiment.getRuns() == null || experiment.getRuns().isEmpty())
+	        return false;
+	    return experiment.getRuns().stream()
+                .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
+    }
+
+    public static boolean isNotStarted(Experiment experiment) {
+        if(experiment.getRuns() == null || experiment.getRuns().isEmpty())
+            return false;
+        return experiment.getRuns().stream()
+                .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
+	}
+
+    // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
+    // them as part of my bigger refactoring.
+    public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
+        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment));
+    }
+
+    public static void navigateToExperiment(UI ui, Experiment experiment) {
+        ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
+    }
+
+    public static Optional<Experiment> getFirstUnarchivedExperiment(List<Experiment> experiments) {
+	    return experiments.stream()
+                .filter(experiment -> !experiment.isArchived())
+                .findFirst();
+    }
+
+    public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
+        Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
+        if(firstUnarchivedExperiment.isEmpty())
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiments.get(0).getModelId()));
+        else
+            getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
+    }
+
+    /**
+     * Replace the existing experiment in the experiments list without replicating the list (for example using map and then collecting)
+     * as well as keeping the exact same order in case the list is already sorted.
+     */
+    public static void updateExperimentInExperimentsList(List<Experiment> experiments, Experiment experiment) {
+        int index = IntStream.range(0, experiments.size())
+                .filter(x -> experiment.getId() == experiments.get(x).getId())
+                .findFirst().orElse(-1);
+        if(index > -1)
+            experiments.set(index, experiment);
     }
 }

@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Tag("reset-password-view")
-@JsModule("./src/account/reset-password-view.js")
+@JsModule("./src/pages/account/reset-password-view.js")
 @Route(value = Routes.RESET_PASSWORD_URL)
 @Slf4j
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>

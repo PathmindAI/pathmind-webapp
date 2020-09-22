@@ -16,10 +16,10 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
-import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.components.atoms.GoalsReachedStatus;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
@@ -42,6 +42,8 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Experiment experiment;
     private Component statusComponent;
     private FavoriteStar favoriteStar;
+    private Div experimentNameWrapper;
+    private GoalsReachedStatus goalStatusComponent;
 
     private SegmentIntegrator segmentIntegrator;
 
@@ -77,8 +79,9 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private void archiveExperiment(Experiment experimentToArchive) {
         ConfirmationUtils.archive("Experiment #"+experimentToArchive.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
             segmentIntegrator.archived(Experiment.class, true);
+            ExperimentUtils.archiveExperiment(experimentDAO, experimentToArchive, true);
+            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
         });
     }
 
@@ -110,7 +113,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     private Component createStatusIcon(RunStatus status) {
         if(ExperimentUtils.isDraftRunType(experiment))
             return new Icon(VaadinIcon.PENCIL);
-        if (status.getValue() <= RunStatus.Running.getValue() || status == RunStatus.Restarting) {
+        if (RunStatus.isRunning(status)) {
             Div loadingSpinner = new Div();
             loadingSpinner.addClassName("icon-loading-spinner");
             return loadingSpinner;
@@ -126,11 +129,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     private Div createExperimentText(String experimentNumber, String experimentDateCreated, FavoriteStar favoriteStar) {
         Paragraph experimentNameLine = new Paragraph("Experiment #" + experimentNumber);
+        goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
+        goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment) && experiment.isHasGoals());
 
         experimentNameLine.add(favoriteStar);
-        Div experimentNameWrapper = new Div();
+        experimentNameWrapper = new Div();
         experimentNameWrapper.add(experimentNameLine);
         experimentNameWrapper.add(new Paragraph("Created " + experimentDateCreated));
+        experimentNameWrapper.add(goalStatusComponent);
         experimentNameWrapper.addClassName("experiment-name");
         return experimentNameWrapper;
     }
@@ -138,6 +144,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         Component newStatusComponent = createStatusIcon(runStatus);
         replace(statusComponent, newStatusComponent);
         statusComponent = newStatusComponent;
+    }
+
+    // Part of this will need to be moved to the javascript part of the refactored Nav Bar Item
+    private void updateGoalStatus(Boolean goalStatus) {
+        if (experiment.isHasGoals()) {
+            goalStatusComponent.setValue(goalStatus);
+            goalStatusComponent.setVisible(!ExperimentUtils.isDraftRunType(experiment));
+        }
     }
 
     private void handleRowClicked(Consumer<Experiment> selectExperimentConsumer) {
@@ -160,11 +174,13 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        updateGoalStatus(experiment.isGoalsReached());
         favoriteStar.setValue(experiment.isFavorite());
     }
 
     public void updateRun(Run run) {
         experiment.updateRun(run);
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        updateGoalStatus(run.getExperiment().isGoalsReached());
     }
 }

@@ -43,6 +43,7 @@ public class AWSApiClient {
     private final ObjectMapper objectMapper;
 
     private final int mockCycle;
+    private final int mockMaxMin;
 
     public AWSApiClient(
             AwsApiClientS3 s3,
@@ -51,7 +52,8 @@ public class AWSApiClient {
             @Value("${pathmind.aws.sqs.url}") String queueUrl,
             @Value("${pathmind.aws.sqs.updater_url}") String updaterQueueUrl,
             ObjectMapper objectMapper,
-            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle) {
+            @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
+            @Value("${pathmind.aws.mock_max_min:0}") int mockMaxMin) {
 
         this.s3Client = s3.getS3Client();
         this.bucketName = bucketName;
@@ -63,6 +65,7 @@ public class AWSApiClient {
         this.objectMapper = objectMapper;
 
         this.mockCycle = mockCycle;
+        this.mockMaxMin = mockMaxMin;
         if (isUsingMockBackend()) {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
@@ -135,8 +138,7 @@ public class AWSApiClient {
     }
 
     public String jobSubmit(String jobId, RunType type, EC2InstanceType ec2InstanceType) throws JsonProcessingException {
-        final String mockType = type == null ? null : type.toString();
-        Job job = new Job(bucketName, jobId, mockCycle, mockType);
+        Job job = new Job(bucketName, jobId, mockCycle, mockMaxMin);
         job.setEc2InstanceType(ec2InstanceType);
 
         SendMessageRequest send_msg_request = new SendMessageRequest()

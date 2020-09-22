@@ -56,7 +56,6 @@
     height: var(--lumo-size-xs);
 }
 
-.experiment-view .training-starting-placeholder span::before,
 .icon-loading-spinner::after {
     box-sizing: border-box;
     content: "";
@@ -127,7 +126,7 @@ iron-icon[icon="vaadin:exclamation-circle-o"] {
     margin: 0;
 }
 
-.experiment-name p:last-child {
+.experiment-name p:nth-child(2) {
     font-size: var(--lumo-font-size-xs);
     color: var(--pm-gray-color-dark);
     margin-top: 2px;

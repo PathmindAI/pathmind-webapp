@@ -247,9 +247,9 @@ public class RunDAO {
             DBUtils.setLockTimeout(transactionCtx, 4);
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
+            calculateGoals(transactionCtx, run.getExperiment(), policies);
 
-            if (providerJobStatus.getRunStatus() == RunStatus.Completed) {
-            	
+            if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             	policiesUpdateInfo.forEach(policyInfo -> {
             		Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
             		PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
@@ -266,6 +266,22 @@ public class RunDAO {
         });
     }
     
+    private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
+        if (bestPolicy == null) {
+            return;
+        }
+        List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+        if (experiment.isHasGoals()) {
+            boolean goalsReached = rewardVariables.stream()
+                .filter(rv -> rv.getGoalConditionType() != null)
+                .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
+            experiment.setGoalsReached(goalsReached);
+            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
+        }
+    }
+
     public void updatePolicyData(Run run, List<Policy> policies) {
         ctx.transaction(configuration -> {
             DSLContext transactionCtx = DSL.using(configuration);
@@ -291,5 +307,9 @@ public class RunDAO {
 
     public UserMetrics getRunUsageDataForUser(long userId) {
         return RunRepository.getRunUsageDataForUser(ctx, userId);
+    }
+
+    public List<Policy> getPolicies(long runId) {
+        return PolicyRepository.getPoliciesForRun(ctx, runId);
     }
 }
