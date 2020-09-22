@@ -28,7 +28,6 @@ public class ExperimentGrid extends Grid<Experiment>
                     experiment.setFavorite(newIsFavorite);
                     getDataProvider().refreshItem(refreshedExperiment);
                 }))
-				.setComparator(Comparator.comparing(Experiment::isFavorite))
 				.setHeader(new Icon(VaadinIcon.STAR))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
@@ -44,13 +43,6 @@ public class ExperimentGrid extends Grid<Experiment>
 		Grid.Column<Experiment> createdColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Experiment::getDateCreated))
 				.setHeader("Created")
-				.setAutoWidth(true)
-				.setFlexGrow(0)
-				.setAutoWidth(true)
-				.setResizable(true);
-		addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
-				.setHeader("Last Activity")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setAutoWidth(true)
@@ -90,7 +82,6 @@ public class ExperimentGrid extends Grid<Experiment>
 
 		// Sort by created by default
 		sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
-
-		getElement().getStyle().set("padding-top", "20px");
-	}
+        addItemClickListener(event -> ExperimentUtils.navigateToExperiment(getUI(), event.getItem()));
+    }
 }

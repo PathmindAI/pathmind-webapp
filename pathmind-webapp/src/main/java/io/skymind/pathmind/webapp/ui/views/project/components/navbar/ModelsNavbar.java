@@ -29,8 +29,6 @@ public class ModelsNavbar extends VerticalLayout
     private UploadModelButton newModelButton;
     private SegmentIntegrator segmentIntegrator;
 
-    public long modelId;
-
     private ModelDAO modelDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
@@ -40,7 +38,6 @@ public class ModelsNavbar extends VerticalLayout
 	    this.modelDAO = modelDAO;
 	    this.models = models;
 	    this.selectedModel = selectedModel;
-	    this.modelId = selectedModel.getId();
         this.selectModelConsumer = selectModelConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
@@ -59,10 +56,6 @@ public class ModelsNavbar extends VerticalLayout
 		addClassName("models-navbar");
         addModelsToNavbar();
 	}
-
-    public long getModelId() {
-        return modelId;
-    }
 
     public List<Model> getModels() {
         return models;

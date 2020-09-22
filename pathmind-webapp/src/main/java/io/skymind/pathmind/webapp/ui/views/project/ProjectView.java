@@ -1,20 +1,15 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -32,7 +27,6 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
@@ -43,11 +37,11 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
@@ -89,6 +83,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Model selectedModel;
     private RewardVariablesTable rewardVariablesTable;
     private NotesField modelNotesField;
+    private SplitLayout modelWrapper;
 	
 	private ScreenTitlePanel titlePanel;
 
@@ -97,8 +92,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	protected Component getMainContent() {
-		setupGrid();
-		setupArchivesTabPanel();
 		
 		addClassName("project-view");
 
@@ -111,18 +104,23 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
-        modelNotesField = createModelNotesField();
-        rewardVariablesTable = new RewardVariablesTable();
-        rewardVariablesTable.setRewardVariables(rewardVariableNames);
-        
-        modelsNavbar = new ModelsNavbar(
-            () -> getUI(),
-            modelDAO,
-            selectedModel,
-            models,
-            selectedModel -> selectModel(selectedModel),
-            segmentIntegrator
-        );
+
+        if (selectedModel != null) {
+            setupGrid();
+            setupArchivesTabPanel();
+            modelNotesField = createModelNotesField();
+            rewardVariablesTable = new RewardVariablesTable();
+            rewardVariablesTable.setRewardVariables(rewardVariableNames);
+
+            modelsNavbar = new ModelsNavbar(
+                () -> getUI(),
+                modelDAO,
+                selectedModel,
+                models,
+                selectedModel -> selectModel(selectedModel),
+                segmentIntegrator
+            );
+        }
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -133,30 +131,37 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         );
 		headerWrapper.addClassName("page-content-header");
 
-		HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal(
+        HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal();
+        modelHeaderWrapper.addClassName("page-content-header");
+
+        if (selectedModel != null) {
+            modelHeaderWrapper.add(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName),
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel)
                 ),
                 modelNotesField
-        );
-        modelHeaderWrapper.addClassName("page-content-header");
-        FlexLayout rightPanel = createRightPanel();
+            );
+            FlexLayout rightPanel = createRightPanel();
+    
+            modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                            modelHeaderWrapper, archivesTabPanel, experimentGrid
+                    ),
+                    rightPanel,
+            70);
+            modelWrapper.addClassName("model-wrapper");
+        }
 
-        SplitLayout modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        modelHeaderWrapper, archivesTabPanel, experimentGrid
-                ),
-                rightPanel,
-        70);
-        modelWrapper.addClassName("model-wrapper");
-
-        FlexLayout gridWrapper = new ViewSection(
-                headerWrapper,
+        FlexLayout gridWrapper = new ViewSection(headerWrapper);
+        if (selectedModel != null) {
+            gridWrapper.add(
                 WrapperUtils.wrapSizeFullBetweenHorizontal(
                         modelsNavbar,
                         modelWrapper                        
-                ));
+                )
+            );
+        }
 		gridWrapper.addClassName("page-content");
 		
 		return gridWrapper;
@@ -219,66 +224,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
     
     private void setupGrid() {
-        experimentGrid = new Grid<>();
-        experimentGrid.addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
-                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-                    Experiment refreshedExperiment = experiment;
-                    experiment.setFavorite(newIsFavorite);
-                    experimentGrid.getDataProvider().refreshItem(refreshedExperiment);
-                }))
-                .setHeader(new Icon(VaadinIcon.STAR))
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true);
-        experimentGrid.addColumn(TemplateRenderer.<Experiment> of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
-                    .withProperty("name", Experiment::getName)
-                    .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
-                .setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
-                .setHeader("#")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true);
-        experimentGrid.addColumn(new ZonedDateTimeRenderer<>(Experiment::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-                .setComparator(Comparator.comparing(Experiment::getDateCreated))
-                .setHeader("Created")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setAutoWidth(true)
-                .setResizable(true);
-        experimentGrid.addColumn(experiment -> ExperimentUtils.getTrainingStatus(experiment))
-                .setHeader("Status")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
-        experimentGrid.addComponentColumn(experiment -> {
-                    if (experiment.isHasGoals() && !experiment.isDraft()) {
-                        Boolean isGoalsReached = experiment.isGoalsReached();
-                        String goalStatusClassName = isGoalsReached ? "success-text" : "failure-text";
-                        Icon goalReachedIcon = experiment.isGoalsReached() ? new Icon(VaadinIcon.CHECK) : new Icon(VaadinIcon.CLOSE);
-                        goalReachedIcon.addClassName(goalStatusClassName);
-                        return goalReachedIcon;
-                    }
-                    // to be replaced with the loading icon after the polymer loading icon component is merged
-                    return new Span("—");
-                })
-                .setComparator(Comparator.comparing(Experiment::isGoalsReached))
-                .setHeader("Goals Reached")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
-        experimentGrid.addColumn(experiment -> {
-            String userNotes = experiment.getUserNotes();
-            return userNotes.isEmpty() ? "—" : userNotes;
-        })
-                .setClassNameGenerator(column -> "grid-notes-column")
-                .setHeader("Notes")
-                .setFlexGrow(1)
-                .setResizable(true)
-                .setSortable(false);
-
-        experimentGrid.addItemClickListener(event -> ExperimentUtils.navigateToExperiment(getUI(), event.getItem()));
+        experimentGrid = new ExperimentGrid(experimentDAO);
     }
 
 	public List<Model> getModels() {
@@ -339,33 +285,31 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
+		if (project.getModels().isEmpty()) {
+            event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
+            return;
+		}
         String modelNameText = "";
-        if (selectedModel != null) {
-            modelNameText = "Model #"+selectedModel.getName();
-            if (selectedModel.getPackageName() != null) {
-                modelNameText += " ("+selectedModel.getPackageName()+")";
-            }
-            modelArchivedLabel.setVisible(selectedModel.isArchived());
+        modelNameText = "Model #"+selectedModel.getName();
+        if (selectedModel.getPackageName() != null) {
+            modelNameText += " ("+selectedModel.getPackageName()+")";
         }
+        modelArchivedLabel.setVisible(selectedModel.isArchived());
         projectName.setText(project.getName());
         archivedLabel.setVisible(project.isArchived());
         modelName.setText(modelNameText);
-
-		if (project.getModels().isEmpty()) {
-			event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
-		}
-		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
-			// experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            experimentGrid.setItems(experiments);
+        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            if (experimentGrid != null) {
+                experimentGrid.setItems(experiments);
+            }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
             }
-		});
-
-		archivesTabPanel.initData(event.getUI());
-
-		recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);		
+        });
+        archivesTabPanel.initData(event.getUI());
+        recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);
 	}
 
 	@Override
