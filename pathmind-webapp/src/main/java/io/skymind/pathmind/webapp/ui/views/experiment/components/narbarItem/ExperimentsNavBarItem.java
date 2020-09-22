@@ -166,5 +166,6 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
     public void updateRun(Run run) {
         experiment.updateRun(run);
         updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        favoriteStar.setValue(!favoriteStar.getValue());
     }
 }

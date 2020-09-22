@@ -1,9 +1,8 @@
 package io.skymind.pathmind.webapp.bus.events;
 
-import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.webapp.bus.CloneUtils;
-import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.webapp.bus.BusEventType;
+import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
 
 public class RunUpdateBusEvent implements CloneablePathmindBusEvent
 {
@@ -40,6 +39,6 @@ public class RunUpdateBusEvent implements CloneablePathmindBusEvent
 
     @Override
     public CloneablePathmindBusEvent cloneForEventBus() {
-        return new RunUpdateBusEvent(CloneUtils.cloneUsingSerialization(run));
+        return new RunUpdateBusEvent(run.deepClone());
     }
 }
