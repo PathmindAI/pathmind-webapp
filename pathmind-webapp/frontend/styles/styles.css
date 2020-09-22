@@ -240,11 +240,6 @@ background-color: var(--pm-gray-color-light);
     width: 100%;
 }
 
-.project-title-label {
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.1;
-}
 .light-text-label {
     font-size: var(--lumo-font-size-m);
     color: var(--pm-orange-color);
@@ -379,7 +374,9 @@ background-color: var(--pm-gray-color-light);
 .projects-view .section-title-label,
 .project-view .section-title-label,
 .model-view .section-title-label {
-    line-height: 1;
+    line-height: 1.1;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .card p,
@@ -599,6 +596,14 @@ account-view {
 
 .button-link:hover::before {
     opacity: 0;
+}
+
+.download-alp-link {
+    align-self: flex-start;
+}
+
+.export-policy-view .download-alp-link {
+    align-self: center;
 }
 
 /* Typography Styles */

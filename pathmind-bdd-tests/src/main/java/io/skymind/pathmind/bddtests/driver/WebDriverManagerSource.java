@@ -43,6 +43,7 @@ public class WebDriverManagerSource implements DriverSource {
                 options.setExperimentalOption("useAutomationExtension", false);
                 prefs.put("credentials_enable_service", false);
                 prefs.put("profile.password_manager_enabled", false);
+                prefs.put("download.default_directory", variables.getProperty("user.dir"));
                 options.setExperimentalOption("prefs", prefs);
                 options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
                 options.setExperimentalOption("useAutomationExtension", false);

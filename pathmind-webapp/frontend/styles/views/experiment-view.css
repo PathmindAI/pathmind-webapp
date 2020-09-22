@@ -174,7 +174,8 @@
     width: 100%;
 }
 
-.experiment-view .buttons-wrapper vaadin-button:not(:first-child) {
+.experiment-view .buttons-wrapper vaadin-button:not(:first-child),
+.experiment-view .buttons-wrapper .download-alp-link {
     margin-left: var(--lumo-space-s);
 }
 

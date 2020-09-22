@@ -137,6 +137,10 @@ public class AWSApiClient {
         s3Client.deleteObject(bucketName, keyId);
     }
 
+    public void fileDelete(String keyId) {
+        fileDelete(bucketName, keyId);
+    }
+
     public String jobSubmit(String jobId, RunType type, EC2InstanceType ec2InstanceType) throws JsonProcessingException {
         Job job = new Job(bucketName, jobId, mockCycle, mockMaxMin);
         job.setEc2InstanceType(ec2InstanceType);
