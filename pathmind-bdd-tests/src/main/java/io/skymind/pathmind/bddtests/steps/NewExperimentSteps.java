@@ -88,4 +88,9 @@ public class NewExperimentSteps {
     public void checkThatExperimentPageTitleIs(String experiment) {
         newExperimentPage.checkThatExperimentPageTitleIs(experiment);
     }
+
+    @Step
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        newExperimentPage.checkNewExperimentPageModelALPBtn(filename);
+    }
 }

@@ -96,4 +96,14 @@ public class NewExperimentStepDefinition {
     public void checkThatExperimentPageTitleIs(String experiment) {
         newExperimentSteps.checkThatExperimentPageTitleIs(experiment);
     }
+
+    @Then("^Check new experiment page model ALP btn (.*)$")
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        newExperimentSteps.checkNewExperimentPageModelALPBtn(filename);
+    }
+
+    @When("^Click new experiment observation btn '(.*)'$")
+    public void clickNewExperimentObservationBtn(String checkbox) {
+        newExperimentSteps.clickObservationsCheckbox(checkbox);
+    }
 }
