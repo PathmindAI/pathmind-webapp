@@ -310,7 +310,7 @@ pipeline {
                 stage('Deploying trainer') {
                     steps {
                         script {
-                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml"
                         }
                     }
                 }
