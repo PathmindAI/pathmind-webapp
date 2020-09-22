@@ -31,6 +31,10 @@ public class ModelDAO {
 	public Optional<Model> getModel(long modelId) {
     	return Optional.ofNullable(ModelRepository.getModel(ctx, modelId));
 	}
+	
+	public Optional<Model> getPrevModelForProject(long projectId, long currentModelId) {
+	    return Optional.ofNullable(ModelRepository.getLastModelForProject(ctx, projectId, currentModelId));
+	}
 
 	public void addDraftModelToProject(Model model, long projectId, String userNotes)
 	{
@@ -54,7 +58,7 @@ public class ModelDAO {
 			DSLContext transactionCtx = DSL.using(configuration);
 			model.setDraft(false);
 			ModelRepository.updateModel(transactionCtx, model.getId(), false, modelNotes);
-			return ExperimentRepository.createNewExperiment(transactionCtx, model.getId());
+			return ExperimentRepository.createNewExperiment(transactionCtx, model.getId(), model.isHasGoals());
 		});
 	}
 

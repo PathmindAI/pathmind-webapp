@@ -27,3 +27,11 @@
 .highcharts-tooltip-box {
     stroke: var(--pm-text-color);
 }
+.target {
+    fill: var(--pm-friendly-color);
+    fill-opacity: 0.4;
+}
+svg {
+    width: 100%;
+    height: 100%;
+}
