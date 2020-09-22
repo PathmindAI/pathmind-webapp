@@ -152,10 +152,10 @@ pipeline {
         
     }
     
-    //all is built and run from the prod
+    //all is built and run from the master
     agent {
         node {
-            label 'prod'
+            label 'master'
             customWorkspace "${env.BUILD_NUMBER}"
         }
     }
@@ -364,4 +364,3 @@ pipeline {
         }
     }
 }
-
