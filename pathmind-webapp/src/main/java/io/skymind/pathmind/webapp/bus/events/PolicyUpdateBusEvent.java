@@ -2,16 +2,11 @@ package io.skymind.pathmind.webapp.bus.events;
 
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.shared.utils.CloneUtils;
-import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
 
 import java.util.List;
 
-public class PolicyUpdateBusEvent implements CloneablePathmindBusEvent {
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
-import io.skymind.pathmind.shared.data.Policy;
 
 public class PolicyUpdateBusEvent implements PathmindBusEvent {
     private List<Policy> policies;
@@ -51,10 +46,5 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    @Override
-    public PolicyUpdateBusEvent cloneForEventBus() {
-        return new PolicyUpdateBusEvent(CloneUtils.deepCloneList(this.policies));
     }
 }
