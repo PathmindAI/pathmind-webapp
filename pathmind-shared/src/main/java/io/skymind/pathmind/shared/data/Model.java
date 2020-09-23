@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 @Builder
@@ -40,9 +41,11 @@ public class Model extends ArchivableData implements DeepCloneableInterface
                 .lastActivityDate(lastActivityDate)
                 .numberOfObservations(numberOfObservations)
                 .file(file == null ? null : Arrays.copyOf(file, file.length))
+                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
                 .projectId(projectId)
                 .userNotes(userNotes)
                 .draft(draft)
+                .hasGoals(hasGoals)
                 .rewardVariablesCount(rewardVariablesCount)
                 .packageName(packageName)
                 .invalidModel(invalidModel)
