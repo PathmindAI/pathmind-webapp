@@ -70,9 +70,9 @@ public class Policy extends Data implements DeepCloneableInterface
                 .run(CloneUtils.shallowClone(run))
                 .metrics(CloneUtils.shallowCloneList(metrics))
                 .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
-                .simulationMetrics(simulationMetrics == null ? null : List.copyOf(simulationMetrics))
+                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
                 .sparklinesData(CloneUtils.cloneListDoubleArrays(sparklinesData))
-                .uncertainty(uncertainty == null ? null : List.copyOf(uncertainty))
+                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
                 .build());
     }
 }
