@@ -410,6 +410,10 @@ background-color: var(--pm-gray-color-light);
     flex: 1;
 }
 
+.project-view .model-wrapper .section-title-label {
+    font-size: var(--lumo-font-size-l);
+}
+
 .project-view .notes-block vaadin-text-area {
     border: none;
     border-left: 1px solid var(--pm-gray-color-lightest);

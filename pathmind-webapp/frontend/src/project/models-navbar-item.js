@@ -71,10 +71,10 @@ class ModelsNavbarItem extends PolymerElement {
             .model-name div {
                 margin-bottom: var(--lumo-space-xxxs);
             }
-            .model-name p {
+            a, p {
                 margin: 0;
             }
-            .model-name p:nth-of-type(2) {
+            .model-name p {
                 font-size: var(--lumo-font-size-xs);
                 font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
                 color: var(--pm-gray-color-dark);
@@ -102,7 +102,7 @@ class ModelsNavbarItem extends PolymerElement {
                 <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
                 <tag-label text="[[tagArchivedText]]" size="small"></tag-label>
             </div>
-            <p>Model #[[modelName]] [[modelPackageNameInBrackets]]</p>
+            <a>Model #[[modelName]] [[modelPackageNameInBrackets]]</a>
             <p>Created [[createdDate]]</p>
         </div>
         <vaadin-button
