@@ -8,6 +8,7 @@ Feature: Check Model Details Reward Variables fields
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
@@ -18,9 +19,9 @@ Feature: Check Model Details Reward Variables fields
     Then Check model page model details reward variables is <variables>
 
     Examples:
-      | project name    | model                             | variables                                                                                                                                                           |
-      | AutotestProject | tuple_models/MoonLanding.zip      | fuelRemaining,distanceToX,distanceToY,distanceToZ,landed,crashed,gotAway,throttlingUp,thottlingDown,movingDown,movingUp,movingLeft,movingRight,speedX,speedY,speedZ |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip  | kitchen_cleanliness,successful_customers,balked_customers,service_time                                                                                              |
-      | AutotestProject | tuple_models/SimpleStochastic.zip | goalReached                                                                                                                                                         |
-      | AutotestProject | tuple_models/ProductDelivery.zip  | avgWaitTime,avgDistanceKM                                                                                                                                           |
-      | AutotestProject | tuple_models/Warehouse.zip        | profitableDeliveries,unprofitableDeliveries                                                                                                                         |
+      | project name    | model                                 | reward function file                                | variables                                                                                                                                                           |
+      | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | fuelRemaining,distanceToX,distanceToY,distanceToZ,landed,crashed,gotAway,throttlingUp,thottlingDown,movingDown,movingUp,movingLeft,movingRight,speedX,speedY,speedZ |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip             | CoffeeShop/CoffeeShopRewardFunction.txt             | kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime                                                                                          |
+      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | goalReached                                                                                                                                                         |
+      | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | avgWaitTime,avgDistanceKM                                                                                                                                           |
+      | AutotestProject | Warehouse/Warehouse.zip               | Warehouse/WarehouseRewardFunction.txt               | profitableDeliveries,unprofitableDeliveries                                                                                                                         |

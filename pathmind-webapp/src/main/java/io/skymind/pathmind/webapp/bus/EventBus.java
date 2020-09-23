@@ -99,15 +99,4 @@ public class EventBus {
     private static void unsubscribe(EventBusSubscriber subscriber) {
         EVENT_BUS.subscribers.get(subscriber.getEventType()).remove(subscriber);
     }
-
-    public static void fireEventBusUpdates(Run run, List<Policy> policies) {
-        // An event for each policy since we only need to update some of the policies in a run.
-        if (!policies.isEmpty()) {
-            EventBus.post(new PolicyUpdateBusEvent(policies));
-        }
-        // Send run updated event, meaning that all policies under the run is updated.
-        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        EventBus.post(new RunUpdateBusEvent(run));
-    }
-
 }

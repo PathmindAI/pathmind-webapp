@@ -9,8 +9,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ModelUploadPage extends PageObject {
 
@@ -43,5 +42,22 @@ public class ModelUploadPage extends PageObject {
         By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
         assertThat(getDriver().findElement(xpath).getText(), is(errorMessage));
         resetImplicitTimeout();
+    }
+
+    public void clickAlpUploadStepNextBtn() {
+        getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::vaadin-horizontal-layout/vaadin-button")).click();
+    }
+
+    public void uploadALPFile(String alpFile) {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/parent::vaadin-vertical-layout/descendant::vaadin-upload")));
+        WebElement projectNameInputField = e.findElement(byInput);
+        upload(System.getProperty("user.dir") + "/models/" + alpFile).fromLocalMachine().to(projectNameInputField);
+        waitABit(3000);
+    }
+
+    public void checkThatWizardUploadAlpFilePageIsOpened() {
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']"))));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[1]")).getText(), is("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[2]")).getText(), is("You'll be able to download this ALP file with your trained policy from an experiment."));
     }
 }

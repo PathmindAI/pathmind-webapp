@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -25,6 +21,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
 public class ModelDetailsWizardPanel extends VerticalLayout
 {
@@ -32,20 +29,14 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 
 	private TextArea notesFieldTextArea;
 
-	private Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+	private Button nextStepButton;
 
-	public ModelDetailsWizardPanel(Binder<Model> binder, boolean isResumeUpload, boolean isValidModel)
+	public ModelDetailsWizardPanel(Binder<Model> binder)
 	{
 		setupFields();
 		setupForm();
 		setupNotesFieldTextArea();
-		nextStepButton.setIconAfterText(true);
-		nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		nextStepButton.setEnabled(isValidModel);
-
-
-		Icon checkmarkIcon = new Icon(VaadinIcon.COMMENTS.CHECK_CIRCLE);
-		checkmarkIcon.setColor("var(--pm-friendly-color)");
+		nextStepButton = UploadModelView.createNextStepButton();
 
 		HorizontalLayout modelDetailsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
 				LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL));
@@ -57,14 +48,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 						GuiUtils.getFullWidthHr()
 				)
 		);
-		if (!isResumeUpload) {
-			HorizontalLayout successMessage = WrapperUtils.wrapWidthFullHorizontal(
-					checkmarkIcon,
-					WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-							LabelFactory.createLabel("Your model was successfully uploaded!", BOLD_LABEL))
-			);
-			items.add(successMessage);
-		}
 		items.addAll(
 				Arrays.asList(
 						formPanel,
@@ -80,10 +63,6 @@ public class ModelDetailsWizardPanel extends VerticalLayout
 		setPadding(false);
 		setSpacing(false);
 	}
-
-	public void setIsValidModel(boolean isValidModel) {
-        nextStepButton.setEnabled(isValidModel);
-    }
 
 	private void setupFields()
 	{

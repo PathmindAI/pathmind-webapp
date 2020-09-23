@@ -142,4 +142,18 @@ public class NewExperimentPage extends PageObject {
     public void clickObservationsCheckbox(String checkbox) {
         getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + checkbox + "']")).click();
     }
+
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='"+rewardVariable+"']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign+goal));
+    }
+
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is(experiment));
+    }
+
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a")).getAttribute("href"), containsString(filename));
+    }
 }

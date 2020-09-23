@@ -106,9 +106,10 @@ public class ExperimentDAO
             DSLContext transactionCtx = DSL.using(conf);
             String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(transactionCtx, modelId) + 1);
             Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(transactionCtx, modelId);
-            String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : ""; 
+            String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : "";
+            boolean hasGoals = lastExperiment != null ? lastExperiment.isHasGoals() : false;
             List<Observation> observations = lastExperiment != null ? ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId()) : Collections.emptyList();
-            Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction);
+            Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
             return exp;
         });

@@ -32,8 +32,9 @@ Feature: Wizard page
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
@@ -55,9 +56,35 @@ Feature: Wizard page
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
-    Then Check experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
+
+  Scenario: Check goals error msg
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Input reward variable 'kitchenCleanlinessLevel' goal '≥' value ' '
+    When Input reward variable 'successfulCustomers' goal '≤' value ' '
+    When Input reward variable 'balkedCustomers' goal '≥' value ' '
+    When Input reward variable 'avgServiceTime' goal '≤' value ' '
+    Then Check wizard reward variable 'kitchenCleanlinessLevel' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'successfulCustomers' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'balkedCustomers' error is shown 'Enter a goal value'
+    Then Check wizard reward variable 'avgServiceTime' error is shown 'Enter a goal value'
+    When Check wizard next button is disabled
+    When Input reward variable 'kitchenCleanlinessLevel' goal '≤' value '1'
+    When Input reward variable 'successfulCustomers' goal '≥' value '2'
+    When Input reward variable 'balkedCustomers' goal '≤' value '3'
+    When Input reward variable 'avgServiceTime' goal '≥' value '4'
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is '≤' and value '1.0'
+    Then Check that new experiment reward variable 'successfulCustomers' goal is '≥' and value '2.0'
+    Then Check that new experiment reward variable 'balkedCustomers' goal is '≤' and value '3.0'
+    Then Check that new experiment reward variable 'avgServiceTime' goal is '≥' and value '4.0'

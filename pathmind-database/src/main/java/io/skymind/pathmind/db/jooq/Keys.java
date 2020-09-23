@@ -38,7 +38,6 @@ import io.skymind.pathmind.db.jooq.tables.records.TrainingErrorRecord;
 import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
 
@@ -61,23 +60,13 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
-    public static final Identity<ExperimentObservationRecord, Long> IDENTITY_EXPERIMENT_OBSERVATION = Identities0.IDENTITY_EXPERIMENT_OBSERVATION;
-    public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
-    public static final Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Identities0.IDENTITY_OBSERVATION;
-    public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
-    public static final Identity<PolicyRecord, Long> IDENTITY_POLICY = Identities0.IDENTITY_POLICY;
-    public static final Identity<ProjectRecord, Long> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
-    public static final Identity<RewardVariableRecord, Long> IDENTITY_REWARD_VARIABLE = Identities0.IDENTITY_REWARD_VARIABLE;
-    public static final Identity<RunRecord, Long> IDENTITY_RUN = Identities0.IDENTITY_RUN;
-    public static final Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Identities0.IDENTITY_TRAINING_ERROR;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = UniqueKeys0.EXPERIMENT_PKEY;
-    public static final UniqueKey<ExperimentObservationRecord> EXPERIMENT_OBSERVATION_PKEY = UniqueKeys0.EXPERIMENT_OBSERVATION_PKEY;
+    public static final UniqueKey<ExperimentObservationRecord> PK_EXPERIMENT_OBSERVATION = UniqueKeys0.PK_EXPERIMENT_OBSERVATION;
     public static final UniqueKey<ModelRecord> MODEL_PKEY = UniqueKeys0.MODEL_PKEY;
     public static final UniqueKey<ObservationRecord> OBSERVATION_PKEY = UniqueKeys0.OBSERVATION_PKEY;
     public static final UniqueKey<ObservationRecord> OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = UniqueKeys0.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY;
@@ -118,22 +107,9 @@ public class Keys {
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
 
-    private static class Identities0 {
-        public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
-        public static Identity<ExperimentObservationRecord, Long> IDENTITY_EXPERIMENT_OBSERVATION = Internal.createIdentity(ExperimentObservation.EXPERIMENT_OBSERVATION, ExperimentObservation.EXPERIMENT_OBSERVATION.ID);
-        public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
-        public static Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Internal.createIdentity(Observation.OBSERVATION, Observation.OBSERVATION.ID);
-        public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
-        public static Identity<PolicyRecord, Long> IDENTITY_POLICY = Internal.createIdentity(Policy.POLICY, Policy.POLICY.ID);
-        public static Identity<ProjectRecord, Long> IDENTITY_PROJECT = Internal.createIdentity(Project.PROJECT, Project.PROJECT.ID);
-        public static Identity<RewardVariableRecord, Long> IDENTITY_REWARD_VARIABLE = Internal.createIdentity(RewardVariable.REWARD_VARIABLE, RewardVariable.REWARD_VARIABLE.ID);
-        public static Identity<RunRecord, Long> IDENTITY_RUN = Internal.createIdentity(Run.RUN, Run.RUN.ID);
-        public static Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Internal.createIdentity(TrainingError.TRAINING_ERROR, TrainingError.TRAINING_ERROR.ID);
-    }
-
     private static class UniqueKeys0 {
         public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = Internal.createUniqueKey(Experiment.EXPERIMENT, "experiment_pkey", Experiment.EXPERIMENT.ID);
-        public static final UniqueKey<ExperimentObservationRecord> EXPERIMENT_OBSERVATION_PKEY = Internal.createUniqueKey(ExperimentObservation.EXPERIMENT_OBSERVATION, "experiment_observation_pkey", ExperimentObservation.EXPERIMENT_OBSERVATION.ID);
+        public static final UniqueKey<ExperimentObservationRecord> PK_EXPERIMENT_OBSERVATION = Internal.createUniqueKey(ExperimentObservation.EXPERIMENT_OBSERVATION, "pk_experiment_observation", ExperimentObservation.EXPERIMENT_OBSERVATION.EXPERIMENT_ID, ExperimentObservation.EXPERIMENT_OBSERVATION.OBSERVATION_ID);
         public static final UniqueKey<ModelRecord> MODEL_PKEY = Internal.createUniqueKey(Model.MODEL, "model_pkey", Model.MODEL.ID);
         public static final UniqueKey<ObservationRecord> OBSERVATION_PKEY = Internal.createUniqueKey(Observation.OBSERVATION, "observation_pkey", Observation.OBSERVATION.ID);
         public static final UniqueKey<ObservationRecord> OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(Observation.OBSERVATION, "observation_model_id_array_index_key", Observation.OBSERVATION.MODEL_ID, Observation.OBSERVATION.ARRAY_INDEX);

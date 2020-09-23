@@ -65,7 +65,7 @@ public class PolicyChartPanel extends VerticalLayout
 
     private void setupChart() {
         XAxis xAxis = new XAxis();
-        xAxis.setTitle("Iterations");
+        xAxis.setTitle("Iteration");
         xAxis.setAllowDecimals(false);
 
         YAxis yAxis = new YAxis();

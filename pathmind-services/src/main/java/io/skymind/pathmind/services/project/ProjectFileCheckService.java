@@ -45,8 +45,7 @@ public class ProjectFileCheckService {
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
-                        }
-                        else {
+                        } else {
                             setHyperparams(result, analysisResult);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
@@ -80,6 +79,8 @@ public class ProjectFileCheckService {
         }
         else if (analysisResult.getObservationsNames().isEmpty()) {
             return Optional.of("Failed to read observations.");
+        } else if (analysisResult.getMode().isEmpty()) {
+            return Optional.of("Failed to read model type.");
         }
         return Optional.empty();
     }
@@ -90,6 +91,7 @@ public class ProjectFileCheckService {
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
     	fileCheckResult.setObservationNames(params.getObservationsNames());
+    	fileCheckResult.setModelType(params.getMode());
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {

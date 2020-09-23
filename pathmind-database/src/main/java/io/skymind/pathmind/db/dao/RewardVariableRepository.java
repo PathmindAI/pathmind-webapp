@@ -18,11 +18,15 @@ class RewardVariableRepository {
         final List<Query> saveQueries = rewardVariables.stream()
                 .map(rewardVariable ->
                         ctx.insertInto(REWARD_VARIABLE)
-                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX, REWARD_VARIABLE.DATA_TYPE)
-                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex(), rewardVariable.getDataType())
+                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX, REWARD_VARIABLE.DATA_TYPE, 
+                                        REWARD_VARIABLE.GOAL_CONDITION_TYPE, REWARD_VARIABLE.GOAL_VALUE)
+                                .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex(), rewardVariable.getDataType(),
+                                        rewardVariable.getGoalConditionType(), rewardVariable.getGoalValue())
                                 .onConflict(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.ARRAY_INDEX)
                                 .doUpdate()
-                                .set(REWARD_VARIABLE.NAME, rewardVariable.getName()))
+                                .set(REWARD_VARIABLE.NAME, rewardVariable.getName())
+                                .set(REWARD_VARIABLE.GOAL_CONDITION_TYPE, rewardVariable.getGoalConditionType())
+                                .set(REWARD_VARIABLE.GOAL_VALUE, rewardVariable.getGoalValue()))
                 .collect(Collectors.toList());
 
         ctx.batch(saveQueries).execute();
