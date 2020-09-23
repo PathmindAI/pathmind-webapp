@@ -444,6 +444,22 @@ background-color: var(--pm-gray-color-light);
     border-right: 1px solid var(--pm-gray-color-lightest);
 }
 
+.models-navbar vaadin-select {
+    width: 100%;
+}
+
+.models-navbar vaadin-select:not([show-archived]) ~ .models-navbar-items models-navbar-item[is-archived] {
+    display: none;
+}
+
+.models-navbar vaadin-select[show-archived] ~ .models-navbar-items models-navbar-item[is-archived] {
+    display: flex;
+}
+
+.models-navbar vaadin-select[show-archived] ~ .models-navbar-items models-navbar-item:not([is-archived]) {
+    display: none;
+}
+
 .models-navbar-items {
     height: 100%;
     overflow: auto;

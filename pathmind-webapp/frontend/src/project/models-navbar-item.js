@@ -31,15 +31,12 @@ class ModelsNavbarItem extends PolymerElement {
             },
             isArchived: {
                 type: Boolean,
+                reflectToAttribute: true,
             },
             tagDraftText: {
                 type: String,
                 computed: 'tagLabelDraftText(isDraft)',
             },
-            tagArchivedText: {
-                type: String,
-                computed: 'tagLabelArchivedText(isArchived)',
-            }
         }
     }
 
@@ -66,7 +63,6 @@ class ModelsNavbarItem extends PolymerElement {
             .model-name {
                 font-size: var(--lumo-font-size-s);
                 line-height: 1em;
-                margin-left: var(--lumo-space-xs);
             }
             .model-name div {
                 margin-bottom: var(--lumo-space-xxxs);
@@ -100,7 +96,6 @@ class ModelsNavbarItem extends PolymerElement {
         <div class="model-name">
             <div>
                 <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
-                <tag-label text="[[tagArchivedText]]" size="small"></tag-label>
             </div>
             <a>Model #[[modelName]] [[modelPackageNameInBrackets]]</a>
             <p>Created [[createdDate]]</p>
@@ -132,10 +127,6 @@ class ModelsNavbarItem extends PolymerElement {
 
     tagLabelDraftText(isDraft) {
         return isDraft ? "Draft" : "";
-    }
-
-    tagLabelArchivedText(isArchived) {
-        return isArchived ? "Archived" : "";
     }
 
     modelPackageNameText(modelPackageName) {

@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
+
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
@@ -23,6 +25,7 @@ public class ModelsNavbar extends VerticalLayout
     private Model selectedModel;
 
     private List<ModelsNavbarItem> modelsNavbarItems = new ArrayList<>();
+    private Select<String> categorySelect;
 	private VerticalLayout rowsWrapper;
 	private Consumer<Model> selectModelConsumer;
     private ModelsNavbarItem currentModelNavItem;
@@ -46,12 +49,15 @@ public class ModelsNavbar extends VerticalLayout
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
 		
-		newModelButton = new UploadModelButton(models.get(0).getProjectId());
+        newModelButton = new UploadModelButton(models.get(0).getProjectId());
+        
+        createCategorySelect();
 
 		setPadding(false);
         setSpacing(false);
         setWidth("auto");
-		add(newModelButton);
+        add(newModelButton);
+        add(categorySelect);
 		add(rowsWrapper);
 		addClassName("models-navbar");
         addModelsToNavbar();
@@ -59,6 +65,20 @@ public class ModelsNavbar extends VerticalLayout
 
     public List<Model> getModels() {
         return models;
+    }
+
+    private void createCategorySelect() {
+        categorySelect = new Select<>();
+        categorySelect.setItems("Active", "Archived");
+        categorySelect.setValue("Active");
+        categorySelect.getElement().setAttribute("theme", "models-nav-bar-select small");
+        categorySelect.addValueChangeListener(event -> {
+            if (event.getValue().equals("Archived")) {
+                categorySelect.getElement().setAttribute("show-archived", true);
+            } else {
+                categorySelect.getElement().removeAttribute("show-archived");
+            }
+        });
     }
 
     private void addModelsToNavbar() {
