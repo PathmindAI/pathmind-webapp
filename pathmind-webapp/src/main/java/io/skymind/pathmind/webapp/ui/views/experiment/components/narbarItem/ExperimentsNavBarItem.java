@@ -100,7 +100,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         if(ExperimentUtils.isDraftRunType(experiment))
             return "pencil";
         if (RunStatus.isRunning(status)) {
-            return "icon-loading-spinner";
+            return "loading";
         } else if (status == RunStatus.Completed) {
             return "check";
         } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {

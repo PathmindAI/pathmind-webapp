@@ -157,7 +157,7 @@ public class Utils extends PageObject {
             WebElement experimentNavbarItemShadow = expandRootElement(webElement);
             if (experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText().split("\n")[0].equals(experimentName)) {
                 if (cssSelector == null) {
-                    return experimentNavbarItemShadow;
+                    return webElement;
                 }
                 return experimentNavbarItemShadow.findElement(By.cssSelector(cssSelector));
             }
