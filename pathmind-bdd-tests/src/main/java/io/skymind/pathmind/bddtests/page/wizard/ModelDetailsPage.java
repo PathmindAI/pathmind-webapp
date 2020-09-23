@@ -29,7 +29,7 @@ public class ModelDetailsPage extends PageObject {
     }
 
     public void clickWizardModelDetailsNextBtn() {
-        getDriver().findElement(By.xpath("//span[text()='Model Details']/ancestor::*[@class='view-section']/descendant::vaadin-button[normalize-space(text())='Next']")).click();
+        getDriver().findElement(By.xpath("//span[text()='Model Details']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).click();
     }
 
     public void checkThatModelDetailsPageIsOpened() {

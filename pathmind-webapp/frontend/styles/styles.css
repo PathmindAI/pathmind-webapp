@@ -162,6 +162,13 @@ background-color: var(--pm-gray-color-light);
     vertical-align: text-top;
 }
 
+.model-view [icon="vaadin:close"],
+.model-view [icon="vaadin:check"] {
+    --iron-icon-width: var(--lumo-font-size-m);
+    --iron-icon-height: var(--lumo-font-size-m);
+    vertical-align: text-top;
+}
+
 #nav-main-links,
 #nav-main-links a,
 .nav-account-links a {
@@ -233,11 +240,6 @@ background-color: var(--pm-gray-color-light);
     width: 100%;
 }
 
-.project-title-label {
-    white-space: pre-wrap;
-    word-break: break-word;
-    line-height: 1.1;
-}
 .light-text-label {
     font-size: var(--lumo-font-size-m);
     color: var(--pm-orange-color);
@@ -372,7 +374,9 @@ background-color: var(--pm-gray-color-light);
 .projects-view .section-title-label,
 .project-view .section-title-label,
 .model-view .section-title-label {
-    line-height: 1;
+    line-height: 1.1;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .card p,
@@ -418,6 +422,7 @@ background-color: var(--pm-gray-color-light);
 
 .model-view .model-reward-variables {
     max-height: 180px;
+    line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
 }
@@ -562,6 +567,12 @@ account-view {
     background: var(--pm-gold-color);
     color: var(--lumo-body-text-color);
 }
+.success-text {
+    color: var(--lumo-success-color);
+}
+.failure-text {
+    color: var(--lumo-error-color);
+}
 /* Primary Button Styles */
 .button-link {
     box-sizing: border-box;
@@ -585,6 +596,14 @@ account-view {
 
 .button-link:hover::before {
     opacity: 0;
+}
+
+.download-alp-link {
+    align-self: flex-start;
+}
+
+.export-policy-view .download-alp-link {
+    align-self: center;
 }
 
 /* Typography Styles */

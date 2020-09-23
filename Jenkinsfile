@@ -53,6 +53,20 @@ def backupDb(identifier) {
 }
 
 /*
+Flaky tests
+*/
+def flakyTests() {
+    sh """
+        ls -1 ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/SERENITY-JUNIT*xml | xargs -I {} /usr/bin/xml2json.py -t xml2json {} -o {}.json
+        mkdir -p ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/out
+        /usr/bin/flaky.py --input ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/
+        cd ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/out
+        ls -1 SERENITY-JUNIT*xml.json | xargs -I {} /usr/bin/xml2json.py {} -t json2xml -o {}.xml
+        ls -1 SERENITY-JUNIT*xml.json.xml | xargs -I {} sh -c 'mv {} `echo {} | sed "s@.json.xml@@g"`'
+    """
+}
+
+/*
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
@@ -88,7 +102,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             steps {
@@ -96,7 +110,7 @@ pipeline {
                 sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
                 script {
                     DOCKER_TAG = "dev"
-                    if (env.BRANCH_NAME == 'master') {
+                    if (env.BRANCH_NAME == 'prod') {
                         DOCKER_TAG = "prod"
                     }
                     if (env.BRANCH_NAME == 'dev') {
@@ -132,7 +146,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             parallel {
@@ -160,7 +174,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             parallel {
@@ -223,7 +237,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
@@ -269,7 +283,7 @@ pipeline {
                 stage('Deploying trainer') {
                     steps {
                         script {
-                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                            sh "helm upgrade --install trainer ${WORKSPACE}/infra/helm/trainer -f ${WORKSPACE}/infra/helm/trainer/values_${DOCKER_TAG}.yaml"
                         }
                     }
                 }
@@ -289,4 +303,3 @@ pipeline {
         }
     }
 }
-

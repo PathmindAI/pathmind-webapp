@@ -1,11 +1,9 @@
 package io.skymind.pathmind.shared.utils;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsRaw;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -13,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -134,5 +132,40 @@ public class PolicyUtils
                     .map(list -> PathmindNumberUtils.calculateUncertainty(list))
                     .collect(Collectors.toList()));
         }
+    }
+    
+    public static boolean isGoalReached(RewardVariable rv, Policy policy) {
+        Double metricValue = 0.0, uncertaintyValue = 0.0;
+        if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
+            // No data to calculate yet
+            if (policy.getUncertainty().size() <= rv.getArrayIndex()) {
+                return false;
+            }
+            String metricValueWithUncertainty = policy.getUncertainty().get(rv.getArrayIndex());
+            Double[] metricAndUncertainity = parseMetricAndUncertainity(metricValueWithUncertainty);
+            metricValue = metricAndUncertainity[0];
+            // todo https://github.com/SkymindIO/pathmind-webapp/pull/2063#issuecomment-693542915
+            // https://github.com/SkymindIO/pathmind-webapp/issues/2108
+            // uncertaintyValue = metricAndUncertainity[1];
+        } else {
+            // No data to calculate yet
+            if (policy.getSimulationMetrics().size() <= rv.getArrayIndex()) {
+                return false;
+            }
+            metricValue = policy.getSimulationMetrics().get(rv.getArrayIndex());
+        }
+        if (rv.getGoalConditionTypeEnum() != null){
+            if (rv.getGoalConditionTypeEnum().equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
+                return metricValue + uncertaintyValue >= rv.getGoalValue();
+            } else {
+                return metricValue - uncertaintyValue <= rv.getGoalValue();
+            }
+        }
+        return false;
+    }
+    
+    private static Double[] parseMetricAndUncertainity(String metricValueWithUncertainty) {
+        String[] actualMetricBreakdown = metricValueWithUncertainty.split("\u2800\u00B1\u2800");
+        return new Double[] {Double.parseDouble(actualMetricBreakdown[0]), Double.parseDouble(actualMetricBreakdown[1])};
     }
 }

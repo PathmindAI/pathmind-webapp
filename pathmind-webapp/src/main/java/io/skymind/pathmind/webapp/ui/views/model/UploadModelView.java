@@ -1,36 +1,26 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 
-import java.util.*;
-
-import com.vaadin.flow.component.html.Span;
-
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.WildcardParameter;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
-
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -39,11 +29,8 @@ import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
+import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -58,8 +45,16 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.unit.DataSize;
+
+import java.util.*;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
@@ -73,6 +68,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	@Autowired
 	private ModelService modelService;
+
+	@Autowired
+	private ModelDAO modelDAO;
 
 	@Autowired
 	private RewardVariableDAO rewardVariablesDAO;
@@ -92,6 +90,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
 
+    @Value(("${pathhmind.model.apl.max-size}"))
+    private String alpFileSizeAsStr;
+
 	private Model model;
 
 	private List<RewardVariable> rewardVariables = new ArrayList<>();
@@ -99,6 +100,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	private Binder<Model> modelBinder;
 
 	private UploadModelWizardPanel uploadModelWizardPanel;
+	private UploadALPWizardPanel uploadALPWizardPanel;
 	private ModelDetailsWizardPanel modelDetailsWizardPanel;
 	private RewardVariablesPanel rewardVariablesPanel;
 
@@ -122,18 +124,20 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		modelBinder = new Binder<>(Model.class);
 
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
-		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder, isResumeUpload(), ModelUtils.isValidModel(model));
+        uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int)DataSize.parse(alpFileSizeAsStr).toBytes());
+		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 		rewardVariablesPanel = new RewardVariablesPanel();
 
 		modelBinder.readBean(model);
 
 		wizardPanels = Arrays.asList(
 				uploadModelWizardPanel,
+				uploadALPWizardPanel,
 				modelDetailsWizardPanel,
 				rewardVariablesPanel);
 
 		if (isResumeUpload()) {
-			setVisibleWizardPanel(modelDetailsWizardPanel);
+			setVisibleWizardPanel(uploadALPWizardPanel);
 		}
 		else {
 			setVisibleWizardPanel(uploadModelWizardPanel);
@@ -141,6 +145,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 		uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
 		uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
+		uploadALPWizardPanel.addButtonClickListener(click -> handleUploadALPClicked());
 		modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 		rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 
@@ -162,6 +167,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
             sections.add(invalidModelErrorLabel);
         }
+        sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanel);
         VerticalLayout wrapper = new VerticalLayout(
@@ -172,6 +178,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		addClassName("upload-model-view");
 		return wrapper;
 	}
+
+    private void handleUploadALPClicked() {
+	    if (model.getAlpFile() != null && model.getAlpFile().length > 0) {
+	        modelService.saveModelAlp(model);
+        }
+	    else {
+	        // for the case we are resuming a model creation and we had already uploaded the alp file
+            modelService.removeModelAlp(model);
+        }
+        setVisibleWizardPanel(modelDetailsWizardPanel);
+    }
 
     private void handleUploadFailed(Collection<String> errors) {
         uploadModelWizardPanel.showFileCheckPanel();
@@ -207,7 +224,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		if (isResumeUpload()) {
 			this.model = modelService.getModel(modelId)
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-			this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
+            this.rewardVariables = rewardVariablesDAO.getRewardVariablesForModel(modelId);
 		}
 		else {
 			this.model = ModelUtils.generateNewDefaultModel();
@@ -219,14 +236,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
 	private boolean isResumeUpload() {
 		return modelId != -1;
-	}
+    }
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 	}
 
 	private void handleRewardVariablesClicked() {
-        saveAndNavigateToNewExperiment();
+	    if (rewardVariablesPanel.canSaveChanges()) {
+	        rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
+	        saveAndNavigateToNewExperiment();
+	    }
     }
 
 	private void handleModelDetailsClicked()
@@ -243,8 +263,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}
 
 		modelService.updateDraftModel(model, modelNotes);
-		rewardVariablesPanel.setupRewardVariablesTable(model.getRewardVariablesCount(), rewardVariables);
-		setVisibleWizardPanel(rewardVariablesPanel);
+		rewardVariablesPanel.setupRewardVariables(rewardVariables);
+        setVisibleWizardPanel(rewardVariablesPanel);
 	}
 	
 	private void saveAndNavigateToNewExperiment() {
@@ -292,7 +312,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public void fileSuccessfullyVerified(FileCheckResult result) {
 		getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
-			setVisibleWizardPanel(modelDetailsWizardPanel);
+			setVisibleWizardPanel(uploadALPWizardPanel);
 			List<Observation> observationList = new ArrayList<>();
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
@@ -300,18 +320,20 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			    observationList = convertToObservations(alResult.getObservationNames());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
+                model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
 			}
-			modelDetailsWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
+            uploadALPWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
 			modelBinder.readBean(model);
 			modelService.addDraftModelToProject(model, project.getId(), "");
-			rewardVariablesDAO.updateModelRewardVariables(model.getId(), rewardVariables);
+            RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariablesDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
+			rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
 			observationDAO.updateModelObservations(model.getId(), observationList);
 			segmentIntegrator.modelImported(true);
 		}));
 	}
 
-	private List<Observation> convertToObservations(List<String> observationNames) {
+    private List<Observation> convertToObservations(List<String> observationNames) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
         for (String name: observationNames) {
             if (VariableParserUtils.isArray(name)) {
@@ -371,4 +393,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	public static String createResumeUploadTarget(Project project, Model model) {
 		return String.format("%s/%s/%s", project.getId(), UploadMode.RESUME, model.getId());
 	}
+
+	public static Button createNextStepButton() {
+        Button nextStepButton = new Button("Next",  new Icon(VaadinIcon.CHEVRON_RIGHT));
+        nextStepButton.setIconAfterText(true);
+        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return nextStepButton;
+    }
 }

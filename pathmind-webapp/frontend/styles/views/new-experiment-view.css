@@ -60,6 +60,7 @@
 }
 
 .new-experiment-view .reward-variables-table .header-row span {
+    line-height: 1;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
@@ -146,4 +147,8 @@
 .new-experiment-view .error-label {
     box-sizing: border-box;
     width: 100%;
+}
+
+.new-experiment-view .download-alp-link {
+    align-self: center;
 }

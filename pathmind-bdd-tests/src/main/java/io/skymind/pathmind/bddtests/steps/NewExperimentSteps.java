@@ -78,4 +78,19 @@ public class NewExperimentSteps {
     public void clickObservationsCheckbox(String checkbox) {
         newExperimentPage.clickObservationsCheckbox(checkbox);
     }
+
+    @Step
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
+        newExperimentPage.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
+    }
+
+    @Step
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        newExperimentPage.checkThatExperimentPageTitleIs(experiment);
+    }
+
+    @Step
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        newExperimentPage.checkNewExperimentPageModelALPBtn(filename);
+    }
 }

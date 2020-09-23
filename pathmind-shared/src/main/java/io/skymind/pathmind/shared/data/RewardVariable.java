@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.data;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,8 @@ public class RewardVariable extends Data {
     private long modelId;
     private int arrayIndex;
     private String dataType;
+    private String goalConditionType;
+    private Double goalValue;
 
     public RewardVariable(long modelId, String name, int arrayIndex) {
         this(modelId, name, arrayIndex, "double");
@@ -22,5 +25,12 @@ public class RewardVariable extends Data {
         this.arrayIndex = arrayIndex;
         this.dataType = dataType;
         setName(name);
+    }
+    
+    public GoalConditionType getGoalConditionTypeEnum() {
+        return GoalConditionType.getEnumFromCode(goalConditionType).orElse(null);
+    }
+    public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
+        goalConditionType = conditionType != null ? conditionType.getValue() : null;
     }
 }

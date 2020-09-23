@@ -198,7 +198,7 @@ pipeline {
         stage('Git clone and setup') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -220,7 +220,7 @@ pipeline {
         stage('Build Docker Images') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -237,7 +237,7 @@ pipeline {
         stage('Publish Docker Images') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -254,7 +254,7 @@ pipeline {
         stage('Deploying helm chart') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -302,7 +302,7 @@ pipeline {
         stage('Testing') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -345,7 +345,7 @@ pipeline {
         stage('Set pipeline status') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH != 'master' }
+                    expression { env.GIT_BRANCH != 'prod' }
                     expression { env.GIT_BRANCH != 'dev' }
                     expression { env.GIT_BRANCH != 'test' }
                 }
@@ -395,4 +395,3 @@ pipeline {
         }
     }
 }
-

@@ -19,11 +19,13 @@ public class Model extends ArchivableData
 	private LocalDateTime lastActivityDate;
 	private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
 	private transient byte[] file;
+    private transient byte[] alpFile;
 	private long projectId;
 	private String userNotes;
 	private boolean draft;
+	private boolean hasGoals;
 	private int rewardVariablesCount;
 	private String packageName;
 	private int invalidModel;
-
+	private int modelType;
 }
