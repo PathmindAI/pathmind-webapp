@@ -1,18 +1,19 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.UserRole;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
-public class PathmindUser
+@AllArgsConstructor
+public class PathmindUser implements DeepCloneableInterface
 {
 	private long id;
 	private String email;
@@ -46,6 +47,27 @@ public class PathmindUser
         this.accountType = accountType;
     }
 
-
+    @Override
+    public PathmindUser shallowClone() {
+        return PathmindUser.builder()
+                .id(id)
+                .email(email)
+                .password(password)
+                .accountType(accountType)
+                .firstname(firstname)
+                .lastname(lastname)
+                .address(address)
+                .city(city)
+                .state(state)
+                .country(country)
+                .zip(zip)
+                .deleteAt(deleteAt)
+                .emailVerifiedAt(emailVerifiedAt)
+                .emailVerificationToken(emailVerificationToken)
+                .passwordResetSendAt(passwordResetSendAt)
+                .stripeCustomerId(stripeCustomerId)
+                .newEmailToVerify(newEmailToVerify)
+                .build();
+    }
 }
 

@@ -65,7 +65,13 @@ public class EventBus {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
                 .filter(subscriber -> subscriber.filterSameUI(event) && subscriber.filterBusEvent(event) && subscriber.isAttached())
                 .forEach(subscriber -> {
-                    EXECUTOR_SERVICE.execute(() -> subscriber.handleBusEvent(event));
+                    EXECUTOR_SERVICE.execute(() -> {
+                        PathmindBusEvent eventToFire = event;
+                        if (event instanceof CloneablePathmindBusEvent) {
+                            eventToFire = ((CloneablePathmindBusEvent)event).cloneForEventBus();
+                        }
+                        subscriber.handleBusEvent(eventToFire);
+                    });
         });
     }
 
