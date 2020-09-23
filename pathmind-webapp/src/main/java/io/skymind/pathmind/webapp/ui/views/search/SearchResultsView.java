@@ -25,7 +25,9 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
@@ -36,9 +38,6 @@ import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
@@ -53,6 +52,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private String numberOfResultsText;
     private Span numberOfResults;
 
+	@Autowired
+	private ModelService modelService;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -104,10 +105,13 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         selectedItem.ifPresent(item -> {
             switch (item.getItemType()) {
                 case PROJECT :
-                    getUI().ifPresent(ui -> ui.navigate(ProjectView.class, item.getItemId()));
+                    getUI().ifPresent(ui -> ui.navigate(ProjectView.class, ""+item.getItemId()));
                     break;
                 case MODEL :
-                    getUI().ifPresent(ui -> ui.navigate(ModelView.class, item.getItemId()));
+                    Optional<Model> resultModel = modelService.getModel(item.getItemId());
+                    resultModel.ifPresent(model -> {
+                        getUI().ifPresent(ui -> ui.navigate(ProjectView.class, model.getProjectId()+"/model/"+item.getItemId()));
+                    });
                     break;
                 case EXPERIMENT:
                     Experiment experiment = experimentDAO.getExperimentWithRuns(item.getItemId()).get();

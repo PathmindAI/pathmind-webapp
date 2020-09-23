@@ -17,6 +17,9 @@ class ModelsNavbarItem extends PolymerElement {
                 type: String,
                 computed: 'modelPackageNameText(modelPackageName)',
             },
+            modelLink: {
+                type: String,
+            },
             createdDate: {
                 type: String,
             },
@@ -70,6 +73,13 @@ class ModelsNavbarItem extends PolymerElement {
             a, p {
                 margin: 0;
             }
+            a {
+                color: var(--lumo-body-text-color);
+                text-decoration: none;
+            }
+            a:hover {
+                opacity: 0.9;
+            }
             .model-name p {
                 font-size: var(--lumo-font-size-xs);
                 font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
@@ -97,7 +107,7 @@ class ModelsNavbarItem extends PolymerElement {
             <div>
                 <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
             </div>
-            <a>Model #[[modelName]] [[modelPackageNameInBrackets]]</a>
+            <a router-link href=[[modelLink]]>Model #[[modelName]] [[modelPackageNameInBrackets]]</a>
             <p>Created [[createdDate]]</p>
         </div>
         <vaadin-button
@@ -131,6 +141,10 @@ class ModelsNavbarItem extends PolymerElement {
 
     modelPackageNameText(modelPackageName) {
         return modelPackageName ? `(${modelPackageName})` : "";
+    }
+
+    handleItemClicked() {
+        history.pushState(window.location.href, `Model #${this.modelName}`, this.modelLink);
     }
 }
 

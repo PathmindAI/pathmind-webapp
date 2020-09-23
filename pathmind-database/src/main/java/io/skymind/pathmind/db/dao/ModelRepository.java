@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 
@@ -20,6 +19,7 @@ class ModelRepository
 				.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE, MODEL.MODEL_TYPE)
 				.from(MODEL)
 				.where(MODEL.PROJECT_ID.eq(projectId))
+                .orderBy(MODEL.ID.desc())
 				.fetchInto(Model.class);
     }
 

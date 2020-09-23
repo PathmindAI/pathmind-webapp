@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -9,7 +8,6 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.bus.EventBus;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class ModelsNavbar extends VerticalLayout
 {
@@ -68,17 +65,23 @@ public class ModelsNavbar extends VerticalLayout
     }
 
     private void createCategorySelect() {
+        String activeLabel = "Active";
+        String archivedLabel = "Archived";
         categorySelect = new Select<>();
-        categorySelect.setItems("Active", "Archived");
-        categorySelect.setValue("Active");
+        categorySelect.setItems(activeLabel, archivedLabel);
         categorySelect.getElement().setAttribute("theme", "models-nav-bar-select small");
         categorySelect.addValueChangeListener(event -> {
-            if (event.getValue().equals("Archived")) {
+            if (event.getValue().equals(archivedLabel)) {
                 categorySelect.getElement().setAttribute("show-archived", true);
             } else {
                 categorySelect.getElement().removeAttribute("show-archived");
             }
         });
+        if (selectedModel.isArchived()) {
+            categorySelect.setValue(archivedLabel);
+        } else {
+            categorySelect.setValue(activeLabel);
+        }
     }
 
     private void addModelsToNavbar() {

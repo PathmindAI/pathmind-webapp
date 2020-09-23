@@ -37,7 +37,9 @@ public class ObservationsPanel extends VerticalLayout
 
     public void setupObservationTable(Collection<Observation> allObservations, Collection<Observation> selection) {
         observationsTable.setItems(new HashSet<>(allObservations));
-        setSelectedObservations(selection);
+        if (selection != null) {
+            setSelectedObservations(selection);
+        }
     }
     
     public Collection<Observation> getSelectedObservations(){

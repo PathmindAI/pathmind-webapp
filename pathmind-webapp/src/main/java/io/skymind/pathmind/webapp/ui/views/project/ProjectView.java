@@ -1,10 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -14,13 +16,18 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
+
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -40,17 +47,27 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
+
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
-public class ProjectView extends PathMindDefaultView implements HasUrlParameter<Long>
+public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>
 {
+    private static final int PROJECT_ID_SEGMENT = 0;
+    private static final int MODEL_ID_SEGMENT = 2;
+
     @Autowired
     private ExperimentDAO experimentDAO;
 	@Autowired
@@ -60,31 +77,40 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
 	@Autowired
+	private ObservationDAO observationDAO;
+	@Autowired
 	private SegmentIntegrator segmentIntegrator;
     @Autowired
     private ModelCheckerService modelCheckerService;
+	@Autowired
+	private ModelService modelService;
 
 	private long projectId;
+    private Long modelId;
     private Project project;
     private List<Model> models;
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariableNames;
+    private List<Observation> modelObservations = new ArrayList<>();
 
 	private ArchivesTabPanel<Experiment> archivesTabPanel;
 	private Grid<Experiment> experimentGrid;
-	
+
+    private Breadcrumbs pageBreadcrumbs;
 	private Span projectName;
     private Span createdDate;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
 	private Span modelName;
     private Span modelCreatedDate;
+    private Anchor downloadAlpLink;
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
     private RewardVariablesTable rewardVariablesTable;
+    private ObservationsPanel observationsPanel;
     private NotesField modelNotesField;
     private SplitLayout modelWrapper;
-	
+
 	private ScreenTitlePanel titlePanel;
 
 	public ProjectView() {
@@ -111,6 +137,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelNotesField = createModelNotesField();
             rewardVariablesTable = new RewardVariablesTable();
             rewardVariablesTable.setRewardVariables(rewardVariableNames);
+            observationsPanel = new ObservationsPanel(true);
+            observationsPanel.setupObservationTable(modelObservations, null);
 
             modelsNavbar = new ModelsNavbar(
                 () -> getUI(),
@@ -135,14 +163,16 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelHeaderWrapper.addClassName("page-content-header");
 
         if (selectedModel != null) {
+            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService, segmentIntegrator);
             modelHeaderWrapper.add(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName),
-                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel)
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
+                        downloadAlpLink
                 ),
                 modelNotesField
             );
-            FlexLayout rightPanel = createRightPanel();
+            VerticalLayout rightPanel = createRightPanel();
     
             modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                     WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -167,13 +197,16 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		return gridWrapper;
     }
     
-    private FlexLayout createRightPanel() {
+    private VerticalLayout createRightPanel() {
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
-        FlexLayout rightPanelCard = new ViewSection(
+        VerticalLayout rightPanelCard = new VerticalLayout(
                 errorMessage,
-                rewardVariablesTable);
-        rightPanelCard.addClassName("card");
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                    LabelFactory.createLabel("Simulation Metrics", BOLD_LABEL),
+                    rewardVariablesTable
+                ),
+                observationsPanel);
 
         return rightPanelCard;
     }
@@ -203,11 +236,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	private void renameProject() {
-		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-			project.setName(updateProjectName);
-			projectName.setText(updateProjectName);
-			titlePanel.removeAll();
-			titlePanel.add(createBreadcrumbs());
+		RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updatedProjectName -> {
+			project.setName(updatedProjectName);
+			projectName.setText(updatedProjectName);
+			pageBreadcrumbs.setText(1, updatedProjectName);
 		});
 		dialog.open();
 	}
@@ -236,7 +268,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(project);
+		return selectedModel != null ? new Breadcrumbs(project, selectedModel) : new Breadcrumbs(project);
     }
 
     private void selectModel(Model selectedModel) {
@@ -260,13 +292,17 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
                     modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
                 });
+                pageBreadcrumbs.setText(2, modelNameText);
+                // the java method does recalculate the column width, so this workaround is implemeneted
+                experimentGrid.getElement().executeJs("setTimeout(() => $0.recalculateColumnWidths(), 0)");
             }
         });
     }
 
 	@Override
 	protected Component getTitlePanel() {
-		titlePanel = new ScreenTitlePanel(createBreadcrumbs());
+        pageBreadcrumbs = createBreadcrumbs();
+		titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
 		return titlePanel;
 	}
 
@@ -277,9 +313,18 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         models = modelDAO.getModelsForProject(projectId);
         project.setModels(models);
         if (models.size() > 0) {
-            selectedModel = models.get(0);
-            experiments = experimentDAO.getExperimentsForModel(selectedModel.getId());
-            rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(selectedModel.getId());
+            if (modelId == null) {
+                selectedModel = models.get(0);
+            } else {
+                selectedModel = models.stream()
+                        .filter(model -> modelId.equals(model.getId()))
+                        .findFirst()
+                        .orElse(models.get(0));
+            }
+            modelId = selectedModel.getId();
+            experiments = experimentDAO.getExperimentsForModel(modelId);
+            rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(modelId);
+    		modelObservations = observationDAO.getObservationsForModel(modelId);
         }
 	}
 
@@ -288,7 +333,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		if (project.getModels().isEmpty()) {
             event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
             return;
-		}
+        }
+        if (selectedModel.isDraft()) {
+            String target = String.format("%s/%s/%s", projectId, UploadMode.RESUME, modelId);
+            event.forwardTo(Routes.UPLOAD_MODEL, target);
+        }
         String modelNameText = "";
         modelNameText = "Model #"+selectedModel.getName();
         if (selectedModel.getPackageName() != null) {
@@ -313,8 +362,15 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 	}
 
 	@Override
-	public void setParameter(BeforeEvent event, Long projectId)
+	public void setParameter(BeforeEvent event, @WildcardParameter String parameter)
 	{
-		this.projectId = projectId;
+ 		String[] segments = parameter.split("/");
+
+ 		if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
+ 			this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+ 		}
+ 		if (segments.length == 3) {
+			this.modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
+ 		}
 	}
 }

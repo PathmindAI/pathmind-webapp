@@ -11,6 +11,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -20,16 +21,12 @@ import java.util.function.Supplier;
 @Tag("models-navbar-item")
 @JsModule("./src/project/models-navbar-item.js")
 public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerModel> {
-    private ModelsNavbar modelsNavbar;
-    private Supplier<Optional<UI>> getUISupplier;
     private ModelDAO modelDAO;
     private Model model;
     private Consumer<Model> selectModelConsumer;
     private SegmentIntegrator segmentIntegrator;
 
     public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, Consumer<Model> selectModelConsumer, SegmentIntegrator segmentIntegrator) {
-        this.modelsNavbar = modelsNavbar;
-        this.getUISupplier = getUISupplier;
 	    this.modelDAO = modelDAO;
 	    this.model = model;
         this.selectModelConsumer = selectModelConsumer;
@@ -71,10 +68,16 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     }
 
     public void setModelDetails(UI ui, Model model) {
+        long projectId = model.getProjectId();
+        long modelId = model.getId();
         getModel().setIsDraft(model.isDraft());
         getModel().setIsArchived(model.isArchived());
         getModel().setModelName(model.getName());
         getModel().setModelPackageName(model.getPackageName());
+        String target = model.isDraft() ?
+                String.format("/uploadModel/%s/%s/%s", projectId, UploadMode.RESUME, modelId)
+                : "/project/"+projectId+"/model/"+modelId;
+        getModel().setModelLink(target);
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(model.getDateCreated(), timeZoneId));
         });
@@ -83,6 +86,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 	public interface PolymerModel extends TemplateModel {
         void setModelName(String modelName);
         void setModelPackageName(String modelPackageName);
+        void setModelLink(String modelLink);
         void setCreatedDate(String createdDate);
         void setIsCurrent(boolean isCurrent);
         void setIsDraft(boolean isDraft);
