@@ -15,7 +15,7 @@ export SNS_UPDATER_SQS_FILTER_ATTR=""
 export SNS_UPDATER_TOPIC_ARN=""
 
 # Set JOB_MOCK_CYCLE to 10 if you want to use the mockbackend for dev work or testing
-export JOB_MOCK_CYCLE=0
+export JOB_MOCK_CYCLE="0"
 
 # These are standard for the Vagrant file and usually don't need to be changed
 export DB_URL="jdbc:postgresql://localhost/pathmind?user=skynet&password=skynetskynet123"
