@@ -49,7 +49,7 @@ public class SparklineChart extends DataChart {
         return cols;
     }
 
-    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, List<Double> sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
+    private JsonArray createRows(Boolean hasGoal, Boolean showDetails, List<Integer> iterationList, List<Double> sparklineData, double maxValue, double minValue, RewardVariable rewardVariable, double metricRange) {
         JsonArray rows = Json.createArray();
         Double goalValue = rewardVariable.getGoalValue();
         GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
@@ -60,8 +60,8 @@ public class SparklineChart extends DataChart {
             goalLowerBound = isGreaterThan ? goalValue : minValue;
             goalRange = isGreaterThan ? maxValue - goalLowerBound : goalValue - goalLowerBound;
         }
-        for (int i = 0; i < sparklineData.size(); i++) {
-            rows.set(i, createRowItem(i+1, sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
+        for (int i = 0; i < iterationList.size(); i++) {
+            rows.set(i, createRowItem(iterationList.get(i), sparklineData.get(i), goalLowerBound, goalRange, showDetails, metricRange));
         }
         return rows;
     }
@@ -84,9 +84,9 @@ public class SparklineChart extends DataChart {
         return rowItem;
     }
 
-    public void updateData(List<Double> sparklineData, Boolean hasGoal, Boolean showDetails, RewardVariable rewardVariable, double maxValue, double minValue) {
+    public void updateData(List<Integer> iterationList, List<Double> sparklineData, Boolean hasGoal, Boolean showDetails, RewardVariable rewardVariable, double maxValue, double minValue) {
         JsonArray cols = createCols(hasGoal, showDetails);
-        JsonArray rows = createRows(hasGoal, showDetails, sparklineData, maxValue, minValue, rewardVariable, maxValue - minValue);
+        JsonArray rows = createRows(hasGoal, showDetails, iterationList, sparklineData, maxValue, minValue, rewardVariable, maxValue - minValue);
         setData(cols, rows);
     }
 
@@ -94,6 +94,7 @@ public class SparklineChart extends DataChart {
         if (sparklineMap == null) {
             return;
         }
+        List<Integer> iterationList = sparklineMap.keySet().stream().collect(Collectors.toList());
         List<Double> sparklineData = sparklineMap.values().stream().collect(Collectors.toList());
         OptionalDouble min = sparklineData.stream().mapToDouble(v -> v).min();
         OptionalDouble max = sparklineData.stream().mapToDouble(v -> v).max();
@@ -145,7 +146,7 @@ public class SparklineChart extends DataChart {
             stacked,
             viewWindow
         );
-        updateData(sparklineData, hasGoal, showDetails, rewardVariable, maxVal, minVal);
+        updateData(iterationList, sparklineData, hasGoal, showDetails, rewardVariable, maxVal, minVal);
     }
     
 }
