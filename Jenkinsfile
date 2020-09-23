@@ -53,6 +53,20 @@ def backupDb(identifier) {
 }
 
 /*
+Flaky tests
+*/
+def flakyTests() {
+    sh """
+        ls -1 ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/SERENITY-JUNIT*xml | xargs -I {} /usr/bin/xml2json.py -t xml2json {} -o {}.json
+        mkdir -p ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/out
+        /usr/bin/flaky.py --input ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/
+        cd ${WORKSPACE}/pathmind-bdd-tests/target/site/serenity/out
+        ls -1 SERENITY-JUNIT*xml.json | xargs -I {} /usr/bin/xml2json.py {} -t json2xml -o {}.xml
+        ls -1 SERENITY-JUNIT*xml.json.xml | xargs -I {} sh -c 'mv {} `echo {} | sed "s@.json.xml@@g"`'
+    """
+}
+
+/*
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
@@ -254,6 +268,7 @@ pipeline {
                             alwaysLinkToLastBuild: true,
                             allowMissing: false
                         ])
+                        flakyTests()
                         junit 'pathmind-bdd-tests/target/site/serenity/SERENITY-JUNIT*xml'
                     }
                 }
