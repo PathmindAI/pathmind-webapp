@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
@@ -39,6 +40,7 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -93,7 +95,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<RewardVariable> rewardVariableNames;
     private List<Observation> modelObservations = new ArrayList<>();
 
-	private ArchivesTabPanel<Experiment> archivesTabPanel;
+    private ArchivesTabPanel<Experiment> archivesTabPanel;
+    private NewExperimentButton newExperimentButton;
 	private Grid<Experiment> experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -134,6 +137,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (selectedModel != null) {
             setupGrid();
             setupArchivesTabPanel();
+            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY);
             modelNotesField = createModelNotesField();
             rewardVariablesTable = new RewardVariablesTable();
             rewardVariablesTable.setRewardVariables(rewardVariableNames);
@@ -173,10 +177,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelNotesField
             );
             VerticalLayout rightPanel = createRightPanel();
+
+            HorizontalLayout experimentGridHeader = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                archivesTabPanel, newExperimentButton
+            );
     
             modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                     WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            modelHeaderWrapper, archivesTabPanel, experimentGrid
+                            modelHeaderWrapper, experimentGridHeader, experimentGrid
                     ),
                     rightPanel,
             70);
@@ -278,8 +286,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 String target = UploadModelView.createResumeUploadTarget(project, selectedModel);
                 ui.navigate(UploadModelView.class, target);
             } else {
+                modelId = selectedModel.getId();
                 modelsNavbar.setCurrentModel(selectedModel);
-                experiments = experimentDAO.getExperimentsForModel(selectedModel.getId());
+                experiments = experimentDAO.getExperimentsForModel(modelId);
                 experimentGrid.setItems(experiments);
                 String modelNameText = "";
                 modelNameText = "Model #"+selectedModel.getName();
@@ -289,6 +298,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelArchivedLabel.setVisible(selectedModel.isArchived());
                 modelName.setText(modelNameText);
                 modelNotesField.setNotesText(selectedModel.getUserNotes());
+                newExperimentButton.setModelId(modelId);
                 VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
                     modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
                 });
