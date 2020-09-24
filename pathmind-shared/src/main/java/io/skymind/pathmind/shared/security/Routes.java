@@ -27,7 +27,7 @@ public class Routes {
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
-    public static final String MODEL_URL = "model";
+    public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT_URL = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";

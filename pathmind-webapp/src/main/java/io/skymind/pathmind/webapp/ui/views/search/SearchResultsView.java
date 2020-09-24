@@ -110,7 +110,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
                 case MODEL :
                     Optional<Model> resultModel = modelService.getModel(item.getItemId());
                     resultModel.ifPresent(model -> {
-                        getUI().ifPresent(ui -> ui.navigate(ProjectView.class, model.getProjectId()+"/model/"+item.getItemId()));
+                        getUI().ifPresent(ui -> ui.navigate(ProjectView.class, model.getProjectId()+Routes.MODEL_PATH+item.getItemId()));
                     });
                     break;
                 case EXPERIMENT:

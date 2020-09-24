@@ -72,10 +72,10 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionE
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -475,7 +475,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         if (experiments.isEmpty()) {
-            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, experiments.get(0).getProject().getId()+Routes.MODEL_PATH+experiments.get(0).getModelId()));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);

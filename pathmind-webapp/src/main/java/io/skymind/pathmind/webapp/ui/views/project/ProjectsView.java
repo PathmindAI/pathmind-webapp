@@ -136,7 +136,7 @@ public class ProjectsView extends PathMindDefaultView
 		projectGrid.sort(Arrays.asList(new GridSortOrder<>(lastActivityColumn, SortDirection.DESCENDING)));
 
 		projectGrid.addItemClickListener(event ->
-                getUI().ifPresent(ui -> ui.navigate(ProjectView.class, event.getItem().getId())));
+                getUI().ifPresent(ui -> ui.navigate(ProjectView.class, ""+event.getItem().getId())));
 	}
 
 	private List<Project> getProjects() {
