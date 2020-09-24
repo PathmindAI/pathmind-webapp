@@ -44,7 +44,6 @@ Feature: Experiment ALP
     When Click model breadcrumb btn
     Then Check new experiment page model ALP btn <alp file name>
     When Click the experiment name 1
-    When Click new experiment observation btn 'Select All'
     Then Click project start run button
     Then Check new experiment page model ALP btn <alp file name>
     When Click in 'Stop Training' button
