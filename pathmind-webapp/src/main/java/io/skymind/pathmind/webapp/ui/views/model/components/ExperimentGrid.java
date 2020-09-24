@@ -55,7 +55,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setFlexGrow(0)
 				.setAutoWidth(true)
 				.setResizable(true);
-		addColumn(experiment -> ExperimentUtils.getTrainingStatus(experiment))
+		addColumn(experiment -> experiment.getTrainingStatusEnum())
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setFlexGrow(0)

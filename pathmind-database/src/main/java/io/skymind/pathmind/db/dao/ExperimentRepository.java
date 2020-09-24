@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.shared.data.user.UserMetrics;
+import io.skymind.pathmind.shared.constants.UserRole;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
@@ -197,9 +197,6 @@ class ExperimentRepository
 	 	OFFSET $offset
 	 * </pre>
 	 *
-	 * @param userId pathmind user ID
-	 * @param offset how many items should be skipped
-	 * @param limit  how many items should be returned
 	 * @return List of dashboard items
 	 */
 	static List<DashboardItem> getDashboardItems(DSLContext ctx, DashboardQueryParams dashboardQueryParams) {
@@ -219,7 +216,7 @@ class ExperimentRepository
 		final Field<LocalDateTime> itemLastActivityDate = DSL.ifnull(DSL.field(EXPERIMENT.LAST_ACTIVITY_DATE),
 				DSL.greatest(MODEL.LAST_ACTIVITY_DATE,PROJECT.LAST_ACTIVITY_DATE));
 
-		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE, EXPERIMENT.HAS_GOALS, EXPERIMENT.GOALS_REACHED,
+		final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES, EXPERIMENT.IS_FAVORITE, EXPERIMENT.HAS_GOALS, EXPERIMENT.GOALS_REACHED, EXPERIMENT.TRAINING_STATUS,
 				MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
 				PROJECT.ID, PROJECT.NAME,
 				latestRun.asterisk(),
@@ -322,4 +319,10 @@ class ExperimentRepository
                 .execute();
     }
 
+    protected static void updateTrainingStatus(DSLContext ctx, Experiment experiment) {
+        ctx.update(Tables.EXPERIMENT)
+                .set(Tables.EXPERIMENT.TRAINING_STATUS, experiment.getTrainingStatus())
+                .where(Tables.EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+    }
 }

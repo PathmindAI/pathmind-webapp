@@ -34,14 +34,12 @@ public class RunDAO {
         return RunRepository.getRunsForExperiment(ctx, experiment.getId());
     }
 
-    public Run createRun(Configuration conf, Experiment experiment, RunType runType){
-    	DSLContext transactionCtx = DSL.using(conf);
+    public Run createRun(DSLContext transactionCtx, Experiment experiment, RunType runType){
     	RunRepository.clearNotificationSentInfo(transactionCtx, experiment.getId());
         return RunRepository.createRun(transactionCtx, experiment, runType);
     }
 
-    public void markAsStarting(Configuration conf, long runId, String jobId){
-        DSLContext transactionCtx = DSL.using(conf);
+    public void markAsStarting(DSLContext transactionCtx, long runId, String jobId){
         RunRepository.markAsStarting(transactionCtx, runId, jobId);
     }
 
@@ -74,17 +72,9 @@ public class RunDAO {
         return RunRepository.getStoppedPolicyNamesForRuns(ctx, runIds);
     }
 
-    public void markAsStopping(Run run) {
-    	updateRun(run, ProviderJobStatus.STOPPING, Collections.emptyList());
-    }
-    
-    private void updateRun(Run run, ProviderJobStatus status, List<Policy> policies) {
-        ctx.transaction(configuration ->
-        {
-            DSLContext transactionCtx = DSL.using(configuration);
-            DBUtils.setLockTimeout(transactionCtx, 4);
-            updateRun(transactionCtx, run, status, policies);
-        });
+    public void markAsStopping(DSLContext transactionCtx, Run run) {
+        updateRun(run, ProviderJobStatus.STOPPING, transactionCtx);
+        updateExperiment(run, transactionCtx);
     }
 
     private void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies) {
@@ -248,6 +238,7 @@ public class RunDAO {
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
             calculateGoals(transactionCtx, run.getExperiment(), policies);
+            updateExperimentTrainingStatus(transactionCtx, run);
 
             if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             	policiesUpdateInfo.forEach(policyInfo -> {
@@ -265,7 +256,18 @@ public class RunDAO {
             return policiesToRaiseUpdateEvent;
         });
     }
-    
+
+    private void updateExperimentTrainingStatus(DSLContext transactionCtx, Run run) {
+        Experiment experiment = run.getExperiment();
+        List<Run> runsForExperiment = RunRepository.getRunsForExperiment(transactionCtx, experiment.getId());
+        int currentIndex = runsForExperiment.indexOf(run);
+        assert currentIndex != -1;
+        runsForExperiment.set(currentIndex, run);
+        experiment.setRuns(runsForExperiment);
+        experiment.updateTrainingStatus();
+        ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
+    }
+
     private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
         Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
         if (bestPolicy == null) {

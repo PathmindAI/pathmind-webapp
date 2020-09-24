@@ -55,7 +55,7 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
         this.segmentIntegrator = segmentIntegrator;
 
         Boolean isDraft = ExperimentUtils.isDraftRunType(experiment);
-        RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
+        RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         statusComponent = isDraft ? new Icon(VaadinIcon.PENCIL) : createStatusIcon(overallExperimentStatus);
         add(statusComponent);
 
@@ -178,14 +178,14 @@ public class ExperimentsNavBarItem extends HorizontalLayout {
 
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
-        updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        updateStatus(experiment.getTrainingStatusEnum());
         updateGoalStatus(experiment.isGoalsReached());
         favoriteStar.setValue(experiment.isFavorite());
     }
 
     public void updateRun(Run run) {
         experiment.updateRun(run);
-        updateStatus(ExperimentUtils.getTrainingStatus(experiment));
+        updateStatus(experiment.getTrainingStatusEnum());
         updateGoalStatus(run.getExperiment().isGoalsReached());
     }
 }

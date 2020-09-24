@@ -1,5 +1,6 @@
 package io.skymind.pathmind.updater.aws;
 
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -20,13 +21,15 @@ import java.util.stream.Collectors;
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
     private final RunDAO runDAO;
+    private final ExperimentDAO experimentDAO;
     private EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO, 
-                                       EmailNotificationService emailNotificationService,
+    public AWSExecutionProgressUpdater(RunDAO runDAO,
+                                       ExperimentDAO experimentDAO, EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService) {
         this.runDAO = runDAO;
+        this.experimentDAO = experimentDAO;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
     }
