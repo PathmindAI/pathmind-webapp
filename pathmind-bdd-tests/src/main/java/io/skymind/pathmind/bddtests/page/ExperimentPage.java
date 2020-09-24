@@ -43,8 +43,10 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        String xpath = String.format("//*[@class='experiment-navbar-item current']/vaadin-button");
-        getDriver().findElement(By.xpath(xpath)).click();
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        archiveButton.click();
     }
 
     public void checkExperimentNotesIs(String note) {
