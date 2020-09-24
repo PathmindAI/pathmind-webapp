@@ -1,13 +1,19 @@
 package io.skymind.pathmind.shared.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import lombok.*;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+@Builder
 @Getter
 @Setter
-public class Model extends ArchivableData
+@NoArgsConstructor
+@AllArgsConstructor
+public class Model extends ArchivableData implements DeepCloneableInterface
 {
     private static final long serialVersionUID = 3143001029296125340L;
 
@@ -27,5 +33,23 @@ public class Model extends ArchivableData
 	private int rewardVariablesCount;
 	private String packageName;
 	private int invalidModel;
+
+    @Override
+    public Model shallowClone() {
+        return super.shallowClone(Model.builder()
+                .dateCreated(dateCreated)
+                .lastActivityDate(lastActivityDate)
+                .numberOfObservations(numberOfObservations)
+                .file(file == null ? null : Arrays.copyOf(file, file.length))
+                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
+                .projectId(projectId)
+                .userNotes(userNotes)
+                .draft(draft)
+                .hasGoals(hasGoals)
+                .rewardVariablesCount(rewardVariablesCount)
+                .packageName(packageName)
+                .invalidModel(invalidModel)
+                .build());
+    }
 	private int modelType;
 }
