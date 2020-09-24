@@ -228,8 +228,4 @@ public class GenericPage extends PageObject {
             assertThat(downloadedFileSize, is(uploadedFileSize));
         }
     }
-
-    public void clickPopUpDialogCloseBtn() {
-        getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::vaadin-button[last()]")).click();
-    }
 }

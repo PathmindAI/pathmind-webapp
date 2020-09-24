@@ -25,8 +25,8 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {
-        experimentPage.checkExperimentStatusCompletedWithLimitMinutes(limit);
+    public void checkExperimentStatusCompletedWithLimitHours(int limit) {
+        experimentPage.checkExperimentStatusCompletedWithLimitHours(limit);
     }
 
     @Step
@@ -142,15 +142,5 @@ public class ExperimentPageSteps {
     @Step
     public void clickSimulationMetricsOverviewIcon() {
         experimentPage.clickSimulationMetricsOverviewIcon();
-    }
-
-    @Step
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPage.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Step
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPage.checkExperimentPageChartPopUpIsShownForVariable(variable);
     }
 }
