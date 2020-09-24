@@ -7,9 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter
@@ -41,9 +39,7 @@ public class Policy extends Data implements DeepCloneableInterface
 
     // Helper Simulation Metrics GUI attributes not stored in the database
     private List<Double> simulationMetrics = new ArrayList<>();
-
-    // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
-    private Map<Integer, Map<Integer, Double>> sparklinesData = new LinkedHashMap<>();
+    private List<double[]> sparklinesData = new ArrayList<>();
     private List<String> uncertainty = new ArrayList<>();
 
     public List<RewardScore> getScores() {

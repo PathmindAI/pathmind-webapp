@@ -219,53 +219,53 @@ class ChartPlaceholder extends PolymerElement {
                 }
 
                 .highcharts-color-0 {
-                    fill: #7cb5ec;
-                    stroke: #7cb5ec;
+                    fill: var(--vaadin-charts-color-0, #7cb5ec);
+                    stroke: var(--vaadin-charts-color-0, #7cb5ec);
                 }
 
                 .highcharts-color-1 {
-                    fill: #434348;
-                    stroke: #434348;
+                    fill: var(--vaadin-charts-color-1, #434348);
+                    stroke: var(--vaadin-charts-color-1, #434348);
                 }
 
                 .highcharts-color-2 {
-                    fill: #90ed7d;
-                    stroke: #90ed7d;
+                    fill: var(--vaadin-charts-color-2, #90ed7d);
+                    stroke: var(--vaadin-charts-color-2, #90ed7d);
                 }
 
                 .highcharts-color-3 {
-                    fill: #f7a35c;
-                    stroke: #f7a35c;
+                    fill: var(--vaadin-charts-color-3, #f7a35c);
+                    stroke: var(--vaadin-charts-color-3, #f7a35c);
                 }
 
                 .highcharts-color-4 {
-                    fill: #8085e9;
-                    stroke: #8085e9;
+                    fill: var(--vaadin-charts-color-4, #8085e9);
+                    stroke: var(--vaadin-charts-color-4, #8085e9);
                 }
 
                 .highcharts-color-5 {
-                    fill: #f15c80;
-                    stroke: #f15c80;
+                    fill: var(--vaadin-charts-color-5, #f15c80);
+                    stroke: var(--vaadin-charts-color-5, #f15c80);
                 }
 
                 .highcharts-color-6 {
-                    fill: #e4d354;
-                    stroke: #e4d354;
+                    fill: var(--vaadin-charts-color-6, #e4d354);
+                    stroke: var(--vaadin-charts-color-6, #e4d354);
                 }
 
                 .highcharts-color-7 {
-                    fill: #2b908f;
-                    stroke: #2b908f;
+                    fill: var(--vaadin-charts-color-7, #2b908f);
+                    stroke: var(--vaadin-charts-color-7, #2b908f);
                 }
 
                 .highcharts-color-8 {
-                    fill: #f45b5b;
-                    stroke: #f45b5b;
+                    fill: var(--vaadin-charts-color-8, #f45b5b);
+                    stroke: var(--vaadin-charts-color-8, #f45b5b);
                 }
 
                 .highcharts-color-9 {
-                    fill: #91e8e1;
-                    stroke: #91e8e1;
+                    fill: var(--vaadin-charts-color-9, #91e8e1);
+                    stroke: var(--vaadin-charts-color-9, #91e8e1);
                 }
 
                 .highcharts-area {

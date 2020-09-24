@@ -28,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 @CssImport(value = "./styles/components/vaadin-context-menu-list-box.css", themeFor = "vaadin-context-menu-list-box")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @CssImport(value = "./styles/components/vaadin-split-layout.css", themeFor = "vaadin-split-layout")
+@CssImport(value = "./styles/components/vaadin-chart.css", themeFor = "vaadin-chart", include = "vaadin-chart-default-theme")
 @CssImport(value = "./styles/components/vaadin-tabs.css", themeFor = "vaadin-tabs")
 @CssImport(value = "./styles/components/vaadin-tab.css", themeFor = "vaadin-tab")
 @CssImport(value = "./styles/components/vaadin-text-area.css", themeFor = "vaadin-text-area")

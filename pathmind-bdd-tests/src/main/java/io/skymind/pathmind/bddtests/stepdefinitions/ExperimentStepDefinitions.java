@@ -30,9 +30,9 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentNotesIs(note);
     }
 
-    @Then("^Check experiment status completed with (.*) minutes$")
-    public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {
-        experimentPageSteps.checkExperimentStatusCompletedWithLimitMinutes(limit);
+    @Then("^Check experiment status completed with (.*) hours$")
+    public void checkExperimentStatusCompletedWithLimitHours(int limit) {
+        experimentPageSteps.checkExperimentStatusCompletedWithLimitHours(limit);
     }
 
     @Then("^Check that the experiment status is different from '(.*)'$")
@@ -153,15 +153,5 @@ public class ExperimentStepDefinitions {
     @Then("^Click simulation metrics overview icon$")
     public void clickSimulationMetricsOverviewIcon() {
         experimentPageSteps.clickSimulationMetricsOverviewIcon();
-    }
-
-    @When("^Click experiment page show sparkline btn for variable '(.*)'$")
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPageSteps.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Then("^Check experiment page chart pop-up is shown for variable '(.*)'$")
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPageSteps.checkExperimentPageChartPopUpIsShownForVariable(variable);
     }
 }

@@ -1,55 +1,66 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
-
-import com.vaadin.flow.component.charts.Chart;
-import com.vaadin.flow.component.charts.model.*;
-import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
-import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+package io.skymind.pathmind.webapp.ui.components;
 
 import java.util.ArrayList;
 import java.util.OptionalDouble;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.charts.Chart;
+import com.vaadin.flow.component.charts.model.*;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.Command;
 
-public class MetricChartPanel extends VerticalLayout
-{
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.data.RewardVariable;
 
+public class SparklineChart extends VerticalLayout{
+
+    private Button enlargeButton = new Button("Show");
     private Chart chart = new Chart(ChartType.AREASPLINE);
-    private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
-    private Paragraph description = new Paragraph("This chart is a screenshot at the time of opening. It does not update automatically.");
+    
+    private int WIDTH = 100;
+    private int HEIGHT = 32;
 
-    public MetricChartPanel() {
-        setupChart();
-        add(chartLabel, description, chart);
+    public SparklineChart() {
         setPadding(false);
         setSpacing(false);
-        addClassName("metric-chart-panel");
+        setupChart();
+        setWidth(WIDTH + "px");
+        setHeight(HEIGHT + "px");
+        addClassName("sparkline");
+        add(chart, enlargeButton);
+    }
+
+    public void setupButton(Command clickHandler) {
+        enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        enlargeButton.addClickListener(event -> clickHandler.execute());
     }
 
     private void setupChart() {
-        XAxis xAxis = new XAxis();
-        xAxis.setTitle("Iteration");
-        xAxis.setAllowDecimals(true);
-
-        YAxis yAxis = new YAxis();
-        yAxis.setTitle("Mean Metric Value");
-
         chart.getConfiguration().setAccessibility(new Accessibility(false));
         chart.getConfiguration().getLegend().setEnabled(false);
-        chart.getConfiguration().addxAxis(xAxis);
-        chart.getConfiguration().addyAxis(yAxis);
-        chart.getConfiguration().getTooltip().setFormatter(
-                "return "
-                + "'<b>Mean Metric </b>' + this.y.toFixed(Math.abs(this.y) > 1 ? 1 : 6)");
-        chart.setSizeFull();
+        chart.getConfiguration().getTitle().setText("");
+        chart.getStyle().set("backgroundColor", null);
+        chart.getStyle().set("borderWidth", "0");
+        chart.getConfiguration().getChart().setSpacing(new Number[] {0,0,0,0});
+        chart.getConfiguration().getChart().setMargin(0);
+        chart.getStyle().set("overflow", "none");
+        
+        chart.getConfiguration().getxAxis().getLabels().setEnabled(false);
+        chart.getConfiguration().getxAxis().getTitle().setText(null);
+        chart.getConfiguration().getxAxis().setStartOnTick(false);
+        chart.getConfiguration().getxAxis().setEndOnTick(false);
+        chart.getConfiguration().getxAxis().setTickPositions(new Number[0]);
+        chart.getConfiguration().getyAxis().getLabels().setEnabled(false);
+        chart.getConfiguration().getyAxis().getTitle().setText(null);
+        chart.getConfiguration().getyAxis().setStartOnTick(false);
+        chart.getConfiguration().getyAxis().setEndOnTick(false);
+        chart.getConfiguration().getyAxis().setTickPositions(new Number[0]);
+        chart.setWidth(WIDTH + "px");
+        chart.setHeight(HEIGHT + "px");
     }
 
-    public void setLines(double[] sparklineData, int index, RewardVariable rewardVariable) {
-        chartLabel.setText(rewardVariable.getName());
+    public void setSparkLine(double[] sparklineData, int index, RewardVariable rewardVariable) {
         ArrayList<Number> data = new ArrayList<>();
         for (int i = 0; i < sparklineData.length; i++) {
             data.add(sparklineData[i]);
@@ -81,10 +92,9 @@ public class MetricChartPanel extends VerticalLayout
                 }
             }
         }
-
+        
         chart.getConfiguration().getyAxis().setMin(minVal);
         chart.getConfiguration().getyAxis().setMax(maxVal);
-        chart.getConfiguration().getyAxis().setEndOnTick(false);
 
         ListSeries series = new ListSeries(data);
         PlotOptionsSeries plotOptions = new PlotOptionsSeries();
@@ -96,8 +106,6 @@ public class MetricChartPanel extends VerticalLayout
 
         if (goalValue != null && goalCondition != null) {
             PlotBand target = new PlotBand();
-            Label targetLabel = new Label("Goal: "+goalCondition.toString()+rewardVariable.getGoalValue());
-            targetLabel.setAlign(HorizontalAlign.CENTER);
             target.setFrom(goalValue);
             if (goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
                 target.setTo(maxVal);
@@ -106,10 +114,10 @@ public class MetricChartPanel extends VerticalLayout
             }
             target.setZIndex(10);
             target.setClassName("target");
-            target.setLabel(targetLabel);
             chart.getConfiguration().getyAxis().addPlotBand(target);
         }
 
         chart.drawChart(true);
     }
+    
 }
