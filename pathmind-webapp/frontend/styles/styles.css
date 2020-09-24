@@ -460,6 +460,18 @@ account-view {
     width: 275px;
 }
 
+.mock-backend-header {
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+    font-weight: bold;
+    line-height: 1;
+    color: var(--lumo-body-text-color);
+    background-color: rgba(254, 187, 43, 0.9);
+    padding: var(--lumo-space-xs) 0;
+    text-align: center;
+}
+
 @media (min-width: 1281px) {
     html {
         font-size: 16px;
