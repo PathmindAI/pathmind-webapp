@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.skymind.pathmind.bddtests.Utils;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
@@ -48,6 +50,7 @@ public class GenericPage extends PageObject {
         String xpath = String.format("//*[text()='%s']", buttonText);
 //        getDriver().findElement(By.xpath(xpath)).click();
         utils.clickElementRepeatIfStaleException(By.xpath(xpath));
+        System.out.println("user dir " + System.getProperty("user.dir"));
     }
 
     public void checkThatNotificationIsShown(String notificationText) {
@@ -200,5 +203,29 @@ public class GenericPage extends PageObject {
 
     public void checkTitleLabelTagIsArchived(String tag) {
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
+    }
+
+    public void compareALPFileWithDownloadedFile(String alpFile) {
+        File downloadedFile = new File(System.getProperty("user.dir") + "/models/" + alpFile);
+        long downloadedFileSize = downloadedFile.length();
+        System.out.println("downloadedFileSize " + downloadedFileSize);
+
+        List<String> filesContainingSubstring = new ArrayList<String>();
+        File file = new File(System.getProperty("user.dir"));
+        if (file.exists() && file.isDirectory()) {
+            String[] files = file.list();
+            for (String fileName : files) {
+                if (fileName.contains(Serenity.sessionVariableCalled("randomNumber").toString()))
+                    filesContainingSubstring.add(fileName);
+            }
+        }
+
+        for (String fileName : filesContainingSubstring) {
+            System.out.println(fileName);
+            File uploadedFile = new File(System.getProperty("user.dir") + "/" + fileName);
+            long uploadedFileSize = uploadedFile.length();
+            System.out.println("Actual size " + uploadedFileSize);
+            assertThat(downloadedFileSize, is(uploadedFileSize));
+        }
     }
 }

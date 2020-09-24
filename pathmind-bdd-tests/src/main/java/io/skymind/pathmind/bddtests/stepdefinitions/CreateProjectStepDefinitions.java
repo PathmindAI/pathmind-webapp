@@ -45,13 +45,14 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with draft model$")
     public void createNewCoffeeShopProjectWithDraftModel() {
         createNewEmptyProject();
-        modelUploadSteps.uploadModelFile("tuple_models/CoffeeShopTuple.zip");
+        modelUploadSteps.uploadModelFile("CoffeeShop/CoffeeShop.zip");
         modelDetailsSteps.checkThatModelSuccessfullyUploaded();
     }
 
     @When("^Create new CoffeeShop project with draft experiment$")
     public void createNewProjectWithModelAndDraftExperiment() {
         createNewCoffeeShopProjectWithDraftModel();
+        modelUploadSteps.clickAlpUploadStepNextBtn();
         modelDetailsSteps.clickWizardModelDetailsNextBtn();
         rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
         newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
@@ -60,16 +61,14 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with single reward function$")
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
-        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
+        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
     @When("^Create new CoffeeShop project with 4 variables reward function$")
     public void createNewProjectWithModelAnd4VariablesReward() {
         createNewProjectWithModelAndDraftExperiment();
-        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
+        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunction.txt");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
@@ -87,8 +86,7 @@ public class CreateProjectStepDefinitions {
         newExperimentSteps.inputVariableNames(commaSeparatedVariableNames.split(","));
         rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
         newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
-        newExperimentSteps.inputRewardFunctionFile("Production_Single_Agent/Production_Single_Agent_Reward_Using_4Variables.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
+        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunction.txt");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 }

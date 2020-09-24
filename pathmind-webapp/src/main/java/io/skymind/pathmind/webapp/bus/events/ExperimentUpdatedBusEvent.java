@@ -2,9 +2,9 @@ package io.skymind.pathmind.webapp.bus.events;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
+import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
 
-public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
+public class ExperimentUpdatedBusEvent implements CloneablePathmindBusEvent {
 
     public enum ExperimentUpdateType {
         ExperimentDataUpdate,
@@ -48,5 +48,10 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     public ExperimentUpdateType getExperimentUpdateType() {
         return experimentUpdateType;
+    }
+
+    @Override
+    public ExperimentUpdatedBusEvent cloneForEventBus() {
+        return new ExperimentUpdatedBusEvent(experiment.deepClone(), experimentUpdateType);
     }
 }

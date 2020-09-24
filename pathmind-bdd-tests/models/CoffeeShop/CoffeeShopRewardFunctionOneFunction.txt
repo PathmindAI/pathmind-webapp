@@ -1,0 +1,1 @@
+reward += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchen cleanliness test1

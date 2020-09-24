@@ -73,7 +73,7 @@ public abstract class TrainingService {
 
     protected abstract String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSampes);
 
-    public void stopRun(Experiment experiment, BiConsumer<Run, List<Policy>> callback)  {
+    public void stopRun(Experiment experiment)  {
         List<Run> runs = experiment.getRuns().stream()
                 .filter(r -> RunStatus.isRunning(r.getStatusEnum()))
                 .collect(Collectors.toList());
@@ -87,10 +87,8 @@ public abstract class TrainingService {
             run.setExperiment(experiment);
             run.setModel(experiment.getModel());
             run.setProject(experiment.getProject());
+            run.setStatusEnum(RunStatus.Stopping);
             runDAO.markAsStopping(run);
-            if (callback != null) {
-                callback.accept(run, experiment.getPolicies());
-            }
         });
     }
 }

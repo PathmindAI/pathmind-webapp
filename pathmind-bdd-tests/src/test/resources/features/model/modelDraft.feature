@@ -8,7 +8,7 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     Then Check that model successfully uploaded
     When Open projects page
     When Open project AutotestProject on projects page
@@ -21,8 +21,9 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     Then Click wizard model details next btn
     When Open projects page
     When Open project AutotestProject on projects page
@@ -35,15 +36,17 @@ Feature: Save Model draft
     When Open projects page
     When Open project AutotestProject on projects page
     When Click upload model btn from project page
-    When Upload model tuple_models/CoffeeShopTuple.zip
+    When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Open projects page
     When Open project AutotestProject on projects page
     Then Check that there are 1 model(s) with 'Draft' tag in project page
     When Click the model name 2
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
-    And Check that there is a variable named kitchen_cleanliness
+    And Check that there is a variable named kitchenCleanlinessLevel
     When Click wizard reward variables next btn
     When Open projects page
     When Open project AutotestProject on projects page
