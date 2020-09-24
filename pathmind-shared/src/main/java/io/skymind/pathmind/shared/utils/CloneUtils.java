@@ -4,7 +4,12 @@ import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class CloneUtils {
 
@@ -24,13 +29,18 @@ public class CloneUtils {
         return clonedList;
     }
 
-    public static List<double[]> cloneListDoubleArrays(List<double[]> originalList) {
-        if(originalList == null)
+    public static Map<Integer, Map<Integer, Double>> cloneMapIntegerMapIntegerDouble(Map<Integer, Map<Integer, Double>> originalMap) {
+        if(originalMap == null)
             return null;
-        ArrayList<double[]> clonedList = new ArrayList<>(originalList.size());
-        originalList.stream().forEach(array ->
-                clonedList.add(array == null ? null : Arrays.copyOf(array, array.length)));
-        return originalList;
+        Map<Integer, Map<Integer, Double>> clonedMap = new LinkedHashMap<>(originalMap.size());
+        Set<Entry<Integer, Map<Integer, Double>>> entries = originalMap.entrySet();
+        for (Map.Entry<Integer, Map<Integer, Double>> mapEntry : entries) {
+            Set<Entry<Integer, Double>> childMapEntries = mapEntry.getValue().entrySet();
+            LinkedHashMap<Integer, Double> childMapShallowCopy = (LinkedHashMap<Integer, Double>) childMapEntries.stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            clonedMap.put(mapEntry.getKey(), childMapShallowCopy);
+        }
+        return originalMap;
     }
 
     public static <T extends DeepCloneableInterface> T shallowClone(T item) {
