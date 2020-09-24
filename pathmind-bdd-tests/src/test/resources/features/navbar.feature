@@ -27,7 +27,7 @@ Feature: Nav bar buttons
 
   Scenario: Check nav bar Projects highlighted button
     Given Login to the pathmind
-    Then Check that projects button highlight is false
+    Then Check that projects button highlight is true
     When Create new CoffeeShop project with single reward function
     Then Check that projects button highlight is false
     When Click project start run button
