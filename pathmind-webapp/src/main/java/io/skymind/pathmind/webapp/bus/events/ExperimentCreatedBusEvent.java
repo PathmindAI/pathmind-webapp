@@ -1,13 +1,10 @@
 package io.skymind.pathmind.webapp.bus.events;
 
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
+import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
 
-import java.util.List;
-
-public class ExperimentCreatedBusEvent implements PathmindBusEvent {
+public class ExperimentCreatedBusEvent implements CloneablePathmindBusEvent {
     private Experiment experiment;
 
     public ExperimentCreatedBusEvent(Experiment experiment) {
@@ -25,5 +22,10 @@ public class ExperimentCreatedBusEvent implements PathmindBusEvent {
 
     public long getModelId() {
         return experiment.getModelId();
+    }
+
+    @Override
+    public ExperimentCreatedBusEvent cloneForEventBus() {
+        return new ExperimentCreatedBusEvent(experiment.deepClone());
     }
 }
