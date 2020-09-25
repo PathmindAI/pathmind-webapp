@@ -3,7 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -89,7 +89,7 @@ public class PolicyChart extends DataChart {
 
     public Map<Integer, List<RewardScore>> generatePolicyChartData(List<Policy> policyData, Policy bestPolicy) {
         List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
-        Map<Integer, List<RewardScore>> allLinesData = new LinkedHashMap<>();
+        Map<Integer, List<RewardScore>> allLinesData = new HashMap<>();
         List<Integer> iterationNumbers = new ArrayList<>();
         int maxIteration = 0;
         policyData.forEach(policy -> {

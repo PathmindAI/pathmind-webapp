@@ -110,7 +110,7 @@ public class PolicyUtils
                     .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
 
             // index, metrics list
-            Map<Integer, Map<Integer, Double>> sparkLineMap = new LinkedHashMap<>();
+            Map<Integer, Map<Integer, Double>> sparkLineMap = new HashMap<>();
 
             // Loop by iteration
             metricsList.stream().forEach(metrics ->
@@ -119,8 +119,8 @@ public class PolicyUtils
                     metrics.getMetricsThisIter().forEach(mIter -> {
                         int index = mIter.getIndex(); // this is the index of the metric
 
-                        Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new LinkedHashMap<>();
-                        // Put Iteration Number and Mean Value of metric into this LinkedHashMap
+                        Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new HashMap<>();
+                        // Put Iteration Number and Mean Value of metric into this HashMap
                         data.put(metrics.getIteration(), mIter.getMean());
                         sparkLineMap.put(index, data);
                     })
