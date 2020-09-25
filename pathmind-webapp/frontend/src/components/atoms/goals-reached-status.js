@@ -24,6 +24,9 @@ class GoalsReachedStatus extends PolymerElement {
                     line-height: 1;
                     margin-top: .125rem;
                 }
+                :host([hidden]) {
+                    display: none;
+                }
                 iron-icon {
                     --iron-icon-width: var(--lumo-font-size-xs);
                     --iron-icon-height: var(--lumo-font-size-xs);
