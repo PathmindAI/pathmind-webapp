@@ -20,7 +20,7 @@ public class MetricChartPanel extends VerticalLayout
 
     private Chart chart = new Chart(ChartType.AREASPLINE);
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
-    private Paragraph description = new Paragraph("This chart is a screenshot at the time of opening. It does not update automatically.");
+    private Paragraph description = new Paragraph("This chart does not update automatically.");
 
     public MetricChartPanel() {
         setupChart();
