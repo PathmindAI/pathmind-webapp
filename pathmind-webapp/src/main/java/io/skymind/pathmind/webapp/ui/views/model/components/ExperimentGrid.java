@@ -55,11 +55,9 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true)
                 .setSortable(true);
         addComponentColumn(experiment -> {
-                    if (experiment.isHasGoals() && !experiment.isDraft()) {
-                        Boolean isGoalsReached = experiment.isGoalsReached();
-                        String goalStatusClassName = isGoalsReached ? "success-text" : "failure-text";
-                        Icon goalReachedIcon = experiment.isGoalsReached() ? new Icon(VaadinIcon.CHECK) : new Icon(VaadinIcon.CLOSE);
-                        goalReachedIcon.addClassName(goalStatusClassName);
+                    if (experiment.isHasGoals() && !experiment.isDraft() && experiment.isGoalsReached()) {
+                        Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
+                        goalReachedIcon.addClassName("success-text");
                         return goalReachedIcon;
                     }
                     // to be replaced with the loading icon after the polymer loading icon component is merged
