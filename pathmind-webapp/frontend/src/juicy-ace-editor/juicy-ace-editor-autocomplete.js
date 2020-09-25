@@ -88,6 +88,7 @@ window.Pathmind.autocomplete = {
         var autocompleteData = localVariables.concat(mathData);
 
         var variablesCompleter = {
+                identifierRegexps: [/[a-zA-Z_0-9\.\$\-\u00A2-\u2000\u2070-\uFFFF]/],
                 getCompletions: function(editor, session, pos, prefix, callback) {
                     callback(null, autocompleteData);
                 }
