@@ -522,7 +522,7 @@ account-view {
     color: var(--lumo-success-color);
 }
 .failure-text {
-    color: var(--lumo-error-color);
+    color: var(--pm-secondary-text-color);
 }
 /* Primary Button Styles */
 .button-link {

@@ -39,7 +39,7 @@ import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
  * 
  */
 
-@JavaScript("/src/upload/model-upload-filter.js")
+@JavaScript("./src/upload/model-upload-filter.js")
 public class PathmindModelUploader extends Upload {
 
 	private int numOfFilesUploaded = 0;
