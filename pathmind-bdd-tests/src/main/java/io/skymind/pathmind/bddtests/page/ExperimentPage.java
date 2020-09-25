@@ -103,7 +103,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        getDriver().findElement(By.xpath("//p[text()='" + experimentName + "']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+        utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button").click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
