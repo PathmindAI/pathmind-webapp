@@ -76,8 +76,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
         getModel().setShowGoals(!ExperimentUtils.isDraftRunType(experiment)
-                && experiment.isHasGoals()
-                && experiment.isGoalsReached());
+                && !ExperimentUtils.isRunning(experiment)
+                && experiment.isHasGoals());
         updateGoalStatus(experiment.isGoalsReached());
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId));
