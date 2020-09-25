@@ -36,7 +36,7 @@ class GoalsReachedStatus extends PolymerElement {
                     margin-right: 4px;
                 }
                 :host(:not([reached])) {
-                    color: var(--pm-danger-color);
+                    color: var(--pm-secondary-text-color);
                 }
                 :host(:not([reached])) iron-icon[icon~="vaadin:close"] {
                     display: block;

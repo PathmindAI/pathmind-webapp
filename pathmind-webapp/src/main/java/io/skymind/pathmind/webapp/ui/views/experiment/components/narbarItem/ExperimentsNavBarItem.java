@@ -75,7 +75,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
-        getModel().setHasGoals(experiment.isHasGoals());
+        getModel().setShowGoals(!ExperimentUtils.isDraftRunType(experiment)
+                && experiment.isHasGoals()
+                && experiment.isGoalsReached());
         updateGoalStatus(experiment.isGoalsReached());
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId));
@@ -150,7 +152,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setIsDraft(boolean isDraft);
         void setIsFavorite(boolean isFavorite);
         void setStatus(String IconStatus);
-        void setHasGoals(boolean hasGoals);
+        void setShowGoals(boolean showGoals);
         void setGoalsReached(boolean goalsReached);
     }
 }
