@@ -376,15 +376,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentViewRunUpdateSubscriber.setExperiment(experiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
-            updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            simulationMetricsPanel.setExperiment(experiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+                updateScreenComponents();
+                simulationMetricsPanel.setExperiment(experiment);
             }
         }
     }
@@ -552,10 +552,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 addOrUpdatePolicies(event.getPolicies());
 
                 // Calculate the best policy again
-                policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+                List<Policy> policies = experiment.getPolicies();
+                policy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
                     if (policy != null) {
-                        policyChartPanel.highlightPolicy(policy);
+                        policyChartPanel.updateChart(policies, policy);
                     }
                     updateDetailsForExperiment();
                 });

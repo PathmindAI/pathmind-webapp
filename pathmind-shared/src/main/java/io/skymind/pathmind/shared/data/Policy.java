@@ -7,7 +7,9 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -39,7 +41,9 @@ public class Policy extends Data implements DeepCloneableInterface
 
     // Helper Simulation Metrics GUI attributes not stored in the database
     private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
+
+    // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
+    private Map<Integer, Map<Integer, Double>> sparklinesData = new HashMap<>();
     private List<String> uncertainty = new ArrayList<>();
 
     public List<RewardScore> getScores() {
@@ -71,7 +75,7 @@ public class Policy extends Data implements DeepCloneableInterface
                 .metrics(CloneUtils.shallowCloneList(metrics))
                 .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
                 .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
-                .sparklinesData(CloneUtils.cloneListDoubleArrays(sparklinesData))
+                .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
                 .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
                 .build());
     }

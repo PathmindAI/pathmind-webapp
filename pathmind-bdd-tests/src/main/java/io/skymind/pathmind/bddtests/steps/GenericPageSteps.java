@@ -150,4 +150,9 @@ public class GenericPageSteps {
     public void compareALPFileWithDownloadedFile(String alpFile) {
         genericPage.compareALPFileWithDownloadedFile(alpFile);
     }
+
+    @Step
+    public void clickPopUpDialogCloseBtn() {
+        genericPage.clickPopUpDialogCloseBtn();
+    }
 }

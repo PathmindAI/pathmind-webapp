@@ -3,8 +3,9 @@ package io.skymind.pathmind.shared.utils;
 import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CloneUtils {
 
@@ -24,13 +25,22 @@ public class CloneUtils {
         return clonedList;
     }
 
-    public static List<double[]> cloneListDoubleArrays(List<double[]> originalList) {
-        if(originalList == null)
+    public static Map<Integer, Map<Integer, Double>> cloneMapIntegerMapIntegerDouble(Map<Integer, Map<Integer, Double>> originalMap) {
+        if(originalMap == null)
             return null;
-        ArrayList<double[]> clonedList = new ArrayList<>(originalList.size());
-        originalList.stream().forEach(array ->
-                clonedList.add(array == null ? null : Arrays.copyOf(array, array.length)));
-        return originalList;
+        HashMap<Integer, Map<Integer, Double>> copy = new HashMap<>();
+        originalMap.keySet().stream().forEach(key ->
+                copy.put(key, cloneMapIntegerDouble(originalMap.get(key))));
+        return copy;
+    }
+    
+    public static Map<Integer, Double> cloneMapIntegerDouble(Map<Integer, Double> originalMap) {
+        if(originalMap == null) 
+            return null;
+        HashMap<Integer, Double> copy = new HashMap<>();
+        originalMap.keySet().stream().forEach(key ->
+                copy.put(key, originalMap.get(key)));
+        return copy;
     }
 
     public static <T extends DeepCloneableInterface> T shallowClone(T item) {
