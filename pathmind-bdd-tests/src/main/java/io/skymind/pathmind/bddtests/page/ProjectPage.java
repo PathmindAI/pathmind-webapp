@@ -59,7 +59,7 @@ public class ProjectPage extends PageObject {
     }
 
     public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='page-title']/descendant::span[@class='breadcrumb']")).getText(), is(name));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='page-title']/descendant::a[@class='breadcrumb' and contains(@href,'project/')]")).getText(), is(name));
     }
 
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {

@@ -10,7 +10,7 @@ Feature: Model page
     Then Click the model name 1
     When Click project page new experiment button
     Then Check that experiment page title is 'Experiment #2'
-    When Click back button
+    When Click model breadcrumb btn
     Then Check that model/experiment name '2 Draft' exist in archived/not archived tab
 
   Scenario: Check model page experiment archive btn, move experiment to archived
