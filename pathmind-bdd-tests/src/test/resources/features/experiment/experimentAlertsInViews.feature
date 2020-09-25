@@ -95,7 +95,7 @@ Feature: Experiment page alerts in multiple views
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
-    When Click in 'Experiment #1' button
+    When Click side bar experiment Experiment #1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
