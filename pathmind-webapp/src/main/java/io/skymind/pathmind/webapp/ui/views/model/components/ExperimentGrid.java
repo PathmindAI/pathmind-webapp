@@ -48,13 +48,6 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setFlexGrow(0)
 				.setAutoWidth(true)
 				.setResizable(true);
-		addColumn(new ZonedDateTimeRenderer<>(Experiment::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-				.setComparator(Comparator.comparing(Experiment::getLastActivityDate))
-				.setHeader("Last Activity")
-				.setAutoWidth(true)
-				.setFlexGrow(0)
-				.setAutoWidth(true)
-				.setResizable(true);
 		addColumn(experiment -> ExperimentUtils.getTrainingStatus(experiment))
 				.setHeader("Status")
 				.setAutoWidth(true)
