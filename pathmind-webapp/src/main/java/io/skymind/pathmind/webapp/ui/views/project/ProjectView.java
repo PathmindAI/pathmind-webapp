@@ -162,7 +162,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 		Grid.Column<Model> createdColumn = modelGrid
 				.addColumn(new ZonedDateTimeRenderer<>(Model::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
 				.setComparator(Comparator.comparing(Model::getDateCreated))
-				.setHeader("Created")
+				.setHeader("Uploaded")
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true);
