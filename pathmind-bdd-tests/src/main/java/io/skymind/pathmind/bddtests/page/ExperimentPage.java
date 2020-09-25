@@ -176,9 +176,10 @@ public class ExperimentPage extends PageObject {
         assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
     }
 
-    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+    public void checkThatExperimentStatusIconIs(String experimentName, String icon) {
         waitABit(10000);
-        assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
+        WebElement statusIconShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "status-icon"));
+        assertThat(statusIconShadow.findElements(By.cssSelector(icon)).size(), is(1));
     }
 
     public void clickExperimentPageStarButton(String experimentName) {
