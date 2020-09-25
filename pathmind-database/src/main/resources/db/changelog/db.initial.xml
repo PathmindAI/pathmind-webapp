@@ -1763,4 +1763,8 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200923-02" author="bruno.rezende@ext.vaadin.com">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdateExperiment_ChangeSet_20200923_02"/>
+    </changeSet>
+
 </databaseChangeLog>
