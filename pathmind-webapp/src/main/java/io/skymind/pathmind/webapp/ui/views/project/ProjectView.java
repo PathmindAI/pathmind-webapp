@@ -166,12 +166,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true);
-		modelGrid.addColumn(new ZonedDateTimeRenderer<>(Model::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
-				.setComparator(Comparator.comparing(Model::getLastActivityDate))
-				.setHeader("Last Activity")
-				.setAutoWidth(true)
-				.setFlexGrow(0)
-				.setResizable(true);
 		modelGrid.addColumn(model -> {
 				String userNotes = model.getUserNotes();
 				return userNotes.isEmpty() ? "—" : userNotes;
