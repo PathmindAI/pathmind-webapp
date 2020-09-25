@@ -62,7 +62,6 @@ public class CreateProjectStepDefinitions {
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
         newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
@@ -70,7 +69,6 @@ public class CreateProjectStepDefinitions {
     public void createNewProjectWithModelAnd4VariablesReward() {
         createNewProjectWithModelAndDraftExperiment();
         newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunction.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
@@ -89,7 +87,6 @@ public class CreateProjectStepDefinitions {
         rewardVariablesSteps.clickWizardRewardVariableNamesNextBtn();
         newExperimentSteps.checkThatExperimentPageOpened("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
         newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunction.txt");
-        newExperimentSteps.clickObservationsCheckbox("Select All");
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 }
