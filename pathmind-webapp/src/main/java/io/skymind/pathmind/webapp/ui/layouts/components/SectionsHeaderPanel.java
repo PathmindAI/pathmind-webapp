@@ -5,7 +5,6 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout
@@ -15,11 +14,9 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
 		sectionsHorizontalLayout.add(linkedLogo());
 		if (hasLoginUser) {
-			RouterLink dashboardLink = new RouterLink("Dashboard", DashboardView.class);
 			RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
 
 			sectionsHorizontalLayout.add(
-					dashboardLink,
 					projectsLink,
 					getLearnAnchor());
 		}
