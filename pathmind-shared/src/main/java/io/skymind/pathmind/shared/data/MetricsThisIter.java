@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MetricsThisIter implements Serializable, DeepCloneableInterface {
+public class MetricsThisIter implements Serializable, DeepCloneableInterface<MetricsThisIter> {
     private Integer index;
     private Double max;
     private Double min;

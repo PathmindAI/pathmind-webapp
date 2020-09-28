@@ -16,7 +16,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Policy extends Data implements DeepCloneableInterface
+public class Policy extends Data implements DeepCloneableInterface<Policy>
 {
     private static final long serialVersionUID = -2089053095112497536L;
 	private long runId;

@@ -13,7 +13,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PathmindUser implements DeepCloneableInterface
+public class PathmindUser implements DeepCloneableInterface<PathmindUser>
 {
 	private long id;
 	private String email;
