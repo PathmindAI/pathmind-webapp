@@ -15,7 +15,6 @@
     "@vaadin/vaadin-combo-box": "5.2.0",
     "@vaadin/vaadin-confirm-dialog": "1.2.1",
     "@vaadin/vaadin-context-menu": "4.4.0",
-    "@vaadin/vaadin-cookie-consent": "1.1.2",
     "@vaadin/vaadin-core-shrinkwrap": "14.3.3",
     "@vaadin/vaadin-custom-field": "1.1.0",
     "@vaadin/vaadin-date-picker": "4.2.0",
@@ -42,11 +41,13 @@
     "@vaadin/vaadin-time-picker": "2.2.0",
     "@vaadin/vaadin-upload": "4.3.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
+    "cookieconsent": "^3.1.1",
     "css-loader": "^3.6.0",
     "highlight.js": "^9.13.1",
     "lit-element": "^2.2.1",
     "lodash": "^4.17.20",
-    "to-string-loader": "^1.1.6"
+    "to-string-loader": "^1.1.6",
+    "@vaadin/vaadin-cookie-consent": "1.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",
@@ -130,6 +131,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.10.3"
     },
-    "hash": "e63d7d811eeee02b2ea260262bce1527d410d433ddfe2d30858b87524c0fd494"
+    "hash": "0f07fadd2d74d9f7810030f9a88f4e7ef98dffd8cda99cf22954e2f4026a22e2"
   }
 }
