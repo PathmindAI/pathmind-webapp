@@ -119,6 +119,8 @@ public class UploadModelWizardPanel extends VerticalLayout
 
 	private void addUploadsFinishedListener() {
 		upload.addAllFilesUploadedListener((errors) -> {
+		    log.info("Upload a model for project " +  model.getProjectId());
+
 		    if (errors.size() > 0) {
 		        uploadFailedConsumer.accept(errors);
 		        return;
