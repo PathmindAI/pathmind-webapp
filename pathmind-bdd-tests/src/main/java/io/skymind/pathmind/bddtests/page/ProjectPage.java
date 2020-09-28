@@ -6,6 +6,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.List;
+
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -39,8 +41,7 @@ public class ProjectPage extends PageObject {
 
     public void projectPageCheckThatModelsCountIs(int modelsCount) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(projectPageModelsTable);
-        assertThat(e.findElements(By.cssSelector("#items tr[part='row']")).size(), is(modelsCount));
+        assertThat(getDriver().findElements(By.cssSelector("models-navbar-item")).size(), is(modelsCount));
     }
 
     public void clickModelArchiveButton(String model) {
@@ -63,7 +64,15 @@ public class ProjectPage extends PageObject {
     }
 
     public void checkProjectPageModelPackageNameIs(String modelId, String packageName) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + modelId + " " + "']/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(packageName));
+        waitABit(5000);
+        List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
+        for (WebElement webElement : e) {
+            String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
+            String modelName = webElement.getText().split("\\(")[1].split("\\)")[0];
+            if (modelNumber.equals(modelId)) {
+                assertThat(modelName, is(packageName));
+            }
+        }
     }
 
     public void checkThatProjectPageIsOpened() {

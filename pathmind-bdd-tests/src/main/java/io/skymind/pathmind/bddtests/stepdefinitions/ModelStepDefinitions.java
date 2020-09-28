@@ -26,7 +26,7 @@ public class ModelStepDefinitions {
     }
 
     @Then("^Check model page model details observations is (.*)$")
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
         modelPageSteps.checkModelPageModelDetailsObservationsIs(observations);
     }
 

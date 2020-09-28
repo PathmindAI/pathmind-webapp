@@ -21,8 +21,6 @@ import static org.hamcrest.Matchers.*;
 @DefaultUrl("page:home.page")
 public class ModelPage extends PageObject {
 
-    @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Archive']")
-    private WebElement archiveBtnShadow;
     @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Unarchive']")
     private WebElement unarchiveBtnShadow;
     @FindBy(xpath = "//*[@class='breadcrumb']")
@@ -37,15 +35,15 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelTitlePackageNameIs(String packageName) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='page-content-header']/descendant::span[@class='section-title-label']")).getText().split("[()]")[1], is(packageName));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-split-layout/descendant::span[@class='section-title-label project-title-label']")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
         assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Actions']/ancestor::p"))), is(actions));
     }
 
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Observations']/ancestor::p"))), is(observations));
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='observations-table']/descendant::vaadin-checkbox[not(@hidden)]")).size(), is(observations));
     }
 
     public void checkModelPageModelDetailsRewardVariablesOrder() {
@@ -61,8 +59,8 @@ public class ModelPage extends PageObject {
     public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[@class]"))) {
-            actual.add(webElement.getText());
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='reward-variables-table']/descendant::vaadin-text-field"))) {
+            actual.add(webElement.getAttribute("value"));
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
@@ -86,8 +84,7 @@ public class ModelPage extends PageObject {
 
     public void clickExperimentArchiveButton() {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(archiveBtnShadow);
-        e.findElement(By.cssSelector("button")).click();
+        getDriver().findElement(By.xpath("//*[@class='experiment-name']/following-sibling::vaadin-button")).click();
     }
 
     public void clickModelPageExperimentArchiveBtn(String experiment) {

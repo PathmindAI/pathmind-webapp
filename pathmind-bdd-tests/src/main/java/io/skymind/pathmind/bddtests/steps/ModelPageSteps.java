@@ -23,7 +23,7 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
         modelPage.checkModelPageModelDetailsObservationsIs(observations);
     }
 
