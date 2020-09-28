@@ -2,7 +2,6 @@ package io.skymind.pathmind.services.project;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -32,8 +31,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     @Override
     public boolean isFileCheckSuccessful() {
-//        return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
-        return isCorrectFileType() && isModelJarFilePresent();
+        return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
     }
 
     @Override
@@ -59,7 +57,6 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     @Override
     public boolean isHelperPresent() {
-        log.info("kepricondebug : " + definedHelpers);
         if (this.definedHelpers.size() > 0) {
             return true;
         } else {
