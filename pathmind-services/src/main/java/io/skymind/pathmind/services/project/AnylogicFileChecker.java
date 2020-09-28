@@ -7,10 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -36,7 +33,10 @@ public class AnylogicFileChecker implements FileChecker {
             if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("Uploaded file exists and it is readable");
                 //To check a Zip file and if it is a valid file extract it in to the temporary folder
+                log.info("kepricondebug0 : " + file);
                 unZippedJar = checkZipFile(file, anylogicFileCheckResult);
+                log.info("kepricondebug1 : " +  unZippedJar);
+                log.info("kepricondebug2 : " + Arrays.asList(unZippedJar.getParentFile().listFiles()));
                 statusUpdater.updateStatus(0.10);
 
                 if (unZippedJar != null) {
@@ -56,8 +56,7 @@ public class AnylogicFileChecker implements FileChecker {
                             statusUpdater.updateError("model.jar does not having PathmindHelper class");
                         }
                     }
-                }
-                else {
+                } else {
                     if (anylogicFileCheckResult.isCorrectFileType()) {
                         log.error("model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
