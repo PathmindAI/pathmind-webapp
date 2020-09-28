@@ -66,6 +66,7 @@
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
     flex-direction: column;
+    border-radius: var(--lumo-border-radius-l);
 }
 .cc-window.cc-banner {
     padding: 1em 1.8em;
