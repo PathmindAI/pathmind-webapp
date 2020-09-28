@@ -10,7 +10,6 @@ dependencies:
   '@vaadin/vaadin-button': 2.3.0
   '@vaadin/vaadin-checkbox': 2.3.0
   '@vaadin/vaadin-combo-box': 5.2.0
-  '@vaadin/vaadin-confirm-dialog': 1.2.1
   '@vaadin/vaadin-context-menu': 4.4.0
   '@vaadin/vaadin-core-shrinkwrap': 14.3.3
   '@vaadin/vaadin-custom-field': 1.1.0
@@ -1993,7 +1992,7 @@ packages:
       integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
   /@types/parse5/2.2.34:
     dependencies:
-      '@types/node': 6.14.12
+      '@types/node': 14.11.2
     dev: true
     resolution:
       integrity: sha1-44cKEOgnNacg9i1x3NGDunjvOp0=
@@ -2135,20 +2134,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-zf7tnYF+NvDEbAhd5i7lTw4rMtsDdZIk+K+gvQdWn2QEi1YGxKlh+XKSbgPlaSB3xBUsvwJ4eoXWO1gegHSqKg==
-  /@vaadin/vaadin-confirm-dialog/1.2.1:
-    dependencies:
-      '@polymer/polymer': 3.2.0
-      '@vaadin/vaadin-button': 2.3.0
-      '@vaadin/vaadin-dialog': 2.4.3
-      '@vaadin/vaadin-element-mixin': 2.3.2
-      '@vaadin/vaadin-license-checker': 2.1.2
-      '@vaadin/vaadin-lumo-styles': 1.6.0
-      '@vaadin/vaadin-material-styles': 1.3.2
-      '@vaadin/vaadin-overlay': 3.4.1
-      '@vaadin/vaadin-themable-mixin': 1.5.2
-    dev: false
-    resolution:
-      integrity: sha512-c1LaO3oWetqgVjHhI3g0jsKj1v3Ww0VBOV0lU52S1+BUzSAOOzHpRgbI75N6nTfNLbGg7t06fXToMvoT06pIiA==
   /@vaadin/vaadin-context-menu/4.4.0:
     dependencies:
       '@polymer/iron-media-query': 3.0.1
@@ -2345,12 +2330,6 @@ packages:
     dev: false
     resolution:
       integrity: sha512-Yvpd2fiTwvfJA18lfjYsj33L+yr/YfHg3WZNp+v8OghfacfMdD5JofJpK6s0cJIuNTg+TC6hG1UwzcEC9jNMFw==
-  /@vaadin/vaadin-license-checker/2.1.2:
-    dependencies:
-      '@vaadin/vaadin-development-mode-detector': 2.0.4
-    dev: false
-    resolution:
-      integrity: sha512-oD6/MoavXyIZp6NWhkbJD5RKrpiWohhaQpgqjM0bFIthRr+1NoiG5R1w0uY3NIdMDuaXlsUFSQJ/Viz1v7F/jQ==
   /@vaadin/vaadin-list-box/1.3.0:
     dependencies:
       '@polymer/polymer': 3.2.0
@@ -3440,7 +3419,7 @@ packages:
   /browserslist/4.14.5:
     dependencies:
       caniuse-lite: 1.0.30001137
-      electron-to-chromium: 1.3.573
+      electron-to-chromium: 1.3.574
       escalade: 3.1.0
       node-releases: 1.1.61
     dev: true
@@ -3452,7 +3431,7 @@ packages:
   /browserslist/4.7.0:
     dependencies:
       caniuse-lite: 1.0.30001137
-      electron-to-chromium: 1.3.573
+      electron-to-chromium: 1.3.574
       node-releases: 1.1.61
     dev: true
     hasBin: true
@@ -4536,10 +4515,10 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-7vmuyh5+kuUyJKePhQfRQBhXV5Ce+RnaeeQArKu1EAMpL3WbgMt5WG6uQZpEVvYSSsxMXRKOewtDk9RaTKXRlA==
-  /electron-to-chromium/1.3.573:
+  /electron-to-chromium/1.3.574:
     dev: true
     resolution:
-      integrity: sha512-oypaNmexr8w0m2GX67fGLQ0Xgsd7uXz7GcwaHZ9eW3ZdQ8uA2+V/wXmLdMTk3gcacbqQGAN7CXWG3fOkfKYftw==
+      integrity: sha512-kF8Bfe1h8X1pPwlw6oRoIXj0DevowviP6fl0wcljm+nZjy/7+Fos4THo1N/7dVGEJlyEqK9C8qNnbheH+Eazfw==
   /element-resize-detector/1.2.1:
     dependencies:
       batch-processor: 1.0.0
@@ -9735,7 +9714,7 @@ packages:
       integrity: sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==
   /wide-align/1.1.3:
     dependencies:
-      string-width: 1.0.2
+      string-width: 2.1.1
     dev: true
     resolution:
       integrity: sha512-QGkOQc8XL6Bt5PwnsExKBPuMKBxnGxWWW3fU55Xt4feHozMUhdUMaBCk290qpm/wG5u/RSKzwdAC4i51YigihA==
@@ -9867,7 +9846,6 @@ specifiers:
   '@vaadin/vaadin-button': 2.3.0
   '@vaadin/vaadin-checkbox': 2.3.0
   '@vaadin/vaadin-combo-box': 5.2.0
-  '@vaadin/vaadin-confirm-dialog': 1.2.1
   '@vaadin/vaadin-context-menu': 4.4.0
   '@vaadin/vaadin-core-shrinkwrap': 14.3.3
   '@vaadin/vaadin-custom-field': 1.1.0
