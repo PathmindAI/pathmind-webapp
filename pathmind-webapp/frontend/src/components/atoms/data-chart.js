@@ -125,6 +125,7 @@ class DataChart extends PolymerElement {
                 "baselineColor": vaxistitle ? "black" : "#FFF",
                 "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
             },
+            "interpolateNulls": true,
             "legend": {"position": "none"},  // true for all usages
             "seriesType": seriestype,
             "series": series,

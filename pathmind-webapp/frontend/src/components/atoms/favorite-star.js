@@ -5,15 +5,13 @@ class FavoriteStar extends PolymerElement {
         return "favorite-star";
     }
 
-    constructor() {
-        super();
-    }
-
     static get properties() {
         return {
             isFavorite: {
                 type: Boolean,
-                observer: '_isFavoriteChanged'
+                observer: '_isFavoriteChanged',
+                notify: true,
+                reflectToAttribute: true
             }
         }
     }
@@ -36,19 +34,28 @@ class FavoriteStar extends PolymerElement {
                     padding: 0;
                 }
             </style>
-            <vaadin-button theme="tertiary-inline" on-click="toggleFavorite">
+            <vaadin-button theme="tertiary-inline" title="Favorite">
                 <iron-icon icon="vaadin:star-o"></iron-icon>
             </vaadin-button>
         `;
     }
 
-    toggleFavorite(event) {
+    constructor() {
+        super();
+        this.addEventListener("click", this._onClick);
+    }
+
+    _onClick(event) {
         event.stopPropagation();
+        this.toggleFavorite();
     }
 
     _isFavoriteChanged(newValue) {
+        const buttonElement = this.shadowRoot.querySelector("vaadin-button");
         const iconElement = this.shadowRoot.querySelector("iron-icon");
         const iconType = newValue ? "vaadin:star" : "vaadin:star-o";
+        const titleText = newValue ? "Unfavorite" : "Favorite";
+        buttonElement.setAttribute("title", titleText);
         iconElement.setAttribute("icon", iconType);
     }
 }

@@ -106,4 +106,15 @@ public class NewExperimentStepDefinition {
     public void clickNewExperimentObservationBtn(String checkbox) {
         newExperimentSteps.clickObservationsCheckbox(checkbox);
     }
+
+    @Then("^Check side bar current experiment star btn tooltip is '(.*)'$")
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        newExperimentSteps.checkSideBarStarBtnTooltipIsFavorite(tooltip);
+    }
+
+    @Then("^Check side bar current experiment archive btn tooltip is '(.*)'$")
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        newExperimentSteps.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
+    }
+
 }
