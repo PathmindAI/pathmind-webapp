@@ -42,7 +42,7 @@ Feature: Experiment ALP
     Then Click project save draft btn
     Then Check new experiment page model ALP btn <alp file name>
     When Click model breadcrumb btn
-    Then Check new experiment page model ALP btn <alp file name>
+    Then Check project page model ALP btn <alp file name>
     When Click the experiment name 1
     Then Click project start run button
     Then Check new experiment page model ALP btn <alp file name>

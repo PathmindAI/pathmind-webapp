@@ -81,4 +81,10 @@ public class ProjectsPage extends PageObject {
     public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
         assertThat(getDriver().findElement(By.cssSelector(".reward-variable-name-field")).getText(), is(error));
     }
+
+    public void checkProjectPageModelALPBtn(String filename) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a/descendant::vaadin-button")));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a")).getAttribute("href"), containsString(filename));
+    }
 }

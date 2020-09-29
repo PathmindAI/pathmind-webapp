@@ -46,7 +46,6 @@ Feature: Experiment favorite feature
     When Click in 'New Experiment' button
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     When Click model page experiment '1 ' star button
     When Refresh page
     Then Check model page experiment '1 ' is favorite true

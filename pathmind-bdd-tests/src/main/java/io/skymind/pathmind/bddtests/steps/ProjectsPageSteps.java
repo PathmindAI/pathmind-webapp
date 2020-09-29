@@ -56,4 +56,9 @@ public class ProjectsPageSteps {
     public void checkNewExperimentPageRewardVariableErrorIsShown(String error) {
         projectsPage.checkNewExperimentPageRewardVariableErrorIsShown(error);
     }
+
+    @Step
+    public void checkProjectPageModelALPBtn(String filename) {
+        projectsPage.checkProjectPageModelALPBtn(filename);
+    }
 }
