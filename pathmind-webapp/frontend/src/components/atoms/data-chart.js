@@ -43,6 +43,10 @@ class DataChart extends PolymerElement {
             viewwindow: {
                 type: Object,
             },
+            chartready: {
+                type: Boolean,
+                reflectToAttribute: true,
+            },
             options: {
                 type: Object,
                 computed: `_computeOptions(
@@ -83,7 +87,12 @@ class DataChart extends PolymerElement {
                 isInit = false;
                 setTimeout(() => {
                     // This is to ensure the tooltips are rendered
+                    this.chartready = true;
                     this.$.chart.redraw();
+
+                    setTimeout(() => {
+                        this.style.opacity = 1;
+                    }, 200);
                 }, 0);
             }
         });
@@ -146,7 +155,14 @@ class DataChart extends PolymerElement {
         return html`
             <style>
                 :host {
+                    width: 1px;
+                    height: 1px;
+                    opacity: 0;
+                    overflow: hidden;
+                }
+                :host([chartready]) {
                     width: 100%;
+                    height: auto;
                 }
             </style>
             <google-chart 
