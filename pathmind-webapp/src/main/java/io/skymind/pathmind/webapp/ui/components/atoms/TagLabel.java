@@ -7,7 +7,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("tag-label")
-@JsModule("/src/components/atoms/tag-label.js")
+@JsModule("./src/components/atoms/tag-label.js")
 public class TagLabel extends PolymerTemplate<TagLabel.Model> implements HasStyle {
     public TagLabel() {
         this("", false, "");

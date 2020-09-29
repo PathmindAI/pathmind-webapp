@@ -6,7 +6,7 @@ Feature: Experiment page Simulation Metrics
     Given Login to the pathmind
     When Create new CoffeeShop project with 4 variables reward function
     When Click project start run button
-    Then Check experiment page simulation metrics kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check experiment page simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -16,7 +16,7 @@ Feature: Experiment page Simulation Metrics
     When Create new CoffeeShop project with 4 variables reward function
     When Click project start run button
     Then Check that simulation metrics block is shown
-    Then Check running experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check running experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -30,7 +30,7 @@ Feature: Experiment page Simulation Metrics
     When Wait a bit 4000 ms
     Then Click side bar experiment Experiment #1
     Then Check that simulation metrics block is shown
-    Then Check running experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check running experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -44,7 +44,7 @@ Feature: Experiment page Simulation Metrics
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
     Then Check that simulation metrics block is shown
-    Then Check running experiment page reward variables is kitchen_cleanliness,successful_customers,balked_customers,service_time
+    Then Check running experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -57,6 +57,7 @@ Feature: Experiment page Simulation Metrics
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Input reward variable names <variables>
     When Click wizard reward variables next btn
@@ -85,5 +86,5 @@ Feature: Experiment page Simulation Metrics
     Examples:
       | project name    | model                                       | reward function file                                             | variables                                                               | simulation metrics count |
       | AutotestProject | tuple_models/CallCenterTuples.zip           | Production_Single_Agent/CheeseChasing_6Observations_4Actions.txt | cheese_var                                                              | 1                        |
-      | AutotestProject | tuple_models/CoffeeShopTuple.zip            | Production_Single_Agent/CoffeeShopPathmindDemo.txt               | kitchen_cleanliness,customers_served,balked_customers,avg_response_time | 4                        |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip                   | CoffeeShop/CoffeeShopPathmindDemo.txt                            | kitchen_cleanliness,customers_served,balked_customers,avg_response_time | 4                        |
       | AutotestProject | tuple_models/SimpleSchedulingTuplesTest.zip | Production_Single_Agent/Two_Variables_Reward_Function.txt        | rail_var,train_var                                                      | 2                        |

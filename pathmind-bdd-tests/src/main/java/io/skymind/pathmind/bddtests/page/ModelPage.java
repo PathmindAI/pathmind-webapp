@@ -36,8 +36,8 @@ public class ModelPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-grid-cell-content[normalize-space(text())='" + modelName + "']")).click();
     }
 
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Package Name']/ancestor::p"))), is(packageName));
+    public void checkModelPageModelTitlePackageNameIs(String packageName) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='page-content-header']/descendant::span[@class='section-title-label']")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
@@ -92,7 +92,7 @@ public class ModelPage extends PageObject {
 
     public void clickModelPageExperimentArchiveBtn(String experiment) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[6]/descendant::vaadin-button")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button")));
         e.findElement(By.cssSelector("button")).click();
     }
 
@@ -109,7 +109,6 @@ public class ModelPage extends PageObject {
 
     public void clickProjectPageNewExperimentButton() {
         getDriver().findElement(By.xpath("//vaadin-button[text()='New Experiment']")).click();
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[text()='Write your reward function']")));
     }
 
     public void checkModelPageElements() {
@@ -132,7 +131,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[5]")), is(note));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
     }
 
     public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {

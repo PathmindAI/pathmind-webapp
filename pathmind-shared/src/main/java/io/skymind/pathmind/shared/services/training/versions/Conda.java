@@ -14,7 +14,8 @@ public enum Conda implements VersionEnum {
     VERSION_0_7_6,
     VERSION_0_8_1,
     VERSION_0_8_5,
-    VERSION_0_8_6;
+    VERSION_0_8_6,
+    VERSION_0_8_7;
 
     @Override
     public List<String> fileNames() {

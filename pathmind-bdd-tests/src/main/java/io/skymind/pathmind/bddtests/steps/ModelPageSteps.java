@@ -13,8 +13,8 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        modelPage.checkModelPageModelDetailsPackageNameIs(packageName);
+    public void checkModelPageModelTitlePackageNameIs(String packageName) {
+        modelPage.checkModelPageModelTitlePackageNameIs(packageName);
     }
 
     @Step

@@ -15,9 +15,9 @@ public class ModelStepDefinitions {
         modelPageSteps.clickTheModelName(modelName);
     }
 
-    @Then("^Check model page model details package name is (.*)$")
-    public void checkModelPageModelDetailsPackageNameIs(String packageName) {
-        modelPageSteps.checkModelPageModelDetailsPackageNameIs(packageName);
+    @Then("^Check model page model title package name is (.*)$")
+    public void checkModelPageModelTitlePackageNameIs(String packageName) {
+        modelPageSteps.checkModelPageModelTitlePackageNameIs(packageName);
     }
 
     @Then("^Check model page model details actions is (.*)$")

@@ -91,4 +91,30 @@ public class NewExperimentStepDefinition {
     public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
         newExperimentSteps.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
     }
+
+    @Then("^Check that experiment page title is '(.*)'$")
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        newExperimentSteps.checkThatExperimentPageTitleIs(experiment);
+    }
+
+    @Then("^Check new experiment page model ALP btn (.*)$")
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        newExperimentSteps.checkNewExperimentPageModelALPBtn(filename);
+    }
+
+    @When("^Click new experiment observation btn '(.*)'$")
+    public void clickNewExperimentObservationBtn(String checkbox) {
+        newExperimentSteps.clickObservationsCheckbox(checkbox);
+    }
+
+    @Then("^Check side bar current experiment star btn tooltip is '(.*)'$")
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        newExperimentSteps.checkSideBarStarBtnTooltipIsFavorite(tooltip);
+    }
+
+    @Then("^Check side bar current experiment archive btn tooltip is '(.*)'$")
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        newExperimentSteps.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
+    }
+
 }

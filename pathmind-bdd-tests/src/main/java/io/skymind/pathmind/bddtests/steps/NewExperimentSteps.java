@@ -83,4 +83,24 @@ public class NewExperimentSteps {
     public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
         newExperimentPage.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
     }
+
+    @Step
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        newExperimentPage.checkThatExperimentPageTitleIs(experiment);
+    }
+
+    @Step
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        newExperimentPage.checkNewExperimentPageModelALPBtn(filename);
+    }
+
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        newExperimentPage.checkSideBarStarBtnTooltipIsFavorite(tooltip);
+    }
+
+    @Step
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        newExperimentPage.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
+    }
+
 }

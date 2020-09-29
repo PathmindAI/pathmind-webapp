@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -36,6 +37,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -51,6 +53,8 @@ public class ProjectsView extends PathMindDefaultView
 	private List<Project> projects;
 	private Grid<Project> projectGrid;
 
+    private EmptyDashboardPlaceholder placeholder;
+    private FlexLayout gridWrapper;
 	private ArchivesTabPanel<Project> archivesTabPanel;
 
 	public ProjectsView() {
@@ -67,15 +71,23 @@ public class ProjectsView extends PathMindDefaultView
 		Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
 
 		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
-		headerWrapper.addClassName("page-content-header");
+        headerWrapper.addClassName("page-content-header");
 
-		FlexLayout gridWrapper = new ViewSection(
+        placeholder = new EmptyDashboardPlaceholder();
+
+		gridWrapper = new ViewSection(
 				headerWrapper, 
 				archivesTabPanel,
 				projectGrid);
 		gridWrapper.addClassName("page-content");
 
-		return gridWrapper;
+        VerticalLayout pageWrapper = WrapperUtils.wrapSizeFullVertical(
+            placeholder,
+            gridWrapper
+        );
+        pageWrapper.setPadding(false);
+
+		return pageWrapper;
 	}
 
 	private void setupTabbedPanel() {
@@ -160,21 +172,20 @@ public class ProjectsView extends PathMindDefaultView
 
 	@Override
 	protected void initLoadData() throws InvalidDataException {
-		projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
-		if(projects == null || projects.isEmpty()) {
-			getUI().ifPresent(ui -> ui.navigate(NewProjectView.class));
-			return;
-		}
+        projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
     }
 
 	@Override
-	protected void initScreen(BeforeEnterEvent event)
-	{
+	protected void initScreen(BeforeEnterEvent event) {
 		VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
 			// projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
 			projectGrid.setItems(projects);
 		});
         archivesTabPanel.initData(event.getUI());
+
+        Boolean hasProjects = projects != null && !projects.isEmpty();
+        placeholder.setVisible(!hasProjects);
+        gridWrapper.setVisible(hasProjects);
 
         recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
 	}

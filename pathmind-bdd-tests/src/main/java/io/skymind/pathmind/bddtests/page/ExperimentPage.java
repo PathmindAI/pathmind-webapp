@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -43,17 +44,19 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        String xpath = String.format("//*[@class='experiment-navbar-item current']/vaadin-button");
-        getDriver().findElement(By.xpath(xpath)).click();
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        archiveButton.click();
     }
 
     public void checkExperimentNotesIs(String note) {
         assertThat(experimentNotes.getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
-    public void checkExperimentStatusCompletedWithLimitHours(int limit) {
-        System.out.println("!Waiting for training completed with limit " + limit + " hours!");
-        for (int i = 0; i < limit * 60; i++) {
+    public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {
+        System.out.println("!Waiting for training completed with limit " + limit + " minutes!");
+        for (int i = 0; i < limit; i++) {
             String status = getDriver().findElement(By.xpath("//span[text()='Status']/following-sibling::span[1]")).getText();
             if (getDriver().findElements(By.xpath("//span[text()='Completed']")).size() != 0 || status.equals("Error") || status.equals("Stopped")) {
                 break;
@@ -101,7 +104,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        getDriver().findElement(By.xpath("//p[text()='" + experimentName + "']/ancestor::vaadin-horizontal-layout[contains(@class,'experiment-navbar-item')]/vaadin-button")).click();
+        utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button").click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -158,7 +161,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), hasItem(experiment));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
     }
 
     public void clickCopyRewardFunctionBtn() {
@@ -171,28 +174,29 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='experiment-name']/p[1]")), not(hasItem(experiment)));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
     }
 
-    public void checkThatExperimentStatusIconIs(String experiment, String icon) {
+    public void checkThatExperimentStatusIconIs(String experimentName, String icon) {
         waitABit(10000);
-        assertThat(getDriver().findElement(By.xpath("//p[text()='" + experiment + "']/parent::div/preceding-sibling::div")).getAttribute("class"),is(icon));
+        WebElement statusIconShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "status-icon"));
+        assertThat(statusIconShadow.findElements(By.cssSelector(icon)).size(), is(1));
     }
 
     public void clickExperimentPageStarButton(String experimentName) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "favorite-star"));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
     }
 
     public void checkExperimentPageSideBarIsFavorite(String experimentName, Boolean favoriteStatus) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='experiment-name']/p[text()='"+ experimentName +"']/favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "favorite-star"));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
-        if (favoriteStatus){
+        if (favoriteStatus) {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
-        }else {
+        } else {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
         }
     }
@@ -205,8 +209,10 @@ public class ExperimentPage extends PageObject {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         List<String> items = Arrays.asList(commaSeparatedExperimentNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='experiment-name']/p[1]"))) {
-            actual.add(webElement.getText());
+        for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
+            WebElement experimentNavbarItemShadow = utils.expandRootElement(webElement);
+            String experimentNameText = experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText();
+            actual.add(experimentNameText);
         }
 
         assertThat(actual, containsInAnyOrder(items.toArray()));
@@ -240,5 +246,20 @@ public class ExperimentPage extends PageObject {
 
     public void clickSimulationMetricsOverviewIcon() {
         getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).click();
+    }
+
+    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
+        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
+        Actions actions = new Actions(getDriver());
+        actions.moveToElement(showBtn);
+        actions.perform();
+        getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
+    }
+
+    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
+        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart is a screenshot at the time of opening. It does not update automatically."));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
     }
 }

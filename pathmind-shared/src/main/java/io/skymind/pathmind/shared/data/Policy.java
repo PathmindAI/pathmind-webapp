@@ -1,16 +1,22 @@
 package io.skymind.pathmind.shared.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import io.skymind.pathmind.shared.utils.CloneUtils;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Builder
 @Getter
 @Setter
-public class Policy extends Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Policy extends Data implements DeepCloneableInterface
 {
     private static final long serialVersionUID = -2089053095112497536L;
 	private long runId;
@@ -35,7 +41,9 @@ public class Policy extends Data
 
     // Helper Simulation Metrics GUI attributes not stored in the database
     private List<Double> simulationMetrics = new ArrayList<>();
-    private List<double[]> sparklinesData = new ArrayList<>();
+
+    // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
+    private Map<Integer, Map<Integer, Double>> sparklinesData = new HashMap<>();
     private List<String> uncertainty = new ArrayList<>();
 
     public List<RewardScore> getScores() {
@@ -48,5 +56,27 @@ public class Policy extends Data
 
     public void setHasFile(boolean hasFile) {
         this.hasFile = hasFile;
+    }
+
+    @Override
+    public Policy shallowClone() {
+        return super.shallowClone(Policy.builder()
+                .runId(runId)
+                .externalId(externalId)
+                .startedAt(startedAt)
+                .stoppedAt(stoppedAt)
+                .scores(CloneUtils.shallowCloneList(scores))
+                .hasFile(hasFile)
+                .checkPointFileKey(checkPointFileKey)
+                .project(CloneUtils.shallowClone(project))
+                .model(CloneUtils.shallowClone(model))
+                .experiment(CloneUtils.shallowClone(experiment))
+                .run(CloneUtils.shallowClone(run))
+                .metrics(CloneUtils.shallowCloneList(metrics))
+                .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
+                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
+                .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
+                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
+                .build());
     }
 }

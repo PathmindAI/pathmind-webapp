@@ -145,4 +145,14 @@ public class GenericPageSteps {
     public void checkTitleLabelTagIsArchived(String tag) {
         genericPage.checkTitleLabelTagIsArchived(tag);
     }
+
+    @Step
+    public void compareALPFileWithDownloadedFile(String alpFile) {
+        genericPage.compareALPFileWithDownloadedFile(alpFile);
+    }
+
+    @Step
+    public void clickPopUpDialogCloseBtn() {
+        genericPage.clickPopUpDialogCloseBtn();
+    }
 }

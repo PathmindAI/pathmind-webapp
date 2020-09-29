@@ -64,6 +64,7 @@
     top: 0;
     color: var(--pm-secondary-text-color);
     background-color: white;
+    z-index: 1;
 }
 
 .experiment-view .metrics-wrapper .header span {
@@ -113,9 +114,15 @@
 
 .experiment-view .sparklines-wrapper .sparkline {
     position: relative;
+    width: 100px;
     height: 2rem !important;
     padding: var(--lumo-space-xxs) 0;
     margin-left: var(--lumo-space-s);
+}
+
+.experiment-view .sparklines-wrapper .sparkline data-chart {
+    width: 100%;
+    height: 100%;
 }
 
 .experiment-view .sparklines-wrapper .sparkline vaadin-button {
@@ -147,8 +154,19 @@
     font-size: var(--lumo-font-size-xs);
 }
 
+.experiment-view .bold-label + data-chart {
+    flex: 1 1 auto;
+    border: 1px solid var(--pm-gray-color);
+    border-radius: var(--lumo-border-radius);
+    overflow: hidden;
+}
+
 .metric-chart-panel {
     position: relative;
+}
+
+.metric-chart-panel vaadin-horizontal-layout tag-label {
+    margin-left: var(--lumo-space-s);
 }
 
 .metric-chart-panel p {
@@ -165,6 +183,7 @@
 .experiment-view .bottom-panel,
 .experiment-view .row-2-of-3 vaadin-vertical-layout {
     flex: 1;
+    max-height: calc(100vh - 24rem);
 }
 
 .experiment-view .buttons-wrapper {
@@ -174,7 +193,8 @@
     width: 100%;
 }
 
-.experiment-view .buttons-wrapper vaadin-button:not(:first-child) {
+.experiment-view .buttons-wrapper vaadin-button:not(:first-child),
+.experiment-view .buttons-wrapper .download-alp-link {
     margin-left: var(--lumo-space-s);
 }
 

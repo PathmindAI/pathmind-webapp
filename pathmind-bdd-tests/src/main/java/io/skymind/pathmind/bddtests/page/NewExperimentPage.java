@@ -136,7 +136,8 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickSideBarExperiment(String experimentName) {
-        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='" + experimentName + "']")).click();
+        waitABit(2000);
+        utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();
     }
 
     public void clickObservationsCheckbox(String checkbox) {
@@ -146,4 +147,31 @@ public class NewExperimentPage extends PageObject {
     public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
         assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='"+rewardVariable+"']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign+goal));
     }
+
+    public void checkThatExperimentPageTitleIs(String experiment) {
+        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is(experiment));
+    }
+
+    public void checkNewExperimentPageModelALPBtn(String filename) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a")).getAttribute("href"), containsString(filename));
+    }
+
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        waitABit(3500);
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement favoriteStarShadow = utils.expandRootElement(experimentNavBarItemShadow.findElement(By.cssSelector("favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        assertThat(favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).getAttribute("title"), is(tooltip));
+    }
+
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        waitABit(3500);
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        assertThat(archiveButton.getAttribute("title"), is(tooltip));
+    }
+
 }

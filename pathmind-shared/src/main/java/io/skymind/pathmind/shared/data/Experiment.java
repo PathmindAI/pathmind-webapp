@@ -1,7 +1,8 @@
 package io.skymind.pathmind.shared.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import io.skymind.pathmind.shared.utils.CloneUtils;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,9 +10,12 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
+@Builder
 @Getter
 @Setter
-public class Experiment extends ArchivableData
+@NoArgsConstructor
+@AllArgsConstructor
+public class Experiment extends ArchivableData implements DeepCloneableInterface
 {
     private static final long serialVersionUID = -5041305878245823921L;
 	private long modelId;
@@ -31,7 +35,7 @@ public class Experiment extends ArchivableData
 
 	// IMPORTANT -> This is resolves #893. I looked at ThreadLocal as well as adjusting how the code uses the policies but deemed this to offer the best tradeoffs.
 	public void setPolicies(List<Policy> policies) {
-		this.policies = new CopyOnWriteArrayList<>(policies);
+		this.policies = policies == null ? null : new CopyOnWriteArrayList<>(policies);
 	}
 
     public boolean isDraft() {
@@ -58,5 +62,27 @@ public class Experiment extends ArchivableData
                     .findFirst()
                     .ifPresent(index -> runs.set(index, run));
         }
+    }
+
+    @Override
+    public Experiment shallowClone() {
+        return super.shallowClone(Experiment.builder()
+                .modelId(modelId)
+                .rewardFunction(rewardFunction)
+                .dateCreated(dateCreated)
+                .lastActivityDate(lastActivityDate)
+                .userNotes(userNotes)
+                .isFavorite(isFavorite)
+                .build());
+    }
+
+    @Override
+    public Experiment deepClone() {
+	    Experiment experiment = shallowClone();
+        experiment.setProject(CloneUtils.shallowClone(project));
+        experiment.setModel(CloneUtils.shallowClone(model));
+        experiment.setPolicies(CloneUtils.shallowCloneList(policies));
+        experiment.setRuns(CloneUtils.shallowCloneList(runs));
+        return experiment;
     }
 }

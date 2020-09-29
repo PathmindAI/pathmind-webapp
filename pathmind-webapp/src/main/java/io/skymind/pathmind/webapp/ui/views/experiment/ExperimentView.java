@@ -1,30 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.Html;
-import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -34,20 +14,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
+import io.skymind.pathmind.db.dao.*;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.TrainingError;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -59,6 +30,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
@@ -85,10 +57,23 @@ import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.Simulati
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
@@ -102,6 +87,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
+    private Anchor downloadModelAlpLink;
 
     private long experimentId = -1;
     private long modelId = -1;
@@ -132,6 +118,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private StoppedTrainingNotification stoppedTrainingNotification;
     private SimulationMetricsPanel simulationMetricsPanel;
 
+    @Autowired
+    private ModelService modelService;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -210,8 +198,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
+        // It is the same for all experiments from the same model so it doesn't have to be updated as long
+        // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
+        // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
+        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
+
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, trainingStatusDetailsPanel, getButtonsWrapper()),
+                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
                 stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,
@@ -319,7 +312,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.setConfirmButton(
                 "Stop Training",
                 (e) -> {
-                    trainingService.stopRun(experiment, EventBus::fireEventBusUpdates);
+                    trainingService.stopRun(experiment);
+                    stopTrainingButton.setVisible(false);
+                    trainingStartingPlaceholder.setVisible(false);
+                    policyChartPanel.setVisible(true);
+                    fireEvents();
                     confirmDialog.close();
                 },
                 StringUtils.join(
@@ -329,6 +326,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmDialog.setCancelText("Cancel");
         confirmDialog.setCancelable(true);
         confirmDialog.open();
+    }
+
+    private void fireEvents() {
+        // An event for each policy since we only need to update some of the policies in a run.
+        if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
+            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        experiment.getRuns().stream().forEach(
+                run -> EventBus.post(new RunUpdateBusEvent(run)));
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
     private void unarchiveExperiment() {
@@ -368,15 +376,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentViewRunUpdateSubscriber.setExperiment(experiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
-            updateScreenComponents();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            simulationMetricsPanel.setExperiment(experiment);
+			experimentsNavbar.setCurrentExperiment(selectedExperiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+                updateScreenComponents();
+                simulationMetricsPanel.setExperiment(experiment);
             }
         }
     }
@@ -544,10 +553,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 addOrUpdatePolicies(event.getPolicies());
 
                 // Calculate the best policy again
-                policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+                List<Policy> policies = experiment.getPolicies();
+                policy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
                     if (policy != null) {
-                        policyChartPanel.highlightPolicy(policy);
+                        policyChartPanel.updateChart(policies, policy);
                     }
                     updateDetailsForExperiment();
                 });
