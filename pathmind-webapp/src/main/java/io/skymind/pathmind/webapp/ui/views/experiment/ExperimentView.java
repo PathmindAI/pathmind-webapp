@@ -378,6 +378,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             loadExperimentData();
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+			experimentsNavbar.setCurrentExperiment(selectedExperiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));

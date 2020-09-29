@@ -219,7 +219,11 @@ public class ExperimentUtils
             return false;
         return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
-	}
+    }
+    
+    public static boolean trainingEnded(Experiment experiment) {
+        return getTrainingStatus(experiment).getValue() >= RunStatus.Completed.getValue();
+    }
 
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
