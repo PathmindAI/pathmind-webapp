@@ -28,16 +28,16 @@ html {
     --pm-yellow-color: #fff51f;
 
     /* pathmind reward variable colors */
-    --variable-color-0: #67ea93;
+    --variable-color-0: #17a747;
     --variable-color-1: #214e96;
-    --variable-color-2: #9bf7ec;
+    --variable-color-2: #318c81;
     --variable-color-3: #7550e5;
-    --variable-color-4: #b0f78c;
-    --variable-color-5: #ef99a4;
-    --variable-color-6: #9bc0f7;
+    --variable-color-4: #62a540;
+    --variable-color-5: #e0667d;
+    --variable-color-6: #5f8fd6;
     --variable-color-7: #931901;
-    --variable-color-8: #f413bc;
-    --variable-color-9: #d1b112;
+    --variable-color-8: #bd52a3;
+    --variable-color-9: #887100;
 
     /* pathmind typography */
     --pm-line-height-xl: 2em;
@@ -425,16 +425,6 @@ background-color: var(--pm-gray-color-light);
     line-height: 1;
     color: var(--lumo-secondary-text-color);
     overflow-y: auto;
-}
-
-.model-view .model-reward-variables span:first-child {
-    display: inline-block;
-    width: 30px;
-    color: var(--lumo-secondary-text-color);
-}
-.model-view .model-reward-variables .reward-variables-table[readonly] vaadin-horizontal-layout {
-    height: auto;
-    line-height: 1.1;
 }
 
 .project-view .notes-field-wrapper,

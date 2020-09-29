@@ -48,12 +48,13 @@
 
 .experiment-view .reward-variables-table.compact .header-row {
     display: block;
-}
-
-.experiment-view .reward-variables-table .header-row span:last-child {
     justify-content: flex-start;
     line-height: 2rem;
     padding: 0;
+}
+
+.experiment-view .reward-variables-table .header-row span:last-child {
+    display: none;
 }
 
 .experiment-view .simulation-metrics-table-wrapper .header {
@@ -84,11 +85,7 @@
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
 }
-
-.experiment-view .reward-variables-table span:first-child {
-    display: none;
-}
-.experiment-view .reward-variables-table span:last-child {
+.experiment-view .reward-variables-table .goal-display-span {
     display: none;
 }
 .experiment-view .reward-variable-name-field {

@@ -11,7 +11,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
@@ -62,7 +61,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
         container.removeAll();
         rewardVariableNameFields.clear();
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("#"), new Span("Variable Name"), new Span("Goal"));
+        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Variable Name"), new Span("Goal"));
 
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
@@ -98,12 +97,7 @@ public class RewardVariablesTable extends VerticalLayout {
         private RowField(RewardVariable rv, Command goalFieldValueChangeHandler) {
             this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
             setAlignItems(Alignment.BASELINE);
-            Span rewardVariableIndexSpan = LabelFactory.createLabel(Integer.toString(rv.getArrayIndex()), "reward-variable-index");
-            Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), ("variable-color-"+ (rv.getArrayIndex() % 10)), "reward-variable-name");
-            TextField rewardVariableNameField = new TextField();
-            rewardVariableNameField.setValue(rv.getName());
-            rewardVariableNameField.addClassName("reward-variable-name-field");
-            rewardVariableNameField.setReadOnly(true);
+            Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
             
             conditionType = new Select<>();
             conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
@@ -129,7 +123,7 @@ public class RewardVariablesTable extends VerticalLayout {
             goalFieldsWrapper.setVisible(false);
             GuiUtils.removeMarginsPaddingAndSpacing(goalFieldsWrapper);
             
-            add(rewardVariableIndexSpan, rewardVariableNameSpan, rewardVariableNameField, goalFieldsWrapper, goalSpan);
+            add(rewardVariableNameSpan, goalFieldsWrapper, goalSpan);
             setWidthFull();
             GuiUtils.removeMarginsPaddingAndSpacing(this);
             initBinder(rv);
