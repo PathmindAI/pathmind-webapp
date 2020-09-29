@@ -26,7 +26,10 @@ public class PolicyChartPanel extends VerticalLayout
 
     private Experiment experiment;
 
-    public PolicyChartPanel() {
+    private Supplier<Optional<UI>> getUISupplier;
+
+    public PolicyChartPanel(Supplier<Optional<UI>> getUISupplier) {
+        this.getUISupplier = getUISupplier;
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
         setPadding(false);
         setSpacing(false);
@@ -52,7 +55,7 @@ public class PolicyChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(() -> getUI()));
+        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(getUISupplier));
     }
 
     class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {

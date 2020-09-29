@@ -282,7 +282,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
-        policyChartPanel = new PolicyChartPanel();
+        policyChartPanel = new PolicyChartPanel(() -> getUI());
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
