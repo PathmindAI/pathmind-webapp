@@ -64,13 +64,13 @@ Feature: Nav bar search
   Scenario: Check search field empty case
     Given Login to the pathmind
     When Click notes search btn
-    Then Check that dashboard page opened
+    Then Check that projects page opened
 
   Scenario: Check search field space case
     Given Login to the pathmind
     When Input ' ' to the notes search field
     When Click notes search btn
-    Then Check that dashboard page opened
+    Then Check that projects page opened
 
   Scenario: Check Search Results for value
     Given Login to the pathmind

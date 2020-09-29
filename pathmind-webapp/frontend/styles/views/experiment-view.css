@@ -64,6 +64,7 @@
     top: 0;
     color: var(--pm-secondary-text-color);
     background-color: white;
+    z-index: 1;
 }
 
 .experiment-view .metrics-wrapper .header span {
