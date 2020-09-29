@@ -33,7 +33,7 @@ Feature: Experiment page alerts in multiple views
     When Open tab 0
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'Ok' button
-    Then Check that models page opened
+    Then Check that project AutotestProject page is opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
     When Open tab 1
@@ -42,7 +42,9 @@ Feature: Experiment page alerts in multiple views
     When Click in 'Unarchive' button
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
+    When Check that unexpected error alert is shown false
     When Open tab 0
+    When Check that unexpected error alert is shown false
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'Ok' button
     Then Check that 'Experiment #1' exist on the experiment page

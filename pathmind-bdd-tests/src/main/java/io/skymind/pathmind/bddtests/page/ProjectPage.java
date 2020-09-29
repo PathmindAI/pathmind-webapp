@@ -23,7 +23,7 @@ public class ProjectPage extends PageObject {
     private WebElement projectPageModelsTable;
 
     public void checkThatProjectPageOpened(String projectName) {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='breadcrumb']")).getText(), containsString(projectName));
+        assertThat(getDriver().findElement(By.xpath("//a[@class='breadcrumb'][2]")).getText(), containsString(projectName));
     }
 
     public void checkNumberOfModelsWithDraftTag(int numberOfProjects) {

@@ -232,4 +232,14 @@ public class GenericPage extends PageObject {
     public void clickPopUpDialogCloseBtn() {
         getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::vaadin-button[last()]")).click();
     }
+
+    public void checkThatUnexpectedErrorAlertIsShown(Boolean status) {
+        setImplicitTimeout(5, SECONDS);
+        if (status) {
+            assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(1));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
+        }
+        resetImplicitTimeout();
+    }
 }

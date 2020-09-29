@@ -164,4 +164,9 @@ public class GenericPageStepDefinitions {
     public void clickPopUpDialogCloseBtn() {
         genericPageSteps.clickPopUpDialogCloseBtn();
     }
+
+    @When("^Check that unexpected error alert is shown (.*)$")
+    public void checkThatUnexpectedErrorAlertIsShown(Boolean status) {
+        genericPageSteps.checkThatUnexpectedErrorAlertIsShown(status);
+    }
 }
