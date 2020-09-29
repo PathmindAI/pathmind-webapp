@@ -313,15 +313,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installNativeRL(NativeRL nativerlVersion, List<String> instructions, List<String> files) {
         switch (nativerlVersion) {
-            case VERSION_0_7_0:
-            case VERSION_0_7_6:
-            case VERSION_0_7_6_PBT:
-            case VERSION_0_7_6_RESUME:
-            case VERSION_1_0_1:
-            case VERSION_1_0_3:
-            case VERSION_1_0_4:
-            case VERSION_1_0_5:
-            case VERSION_1_0_6:
             case VERSION_1_0_7:
             case VERSION_1_1_0:
             case VERSION_1_1_1:
@@ -350,6 +341,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_5_1:
             case VERSION_8_5_2:
             case VERSION_8_6_0:
+            case VERSION_8_6_1:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -392,6 +384,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_1:
             case VERSION_0_8_5:
             case VERSION_0_8_6:
+            case VERSION_0_8_7:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
@@ -412,12 +405,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installHelper(PathmindHelper pathmindHelperVersion, List<String> instructions, List<String> files) {
         switch (pathmindHelperVersion) {
-            case VERSION_0_0_24:
-            case VERSION_0_0_25:
-            case VERSION_0_0_25_Multi:
-            case VERSION_1_0_1:
             case VERSION_1_0_2:
             case VERSION_1_2_0:
+            case VERSION_1_3_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));

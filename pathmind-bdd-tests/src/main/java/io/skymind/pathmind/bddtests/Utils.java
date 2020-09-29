@@ -59,6 +59,25 @@ public class Utils extends PageObject {
         return strings;
     }
 
+    public List<String> getStringListFromShadowRootRepeatIfStaleException(By rootElement, By by) {
+        List<String> strings = new ArrayList<>();
+        int attempts = 0;
+        while (attempts < 3) {
+            try {
+                for (WebElement webElement : getDriver().findElements(rootElement)) {
+                    WebElement experimentNavbarItemShadow = expandRootElement(webElement);
+                    WebElement e = experimentNavbarItemShadow.findElement(by);
+                    strings.add(e.getText().replaceAll("\n", " "));
+                }
+                break;
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                waitABit(2000);
+            }
+            attempts++;
+        }
+        return strings;
+    }
+
     public String getStringRepeatIfStaleException(By by) {
         String string = null;
         int attempts = 0;
@@ -131,5 +150,18 @@ public class Utils extends PageObject {
             String myChar = String.valueOf(text.charAt(i));
             locator.sendKeys(myChar);
         }
+    }
+
+    public WebElement getExperimentNavbarItemByExperimentName(String experimentName, String cssSelector) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
+            WebElement experimentNavbarItemShadow = expandRootElement(webElement);
+            if (experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText().split("\n")[0].equals(experimentName)) {
+                if (cssSelector == null) {
+                    return webElement;
+                }
+                return experimentNavbarItemShadow.findElement(By.cssSelector(cssSelector));
+            }
+        }
+        return null;
     }
 }

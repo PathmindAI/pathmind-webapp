@@ -8,7 +8,10 @@ class SettingsViewContent extends PolymerElement {
                 <vaadin-vertical-layout style="width: 100%;" class="inner-content">
                         <vaadin-vertical-layout style="width: 100%; height: 100%;">
                             <vaadin-combo-box id="ec2InstanceTypeCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="condaVersionCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="anylogicVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="nativerlVersionCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="helperVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-vertical-layout id="buttonsCont">
                             	<vaadin-button id="saveBtn" theme="primary">
                                     Save
