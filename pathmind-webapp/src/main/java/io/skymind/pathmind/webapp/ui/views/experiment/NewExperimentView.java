@@ -476,7 +476,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             for(RewardVariable rv: rewardVariables) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
-                    sb.append(MessageFormat.format("reward {0}= after.{1} {0} before.{1};", goal.getMathOperation(), rv.getName()));
+                    sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
                     sb.append("\n");
                 }
             }
