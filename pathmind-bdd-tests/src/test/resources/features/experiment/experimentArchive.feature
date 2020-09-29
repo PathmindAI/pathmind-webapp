@@ -97,3 +97,8 @@ Feature: Experiment archive
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
+
+  Scenario: Check archive btn tooltip
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    Then Check side bar current experiment archive btn tooltip is 'Archive'

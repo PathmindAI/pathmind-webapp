@@ -15,7 +15,7 @@
 
 .page-title .breadcrumb:last-child {
     max-width: none;
-    cursor: pointer;
+    cursor: default;
 }
 
 .breadcrumb:hover,

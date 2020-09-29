@@ -36,7 +36,6 @@ public class ExperimentsNavBar extends VerticalLayout
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
 	private Consumer<Experiment> selectExperimentConsumer;
-    private ExperimentsNavBarItem currentExperimentNavItem;
     private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;
@@ -129,7 +128,6 @@ public class ExperimentsNavBar extends VerticalLayout
                 experimentsNavBarItems.add(navBarItem);
 				if(experiment.equals(selectedExperiment)) {
 					navBarItem.setAsCurrent();
-					currentExperimentNavItem = navBarItem;
 				}
 				rowsWrapper.add(navBarItem);
 		});
@@ -140,13 +138,10 @@ public class ExperimentsNavBar extends VerticalLayout
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
-	    if (currentExperimentNavItem != null) {
-	        currentExperimentNavItem.removeAsCurrent();
-	    }
 		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+            experimentsNavBarItem.removeAsCurrent();
 			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
 				experimentsNavBarItem.setAsCurrent();
-				currentExperimentNavItem = experimentsNavBarItem;
 			}
 		});
         notificationExperimentUpdatedSubscriber.setExperiment(newCurrentExperiment);

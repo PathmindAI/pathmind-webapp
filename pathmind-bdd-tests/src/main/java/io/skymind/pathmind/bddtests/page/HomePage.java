@@ -44,7 +44,7 @@ public class HomePage extends PageObject {
     private WebElement searchBoxShadow;
 
     public void checkNavAccLinkVisible(String name) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@id='nav-main-links']//a[2]")).getText(), is("Dashboard"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@id='nav-main-links']//a[2]")).getText(), is("Projects"));
     }
 
     public void openProjectsPage() {
@@ -164,7 +164,9 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultsForValueIs(String value) {
+        waitABit(3000);
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-title-label truncated-label']")).getText().split(": ",2);
+        System.out.println(Arrays.toString(text));
         assertThat(text[1], is(value));
     }
 
