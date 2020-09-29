@@ -11,7 +11,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
-    When In confirmation dialog click in 'Ok' button
+    When In confirmation dialog click in 'OK' button
     Then Check that 'Experiment #1' exist on the experiment page
     Then Check that 'Experiment #1' status icon is 'icon-loading-spinner'
     When Click in 'Stop Training' button
@@ -32,7 +32,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
-    When In confirmation dialog click in 'Ok' button
+    When In confirmation dialog click in 'OK' button
     Then Check that models page opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
@@ -44,7 +44,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
-    When In confirmation dialog click in 'Ok' button
+    When In confirmation dialog click in 'OK' button
     Then Check that 'Experiment #1' exist on the experiment page
 
   @otherView
@@ -60,7 +60,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
-    When In confirmation dialog click in 'Ok' button
+    When In confirmation dialog click in 'OK' button
     Then Check that models page opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
@@ -72,7 +72,7 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
-    When In confirmation dialog click in 'Ok' button
+    When In confirmation dialog click in 'OK' button
     Then Check that 'Experiment #1' exist on the experiment page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
