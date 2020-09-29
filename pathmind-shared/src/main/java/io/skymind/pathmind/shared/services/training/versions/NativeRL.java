@@ -21,9 +21,9 @@ public enum NativeRL implements VersionEnum{
     @Override
     public List<String> fileNames() {
         if (OLD_VERSION.contains(this)) {
-            return Arrays.asList(String.format(baseFileName, "1_0_0"));
+            return Arrays.asList(String.format(baseFileName, "1.0.0"));
         } else {
-            String version = this.toString().replace("VERSION_", "");
+            String version = this.toString().replace("VERSION_", "").replace("_", ".");
             return Arrays.asList(String.format(baseFileName, version));
         }
     }
