@@ -93,4 +93,14 @@ public class NewExperimentSteps {
     public void checkNewExperimentPageModelALPBtn(String filename) {
         newExperimentPage.checkNewExperimentPageModelALPBtn(filename);
     }
+
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        newExperimentPage.checkSideBarStarBtnTooltipIsFavorite(tooltip);
+    }
+
+    @Step
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        newExperimentPage.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
+    }
+
 }
