@@ -188,9 +188,9 @@ public class GenericPage extends PageObject {
     public void checkThatConfirmationDialogNotShown(Boolean status) {
         setImplicitTimeout(4, SECONDS);
         if (status) {
-            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(1));
+            assertThat(getDriver().findElements(By.xpath("//confirm-popup")).size(), is(1));
         } else {
-            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(0));
+            assertThat(getDriver().findElements(By.xpath("//confirm-popup")).size(), is(0));
         }
         resetImplicitTimeout();
     }
