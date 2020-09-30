@@ -50,6 +50,10 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
     public void setChartEmpty() {
         getElement().callJsFunction("setChartEmpty");
     }
+
+    public void redraw() {
+        getElement().callJsFunction("redraw");
+    }
     
 	public interface Model extends TemplateModel {
 		void setType(String type);

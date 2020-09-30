@@ -328,9 +328,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             if (chartTabs.getSelectedIndex() == 0) {
                 allMetricsChartPanel.setVisible(true);
                 policyChartPanel.setVisible(false);
+                allMetricsChartPanel.redrawChart();
             } else {
                 allMetricsChartPanel.setVisible(false);
                 policyChartPanel.setVisible(true);
+                policyChartPanel.redrawChart();
             }
         });
         return chartTabs;
@@ -477,6 +479,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, policy);
+        allMetricsChartPanel.setExperiment(experiment, policy);
         updateDetailsForExperiment();
     }
 

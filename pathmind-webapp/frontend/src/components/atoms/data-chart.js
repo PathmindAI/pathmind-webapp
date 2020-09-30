@@ -137,16 +137,20 @@ class DataChart extends PolymerElement {
             }
         };
     }
+
+    redraw() {
+        this.$.chart.redraw();
+    }
     
     setData(cols, rows) {
         this.cols = cols;
         this.rows = rows;
-        this.$.chart.redraw();
+        this.redraw();
     }
     
     setChartEmpty() {
         this.rows = [];
-        this.$.chart.redraw();
+        this.redraw();
     }
 
     setSeries(series) {

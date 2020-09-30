@@ -129,8 +129,9 @@ public class AllMetricsChart extends DataChart {
         setData(cols, rows);
     }
 
-    public void setPolicyChart(List<Policy> updatedPolicies, Policy bestPolicy) {
+    public void setAllMetricsChart(List<Policy> updatedPolicies, Policy bestPolicy) {
         if (updatedPolicies == null) {
+            setChartEmpty();
             return;
         }
         Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(updatedPolicies, bestPolicy);
@@ -138,7 +139,7 @@ public class AllMetricsChart extends DataChart {
         String type = "line";
         Boolean showTooltip = true;
         String hAxisTitle = "Iteration";
-        String vAxisTitle = "Mean Reward Score over All Episodes";
+        String vAxisTitle = "Mean Metric Value per Iteration";
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;

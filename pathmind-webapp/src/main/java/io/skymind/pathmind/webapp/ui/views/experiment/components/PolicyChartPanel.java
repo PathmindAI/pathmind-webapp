@@ -44,6 +44,10 @@ public class PolicyChartPanel extends VerticalLayout
         }
     }
 
+    public void redrawChart() {
+        chart.redraw();
+    }
+
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);

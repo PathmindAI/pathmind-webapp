@@ -39,7 +39,11 @@ public class AllMetricsChartPanel extends VerticalLayout
     }
 
     public void updateChart(List<Policy> policies, Policy bestPolicy) {
-        chart.setPolicyChart(policies, bestPolicy);
+        chart.setAllMetricsChart(policies, bestPolicy);
+    }
+
+    public void redrawChart() {
+        chart.redraw();
     }
 
     @Override
