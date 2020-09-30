@@ -100,19 +100,6 @@ class ConfirmPopup extends PolymerElement {
         `;
     }
 
-    onConfirm() {
-        close();
-    }
-
-    onCancel() {
-        close();
-    }
-
-    close() {
-        this.opened = false;
-        this.parentNode.removeChild(this);
-    }
-
     _isEmptyStringOrUnset(prop) {
         return prop == null || prop === "";
     }
