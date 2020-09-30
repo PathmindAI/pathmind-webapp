@@ -46,6 +46,10 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
         // So we have to set it through calling the JS function
         getElement().callJsFunction("setData", cols, rows);
     }
+
+    public void setChartEmpty() {
+        getElement().callJsFunction("setChartEmpty");
+    }
     
 	public interface Model extends TemplateModel {
 		void setType(String type);

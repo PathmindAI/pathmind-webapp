@@ -134,6 +134,11 @@ class DataChart extends PolymerElement {
         this.rows = rows;
         this.$.chart.redraw();
     }
+    
+    setChartEmpty() {
+        this.rows = [];
+        this.$.chart.redraw();
+    }
 
     setSeries(series) {
         this.series = series;
