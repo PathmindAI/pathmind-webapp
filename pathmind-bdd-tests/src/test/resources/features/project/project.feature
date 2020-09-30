@@ -30,26 +30,26 @@ Feature: Project page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click model '1' archive/unarchive button
+    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
     When In confirmation dialog click in 'Archive' button
-    When Open projects/model/experiment archived tab
-    Then Check that model/experiment name '1' exist in archived/not archived tab
-    When Open projects/model/experiment archived tab
-    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
+    When Change models sidebar list to 'Archived'
+    Then Check project page model '1' package name is coffeeshop
+    When Change models sidebar list to 'Active'
+    When Check project page model '1' not exist in the sidebar list
 
   Scenario: Check model page Unarchive btn, move model to active tab
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click model '1' archive/unarchive button
+    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
     When In confirmation dialog click in 'Archive' button
-    When Open projects/model/experiment archived tab
-    When Click model '1' archive/unarchive button
+    When Change models sidebar list to 'Archived'
+    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
     When In confirmation dialog click in 'Unarchive' button
-    When Check that model/experiment name 'AutotestProject' NOT exist in archived/not archived tab
-    When Open models tab
-    Then Check that model/experiment name '1' exist in archived/not archived tab
+    When Check project page model '1' not exist in the sidebar list
+    When Change models sidebar list to 'Active'
+    Then Check project page model '1' package name is coffeeshop
 
   Scenario: Edit project name from project page
     Given Login to the pathmind

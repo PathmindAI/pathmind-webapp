@@ -5,6 +5,7 @@ import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
@@ -70,13 +71,46 @@ public class ProjectPage extends PageObject {
             String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
             String modelName = webElement.getText().split("\\(")[1].split("\\)")[0];
             if (modelNumber.equals(modelId)) {
+                waitFor(ExpectedConditions.visibilityOf(webElement));
                 assertThat(modelName, is(packageName));
             }
         }
     }
 
+    public void checkProjectPageModelNotExistInList(String modelId) {
+        setImplicitTimeout(5000, SECONDS);
+        waitABit(5000);
+        List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
+        for (WebElement webElement : e) {
+            String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
+            if (modelNumber.equals(modelId)) {
+                waitFor(ExpectedConditions.invisibilityOf(webElement));
+            }
+        }
+        resetImplicitTimeout();
+    }
+
     public void checkThatProjectPageIsOpened() {
         assertThat(getDriver().getTitle(), is("Pathmind | Project"));
         assertThat(getDriver().getCurrentUrl(), containsString("/project/"));
+    }
+
+    public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
+        System.out.println("MODEL " + getDriver().findElement(By.xpath("//models-navbar-item")));
+
+        List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
+        for (WebElement webElement : e) {
+            String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
+            String modelName = webElement.getText().split("\\(")[1].split("\\)")[0];
+            if (modelNumber.equals(modelId) | modelName.equals(packageName)) {
+                WebElement shadow = utils.expandRootElement(webElement);
+                shadow.findElement(By.cssSelector("vaadin-button:not([hidden])")).click();
+            }
+        }
+    }
+
+    public void changeModelsSidebarListTo(String modelsList) {
+        getDriver().findElement(By.xpath("//vaadin-select[@theme='models-nav-bar-select small']")).click();
+        getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[text()='" + modelsList + "']")).click();
     }
 }

@@ -31,7 +31,7 @@ public class GenericPage extends PageObject {
     private List<WebElement> experimentModelsNames;
     @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
     private WebElement notesField;
-    @FindBy(xpath = "(//vaadin-text-field)[2]")
+    @FindBy(xpath = "//span[@class='section-title-label' and text()='Rename project']/following-sibling::vaadin-text-field")
     private WebElement editProjectNameInputShadow;
 
     public void checkThatButtonExists(String buttonText) {

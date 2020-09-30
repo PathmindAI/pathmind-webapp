@@ -52,4 +52,19 @@ public class ProjectPageSteps {
     public void checkThatProjectPageIsOpened() {
         projectPage.checkThatProjectPageIsOpened();
     }
+
+    @Step
+    public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
+        projectPage.archiveModelWithPackageNameFromLeftSidebar(modelId, packageName);
+    }
+
+    @Step
+    public void changeModelsSidebarListTo(String modelsList) {
+        projectPage.changeModelsSidebarListTo(modelsList);
+    }
+
+    @Step
+    public void checkProjectPageModelNotExistInList(String model) {
+        projectPage.checkProjectPageModelNotExistInList(model);
+    }
 }
