@@ -156,11 +156,11 @@ public class HomePage extends PageObject {
     }
 
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
-        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper grid-notes-column']//span[@class='highlight-label' and contains(text(),'"+text+"')]")).click();
+        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper grid-notes-column']//span[@class='highlight-label' and contains(text(),'" + text + "')]/ancestor::*[@class='search-result-item']/descendant::a[contains(@href, 'newExperiment')]")).click();
     }
 
     public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '"+name+"')]/parent::div/parent::vaadin-vertical-layout[@class='name-row']/preceding-sibling::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
     }
 
     public void checkSearchResultsForValueIs(String value) {
