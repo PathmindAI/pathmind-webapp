@@ -1,12 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.search.components;
 
-import java.util.Optional;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.HasText;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -93,12 +90,16 @@ public class SearchResultItem extends VerticalLayout {
         String experimentNameText = "Experiment #"+searchResult.getExperimentName();
         RouterLink projectNameLink = new RouterLink();
         nameRow.add(highlightSearchResult(projectNameLink, searchResult.getProjectName(), null, resultTypeProject));
-        setRouterTarget(projectNameLink);
+        if (resultTypeProject) {
+            setRouterTarget(projectNameLink);
+        }
         if (resultTypeModel || resultTypeExperiment) {
             RouterLink modelNameLink = new RouterLink();
             nameRow.add(highlightSearchResult(modelNameLink, modelNameText, "(?i)Model\\s#?"+modelName,
                     resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
-            setRouterTarget(modelNameLink);
+            if (resultTypeModel) {
+                setRouterTarget(modelNameLink);
+            }
         }
         if (resultTypeExperiment) {
             RouterLink experimentNameLink = new RouterLink();
@@ -111,14 +112,14 @@ public class SearchResultItem extends VerticalLayout {
     }
 
     private void setRouterTarget(RouterLink link) {
-        switch (searchResult.getItemType()) {
-            case PROJECT :
+        switch (searchResult.getItemType().getName()) {
+            case "Project" :
                 link.setRoute(ProjectView.class, searchResult.getItemId());
                 break;
-            case MODEL :
+            case "Model" :
                 link.setRoute(ModelView.class, searchResult.getItemId());
                 break;
-            case EXPERIMENT :
+            case "Experiment" :
                 Experiment experiment = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get();
                 if (ExperimentUtils.isDraftRunType(experiment)) {
                     link.setRoute(NewExperimentView.class, searchResult.getItemId());
