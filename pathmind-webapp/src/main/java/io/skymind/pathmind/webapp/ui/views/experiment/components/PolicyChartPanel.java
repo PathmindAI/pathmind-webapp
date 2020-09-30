@@ -35,14 +35,16 @@ public class PolicyChartPanel extends VerticalLayout
     public void setExperiment(Experiment experiment, Policy bestPolicy) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            if (experiment.getPolicies().size() > 0) {
-                updateChart(experiment.getPolicies(), bestPolicy);
-            }
+            updateChart(experiment.getPolicies(), bestPolicy);
         }
     }
 
     public void updateChart(List<Policy> policies, Policy bestPolicy) {
-        chart.setPolicyChart(policies, bestPolicy);
+        if (experiment.getPolicies().size() > 0) {
+            chart.setPolicyChart(policies, bestPolicy);
+        } else {
+            chart.setChartEmpty();
+        }
     }
 
     @Override
