@@ -76,7 +76,7 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
         getModel().setOpened(true);
     }
 
-    public void close() {
+    public void closePopup() {
         getElement().removeFromParent();
         getModel().setOpened(false);
     }
@@ -84,13 +84,13 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
     @EventHandler
     private void onConfirm() {
         this.confirmHandler.execute();
-        close();
+        closePopup();
     }
 
     @EventHandler
     private void onCancel() {
         this.cancelHandler.execute();
-        close();
+        closePopup();
     }
 
     public void setConfirmButtonText(String confirmText) {
