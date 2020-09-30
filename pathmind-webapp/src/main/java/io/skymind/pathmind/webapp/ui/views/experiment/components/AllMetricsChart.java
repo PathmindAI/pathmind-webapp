@@ -24,9 +24,8 @@ public class AllMetricsChart extends DataChart {
         super();
     }
 
-    private JsonObject createSeries(int numberOfSeries, Integer bestPolicySeriesNumber) {
+    private JsonObject createSeries(int numberOfSeries) {
         JsonObject series = Json.createObject();
-        String highlightColor = "#1a2949";
         List<String> colors = Arrays.asList(
             "#7cb5ec",
             "#737378",
@@ -41,9 +40,6 @@ public class AllMetricsChart extends DataChart {
         );
         for (int i = 0; i < numberOfSeries; i++) {
             String seriesColor = colors.get(i%10);
-            if (bestPolicySeriesNumber != null && i == bestPolicySeriesNumber) {
-                seriesColor = highlightColor;
-            }
             series.put(""+i, Json.parse("{'color': '"+seriesColor+"'}"));
         }
         return series;
@@ -75,10 +71,9 @@ public class AllMetricsChart extends DataChart {
             int index = rowItem.length();
             if (rewardScore != null) {
                 Double meanRewardScoreValue = rewardScore.getMean();
-                int episodeCount = rewardScore.getEpisodeCount();
                 rowItem.set(index, meanRewardScoreValue);
                 String meanRewardScoreValueFormatted = Math.abs(meanRewardScoreValue) > 1 ? String.format("%.2f", meanRewardScoreValue) : String.format("%.4f", meanRewardScoreValue);
-                rowItem.set(index+1, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Reward</b> "+meanRewardScoreValueFormatted+"<br><b>Episode Count</b> "+episodeCount+"</div>");
+                rowItem.set(index+1, "<div><b>"+"metric name"+"</b><br><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanRewardScoreValueFormatted+"</div>");
             } else {
                 rowItem.set(index, Json.createNull());
                 rowItem.set(index+1, Json.createNull());
@@ -143,7 +138,7 @@ public class AllMetricsChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries(updatedPolicies.size(), bestPolicySeriesNumber);
+        JsonObject series = createSeries(updatedPolicies.size());
         JsonObject viewWindow = null;
 
         setupChart(
