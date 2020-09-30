@@ -65,10 +65,6 @@
     padding-bottom: 0 !important;
 }
 
-.new-experiment-view .reward-variables-table .reward-variable-name {
-    width: auto;
-}
-
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
     justify-content: space-between;
     margin-bottom: var(--lumo-space-xxs);

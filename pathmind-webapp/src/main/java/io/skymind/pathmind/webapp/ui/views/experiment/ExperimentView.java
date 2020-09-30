@@ -10,6 +10,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -48,6 +51,7 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.AllMetricsChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
@@ -109,6 +113,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private VerticalLayout rewardFunctionGroup;
     private CodeViewer codeViewer;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
+    private AllMetricsChartPanel allMetricsChartPanel;
+    private VerticalLayout charts;
     private PolicyChartPanel policyChartPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
@@ -282,20 +288,52 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
+        Tabs chartTabs = createChartTabs();
+        allMetricsChartPanel = new AllMetricsChartPanel();
         policyChartPanel = new PolicyChartPanel();
+        policyChartPanel.setVisible(false);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
-        VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        trainingStartingPlaceholder,
-                        policyChartPanel);
-        chartWrapper.addClassName("row-2-of-3");
+        charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                allMetricsChartPanel,
+                policyChartPanel);
+
+        VerticalLayout chartsPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                trainingStartingPlaceholder,
+                charts
+        );
+
+        VerticalLayout chartsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel("Learning Progress", BOLD_LABEL),
+                chartTabs,
+                chartsPanel
+        );
+        chartsWrapper.addClassName("row-2-of-3");
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                chartWrapper,
+                chartsWrapper,
                 notesField);
         bottomPanel.addClassName("bottom-panel");
         bottomPanel.setPadding(false);
         return bottomPanel;
+    }
+
+    private Tabs createChartTabs() {
+        Tab metricsChartTab = new Tab("Metrics");
+        Tab rewardScoreChartTab = new Tab("Mean Reward Score");
+        Tabs chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
+        chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
+        chartTabs.addSelectedChangeListener(event -> {
+            // have to redraw chart to make sure the chart size is right
+            if (chartTabs.getSelectedIndex() == 0) {
+                allMetricsChartPanel.setVisible(true);
+                policyChartPanel.setVisible(false);
+            } else {
+                allMetricsChartPanel.setVisible(false);
+                policyChartPanel.setVisible(true);
+            }
+        });
+        return chartTabs;
     }
 
     private void showStopTrainingConfirmationDialog() {
@@ -315,7 +353,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     trainingService.stopRun(experiment);
                     stopTrainingButton.setVisible(false);
                     trainingStartingPlaceholder.setVisible(false);
-                    policyChartPanel.setVisible(true);
+                    charts.setVisible(true);
                     fireEvents();
                     confirmDialog.close();
                 },
@@ -445,7 +483,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public void setPolicyChartVisibility() {
         RunStatus trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
         trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
-        policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
+        charts.setVisible(trainingStatus != RunStatus.Starting);
     }
 
     private void updateUIForError(TrainingError error, String errorText) {

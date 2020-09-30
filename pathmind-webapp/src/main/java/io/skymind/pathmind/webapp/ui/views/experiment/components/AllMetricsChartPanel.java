@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public class PolicyChartPanel extends VerticalLayout
+public class AllMetricsChartPanel extends VerticalLayout
 {
     private Object experimentLock = new Object();
 
-    private PolicyChart chart = new PolicyChart();
+    private AllMetricsChart chart = new AllMetricsChart();
 
     private Experiment experiment;
 
-    public PolicyChartPanel() {
+    public AllMetricsChartPanel() {
         add(chart);
         setPadding(false);
         setSpacing(false);

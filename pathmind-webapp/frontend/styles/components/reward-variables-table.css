@@ -44,12 +44,15 @@
 .reward-variables-table .reward-variable-name {
     box-sizing: border-box;
     display: flex;
-    width: 100%;
+    width: auto;
     line-height: 1;
     padding: 0.4em;
     border: 1px solid currentColor;
     border-radius: var(--lumo-border-radius);
     word-break: break-all;
+}
+.upload-model-view .reward-variables-table .reward-variable-name {
+    width: 100%;
 }
 .reward-variables-table.compact .goal-display-span {
     display: none;

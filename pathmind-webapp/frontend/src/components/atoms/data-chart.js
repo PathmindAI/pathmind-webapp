@@ -163,7 +163,7 @@ class DataChart extends PolymerElement {
                 }
                 :host([chartready]) {
                     width: 100%;
-                    height: auto;
+                    height: 100%;
                 }
             </style>
             <google-chart 
