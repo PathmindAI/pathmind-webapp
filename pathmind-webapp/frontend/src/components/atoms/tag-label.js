@@ -38,7 +38,7 @@ class TagLabel extends PolymerElement {
     :host {
         box-sizing: border-box;
         display: inline-block;
-        color: var(--pm-gray-color-dark);
+        color: var(--pm-grey-color-dark);
         font-size: var(--lumo-font-size-s);
         line-height: 1.3;
         padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
