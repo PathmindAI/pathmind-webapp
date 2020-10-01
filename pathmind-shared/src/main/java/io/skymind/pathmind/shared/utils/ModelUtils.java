@@ -8,11 +8,15 @@ import org.apache.commons.lang3.StringUtils;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 
 @Slf4j
 public class ModelUtils {
+    private static final Predicate<String> LIB_MODEL_MATCH = Pattern.compile("^(lib/)?model[0-9]*\\.jar", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+
     private ModelUtils() {
         throw new IllegalAccessError("Static usage only");
     }
@@ -43,8 +47,13 @@ public class ModelUtils {
     public static Optional<InvalidModelType> checkIfModelIsInvalid(Model model) {
         return InvalidModelType.getEnumFromValue(model.getInvalidModel());
     }
+
     public static boolean isValidModel(Model model) {
         return InvalidModelType.getEnumFromValue(model.getInvalidModel()).isEmpty();
+    }
+
+    public static boolean isModelFile(String filename) {
+        return ModelUtils.LIB_MODEL_MATCH.test(filename);
     }
 
 }
