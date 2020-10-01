@@ -43,6 +43,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
         final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
 
+        log.info("Updater is dealing with: {}", runIds);
+
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
             	ProviderJobStatus providerJobStatus = updaterService.updateRunInformation(run, stoppedPoliciesNamesForRuns, run.getJobId());

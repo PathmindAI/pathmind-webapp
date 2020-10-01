@@ -1,6 +1,5 @@
 package io.skymind.pathmind.shared.services.training.versions;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
