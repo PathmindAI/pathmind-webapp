@@ -25,8 +25,8 @@ public class GenericPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//vaadin-dialog-overlay")
-    private WebElement dialogShadow;
+    @FindBy(xpath = "//confirm-popup")
+    private WebElement popupShadow;
     @FindBy(xpath = "//vaadin-grid-cell-content")
     private List<WebElement> experimentModelsNames;
     @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
@@ -61,12 +61,10 @@ public class GenericPage extends PageObject {
 
     public void checkThatTheConfirmationDialogIsShown(String confirmationDialogHeader) {
         setImplicitTimeout(5, SECONDS);
-        WebElement dialogShadow = getDriver().findElement(By.xpath("//vaadin-dialog-overlay"));
-        waitFor(ExpectedConditions.visibilityOf(dialogShadow));
-        WebElement overlay = utils.expandRootElement(dialogShadow);
-        WebElement contentShadow = overlay.findElement(By.cssSelector("#content"));
-        WebElement contentElements = utils.expandRootElement(contentShadow);
-        WebElement header = contentElements.findElement(By.cssSelector(".header"));
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
 
         assertThat(header.getText(), is(confirmationDialogHeader));
         resetImplicitTimeout();
@@ -74,27 +72,23 @@ public class GenericPage extends PageObject {
 
     public void checkThatNoConfirmationDialogIsShown() {
         setImplicitTimeout(5, SECONDS);
-        waitFor(ExpectedConditions.invisibilityOfAllElements(getDriver().findElements(By.xpath("//vaadin-dialog-overlay"))));
+        waitFor(ExpectedConditions.invisibilityOfAllElements(getDriver().findElements(By.xpath("//confirm-popup"))));
         resetImplicitTimeout();
     }
 
     public void inConfirmationDialogClickInButton(String buttonText) {
         setImplicitTimeout(5, SECONDS);
-        WebElement dialogShadow = getDriver().findElement(By.xpath("//vaadin-dialog-overlay"));
-        waitFor(ExpectedConditions.visibilityOf(dialogShadow));
-        WebElement overlay = utils.expandRootElement(dialogShadow);
-        WebElement contentShadow = overlay.findElement(By.cssSelector("#content"));
-        WebElement contentElements = utils.expandRootElement(contentShadow);
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
 
-        List<WebElement> buttons = contentElements.findElements(By.cssSelector("vaadin-button"));
-        List<WebElement> nonShadowButtons = contentShadow.findElements(By.cssSelector("vaadin-button"));
-        List<WebElement> allButtons = Stream.concat(buttons.stream(), nonShadowButtons.stream()).collect(Collectors.toList());
-        Optional<WebElement> first = allButtons.stream()
+        List<WebElement> buttons = popupShadowRoot.findElements(By.cssSelector("vaadin-button"));
+        Optional<WebElement> first = buttons.stream()
             .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
             .findFirst();
         String errorMessage = String.format("Button '%s' doesn't exist. Available buttons: %s.",
             buttonText,
-            StringUtils.join(allButtons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
+            StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
         );
         assertThat(errorMessage, first.isPresent());
         first.get().click();
@@ -194,9 +188,9 @@ public class GenericPage extends PageObject {
     public void checkThatConfirmationDialogNotShown(Boolean status) {
         setImplicitTimeout(4, SECONDS);
         if (status) {
-            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(1));
+            assertThat(getDriver().findElements(By.xpath("//confirm-popup")).size(), is(1));
         } else {
-            assertThat(getDriver().findElements(By.xpath("//*[@role='dialog']")).size(), is(0));
+            assertThat(getDriver().findElements(By.xpath("//confirm-popup")).size(), is(0));
         }
         resetImplicitTimeout();
     }

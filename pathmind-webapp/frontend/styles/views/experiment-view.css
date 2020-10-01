@@ -37,7 +37,7 @@
     line-height: 1.8;
     padding: var(--lumo-space-s);
     padding-top: 0;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;
 }
@@ -156,7 +156,7 @@
 
 .experiment-view .bold-label + data-chart {
     flex: 1 1 auto;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow: hidden;
 }

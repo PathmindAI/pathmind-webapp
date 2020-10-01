@@ -77,7 +77,7 @@
     font-size: var(--lumo-font-size-s);
     font-family: var(--code-font-family);
     border-radius: 3px 0 0 3px;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-right: none;
 }
 .reward-variables-table.compact .header-row {
