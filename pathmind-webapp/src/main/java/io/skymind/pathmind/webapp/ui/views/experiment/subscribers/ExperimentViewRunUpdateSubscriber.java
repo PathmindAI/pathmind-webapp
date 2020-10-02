@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 @Slf4j
 public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
-    private List<Experiment> experiments;
     private Experiment experiment;
 
     private ExperimentView experimentView;
@@ -30,23 +29,16 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         this.experiment = experiment;
     }
 
-    public void setExperiments(List<Experiment> experiments) {
-        this.experiments = experiments;
-    }
-
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        if (isSameExperiment(event)) {
-            experiment.setTrainingStatusEnum(event.getRun().getExperiment().getTrainingStatusEnum());
-            ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
-            ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
-            PushUtils.push(getUiSupplier(), () -> {
-                experimentView.setPolicyChartVisibility();
-                experimentView.updateDetailsForExperiment();
-            });
-        } else if (ExperimentUtils.isNewExperimentForModel(event.getRun().getExperiment(), experiments, experiment.getModelId())) {
-            experimentView.updateExperimentComponents();
-        }
+        // STEPH -> Do we actually need to do anything if it's not the same experiment?
+        experiment.setTrainingStatusEnum(event.getRun().getExperiment().getTrainingStatusEnum());
+        ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
+        ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
+        PushUtils.push(getUiSupplier(), () -> {
+            experimentView.setPolicyChartVisibility();
+            experimentView.updateDetailsForExperiment();
+        });
     }
 
     @Override

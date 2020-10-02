@@ -46,7 +46,7 @@ public class SecondSharedExperimentView extends ExperimentView
     }
 
     @Override
-    protected Button[] getButtonList() {
+    protected Button[] getActionButtonList() {
         return new Button[] { exportPolicyButton };
     }
 }

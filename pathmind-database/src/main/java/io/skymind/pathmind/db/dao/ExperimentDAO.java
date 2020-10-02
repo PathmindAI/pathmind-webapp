@@ -59,18 +59,26 @@ public class ExperimentDAO
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {
-		List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId);
-		Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
-		experiments.stream().forEach(experiment ->
-				experiment.setRuns(runsGroupedByExperiment.get(experiment.getId())));
-		// A quick solution to fix a bug due to null checks bot being implemented throughout the app.
-		experiments.stream()
-				.filter(experiment -> experiment.getRuns() == null)
-				.forEach(experiment -> experiment.setRuns(new ArrayList<Run>()));
-		return experiments;
+	    return getExperimentsForModel(modelId, true);
+    }
+
+    public List<Experiment> getExperimentsForModel(long modelId, boolean isIncludeArchived) {
+		List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId, isIncludeArchived);
+        addRunsToExperiments(experiments);
+        return experiments;
 	}
 
-	public void updateExperiment(Experiment experiment) {
+    private void addRunsToExperiments(List<Experiment> experiments) {
+        Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
+        experiments.stream().forEach(experiment ->
+                experiment.setRuns(runsGroupedByExperiment.get(experiment.getId())));
+        // A quick solution to fix a bug due to null checks not being implemented throughout the app.
+        experiments.stream()
+                .filter(experiment -> experiment.getRuns() == null)
+                .forEach(experiment -> experiment.setRuns(new ArrayList<>()));
+    }
+
+    public void updateExperiment(Experiment experiment) {
 		ExperimentRepository.updateExperiment(ctx, experiment);
 	}
 

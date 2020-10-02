@@ -464,7 +464,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void updateExperimentComponents() {
-        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
             PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));

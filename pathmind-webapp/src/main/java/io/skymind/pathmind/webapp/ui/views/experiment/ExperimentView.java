@@ -68,7 +68,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -283,7 +282,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         notesField = createViewNotesField();
 
-        Div buttonsWrapper = new Div(getButtonList());
+        Div buttonsWrapper = new Div(getActionButtonList());
 
         buttonsWrapper.addClassName("buttons-wrapper");
         return buttonsWrapper;
@@ -292,7 +291,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     /**
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
-    protected Button[] getButtonList() {
+    protected Button[] getActionButtonList() {
         return new Button[] {
                 unarchiveExperimentButton,
                 restartTraining,
@@ -440,7 +439,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-            experimentViewRunUpdateSubscriber.setExperiments(experiments);
         }
     }
 
@@ -525,8 +523,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public void updateExperimentComponents() {
         // REFACTOR -> We will want to adjust this code as it's performing a database call on almost all eventbus events which is both
         // a potential performance issue as well as cause potential multi-threading issues (racing conditions).
-        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        experimentViewRunUpdateSubscriber.setExperiments(experiments);
+        experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
             PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));

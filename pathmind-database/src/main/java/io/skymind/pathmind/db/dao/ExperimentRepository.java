@@ -94,7 +94,11 @@ class ExperimentRepository
 		return experiment;
 	}
 
-	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId) {
+	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId, boolean isIncludeArchived) {
+	    Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
+	    if(!isIncludeArchived)
+	        condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
+
 		Result<?> result = ctx
 				.select(EXPERIMENT.asterisk())
 				.select(MODEL.ID, MODEL.NAME)
@@ -102,7 +106,7 @@ class ExperimentRepository
 				.from(EXPERIMENT)
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+				.where(condition)
                 .orderBy(EXPERIMENT.DATE_CREATED.desc())
 				.fetch();
 
