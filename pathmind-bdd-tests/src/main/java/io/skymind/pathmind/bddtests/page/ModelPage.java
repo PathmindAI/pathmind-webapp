@@ -92,7 +92,7 @@ public class ModelPage extends PageObject {
 
     public void clickModelPageExperimentArchiveBtn(String experiment) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[6]/descendant::vaadin-button")));
         e.findElement(By.cssSelector("button")).click();
     }
 
@@ -131,7 +131,8 @@ public class ModelPage extends PageObject {
     }
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
-        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
+        waitABit(3000);
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[5]")), is(note));
     }
 
     public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
