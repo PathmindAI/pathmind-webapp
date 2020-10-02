@@ -2,7 +2,7 @@
     width: auto !important;
     height: calc(100vh - 5rem);
     min-height: 100%;
-    border-right: 1px solid var(--pm-gray-color-lightest);
+    border-right: 1px solid var(--pm-grey-color-lightest);
 }
 
 .experiments-navbar > vaadin-button {

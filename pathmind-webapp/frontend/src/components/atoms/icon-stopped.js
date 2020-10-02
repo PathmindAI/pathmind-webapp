@@ -14,7 +14,7 @@ class IconStopped extends PolymerElement {
                     position: relative;
                     width: var(--icon-size);
                     height: var(--icon-size);
-                    background: var(--pm-gray-color);
+                    background: var(--pm-grey-color);
                     border-radius: 50%;
                 }
                 div {
