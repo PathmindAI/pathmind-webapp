@@ -116,6 +116,7 @@ class DataChart extends PolymerElement {
                 "baselineColor": vaxistitle ? "black" : "#FFF",
                 "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
             },
+            "interpolateNulls": true,
             "legend": {"position": "none"},  // true for all usages
             "seriesType": seriestype,
             "series": series,
@@ -131,6 +132,11 @@ class DataChart extends PolymerElement {
     setData(cols, rows) {
         this.cols = cols;
         this.rows = rows;
+        this.$.chart.redraw();
+    }
+    
+    setChartEmpty() {
+        this.rows = [];
         this.$.chart.redraw();
     }
 

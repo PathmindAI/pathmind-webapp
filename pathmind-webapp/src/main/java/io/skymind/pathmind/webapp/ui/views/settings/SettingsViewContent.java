@@ -12,7 +12,10 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
+import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
+import io.skymind.pathmind.shared.services.training.versions.Conda;
 import io.skymind.pathmind.shared.services.training.versions.NativeRL;
+import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +40,17 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
 
+    @Id("condaVersionCB")
+    private ComboBox<String> condaVersion;
+
+    @Id("anylogicVersionCB")
+    private ComboBox<String> anylogicVersion;
+
     @Id("nativerlVersionCB")
     private ComboBox<String> nativerlVersion;
+
+    @Id("helperVersionCB")
+    private ComboBox<String> helperVersion;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -58,7 +70,10 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private void initBtns() {
         saveBtn.addClickListener(e -> {
             env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+            env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
+            env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
             env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
+            env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -80,13 +95,43 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
         // init NativeRL versions
         List<String> nativerlVersions = NativeRL.activeValues().stream()
-                .map(NativeRL::toString)
-                .collect(Collectors.toList());
+            .map(NativeRL::toString)
+            .collect(Collectors.toList());
 
         nativerlVersion.setItems(nativerlVersions);
         nativerlVersion.setLabel("NativeRL Version");
         nativerlVersion.setPlaceholder(env.getNativerlVersion().toString());
         nativerlVersion.setValue(env.getNativerlVersion().toString());
+
+        // init AnyLogic versions
+        List<String> anyLogicVersions = Arrays.stream(AnyLogic.values())
+                .map(AnyLogic::toString)
+                .collect(Collectors.toList());
+
+        anylogicVersion.setItems(anyLogicVersions);
+        anylogicVersion.setLabel("AnyLogic Version");
+        anylogicVersion.setPlaceholder(env.getAnylogicVersion().toString());
+        anylogicVersion.setValue(env.getAnylogicVersion().toString());
+
+        // init conda versions
+        List<String> condaVersions = Arrays.stream(Conda.values())
+            .map(Conda::toString)
+            .collect(Collectors.toList());
+
+        condaVersion.setItems(condaVersions);
+        condaVersion.setLabel("Conda Version");
+        condaVersion.setPlaceholder(env.getCondaVersion().toString());
+        condaVersion.setValue(env.getCondaVersion().toString());
+
+        // init pathmind helper versions
+        List<String> helperVersions = Arrays.stream(PathmindHelper.values())
+            .map(PathmindHelper::toString)
+            .collect(Collectors.toList());
+
+        helperVersion.setItems(helperVersions);
+        helperVersion.setLabel("PM helper Version");
+        helperVersion.setPlaceholder(env.getPathmindHelperVersion().toString());
+        helperVersion.setValue(env.getPathmindHelperVersion().toString());
     }
 
     public interface Model extends TemplateModel {

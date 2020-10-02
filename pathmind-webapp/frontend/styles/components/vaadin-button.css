@@ -20,7 +20,7 @@
 
 /* Default (Secondary) Button Styles */
 :host {
-    --_lumo-button-background-color: var(--pm-gray-color-lightest);
+    --_lumo-button-background-color: var(--pm-grey-color-lightest);
     font-weight: bold;
     min-width: 14rem;
     height: var(--lumo-size-l);
@@ -71,7 +71,7 @@
 }
 
 :host(.action-button) {
-    color: var(--pm-gray-color);
+    color: var(--pm-grey-color);
     margin: 0;
 }
 

@@ -61,7 +61,7 @@
 
 .search-box {
     height: 2rem;
-    border: 1px solid var(--pm-gray-color-light);
+    border: 1px solid var(--pm-grey-color-light);
     border-radius: var(--lumo-border-radius);
     margin-right: var(--lumo-space-m);
 }
@@ -70,6 +70,6 @@
     flex: 1 0 1px;
     width: 1px;
     height: calc(100% - 8px);
-    background: var(--pm-gray-color-light);
+    background: var(--pm-grey-color-light);
     align-self: center;
 }

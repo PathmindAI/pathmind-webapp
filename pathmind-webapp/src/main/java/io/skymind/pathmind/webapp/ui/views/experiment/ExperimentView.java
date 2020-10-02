@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -41,6 +40,7 @@ import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -304,9 +304,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void showStopTrainingConfirmationDialog() {
-        ConfirmDialog confirmDialog = new ConfirmDialog();
-        confirmDialog.setHeader("Stop Training");
-        confirmDialog.setText(new Html(
+        ConfirmPopup confirmPopup = new ConfirmPopup();
+        confirmPopup.setHeader("Stop Training");
+        confirmPopup.setMessage(new Html(
                 "<div>"
                         + "<p>Are you sure you want to stop training?</p>"
                         + "<p>If you stop the training before it completes, you won't be able to download the policy. "
@@ -314,21 +314,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                         + "use the same reward function.</b>"
                         + "</p>"
                         + "</div>"));
-        confirmDialog.setConfirmButton(
+        confirmPopup.setConfirmButton(
                 "Stop Training",
-                (e) -> {
+                () -> {
                     trainingService.stopRun(experiment);
                     updateUIAfterExperimentIsStopped();
                     fireEvents();
-                    confirmDialog.close();
                 },
-                StringUtils.join(
-                        Arrays.asList(ButtonVariant.LUMO_ERROR.getVariantName(), ButtonVariant.LUMO_PRIMARY.getVariantName()),
-                        " ")
+                ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName()
         );
-        confirmDialog.setCancelText("Cancel");
-        confirmDialog.setCancelable(true);
-        confirmDialog.open();
+        confirmPopup.setCancelButtonText("Cancel");
+        confirmPopup.open();
     }
 
     private void updateUIAfterExperimentIsStopped() {
@@ -390,6 +386,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             // Check is needed for the shared experiment view which has no breadcrumb.
             if(pageBreadcrumbs != null)
                 pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            experimentsNavbar.setCurrentExperiment(selectedExperiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -414,7 +411,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
-
         loadExperimentData();
     }
 

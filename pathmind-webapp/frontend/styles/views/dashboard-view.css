@@ -59,7 +59,7 @@
     align-self: stretch;
     height: 6rem;
     padding: 0 0 0 var(--lumo-space-m);
-    border-left: 1px solid var(--pm-gray-color-lighter);
+    border-left: 1px solid var(--pm-grey-color-lighter);
     margin-top: 1.8rem;
 }
 .dashboard-item-notes:empty {
@@ -151,8 +151,10 @@
 .stage-done {
     color: var(--lumo-body-text-color);
 }
-.stage-failed,
-.stage-failed .hint-label {
+.stage-done iron-icon[icon~="vaadin:check-circle"] {
+    color: var(--lumo-success-color);
+}
+.stage-failed {
     color: var(--lumo-error-text-color);
 }
 .stage-stopped {
@@ -160,19 +162,9 @@
     justify-content: center;
     color: var(--lumo-body-text-color);
 }
-.stage-stopped .icon-stopped {
-    width: var(--lumo-font-size-m);
-    height: var(--lumo-font-size-m);
+.stage-stopped icon-stopped {
+    --icon-size: 20px;
     margin-right: 4px;
-}
-.stage-stopped .icon-stopped::after {
-    width: calc(var(--lumo-font-size-m) / 2);
-    height: calc(var(--lumo-font-size-m) / 2);
-    top: calc(var(--lumo-font-size-m) / 4);
-    left: calc(var(--lumo-font-size-m) / 4);
-}
-.stage-stopped .hint-label {
-    color: var(--lumo-body-text-color);
 }
 .stage-failed span,
 .stage-stopped span {
@@ -180,7 +172,7 @@
     text-align: left;
 }
 .stage-next {
-    color: var(--pm-gray-color);
+    color: var(--pm-grey-color);
 }
 @media (max-width: 720px) {
     .stages-container {

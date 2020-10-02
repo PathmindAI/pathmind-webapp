@@ -131,6 +131,7 @@ public class PolicyChart extends DataChart {
 
     public void setPolicyChart(List<Policy> updatedPolicies, Policy bestPolicy) {
         if (updatedPolicies == null) {
+            setChartEmpty();
             return;
         }
         Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(updatedPolicies, bestPolicy);

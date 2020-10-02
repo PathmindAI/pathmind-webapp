@@ -2,38 +2,29 @@ package io.skymind.pathmind.shared.services.training.versions;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public enum NativeRL implements VersionEnum{
     @Deprecated
-    VERSION_0_7_0,
-    @Deprecated
-    VERSION_0_7_6,
-    @Deprecated
-    VERSION_0_7_6_PBT,
-    @Deprecated
-    VERSION_0_7_6_RESUME,
-    @Deprecated
-    VERSION_0_8_1,
-    @Deprecated
-    VERSION_1_0_1,
-    @Deprecated
-    VERSION_1_0_3,
-    VERSION_1_0_4,
-    VERSION_1_0_5,
-    VERSION_1_0_6,
     VERSION_1_0_7,
     VERSION_1_1_0,
     VERSION_1_1_1,
-    VERSION_1_2_0;
+    VERSION_1_2_0,
+    VERSION_1_3_0;
+
+    private static final String baseFileName = "nativerl-%s-SNAPSHOT-bin.zip";
+
+    private static final EnumSet<NativeRL> OLD_VERSION = EnumSet.of(VERSION_1_0_7, VERSION_1_1_0, VERSION_1_1_1);
 
     @Override
     public List<String> fileNames() {
-        if (this == VERSION_1_2_0) {
-            return Arrays.asList("nativerl-1.2.0-SNAPSHOT-bin.zip");
+        if (OLD_VERSION.contains(this)) {
+            return Arrays.asList(String.format(baseFileName, "1.0.0"));
         } else {
-            return Arrays.asList("nativerl-1.0.0-SNAPSHOT-bin.zip");
+            String version = this.toString().replace("VERSION_", "").replace("_", ".");
+            return Arrays.asList(String.format(baseFileName, version));
         }
     }
 
