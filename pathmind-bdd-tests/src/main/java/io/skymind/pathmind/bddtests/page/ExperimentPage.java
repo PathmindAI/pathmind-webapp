@@ -148,7 +148,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparklines-wrapper']/spark-line"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparkline']/data-chart"))) {
             actual.add(webElement.getText());
         }
 
@@ -259,7 +259,7 @@ public class ExperimentPage extends PageObject {
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart is a screenshot at the time of opening. It does not update automatically."));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart does not update automatically."));
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
     }
 }
