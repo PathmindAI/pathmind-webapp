@@ -164,4 +164,14 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
         experimentPageSteps.checkExperimentPageChartPopUpIsShownForVariable(variable);
     }
+
+    @Then("^Check variable '(.*)' simulation metric value '(.*)'$")
+    public void checkVariableSimulationMetricValue(String variable, String value) {
+        experimentPageSteps.checkVariableSimulationMetricValue(variable, value);
+    }
+
+    @Then("^Check experiment page observations list (.*)$")
+    public void checkExperimentPageObservationsList(String observation) {
+        experimentPageSteps.checkExperimentPageObservationsList(observation);
+    }
 }

@@ -262,4 +262,17 @@ public class ExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart does not update automatically."));
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
     }
+
+    public void checkVariableSimulationMetricValue(String variable, String value) {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='" + variable + "']/ancestor::*[@class='simulation-metrics-table-wrapper']/descendant::*[@class='metrics-wrapper']/span")).getText(), is(value));
+    }
+
+    public void checkExperimentPageObservationsList(String observation) {
+        List<String> items = Arrays.asList(observation.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[not(@hidden)]"))) {
+            actual.add(webElement.getText());
+        }
+        assertThat(actual, containsInAnyOrder(items.toArray()));
+    }
 }
