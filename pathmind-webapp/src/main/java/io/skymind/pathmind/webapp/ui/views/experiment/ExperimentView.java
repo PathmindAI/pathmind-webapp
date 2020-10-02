@@ -46,6 +46,7 @@ import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -63,7 +64,6 @@ import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -85,7 +85,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
     private Object experimentLock = new Object();
 
-    private Button exportPolicyButton;
+    protected Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
     private Anchor downloadModelAlpLink;
@@ -189,13 +189,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
-        experimentsNavbar = new ExperimentsNavBar(
-                () -> getUI(),
-                experimentDAO,
-                experiment,
-                experiments,
-                selectedExperiment -> selectExperiment(selectedExperiment),
-                segmentIntegrator);
+        if(isShowNavBar())
+            experimentsNavbar = new ExperimentsNavBar(
+                    () -> getUI(),
+                    experimentDAO,
+                    experiment,
+                    experiments,
+                    selectedExperiment -> selectExperiment(selectedExperiment),
+                    segmentIntegrator);
+
         setupExperimentContentPanel();
 
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
@@ -215,12 +217,19 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 middlePanel,
                 getBottomPanel());
         experimentContent.addClassName("view-section");
-        HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
-                experimentsNavbar,
-                experimentContent);
+        HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapWidthFullHorizontal(experimentContent);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
+    }
+
+    /**
+     * This is a temporary solution until the experiment view refactoring is completed. It's done this way because until the subscribers
+     * are properly broken up it's almost impossible to break out the navbar specific eventbus handling and as a result all navbar
+     * code is going to be wrapped around if's which the SharedExperimentView will override to false.
+     */
+    protected boolean isShowNavBar() {
+        return true;
     }
 
     private void setupExperimentContentPanel() {
@@ -246,7 +255,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         middlePanel.setPadding(false);
     }
 
-    private Div getButtonsWrapper() {
+    protected Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", click -> {
             synchronized (experimentLock) {
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
@@ -262,28 +271,33 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         restartTraining.setVisible(false);
         restartTraining.addClassNames("large-image-btn", "run");
 
-        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
-        exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        exportPolicyButton.setVisible(false);
+        exportPolicyButton = GuiUtils.getPrimaryButton(
+                "Export Policy",
+                click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())),
+                false);
 
-        stopTrainingButton = new Button("Stop Training", click -> {
-            showStopTrainingConfirmationDialog();
-        });
+        stopTrainingButton = new Button("Stop Training", click -> showStopTrainingConfirmationDialog());
         stopTrainingButton.setVisible(true);
 
-        unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
-        unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
         notesField = createViewNotesField();
 
-        Div buttonsWrapper = new Div(
-            unarchiveExperimentButton,
-            restartTraining,
-            stopTrainingButton,
-            exportPolicyButton
-        );
+        Div buttonsWrapper = new Div(getButtonList());
+
         buttonsWrapper.addClassName("buttons-wrapper");
         return buttonsWrapper;
+    }
+
+    /**
+     * This is overwritten by ShareExperimentView where we only want a subset of buttons.
+     */
+    protected Button[] getButtonList() {
+        return new Button[] {
+                unarchiveExperimentButton,
+                restartTraining,
+                stopTrainingButton,
+                exportPolicyButton };
     }
 
     private HorizontalLayout getBottomPanel() {
@@ -386,7 +400,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             // Check is needed for the shared experiment view which has no breadcrumb.
             if(pageBreadcrumbs != null)
                 pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            experimentsNavbar.setCurrentExperiment(selectedExperiment);
+            if(isShowNavBar())
+                experimentsNavbar.setCurrentExperiment(selectedExperiment);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -437,13 +452,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateScreenComponents() {
         clearErrorState();
         setPolicyChartVisibility();
-        experimentsNavbar.setVisible(!experiment.isArchived());
+        if(isShowNavBar())
+            experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
         if (ModelUtils.isValidModel(experiment.getModel())) {
             codeViewer.setValue(experiment.getRewardFunction());
         } else {
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-            experimentsNavbar.setAllowNewExperimentCreation(false);
+            if(isShowNavBar())
+                experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, policy);

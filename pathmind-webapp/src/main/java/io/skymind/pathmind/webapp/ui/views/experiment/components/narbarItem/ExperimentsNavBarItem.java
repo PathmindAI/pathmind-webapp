@@ -70,7 +70,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private void setExperimentDetails(UI ui, Experiment experiment) {
-        RunStatus overallExperimentStatus = ExperimentUtils.getTrainingStatus(experiment);
+        RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         getModel().setStatus(getIconStatus(overallExperimentStatus));
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());

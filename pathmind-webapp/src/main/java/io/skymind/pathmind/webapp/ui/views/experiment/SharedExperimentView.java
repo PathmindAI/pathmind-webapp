@@ -195,8 +195,6 @@ public class SharedExperimentView extends PathMindDefaultView implements HasUrlP
         exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         exportPolicyButton.setVisible(false);
 
-        notesField = createViewNotesField();
-
         Div buttonsWrapper = new Div(
             exportPolicyButton
         );
@@ -213,6 +211,7 @@ public class SharedExperimentView extends PathMindDefaultView implements HasUrlP
                         policyChartPanel);
         chartWrapper.addClassName("row-2-of-3");
 
+        notesField = createViewNotesField();
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 chartWrapper,
                 notesField);
