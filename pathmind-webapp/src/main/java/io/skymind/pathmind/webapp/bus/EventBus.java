@@ -75,12 +75,16 @@ public class EventBus {
         });
     }
 
-    /**
-     * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one.
-     */
     public static void subscribe(Component component, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
         List<EventBusSubscriber> subscribers = new ArrayList<>(Arrays.asList(eventBusSubscribers));
         subscribers.add(eventBusSubscriber);
+        subscribe(component, subscribers);
+    }
+
+    /**
+     * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one.
+     */
+    public static void subscribe(Component component, List<EventBusSubscriber> subscribers) {
         componentSubscribers.put(component, subscribers);
         subscribers.forEach(subscriber -> subscribe(subscriber));
     }

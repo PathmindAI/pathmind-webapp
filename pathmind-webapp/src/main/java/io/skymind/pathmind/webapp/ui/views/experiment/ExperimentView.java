@@ -27,6 +27,7 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
@@ -161,7 +162,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this,
+        EventBus.subscribe(this, getViewSubscribers());
+    }
+
+    protected List<EventBusSubscriber> getViewSubscribers() {
+        return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI()),
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
@@ -382,7 +387,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentId = selectedExperiment.getId();
             loadExperimentData();
             notesField.setNotesText(experiment.getUserNotes());
-            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            // Check is needed for the shared experiment view which has no breadcrumb.
+            if(pageBreadcrumbs != null)
+                pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -407,6 +414,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
+
         loadExperimentData();
     }
 
@@ -555,7 +563,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
+    protected class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
 
         public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
             super(getUISupplier);
