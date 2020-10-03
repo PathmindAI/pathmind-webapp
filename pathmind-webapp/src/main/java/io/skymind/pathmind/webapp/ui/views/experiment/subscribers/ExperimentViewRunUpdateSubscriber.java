@@ -31,7 +31,6 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        // STEPH -> Do we actually need to do anything if it's not the same experiment?
         experiment.setTrainingStatusEnum(event.getRun().getExperiment().getTrainingStatusEnum());
         ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
         ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());

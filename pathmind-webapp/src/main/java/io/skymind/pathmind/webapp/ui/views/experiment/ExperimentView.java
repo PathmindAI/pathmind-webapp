@@ -447,7 +447,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
-        // STEPH -> NOT in sharedExperiment view.
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
@@ -486,7 +485,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateUIForError(TrainingError error, String errorText) {
         stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
 
-        // STEPH -> Not used in the shared view but this code can be left as the buttons are not included in the shared view.
+        // Not used in the shared view but this code can be left as the buttons are not included in the shared view.
         boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
         restartTraining.setVisible(allowRestart);
         restartTraining.setEnabled(allowRestart);
