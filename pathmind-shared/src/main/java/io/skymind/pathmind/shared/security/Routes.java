@@ -31,8 +31,6 @@ public class Routes {
     public static final String EXPERIMENT_URL = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";
-    // TODO -> STEPHANE -> REMOVE
-    public static final String SECOND_SHARED_EXPERIMENT = "secondSharedExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
     public static final String ERROR_URL = "error";

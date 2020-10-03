@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
@@ -51,12 +52,9 @@ public class ExperimentDAO
 	}
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
-		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
-	}
-
-	// STEPH -> TO DELETE
-    public Optional<Experiment> getSharedExperiment(long experimentId, long userId) {
-        return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+	    if(UserRole.Support.equals(UserRepository.findById(ctx, userId).getAccountType()))
+	    	return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+        return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {
