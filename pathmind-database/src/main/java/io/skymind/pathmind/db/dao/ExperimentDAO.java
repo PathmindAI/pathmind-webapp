@@ -54,6 +54,7 @@ public class ExperimentDAO
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
 	}
 
+	// STEPH -> TO DELETE
     public Optional<Experiment> getSharedExperiment(long experimentId, long userId) {
         return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
     }

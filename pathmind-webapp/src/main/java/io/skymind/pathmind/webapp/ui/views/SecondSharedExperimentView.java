@@ -22,8 +22,8 @@ public class SecondSharedExperimentView extends ExperimentView
 {
     private Button exportPolicyButton;
 
-    public SecondSharedExperimentView(int newRunDailyLimit, int newRunMonthlyLimit, int newRunNotificationThreshold) {
-        super(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
+    public SecondSharedExperimentView() {
+        super();
     }
 
     // For the shared view we remove the subscribers we don't want to listen to such as the new experiment created subscriber. It's a more maintainable
@@ -35,10 +35,10 @@ public class SecondSharedExperimentView extends ExperimentView
                 .collect(Collectors.toList());
     }
 
+    // We don't want breadcrumbs in the shared view.
     @Override
     protected Component getTitlePanel() {
         return new ScreenTitlePanel("Shared Experiment");
-        // We do not want breadcrumbs in the shared view.
     }
 
     protected boolean isShowNavBar() {
