@@ -15,7 +15,7 @@ public class MetricsRawUtils {
 
     public static Map<Integer, List<Double>> toIndexAndMetricRawData(List<MetricsRaw> metricsRaws) {
         // index, metrics raw data list
-        Map<Integer, List<Double>> uncertaintyMap = new LinkedHashMap<>();
+        Map<Integer, List<Double>> uncertaintyMap = new HashMap<>();
         if (metricsRaws != null && metricsRaws.size() > 0) {
             metricsRaws.stream()
                 .forEach(metricsRaw -> {

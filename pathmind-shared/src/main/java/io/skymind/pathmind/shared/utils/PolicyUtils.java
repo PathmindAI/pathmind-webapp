@@ -1,19 +1,18 @@
 package io.skymind.pathmind.shared.utils;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
-
-import org.apache.commons.lang3.ObjectUtils;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.*;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -110,9 +109,7 @@ public class PolicyUtils
                     .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
 
             // index, metrics list
-            // since this is for chart view, we need to make sure the order of data
-            // we SHOULD use LinkedHashMap instead of HashMap
-            Map<Integer, Map<Integer, Double>> sparkLineMap = new LinkedHashMap<>();
+            Map<Integer, Map<Integer, Double>> sparkLineMap = new HashMap<>();
 
             // Loop by iteration
             metricsList.stream().forEach(metrics ->
