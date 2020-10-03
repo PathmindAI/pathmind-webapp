@@ -22,7 +22,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Experiment extends ArchivableData implements DeepCloneableInterface
+public class Experiment extends ArchivableData implements DeepCloneableInterface<Experiment>
 {
     private static final long serialVersionUID = -5041305878245823921L;
 	private long modelId;

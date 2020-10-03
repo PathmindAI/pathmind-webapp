@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.webapp.ui.utils.*;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -451,13 +454,27 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         panelTitleText.setText("Experiment #"+experiment.getName());
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
-		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
 		rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
+
+    private String generateRewardFunction() {
+        StringBuilder sb = new StringBuilder();
+        if (experiment.isHasGoals()) {
+            for(RewardVariable rv: rewardVariables) {
+                GoalConditionType goal = rv.getGoalConditionTypeEnum();
+                if (goal != null) {
+                    sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
+                    sb.append("\n");
+                }
+            }
+        }
+        return sb.toString();
+    }
 
     private boolean isSameExperiment(Experiment eventExperiment) {
         return ExperimentUtils.isSameModel(experiment, eventExperiment.getModelId()) && experiment.equals(eventExperiment);

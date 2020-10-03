@@ -22,7 +22,7 @@ public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
     private static String[] ALLOW_LIST = {"database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
-    private static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    private static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls[x]?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -2,9 +2,10 @@ package io.skymind.pathmind.shared.data.user;
 
 public interface DeepCloneableInterface<T> {
 
-    <T> T shallowClone();
+    T shallowClone();
 
-    default <T> T deepClone() {
+    default T deepClone() {
         return shallowClone();
     }
+
 }

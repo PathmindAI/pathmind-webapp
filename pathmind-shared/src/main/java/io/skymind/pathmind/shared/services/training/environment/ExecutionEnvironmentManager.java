@@ -18,7 +18,7 @@ public class ExecutionEnvironmentManager {
                 PathmindHelper.VERSION_1_3_0,
                 NativeRL.VERSION_1_3_0,
                 JDK.VERSION_8_222,
-                Conda.VERSION_0_8_7,
+                Conda.VERSION_0_8_6,
                 EC2InstanceType.IT_36CPU_72GB);
     }
 

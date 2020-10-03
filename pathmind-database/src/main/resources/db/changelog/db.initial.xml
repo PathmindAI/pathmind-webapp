@@ -1767,7 +1767,7 @@
         <customChange class="io.skymind.pathmind.db.changeset.UpdateExperiment_ChangeSet_20200923_02"/>
     </changeSet>
 
-    <changeSet id="20200928-01" author="bruno.rezende@ext.vaadin.com">
+    <changeSet id="20201003-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="EXPERIMENT">
             <column name="SHARED_WITH_SUPPORT" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>
