@@ -1752,4 +1752,19 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20200923-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="TRAINING_STATUS" type="integer" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="EXPERIMENT" columnName="TRAINING_STATUS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20200923-02" author="bruno.rezende@ext.vaadin.com">
+        <customChange class="io.skymind.pathmind.db.changeset.UpdateExperiment_ChangeSet_20200923_02"/>
+    </changeSet>
+
 </databaseChangeLog>
