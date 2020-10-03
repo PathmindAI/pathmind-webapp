@@ -326,23 +326,30 @@ class ExperimentRepository
 	}
 
 	protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
-		ctx.update(Tables.EXPERIMENT)
-				.set(Tables.EXPERIMENT.USER_NOTES, userNotes)
-				.where(Tables.EXPERIMENT.ID.eq(experimentId))
+		ctx.update(EXPERIMENT)
+				.set(EXPERIMENT.USER_NOTES, userNotes)
+				.where(EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
 
     protected static void markAsFavorite(DSLContext ctx, long experimentId, boolean isFavorite) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.IS_FAVORITE, isFavorite)
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.IS_FAVORITE, isFavorite)
+                .where(EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
 
     protected static void updateTrainingStatus(DSLContext ctx, Experiment experiment) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.TRAINING_STATUS, experiment.getTrainingStatus())
-                .where(Tables.EXPERIMENT.ID.eq(experiment.getId()))
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.TRAINING_STATUS, experiment.getTrainingStatus())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+    }
+
+    protected static void shareExperimentWithSupport(DSLContext ctx, long experimentId) {
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.SHARED_WITH_SUPPORT, true)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
 }

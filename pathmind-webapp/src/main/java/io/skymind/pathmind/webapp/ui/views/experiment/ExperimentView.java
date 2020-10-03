@@ -88,6 +88,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
     private Anchor downloadModelAlpLink;
+    private Button shareButton;
 
     private long experimentId = -1;
     private long modelId = -1;
@@ -283,6 +284,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         stopTrainingButton = new Button("Stop Training", click -> showStopTrainingConfirmationDialog());
         stopTrainingButton.setVisible(true);
 
+        shareButton = new Button("Share with support", click -> showShareConfirmationDialog());
+
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
         notesField = createViewNotesField();
@@ -293,6 +296,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return buttonsWrapper;
     }
 
+    private void showShareConfirmationDialog() {
+        ConfirmationUtils.confirmationPopupDialog(
+                "Share training with support",
+                "<div><p>Message goes here</p></div>",
+                "Share Training",
+                () -> experimentDAO.shareExperimentWithSupport(experiment.getId()));
+    }
+
     /**
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
@@ -301,7 +312,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 unarchiveExperimentButton,
                 restartTraining,
                 stopTrainingButton,
-                exportPolicyButton };
+                shareButton,
+                exportPolicyButton};
     }
 
     private HorizontalLayout getBottomPanel() {
@@ -322,27 +334,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void showStopTrainingConfirmationDialog() {
-        ConfirmPopup confirmPopup = new ConfirmPopup();
-        confirmPopup.setHeader("Stop Training");
-        confirmPopup.setMessage(new Html(
+        ConfirmationUtils.confirmationPopupDialog(
+                "Stop Training",
                 "<div>"
                         + "<p>Are you sure you want to stop training?</p>"
                         + "<p>If you stop the training before it completes, you won't be able to download the policy. "
                         + "<b>If you decide you want to start the training again, you can start a new experiment and "
                         + "use the same reward function.</b>"
                         + "</p>"
-                        + "</div>"));
-        confirmPopup.setConfirmButton(
+                        + "</div>",
                 "Stop Training",
                 () -> {
                     trainingService.stopRun(experiment);
                     updateUIAfterExperimentIsStopped();
                     fireEvents();
-                },
-                ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName()
-        );
-        confirmPopup.setCancelButtonText("Cancel");
-        confirmPopup.open();
+                });
     }
 
     private void updateUIAfterExperimentIsStopped() {

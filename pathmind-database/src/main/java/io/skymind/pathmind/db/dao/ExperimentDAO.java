@@ -32,7 +32,7 @@ public class ExperimentDAO
 		this.ctx = ctx;
 	}
 
-	public Optional<Experiment> getExperiment(long experimentId) {
+    public Optional<Experiment> getExperiment(long experimentId) {
 		var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
         return Optional.ofNullable(experiment);
 	}
@@ -76,8 +76,11 @@ public class ExperimentDAO
                 .filter(experiment -> experiment.getRuns() == null)
                 .forEach(experiment -> experiment.setRuns(new ArrayList<>()));
     }
+    public void shareExperimentWithSupport(long experimentId) {
+	    ExperimentRepository.shareExperimentWithSupport(ctx, experimentId);
+    }
 
-	public void updateExperiment(Experiment experiment) {
+    public void updateExperiment(Experiment experiment) {
 		ExperimentRepository.updateExperiment(ctx, experiment);
 	}
 

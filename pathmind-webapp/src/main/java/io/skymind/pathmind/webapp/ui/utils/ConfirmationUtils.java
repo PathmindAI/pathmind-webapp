@@ -1,7 +1,8 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 
 public class ConfirmationUtils {
@@ -44,5 +45,18 @@ public class ConfirmationUtils {
         popup.setConfirmButton("OK", action);
 	    popup.open();
 	}
-	
+
+	public static void confirmationPopupDialog(String header, String message, String confirmText, Command confirmHandler) {
+        ConfirmPopup confirmPopup = new ConfirmPopup();
+        confirmPopup.setHeader(header);
+        confirmPopup.setMessage(new Html(
+                message));
+        confirmPopup.setConfirmButton(
+                confirmText,
+                confirmHandler,
+                ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName()
+        );
+        confirmPopup.setCancelButtonText("Cancel");
+        confirmPopup.open();
+    }
 }
