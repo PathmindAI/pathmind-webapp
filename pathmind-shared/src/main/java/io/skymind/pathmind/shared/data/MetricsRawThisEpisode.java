@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MetricsRawThisEpisode  implements Serializable, DeepCloneableInterface {
+public class MetricsRawThisEpisode  implements Serializable, DeepCloneableInterface<MetricsRawThisEpisode> {
     private Integer index;
     private Double value;
 

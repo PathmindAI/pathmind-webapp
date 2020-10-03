@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RewardScore implements Serializable, DeepCloneableInterface {
+public class RewardScore implements Serializable, DeepCloneableInterface<RewardScore> {
     // May be NaN!
     private Double max;
     private Double min;

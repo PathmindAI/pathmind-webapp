@@ -1,11 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -212,7 +215,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFnEditorWrapper.addClassName("reward-fn-editor-panel");
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-        
+
         rewardVariablesTable = new RewardVariablesTable();
         VerticalLayout rewardVariablesPanel = WrapperUtils
                 .wrapVerticalWithNoPaddingOrSpacing(
@@ -279,11 +282,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
         return rewardFnEditorPanel;
     }
-	
+
 	private boolean canStartTraining() {
-		return ModelUtils.isValidModel(experiment.getModel()) 
-		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0 
-		        && !observationsPanel.getSelectedObservations().isEmpty() 
+		return ModelUtils.isValidModel(experiment.getModel())
+		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0
+		        && !observationsPanel.getSelectedObservations().isEmpty()
 		        && canSaveDataInDB();
 	}
 
@@ -377,7 +380,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
-			
+
 			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
 				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
 			} else {
@@ -458,13 +461,27 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         panelTitleText.setText("Experiment #"+experiment.getName());
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
-		rewardFunctionEditor.setValue(experiment.getRewardFunction());
+		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
 		rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
 	}
+
+    private String generateRewardFunction() {
+        StringBuilder sb = new StringBuilder();
+        if (experiment.isHasGoals()) {
+            for(RewardVariable rv: rewardVariables) {
+                GoalConditionType goal = rv.getGoalConditionTypeEnum();
+                if (goal != null) {
+                    sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
+                    sb.append("\n");
+                }
+            }
+        }
+        return sb.toString();
+    }
 
     private boolean isSameExperiment(Experiment eventExperiment) {
         return ExperimentUtils.isSameModel(experiment, eventExperiment.getModelId()) && experiment.equals(eventExperiment);

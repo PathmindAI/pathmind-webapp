@@ -31,6 +31,6 @@ public class RewardVariable extends Data {
         return GoalConditionType.getEnumFromCode(goalConditionType).orElse(null);
     }
     public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
-        goalConditionType = conditionType != null ? conditionType.getValue() : null;
+        goalConditionType = conditionType != null ? conditionType.getCode() : null;
     }
 }

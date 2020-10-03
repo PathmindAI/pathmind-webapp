@@ -1,34 +1,35 @@
 package io.skymind.pathmind.shared.constants;
 
+import lombok.Getter;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 public enum GoalConditionType {
-    GREATER_THAN_OR_EQUAL("GTE", "≥"), LESS_THAN_OR_EQUAL("LTE", "≤");
+    GREATER_THAN_OR_EQUAL("GTE", "≥", "+"), LESS_THAN_OR_EQUAL("LTE", "≤", "-");
     
-    private String code;
-    private String name;
+    private final String code;
+    private final String name;
+    private final String mathOperation;
 
-    private GoalConditionType(String code, String name) {
+    GoalConditionType(String code, String name, String math) {
         this.code = code;
         this.name = name;
+        this.mathOperation = math;
     }
 
     public String toString() {
         return name;
     }
 
-    public String getValue() {
-        return code;
-    }
-
     private static final Map<String, GoalConditionType> BY_CODE;
     static {
 		Map<String,GoalConditionType> map = new ConcurrentHashMap<>();
 		for (GoalConditionType instance : GoalConditionType.values()) {
-			map.put(instance.getValue(), instance);
+			map.put(instance.getCode(), instance);
 		}
 		BY_CODE = Collections.unmodifiableMap(map);
     }
