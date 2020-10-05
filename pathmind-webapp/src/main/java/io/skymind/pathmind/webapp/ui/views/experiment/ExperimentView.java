@@ -106,6 +106,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private HorizontalLayout middlePanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
+    private TagLabel sharedWithSupportLabel;
     private Span panelTitle;
     private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
@@ -194,6 +195,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
+        sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         if(isShowNavBar())
             experimentsNavbar = new ExperimentsNavBar(
@@ -217,7 +219,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
 
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(panelTitle, archivedLabel, downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
+                WrapperUtils.wrapWidthFullHorizontal(
+                        WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                                panelTitle, archivedLabel, sharedWithSupportLabel),
+                                downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
                 stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,

@@ -1,11 +1,14 @@
+.experiment-view .view-section > vaadin-horizontal-layout:first-child > vaadin-vertical-layout:first-child {
+    flex: 1 0 auto;
+}
+
 .experiment-view .section-title-label {
     flex: 1 0 auto;
     line-height: 1;
 }
 
-.experiment-view .section-title-label + tag-label {
-    align-self: flex-start;
-    margin-left: var(--lumo-space-xs);
+.experiment-view .section-title-label ~ tag-label {
+    margin: var(--lumo-space-xs) 0;
 }
 
 .experiment-view .view-section {
