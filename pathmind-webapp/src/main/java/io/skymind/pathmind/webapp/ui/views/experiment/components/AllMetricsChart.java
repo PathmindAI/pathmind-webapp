@@ -66,10 +66,17 @@ public class AllMetricsChart extends DataChart {
         for (int i = 0; i < thisIterationMetricValues.size(); i++) {
             Double metricValue = thisIterationMetricValues.get(i);
             int index = rowItem.length();
+            RewardVariable rewardVariable = rewardVariables.get(i);
             if (metricValue != null) {
                 rowItem.set(index, metricValue);
                 String meanMetricValueFormatted = Math.abs(metricValue) > 1 ? String.format("%.2f", metricValue) : String.format("%.4f", metricValue);
-                rowItem.set(index+1, "<div><b>"+rewardVariables.get(i).getName()+"</b><br><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanMetricValueFormatted+"</div>");
+                String tooltip = "<div><b>"+rewardVariable.getName()+"</b><br>";
+                if (rewardVariable.getGoalConditionTypeEnum() != null && rewardVariable.getGoalValue() != null) {
+                    tooltip += "<b>Goal</b> "+rewardVariable.getGoalConditionTypeEnum().toString()+rewardVariable.getGoalValue()+"<br>";
+                }
+                tooltip += "<b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanMetricValueFormatted+"</div>";
+                
+                rowItem.set(index+1, tooltip);
             } else {
                 rowItem.set(index, Json.createNull());
                 rowItem.set(index+1, Json.createNull());

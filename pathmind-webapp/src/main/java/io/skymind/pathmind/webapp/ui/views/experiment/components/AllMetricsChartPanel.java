@@ -31,7 +31,10 @@ public class AllMetricsChartPanel extends VerticalLayout
     }
 
     public void setupChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
-        updateChart(rewardVariables, bestPolicy);
+        synchronized (experimentLock) {
+            this.experiment = experiment;
+            updateChart(rewardVariables, bestPolicy);
+        }
     }
 
     public void updateChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
@@ -49,12 +52,12 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(() -> getUI()));
+        EventBus.subscribe(this, new AllMetricsChartPanelPolicyUpdateSubscriber(() -> getUI()));
     }
 
-    class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
+    class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
-        public PolicyChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
+        public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
             super(getUISupplier);
         }
 
