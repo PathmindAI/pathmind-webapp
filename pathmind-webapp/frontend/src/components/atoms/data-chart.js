@@ -47,6 +47,9 @@ class DataChart extends PolymerElement {
                 type: Boolean,
                 reflectToAttribute: true,
             },
+            dimlines: {
+                type: Boolean,
+            },
             options: {
                 type: Object,
                 computed: `_computeOptions(
@@ -76,15 +79,18 @@ class DataChart extends PolymerElement {
                     line-height: 1.2;
                     padding: var(--lumo-space-xxs);
                 }
-                :host([type~="line"]) #chartdiv path {
+                :host([dimlines]) #chartdiv path {
                     opacity: 0.4;
                 }
-                :host([type~="line"]) #chartdiv path[stroke~="#1a2949"] {
+                :host([dimlines]) #chartdiv path[stroke~="#1a2949"] {
                     opacity: 1;
                 }`;
             this.$.chart.shadowRoot.appendChild(style);
             if (isInit) {
                 isInit = false;
+                if (this.dimlines) {
+                    this.$.chart.setAttribute("dimlines", true);
+                }
                 setTimeout(() => {
                     // This is to ensure the tooltips are rendered
                     this.chartready = true;

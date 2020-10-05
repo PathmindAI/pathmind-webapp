@@ -6,6 +6,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
@@ -29,17 +30,12 @@ public class AllMetricsChartPanel extends VerticalLayout
         setSpacing(false);
     }
 
-    public void setExperiment(Experiment experiment, Policy bestPolicy) {
-        synchronized (experimentLock) {
-            this.experiment = experiment;
-            if (experiment.getPolicies().size() > 0) {
-                updateChart(experiment.getPolicies(), bestPolicy);
-            }
-        }
+    public void setupChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
+        updateChart(rewardVariables, bestPolicy);
     }
 
-    public void updateChart(List<Policy> policies, Policy bestPolicy) {
-        chart.setAllMetricsChart(policies, bestPolicy);
+    public void updateChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
+        chart.setAllMetricsChart(rewardVariables, bestPolicy);
     }
 
     public void redrawChart() {
@@ -68,7 +64,7 @@ public class AllMetricsChartPanel extends VerticalLayout
                 // We need to check after the lock is acquired as changing experiments can take up to several seconds.
                 if (event.getExperimentId() != experiment.getId())
                     return;
-                PushUtils.push(getUiSupplier(), () -> updateChart(event.getPolicies(), null));
+                PushUtils.push(getUiSupplier(), () -> updateChart(null, null));
             }
         }
 

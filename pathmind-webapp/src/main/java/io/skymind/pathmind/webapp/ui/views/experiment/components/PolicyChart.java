@@ -158,6 +158,7 @@ public class PolicyChart extends DataChart {
             viewWindow
         );
         updateData(updatedPolicies, policyChartData);
+        getModel().setDimlines(true);
     }
     
 }

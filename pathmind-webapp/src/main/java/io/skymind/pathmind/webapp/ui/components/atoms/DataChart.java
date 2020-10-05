@@ -63,5 +63,6 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
 		void setCurvelines(Boolean curveLines);
         void setSeriestype(String seriesType);
         void setStacked(Boolean stacked);
+        void setDimlines(Boolean useDimlines);
 	}
 }

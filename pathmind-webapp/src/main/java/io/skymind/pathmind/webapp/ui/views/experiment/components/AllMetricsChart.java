@@ -2,23 +2,19 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class AllMetricsChart extends DataChart {
-
-    private int bestPolicySeriesNumber = -1;
 
     public AllMetricsChart() {
         super();
@@ -27,16 +23,16 @@ public class AllMetricsChart extends DataChart {
     private JsonObject createSeries(int numberOfSeries) {
         JsonObject series = Json.createObject();
         List<String> colors = Arrays.asList(
-            "#7cb5ec",
-            "#737378",
-            "#90ed7d",
-            "#f7a35c",
-            "#8085e9",
-            "#f15c80",
-            "#e4d354",
-            "#2b908f",
-            "#f45b5b",
-            "#91e8e1"
+            "#17a747",
+            "#214e96",
+            "#318c81",
+            "#7550e5",
+            "#62a540",
+            "#e0667d",
+            "#5f8fd6",
+            "#931901",
+            "#bd52a3",
+            "#887100"
         );
         for (int i = 0; i < numberOfSeries; i++) {
             String seriesColor = colors.get(i%10);
@@ -45,91 +41,76 @@ public class AllMetricsChart extends DataChart {
         return series;
     }
 
-    private JsonArray createCols(List<Policy> policies) {
+    private JsonArray createCols(List<RewardVariable> rewardVariables) {
         JsonArray cols = Json.createArray();
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
-        policies.forEach((policy) -> {
+        rewardVariables.forEach((rewardVariable) -> {
             int index = cols.length();
-            cols.set(index, Json.parse("{'label':'Policy "+policy.getName()+"', 'type':'number'}"));
+            cols.set(index, Json.parse("{'label':'"+rewardVariable.getName()+"', 'type':'number'}"));
             cols.set(index+1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
         });
         return cols;
     }
 
-    private JsonArray createRows(Map<Integer, List<RewardScore>> allLinesData) {
+    private JsonArray createRows(List<RewardVariable> rewardVariables, Map<Integer, List<Double>> allLinesData) {
         JsonArray rows = Json.createArray();
-        allLinesData.forEach((iteration, rewardScoreList) -> {
-            rows.set(rows.length(), createRowItem(iteration, rewardScoreList));
+        allLinesData.forEach((iteration, metricList) -> {
+            rows.set(rows.length(), createRowItem(rewardVariables, iteration, metricList));
         });
         return rows;
     }
 
-    private JsonArray createRowItem(Integer iteration, List<RewardScore> thisIterationRewardScores) {
+    private JsonArray createRowItem(List<RewardVariable> rewardVariables, Integer iteration, List<Double> thisIterationMetricValues) {
         JsonArray rowItem = Json.createArray();
         rowItem.set(0, iteration);
-        thisIterationRewardScores.forEach(rewardScore -> {
+        for (int i = 0; i < thisIterationMetricValues.size(); i++) {
+            Double metricValue = thisIterationMetricValues.get(i);
             int index = rowItem.length();
-            if (rewardScore != null) {
-                Double meanRewardScoreValue = rewardScore.getMean();
-                rowItem.set(index, meanRewardScoreValue);
-                String meanRewardScoreValueFormatted = Math.abs(meanRewardScoreValue) > 1 ? String.format("%.2f", meanRewardScoreValue) : String.format("%.4f", meanRewardScoreValue);
-                rowItem.set(index+1, "<div><b>"+"metric name"+"</b><br><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanRewardScoreValueFormatted+"</div>");
+            if (metricValue != null) {
+                rowItem.set(index, metricValue);
+                String meanMetricValueFormatted = Math.abs(metricValue) > 1 ? String.format("%.2f", metricValue) : String.format("%.4f", metricValue);
+                rowItem.set(index+1, "<div><b>"+rewardVariables.get(i).getName()+"</b><br><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanMetricValueFormatted+"</div>");
             } else {
                 rowItem.set(index, Json.createNull());
                 rowItem.set(index+1, Json.createNull());
             }
-        });
+        }
         return rowItem;
     }
 
-    public Map<Integer, List<RewardScore>> generatePolicyChartData(List<Policy> policyData, Policy bestPolicy) {
-        List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
-        Map<Integer, List<RewardScore>> allLinesData = new HashMap<>();
-        List<Integer> iterationNumbers = new ArrayList<>();
-        int maxIteration = 0;
-        policyData.forEach(policy -> {
-            List<RewardScore> rewardScoresList = policy.getScores().stream()
-                    .filter(score -> !Double.isNaN(score.getMean()))
-                    .collect(Collectors.toList());
-            allRewardScoresLists.add(rewardScoresList);
-            if (bestPolicy != null && policy.getId() == bestPolicy.getId()) {
-                bestPolicySeriesNumber = allRewardScoresLists.size()-1;
-            }
-            iterationNumbers.add(rewardScoresList.size());
-        });
-        maxIteration = Collections.max(iterationNumbers);
+    public Map<Integer, List<Double>> generateAllMetricsChartData(Map<Integer, Map<Integer, Double>> sparklinesData) {
+        Map<Integer, List<Double>> allLinesData = new LinkedHashMap<>();
+        // Get first metric's sparkline data
+        Map<Integer, Double> firstMetricSparklineData = sparklinesData.get(0);
+        // Get first metric's last iteration number
+        // all sparklines should have the same number of iterations
+        int maxIteration = new ArrayList<>(firstMetricSparklineData.keySet()).get(firstMetricSparklineData.size()-1);
 
-        // save a list of reward scores per iteration
+        // save a list of sparkline datum per metric per iteration
         for (int i = 0; i < maxIteration; i++) {
-            int index = i;
-            List<RewardScore> thisIterationRewardScores = new ArrayList<>();
-            allRewardScoresLists.stream().forEach(rewardScoresList -> {
-                rewardScoresList.stream()
-                        .filter(rewardScore -> rewardScore.getIteration().equals(index+1))
-                        .findAny()
-                        .ifPresentOrElse(rewardScore -> {
-                                    thisIterationRewardScores.add(rewardScore);
-                                },
-                                () -> thisIterationRewardScores.add(null));
+            int iterationNumber = i;
+            List<Double> thisIterationMetricValues = new ArrayList<>();
+            sparklinesData.forEach((metricIndex, sparklineData) -> {
+                thisIterationMetricValues.add(sparklineData.get(iterationNumber));
             });
-            allLinesData.put(i+1, thisIterationRewardScores);
+            allLinesData.put(i, thisIterationMetricValues);
         }
         
         return allLinesData;
     }
 
-    public void updateData(List<Policy> policies, Map<Integer, List<RewardScore>> allLinesData) {
-        JsonArray cols = createCols(policies);
-        JsonArray rows = createRows(allLinesData);
+    public void updateData(List<RewardVariable> rewardVariables, Map<Integer, List<Double>> allLinesData) {
+        JsonArray cols = createCols(rewardVariables);
+        JsonArray rows = createRows(rewardVariables, allLinesData);
         setData(cols, rows);
     }
 
-    public void setAllMetricsChart(List<Policy> updatedPolicies, Policy bestPolicy) {
-        if (updatedPolicies == null) {
+    public void setAllMetricsChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
+        if (rewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0) {
             setChartEmpty();
             return;
         }
-        Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(updatedPolicies, bestPolicy);
+        Map<Integer, List<Double>> allMetricsChartData = generateAllMetricsChartData(bestPolicy.getSparklinesData());
 
         String type = "line";
         Boolean showTooltip = true;
@@ -138,7 +119,7 @@ public class AllMetricsChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries(updatedPolicies.size());
+        JsonObject series = createSeries(bestPolicy.getSparklinesData().size());
         JsonObject viewWindow = null;
 
         setupChart(
@@ -152,7 +133,7 @@ public class AllMetricsChart extends DataChart {
             stacked,
             viewWindow
         );
-        updateData(updatedPolicies, policyChartData);
+        updateData(rewardVariables, allMetricsChartData);
     }
     
 }
