@@ -300,7 +300,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void showShareConfirmationDialog() {
         ConfirmationUtils.confirmationPopupDialog(
                 "Share training with support",
-                "<div><p>Message goes here</p></div>",
+                "This will give Pathmind a read-only mode to the experiment to help with debugging any issues.",
                 "Share Training",
                 () -> experimentDAO.shareExperimentWithSupport(experiment.getId()));
     }
