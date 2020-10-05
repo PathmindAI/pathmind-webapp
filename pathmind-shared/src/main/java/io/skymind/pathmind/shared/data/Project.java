@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Project extends ArchivableData implements DeepCloneableInterface {
+public class Project extends ArchivableData implements DeepCloneableInterface<Project> {
 
     private static final long serialVersionUID = -8482276917940795086L;
     private LocalDateTime dateCreated;

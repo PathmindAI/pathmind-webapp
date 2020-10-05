@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Policy extends Data implements DeepCloneableInterface
+public class Policy extends Data implements DeepCloneableInterface<Policy>
 {
     private static final long serialVersionUID = -2089053095112497536L;
 	private long runId;
@@ -43,7 +43,7 @@ public class Policy extends Data implements DeepCloneableInterface
     private List<Double> simulationMetrics = new ArrayList<>();
 
     // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
-    private Map<Integer, Map<Integer, Double>> sparklinesData = new HashMap<>();
+    private Map<Integer, Map<Integer, Double>> sparklinesData = new LinkedHashMap<>();
     private List<String> uncertainty = new ArrayList<>();
 
     public List<RewardScore> getScores() {

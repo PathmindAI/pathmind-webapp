@@ -58,10 +58,6 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-confirm-dialog-flow</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
@@ -99,10 +95,6 @@
         <dependency>
             <groupId>org.vaadin.spring.extensions</groupId>
             <artifactId>vaadin-spring-ext-boot</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-cookie-consent-flow</artifactId>
         </dependency>
     </dependencies>
     <build>

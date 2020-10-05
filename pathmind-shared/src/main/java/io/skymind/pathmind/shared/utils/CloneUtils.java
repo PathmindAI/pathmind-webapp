@@ -3,7 +3,7 @@ package io.skymind.pathmind.shared.utils;
 import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +28,7 @@ public class CloneUtils {
     public static Map<Integer, Map<Integer, Double>> cloneMapIntegerMapIntegerDouble(Map<Integer, Map<Integer, Double>> originalMap) {
         if(originalMap == null)
             return null;
-        HashMap<Integer, Map<Integer, Double>> copy = new HashMap<>();
+        Map<Integer, Map<Integer, Double>> copy = new LinkedHashMap<>();
         originalMap.keySet().stream().forEach(key ->
                 copy.put(key, cloneMapIntegerDouble(originalMap.get(key))));
         return copy;
@@ -37,7 +37,7 @@ public class CloneUtils {
     public static Map<Integer, Double> cloneMapIntegerDouble(Map<Integer, Double> originalMap) {
         if(originalMap == null) 
             return null;
-        HashMap<Integer, Double> copy = new HashMap<>();
+        Map<Integer, Double> copy = new LinkedHashMap<>();
         originalMap.keySet().stream().forEach(key ->
                 copy.put(key, originalMap.get(key)));
         return copy;
