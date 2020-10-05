@@ -174,4 +174,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageObservationsList(String observation) {
         experimentPageSteps.checkExperimentPageObservationsList(observation);
     }
+
+    @Then("^Check export policy page '(.*)'$")
+    public void checkExportPolicyPage(String model) {
+        experimentPageSteps.checkExportPolicyPage(model);
+    }
 }

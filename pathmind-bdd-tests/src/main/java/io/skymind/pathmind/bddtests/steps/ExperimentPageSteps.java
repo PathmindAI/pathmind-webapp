@@ -163,4 +163,9 @@ public class ExperimentPageSteps {
     public void checkExperimentPageObservationsList(String observation) {
         experimentPage.checkExperimentPageObservationsList(observation);
     }
+
+    @Step
+    public void checkExportPolicyPage(String model) {
+        experimentPage.checkExportPolicyPage(model);
+    }
 }
