@@ -38,12 +38,15 @@ public class MetricChartPanel extends VerticalLayout {
         String goalCondition = rewardVariable.getGoalConditionTypeEnum() != null ? rewardVariable.getGoalConditionTypeEnum().toString() : null;
         Double goalValue = rewardVariable.getGoalValue();
         if (goalCondition != null && goalValue != null) {
+            goalLabel.setVisible(true);
             goalLabel.setText("Goal: "+goalCondition+goalValue);
             if (reachedGoal) {
                 goalLabel.setClassName("success-text");
             } else {
                 goalLabel.setClassName("failure-text");
             }
+        } else {
+            goalLabel.setVisible(false);
         }
     }
 
