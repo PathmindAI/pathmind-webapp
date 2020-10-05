@@ -23,7 +23,7 @@ class LoadingSpinner extends PolymerElement {
                     height: var(--icon-size);
                     top: 0;
                     left: 0;
-                    border: 2px solid var(--pm-gray-color-light);
+                    border: 2px solid var(--pm-grey-color-light);
                     border-radius: 50%;
                     border-top: 2px solid var(--pm-primary-color);
                     -webkit-animation: spin 2s linear infinite; /* Safari */

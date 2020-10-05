@@ -31,8 +31,8 @@ public class NewExperimentPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
     private List<WebElement> rewardVariableNameInputs;
-    @FindBy(xpath = "//vaadin-dialog-overlay")
-    private WebElement overlay;
+    @FindBy(xpath = "//confirm-popup")
+    private WebElement confirmPopup;
     private final By byInput = By.cssSelector("input");
 
     public void checkThatExperimentPageOpened(String projectName) {
@@ -128,11 +128,9 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        WebElement e = utils.expandRootElement(overlay);
-        WebElement contentShadow = e.findElement(By.cssSelector("#content"));
-        WebElement popUp = utils.expandRootElement(contentShadow);
-        assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
-        assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
+        WebElement popupShadowRoot = utils.expandRootElement(confirmPopup);
+        assertThat(popupShadowRoot.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
+        assertThat(popupShadowRoot.findElement(By.cssSelector(".message")).getText(), is(error));
     }
 
     public void clickSideBarExperiment(String experimentName) {

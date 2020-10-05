@@ -1,7 +1,10 @@
 package io.skymind.pathmind.services.project;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 
+@Slf4j
 public class AnylogicFileCheckResult implements FileCheckResult {
 
     private boolean fileCheckComplete;

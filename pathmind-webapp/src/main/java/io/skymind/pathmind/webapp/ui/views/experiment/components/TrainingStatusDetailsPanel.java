@@ -37,7 +37,7 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	}
 
 	public void updateTrainingDetailsPanel(Experiment experiment) {
-		final var trainingStatus = ExperimentUtils.getTrainingStatus(experiment);
+		RunStatus trainingStatus = experiment.getTrainingStatusEnum();
 		statusLabel.setText(trainingStatus.toString());
 
 		updateElapsedTimer(experiment, trainingStatus);

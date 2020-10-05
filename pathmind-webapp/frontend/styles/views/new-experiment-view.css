@@ -43,7 +43,7 @@
     flex: 1 1 19rem;
     line-height: 1;
     padding: 0 var(--lumo-space-s) var(--lumo-space-xxxs);
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow-y: auto;
 }
@@ -54,7 +54,7 @@
 
 .new-experiment-view .reward-variables-table .header-row {
     padding: var(--lumo-space-s) 0;
-    border-bottom: 1px solid var(--pm-gray-color-lightest);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
     margin-bottom: var(--lumo-space-s);
 }
 
@@ -93,7 +93,7 @@
     font-family: var(--code-font-family);
     background-color: var(--pm-app-bg-color);
     padding: var(--lumo-space-xs) var(--lumo-space-s);
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;
 }

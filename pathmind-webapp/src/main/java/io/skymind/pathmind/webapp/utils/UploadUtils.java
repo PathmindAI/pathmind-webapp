@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.utils;
 
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -20,8 +21,8 @@ import java.util.zip.ZipOutputStream;
 public class UploadUtils {
 	
 	private static String MODEL = "model.jar";
-    private static String[] ALLOW_LIST = {"model.jar", "database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
-    private static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    private static String[] ALLOW_LIST = {"database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t"};
+    private static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls[x]?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
 	public static byte[] createZipFileFromBuffer(MultiFileMemoryBuffer buffer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -66,7 +67,7 @@ public class UploadUtils {
                     ZipEntry zipEntry = (ZipEntry) enu.nextElement();
                         if (zipEntry.getName().length() > rootFolder.length()) {
                             String filename = zipEntry.getName().substring(rootFolder.length());
-                            if (Arrays.asList(ALLOW_LIST).contains(filename) || XLS_MATCH.test(filename)) {
+                            if (Arrays.asList(ALLOW_LIST).contains(filename) || XLS_MATCH.test(filename) || ModelUtils.isModelFile(filename)) {
                                 ZipEntry entry = new ZipEntry(filename);
                                 zos.putNextEntry(entry);
                                 zos.write(readZipEntryContent(zipFile, zipEntry));

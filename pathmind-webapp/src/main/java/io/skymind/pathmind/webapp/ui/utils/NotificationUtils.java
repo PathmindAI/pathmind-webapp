@@ -3,11 +3,11 @@ package io.skymind.pathmind.webapp.ui.utils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
+import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -58,11 +58,11 @@ public class NotificationUtils {
     }
 
     public static void alertAndThen(Optional<UI> optionalUI, String header, String text, Consumer<UI> consumer) {
-        ConfirmDialog confirmDialog = new ConfirmDialog(
+        ConfirmPopup confirmPopup = new ConfirmPopup(
                 header,
                 text,
-                "Ok", evt -> PushUtils.push(optionalUI, consumer::accept)
+                "OK", () -> PushUtils.push(optionalUI, consumer::accept)
         );
-        confirmDialog.open();
+        confirmPopup.open();
     }
 }

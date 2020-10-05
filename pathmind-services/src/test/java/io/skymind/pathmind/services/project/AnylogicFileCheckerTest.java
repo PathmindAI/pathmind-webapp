@@ -1,5 +1,9 @@
 package io.skymind.pathmind.services.project;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,18 +16,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.io.FileMatchers.anExistingFileOrDirectory;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.io.FileMatchers.aFileWithCanonicalPath;
-
+import static org.hamcrest.io.FileMatchers.anExistingFileOrDirectory;
 import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.containsString;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,7 +73,7 @@ public class AnylogicFileCheckerTest {
 
     @Test
     public void testCheckZipFileSuccess() throws IOException{
-        File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult);
+        File unZippedJar = anylogicFileChecker.checkZipFile(validFile, anylogicFileCheckResult).get(0);
         jarFile.set(unZippedJar);
         assertThat(unZippedJar, anExistingFileOrDirectory());
         assertThat(unZippedJar, aFileWithCanonicalPath(containsString("model.jar")));
@@ -102,7 +98,7 @@ public class AnylogicFileCheckerTest {
 
     @Test
     public void testCheckJarFileSuccess(){
-        anylogicFileChecker.checkJarFile(jarFile.get(), anylogicFileCheckResult);
+        anylogicFileChecker.checkJarFile(List.of(jarFile.get()), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(true)));
     }
 
@@ -112,7 +108,7 @@ public class AnylogicFileCheckerTest {
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        anylogicFileChecker.checkJarFile(invalidFormat, anylogicFileCheckResult);
+        anylogicFileChecker.checkJarFile(List.of(invalidFormat), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.isModelJarFilePresent(), is(equalTo(false)));
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(logsList.get(1).getLevel(), is(equalTo(Level.ERROR)));
@@ -131,7 +127,7 @@ public class AnylogicFileCheckerTest {
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
         testFileCheckResult.setDefinedHelpers(definedHelpers);
 
-        anylogicFileChecker.checkHelpers(jarFile.get(), anylogicFileCheckResult);
+        anylogicFileChecker.checkHelpers(List.of(jarFile.get()), anylogicFileCheckResult);
         assertThat(anylogicFileCheckResult.getDefinedHelpers(), is(equalTo(testFileCheckResult.getDefinedHelpers())));
     }
 
@@ -142,7 +138,7 @@ public class AnylogicFileCheckerTest {
         List<String> definedHelpers = new ArrayList<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        anylogicFileChecker.checkHelpers(invalidFormat, anylogicFileCheckResult);
+        anylogicFileChecker.checkHelpers(List.of(invalidFormat), anylogicFileCheckResult);
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(anylogicFileCheckResult.getDefinedHelpers(), is(equalTo(definedHelpers)));
         assertThat(logsList.get(2).getLevel(), is(equalTo(Level.ERROR)));
