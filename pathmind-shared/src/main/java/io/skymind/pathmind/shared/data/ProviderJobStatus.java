@@ -14,11 +14,12 @@ import static io.skymind.pathmind.shared.constants.RunStatus.*;
 
 @Getter
 public class ProviderJobStatus {
-	@Setter
-	private RunStatus runStatus;
-	@Setter
-	private List<String> description;
-	private ExperimentState experimentState;
+
+	private final RunStatus runStatus;
+
+	private final List<String> description;
+
+	private final ExperimentState experimentState;
 
 	public static ProviderJobStatus KILLED = new ProviderJobStatus(Killed);
 	public static ProviderJobStatus RESTARTING = new ProviderJobStatus(Restarting);
@@ -32,13 +33,18 @@ public class ProviderJobStatus {
 		this(runStatus, Collections.emptyList());
 	}
 
-	public ProviderJobStatus(RunStatus runStatus, List<String> description) {
-		this.runStatus = runStatus;
-		this.description = description;
+	public ProviderJobStatus(RunStatus runStatus, ExperimentState experimentState) {
+		this(runStatus, Collections.emptyList(), experimentState);
 	}
 
-	public ProviderJobStatus addExperimentState(ExperimentState experimentState) {
-		this.experimentState = experimentState;
-		return this;
+	public ProviderJobStatus(RunStatus runStatus, List<String> description) {
+		this(runStatus, description, null);
 	}
+
+	public ProviderJobStatus(RunStatus runStatus, List<String> description, ExperimentState experimentState) {
+		this.runStatus = runStatus;
+		this.description = description;
+		this.experimentState = experimentState;
+	}
+
 }
