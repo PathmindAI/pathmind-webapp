@@ -298,6 +298,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 allMetricsChartPanel,
                 policyChartPanel);
 
+        simulationMetricsPanel.setAllMetricsChartPanel(allMetricsChartPanel);
+
         VerticalLayout chartsPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 trainingStartingPlaceholder,
                 charts

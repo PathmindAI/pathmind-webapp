@@ -51,6 +51,10 @@
     border-radius: var(--lumo-border-radius);
     word-break: break-all;
 }
+.reward-variables-table .reward-variable-name[chosen] {
+    color: white;
+    border-color: transparent;
+}
 .upload-model-view .reward-variables-table .reward-variable-name {
     width: 100%;
 }
@@ -109,6 +113,36 @@
 }
 .reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span {
     color: var(--variable-color-9);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 2) span[chosen] {
+    background-color: var(--variable-color-0);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 3) span[chosen] {
+    background-color: var(--variable-color-1);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 4) span[chosen] {
+    background-color: var(--variable-color-2);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 5) span[chosen] {
+    background-color: var(--variable-color-3);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 6) span[chosen] {
+    background-color: var(--variable-color-4);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 7) span[chosen] {
+    background-color: var(--variable-color-5);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 8) span[chosen] {
+    background-color: var(--variable-color-6);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 9) span[chosen] {
+    background-color: var(--variable-color-7);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n) span[chosen] {
+    background-color: var(--variable-color-8);
+}
+.reward-variables-table vaadin-horizontal-layout:nth-of-type(10n + 1):not(.header-row) span[chosen] {
+    background-color: var(--variable-color-9);
 }
 .goal-fields-wrapper {
 	align-items: baseline !important;

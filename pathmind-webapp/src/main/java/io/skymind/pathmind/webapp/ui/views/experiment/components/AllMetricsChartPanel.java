@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -25,20 +27,35 @@ public class AllMetricsChartPanel extends VerticalLayout
     private Experiment experiment;
 
     public AllMetricsChartPanel() {
-        add(chart);
+        add(hintMessage(), chart);
         setPadding(false);
         setSpacing(false);
+    }
+
+    private Paragraph hintMessage() {
+        Paragraph hintMessage = new Paragraph(VaadinIcon.INFO_CIRCLE_O.create());
+        hintMessage.add(
+            "You can click on the simulation metric names above to toggle the lines on this chart."
+        );
+        hintMessage.addClassName("hint-label");
+        return hintMessage;
     }
 
     public void setupChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            updateChart(rewardVariables, bestPolicy);
+            chart.setAllMetricsChart(rewardVariables, bestPolicy);
         }
     }
 
     public void updateChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
-        chart.setAllMetricsChart(rewardVariables, bestPolicy);
+        if (rewardVariables != null) {
+            chart.updateSelectedRewardVariables(rewardVariables);
+        }
+        if (bestPolicy != null) {
+            chart.updateBestPolicy(bestPolicy);
+        }
+        chart.updateData();
     }
 
     public void redrawChart() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
@@ -14,6 +15,7 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
+import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
@@ -21,13 +23,17 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.AllMetricsChartPanel;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout {
 
+    private List<RewardVariable> rewardVariablesInComparison = new ArrayList<>();
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
+    private AllMetricsChartPanel allMetricsChartPanel;
     private Command goalFieldValueChangeHandler;
+    private Boolean actAsMultiSelect = false;
 
     public RewardVariablesTable() {
         this(() -> {});
@@ -50,6 +56,10 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setCompactMode() {
         container.addClassName("compact");
     }
+
+    public void setSelectMode() {
+        actAsMultiSelect = true;
+    }
     
     /**
      * By the default the table is readonly, as there is only a single case it's editable
@@ -69,17 +79,40 @@ public class RewardVariablesTable extends VerticalLayout {
         container.add(headerRow);
         
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
-        rewardVariables.forEach(rv -> container.add(createRow(rv)));
+        rewardVariables.forEach(rv -> {
+            container.add(createRow(rv));
+            rewardVariablesInComparison.add(rv);
+        });
     }
     
     public boolean canSaveChanges() {
         return rewardVariableNameFields.stream().allMatch(f -> f.isValid());
     }
 
+    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
+        this.allMetricsChartPanel = allMetricsChartPanel;
+    }
+
     private RowField createRow(RewardVariable rv) {
-        RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler);
+        Command rewardVariableClickHandler = () -> {
+            Optional<RewardVariable> thisRVinComparison = rewardVariablesInComparison.stream().filter(rvInComparison -> rv.equals(rvInComparison)).findAny();
+            thisRVinComparison.ifPresentOrElse(
+                    thisRV -> {
+                        rewardVariablesInComparison.set(rv.getArrayIndex(), null);
+                        allMetricsChartPanel.updateChart(rewardVariablesInComparison, null);
+                    },
+                    () -> {
+                        rewardVariablesInComparison.set(rv.getArrayIndex(), rv);
+                        allMetricsChartPanel.updateChart(rewardVariablesInComparison, null);
+                    });
+        };
+        RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler, rewardVariableClickHandler, actAsMultiSelect);
         rewardVariableNameFields.add(rewardVariableNameField);
         return rewardVariableNameField;
+    }
+
+    public List<RewardVariable> getRewardVariablesInComparison() {
+        return rewardVariablesInComparison;
     }
 
     private static class RowField extends HorizontalLayout {
@@ -94,10 +127,24 @@ public class RewardVariablesTable extends VerticalLayout {
         private String goalOperatorSelectThemeNames = "goals small align-center";
         private Command goalFieldValueChangeHandler;
 
-        private RowField(RewardVariable rv, Command goalFieldValueChangeHandler) {
+        private RowField(RewardVariable rv, Command goalFieldValueChangeHandler, Command clickHandler, Boolean actAsMultiSelect) {
             this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
             setAlignItems(Alignment.BASELINE);
             Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
+            if (actAsMultiSelect) {
+                String clickedAttribute = "chosen";
+                rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+
+                rewardVariableNameSpan.addClickListener(event -> {
+                    Element spanElement = event.getSource().getElement();
+                    if (spanElement.hasAttribute(clickedAttribute)) {
+                        spanElement.removeAttribute(clickedAttribute);
+                    } else {
+                        spanElement.setAttribute(clickedAttribute, true);
+                    }
+                    clickHandler.execute();
+                });
+            }
             
             conditionType = new Select<>();
             conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
