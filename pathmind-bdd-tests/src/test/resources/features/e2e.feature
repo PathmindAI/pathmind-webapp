@@ -1,4 +1,4 @@
-@debug
+@e2e
 Feature: E2E
 
   Scenario Outline: Create new project and run experiment
