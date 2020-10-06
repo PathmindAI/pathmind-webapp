@@ -47,14 +47,10 @@ public class ConfirmationUtils {
 	}
 
 	public static void confirmationPopupDialog(String header, String message, String confirmText, Command confirmHandler) {
-        ConfirmPopup confirmPopup = new ConfirmPopup();
-        confirmPopup.setHeader(header);
-        confirmPopup.setMessage(new Html(
-                message));
+        ConfirmPopup confirmPopup = new ConfirmPopup(header, message);
         confirmPopup.setConfirmButton(
                 confirmText,
-                confirmHandler,
-                ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName()
+                confirmHandler
         );
         confirmPopup.setCancelButtonText("Cancel");
         confirmPopup.open();
