@@ -25,7 +25,10 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                     margin-bottom: calc(var(--lumo-space-xxl) * 2);
                 }
                 .button-link {
+                    font-size: var(--lumo-font-size-l);
+                    padding: var(--lumo-space-l);
                     margin: var(--lumo-space-m);
+                    border: 1px solid transparent;
                 }
                 .create-project-link {
                     color: var(--lumo-primary-text-color);
@@ -43,8 +46,7 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                 alt="Pathmind"
               />
                 <vaadin-horizontal-layout>
-                    <span class="section-title-label">Let's begin by opening the</span>
-                    <a class="button-link" href="https://help.pathmind.com/en/articles/4004788-getting-started" target="_blank">Getting Started Guide</a>
+                    <a class="button-link" href="https://help.pathmind.com/en/articles/4478328-getting-started-with-product-delivery" target="_blank">Read our Getting Started Guide</a>
                 </vaadin-horizontal-layout>
                 <vaadin-horizontal-layout>
                     <span>or skip ahead to </span>
