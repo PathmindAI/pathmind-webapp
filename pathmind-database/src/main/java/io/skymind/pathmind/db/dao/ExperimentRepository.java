@@ -55,7 +55,7 @@ class ExperimentRepository
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .join(PATHMIND_USER).on(PATHMIND_USER.ID.eq(userId).and(PATHMIND_USER.ACCOUNT_TYPE.eq(UserRole.Support.getId())))
                 .where(EXPERIMENT.ID.eq(experimentId))
-                .and(EXPERIMENT.SHARED_WITH_SUPPORT.eq(true))
+                .and(EXPERIMENT.SHARED_WITH_SUPPORT.eq(true).or(PROJECT.PATHMIND_USER_ID.eq(userId)))
                 .fetchOne();
 
         if(record == null) {
@@ -76,7 +76,7 @@ class ExperimentRepository
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.ID.eq(experimentId))
-					.and(Tables.PROJECT.PATHMIND_USER_ID.eq(userId))
+					.and(PROJECT.PATHMIND_USER_ID.eq(userId))
 				.fetchOne();
 
 		if(record == null) {

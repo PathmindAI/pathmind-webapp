@@ -52,7 +52,7 @@ public class ExperimentDAO
 	}
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
-	    if(UserRole.Support.equals(UserRepository.findById(ctx, userId).getAccountType()))
+	    if(UserRepository.findById(ctx, userId).isSupportAccountType())
 	    	return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
         return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
     }

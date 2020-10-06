@@ -307,7 +307,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 "Share training with support",
                 "This will give Pathmind a read-only mode to the experiment to help with debugging any issues.",
                 "Share Training",
-                () -> experimentDAO.shareExperimentWithSupport(experiment.getId()));
+                () -> {
+                    experimentDAO.shareExperimentWithSupport(experiment.getId());
+                    experiment.setSharedWithSupport(true);
+                    setSharedWithSupportComponents();
+                });
     }
 
     /**
@@ -439,6 +443,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initLoadData() throws InvalidDataException {
+        // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
+        // we will no longer have to retrieve the user information when loading this page.
         experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
@@ -459,6 +465,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
+    private void setSharedWithSupportComponents() {
+        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
+        shareButton.setVisible(!experiment.isSharedWithSupport());
+    }
+
     @Override
     protected void initScreen(BeforeEnterEvent event) {
         updateScreenComponents();
@@ -467,6 +478,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void updateScreenComponents() {
         clearErrorState();
         setPolicyChartVisibility();
+        setSharedWithSupportComponents();
         if(isShowNavBar())
             experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
