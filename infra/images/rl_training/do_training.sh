@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 NAMESPACE="default"
 if [ "${ENVIRONMENT}" != "prod" ]
 then
@@ -87,6 +88,9 @@ where id= (select pathmind_user_id from project
 where id= (select project_id from model
 where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
 EOF`
+
+#Monitor spot instance
+bash check_spot.sh "${S3BUCKET}" "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${log_file}" &
 
 #Get the instance type and cost
 instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
