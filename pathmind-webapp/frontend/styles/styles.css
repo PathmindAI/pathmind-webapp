@@ -132,6 +132,11 @@ background-color: var(--pm-grey-color-light);
     width: calc(100% * 2 / 3) !important;
 }
 
+.internal-banner {
+    color: var(--lumo-body-text-color);
+    background-color: var(--pm-gold-color);
+}
+
 [tooltip-content] {
     position: relative;
 }

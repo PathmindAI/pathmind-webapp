@@ -2,7 +2,6 @@ package io.skymind.pathmind.webapp.ui.views;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Page;
@@ -98,11 +97,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 	}
 
     private  Component getWarningMessage() {
-        Div message = new Div();
-        message.add(LabelFactory.createLabel("Using Mock Backend"));
-        HorizontalLayout result = WrapperUtils.wrapWidthFullCenterHorizontal(message);
-        result.getStyle().set("color", "var(--lumo-body-text-color)");
-        result.getStyle().set("background-color", "var(--pm-gold-color)");
+        HorizontalLayout result = WrapperUtils.wrapWidthFullCenterHorizontal(
+            LabelFactory.createLabel("Using Mock Backend")
+        );
+        result.addClassName("internal-banner");
         return result;
     }
 
