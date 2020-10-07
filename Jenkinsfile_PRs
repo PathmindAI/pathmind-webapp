@@ -346,13 +346,13 @@ pipeline {
                             echo "Waiting for webapp to come up"
                             sh "timeout 300 bash -c 'while ! curl http://${RELEASE_ID}; do sleep 5; done'"
 
-                            echo "Running e2e tests"
+                            echo "Running E2E tests"
                             sh "rm -rf pathmind-bdd-tests/target/"
                             TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=e2e -f pom.xml -P bdd-tests")
                             publishHTML(target: [
                                 reportDir: 'pathmind-bdd-tests/target/site/serenity',
                                 reportFiles: 'index.html',
-                                reportName: "SmokeTests",
+                                reportName: "E2E",
                                 keepAll: true,
                                 alwaysLinkToLastBuild: true,
                                 allowMissing: false
