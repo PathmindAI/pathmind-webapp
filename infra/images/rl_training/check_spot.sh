@@ -5,7 +5,10 @@ S3BUCKET=$1
 S3PATH=$2
 ENVIRONMENT=$3
 EMAIL=$4
-s3_url_link=$5
+log_file=$5
+
+s3_url="s3://${S3BUCKET}/${S3PATH}"
+s3_url_link="${S3BUCKET}/${S3PATH}"
 
 while true
 do
