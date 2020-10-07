@@ -547,7 +547,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 policy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
                     if (policy != null) {
-                        policyChartPanel.updateChart(policies, policy);
+                        policyChartPanel.updateChart(experiment, policy);
                     }
                     updateDetailsForExperiment();
                 });
