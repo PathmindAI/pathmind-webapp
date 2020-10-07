@@ -29,16 +29,16 @@ Feature: Experiment favorite feature
     Then Check experiment page side bar Experiment #2 is favorite true
     Then Check experiment page side bar Experiment #1 is favorite false
 
-  Scenario: Check favorite buttons on the dashboard page
-    Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
-    When Open dashboard page
-    When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
-    When Refresh page
-    Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite true
-    When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
-    When Refresh page
-    Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite false
+  # Scenario: Check favorite buttons on the dashboard page
+  #   Given Login to the pathmind
+  #   When Create new CoffeeShop project with single reward function
+  #   When Open dashboard page
+  #   When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
+  #   When Refresh page
+  #   Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite true
+  #   When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
+  #   When Refresh page
+  #   Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite false
 
   Scenario: Check favorite buttons on the model page
     Given Login to the pathmind
@@ -82,6 +82,20 @@ Feature: Experiment favorite feature
     When Open projects/model/experiment archived tab
     Then Check model page experiment '1 ' is favorite true
     When Click the experiment name 1
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check favorite star tooltip
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    Then Check side bar current experiment star btn tooltip is 'Favorite'
+    When Click experiment page Experiment #1 star button
+    Then Check side bar current experiment star btn tooltip is 'Unfavorite'
+    When Click project start run button
+    Then Check side bar current experiment star btn tooltip is 'Unfavorite'
+    When Click experiment page Experiment #1 star button
+    Then Check side bar current experiment star btn tooltip is 'Favorite'
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button

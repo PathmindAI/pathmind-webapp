@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.cookieconsent.CookieConsent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -14,6 +13,7 @@ import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.molecules.CookieConsentBox;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle
 {
-	private static String COOKIE_CONSENT_LINK = "https://pathmind.com/privacy";
-
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -44,11 +42,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 		GuiUtils.removeMarginsPaddingAndSpacing(this);
 		setClassName("default-view");
-
-		CookieConsent cookieConsent = new CookieConsent();
-		cookieConsent.setPosition(CookieConsent.Position.BOTTOM_LEFT);
-		cookieConsent.setLearnMoreLink(COOKIE_CONSENT_LINK);
-		add(cookieConsent);
 	}
 
 	public void beforeEnter(BeforeEnterEvent event)
@@ -91,6 +84,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
 	private void addScreens(){
 		removeAll();
+        
+        CookieConsentBox cookieConsentBox = new CookieConsentBox();
+        add(cookieConsentBox);
+
 		if (awsApiClient.isUsingMockBackend()) {
             add(getWarningMessage());
         }

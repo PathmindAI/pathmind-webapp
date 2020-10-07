@@ -201,10 +201,10 @@ public class ProgressInterpreter {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         // to enable auto expansion we can set -1, but it can cause OOM
-        // so i set it 81960 for now(tested with 30 reward variables)
-        // https://s3.console.aws.amazon.com/s3/object/dh-training-dynamic-files.pathmind.com/id1234/output/PPO_PathmindEnvironment_0_num_sgd_iter%253D20%252Csgd_minibatch_size%253D128%252Ctrain_batch_size%253D12000_2020-08-05_20-46-15kvcndt60/progress.csv?region=us-east-1&tab=overview
+        // so i set it 163920 for now
+        // https://s3.console.aws.amazon.com/s3/object/prod-training-dynamic-files.pathmind.com/id6704/output/PPO_PathmindEnvironment_0_num_sgd_iter%253D10%252Csgd_minibatch_size%253D512%252Ctrain_batch_size%253D12000_2020-09-25_19-01-16smkpmamf/progress.csv?region=us-east-1&tab=overview
 //        settings.setMaxCharsPerColumn(-1);
-        settings.setMaxCharsPerColumn(81960);
+        settings.setMaxCharsPerColumn(163920);
         settings.selectFields((RAY_PROGRESS.metricsRawColumns()));
 
         CsvParser parser = new CsvParser(settings);

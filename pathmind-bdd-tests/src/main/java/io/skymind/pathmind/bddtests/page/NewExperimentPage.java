@@ -31,8 +31,8 @@ public class NewExperimentPage extends PageObject {
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
     private List<WebElement> rewardVariableNameInputs;
-    @FindBy(xpath = "//vaadin-dialog-overlay")
-    private WebElement overlay;
+    @FindBy(xpath = "//confirm-popup")
+    private WebElement confirmPopup;
     private final By byInput = By.cssSelector("input");
 
     public void checkThatExperimentPageOpened(String projectName) {
@@ -128,15 +128,14 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        WebElement e = utils.expandRootElement(overlay);
-        WebElement contentShadow = e.findElement(By.cssSelector("#content"));
-        WebElement popUp = utils.expandRootElement(contentShadow);
-        assertThat(popUp.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
-        assertThat(popUp.findElement(By.cssSelector("#message")).getText(), is(error));
+        WebElement popupShadowRoot = utils.expandRootElement(confirmPopup);
+        assertThat(popupShadowRoot.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
+        assertThat(popupShadowRoot.findElement(By.cssSelector(".message")).getText(), is(error));
     }
 
     public void clickSideBarExperiment(String experimentName) {
-        getDriver().findElement(By.xpath("//div[@class='experiment-name']/p[text()='" + experimentName + "']")).click();
+        waitABit(2000);
+        utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();
     }
 
     public void clickObservationsCheckbox(String checkbox) {
@@ -156,4 +155,21 @@ public class NewExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a")).getAttribute("href"), containsString(filename));
     }
+
+    public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
+        waitABit(3500);
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement favoriteStarShadow = utils.expandRootElement(experimentNavBarItemShadow.findElement(By.cssSelector("favorite-star")));
+        waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
+        assertThat(favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).getAttribute("title"), is(tooltip));
+    }
+
+    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
+        waitABit(3500);
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        assertThat(archiveButton.getAttribute("title"), is(tooltip));
+    }
+
 }

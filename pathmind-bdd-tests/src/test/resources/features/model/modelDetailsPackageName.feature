@@ -13,8 +13,8 @@ Feature: Check Model Details package name field
     When Click wizard reward variables next btn
     Then Check that new experiment <project name> page is opened
     Then Check model page model breadcrumb package name is <package name>
-    When Open dashboard page
-    Then Check dashboard <project name> model breadcrumb <package name>
+    # When Open dashboard page
+    # Then Check dashboard <project name> model breadcrumb <package name>
     When Open projects page
     When Open project <project name> on projects page
     Then Check project page model '1' package name is <package name>

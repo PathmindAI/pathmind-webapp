@@ -42,7 +42,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
-import io.skymind.pathmind.webapp.ui.views.dashboard.DashboardView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 @Route(Routes.LOGIN_URL)
 @Theme(Lumo.class)
@@ -168,7 +168,7 @@ public class LoginView extends HorizontalLayout
 	}
 
 	private Class getRerouteClass() {
-		return DashboardView.class;
+		return ProjectsView.class;
 	}
 
 	@Override

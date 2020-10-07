@@ -153,4 +153,19 @@ public class ExperimentPageSteps {
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
         experimentPage.checkExperimentPageChartPopUpIsShownForVariable(variable);
     }
+
+    @Step
+    public void checkVariableSimulationMetricValue(String variable, String value) {
+        experimentPage.checkVariableSimulationMetricValue(variable, value);
+    }
+
+    @Step
+    public void checkExperimentPageObservationsList(String observation) {
+        experimentPage.checkExperimentPageObservationsList(observation);
+    }
+
+    @Step
+    public void checkExportPolicyPage(String model) {
+        experimentPage.checkExportPolicyPage(model);
+    }
 }

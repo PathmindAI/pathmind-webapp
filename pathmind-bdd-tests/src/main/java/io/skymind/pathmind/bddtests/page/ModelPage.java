@@ -128,6 +128,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
+        waitABit(3000);
         assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
     }
 

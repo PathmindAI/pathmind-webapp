@@ -26,6 +26,7 @@ import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.components.atoms.GoalsReachedStatus;
+import io.skymind.pathmind.webapp.ui.components.atoms.IconStopped;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
@@ -128,16 +129,13 @@ public class DashboardLine extends HorizontalLayout {
 				item = new Span(trainingProgress);
 				item.setClassName("stage-active");
             } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
-                if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
+                if (dashboardItem.getExperiment().getTrainingStatusEnum() == RunStatus.Error) {
                     Icon errorIcon = VaadinIcon.EXCLAMATION_CIRCLE_O.create();
                     errorIcon.getElement().setAttribute("title", "Failed");
                     item = new Span(new Span(errorIcon, new Span(stage.getNameAfterDone())));
                     item.setClassName("stage-failed");
                 } else {
-                    String trainingStatusText = dashboardItem.getLatestRun().getStatusEnum() == RunStatus.Stopping ? "Stopping" : "Stopped";
-                    Span stoppedIcon = LabelFactory.createLabel("", "icon-stopped");
-                    stoppedIcon.setTitle(trainingStatusText);
-                    item = new Span(new Span(stoppedIcon, new Span(stage.getNameAfterDone())));
+                    item = new Span(new Span(new IconStopped(), new Span(stage.getNameAfterDone())));
                     item.setClassName("stage-stopped");
                 }
 			} else {

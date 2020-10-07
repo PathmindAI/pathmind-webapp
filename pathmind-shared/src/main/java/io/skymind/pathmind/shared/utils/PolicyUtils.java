@@ -1,19 +1,18 @@
 package io.skymind.pathmind.shared.utils;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
-
-import org.apache.commons.lang3.ObjectUtils;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.*;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class PolicyUtils
@@ -110,7 +109,7 @@ public class PolicyUtils
                     .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
 
             // index, metrics list
-            Map<Integer, Map<Integer, Double>> sparkLineMap = new HashMap<>();
+            Map<Integer, Map<Integer, Double>> sparkLineMap = new LinkedHashMap<>();
 
             // Loop by iteration
             metricsList.stream().forEach(metrics ->
@@ -119,8 +118,10 @@ public class PolicyUtils
                     metrics.getMetricsThisIter().forEach(mIter -> {
                         int index = mIter.getIndex(); // this is the index of the metric
 
-                        Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new HashMap<>();
-                        // Put Iteration Number and Mean Value of metric into this HashMap
+                        // since this is for chart view, we need to make sure the order of data
+                        // we SHOULD use LinkedHashMap instead of HashMap
+                        Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new LinkedHashMap<>();
+                        // Put Iteration Number and Mean Value of metric into this LinkedHashMap
                         data.put(metrics.getIteration(), mIter.getMean());
                         sparkLineMap.put(index, data);
                     })

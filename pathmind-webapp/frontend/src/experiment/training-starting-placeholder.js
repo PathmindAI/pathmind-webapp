@@ -20,7 +20,7 @@ class TrainingStartingPlaceholder extends PolymerElement {
                     min-height: 25rem;
                     background-color: var(--pm-highlight-light);
                     padding: var(--lumo-space-m) var(--lumo-space-xxl);
-                    border: 1px solid var(--pm-gray-color);
+                    border: 1px solid var(--pm-grey-color);
                     border-radius: var(--lumo-border-radius);
                 }
                 chart-placeholder {
@@ -57,7 +57,7 @@ class TrainingStartingPlaceholder extends PolymerElement {
                     height: var(--lumo-size-xs);
                     top: -0.2rem !important;
                     left: 0;
-                    border: 2px solid var(--pm-gray-color-light);
+                    border: 2px solid var(--pm-grey-color-light);
                     border-radius: 50%;
                     border-top: 2px solid var(--pm-primary-color);
                     -webkit-animation: spin 2s linear infinite; /* Safari */

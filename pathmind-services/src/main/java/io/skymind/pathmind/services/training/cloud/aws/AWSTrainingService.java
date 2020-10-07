@@ -1,9 +1,6 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.ModelType;
@@ -34,8 +31,9 @@ public class AWSTrainingService extends TrainingService {
                               PolicyDAO policyDAO,
                               ModelDAO modelDAO,
                               ObservationDAO observationDAO,
+                              ExperimentDAO experimentDAO,
                               DSLContext ctx) {
-    	super(executionProvider, runDAO, modelService, executionEnvironmentManager, policyDAO, modelDAO, ctx);
+    	super(executionProvider, runDAO, modelService, executionEnvironmentManager, policyDAO, modelDAO, experimentDAO, ctx);
     	this.observationDAO = observationDAO;
     	this.featureManager = featureManager;
     }

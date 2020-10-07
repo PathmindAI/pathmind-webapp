@@ -23,7 +23,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO, 
+    public AWSExecutionProgressUpdater(RunDAO runDAO,
                                        EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService) {
         this.runDAO = runDAO;
@@ -42,6 +42,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         final List<Long> runIds = runs.stream().map(Run::getId).collect(Collectors.toList());
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
         final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
+
+        log.info("Updater is dealing with: {}", runIds);
 
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {

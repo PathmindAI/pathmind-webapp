@@ -54,7 +54,7 @@ public class ExperimentDAO
 		return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
 	}
 
-	public List<Experiment> getExperimentsForModel(long modelId) {
+    public List<Experiment> getExperimentsForModel(long modelId) {
 		List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId);
 		Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
 		experiments.stream().forEach(experiment ->
@@ -81,6 +81,10 @@ public class ExperimentDAO
 	public void updateExperiment(Experiment experiment) {
 		ExperimentRepository.updateExperiment(ctx, experiment);
 	}
+
+    public void updateTrainingStatus(DSLContext transactionCtx, Experiment experiment) {
+        ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
+    }
 
 	public void archive(long experimentId, boolean isArchive) {
 		ExperimentRepository.archive(ctx, experimentId, isArchive);

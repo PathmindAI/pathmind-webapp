@@ -1,16 +1,8 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
-import static io.skymind.pathmind.shared.constants.RunStatus.Running;
-import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
-import static io.skymind.pathmind.shared.constants.RunStatus.Error;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -62,33 +54,6 @@ public class ExperimentUtils
 
 	public static String getExperimentNumber(Experiment experiment) {
 		return experiment.getName();
-	}
-
-	public static RunStatus getTrainingStatus(Experiment experiment) {
-		RunStatus status = experiment.getRuns().stream()
-				.map(Run::getStatusEnum)
-				.min(Comparator.comparingInt(RunStatus::getValue))
-				.orElse(NotStarted);
-		
-		// In Running status, there can be some runs completed while others are yet to be started
-		// So checking that to make sure
-		if (status == NotStarted || status == Starting) {
-			if (experiment.getRuns().stream()
-					.map(Run::getStatusEnum)
-					.map(RunStatus::getValue)
-					.anyMatch(statusVal -> statusVal > Starting.getValue())) {
-				status = Running;
-			}
-        }
-
-        if (status == RunStatus.Killed) {
-            if (experiment.getRuns().stream()
-                    .map(Run::getTrainingErrorId)
-                    .anyMatch(errorId -> errorId > 0)) {
-                status = Error;
-            }
-        }
-		return status;
 	}
 
 	public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
@@ -192,7 +157,24 @@ public class ExperimentUtils
         return experiment != null && experiment.getId() == secondExperiment.getId();
     }
 
+    public static void addOrUpdatePolicies(Experiment experiment, List<Policy> updatedPolicies) {
+        updatedPolicies.forEach(updatedPolicy -> {
+            if (experiment.getPolicies() == null) {
+                experiment.setPolicies(new ArrayList<>());
+            }
+            int index = experiment.getPolicies().indexOf(updatedPolicy);
+            if (index != -1) {
+                experiment.getPolicies().set(index, updatedPolicy);
+            } else {
+                experiment.getPolicies().add(updatedPolicy);
+            }
+        });
+    }
+
     public static void addOrUpdateRun(Experiment experiment, Run updatedRun) {
+	    if (experiment.getRuns() == null) {
+	        experiment.setRuns(new ArrayList<>());
+        }
         experiment.getRuns().stream()
                 .filter(run -> run.getId() == updatedRun.getId())
                 .findAny()
@@ -219,8 +201,8 @@ public class ExperimentUtils
             return false;
         return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
-	}
-
+    }
+    
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
     public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
