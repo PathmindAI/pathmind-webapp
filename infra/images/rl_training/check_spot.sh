@@ -29,7 +29,7 @@ curl -X POST -H 'Content-type: application/json' \
 	--data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
 	https://hooks.slack.com/services/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
 
-aws sqs send-message \
-	--queue-url ${SQS_URL} \
-	--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
-	--message-group-id training
+#aws sqs send-message \
+#	--queue-url ${SQS_URL} \
+#	--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+#	--message-group-id training
