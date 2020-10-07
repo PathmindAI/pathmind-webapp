@@ -55,4 +55,20 @@ public class ConfirmationUtils {
         confirmPopup.setCancelButtonText("Cancel");
         confirmPopup.open();
     }
+
+    public static void showStopTrainingConfirmationPopup(Command confirmHandler) {
+        ConfirmPopup confirmPopup = new ConfirmPopup();
+        confirmPopup.setHeader("Stop Training");
+        confirmPopup.setMessage(new Html(
+                "<div>"
+                + "<p>Are you sure you want to stop training?</p>"
+                + "<p>If you stop the training before it completes, you won't be able to download the policy. "
+                + "<b>If you decide you want to start the training again, you can start a new experiment and "
+                + "use the same reward function.</b>"
+                + "</p>"
+                + "</div>"));
+        confirmPopup.setConfirmButton("Stop Training", confirmHandler, ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName());
+        confirmPopup.setCancelButtonText("Cancel");
+        confirmPopup.open();
+    }
 }

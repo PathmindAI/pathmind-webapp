@@ -344,21 +344,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void showStopTrainingConfirmationDialog() {
-        ConfirmationUtils.confirmationPopupDialog(
-                "Stop Training",
-                "<div>"
-                        + "<p>Are you sure you want to stop training?</p>"
-                        + "<p>If you stop the training before it completes, you won't be able to download the policy. "
-                        + "<b>If you decide you want to start the training again, you can start a new experiment and "
-                        + "use the same reward function.</b>"
-                        + "</p>"
-                        + "</div>",
-                "Stop Training",
-                () -> {
-                    trainingService.stopRun(experiment);
-                    updateUIAfterExperimentIsStopped();
-                    fireEvents();
-                });
+        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
+                trainingService.stopRun(experiment);
+                updateUIAfterExperimentIsStopped();
+                fireEvents();
+        });
     }
 
     private void updateUIAfterExperimentIsStopped() {
