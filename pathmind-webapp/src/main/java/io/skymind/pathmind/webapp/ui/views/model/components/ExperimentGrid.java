@@ -50,6 +50,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true);
         addComponentColumn(experiment -> new StatusIcon(experiment))
 				.setHeader("Status")
+				.setComparator(Comparator.comparing(Experiment::getTrainingStatus))
 				.setAutoWidth(true)
 				.setFlexGrow(0)
 				.setResizable(true)
