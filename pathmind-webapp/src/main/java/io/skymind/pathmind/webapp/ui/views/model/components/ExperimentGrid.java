@@ -12,6 +12,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 
@@ -47,7 +48,7 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setFlexGrow(0)
 				.setAutoWidth(true)
 				.setResizable(true);
-		addColumn(experiment -> experiment.getTrainingStatusEnum())
+        addComponentColumn(experiment -> new StatusIcon(experiment))
 				.setHeader("Status")
 				.setAutoWidth(true)
 				.setFlexGrow(0)

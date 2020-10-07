@@ -72,6 +72,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void setExperimentDetails(UI ui, Experiment experiment) {
         RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         getModel().setStatus(getIconStatus(overallExperimentStatus));
+        getModel().setStatusText(overallExperimentStatus.toString());
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
@@ -99,16 +100,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private String getIconStatus(RunStatus status) {
-        if(ExperimentUtils.isDraftRunType(experiment))
-            return "pencil";
-        if (RunStatus.isRunning(status)) {
-            return "loading";
-        } else if (status == RunStatus.Completed) {
-            return "check";
-        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
-            return "stopped";
-        }
-        return "exclamation";
+        return ExperimentUtils.getIconStatus(experiment, status);
     }
 
     private void updateGoalStatus(Boolean goalStatus) {
@@ -129,6 +121,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     private void updateStatus(RunStatus runStatus) {
         getModel().setStatus(getIconStatus(runStatus));
+        getModel().setStatusText(runStatus.toString());
     }
 
     public void updateExperiment(Experiment experiment) {
@@ -151,7 +144,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setIsCurrent(boolean isCurrent);
         void setIsDraft(boolean isDraft);
         void setIsFavorite(boolean isFavorite);
-        void setStatus(String IconStatus);
+        void setStatus(String iconStatus);
+        void setStatusText(String statusText);
         void setShowGoals(boolean showGoals);
         void setGoalsReached(boolean goalsReached);
     }

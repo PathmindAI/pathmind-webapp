@@ -202,6 +202,19 @@ public class ExperimentUtils
         return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
     }
+
+    public static String getIconStatus(Experiment experiment, RunStatus status) {
+        if(ExperimentUtils.isDraftRunType(experiment))
+            return "pencil";
+        if (RunStatus.isRunning(status)) {
+            return "loading";
+        } else if (status == RunStatus.Completed) {
+            return "check";
+        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
+            return "stopped";
+        }
+        return "exclamation";
+    }
     
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
