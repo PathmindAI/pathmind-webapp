@@ -62,7 +62,7 @@
 .project-view .page-content-header {
     margin-bottom: 0;
     padding: 0 var(--lumo-space-xs) 0 var(--lumo-space-m) ;
-    border-bottom: 1px solid var(--pm-gray-color-lightest);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
 .project-view .page-content-header > vaadin-vertical-layout {
@@ -89,7 +89,7 @@
     padding-right: var(--lumo-space-s);
     border-radius: 0;
     margin: 0;
-    box-shadow: inset 0 -2px 0 0 var(--pm-gray-color-lighter);
+    box-shadow: inset 0 -2px 0 0 var(--pm-grey-color-lighter);
 }
 
 .project-view .observations-panel {
@@ -108,7 +108,7 @@
 
 .project-view .notes-block vaadin-text-area {
     border: none;
-    border-left: 1px solid var(--pm-gray-color-lightest);
+    border-left: 1px solid var(--pm-grey-color-lightest);
     border-radius: 0;
 }
 
@@ -133,7 +133,7 @@
 .models-navbar {
     height: calc(100vh - 10.5rem);
     background-color: var(--pm-app-bg-color);
-    border-right: 1px solid var(--pm-gray-color-lightest);
+    border-right: 1px solid var(--pm-grey-color-lightest);
 }
 
 .models-navbar vaadin-select {

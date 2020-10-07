@@ -53,10 +53,10 @@
     border-radius: 0;
     border-left: none;
     border-right: none;
-    border-bottom: 1px solid var(--pm-gray-color-lighter);
+    border-bottom: 1px solid var(--pm-grey-color-lighter);
 }
 
 :host([theme~="models-nav-bar-select"]:hover) [part="input-field"] {
     color: var(--lumo-body-text-color);
-    background-color: var(--pm-gray-color-lightest);
+    background-color: var(--pm-grey-color-lightest);
 }

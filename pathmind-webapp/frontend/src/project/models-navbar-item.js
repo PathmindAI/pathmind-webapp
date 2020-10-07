@@ -61,7 +61,7 @@ class ModelsNavbarItem extends PolymerElement {
             :host([is-current]),
             :host(:hover) {
                 background-color: white;
-                border-color: var(--pm-gray-color-lighter);
+                border-color: var(--pm-grey-color-lighter);
             }
             .model-name {
                 font-size: var(--lumo-font-size-s);
@@ -83,7 +83,7 @@ class ModelsNavbarItem extends PolymerElement {
             .model-name p {
                 font-size: var(--lumo-font-size-xs);
                 font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
-                color: var(--pm-gray-color-dark);
+                color: var(--pm-grey-color-dark);
             }
             vaadin-button {
                 margin-left: auto;
