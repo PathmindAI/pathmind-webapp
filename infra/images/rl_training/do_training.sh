@@ -1,11 +1,25 @@
 #!/bin/bash
 
-
 NAMESPACE="default"
 if [ "${ENVIRONMENT}" != "prod" ]
 then
-	NAMESPACE=${ENVIRONMENT}
+        NAMESPACE=${ENVIRONMENT}
 fi
+sleep_time=60
+training_update_timeout=3600
+s3_url="s3://${S3BUCKET}/${S3PATH}"
+s3_url_link="${S3BUCKET}/${S3PATH}"
+log_file="process_output.log"
+
+#Get the user
+ID=`echo ${S3PATH} | sed "s/id//g"`
+EMAIL=`psql -t "$DB_URL_CLI" << EOF
+select email from pathmind_user
+where id= (select pathmind_user_id from project
+where id= (select project_id from model
+where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
+EOF`
+
 
 #Increase the restrats count
 psql "$DB_URL_CLI" << EOF
@@ -48,46 +62,32 @@ EOF`
 
 if [ $AGE -ge 24 ]
 then
-	description="Job running for more than 24 hours, job is killed"
-	curl -X POST -H 'Content-type: application/json' \
-	--data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
-	https://hooks.slack.com/services/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
-	echo "Killing on timeout"
-	#Set the status in trainer_job
-	psql "$DB_URL_CLI" << EOF
+        description="Job running for more than 24 hours, job is killed"
+        curl -X POST -H 'Content-type: application/json' \
+        --data "{'text':':x:Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+        https://hooks.slack.com/services/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
+        echo "Killing on timeout"
+        #Set the status in trainer_job
+        psql "$DB_URL_CLI" << EOF
 update public.trainer_job
 set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
-	aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
-	echo ${description} > errors.log
-	aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
-	aws sqs send-message \
-		--queue-url ${SQS_URL} \
-		--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
-		--message-group-id training
-	sleep 1h
+        aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+        echo ${description} > errors.log
+        aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+        aws sqs send-message \
+                --queue-url ${SQS_URL} \
+                --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+                --message-group-id training
+        sleep 1h
 fi
 
-sleep_time=60
-training_update_timeout=3600
-s3_url="s3://${S3BUCKET}/${S3PATH}"
-s3_url_link="${S3BUCKET}/${S3PATH}"
-log_file="process_output.log"
 aws s3 sync ${s3_url} ./ > /dev/null
 
 #remove existing folders
 find . -mindepth 1 -maxdepth 1 -type d | xargs -I {} rm -rf {}
-
-#Get the user
-ID=`echo ${S3PATH} | sed "s/id//g"`
-EMAIL=`psql -t "$DB_URL_CLI" << EOF
-select email from pathmind_user
-where id= (select pathmind_user_id from project
-where id= (select project_id from model
-where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
-EOF`
 
 #Get the instance type and cost
 instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
@@ -99,22 +99,26 @@ aws s3 sync ${s3_url}/output/ /tmp/PPO/
 output_files=`ls  /tmp/PPO/experiment_state*json | wc -l`
 if [ "${output_files}" -ge 1 ]
 then
-	set -e
-	echo "Resuming Training"
-	export RESUME=true
-	rm -rf /app/work/PPO/*
-	touch restarting
-	aws s3 cp restarting ${s3_url}/output/
-	aws s3 sync ${s3_url}/output/ /app/work/PPO/
-	echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
-	aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
-	aws s3 rm ${s3_url}/output/ --recursive
-	touch restarted
-	aws s3 cp restarted ${s3_url}/output/
-	set +e
+        set -e
+        echo "Resuming Training"
+        export RESUME=true
+        rm -rf /app/work/PPO/*
+        touch restarting
+        aws s3 cp restarting ${s3_url}/output/
+        aws s3 sync ${s3_url}/output/ /app/work/PPO/
+        echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
+        aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
+        aws s3 rm ${s3_url}/output/ --recursive
+        touch restarted
+        aws s3 cp restarted ${s3_url}/output/
+        set +e
+        curl -X POST -H 'Content-type: application/json' \
+            --data "{'text':':x:Job ${S3PATH}\nDescription: Training is resumed\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+            https://hooks.slack.com/services/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
+
 else
-	#Set the status in trainer_job
-	psql "$DB_URL_CLI" << EOF
+        #Set the status in trainer_job
+        psql "$DB_URL_CLI" << EOF
 update public.trainer_job
 set status=3,ec2_create_date=now(),update_date=NOW(),ec2_instance_type='${instance_type}',ec2_max_price='${instance_price}',restarts=0
 where job_id='${S3PATH}';
@@ -164,19 +168,21 @@ set status=5,ec2_end_date=now(),update_date=NOW(),description='${description}'
 where job_id='${S3PATH}';
 commit;
 EOF
-		aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
-		echo ${description} > errors.log
-		aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
-		aws sqs send-message \
-			--queue-url ${SQS_URL} \
-			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
-			--message-group-id training
+                aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+                echo ${description} > errors.log
+                aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
+                aws sqs send-message \
+                        --queue-url ${SQS_URL} \
+                        --message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
+                        --message-group-id training
                 sleep 1h
         fi
 
         STATUS=`curl -s -o /dev/null -w '%{http_code}' http://169.254.169.254/latest/meta-data/spot/instance-action`
         if [ $STATUS -eq 200 ]; then
                 echo "Spot instance will be terminated by AWS"
+                kill -9 ${pid}
+                aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
                 aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
                 ls -alR ./work/PPO/ > /tmp/debug
                 aws s3 cp /tmp/debug ${s3_url}/output/debug > /dev/null
@@ -184,6 +190,8 @@ EOF
                 curl -X POST -H 'Content-type: application/json' \
                     --data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                     https://hooks.slack.com/services/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
+                sleep 20
+                aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
                 #Wait for the instace to be taken
                 sleep 300
         fi
@@ -196,13 +204,13 @@ status=4
 description="Job finished"
 if [ ${script_exit} != 0 ]
 then
-	description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`
-	curl -X POST -H 'Content-type: application/json' \
-		--data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
-		https://hooks.slack.com/services/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
-	echo "Training crashed"
-	tail -1  ${log_file} >> errors.log
-	status=5
+        description=`tail -c 254 ${log_file} | tr '\n' ' ' | sed "s/'//g"`
+        curl -X POST -H 'Content-type: application/json' \
+                --data "{'text':':x:Training ${S3PATH} Job Crashed\nError: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+                https://hooks.slack.com/services/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
+        echo "Training crashed"
+        tail -1  ${log_file} >> errors.log
+        status=5
 fi
 
 #Generate final files
@@ -237,15 +245,15 @@ aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null
 #delete old state files
 if [ "${RESUME}" == true ]
 then
-	for file in `ls -1tr ./work/PPO/experiment_state*json | sed '$d'`
-	do
-		#Delete locally
-		echo "Deleting old ${file}"
-		rm ${file}
-		#Delete from s3
-		file=`basename ${file}`
-		aws s3 rm ${s3_url}/output/${file} > /dev/null
-	done
+        for file in `ls -1tr ./work/PPO/experiment_state*json | sed '$d'`
+        do
+                #Delete locally
+                echo "Deleting old ${file}"
+                rm ${file}
+                #Delete from s3
+                file=`basename ${file}`
+                aws s3 rm ${s3_url}/output/${file} > /dev/null
+        done
 fi
 
 #Validate that the training was successful
@@ -279,3 +287,4 @@ kill -9 $pid_tail
 
 #Sleep until is destroyed
 sleep 1h
+
