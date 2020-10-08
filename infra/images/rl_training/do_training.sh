@@ -89,9 +89,6 @@ where id= (select project_id from model
 where id= (select model_id from experiment where id=(select experiment_id from run where id=${ID}))))
 EOF`
 
-#Monitor spot instance
-bash check_spot.sh "${S3BUCKET}" "${S3PATH}" "${ENVIRONMENT}" "${EMAIL}" "${log_file}" &
-
 #Get the instance type and cost
 instanceid=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.instanceId'`
 instance_type=`aws ec2 describe-spot-instance-requests | jq -r ".SpotInstanceRequests | .[] | select (.InstanceId ==\"${instanceid}\").LaunchSpecification.InstanceType"`
@@ -175,6 +172,20 @@ EOF
 			--message-body '{"S3Bucket": "'${S3BUCKET}'", "S3Path":"'${S3PATH}'", "destroy":"0"}' \
 			--message-group-id training
                 sleep 1h
+        fi
+
+        STATUS=`curl -s -o /dev/null -w '%{http_code}' http://169.254.169.254/latest/meta-data/spot/instance-action`
+        if [ $STATUS -eq 200 ]; then
+                echo "Spot instance will be terminated by AWS"
+                aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
+                ls -alR ./work/PPO/ > /tmp/debug
+                aws s3 cp /tmp/debug ${s3_url}/output/debug > /dev/null
+                description="Spot instance will be terminated by AWS"
+                curl -X POST -H 'Content-type: application/json' \
+                    --data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
+                    https://hooks.slack.com/services/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
+                #Wait for the instace to be taken
+                sleep 300
         fi
         sleep $sleep_time
 done
