@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MetricsRaw implements Serializable, DeepCloneableInterface {
+public class MetricsRaw implements Serializable, DeepCloneableInterface<MetricsRaw> {
     private Integer iteration;
 
     // episode, raw data

@@ -37,7 +37,7 @@
     line-height: 1.8;
     padding: var(--lumo-space-s);
     padding-top: 0;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow: auto;
 }
@@ -100,7 +100,7 @@
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
-    flex: 1 0 auto;
+    flex: 0 0 auto;
     height: 2rem;
     line-height: 1;
     margin-left: var(--lumo-space-s);
@@ -146,6 +146,10 @@
     align-items: flex-end;
 }
 
+.experiment-view .observations-panel {
+    max-height: 27rem;
+}
+
 .experiment-view .observations-table {
     padding-top: 0;
 }
@@ -156,7 +160,7 @@
 
 .experiment-view .bold-label + data-chart {
     flex: 1 1 auto;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);
     overflow: hidden;
 }

@@ -25,7 +25,7 @@
 #     When Check that new project page opened
 #     When Open dashboard page
 #     When Click Getting Started Guide button
-#     Then Check that learn page https://help.pathmind.com/en/articles/4004788-getting-started opened
+#     Then Check that learn page https://help.pathmind.com/en/articles/4478328-getting-started-with-product-delivery opened
 
 #   @smoke
 #   Scenario: Check start page with the getting started message user see after login

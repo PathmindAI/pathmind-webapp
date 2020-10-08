@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.project;
 
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -27,7 +29,7 @@ public class AnylogicFileChecker implements FileChecker {
     @Override
     public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) {
         log.info("{} :- performFileCheck Started", uuid);
-        File unZippedJar;
+        List<File> unZippedJars;
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
         anylogicFileCheckResult.setFileCheckComplete(false);
 
@@ -36,17 +38,17 @@ public class AnylogicFileChecker implements FileChecker {
             if (file.exists() && file.isFile() && file.canRead()) {
                 log.info("Uploaded file exists and it is readable");
                 //To check a Zip file and if it is a valid file extract it in to the temporary folder
-                unZippedJar = checkZipFile(file, anylogicFileCheckResult);
+                unZippedJars = checkZipFile(file, anylogicFileCheckResult);
                 statusUpdater.updateStatus(0.10);
 
-                if (unZippedJar != null) {
+                if (unZippedJars != null && unZippedJars.size() > 0) {
                     //Passing unzipped jar to check whether it is valid or not
-                    checkJarFile(unZippedJar, anylogicFileCheckResult);
+                    checkJarFile(unZippedJars, anylogicFileCheckResult);
                     statusUpdater.updateStatus(0.30);
 
                     if (anylogicFileCheckResult.isModelJarFilePresent()) {
                         //Check for PathmindHelper class instance in uploaded model.jar
-                        checkHelpers(unZippedJar, anylogicFileCheckResult);
+                        checkHelpers(unZippedJars, anylogicFileCheckResult);
                         statusUpdater.updateStatus(0.50);
 
                         if (anylogicFileCheckResult.isHelperPresent()) {
@@ -56,8 +58,7 @@ public class AnylogicFileChecker implements FileChecker {
                             statusUpdater.updateError("model.jar does not having PathmindHelper class");
                         }
                     }
-                }
-                else {
+                } else {
                     if (anylogicFileCheckResult.isCorrectFileType()) {
                         log.error("model.jar does not exist");
                         statusUpdater.updateError("model.jar does not exist");
@@ -82,11 +83,9 @@ public class AnylogicFileChecker implements FileChecker {
     }
 
     /* To check whether zip file is valid or not, if valid it returns unzipped temp directory */
-    File checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
+    List<File> checkZipFile(File file, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
         log.info("{} :- CheckZip File Started", uuid);
-        String searchFileName = "model.jar";
-        // To Check if the Zip file is a valid
-        File unZippedJar = null;
+        List<File> unZippedJars = new ArrayList<>();
         boolean isValidZip;
 
         try (InputStream iStream = new FileInputStream(file)) {
@@ -105,10 +104,10 @@ public class AnylogicFileChecker implements FileChecker {
 
                     Path objPath = Paths.get(zipEntry.getName());
                     Path modelFileName = objPath.getFileName();
-                    // To Search model.jar in the extracted zipped file
-                    if (modelFileName.toString().toLowerCase().equalsIgnoreCase(searchFileName)) {
-                        unZippedJar = unzipFile(file, searchFileName);
-                        log.debug("unzipped jar path {} :-", unZippedJar.getAbsolutePath());
+
+                    if (ModelUtils.isModelFile(zipEntry.getName())) {
+                        unZippedJars.add(unzipFile(file, modelFileName.toString()));
+                        log.debug("unzipped jar path {} :-", objPath);
                     }
                 }
                 anylogicFileCheckResult.setZipContentFileNames(fileNameList);
@@ -120,40 +119,47 @@ public class AnylogicFileChecker implements FileChecker {
         }
 
         log.info("{} :- CheckZip File Completed", uuid);
-        return unZippedJar;
+        return unZippedJars;
     }
 
     // To Check if the model.jar is a valid
-    void checkJarFile(File unZippedJar, AnylogicFileCheckResult anylogicFileCheckResult) {
+    void checkJarFile(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkJarFile Started", uuid);
-        // To Check if the Jar file is a valid
-        try (ZipFile jarFile = new ZipFile(unZippedJar)) {
-            anylogicFileCheckResult.setModelJarFilePresent(true);
-        } catch (ZipException ioe) {
-            log.error("Error opening jar file", ioe);
-            anylogicFileCheckResult.setModelJarFilePresent(false);
-        } catch (IOException e) {
-            log.error("Error opening jar file", e);
-            anylogicFileCheckResult.setModelJarFilePresent(false);
-        }
+        AtomicBoolean isModelJarFilePresent = new AtomicBoolean(false);
+
+        unZippedJars.stream().forEach(unZippedJar -> {
+            try (ZipFile jarFile = new ZipFile(unZippedJar)) {
+                isModelJarFilePresent.set(true);
+            } catch (ZipException ioe) {
+                log.error("Error opening jar file", ioe);
+            } catch (IOException e) {
+                log.error("Error opening jar file", e);
+            }
+        });
+
+        anylogicFileCheckResult.setModelJarFilePresent(isModelJarFilePresent.get());
         log.info("{} :- checkJarFile Completed", uuid);
     }
 
     // To check the existence of pathmind helpers check
-    void checkHelpers(File file, AnylogicFileCheckResult anylogicFileCheckResult) {
+    void checkHelpers(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
-        try {
-            File unJarred = extractArchive(file);
-            List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
 
-            ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
+        List<String> listOfHelpers = new ArrayList<>();
 
-            List<String> listOfHelpers = byteCodeAnalyzer.byteParser(listOfFiles);
+        unZippedJars.stream().forEach(unZippedJar -> {
+            try {
+                File unJarred = extractArchive(unZippedJar);
+                List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
+                ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
+                listOfHelpers.addAll(byteCodeAnalyzer.byteParser(listOfFiles));
+            } catch (IOException ioe) {
+                log.error("Error unJarred jar file", ioe);
+            }
+        });
 
-            anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
-        } catch (IOException ioe) {
-            log.error("Error unJarred jar file", ioe);
-        }
+        anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
+
         log.info("{} :- checkHelpers Completed", uuid);
     }
 

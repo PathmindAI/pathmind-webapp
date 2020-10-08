@@ -37,6 +37,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
         if (isSameExperiment(event)) {
+            experiment.setTrainingStatusEnum(event.getRun().getExperiment().getTrainingStatusEnum());
             ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
             ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
             PushUtils.push(getUiSupplier(), () -> {
