@@ -6,10 +6,10 @@
     @license MIT
     @author
 */
-import "ace-builds/src-noconflict/ace.js";
+// import "ace-builds/src-noconflict/ace.js";
 
-import "ace-builds/src-noconflict/ext-searchbox.js";
-import "ace-builds/src-noconflict/ext-beautify.js";
+// import "ace-builds/src-noconflict/ext-searchbox.js";
+// import "ace-builds/src-noconflict/ext-beautify.js";
 
 const $template = document.createElement("template");
 $template.innerHTML = `<template id="juicy-ace-editor">
@@ -39,7 +39,11 @@ window.customElements.define(
   class JuicyAceEditor extends HTMLElement {
     // getter/setter for value property
     get value() {
-      return (this.editor && this.editor.getValue()) || this.textContent;
+        // This is a fix by @fionnachan because it doesn't return the value correctly when the value is an empty string
+        if (this.editor && this.editor.getValue() != null && typeof(this.editor.getValue()) !== "undefined") {
+            return this.editor && this.editor.getValue();
+        }
+        return this.textContent;
     }
     set value(val) {
       if (this.editor) {
