@@ -296,7 +296,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void setupBinder() {
-        binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction,
+        // To allow saving when the reward function editor is empty,
+        // the field is not set to forField(...).asRequired().bind(...)
+        binder.forField(rewardFunctionEditor).bind(Experiment::getRewardFunction,
                 Experiment::setRewardFunction);
     }
 
