@@ -26,6 +26,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -72,6 +73,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Autowired
     private ExperimentDAO experimentDAO;
+    @Autowired
+    private PolicyDAO policyDAO;
 	@Autowired
 	private ModelDAO modelDAO;
 	@Autowired
@@ -92,7 +95,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Project project;
     private List<Model> models;
     private List<Experiment> experiments;
-    private List<RewardVariable> rewardVariableNames;
+    private List<RewardVariable> rewardVariables;
     private List<Observation> modelObservations = new ArrayList<>();
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
@@ -140,7 +143,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY);
             modelNotesField = createModelNotesField();
             rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setRewardVariables(rewardVariableNames);
+            rewardVariablesTable.setRewardVariables(rewardVariables);
             observationsPanel = new ObservationsPanel(true);
             observationsPanel.setupObservationTable(modelObservations, null);
 
@@ -264,7 +267,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
     
     private void setupGrid() {
-        experimentGrid = new ExperimentGrid(experimentDAO);
+        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
     }
 
 	public List<Model> getModels() {
@@ -333,7 +336,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             }
             modelId = selectedModel.getId();
             experiments = experimentDAO.getExperimentsForModel(modelId);
-            rewardVariableNames = rewardVariableDAO.getRewardVariablesForModel(modelId);
+            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     		modelObservations = observationDAO.getObservationsForModel(modelId);
         }
 	}

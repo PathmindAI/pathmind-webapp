@@ -10,18 +10,24 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 public class ExperimentGrid extends Grid<Experiment>
 {
-	public ExperimentGrid(ExperimentDAO experimentDAO)
+	public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables)
 	{
 		addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
                     ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
@@ -56,13 +62,35 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setResizable(true)
                 .setSortable(true);
         addComponentColumn(experiment -> {
-                    if (experiment.isHasGoals() && !experiment.isDraft() && experiment.isGoalsReached()) {
-                        Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
-                        goalReachedIcon.addClassName("success-text");
-                        return goalReachedIcon;
+                    Span goalIcons = new Span();
+                    String successClassName = "success-text";
+                    if (experiment.isHasGoals() && !experiment.isDraft()) {
+                        // Get best policy
+                        List<Policy> policies = policyDAO.getPoliciesForExperiment(experiment.getId());
+
+                        if (policies != null && !policies.isEmpty()) {
+                            Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
+                            Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
+                            goalReachedIcon.addClassName(successClassName);
+                            int goalReachedCount = 0;
+
+                            // Get reward variables total reached goal count
+                            rewardVariables.forEach(rv -> {
+                                if (rv.getGoalConditionTypeEnum() != null) {
+                                    Boolean reachedGoal = PolicyUtils.isGoalReached(rv, bestPolicy);
+                                    if (reachedGoal){
+                                        // goalReachedCount++;
+                                    }
+                                }
+                            });
+                            if (goalReachedCount > 0) {
+                                goalIcons.add(LabelFactory.createLabel(""+goalReachedCount, successClassName), goalReachedIcon);
+                                return goalIcons;
+                            }
+                        }
                     }
-                    // to be replaced with the loading icon after the polymer loading icon component is merged
-                    return new Span("—");
+                    goalIcons.setText("—");
+                    return goalIcons;
                 })
 				.setComparator(Comparator.comparing(Experiment::isGoalsReached))
                 .setHeader("Goals Reached")
