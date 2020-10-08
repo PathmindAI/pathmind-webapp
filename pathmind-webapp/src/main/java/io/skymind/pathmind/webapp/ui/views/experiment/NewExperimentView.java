@@ -285,7 +285,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private boolean canStartTraining() {
 		return ModelUtils.isValidModel(experiment.getModel())
-		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0
+                && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
+                && rewardFunctionErrors.size() == 0
 		        && !observationsPanel.getSelectedObservations().isEmpty()
 		        && canSaveDataInDB();
 	}

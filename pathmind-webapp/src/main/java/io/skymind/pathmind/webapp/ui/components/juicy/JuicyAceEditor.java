@@ -82,8 +82,7 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 	}
 
 	public void setValue(String value) {
-		this.getElement().setProperty("value", value);
-		getElement().executeJs("$0.editor.clearSelection()");
+		getElement().executeJs("this.editor.setValue($0)", value);
 	}
 
 	@Synchronize({"change"})
