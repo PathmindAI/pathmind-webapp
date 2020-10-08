@@ -103,4 +103,13 @@ public class NewExperimentSteps {
         newExperimentPage.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
     }
 
+    @Step
+    public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
+        newExperimentPage.checkNewExperimentPageTrainPolicyBtn(btnStatus);
+    }
+
+    @Step
+    public void cleanNewExperimentRewardFunctionField() {
+        newExperimentPage.cleanNewExperimentRewardFunctionField();
+    }
 }
