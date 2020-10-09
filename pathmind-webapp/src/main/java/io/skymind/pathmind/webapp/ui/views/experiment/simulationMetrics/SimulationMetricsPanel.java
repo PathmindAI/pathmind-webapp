@@ -130,7 +130,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper.removeAll();
         }
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElseGet(null);
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
