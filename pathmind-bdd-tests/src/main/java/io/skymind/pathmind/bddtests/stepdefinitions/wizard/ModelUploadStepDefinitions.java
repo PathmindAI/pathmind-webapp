@@ -42,4 +42,9 @@ public class ModelUploadStepDefinitions {
     public void checkThatWizardUploadAlpFilePageIsOpened() {
         modelUploadSteps.checkThatWizardUploadAlpFilePageIsOpened();
     }
+
+    @When("^Check wizard alp upload step$")
+    public void checkWizardAlpUploadStep() {
+        modelUploadSteps.checkWizardAlpUploadStep();
+    }
 }
