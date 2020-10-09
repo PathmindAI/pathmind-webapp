@@ -76,7 +76,11 @@ public class UpdaterService {
         if (providerJobStatus.getRunStatus().equals(RunStatus.Completing)) {
             run.setCompletingUpdatesAttempts(run.getCompletingUpdatesAttempts() + 1);
             List<String> unfinishedIds = runDAO.unfinishedPolicyIds(run.getId());
-            if (unfinishedIds.size() == 0 || run.getCompletingUpdatesAttempts() >= updateCompletingAttemptsLimit) {
+            boolean enforceComplete = run.getCompletingUpdatesAttempts() >= updateCompletingAttemptsLimit;
+            if (unfinishedIds.size() == 0 || enforceComplete) {
+                if (enforceComplete) {
+                    log.info("Marking Completing run [{}] as Completed since limit of update attempts had been reached", run.getId());
+                }
                 providerJobStatus = new ProviderJobStatus(Completed, providerJobStatus.getExperimentState());
             }
         }
