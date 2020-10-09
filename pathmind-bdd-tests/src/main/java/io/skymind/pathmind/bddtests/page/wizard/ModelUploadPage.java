@@ -64,4 +64,11 @@ public class ModelUploadPage extends PageObject {
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(3)")).getText(), is("You will be able to download this ALP file later to retrieve it."));
     }
+
+    public void checkThatModelUploadLinkOpened() {
+        getDriver().switchTo().frame(1);
+        getDriver().switchTo().frame(1);
+        getDriver().switchTo().frame(1);
+        assertThat(getDriver().findElement(By.cssSelector("body > h1:nth-child(2)")).getText(), is("Exporting models to Java application"));
+    }
 }
