@@ -110,8 +110,8 @@ public class ExperimentPage extends PageObject {
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
-            actual.add(webElement.getAttribute("value"));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::*[@class='reward-variable-name']"))) {
+            actual.add(webElement.getText());
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
