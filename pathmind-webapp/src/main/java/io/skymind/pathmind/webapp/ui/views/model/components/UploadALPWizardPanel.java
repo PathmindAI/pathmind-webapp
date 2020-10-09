@@ -5,8 +5,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -18,6 +16,7 @@ import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
@@ -52,13 +51,15 @@ public class UploadALPWizardPanel extends VerticalLayout {
         setWidthFull();
         setPadding(false);
         setSpacing(false);
-
     }
 
     private void setupLayout(boolean isResumeUpload) {
         setupUploadPanel();
         List<Component> items = new ArrayList<>(Arrays.asList(
-                LabelFactory.createLabel("Upload alp file (Optional)", NO_TOP_MARGIN_LABEL),
+                WrapperUtils.wrapWidthFullBetweenHorizontal(
+                        LabelFactory.createLabel("Upload alp file", NO_TOP_MARGIN_LABEL),
+                        new TagLabel("Optional")
+                ),
                 GuiUtils.getFullWidthHr()));
         if (!isResumeUpload) {
             Icon checkmarkIcon = new Icon(VaadinIcon.CHECK_CIRCLE);
@@ -72,7 +73,7 @@ public class UploadALPWizardPanel extends VerticalLayout {
             items.add(successMessage);
         }
         items.addAll(Arrays.asList(
-                getInstructionsDiv(),
+                new UploadAlpInstructions(),
                 uploadModelPanel,
                 WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)));
 
@@ -129,13 +130,5 @@ public class UploadALPWizardPanel extends VerticalLayout {
                 model.setAlpFile(new byte[0]);
             }
         });
-    }
-
-    private Div getInstructionsDiv() {
-        Div div = new Div();
-        div.setWidthFull();
-        div.add(new Paragraph("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."),
-                new Paragraph("You'll be able to download this ALP file with your trained policy from an experiment."));
-        return div;
     }
 }
