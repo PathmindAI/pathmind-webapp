@@ -1,4 +1,10 @@
 /**
+    This file is no longer the same as the one from juicy-ace-editor
+    because we have modified it for debugging purpose.
+    This file is not used by the app but is for testing changes and reference for customization.
+    The file used by the app is juicy-ace-editor-npm.min.js
+ */
+/**
     Custom Element with Ace code editor
     http://juicy.github.io/juicy-ace-editor/
     version: 2.2.1
@@ -6,10 +12,6 @@
     @license MIT
     @author
 */
-// import "ace-builds/src-noconflict/ace.js";
-
-// import "ace-builds/src-noconflict/ext-searchbox.js";
-// import "ace-builds/src-noconflict/ext-beautify.js";
 
 const $template = document.createElement("template");
 $template.innerHTML = `<template id="juicy-ace-editor">
