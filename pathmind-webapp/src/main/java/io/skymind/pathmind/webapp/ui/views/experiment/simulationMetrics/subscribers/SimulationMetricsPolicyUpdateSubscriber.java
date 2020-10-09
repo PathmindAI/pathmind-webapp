@@ -23,10 +23,8 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(getUiSupplier(), ui -> {
-            // Only for the best policy.
-            Policy policy = PolicyUtils.selectBestPolicy(event.getPolicies());
-            if (simulationMetricsPanel.isShowSimulationMetrics() && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0)
-                simulationMetricsPanel.updateSimulationMetrics(policy, true); // TODO -> it should only be true for the first time, but this is a hotfix
+            // TODO -> it should only be true for the first time, but this is a hotfix
+            simulationMetricsPanel.updateSimulationMetrics(event.getExperiment(), true);
         });
     }
 

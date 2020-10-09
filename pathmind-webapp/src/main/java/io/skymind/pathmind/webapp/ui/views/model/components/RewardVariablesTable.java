@@ -99,11 +99,11 @@ public class RewardVariablesTable extends VerticalLayout {
             thisRVinComparison.ifPresentOrElse(
                     thisRV -> {
                         rewardVariablesInComparison.set(rv.getArrayIndex(), null);
-                        allMetricsChartPanel.updateChart(rewardVariablesInComparison, null);
+                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
                     },
                     () -> {
                         rewardVariablesInComparison.set(rv.getArrayIndex(), rv);
-                        allMetricsChartPanel.updateChart(rewardVariablesInComparison, null);
+                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
                     });
         };
         RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler, rewardVariableClickHandler, actAsMultiSelect);

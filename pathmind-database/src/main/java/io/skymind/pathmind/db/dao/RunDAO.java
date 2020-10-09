@@ -269,19 +269,17 @@ public class RunDAO {
     }
 
     private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
-        if (bestPolicy == null) {
-            return;
-        }
-        List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        if (experiment.isHasGoals()) {
-            boolean goalsReached = rewardVariables.stream()
-                .filter(rv -> rv.getGoalConditionType() != null)
-                .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
-            experiment.setGoalsReached(goalsReached);
-            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
-        }
+        PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
+            List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
+            PolicyUtils.updateSimulationMetricsData(bestPolicy);
+            if (experiment.isHasGoals()) {
+                boolean goalsReached = rewardVariables.stream()
+                        .filter(rv -> rv.getGoalConditionType() != null)
+                        .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
+                experiment.setGoalsReached(goalsReached);
+                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
+            }
+        });
     }
 
     public void updatePolicyData(Run run, List<Policy> policies) {

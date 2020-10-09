@@ -9,9 +9,11 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 
 import java.util.List;
@@ -41,20 +43,20 @@ public class AllMetricsChartPanel extends VerticalLayout
         return hintMessage;
     }
 
-    public void setupChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
+    public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables, Policy bestPolicy) {
         synchronized (experimentLock) {
             this.experiment = experiment;
             chart.setAllMetricsChart(rewardVariables, bestPolicy);
         }
     }
 
-    public void updateChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
-        if (rewardVariables != null) {
-            chart.updateSelectedRewardVariables(rewardVariables);
-        }
-        if (bestPolicy != null) {
-            chart.updateBestPolicy(bestPolicy);
-        }
+    public void updateRewardVariables(List<RewardVariable> rewardVariables) {
+        chart.updateSelectedRewardVariables(rewardVariables);
+        chart.updateData();
+    }
+
+    public void updateBestPolicy(Policy bestPolicy) {
+        chart.updateBestPolicy(bestPolicy);
         chart.updateData();
     }
 
@@ -84,7 +86,9 @@ public class AllMetricsChartPanel extends VerticalLayout
                 // We need to check after the lock is acquired as changing experiments can take up to several seconds.
                 if (event.getExperimentId() != experiment.getId())
                     return;
-                PushUtils.push(getUiSupplier(), () -> updateChart(null, null));
+                ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
+                PolicyUtils.selectBestPolicy(experiment.getPolicies())
+                        .ifPresent(bestPolicy -> PushUtils.push(getUiSupplier(), () -> updateBestPolicy(bestPolicy)));
             }
         }
 
@@ -92,7 +96,6 @@ public class AllMetricsChartPanel extends VerticalLayout
         public boolean filterBusEvent(PolicyUpdateBusEvent event) {
             return experiment.getId() == event.getExperimentId();
         }
-
     }
 }
 

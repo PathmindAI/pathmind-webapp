@@ -86,11 +86,10 @@ public class PolicyUtils
         return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
     }
 
-    public static Policy selectBestPolicy(List<Policy> policies) {
+    public static Optional<Policy> selectBestPolicy(List<Policy> policies) {
         return policies.stream()
                 .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
-                .orElse(null);
+                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration));
     }
 
     public static void updateSimulationMetricsData(Policy policy) {

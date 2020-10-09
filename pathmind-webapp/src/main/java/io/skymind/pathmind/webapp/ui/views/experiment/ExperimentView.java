@@ -71,7 +71,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -96,7 +95,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private long experimentId = -1;
     private long modelId = -1;
     private List<RewardVariable> rewardVariables;
-    private Policy policy;
+    private Policy bestPolicy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
@@ -263,7 +262,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         restartTraining.setVisible(false);
         restartTraining.addClassNames("large-image-btn", "run");
 
-        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
+        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, bestPolicy.getId())));
         exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         exportPolicyButton.setVisible(false);
 
@@ -456,7 +455,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
 		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
-        policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
@@ -482,8 +481,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         observationsPanel.setSelectedObservations(experimentObservations);
-        policyChartPanel.setExperiment(experiment, policy);
-        allMetricsChartPanel.setupChart(rewardVariables, policy);
+        policyChartPanel.setExperiment(experiment, bestPolicy);
+        allMetricsChartPanel.setupChart(experiment, rewardVariables, bestPolicy);
         updateDetailsForExperiment();
     }
 
@@ -544,7 +543,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         RunStatus trainingStatus = experiment.getTrainingStatusEnum();
         boolean isCompleted = trainingStatus == RunStatus.Completed;
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
+        exportPolicyButton.setVisible(isCompleted && bestPolicy != null && bestPolicy.hasFile());
         boolean canBeStopped = RunStatus.isRunning(trainingStatus);
         stopTrainingButton.setVisible(canBeStopped);
         restartTraining.setVisible(false);
@@ -588,10 +587,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
                 // Calculate the best policy again
                 List<Policy> policies = experiment.getPolicies();
-                policy = PolicyUtils.selectBestPolicy(policies);
+                bestPolicy = PolicyUtils.selectBestPolicy(policies).orElse(null);
                 PushUtils.push(getUI(), () -> {
-                    if (policy != null) {
-                        policyChartPanel.updateChart(policies, policy);
+                    if (bestPolicy != null) {
+                        policyChartPanel.updateChart(policies, bestPolicy);
                     }
                     updateDetailsForExperiment();
                 });
