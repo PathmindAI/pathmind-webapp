@@ -228,7 +228,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 middlePanel,
                 getBottomPanel());
         experimentContent.addClassName("view-section");
-        HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapWidthFullHorizontal(experimentContent);
+        HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapSizeFullHorizontal(experimentContent);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
