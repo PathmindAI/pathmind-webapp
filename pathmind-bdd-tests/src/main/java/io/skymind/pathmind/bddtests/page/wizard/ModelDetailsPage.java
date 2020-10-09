@@ -47,7 +47,7 @@ public class ModelDetailsPage extends PageObject {
             if (getDriver().findElements(By.xpath("//*[text()='Your model was successfully uploaded!']")).size() != 0 || getDriver().findElements(By.xpath("//span[text()='Unable to analyze the model.']")).size() != 0) {
                 break;
             }
-            System.out.println("WAITING FOR ELEMENT");
+//            System.out.println("WAITING FOR ELEMENT");
             attempts++;
         }
         assertThat(getDriver().findElements(By.xpath("//span[text()='Unable to analyze the model.']")).size(), is(0));
