@@ -88,9 +88,10 @@ public class PolicyUtils
 
     public static Policy selectBestPolicy(List<Policy> policies) {
         return policies.stream()
-                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-                .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
-                .orElse(null);
+            .filter(Policy::hasFile)
+            .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+            .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
+            .orElse(null);
     }
 
     public static void updateSimulationMetricsData(Policy policy) {
