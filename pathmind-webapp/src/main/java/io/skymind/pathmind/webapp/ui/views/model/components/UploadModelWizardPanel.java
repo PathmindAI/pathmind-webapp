@@ -35,6 +35,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 {
 	private final Model model;
     private final int maxFileSize;
+    private final String anylogicExportGuide = "https://help.anylogic.com/index.jsp?topic=%2Fcom.anylogic.help%2Fhtml%2Frunning%2Fexport-java-application.html";
 
     private VerticalLayout uploadModelPanel;
 	private PathmindModelUploader upload;
@@ -179,7 +180,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setInstructionsForFolderUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
+					"<li><a href=\""+anylogicExportGuide+"\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
 					"<li>Upload the exported folder.</li>" +
 				"</ol>");
 	}
@@ -187,7 +188,7 @@ public class UploadModelWizardPanel extends VerticalLayout
 	private void setInstructionsForZipUploadDiv(Div div) {
 		div.getElement().setProperty("innerHTML",
 				"<ol>" +
-					"<li><a href=\"https://help.anylogic.com/topic/com.anylogic.help/html/standalone/Export_Java_Application.html\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
+					"<li><a href=\""+anylogicExportGuide+"\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
 					"<li>Open the exported folder.</li>" +
 					"<li>Create a zip file that contains:</li>" +
 						"<ul>" +
