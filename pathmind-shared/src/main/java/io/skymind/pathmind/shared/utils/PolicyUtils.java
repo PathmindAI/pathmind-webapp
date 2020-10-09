@@ -87,6 +87,7 @@ public class PolicyUtils
     }
 
     public static Policy selectBestPolicy(List<Policy> policies) {
+
         return policies.stream()
             .filter(p -> p.getRun().getStatusEnum().equals(RunStatus.Completed) ? p.hasFile() : true)
             .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
