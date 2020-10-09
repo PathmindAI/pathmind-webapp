@@ -13,8 +13,7 @@ import java.util.Arrays;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Model extends ArchivableData implements DeepCloneableInterface
-{
+public class Model extends ArchivableData implements DeepCloneableInterface<Model> {
     private static final long serialVersionUID = 3143001029296125340L;
 
 	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;

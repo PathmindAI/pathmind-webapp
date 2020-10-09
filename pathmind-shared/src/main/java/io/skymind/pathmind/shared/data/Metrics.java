@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Metrics implements Serializable, DeepCloneableInterface {
+public class Metrics implements Serializable, DeepCloneableInterface<Metrics> {
     private Integer iteration;
     private List<MetricsThisIter> metricsThisIter;
 

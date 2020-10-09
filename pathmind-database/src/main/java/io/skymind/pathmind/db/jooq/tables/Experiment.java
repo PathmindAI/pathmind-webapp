@@ -17,10 +17,11 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1498463499;
+    private static final long serialVersionUID = -1202604930;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -60,7 +61,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.id</code>.
      */
-    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('experiment_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.experiment.model_id</code>.
@@ -113,6 +114,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Boolean> HAS_GOALS = createField(DSL.name("has_goals"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
+     * The column <code>public.experiment.training_status</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> TRAINING_STATUS = createField(DSL.name("training_status"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
      * Create a <code>public.experiment</code> table reference
      */
     public Experiment() {
@@ -153,6 +159,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
+    }
+
+    @Override
+    public Identity<ExperimentRecord, Long> getIdentity() {
+        return Keys.IDENTITY_EXPERIMENT;
     }
 
     @Override
@@ -201,11 +212,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean, Integer> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

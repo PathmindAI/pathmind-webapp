@@ -17,14 +17,14 @@ class ExperimentNavbarItem extends PolymerElement {
                     flex-shrink: 0;
                     width: 100%;
                     padding: 0.45rem var(--lumo-space-s);
-                    border: 1px solid transparent;
-                    border-right: none;
+                    border-top: 1px solid transparent;
+                    border-bottom: 1px solid transparent;
                     margin-top: -1px;
                 }
                 :host([is-current]),
                 :host(:hover) {
                     background-color: white;
-                    border-color: var(--pm-gray-color-lighter);
+                    border-color: var(--pm-grey-color-lighter);
                 }
                 .experiment-name {
                     font-size: var(--lumo-font-size-s);
@@ -45,7 +45,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 .experiment-name p:nth-child(2) {
                     font-size: var(--lumo-font-size-xs);
                     font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
-                    color: var(--pm-gray-color-dark);
+                    color: var(--pm-grey-color-dark);
                 }
                 favorite-star {
                     display: inline-block;

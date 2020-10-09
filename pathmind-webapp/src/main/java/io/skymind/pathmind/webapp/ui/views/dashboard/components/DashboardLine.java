@@ -151,7 +151,7 @@ public class DashboardLine extends HorizontalLayout {
 				item = new Span(trainingProgress);
 				item.setClassName("stage-active");
             } else if (DashboardUtils.isTrainingStopped(stage, dashboardItem.getLatestRun()) || DashboardUtils.isTrainingInFailed(stage, dashboardItem.getLatestRun())) {
-                if (ExperimentUtils.getTrainingStatus(dashboardItem.getExperiment()) == RunStatus.Error) {
+                if (dashboardItem.getExperiment().getTrainingStatusEnum() == RunStatus.Error) {
                     Icon errorIcon = VaadinIcon.EXCLAMATION_CIRCLE_O.create();
                     errorIcon.getElement().setAttribute("title", "Failed");
                     item = new Span(new Span(errorIcon, new Span(stage.getNameAfterDone())));

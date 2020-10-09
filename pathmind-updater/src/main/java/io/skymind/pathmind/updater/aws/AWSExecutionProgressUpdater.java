@@ -23,7 +23,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO, 
+    public AWSExecutionProgressUpdater(RunDAO runDAO,
                                        EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService) {
         this.runDAO = runDAO;

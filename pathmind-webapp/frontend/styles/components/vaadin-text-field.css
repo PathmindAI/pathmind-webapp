@@ -1,6 +1,6 @@
 :host [part="input-field"] {
     background: var(--pm-highlight-medium);
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
 }
 
 :host [part="label"] {
@@ -32,7 +32,7 @@
     height: 1.75rem;
     padding: 0.4em;
     border-radius: 0 var(--lumo-border-radius-s) var(--lumo-border-radius-s) 0;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
 }
 
 :host(.reward-variable-name-field[readonly]) [part="input-field"] {
@@ -52,7 +52,7 @@
     height: 1.75rem;
     padding: 0.4em;
     border-radius: 0 3px 3px 0;
-    border: 1px solid var(--pm-gray-color);
+    border: 1px solid var(--pm-grey-color);
 }
 
 :host([theme~="code"]){
