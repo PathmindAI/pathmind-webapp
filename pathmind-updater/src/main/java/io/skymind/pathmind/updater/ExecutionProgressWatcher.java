@@ -1,21 +1,22 @@
 package io.skymind.pathmind.updater;
 
-import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+
 @Component
 @Slf4j
-public class ExecutionProgressWatcher implements ApplicationListener<ContextRefreshedEvent>, DisposableBean
-{
-    @Autowired
-    private EmailNotificationService emailNotificationService;
+public class ExecutionProgressWatcher implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
     private Runner runner = null;
+
+    @Value("${pathmind.updater.interval}")
+    private Duration interval;
 
     public void destroy(){
         if (runner != null) {
@@ -28,7 +29,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
     public void onApplicationEvent(ContextRefreshedEvent event) {
         log.info("Restarting with new context...");
         ExecutionProgressUpdater updater = event.getApplicationContext().getBean(ExecutionProgressUpdater.class);
-        runner = new Runner(updater);
+        runner = new Runner(updater, interval.getSeconds());
         Thread thread = new Thread(runner);
         thread.setName("ExecutionProgressWatcher");
         thread.setDaemon(true);
@@ -36,14 +37,15 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
     }
 
     private class Runner implements Runnable {
-        private final long UPDATE_INTERVAL = 60 * 1000;
+        private final long UPDATE_INTERVAL;
 
         private boolean stop = false;
 
         private final ExecutionProgressUpdater updater;
 
-        Runner(ExecutionProgressUpdater updater) {
+        Runner(ExecutionProgressUpdater updater, long seconds) {
             this.updater = updater;
+            UPDATE_INTERVAL = seconds * 1000;
         }
 
         void stop() {
