@@ -9,6 +9,7 @@ import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.UpdaterService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,15 +21,18 @@ import java.util.stream.Collectors;
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
     private final RunDAO runDAO;
-    private EmailNotificationService emailNotificationService;
+    private final EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
+    private final int updateCompletingAttemptsLimit;
 
     public AWSExecutionProgressUpdater(RunDAO runDAO,
+                                       @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService) {
         this.runDAO = runDAO;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
+        this.updateCompletingAttemptsLimit = completingAttempts;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // This means that errors after the info is saved in AWS but before the info is saved in DB won't cause the
         // system to be in an inconsistent state.
         // Also, completed runs that doesn't have policy file information in the db will be returned by this call.
-    	final List<Run> runs = runDAO.getExecutingRuns();
+    	final List<Run> runs = runDAO.getExecutingRuns(updateCompletingAttemptsLimit);
         final List<Long> runIds = runs.stream().map(Run::getId).collect(Collectors.toList());
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
         final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
@@ -47,7 +51,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
-            	ProviderJobStatus providerJobStatus = updaterService.updateRunInformation(run, stoppedPoliciesNamesForRuns, run.getJobId());
+            	ProviderJobStatus providerJobStatus =
+                        updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNamesForRuns);
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);

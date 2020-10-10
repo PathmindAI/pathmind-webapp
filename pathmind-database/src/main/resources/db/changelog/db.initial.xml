@@ -1767,4 +1767,15 @@
         <customChange class="io.skymind.pathmind.db.changeset.UpdateExperiment_ChangeSet_20200923_02"/>
     </changeSet>
 
+    <changeSet id="20201007-01" author="alexander.makarov@topta.com">
+        <addColumn tableName="RUN">
+            <column name="COMPLETING_UPDATES_ATTEMPTS" type="integer" defaultValueNumeric="0">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="COMPLETING_UPDATES_ATTEMPTS"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

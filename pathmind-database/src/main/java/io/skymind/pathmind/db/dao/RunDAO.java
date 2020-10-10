@@ -64,8 +64,8 @@ public class RunDAO {
         RunRepository.clearNotificationSentInfo(ctx, experimentId);
     }
 
-    public List<Run> getExecutingRuns() {
-        return RunRepository.getExecutingRuns(ctx);
+    public List<Run> getExecutingRuns(int completingAttempts) {
+        return RunRepository.getExecutingRuns(ctx, completingAttempts);
     }
 
     public Map<Long, List<String>> getStoppedPolicyNamesForRuns(List<Long> runIds) {
@@ -118,7 +118,7 @@ public class RunDAO {
     	Map<Long, Integer> maxRewardScoreIterations = RewardScoreRepository.getMaxRewardScoreIterationForPolicies(transactionCtx, policyIds);
     	Map<Long, List<RewardScore>> rewardScoresMap = new HashMap<>();
     	policies.forEach(policy -> {
-    		Integer maxRewardScoreIteration = maxRewardScoreIterations.containsKey(policy.getId()) ? maxRewardScoreIterations.get(policy.getId()) : 0;
+    		Integer maxRewardScoreIteration = maxRewardScoreIterations.getOrDefault(policy.getId(), 0);
     		List<RewardScore> newRewardScores = policy.getScores().stream()
 					.filter(score -> score.getIteration() > maxRewardScoreIteration)
 					.collect(Collectors.toList());
@@ -134,7 +134,7 @@ public class RunDAO {
         Map<Long, Integer> maxMetricsIterations = MetricsRepository.getMaxMetricsIterationForPolicies(transactionCtx, policyIds);
     	Map<Long, List<Metrics>> metricsMap = new HashMap<>();
     	policies.forEach(policy -> {
-    	    Integer maxMetricsIteration = maxMetricsIterations.containsKey(policy.getId()) ? maxMetricsIterations.get(policy.getId()) : 0;
+    	    Integer maxMetricsIteration = maxMetricsIterations.getOrDefault(policy.getId(), 0);
     	    if (policy.getMetrics() != null) {
                 List<Metrics> newMetrics = policy.getMetrics().stream()
                     .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
@@ -152,7 +152,7 @@ public class RunDAO {
         Map<Long, Integer> maxMetricsRawIterations = MetricsRawRepository.getMaxMetricsRawIterationForPolicies(transactionCtx, policyIds);
         Map<Long, List<MetricsRaw>> metricsRawMap = new HashMap<>();
         policies.forEach(policy -> {
-            Integer maxMetricsRawIteration = maxMetricsRawIterations.containsKey(policy.getId()) ? maxMetricsRawIterations.get(policy.getId()) : 0;
+            Integer maxMetricsRawIteration = maxMetricsRawIterations.getOrDefault(policy.getId(), 0);
             if (policy.getMetricsRaws() != null) {
                 List<MetricsRaw> newMetricsRaw = policy.getMetricsRaws().stream()
                     .filter(metricsRaw -> metricsRaw.getIteration() > maxMetricsRawIteration)

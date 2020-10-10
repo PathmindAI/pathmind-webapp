@@ -101,7 +101,7 @@
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
-    flex: 1 0 auto;
+    flex: 0 0 auto;
     height: 2rem;
     line-height: 1;
     margin-left: var(--lumo-space-s);
@@ -145,6 +145,10 @@
 
 .experiment-view .metrics-wrapper {
     align-items: flex-end;
+}
+
+.experiment-view .observations-panel {
+    max-height: 27rem;
 }
 
 .experiment-view .observations-table {

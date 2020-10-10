@@ -148,7 +148,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatSparklinesAreShownForRewardVariables(int sparklinesNumber) {
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparklines-wrapper']/spark-line"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='sparkline']/data-chart"))) {
             actual.add(webElement.getText());
         }
 
@@ -259,7 +259,41 @@ public class ExperimentPage extends PageObject {
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart is a screenshot at the time of opening. It does not update automatically."));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart does not update automatically."));
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
+    }
+
+    public void checkVariableSimulationMetricValue(String variable, String value) {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='" + variable + "']/ancestor::*[@class='simulation-metrics-table-wrapper']/descendant::*[@class='metrics-wrapper']/span")).getText(), is(value));
+    }
+
+    public void checkExperimentPageObservationsList(String observation) {
+        List<String> items = Arrays.asList(observation.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[not(@hidden)]"))) {
+            actual.add(webElement.getText());
+        }
+        assertThat(actual, containsInAnyOrder(items.toArray()));
+    }
+
+    public void checkExportPolicyPage(String model) {
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='view-section']/img"))));
+        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/img")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::span")).getText(), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/h3")).getText(), is("To use your policy:"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/ol")).getText(), is("Download this file.\n" +
+            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
+            "Change the 'Mode' to 'Use Policy'.\n" +
+            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
+            "Run the simulation to see the policy in action."));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getText(), is("Learn how to validate your policy"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]"))));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]/vaadin-button")).getText(), is("Export Policy"));
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(".download-alp-link"))));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]/vaadin-button")).getText(), is("Model ALP"));
     }
 }
