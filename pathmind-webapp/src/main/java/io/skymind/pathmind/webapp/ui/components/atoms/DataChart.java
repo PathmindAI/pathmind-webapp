@@ -45,10 +45,12 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
         // JsonObject and JsonArray are not allowed types for TemplateModel methods
         // So we have to set it through calling the JS function
         getElement().callJsFunction("setData", cols, rows);
+        redraw();
     }
 
     public void setChartEmpty() {
         getElement().callJsFunction("setChartEmpty");
+        redraw();
     }
 
     public void redraw() {

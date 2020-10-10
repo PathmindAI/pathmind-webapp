@@ -422,6 +422,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
+			// TODO -> STEPH -> We have to update all components on select Experiment. Should be on an event otherwise this will get more confusing with time...
+            // TODO -> STEPH -> What about bestPolicy? This is also not updated on change experiment.
+            allMetricsChartPanel.setupChart(selectedExperiment, rewardVariables);
+            allMetricsChartPanel.redrawChart();
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -482,7 +486,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         policyChartPanel.setExperiment(experiment, bestPolicy);
-        allMetricsChartPanel.setupChart(experiment, rewardVariables, bestPolicy);
+        allMetricsChartPanel.setupChart(experiment, rewardVariables);
         updateDetailsForExperiment();
     }
 

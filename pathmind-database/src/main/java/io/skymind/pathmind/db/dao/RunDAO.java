@@ -269,6 +269,8 @@ public class RunDAO {
     }
 
     private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
+        if(policies == null)
+            return;
         PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
             List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
             PolicyUtils.updateSimulationMetricsData(bestPolicy);

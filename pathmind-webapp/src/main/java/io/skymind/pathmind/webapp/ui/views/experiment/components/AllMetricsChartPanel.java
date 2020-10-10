@@ -43,9 +43,10 @@ public class AllMetricsChartPanel extends VerticalLayout
         return hintMessage;
     }
 
-    public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables, Policy bestPolicy) {
+    public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment;
+            Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
             chart.setAllMetricsChart(rewardVariables, bestPolicy);
         }
     }
