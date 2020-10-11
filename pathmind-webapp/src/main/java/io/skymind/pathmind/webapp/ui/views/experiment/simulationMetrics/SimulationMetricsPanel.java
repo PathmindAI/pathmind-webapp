@@ -80,8 +80,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
+            .. Is the if even needed at this level?
             if(!experiment.getPolicies().isEmpty())
-               updateSimulationMetrics(experiment, true);
+               updateSimulationMetrics(true);
 
             add(metricsWrapper, sparklinesWrapper);
         }
@@ -92,7 +93,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         if(experiment.isArchived())
             return;
         EventBus.subscribe(this,
-                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this),
                 new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this));
     }
 
@@ -111,26 +111,26 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        updateSimulationMetrics(experiment, true);
+        updateSimulationMetrics(true);
+    }
+
+    public void updatePolicies(List<Policy> updatedPolicies) {
+        ExperimentUtils.addOrUpdatePolicies(experiment, updatedPolicies);
+        updateSimulationMetrics(true);
     }
 
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
 
-    public void updateSimulationMetrics(List<Policy> policies, Boolean createElementsFromScratch) {
-        ExperimentUtils.addOrUpdatePolicies(experiment, policies);
-        updateSimulationMetrics(experiment, createElementsFromScratch);
-    }
-
-    public void updateSimulationMetrics(Experiment experiment, Boolean createElementsFromScratch) {
+    private void updateSimulationMetrics(Boolean createElementsFromScratch) {
 
         if (createElementsFromScratch) {
             metricsWrapper.removeAll();
             sparklinesWrapper.removeAll();
         }
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
 
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
