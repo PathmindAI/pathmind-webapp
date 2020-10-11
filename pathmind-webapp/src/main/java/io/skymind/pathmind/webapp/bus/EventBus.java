@@ -64,14 +64,22 @@ public class EventBus {
     public static void post(PathmindBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
                 .filter(subscriber -> subscriber.filterSameUI(event) && subscriber.filterBusEvent(event) && subscriber.isAttached())
-                .forEach(subscriber -> {
-                    EXECUTOR_SERVICE.execute(() -> {
-                        PathmindBusEvent eventToFire = event;
-                        if (event instanceof CloneablePathmindBusEvent) {
-                            eventToFire = ((CloneablePathmindBusEvent)event).cloneForEventBus();
-                        }
-                        subscriber.handleBusEvent(eventToFire);
-                    });
+                .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
+    }
+
+    public static void post(PathmindViewBusEvent event) {
+        EVENT_BUS.subscribers.get(event.getEventType()).stream()
+                .filter(subscriber -> !subscriber.filterSameUI(event) && subscriber.filterBusEvent(event) && subscriber.isAttached())
+                .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
+    }
+
+    private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
+        EXECUTOR_SERVICE.execute(() -> {
+            PathmindBusEvent eventToFire = event;
+            if (event instanceof CloneablePathmindBusEvent) {
+                eventToFire = ((CloneablePathmindBusEvent) event).cloneForEventBus();
+            }
+            subscriber.handleBusEvent(eventToFire);
         });
     }
 
