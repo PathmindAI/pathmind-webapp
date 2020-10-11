@@ -48,9 +48,8 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
@@ -67,7 +66,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -92,7 +90,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private long experimentId = -1;
     private long modelId = -1;
     private List<RewardVariable> rewardVariables;
-    private Policy policy;
+    private Policy bestPolicy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
@@ -108,8 +106,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
     private CodeViewer codeViewer;
-    private TrainingStartingPlaceholder trainingStartingPlaceholder;
-    private PolicyChartPanel policyChartPanel;
+    private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
 
@@ -251,13 +248,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 initLoadData();
                 trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
                 clearErrorState();
-                setPolicyChartVisibility();
+                experimentChartsPanel.setupCharts(experiment, rewardVariables);
             }
         });
         restartTraining.setVisible(false);
         restartTraining.addClassNames("large-image-btn", "run");
 
-        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, policy.getId())));
+        exportPolicyButton = new Button("Export Policy", click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, bestPolicy.getId())));
         exportPolicyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         exportPolicyButton.setVisible(false);
 
@@ -282,16 +279,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
-        policyChartPanel = new PolicyChartPanel();
-        trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-
-        VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        trainingStartingPlaceholder,
-                        policyChartPanel);
-        chartWrapper.addClassName("row-2-of-3");
-
+        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                chartWrapper,
+                experimentChartsPanel,
                 notesField);
         bottomPanel.addClassName("bottom-panel");
         bottomPanel.setPadding(false);
@@ -324,8 +314,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateUIAfterExperimentIsStopped() {
         stopTrainingButton.setVisible(false);
-        trainingStartingPlaceholder.setVisible(false);
-        policyChartPanel.setVisible(true);
+        // TODO -> STEPH -> I don't think this is needed if we have the proper event listener for runUpdate events.
+        experimentChartsPanel.setStopTrainingVisibility();
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
     }
 
@@ -380,6 +370,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
+			// TODO -> STEPH -> We have to update all components on select Experiment. Should be on an event otherwise this will get more confusing with time...
+            // TODO -> STEPH -> What about bestPolicy? This is also not updated on change experiment.
+            experimentChartsPanel.setupCharts(selectedExperiment, rewardVariables);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -413,7 +406,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
 		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
-        policy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
@@ -429,7 +422,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateScreenComponents() {
         clearErrorState();
-        setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
         if (ModelUtils.isValidModel(experiment.getModel())) {
@@ -439,14 +431,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         observationsPanel.setSelectedObservations(experimentObservations);
-        policyChartPanel.setExperiment(experiment, policy);
+        experimentChartsPanel.setupCharts(experiment, rewardVariables);
         updateDetailsForExperiment();
-    }
-
-    public void setPolicyChartVisibility() {
-        RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-        trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
-        policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
     }
 
     private void updateUIForError(TrainingError error, String errorText) {
@@ -500,7 +486,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         RunStatus trainingStatus = experiment.getTrainingStatusEnum();
         boolean isCompleted = trainingStatus == RunStatus.Completed;
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(isCompleted && policy != null && policy.hasFile());
+        exportPolicyButton.setVisible(isCompleted && bestPolicy != null && bestPolicy.hasFile());
         boolean canBeStopped = RunStatus.isRunning(trainingStatus);
         stopTrainingButton.setVisible(canBeStopped);
         restartTraining.setVisible(false);
@@ -542,13 +528,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 // Update or insert the policy in experiment.getPolicies
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
 
-                // Calculate the best policy again
-                List<Policy> policies = experiment.getPolicies();
-                policy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
-                    if (policy != null) {
-                        policyChartPanel.updateChart(policies, policy);
-                    }
                     updateDetailsForExperiment();
                 });
             }

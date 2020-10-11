@@ -43,6 +43,13 @@ class DataChart extends PolymerElement {
             viewwindow: {
                 type: Object,
             },
+            chartready: {
+                type: Boolean,
+                reflectToAttribute: true,
+            },
+            dimlines: {
+                type: Boolean,
+            },
             options: {
                 type: Object,
                 computed: `_computeOptions(
@@ -72,18 +79,26 @@ class DataChart extends PolymerElement {
                     line-height: 1.2;
                     padding: var(--lumo-space-xxs);
                 }
-                :host([type~="line"]) #chartdiv path {
+                :host([dimlines]) #chartdiv path {
                     opacity: 0.4;
                 }
-                :host([type~="line"]) #chartdiv path[stroke~="#1a2949"] {
+                :host([dimlines]) #chartdiv path[stroke~="#1a2949"] {
                     opacity: 1;
                 }`;
             this.$.chart.shadowRoot.appendChild(style);
             if (isInit) {
                 isInit = false;
+                if (this.dimlines) {
+                    this.$.chart.setAttribute("dimlines", true);
+                }
                 setTimeout(() => {
                     // This is to ensure the tooltips are rendered
+                    this.chartready = true;
                     this.$.chart.redraw();
+
+                    setTimeout(() => {
+                        this.style.opacity = 1;
+                    }, 200);
                 }, 0);
             }
         });
@@ -128,16 +143,20 @@ class DataChart extends PolymerElement {
             }
         };
     }
+
+    redraw() {
+        this.$.chart.redraw();
+    }
     
     setData(cols, rows) {
         this.cols = cols;
         this.rows = rows;
-        this.$.chart.redraw();
+        this.redraw();
     }
     
     setChartEmpty() {
         this.rows = [];
-        this.$.chart.redraw();
+        this.redraw();
     }
 
     setSeries(series) {
@@ -152,7 +171,14 @@ class DataChart extends PolymerElement {
         return html`
             <style>
                 :host {
+                    width: 1px;
+                    height: 1px;
+                    opacity: 0;
+                    overflow: hidden;
+                }
+                :host([chartready]) {
                     width: 100%;
+                    height: 100%;
                 }
             </style>
             <google-chart 
