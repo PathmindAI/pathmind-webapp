@@ -370,9 +370,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
+
 			// TODO -> STEPH -> We have to update all components on select Experiment. Should be on an event otherwise this will get more confusing with time...
             // TODO -> STEPH -> What about bestPolicy? This is also not updated on change experiment.
-            experimentChartsPanel.setupCharts(selectedExperiment, rewardVariables);
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -417,6 +417,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
+        // Part of a bigger refactoring. The goal is to eventually remove the selectExperiment code and use the ExperimentChangedViewSubscriber
+        // instead because the logic and code is not the same between loading the initial screen and when updateScreenComponents is called. There's
+        // a mix of logic and code between selectExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
+        // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
+        // load and any event updates as well as experiment select.
+        experimentChartsPanel.setupCharts(experiment, rewardVariables);
         updateScreenComponents();
     }
 
@@ -431,7 +437,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         observationsPanel.setSelectedObservations(experimentObservations);
-        experimentChartsPanel.setupCharts(experiment, rewardVariables);
         updateDetailsForExperiment();
     }
 

@@ -11,7 +11,9 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
@@ -31,6 +33,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
     private Experiment experiment;
+    private List<RewardVariable> rewardVariables;
 
     private Supplier<Optional<UI>> getUISupplier;
 
@@ -83,12 +86,15 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier));
+        EventBus.subscribe(this,
+                new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier),
+                new ExperimentChartsPanelExperimentChangedViewSubscriber(getUISupplier));
     }
 
     public void setupCharts(Experiment experiment, List<RewardVariable> rewardVariables) {
 
         this.experiment = experiment;
+        this.rewardVariables = rewardVariables;
 
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
@@ -113,13 +119,14 @@ public class ExperimentChartsPanel extends VerticalLayout {
     }
 
     private void setPolicyChartPanelVisible(boolean isVisible) {
+        // TODO -> STEPH -> This logic should fail because what happens if it's not visible?
         policyChartPanel.setVisible(isVisible);
         allMetricsChartPanel.setVisible(!isVisible);
         policyChartPanel.redrawChart();
     }
 
-    private boolean isSameExperiment(RunUpdateBusEvent event) {
-        return ExperimentUtils.isSameExperiment(experiment, event.getRun().getExperiment());
+    private boolean isSameExperiment(Experiment experimentToCompare) {
+        return ExperimentUtils.isSameExperiment(experiment, experimentToCompare);
     }
 
     class ExperimentChartsPanelRunUpdateSubscriber extends RunUpdateSubscriber {
@@ -138,7 +145,20 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event);
+            return isSameExperiment(event.getRun().getExperiment());
+        }
+    }
+
+    class ExperimentChartsPanelExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
+
+        public ExperimentChartsPanelExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
+        @Override
+        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+            PushUtils.push(getUiSupplier(), () ->
+                setupCharts(event.getExperiment(), rewardVariables));
         }
     }
 }
