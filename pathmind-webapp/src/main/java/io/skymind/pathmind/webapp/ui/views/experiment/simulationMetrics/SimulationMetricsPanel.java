@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
@@ -78,7 +79,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
             if(!experiment.getPolicies().isEmpty())
-               updateSimulationMetrics(PolicyUtils.selectBestPolicy(experiment.getPolicies()), true);
+               updateSimulationMetrics(true);
 
             add(metricsWrapper, sparklinesWrapper);
         }
@@ -89,7 +90,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         if(experiment.isArchived())
             return;
         EventBus.subscribe(this,
-                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this),
                 new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this));
     }
 
@@ -104,25 +104,31 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
-        updateSimulationMetrics(bestPolicy, true);
+        updateSimulationMetrics(true);
+    }
+
+    public void updatePolicies(List<Policy> updatedPolicies) {
+        ExperimentUtils.addOrUpdatePolicies(experiment, updatedPolicies);
+        updateSimulationMetrics(true);
     }
 
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
 
-    public void updateSimulationMetrics(Policy policy, Boolean createElementsFromScratch) {
+    private void updateSimulationMetrics(Boolean createElementsFromScratch) {
+
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
 
         // Needed to convert the raw metrics to a format the UI can use.
-        PolicyUtils.updateSimulationMetricsData(policy);
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
 
         if (createElementsFromScratch) {
             metricsWrapper.removeAll();
             sparklinesWrapper.removeAll();
         }
 
-        if (policy == null || policy.getSimulationMetrics() == null || policy.getSimulationMetrics().isEmpty()) {
+        if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
             return;
         }
 
@@ -136,19 +142,19 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             metricsWrapper.add(metricsHeader);
         }
 
-        IntStream.range(0, policy.getSimulationMetrics().size())
+        IntStream.range(0, bestPolicy.getSimulationMetrics().size())
                 .forEach(index -> {
                     Span metricSpan = new Span();
-                    Map<Integer, Double> sparklineData = policy.getSparklinesData().get(index);
+                    Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
                     RewardVariable rewardVariable = rewardVariables.get(index);
 
                     // First conditional value is with uncertainty, second value is without uncertainty
-                    String metricValue = policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()
-                            ? policy.getUncertainty().get(index)
-                            : PathmindNumberUtils.formatNumber(policy.getSimulationMetrics().get(index));
+                    String metricValue = bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
+                            ? bestPolicy.getUncertainty().get(index)
+                            : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(index));
 
                     if (rewardVariable.getGoalConditionTypeEnum() != null){
-                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, policy);
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
                         metricSpan.addClassName(metricSpanColorClass);
                     }
@@ -161,7 +167,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         Button enlargeButton = new Button("Show");
                         enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
                         enlargeButton.addClickListener(event -> {
-                            Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, policy);
+                            Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
                             metricChartPanel.setGoals(rewardVariable, reachedGoal);
                             metricChartPanel.setupChart(sparklineData, rewardVariable);
                             metricChartDialog.open();
