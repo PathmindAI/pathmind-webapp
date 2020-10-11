@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import java.util.ArrayList;
 import java.util.Arrays;

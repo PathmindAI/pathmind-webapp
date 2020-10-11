@@ -11,7 +11,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -20,10 +19,9 @@ import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.AllMetricsChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
 
@@ -80,9 +78,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
             sparklinesWrapper.addClassName("sparklines-wrapper");
 
-            .. Is the if even needed at this level?
-            if(!experiment.getPolicies().isEmpty())
-               updateSimulationMetrics(true);
+            updateSimulationMetrics(true);
 
             add(metricsWrapper, sparklinesWrapper);
         }
@@ -105,10 +101,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         return experiment;
     }
 
-    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
-        rewardVariablesTable.setAllMetricsChartPanel(allMetricsChartPanel);
-    }
-
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateSimulationMetrics(true);
@@ -123,6 +115,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         return showSimulationMetrics;
     }
 
+    // TODO -> it should only be true for the first time, but this is a hotfix
     private void updateSimulationMetrics(Boolean createElementsFromScratch) {
 
         if (createElementsFromScratch) {
@@ -130,7 +123,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             sparklinesWrapper.removeAll();
         }
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(bestPolicy);

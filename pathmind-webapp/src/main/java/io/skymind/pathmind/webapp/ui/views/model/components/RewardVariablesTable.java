@@ -1,11 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -17,13 +11,13 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.AllMetricsChartPanel;
+
+import java.util.*;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout {
@@ -31,7 +25,7 @@ public class RewardVariablesTable extends VerticalLayout {
     private List<RewardVariable> rewardVariablesInComparison = new ArrayList<>();
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
-    private AllMetricsChartPanel allMetricsChartPanel;
+//    private AllMetricsChartPanel allMetricsChartPanel;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
 
@@ -89,9 +83,9 @@ public class RewardVariablesTable extends VerticalLayout {
         return rewardVariableNameFields.stream().allMatch(f -> f.isValid());
     }
 
-    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
-        this.allMetricsChartPanel = allMetricsChartPanel;
-    }
+//    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
+//        this.allMetricsChartPanel = allMetricsChartPanel;
+//    }
 
     private RowField createRow(RewardVariable rv) {
         Command rewardVariableClickHandler = () -> {
@@ -99,11 +93,12 @@ public class RewardVariablesTable extends VerticalLayout {
             thisRVinComparison.ifPresentOrElse(
                     thisRV -> {
                         rewardVariablesInComparison.set(rv.getArrayIndex(), null);
-                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
+                        // TODO -> STEPH -> Can the reward variables change once we get to the experiment view (Chart)? I didn't think it was even possible.
+//                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
                     },
                     () -> {
                         rewardVariablesInComparison.set(rv.getArrayIndex(), rv);
-                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
+//                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
                     });
         };
         RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler, rewardVariableClickHandler, actAsMultiSelect);

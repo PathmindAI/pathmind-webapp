@@ -41,7 +41,6 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
             ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
             PushUtils.push(getUiSupplier(), () -> {
-                experimentView.setPolicyChartVisibility();
                 experimentView.updateDetailsForExperiment();
             });
         } else if (ExperimentUtils.isNewExperimentForModel(event.getRun().getExperiment(), experiments, experiment.getModelId())) {

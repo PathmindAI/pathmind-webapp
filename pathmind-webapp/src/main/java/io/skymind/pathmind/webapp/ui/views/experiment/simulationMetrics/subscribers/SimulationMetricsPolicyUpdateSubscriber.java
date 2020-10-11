@@ -1,8 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers;
 
 import com.vaadin.flow.component.UI;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
@@ -23,8 +21,7 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(getUiSupplier(), ui -> {
-            // TODO -> it should only be true for the first time, but this is a hotfix
-            simulationMetricsPanel.updateSimulationMetrics(event.getExperiment(), true);
+            simulationMetricsPanel.setExperiment(event.getExperiment());
         });
     }
 

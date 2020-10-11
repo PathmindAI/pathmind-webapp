@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -15,6 +15,8 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+
 public class PolicyChartPanel extends VerticalLayout
 {
     private Object experimentLock = new Object();
@@ -23,7 +25,10 @@ public class PolicyChartPanel extends VerticalLayout
 
     private Experiment experiment;
 
-    public PolicyChartPanel() {
+    private Supplier<Optional<UI>> getUISupplier;
+
+    public PolicyChartPanel(Supplier<Optional<UI>> getUISupplier) {
+        this.getUISupplier = getUISupplier;
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
         setPadding(false);
         setSpacing(false);
@@ -32,7 +37,7 @@ public class PolicyChartPanel extends VerticalLayout
     public void setExperiment(Experiment experiment) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            chart.setPolicyChart(experiment.getPolicies());
+            chart.setPolicyChart(experiment);
         }
     }
 
@@ -47,7 +52,7 @@ public class PolicyChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(() -> getUI()));
+        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(getUISupplier));
     }
 
     class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {

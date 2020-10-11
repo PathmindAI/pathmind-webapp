@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -28,7 +28,10 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     private Experiment experiment;
 
-    public AllMetricsChartPanel() {
+    private Supplier<Optional<UI>> getUISupplier;
+
+    public AllMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
+        this.getUISupplier = getUISupplier;
         add(hintMessage(), chart);
         setPadding(false);
         setSpacing(false);
@@ -56,7 +59,7 @@ public class AllMetricsChartPanel extends VerticalLayout
         chart.updateData();
     }
 
-    public void updateBestPolicy(Policy bestPolicy) {
+    private void updateBestPolicy(Policy bestPolicy) {
         chart.updateBestPolicy(bestPolicy);
         chart.updateData();
     }
@@ -72,7 +75,7 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new AllMetricsChartPanelPolicyUpdateSubscriber(() -> getUI()));
+        EventBus.subscribe(this, new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier));
     }
 
     class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
