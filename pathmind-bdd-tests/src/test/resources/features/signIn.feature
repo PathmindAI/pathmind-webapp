@@ -26,6 +26,11 @@ Feature: Sign In form tests
     Given Open pathmind page
     Then Check login page elements
 
+  Scenario: Check Get started btn
+    Given Open pathmind page
+    Then Click in 'Get started' button
+    Then Check create new user page elements
+
   Scenario Outline: Check css styles error the name "vaadin-device-detector" has already been used with this registry
     Given Open pathmind page
     Then Check console error <error>

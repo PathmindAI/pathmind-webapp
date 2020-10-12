@@ -250,6 +250,9 @@ public class LoginPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".policy")).getText(), containsString("By clicking Sign In, you agree to Pathmind's Terms of Use and Privacy Policy."));
         assertThat(getDriver().findElement(By.xpath("//a[text()='Terms of Use']")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
         assertThat(getDriver().findElement(By.xpath("//a[text()='Privacy Policy']")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/span")).getText(), is("Don't have an account?"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/a")).getText(), is("Get started"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/a")).getAttribute("href"), containsString("sign-up"));
     }
 
     public void checkConsoleError(String error) {
