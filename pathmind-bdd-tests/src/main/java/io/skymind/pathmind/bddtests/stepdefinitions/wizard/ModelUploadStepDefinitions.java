@@ -42,4 +42,9 @@ public class ModelUploadStepDefinitions {
     public void checkThatWizardUploadAlpFilePageIsOpened() {
         modelUploadSteps.checkThatWizardUploadAlpFilePageIsOpened();
     }
+
+    @Then("^Check That model upload link 'Export your model as a standalone Java application' opened$")
+    public void checkThatModelUploadLinkOpened() {
+        modelUploadSteps.checkThatModelUploadLinkOpened();
+    }
 }

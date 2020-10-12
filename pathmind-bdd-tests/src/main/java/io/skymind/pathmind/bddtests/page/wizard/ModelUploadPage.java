@@ -17,6 +17,8 @@ public class ModelUploadPage extends PageObject {
 
     @FindBy(xpath = "//vaadin-upload")
     private WebElement uploadShadow;
+    @FindBy(xpath = "//upload-alp-instructions")
+    private WebElement uploadAlpInstructionsShadow;
 
     private final By byInput = By.cssSelector("input");
 
@@ -45,19 +47,28 @@ public class ModelUploadPage extends PageObject {
     }
 
     public void clickAlpUploadStepNextBtn() {
-        getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::vaadin-horizontal-layout/vaadin-button")).click();
+        getDriver().findElement(By.xpath("//span[text()='Upload alp file']/parent::vaadin-horizontal-layout/following-sibling::vaadin-horizontal-layout/vaadin-button")).click();
     }
 
     public void uploadALPFile(String alpFile) {
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/parent::vaadin-vertical-layout/descendant::vaadin-upload")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//span[text()='Upload alp file']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-upload")));
         WebElement projectNameInputField = e.findElement(byInput);
         upload(System.getProperty("user.dir") + "/models/" + alpFile).fromLocalMachine().to(projectNameInputField);
         waitABit(3000);
     }
 
     public void checkThatWizardUploadAlpFilePageIsOpened() {
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']"))));
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[1]")).getText(), is("Upload your model's ALP file to easily keep track of the version of your model that was used for training each policy."));
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Upload alp file (Optional)']/following-sibling::div/p[2]")).getText(), is("You'll be able to download this ALP file with your trained policy from an experiment."));
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//span[text()='Upload alp file']"))));
+        WebElement instructionsElement = utils.expandRootElement(uploadAlpInstructionsShadow);
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(1)")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments."));
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(3)")).getText(), is("You will be able to download this ALP file later to retrieve it."));
+    }
+
+    public void checkThatModelUploadLinkOpened() {
+        getDriver().switchTo().frame(1);
+        getDriver().switchTo().frame(1);
+        getDriver().switchTo().frame(1);
+        assertThat(getDriver().findElement(By.cssSelector("body > h1:nth-child(2)")).getText(), is("Exporting models to Java application"));
     }
 }
