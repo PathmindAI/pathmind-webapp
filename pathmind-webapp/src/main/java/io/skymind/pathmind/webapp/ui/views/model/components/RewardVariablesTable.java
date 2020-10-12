@@ -16,6 +16,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.AllMetricsChartPanel;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class RewardVariablesTable extends VerticalLayout {
     private List<RewardVariable> rewardVariablesInComparison = new ArrayList<>();
 	private List<RowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
-//    private AllMetricsChartPanel allMetricsChartPanel;
+    private AllMetricsChartPanel allMetricsChartPanel;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
 
@@ -78,6 +79,10 @@ public class RewardVariablesTable extends VerticalLayout {
             rewardVariablesInComparison.add(rv);
         });
     }
+
+    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
+        this.allMetricsChartPanel = allMetricsChartPanel;
+    }
     
     public boolean canSaveChanges() {
         return rewardVariableNameFields.stream().allMatch(f -> f.isValid());
@@ -87,8 +92,14 @@ public class RewardVariablesTable extends VerticalLayout {
         Command rewardVariableClickHandler = () -> {
             Optional<RewardVariable> thisRVinComparison = rewardVariablesInComparison.stream().filter(rvInComparison -> rv.equals(rvInComparison)).findAny();
             thisRVinComparison.ifPresentOrElse(
-                    thisRV -> rewardVariablesInComparison.set(rv.getArrayIndex(), null),
-                    () -> rewardVariablesInComparison.set(rv.getArrayIndex(), rv));
+                    thisRV -> {
+                        rewardVariablesInComparison.set(rv.getArrayIndex(), null);
+                        allMetricsChartPanel.updateSelectedRewardVariables(rewardVariablesInComparison);
+                    },
+                    () -> {
+                        rewardVariablesInComparison.set(rv.getArrayIndex(), rv);
+                        allMetricsChartPanel.updateSelectedRewardVariables(rewardVariablesInComparison);
+                    });
         };
         RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler, rewardVariableClickHandler, actAsMultiSelect);
         rewardVariableNameFields.add(rewardVariableNameField);

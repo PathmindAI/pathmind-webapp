@@ -119,20 +119,20 @@ public class AllMetricsChart extends DataChart {
         JsonArray rows = createRows();
         setData(cols, rows);
     }
-    private void updateSelectedRewardVariables(List<RewardVariable> rewardVariables) {
-        selectedRewardVariables = rewardVariables;
+    public void updateSelectedRewardVariables(List<RewardVariable> selectedRewardVariables) {
+        this.selectedRewardVariables = selectedRewardVariables;
     }
-    private void updateBestPolicy(Policy bestPolicy) {
+    public void updateBestPolicy(Policy bestPolicy) {
         metricsPolicy = bestPolicy;
         allMetricsChartData = generateAllMetricsChartData(metricsPolicy.getSparklinesData());
     }
 
-    public void setAllMetricsChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {
-        if (rewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0) {
+    public void setAllMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+        if (selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0) {
             setChartEmpty();
             return;
         }
-        updateSelectedRewardVariables(rewardVariables);
+        updateSelectedRewardVariables(selectedRewardVariables);
         updateBestPolicy(bestPolicy);
 
         String type = "line";

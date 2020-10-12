@@ -83,6 +83,10 @@ public class ExperimentChartsPanel extends VerticalLayout {
         return chartTabs;
     }
 
+    public AllMetricsChartPanel getAllMetricsChartPanel() {
+        return allMetricsChartPanel;
+    }
+
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this,

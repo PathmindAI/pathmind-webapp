@@ -21,6 +21,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.AllMetricsChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
@@ -104,6 +105,10 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateSimulationMetrics(true);
+    }
+
+    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
+        rewardVariablesTable.setAllMetricsChartPanel(allMetricsChartPanel);
     }
 
     public void updatePolicies(List<Policy> updatedPolicies) {

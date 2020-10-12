@@ -57,6 +57,13 @@ public class AllMetricsChartPanel extends VerticalLayout
         }
     }
 
+    public void updateSelectedRewardVariables(List<RewardVariable> rewardVariables) {
+        if (rewardVariables != null) {
+            chart.updateSelectedRewardVariables(rewardVariables);
+            chart.updateData();
+        }
+    }
+
     private void updateBestPolicy(Policy bestPolicy) {
         chart.setAllMetricsChart(rewardVariables, bestPolicy);
         chart.updateData();
