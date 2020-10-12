@@ -285,7 +285,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private boolean canStartTraining() {
 		return ModelUtils.isValidModel(experiment.getModel())
-		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0
+                && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
+                && rewardFunctionErrors.size() == 0
 		        && !observationsPanel.getSelectedObservations().isEmpty()
 		        && canSaveDataInDB();
 	}
@@ -295,7 +296,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void setupBinder() {
-        binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction,
+        // To allow saving when the reward function editor is empty,
+        // the field is not set to forField(...).asRequired().bind(...)
+        binder.forField(rewardFunctionEditor).bind(Experiment::getRewardFunction,
                 Experiment::setRewardFunction);
     }
 

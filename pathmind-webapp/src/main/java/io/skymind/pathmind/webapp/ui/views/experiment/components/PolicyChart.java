@@ -14,6 +14,7 @@ import elemental.json.JsonObject;
 
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class PolicyChart extends DataChart {
@@ -129,12 +130,16 @@ public class PolicyChart extends DataChart {
         setData(cols, rows);
     }
 
-    public void setPolicyChart(List<Policy> updatedPolicies, Policy bestPolicy) {
-        if (updatedPolicies == null) {
+    public void setPolicyChart(List<Policy> policies) {
+        setPolicyChart(policies, PolicyUtils.selectBestPolicy(policies));
+    }
+
+    public void setPolicyChart(List<Policy> policies, Policy bestPolicy) {
+        if (policies == null || policies.isEmpty()) {
             setChartEmpty();
             return;
         }
-        Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(updatedPolicies, bestPolicy);
+        Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(policies, bestPolicy);
 
         String type = "line";
         Boolean showTooltip = true;
@@ -143,7 +148,7 @@ public class PolicyChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries(updatedPolicies.size(), bestPolicySeriesNumber);
+        JsonObject series = createSeries(policies.size(), bestPolicySeriesNumber);
         JsonObject viewWindow = null;
 
         setupChart(
@@ -157,7 +162,7 @@ public class PolicyChart extends DataChart {
             stacked,
             viewWindow
         );
-        updateData(updatedPolicies, policyChartData);
+        updateData(policies, policyChartData);
     }
     
 }

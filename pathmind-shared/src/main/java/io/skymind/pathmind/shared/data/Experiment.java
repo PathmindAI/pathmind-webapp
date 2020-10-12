@@ -78,6 +78,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                     .findFirst()
                     .ifPresent(index -> runs.set(index, run));
         }
+        updateTrainingStatus();
     }
 
     @Override
