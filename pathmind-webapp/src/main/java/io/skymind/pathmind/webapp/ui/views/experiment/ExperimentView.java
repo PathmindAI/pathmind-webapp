@@ -361,10 +361,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void selectExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+        // TODO -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
         synchronized (experimentLock) {
             experiment = experimentDAO.getExperiment(selectedExperiment.getId())
                     .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-            experimentViewRunUpdateSubscriber.setExperiment(experiment);
+            experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
             notesField.setNotesText(experiment.getUserNotes());

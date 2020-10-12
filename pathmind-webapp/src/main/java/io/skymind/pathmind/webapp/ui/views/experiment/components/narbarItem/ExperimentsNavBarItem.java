@@ -61,8 +61,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         // TODO -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
         // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the
         // experiment.
-        EventBus.post(new ExperimentChangedViewBusEvent(experiment));
-        selectExperimentConsumer.accept(experiment);
+        Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
+        EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
+        selectExperimentConsumer.accept(selectedExperiment);
     }
 
     @EventHandler
