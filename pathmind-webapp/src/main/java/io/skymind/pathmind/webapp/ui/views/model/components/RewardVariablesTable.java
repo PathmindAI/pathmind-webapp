@@ -66,6 +66,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
         container.removeAll();
         rewardVariableNameFields.clear();
+        rewardVariablesInComparison.clear();
         HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Variable Name"), new Span("Goal"));
 
         headerRow.addClassName("header-row");
@@ -78,6 +79,12 @@ public class RewardVariablesTable extends VerticalLayout {
             container.add(createRow(rv));
             rewardVariablesInComparison.add(rv);
         });
+    }
+
+    public void resetRewardVariablesInComparison(List<RewardVariable> rewardVariables) {
+        rewardVariablesInComparison.clear();
+        rewardVariables.forEach(rv -> rewardVariablesInComparison.add(rv));
+        rewardVariableNameFields.forEach(field -> field.getRewardVariableSpan().getElement().setAttribute("chosen", true));
     }
 
     public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
@@ -111,6 +118,7 @@ public class RewardVariablesTable extends VerticalLayout {
     }
 
     private static class RowField extends HorizontalLayout {
+        private Span rewardVariableNameSpan;
         
         private NumberField goalField;
         private Select<GoalConditionType> conditionType;
@@ -125,7 +133,7 @@ public class RewardVariablesTable extends VerticalLayout {
         private RowField(RewardVariable rv, Command goalFieldValueChangeHandler, Command clickHandler, Boolean actAsMultiSelect) {
             this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
             setAlignItems(Alignment.BASELINE);
-            Span rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
+            rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
             if (actAsMultiSelect) {
                 String clickedAttribute = "chosen";
                 rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
@@ -198,6 +206,10 @@ public class RewardVariablesTable extends VerticalLayout {
         public void setEditable(boolean editable) {
             goalFieldsWrapper.setVisible(editable);
             goalSpan.setVisible(!editable);
+        }
+
+        public Span getRewardVariableSpan() {
+            return rewardVariableNameSpan;
         }
         
     }

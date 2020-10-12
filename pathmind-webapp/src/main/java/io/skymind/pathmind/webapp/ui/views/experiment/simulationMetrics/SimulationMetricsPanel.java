@@ -104,6 +104,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        rewardVariablesTable.resetRewardVariablesInComparison(rewardVariables);
         updateSimulationMetrics(true);
     }
 
