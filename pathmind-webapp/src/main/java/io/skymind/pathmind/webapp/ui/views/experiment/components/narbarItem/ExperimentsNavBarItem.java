@@ -9,6 +9,7 @@ import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
@@ -34,16 +35,18 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
+    private PolicyDAO policyDAO;
 
     private Experiment experiment;
 	private Consumer<Experiment> selectExperimentConsumer;
 
     private SegmentIntegrator segmentIntegrator;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
+        this.policyDAO = policyDAO;
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
         this.selectExperimentConsumer = selectExperimentConsumer;
@@ -61,7 +64,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         // TODO -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
         // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the
         // experiment.
+        // TODO -> STEPH -> Need some way to load everything for now. We can't just do experimentDAO and then call the repositories because the
+        // DAO at each level also has some logic and code.
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
+        selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
+
         EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
         selectExperimentConsumer.accept(selectedExperiment);
     }

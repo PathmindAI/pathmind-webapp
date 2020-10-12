@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
@@ -125,6 +122,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Autowired
     private RunDAO runDAO;
     @Autowired
+    private PolicyDAO policyDAO;
+    @Autowired
     private RewardVariableDAO rewardVariableDAO;
 	@Autowired
 	private ObservationDAO observationDAO;
@@ -171,7 +170,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, experiment, experiments,
+        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, policyDAO, experiment, experiments,
                 selectedExperiment -> selectExperiment(selectedExperiment), segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 

@@ -184,6 +184,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experimentsNavbar = new ExperimentsNavBar(
                 () -> getUI(),
                 experimentDAO,
+                policyDAO,
                 experiment,
                 experiments,
                 selectedExperiment -> selectExperiment(selectedExperiment),

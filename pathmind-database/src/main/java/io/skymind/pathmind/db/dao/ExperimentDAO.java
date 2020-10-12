@@ -126,6 +126,7 @@ public class ExperimentDAO
 	public Optional<Experiment> getFullExperiment(long experimentId) {
 	    Optional<Experiment> optionalExperiment = getExperiment(experimentId);
 	    optionalExperiment.ifPresent(experiment -> {
+	        // TODO -> STEPH -> Not good enough as there is a bunch of logic to parse the data in PolicyDAO
 	        experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experimentId));
             experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experimentId));
         });
