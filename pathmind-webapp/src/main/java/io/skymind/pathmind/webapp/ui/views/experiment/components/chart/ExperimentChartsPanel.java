@@ -65,7 +65,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         add(chartsWrapper);
 
 
-        setAllMetricsChartPanelVisible(true);
+        setAllMetricsChartPanelVisible();
     }
 
     private Tabs createChartTabs() {
@@ -76,9 +76,9 @@ public class ExperimentChartsPanel extends VerticalLayout {
         chartTabs.addSelectedChangeListener(event -> {
             // have to redraw chart to make sure the chart size is right
             if (chartTabs.getSelectedIndex() == 0) {
-                setAllMetricsChartPanelVisible(true);
+                setAllMetricsChartPanelVisible();
             } else {
-                setPolicyChartPanelVisible(true);
+                setPolicyChartPanelVisible();
             }
         });
         return chartTabs;
@@ -99,30 +99,37 @@ public class ExperimentChartsPanel extends VerticalLayout {
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
 
-        RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-        trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
-        // TODO -> STEPH -> Is this correct? I would think it would be the opposite but let's confirm.
-        setPolicyChartPanelVisible(trainingStatus != RunStatus.Starting);
+        if(experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting)
+            setPlaceholderVisible();
+        else
+            setPolicyChartPanelVisible();
     }
 
     public void setStopTrainingVisibility() {
         trainingStartingPlaceholder.setVisible(false);
-        setPolicyChartPanelVisible(true);
+        setPolicyChartPanelVisible();
         // TODO -> STEPH -> Is this last line needed? Shouldn't it always be true?
         setVisible(true);
     }
 
-    private void setAllMetricsChartPanelVisible(boolean isVisible) {
-        policyChartPanel.setVisible(!isVisible);
-        allMetricsChartPanel.setVisible(isVisible);
+    private void setAllMetricsChartPanelVisible() {
+        trainingStartingPlaceholder.setVisible(false);
+        policyChartPanel.setVisible(false);
+        allMetricsChartPanel.setVisible(true);
         allMetricsChartPanel.redrawChart();
     }
 
-    private void setPolicyChartPanelVisible(boolean isVisible) {
-        // TODO -> STEPH -> This logic should fail because what happens if it's not visible?
-        policyChartPanel.setVisible(isVisible);
-        allMetricsChartPanel.setVisible(!isVisible);
+    private void setPolicyChartPanelVisible() {
+        trainingStartingPlaceholder.setVisible(false);
+        policyChartPanel.setVisible(true);
+        allMetricsChartPanel.setVisible(false);
         policyChartPanel.redrawChart();
+    }
+
+    private void setPlaceholderVisible() {
+        trainingStartingPlaceholder.setVisible(true);
+        policyChartPanel.setVisible(false);
+        allMetricsChartPanel.setVisible(false);
     }
 
     private boolean isSameExperiment(Experiment experimentToCompare) {
@@ -139,7 +146,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
                 // TODO -> STEPH -> Why do we do this on every event update? This seems off? It was in the experiment RunUpdate Subscriber.
-                setStopTrainingVisibility();
+                // TODO -> STEPH -> .. shouldn't we instead update the chart...
+//                setStopTrainingVisibility();
+                // TODO -> STEPH -> what about policies? Shouldn't we be listening to policies as well? Why runs instead of policies in the first place?
+                ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
+                setupCharts(experiment, rewardVariables);
             });
         }
 
