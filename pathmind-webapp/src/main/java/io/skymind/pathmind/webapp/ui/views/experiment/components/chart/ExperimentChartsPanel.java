@@ -32,8 +32,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
     private Tabs chartTabs;
-    Tab metricsChartTab;
-    Tab rewardScoreChartTab;
+    private Tab metricsChartTab;
+    private Tab rewardScoreChartTab;
 
     private Experiment experiment;
     private List<RewardVariable> rewardVariables;
@@ -58,16 +58,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
                 charts
         );
 
-        VerticalLayout chartsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel("Learning Progress", BOLD_LABEL),
-                chartTabs,
-                chartsPanel
-        );
-
-        chartsWrapper.addClassName("row-2-of-3");
-        add(chartsWrapper);
-
-
+        setSpacing(false);
+        setPadding(false);
+        add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL),
+            chartTabs,
+            chartsPanel);
+        addClassName("row-2-of-3");
         setAllMetricsChartPanelVisible();
     }
 
@@ -102,20 +98,18 @@ public class ExperimentChartsPanel extends VerticalLayout {
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
 
-        if(experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
-            chartTabs.setSelectedTab(metricsChartTab);
+        System.out.println("training status: "+experiment.getTrainingStatusEnum());
+
+        if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
         } else {
-            chartTabs.setSelectedTab(rewardScoreChartTab);
-            setPolicyChartPanelVisible();
+            chartTabs.setSelectedTab(metricsChartTab);
         }
     }
 
     public void setStopTrainingVisibility() {
         trainingStartingPlaceholder.setVisible(false);
         setPolicyChartPanelVisible();
-        // TODO -> FIONA -> Is this last line needed? Shouldn't it always be true?
-        setVisible(true);
     }
 
     private void setAllMetricsChartPanelVisible() {

@@ -9,13 +9,10 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class PolicyChartPanel extends VerticalLayout
 {
@@ -29,7 +26,7 @@ public class PolicyChartPanel extends VerticalLayout
 
     public PolicyChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
-        add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL), chart);
+        add(chart);
         setPadding(false);
         setSpacing(false);
     }
