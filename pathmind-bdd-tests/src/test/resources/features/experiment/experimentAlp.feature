@@ -7,7 +7,7 @@ Feature: Experiment ALP
     When Input name of the new project <project name> and click Create project button
     When Upload model <model>
     When Check that model successfully uploaded
-    When Check wizard alp upload step
+    Then Check that wizard upload alp file page is opened
     When Upload ALP file '<ALP>'
     When Click wizard upload ALP next btn
     When Click wizard model details next btn

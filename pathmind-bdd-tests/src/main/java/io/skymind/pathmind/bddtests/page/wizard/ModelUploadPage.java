@@ -61,19 +61,13 @@ public class ModelUploadPage extends PageObject {
     public void checkThatWizardUploadAlpFilePageIsOpened() {
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//span[text()='Upload alp file']"))));
         WebElement instructionsElement = utils.expandRootElement(uploadAlpInstructionsShadow);
-        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(1)")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments."));
-        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
-        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(3)")).getText(), is("You will be able to download this ALP file later to retrieve it."));
-    }
-
-    public void checkWizardAlpUploadStep() {
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']")).getText(), is("Project:"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label-regular-font-weight section-subtitle-label']")).getText(), is("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout/*[@class='no-top-margin-label']")).getText(), is("Upload alp file"));
         assertThat(getDriver().findElement(By.xpath("//tag-label[@outline='false']")).getText(), is("Optional"));
-        assertThat(getDriver().findElement(By.xpath("//upload-alp-instructions")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments.\n" +
-            "Your ALP file should be in the original AnyLogic Project folder on your computer.\n" +
-            "You will be able to download this ALP file later to retrieve it."));
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(1)")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments."));
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
+        assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(3)")).getText(), is("You will be able to download this ALP file later to retrieve it."));
         assertThat(getDriver().findElement(By.xpath("//upload-alp-instructions/following-sibling::vaadin-vertical-layout//vaadin-button[@slot='add-button']")).getText(), is("Upload alp file"));
     }
 }

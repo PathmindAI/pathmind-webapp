@@ -36,9 +36,4 @@ public class ModelUploadSteps {
     public void checkThatWizardUploadAlpFilePageIsOpened() {
         modelUploadPage.checkThatWizardUploadAlpFilePageIsOpened();
     }
-
-    @Step
-    public void checkWizardAlpUploadStep() {
-        modelUploadPage.checkWizardAlpUploadStep();
-    }
 }
