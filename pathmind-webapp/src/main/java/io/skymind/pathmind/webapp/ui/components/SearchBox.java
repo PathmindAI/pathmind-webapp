@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
@@ -41,8 +42,7 @@ public class SearchBox extends HorizontalLayout
         searchTextField.getElement().setAttribute("theme", "searchBox small");
         searchSelect.getElement().setAttribute("theme", "searchBox small");
 		searchButton.addClickListener(click -> search());
-        searchTextField.addValueChangeListener(change -> search());
-
+        searchTextField.addKeyUpListener(Key.ENTER, event -> search());
         
 		addClassName(CLASS_NAME);
         searchSelect.addClassName(CLASS_NAME + "_select");
