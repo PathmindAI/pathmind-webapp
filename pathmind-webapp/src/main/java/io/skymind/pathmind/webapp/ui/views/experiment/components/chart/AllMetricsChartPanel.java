@@ -12,7 +12,9 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.view.RewardVariableSelectedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 
@@ -80,7 +82,9 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier));
+        EventBus.subscribe(this,
+                new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier),
+                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier));
     }
 
     class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
@@ -104,6 +108,18 @@ public class AllMetricsChartPanel extends VerticalLayout
         @Override
         public boolean filterBusEvent(PolicyUpdateBusEvent event) {
             return experiment.getId() == event.getExperimentId();
+        }
+    }
+
+    class AllMetricsChartPanelRewardVariableSelectedViewSubscriber extends RewardVariableSelectedViewSubscriber {
+
+        public AllMetricsChartPanelRewardVariableSelectedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
+        @Override
+        public void handleBusEvent(RewardVariableSelectedViewBusEvent event) {
+            // EXAMPLE event.getRewardVariable()
         }
     }
 }

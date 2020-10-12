@@ -13,6 +13,7 @@ import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -100,6 +101,7 @@ public class RewardVariablesTable extends VerticalLayout {
             Optional<RewardVariable> thisRVinComparison = rewardVariablesInComparison.stream().filter(rvInComparison -> rv.equals(rvInComparison)).findAny();
             thisRVinComparison.ifPresentOrElse(
                     thisRV -> {
+                        // EXAMPLE -> EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable));
                         rewardVariablesInComparison.set(rv.getArrayIndex(), null);
                         allMetricsChartPanel.updateSelectedRewardVariables(rewardVariablesInComparison);
                     },
