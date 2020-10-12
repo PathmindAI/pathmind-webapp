@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1202604930;
+    private static final long serialVersionUID = 157390481;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -91,22 +91,17 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.archived</code>.
      */
-    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.user_notes</code>.
      */
-    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.experiment.is_favorite</code>.
      */
     public final TableField<ExperimentRecord, Boolean> IS_FAVORITE = createField(DSL.name("is_favorite"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
-     * The column <code>public.experiment.goals_reached</code>.
-     */
-    public final TableField<ExperimentRecord, Boolean> GOALS_REACHED = createField(DSL.name("goals_reached"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.has_goals</code>.
@@ -117,6 +112,16 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.training_status</code>.
      */
     public final TableField<ExperimentRecord, Integer> TRAINING_STATUS = createField(DSL.name("training_status"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_total_num</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> GOALS_TOTAL_NUM = createField(DSL.name("goals_total_num"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_reached_num</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -212,11 +217,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean, Integer> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Integer, Integer> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

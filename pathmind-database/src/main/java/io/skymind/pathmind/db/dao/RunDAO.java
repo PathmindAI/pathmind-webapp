@@ -268,7 +268,7 @@ public class RunDAO {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }
 
-    private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
+    public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
         Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
         if (bestPolicy == null) {
             return;
@@ -276,11 +276,14 @@ public class RunDAO {
         List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
         if (experiment.isHasGoals()) {
-            boolean goalsReached = rewardVariables.stream()
-                .filter(rv -> rv.getGoalConditionType() != null)
-                .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
+            List<RewardVariable> rewardVariablesWithGoals = rewardVariables.stream()
+                    .filter(rv -> rv.getGoalConditionType() != null).collect(Collectors.toList());
+            int goalsTotalNum = rewardVariablesWithGoals.size();
+            long goalsReachedLong = rewardVariablesWithGoals.stream().filter(rv -> PolicyUtils.isGoalReached(rv, bestPolicy)).count();
+            int goalsReached = Math.toIntExact(goalsReachedLong);
+            experiment.setTotalGoals(goalsTotalNum);
             experiment.setGoalsReached(goalsReached);
-            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
+            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached, goalsTotalNum);
         }
     }
 

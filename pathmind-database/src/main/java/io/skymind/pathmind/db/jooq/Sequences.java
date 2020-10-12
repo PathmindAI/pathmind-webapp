@@ -34,11 +34,6 @@ public class Sequences {
     public static final Sequence<Long> MODEL_ID_SEQ = new SequenceImpl<Long>("model_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
     /**
-     * The sequence <code>public.observation_id_seq</code>
-     */
-    public static final Sequence<Long> OBSERVATION_ID_SEQ = new SequenceImpl<Long>("observation_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
      * The sequence <code>public.pathmind_user_id_seq</code>
      */
     public static final Sequence<Long> PATHMIND_USER_ID_SEQ = new SequenceImpl<Long>("pathmind_user_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
@@ -54,17 +49,7 @@ public class Sequences {
     public static final Sequence<Long> PROJECT_ID_SEQ = new SequenceImpl<Long>("project_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
     /**
-     * The sequence <code>public.reward_variable_id_seq</code>
-     */
-    public static final Sequence<Long> REWARD_VARIABLE_ID_SEQ = new SequenceImpl<Long>("reward_variable_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
      * The sequence <code>public.run_id_seq</code>
      */
     public static final Sequence<Long> RUN_ID_SEQ = new SequenceImpl<Long>("run_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
-
-    /**
-     * The sequence <code>public.training_error_id_seq</code>
-     */
-    public static final Sequence<Long> TRAINING_ERROR_ID_SEQ = new SequenceImpl<Long>("training_error_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 }
