@@ -27,6 +27,7 @@ public class AllMetricsChartPanel extends VerticalLayout
     private AllMetricsChart chart = new AllMetricsChart();
 
     private Experiment experiment;
+    private List<RewardVariable> rewardVariables;
 
     private Supplier<Optional<UI>> getUISupplier;
 
@@ -46,23 +47,18 @@ public class AllMetricsChartPanel extends VerticalLayout
         return hintMessage;
     }
 
-    // TODO -> STEPH -> The sparkline should maybe be calculated as part of selectBestPolicy? We almost always have to do it together anyways don't we?
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment;
+            this.rewardVariables = rewardVariables;
             Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
             PolicyUtils.updateSimulationMetricsData(bestPolicy);
             chart.setAllMetricsChart(rewardVariables, bestPolicy);
         }
     }
 
-    public void updateRewardVariables(List<RewardVariable> rewardVariables) {
-        chart.updateSelectedRewardVariables(rewardVariables);
-        chart.updateData();
-    }
-
     private void updateBestPolicy(Policy bestPolicy) {
-        chart.updateBestPolicy(bestPolicy);
+        chart.setAllMetricsChart(rewardVariables, bestPolicy);
         chart.updateData();
     }
 

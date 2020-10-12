@@ -119,16 +119,12 @@ public class AllMetricsChart extends DataChart {
         JsonArray rows = createRows();
         setData(cols, rows);
     }
-
-    public void updateSelectedRewardVariables(List<RewardVariable> rewardVariables) {
+    private void updateSelectedRewardVariables(List<RewardVariable> rewardVariables) {
         selectedRewardVariables = rewardVariables;
-        updateData();
     }
-
-    public void updateBestPolicy(Policy bestPolicy) {
+    private void updateBestPolicy(Policy bestPolicy) {
         metricsPolicy = bestPolicy;
         allMetricsChartData = generateAllMetricsChartData(metricsPolicy.getSparklinesData());
-        updateData();
     }
 
     public void setAllMetricsChart(List<RewardVariable> rewardVariables, Policy bestPolicy) {

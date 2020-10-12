@@ -83,23 +83,12 @@ public class RewardVariablesTable extends VerticalLayout {
         return rewardVariableNameFields.stream().allMatch(f -> f.isValid());
     }
 
-//    public void setAllMetricsChartPanel(AllMetricsChartPanel allMetricsChartPanel) {
-//        this.allMetricsChartPanel = allMetricsChartPanel;
-//    }
-
     private RowField createRow(RewardVariable rv) {
         Command rewardVariableClickHandler = () -> {
             Optional<RewardVariable> thisRVinComparison = rewardVariablesInComparison.stream().filter(rvInComparison -> rv.equals(rvInComparison)).findAny();
             thisRVinComparison.ifPresentOrElse(
-                    thisRV -> {
-                        rewardVariablesInComparison.set(rv.getArrayIndex(), null);
-                        // TODO -> STEPH -> Can the reward variables change once we get to the experiment view (Chart)? I didn't think it was even possible.
-//                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
-                    },
-                    () -> {
-                        rewardVariablesInComparison.set(rv.getArrayIndex(), rv);
-//                        allMetricsChartPanel.updateRewardVariables(rewardVariablesInComparison);
-                    });
+                    thisRV -> rewardVariablesInComparison.set(rv.getArrayIndex(), null),
+                    () -> rewardVariablesInComparison.set(rv.getArrayIndex(), rv));
         };
         RowField rewardVariableNameField = new RowField(rv, goalFieldValueChangeHandler, rewardVariableClickHandler, actAsMultiSelect);
         rewardVariableNameFields.add(rewardVariableNameField);

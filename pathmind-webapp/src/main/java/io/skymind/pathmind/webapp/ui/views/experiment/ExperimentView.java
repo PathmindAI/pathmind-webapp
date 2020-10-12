@@ -315,7 +315,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateUIAfterExperimentIsStopped() {
         stopTrainingButton.setVisible(false);
-        // TODO -> STEPH -> I don't think this is needed if we have the proper event listener for runUpdate events.
+        // TODO -> FIONA -> I don't think this is needed now that it's cleaned up but can you please confirm.
         experimentChartsPanel.setStopTrainingVisibility();
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
     }
@@ -362,7 +362,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void selectExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        // TODO -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
+        // REFACTOR -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
+        // REFACTOR -> STEPH -> Finish moving this code to ExperimentChangedViewSubscriber (See https://github.com/SkymindIO/pathmind-webapp/issues/2259)
         synchronized (experimentLock) {
             experiment = experimentDAO.getExperiment(selectedExperiment.getId())
                     .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
@@ -372,9 +373,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
-
-			// TODO -> STEPH -> We have to update all components on select Experiment. Should be on an event otherwise this will get more confusing with time...
-            // TODO -> STEPH -> What about bestPolicy? This is also not updated on change experiment.
 
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
@@ -404,7 +402,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void loadExperimentData() {
         modelId = experiment.getModelId();
-        // TODO -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
+        // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);

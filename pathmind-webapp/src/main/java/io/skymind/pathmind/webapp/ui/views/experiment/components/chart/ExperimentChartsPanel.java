@@ -114,7 +114,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     public void setStopTrainingVisibility() {
         trainingStartingPlaceholder.setVisible(false);
         setPolicyChartPanelVisible();
-        // TODO -> STEPH -> Is this last line needed? Shouldn't it always be true?
+        // TODO -> FIONA -> Is this last line needed? Shouldn't it always be true?
         setVisible(true);
     }
 
@@ -151,10 +151,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
-                // TODO -> STEPH -> Why do we do this on every event update? This seems off? It was in the experiment RunUpdate Subscriber.
-                // TODO -> STEPH -> .. shouldn't we instead update the chart...
-//                setStopTrainingVisibility();
-                // TODO -> STEPH -> what about policies? Shouldn't we be listening to policies as well? Why runs instead of policies in the first place?
+                // TODO -> FIONA -> Why do we do this on every event update? What about Policy updates like in the other experiment view components?
                 ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
                 setupCharts(experiment, rewardVariables);
             });

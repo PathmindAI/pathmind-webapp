@@ -61,11 +61,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void handleRowClicked() {
-        // TODO -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
-        // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the
-        // experiment.
-        // TODO -> STEPH -> Need some way to load everything for now. We can't just do experimentDAO and then call the repositories because the
-        // DAO at each level also has some logic and code.
+        // REFACTOR -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
+        // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the experiment.
+        // REFACTOR -> STEPH -> Need some way to load everything for now because we can't just do it with experimentDAO. PolicyDAO also has multiple
+        // repository calls as well as some logic.
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
 
