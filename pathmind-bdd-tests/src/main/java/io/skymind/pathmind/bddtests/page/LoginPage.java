@@ -138,7 +138,6 @@ public class LoginPage extends PageObject {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
 
         assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a 30-day Free Trial!"));
-        assertThat(signUpView.findElement(By.cssSelector(".do-not-share-url")).getText(), containsString("Please do not share this URL"));
 
         WebElement firstNameInputShadow = signUpView.findElement(By.id("firstName"));
         WebElement firstNameInput = utils.expandRootElement(firstNameInputShadow);

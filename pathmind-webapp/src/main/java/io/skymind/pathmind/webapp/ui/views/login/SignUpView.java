@@ -21,6 +21,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -32,6 +33,7 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
+@RouteAlias(value = Routes.EARLY_ACCESS_SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
 {
 	@Id("lastName")

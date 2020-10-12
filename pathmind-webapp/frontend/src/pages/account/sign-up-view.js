@@ -14,10 +14,6 @@ class SignUpView extends PolymerElement {
         />
         <vaadin-vertical-layout class="inner-content" id="emailPart">
           <h3>{{title}}</h3>
-          <div class="do-not-share-url">
-            <iron-icon icon="vaadin:exclamation-circle-o"></iron-icon>
-            Please do not share this URL
-          </div>
           <vaadin-text-field
             id="firstName"
             label="First Name"
