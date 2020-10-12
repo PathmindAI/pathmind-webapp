@@ -2,7 +2,7 @@
 Feature: Sign Up
 
   Scenario Outline: Create new user
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
     When Create new user click sign up button
     When Fill new user password <Password>
@@ -19,7 +19,7 @@ Feature: Sign Up
       | Evgeniy    | Autotest  | Pass123456 |
 
   Scenario Outline: Create new user and login without email approve
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
     When Create new user click sign up button
     When Fill new user password <Password>
@@ -35,7 +35,7 @@ Feature: Sign Up
       | Evgeniy    | Autotest  | Pass123456 |
 
   Scenario: Create new user using email alias
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with first name Evgeniy
     When Fill new user form with last name Autotest
     When Fill temporary email with alias to the new user form
@@ -52,5 +52,5 @@ Feature: Sign Up
 
   @smoke
   Scenario: Check create new user page elements
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Check create new user page elements
