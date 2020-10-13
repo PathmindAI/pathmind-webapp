@@ -68,7 +68,9 @@ public class AllMetricsChartPanel extends VerticalLayout
     }
 
     private void updateChartData() {
-        chart.setAllMetricsChart(new ArrayList<>(rewardVariableFilters.values()), bestPolicy);
+        List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
+        Collections.sort(filteredAndSortedList, Comparator.comparing(RewardVariable::getArrayIndex));
+        chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
         chart.updateData();
     }
 
