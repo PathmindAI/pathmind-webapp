@@ -212,7 +212,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         observationsText.add(""+model.getNumberOfObservations());
 
         if (rewardVariableNames.size() > 0) {
-            RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
+            RewardVariablesTable rewardVariablesTable = new RewardVariablesTable(() -> getUI());
             rewardVariablesTable.setRewardVariables(rewardVariableNames);
             rewardVariablesTable.setCompactMode();
             rewardVariableNamesText.add(rewardVariablesTable);

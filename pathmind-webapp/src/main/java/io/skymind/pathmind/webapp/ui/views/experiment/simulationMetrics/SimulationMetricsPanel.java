@@ -64,7 +64,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         createEnlargedChartDialog();
 
-        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable = new RewardVariablesTable(getUISupplier);
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();

@@ -126,7 +126,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int)DataSize.parse(alpFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-		rewardVariablesPanel = new RewardVariablesPanel();
+		rewardVariablesPanel = new RewardVariablesPanel(() -> getUI());
 
 		modelBinder.readBean(model);
 

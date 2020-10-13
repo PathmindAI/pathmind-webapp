@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -88,6 +89,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
         EventBus.subscribe(this,
                 new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier),
                 new ExperimentChartsPanelExperimentChangedViewSubscriber(getUISupplier));
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
     }
 
     public void setupCharts(Experiment experiment, List<RewardVariable> rewardVariables) {
