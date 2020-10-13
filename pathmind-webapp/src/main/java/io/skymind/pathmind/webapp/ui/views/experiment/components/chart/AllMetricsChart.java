@@ -1,24 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
+import java.util.*;
+
 public class AllMetricsChart extends DataChart {
 
     private Policy metricsPolicy;
-    private List<RewardVariable> selectedRewardVariables;
     private Map<Integer, List<Double>> allMetricsChartData;
+    // This must be an array due to a number of issues. For example a list containing a null item at the end will result in the list being decreased in size. This guarantees
+    // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
+    private RewardVariable[] rewardVariables;
 
     public AllMetricsChart() {
         super();
@@ -38,9 +35,9 @@ public class AllMetricsChart extends DataChart {
             "#bd52a3",
             "#887100"
         );
-        for (int i = 0; i < selectedRewardVariables.size(); i++) {
-            if (selectedRewardVariables.get(i) != null) {
-                String seriesColor = colors.get(selectedRewardVariables.get(i).getArrayIndex()%10);
+        for (int i = 0; i < rewardVariables.length; i++) {
+            if (rewardVariables[i] != null) {
+                String seriesColor = colors.get(rewardVariables[i].getArrayIndex()%10);
                 series.put(""+i, Json.parse("{'color': '"+seriesColor+"'}"));
             }
         }
@@ -50,19 +47,18 @@ public class AllMetricsChart extends DataChart {
     private JsonArray createCols() {
         JsonArray cols = Json.createArray();
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
-        selectedRewardVariables.forEach((rewardVariable) -> {
+        for(RewardVariable rewardVariable: rewardVariables) {
             int index = cols.length();
             cols.set(index, Json.parse("{'label':'reward variable "+index+"', 'type':'number'}"));
             cols.set(index+1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
-        });
+        }
         return cols;
     }
 
     private JsonArray createRows() {
         JsonArray rows = Json.createArray();
-        allMetricsChartData.forEach((iteration, metricList) -> {
-            rows.set(rows.length(), createRowItem(iteration, metricList));
-        });
+        allMetricsChartData.forEach((iteration, metricList) ->
+                rows.set(rows.length(), createRowItem(iteration, metricList)));
         return rows;
     }
 
@@ -72,8 +68,8 @@ public class AllMetricsChart extends DataChart {
         for (int i = 0; i < thisIterationMetricValues.size(); i++) {
             Double metricValue = thisIterationMetricValues.get(i);
             int index = rowItem.length();
-            if (selectedRewardVariables.get(i) != null && metricValue != null) {
-                RewardVariable rewardVariable = selectedRewardVariables.get(i);
+            if (rewardVariables[i] != null && metricValue != null) {
+                RewardVariable rewardVariable = rewardVariables[i];
                 rowItem.set(index, metricValue);
                 String meanMetricValueFormatted = Math.abs(metricValue) > 1 ? String.format("%.2f", metricValue) : String.format("%.4f", metricValue);
                 String tooltip = "<div><b>"+rewardVariable.getName()+"</b><br>";
@@ -104,9 +100,8 @@ public class AllMetricsChart extends DataChart {
         for (int i = 0; i <= maxIteration; i++) {
             final int iterationNumber = i;
             List<Double> thisIterationMetricValues = new ArrayList<>();
-            sparklinesData.forEach((metricIndex, sparklineData) -> {
-                thisIterationMetricValues.add(sparklineData.get(iterationNumber));
-            });
+            sparklinesData.forEach((metricIndex, sparklineData) ->
+                    thisIterationMetricValues.add(sparklineData.get(iterationNumber)));
             allLinesData.put(i, thisIterationMetricValues);
         }
         
@@ -119,10 +114,17 @@ public class AllMetricsChart extends DataChart {
         JsonArray rows = createRows();
         setData(cols, rows);
     }
-    public void updateSelectedRewardVariables(List<RewardVariable> selectedRewardVariables) {
-        this.selectedRewardVariables = selectedRewardVariables;
+
+    private void updateSelectedRewardVariables(List<RewardVariable> selectedRewardVariables) {
+        // Make sure the list is sorted by arrayIndex as there are no guarantees it will be.
+        Collections.sort(selectedRewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
+        // Using the selectedRewardVariables create a new List with null's for all empty arrayIndex values so that the chart colors remain the same.
+        rewardVariables = new RewardVariable[metricsPolicy.getSparklinesData().size()];
+        // Insert the RewardVariables at their appropriate index values.
+        selectedRewardVariables.stream().forEach(selectedRewardVariable -> rewardVariables[selectedRewardVariable.getArrayIndex()] = selectedRewardVariable);
     }
-    public void updateBestPolicy(Policy bestPolicy) {
+
+    private void updateBestPolicy(Policy bestPolicy) {
         metricsPolicy = bestPolicy;
         allMetricsChartData = generateAllMetricsChartData(metricsPolicy.getSparklinesData());
     }
@@ -132,8 +134,10 @@ public class AllMetricsChart extends DataChart {
             setChartEmpty();
             return;
         }
-        updateSelectedRewardVariables(selectedRewardVariables);
+
+        // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
         updateBestPolicy(bestPolicy);
+        updateSelectedRewardVariables(selectedRewardVariables);
 
         String type = "line";
         Boolean showTooltip = true;
