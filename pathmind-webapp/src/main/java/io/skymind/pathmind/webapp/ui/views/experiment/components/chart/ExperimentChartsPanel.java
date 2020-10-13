@@ -73,15 +73,16 @@ public class ExperimentChartsPanel extends VerticalLayout {
         rewardScoreChartTab = new Tab("Mean Reward Score");
         chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
-        chartTabs.addSelectedChangeListener(event -> {
-            // have to redraw chart to make sure the chart size is right
-            if (chartTabs.getSelectedIndex() == 0) {
-                setAllMetricsChartPanelVisible();
-            } else {
-                setPolicyChartPanelVisible();
-            }
-        });
+        chartTabs.addSelectedChangeListener(event -> setVisiblePanel());
         return chartTabs;
+    }
+
+    private void setVisiblePanel() {
+        if (chartTabs.getSelectedIndex() == 0) {
+            setAllMetricsChartPanelVisible();
+        } else {
+            setPolicyChartPanelVisible();
+        }
     }
 
     @Override
@@ -104,18 +105,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
 
-        System.out.println("training status: "+experiment.getTrainingStatusEnum());
-
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
         } else {
-            chartTabs.setSelectedTab(metricsChartTab);
+            setVisiblePanel();
         }
-    }
-
-    public void setStopTrainingVisibility() {
-        trainingStartingPlaceholder.setVisible(false);
-        setPolicyChartPanelVisible();
     }
 
     private void setAllMetricsChartPanelVisible() {
