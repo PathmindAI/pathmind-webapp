@@ -137,13 +137,15 @@ public class PolicyChart extends DataChart {
     }
 
     public void setPolicyChart(Experiment experiment) {
-
-        if(CollectionUtils.isEmpty(experiment.getPolicies())) {
-            setChartEmpty();
-            return;
+        Boolean showEmptyChart = CollectionUtils.isEmpty(experiment.getPolicies());
+        Map<Integer, List<RewardScore>> policyChartData = new LinkedHashMap<>();
+        JsonObject series;
+        if (showEmptyChart) {
+            series = Json.createObject();
+        } else {
+            policyChartData = generatePolicyChartData(experiment);
+            series = createSeries(experiment.getPolicies().size(), bestPolicySeriesNumber);
         }
-
-        Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(experiment);
 
         String type = "line";
         Boolean showTooltip = true;
@@ -152,7 +154,6 @@ public class PolicyChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries(experiment.getPolicies().size(), bestPolicySeriesNumber);
         JsonObject viewWindow = null;
 
         setupChart(
@@ -167,7 +168,11 @@ public class PolicyChart extends DataChart {
             viewWindow
         );
         getModel().setDimlines(true);
-        updateData(experiment.getPolicies(), policyChartData);
+        if (showEmptyChart) {
+            setChartEmpty();
+        } else {
+            updateData(experiment.getPolicies(), policyChartData);
+        }
     }
     
 }
