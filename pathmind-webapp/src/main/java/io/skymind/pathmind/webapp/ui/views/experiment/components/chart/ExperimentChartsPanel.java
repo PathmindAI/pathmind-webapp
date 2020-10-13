@@ -149,7 +149,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
-                // TODO -> FIONA -> Why do we do this on every event update? What about Policy updates like in the other experiment view components?
                 ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
                 setupCharts(experiment, rewardVariables);
             });
