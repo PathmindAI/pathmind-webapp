@@ -30,6 +30,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
     private Command goalFieldValueChangeHandler;
 
     private RewardVariable rewardVariable;
+    // This is really only used to prevent eventbus updates for reward variables that are already set to show.
     private boolean isShow = true;
 
     protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
@@ -45,9 +46,11 @@ public class RewardVariablesRowField extends HorizontalLayout {
                 Element spanElement = event.getSource().getElement();
                 if (spanElement.hasAttribute(clickedAttribute)) {
                     spanElement.removeAttribute(clickedAttribute);
+                    isShow = false;
                     EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
                 } else {
                     spanElement.setAttribute(clickedAttribute, true);
+                    isShow = true;
                     EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
                 }
             });

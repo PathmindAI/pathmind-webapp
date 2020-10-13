@@ -4,22 +4,15 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.Binder.Binding;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
-import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.AllMetricsChartPanel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout {
