@@ -104,3 +104,12 @@ Feature: Nav bar search
     Then Check search result tag is 'Project'
     When Refresh page
     Then Check search result group project is 'AutotestProject15'
+
+  Scenario: Open project in the new tab
+    Given Login to the pathmind
+    When Choose search option Project
+    When Input 'AutotestProject' to the notes search field
+    When Click notes search btn
+    When Click in the new tab 'AutotestProject' button
+    When Open tab 1
+    Then Check that project page is opened
