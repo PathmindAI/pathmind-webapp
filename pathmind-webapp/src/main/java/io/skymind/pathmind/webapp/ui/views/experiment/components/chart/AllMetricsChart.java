@@ -135,9 +135,6 @@ public class AllMetricsChart extends DataChart {
     public void setAllMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
         Boolean showEmptyChart = selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0;
         JsonObject series;
-        System.out.println("selectedRewardVariables? "+selectedRewardVariables);
-        System.out.println("bestPolicy? "+bestPolicy);
-        System.out.println("show empty chart? "+showEmptyChart);
         if (showEmptyChart) {
             series = Json.createObject();
         } else {
