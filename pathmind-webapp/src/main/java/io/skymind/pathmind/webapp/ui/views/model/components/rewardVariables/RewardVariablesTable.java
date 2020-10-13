@@ -80,10 +80,6 @@ public class RewardVariablesTable extends VerticalLayout {
         });
     }
 
-//    public void resetRewardVariablesInComparison(List<RewardVariable> rewardVariables) {
-//        rewardVariableNameFields.forEach(row -> row.reset());
-//    }
-
     public boolean canSaveChanges() {
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
     }
