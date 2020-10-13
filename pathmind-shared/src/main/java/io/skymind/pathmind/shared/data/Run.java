@@ -29,6 +29,7 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
     private String rllibError;
     private String successMessage;
     private String warningMessage;
+    private int completingUpdatesAttempts;
 
     // Helper attributes
     private Experiment experiment;
@@ -69,6 +70,7 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
                 .rllibError(rllibError)
                 .successMessage(successMessage)
                 .warningMessage(warningMessage)
+                .completingUpdatesAttempts(completingUpdatesAttempts)
                 .build());
     }
 

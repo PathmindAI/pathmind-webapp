@@ -1,4 +1,10 @@
 /**
+    This file is no longer the same as the one from juicy-ace-editor
+    because we have modified it for debugging purpose.
+    This file is not used by the app but is for testing changes and reference for customization.
+    The file used by the app is juicy-ace-editor-npm.min.js
+ */
+/**
     Custom Element with Ace code editor
     http://juicy.github.io/juicy-ace-editor/
     version: 2.2.1
@@ -6,10 +12,6 @@
     @license MIT
     @author
 */
-import "ace-builds/src-noconflict/ace.js";
-
-import "ace-builds/src-noconflict/ext-searchbox.js";
-import "ace-builds/src-noconflict/ext-beautify.js";
 
 const $template = document.createElement("template");
 $template.innerHTML = `<template id="juicy-ace-editor">
@@ -39,7 +41,11 @@ window.customElements.define(
   class JuicyAceEditor extends HTMLElement {
     // getter/setter for value property
     get value() {
-      return (this.editor && this.editor.getValue()) || this.textContent;
+        // This is a fix by @fionnachan because it doesn't return the value correctly when the value is an empty string
+        if (this.editor && this.editor.getValue() != null && typeof(this.editor.getValue()) !== "undefined") {
+            return this.editor && this.editor.getValue();
+        }
+        return this.textContent;
     }
     set value(val) {
       if (this.editor) {

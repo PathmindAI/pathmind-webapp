@@ -82,8 +82,10 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 	}
 
 	public void setValue(String value) {
-		this.getElement().setProperty("value", value);
-		getElement().executeJs("$0.editor.clearSelection()");
+        this.getElement().setProperty("value", value);
+        // By default Ace editor highlight the new value
+        // This is to override default behaviour of Ace editor
+        this.getElement().executeJs("this.editor.clearSelection()");
 	}
 
 	@Synchronize({"change"})

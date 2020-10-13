@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.*;
 import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
+import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
@@ -66,24 +67,28 @@ public class UpdaterService {
         this.sqsFilter = sqsFilter;
     }
 
-    public ProviderJobStatus updateRunInformation(
-            Run run,
-            Map<Long, List<String>> stoppedPoliciesNamesForRuns,
-            String jobHandle) {
-        List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns
-                .getOrDefault(run.getId(), Collections.emptyList());
+    public ProviderJobStatus updateRunInformation(Run run, int updateCompletingAttemptsLimit, Map<Long, List<String>> stoppedPoliciesNamesForRuns) {
+        final String jobHandle = run.getJobId();
+
+        List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns.getOrDefault(run.getId(), Collections.emptyList());
 
         ProviderJobStatus providerJobStatus = provider.status(jobHandle);
         if (providerJobStatus.getRunStatus().equals(RunStatus.Completing)) {
+            run.setCompletingUpdatesAttempts(run.getCompletingUpdatesAttempts() + 1);
             List<String> unfinishedIds = runDAO.unfinishedPolicyIds(run.getId());
-            if (unfinishedIds.size() == 0) {
-                providerJobStatus = ProviderJobStatus.COMPLETED.addExperimentState(providerJobStatus.getExperimentState());
+            boolean enforceComplete = run.getCompletingUpdatesAttempts() >= updateCompletingAttemptsLimit;
+            if (unfinishedIds.size() == 0 || enforceComplete) {
+                if (enforceComplete) {
+                    log.info("Marking Completing run [{}] as Completed since limit of update attempts had been reached", run.getId());
+                }
+                providerJobStatus = new ProviderJobStatus(Completed, providerJobStatus.getExperimentState());
             }
         }
         ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-        final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNamesForRuns, run.getId(),
-                jobHandle, experimentState, false);
+        final List<Policy> policies = getPoliciesFromProgressProvider(
+                stoppedPoliciesNamesForRuns, run.getId(), jobHandle, experimentState, false
+        );
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
         setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
@@ -112,7 +117,7 @@ public class UpdaterService {
     // When the Run is completed, update policy data one more time just to ensure all data is saved to DB
     // See https://github.com/SkymindIO/pathmind-webapp/issues/1866 for details.
     private List<Policy> ensurePolicyDataIfRunIsCompleted(Run run, ProviderJobStatus providerJobStatus) {
-        if (run.getStatusEnum() == RunStatus.Completed) {
+        if (run.getStatusEnum() == Completed) {
             log.debug("final DB updates for " + run.getJobId());
             List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyMap(), run.getId(),
                     run.getJobId(), providerJobStatus.getExperimentState(), true);
@@ -202,9 +207,7 @@ public class UpdaterService {
                     });
 
             final var foundError = trainingErrorDAO.getErrorByKeyword(knownErrorMessage);
-            foundError.ifPresent(
-                    e -> run.setTrainingErrorId(e.getId())
-            );
+            foundError.ifPresent(e -> run.setTrainingErrorId(e.getId()));
             getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX, RLLIB_MAX_LEN).ifPresent(run::setRllibError);
         } else if (status == RunStatus.Killed && run.getStatusEnum() != RunStatus.Stopping) {
             // Stopping status is set, when user wants to stop training. So, don't assign an error in this case
@@ -212,7 +215,7 @@ public class UpdaterService {
                 run.setTrainingErrorId(error.getId());
             });
             getDescriptionStartingWithPrefix(descriptions, RLLIB_ERROR_PREFIX, RLLIB_MAX_LEN).ifPresent(run::setRllibError);
-        } else if (status == RunStatus.Completed) {
+        } else if (status == Completed) {
             getDescriptionStartingWithPrefix(descriptions, SUCCESS_MESSAGE_PREFIX, SUCCESS_MAX_LEN).ifPresent(run::setSuccessMessage);
             getDescriptionStartingWithPrefix(descriptions, WARNING_MESSAGE_PREFIX, WARNING_MAX_LEN).ifPresent(run::setWarningMessage);
         }
@@ -289,7 +292,7 @@ public class UpdaterService {
             policiesInfo.addAll(
                     stoppedPoliciesNames
                             .stream()
-                            .filter(id -> unfinishedPolicyIds.contains(id))
+                            .filter(unfinishedPolicyIds::contains)
                             .map(finishPolicyName -> {
                                 final byte[] policyFile = provider
                                         .policy(jobHandle, finishPolicyName); // don't update db nor aws
