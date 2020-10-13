@@ -1778,4 +1778,24 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20201012-01" author="alexander.makarov@toptal.com">
+        <comment>
+            Add number of total and reached goals
+        </comment>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_TOTAL_NUM" type="INT" defaultValue="0">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_REACHED_NUM" type="INT" defaultValue="0">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20201012-02" author="alexander.makarov@toptal.com">
+        <dropColumn tableName="EXPERIMENT" columnName="GOALS_REACHED" />
+    </changeSet>
+
 </databaseChangeLog>

@@ -33,16 +33,22 @@ public class PolicyDAO {
         return optionalPolicy;
     }
 
-    public List<Policy> getPoliciesForExperiment(long experimentId) {
-        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
-        Map<Long, List<Metrics>> metricsMap = getMetricsForPolicies(DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setMetrics(metricsMap.get(policy.getId())));
-        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(ctx, DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setMetricsRaws(metricsRawMap.get(policy.getId())));
-
+    public List<Policy> getPoliciesForExperiment(DSLContext context, long experimentId) {
+        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(context, experimentId);
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(context, DataUtils.convertToIds(policies));
+        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(context, DataUtils.convertToIds(policies));
+        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(context, DataUtils.convertToIds(policies));
+        policies.forEach(policy -> {
+            long id = policy.getId();
+            policy.setScores(rewardScores.get(id));
+            policy.setMetrics(metricsMap.get(id));
+            policy.setMetricsRaws(metricsRawMap.get(id));
+        });
         return policies;
+    }
+
+    public List<Policy> getPoliciesForExperiment(long experimentId) {
+        return getPoliciesForExperiment(ctx, experimentId);
     }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {
