@@ -155,6 +155,12 @@ class DataChart extends PolymerElement {
     }
     
     setChartEmpty() {
+        if (this.cols == undefined) {
+            this.cols = [
+                {"label":"Iteration", "type":"number"},
+                {"label":"line", "type":"number"},
+            ]
+        }
         this.rows = [];
         this.redraw();
     }

@@ -109,7 +109,10 @@ public class AllMetricsChart extends DataChart {
     }
 
     public void updateData() {
-        if (metricsPolicy == null) return;
+        if (metricsPolicy == null) {
+            setChartEmpty();
+            return;
+        }
         JsonArray cols = createCols();
         JsonArray rows = createRows();
         setData(cols, rows);
@@ -130,15 +133,19 @@ public class AllMetricsChart extends DataChart {
     }
 
     public void setAllMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
-        if (selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0) {
-            setChartEmpty();
-            return;
+        Boolean showEmptyChart = selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0;
+        JsonObject series;
+        System.out.println("selectedRewardVariables? "+selectedRewardVariables);
+        System.out.println("bestPolicy? "+bestPolicy);
+        System.out.println("show empty chart? "+showEmptyChart);
+        if (showEmptyChart) {
+            series = Json.createObject();
+        } else {
+            // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
+            updateBestPolicy(bestPolicy);
+            updateSelectedRewardVariables(selectedRewardVariables);
+            series = createSeries();
         }
-
-        // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
-        updateBestPolicy(bestPolicy);
-        updateSelectedRewardVariables(selectedRewardVariables);
-
         String type = "line";
         Boolean showTooltip = true;
         String hAxisTitle = "Iteration";
@@ -146,7 +153,6 @@ public class AllMetricsChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries();
         JsonObject viewWindow = null;
 
         setupChart(
@@ -160,7 +166,12 @@ public class AllMetricsChart extends DataChart {
             stacked,
             viewWindow
         );
-        updateData();
+
+        if (showEmptyChart) {
+            setChartEmpty();
+        } else {
+            updateData();
+        }
     }
     
 }

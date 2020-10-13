@@ -315,8 +315,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateUIAfterExperimentIsStopped() {
         stopTrainingButton.setVisible(false);
-        // TODO -> FIONA -> I don't think this is needed now that it's cleaned up but can you please confirm.
-        experimentChartsPanel.setStopTrainingVisibility();
         trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
     }
 

@@ -69,9 +69,7 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     private void updateChartData() {
         List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-//        Collections.sort(filteredAndSortedList, Comparator.comparing(RewardVariable::getArrayIndex));
         chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
-        chart.updateData();
     }
 
     public void redrawChart() {
@@ -112,8 +110,8 @@ public class AllMetricsChartPanel extends VerticalLayout
 
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
                 selectBestPolicy();
-                if(bestPolicy != null)
-                    pushChartUpdate(getUiSupplier());
+                // if(bestPolicy != null)
+                pushChartUpdate(getUiSupplier());
             }
         }
 
