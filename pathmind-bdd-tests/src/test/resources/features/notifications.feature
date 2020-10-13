@@ -49,5 +49,6 @@ Feature: Notifications
   Scenario: Check new version notification sign out btn
     Given Login to the pathmind
     When Trigger API new version notification
+    When Check that new version notification is shown
     When Click in notification Sign out button
     Then Check that login page opened
