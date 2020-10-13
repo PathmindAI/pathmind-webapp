@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components;
+package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 

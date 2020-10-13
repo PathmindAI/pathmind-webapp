@@ -7,9 +7,11 @@ import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 public class RewardVariableSelectedViewBusEvent implements PathmindViewBusEvent {
 
     private RewardVariable rewardVariable;
+    private boolean isShow;
 
-    public RewardVariableSelectedViewBusEvent(RewardVariable rewardVariable) {
+    public RewardVariableSelectedViewBusEvent(RewardVariable rewardVariable, boolean isShow) {
         this.rewardVariable = rewardVariable;
+        this.isShow = isShow;
     }
 
     @Override
@@ -19,5 +21,9 @@ public class RewardVariableSelectedViewBusEvent implements PathmindViewBusEvent 
 
     public RewardVariable getRewardVariable() {
         return rewardVariable;
+    }
+
+    public boolean isShow() {
+        return isShow;
     }
 }

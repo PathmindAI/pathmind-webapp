@@ -18,8 +18,8 @@ import io.skymind.pathmind.webapp.bus.subscribers.view.RewardVariableSelectedVie
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 public class AllMetricsChartPanel extends VerticalLayout
@@ -29,12 +29,14 @@ public class AllMetricsChartPanel extends VerticalLayout
     private AllMetricsChart chart = new AllMetricsChart();
 
     private Experiment experiment;
-    private List<RewardVariable> rewardVariables;
+    private Policy bestPolicy;
+    private Map<Long, RewardVariable> rewardVariableFilters;
 
     private Supplier<Optional<UI>> getUISupplier;
 
     public AllMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
+        rewardVariableFilters = new ConcurrentHashMap<>();
         add(hintMessage(), chart);
         setPadding(false);
         setSpacing(false);
@@ -52,22 +54,21 @@ public class AllMetricsChartPanel extends VerticalLayout
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment;
-            this.rewardVariables = rewardVariables;
-            Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-            PolicyUtils.updateSimulationMetricsData(bestPolicy);
-            chart.setAllMetricsChart(rewardVariables, bestPolicy);
+            rewardVariables.stream().forEach(rewardVariable ->
+                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable));
+            selectBestPolicy();
+            updateChartData();
+            redrawChart();
         }
     }
 
-    public void updateSelectedRewardVariables(List<RewardVariable> rewardVariables) {
-        if (rewardVariables != null) {
-            chart.updateSelectedRewardVariables(rewardVariables);
-            chart.updateData();
-        }
+    private void selectBestPolicy() {
+        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
     }
 
-    private void updateBestPolicy(Policy bestPolicy) {
-        chart.setAllMetricsChart(rewardVariables, bestPolicy);
+    private void updateChartData() {
+        chart.setAllMetricsChart(new ArrayList<>(rewardVariableFilters.values()), bestPolicy);
         chart.updateData();
     }
 
@@ -87,6 +88,13 @@ public class AllMetricsChartPanel extends VerticalLayout
                 new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier));
     }
 
+    private void pushChartUpdate(Supplier<Optional<UI>> getUISupplier) {
+        PushUtils.push(getUISupplier, () -> {
+            updateChartData();
+            redrawChart();
+        });
+    }
+
     class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
         public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
@@ -99,9 +107,11 @@ public class AllMetricsChartPanel extends VerticalLayout
                 // We need to check after the lock is acquired as changing experiments can take up to several seconds.
                 if (event.getExperimentId() != experiment.getId())
                     return;
+
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
-                PolicyUtils.selectBestPolicy(experiment.getPolicies())
-                        .ifPresent(bestPolicy -> PushUtils.push(getUiSupplier(), () -> updateBestPolicy(bestPolicy)));
+                selectBestPolicy();
+                if(bestPolicy != null)
+                    pushChartUpdate(getUiSupplier());
             }
         }
 
@@ -119,7 +129,13 @@ public class AllMetricsChartPanel extends VerticalLayout
 
         @Override
         public void handleBusEvent(RewardVariableSelectedViewBusEvent event) {
-            // EXAMPLE event.getRewardVariable()
+            if(event.isShow()) {
+                rewardVariableFilters.putIfAbsent(event.getRewardVariable().getId(), event.getRewardVariable());
+            } else {
+                rewardVariableFilters.remove(event.getRewardVariable().getId());
+            }
+
+            pushChartUpdate(getUiSupplier());
         }
     }
 }

@@ -211,7 +211,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         HorizontalLayout pageWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 experimentsNavbar,
                 experimentContent);
-        simulationMetricsPanel.setAllMetricsChartPanel(experimentChartsPanel.getAllMetricsChartPanel());
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;

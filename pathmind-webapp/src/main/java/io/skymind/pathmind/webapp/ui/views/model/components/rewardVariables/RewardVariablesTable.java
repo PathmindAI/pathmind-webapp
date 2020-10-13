@@ -1,0 +1,90 @@
+package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
+
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.Binding;
+import com.vaadin.flow.dom.Element;
+import com.vaadin.flow.server.Command;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.AllMetricsChartPanel;
+
+import java.util.*;
+
+@CssImport(value = "./styles/components/reward-variables-table.css")
+public class RewardVariablesTable extends VerticalLayout {
+
+	private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
+    private VerticalLayout container;
+    private Command goalFieldValueChangeHandler;
+    private Boolean actAsMultiSelect = false;
+
+    public RewardVariablesTable() {
+        this(() -> {});
+    }
+
+    public RewardVariablesTable(Command goalFieldValueChangeHandler) {
+        this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
+        setPadding(false);
+        setSpacing(false);
+        container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        container.setClassName("reward-variables-table");
+
+        add(container);
+    }
+
+    public void setCodeEditorMode() {
+        setClassName("with-container-border");
+    }
+    
+    public void setCompactMode() {
+        container.addClassName("compact");
+    }
+
+    public void setSelectMode() {
+        actAsMultiSelect = true;
+    }
+    
+    /**
+     * By the default the table is readonly, as there is only a single case it's editable
+     */
+    public void makeEditable() {
+        rewardVariableNameFields.forEach(row -> row.setEditable(true));
+    }
+
+    public void setRewardVariables(List<RewardVariable> rewardVariables) {
+        container.removeAll();
+        rewardVariableNameFields.clear();
+        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Variable Name"), new Span("Goal"));
+
+        headerRow.addClassName("header-row");
+        GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
+
+        container.add(headerRow);
+        
+        Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
+        rewardVariables.forEach(rewardVariable -> {
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect);
+            container.add(row);
+            rewardVariableNameFields.add(row);
+        });
+    }
+
+//    public void resetRewardVariablesInComparison(List<RewardVariable> rewardVariables) {
+//        rewardVariableNameFields.forEach(row -> row.reset());
+//    }
+
+    public boolean canSaveChanges() {
+        return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
+    }
+}

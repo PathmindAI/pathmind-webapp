@@ -43,7 +43,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 
