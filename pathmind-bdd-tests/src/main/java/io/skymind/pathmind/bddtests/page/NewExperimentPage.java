@@ -24,6 +24,8 @@ public class NewExperimentPage extends PageObject {
 
     private Utils utils;
 
+    @FindBy(xpath = "//*[@class='experiments-navbar']/vaadin-button")
+    private WebElement newExperimentBtn;
     @FindBy(xpath = "//juicy-ace-editor")
     private WebElement rewardField;
     @FindBy(xpath = "//vaadin-button[text()='Train Policy']")
@@ -33,6 +35,13 @@ public class NewExperimentPage extends PageObject {
     @FindBy(xpath = "//confirm-popup")
     private WebElement confirmPopup;
     private final By byInput = By.cssSelector("input");
+
+    public void clickSideBarNewExperimentBtn() {
+        Actions actions = new Actions(getDriver());
+        actions.moveToElement(newExperimentBtn).build().perform();
+        waitABit(2500);
+        actions.click(newExperimentBtn).build().perform();
+    }
 
     public void checkThatExperimentPageOpened(String projectName) {
         assertThat(getDriver().findElement(By.xpath("//a[contains(@href, 'project/')]")).getText(), containsString(projectName));
@@ -142,7 +151,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
-        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='"+rewardVariable+"']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign+goal));
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign + goal));
     }
 
     public void checkThatExperimentPageTitleIs(String experiment) {
@@ -173,12 +182,12 @@ public class NewExperimentPage extends PageObject {
 
     public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
         waitABit(4000);
-        if (btnStatus){
+        if (btnStatus) {
             waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")));
             waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")));
             assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")).size(), is(not(0)));
             assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")).size(), is(not(0)));
-        }else {
+        } else {
             waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and @aria-disabled='true' and @disabled]")));
             assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("aria-disabled"), is("true"));
             assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("disabled"), is("true"));
@@ -190,5 +199,16 @@ public class NewExperimentPage extends PageObject {
         utils.clickElementRepeatIfStaleException(By.xpath("//juicy-ace-editor"));
         rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         rewardField.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public void openExperimentFromSidebarInTheNewTab(String experiment) {
+        waitABit(2000);
+        Actions actions = new Actions(getDriver());
+        actions.keyDown(Keys.CONTROL).build().perform();
+        actions.moveToElement(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
+        waitABit(2500);
+        actions.click(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
+        actions.keyUp(Keys.CONTROL).build().perform();
+        waitABit(3000);
     }
 }

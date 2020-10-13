@@ -155,7 +155,7 @@ public class Utils extends PageObject {
     public WebElement getExperimentNavbarItemByExperimentName(String experimentName, String cssSelector) {
         for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
             WebElement experimentNavbarItemShadow = expandRootElement(webElement);
-            if (experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText().split("\n")[0].equals(experimentName)) {
+            if (experimentNavbarItemShadow.findElement(By.cssSelector("a")).getText().split("\n")[0].equals(experimentName)) {
                 if (cssSelector == null) {
                     return webElement;
                 }
