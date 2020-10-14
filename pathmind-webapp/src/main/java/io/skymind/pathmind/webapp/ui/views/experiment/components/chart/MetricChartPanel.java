@@ -22,14 +22,13 @@ public class MetricChartPanel extends VerticalLayout {
     private TagLabel goalLabel;
     private SparklineChart chart = new SparklineChart();
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
-    private Paragraph description = new Paragraph("This chart does not update automatically.");
 
     public MetricChartPanel() {
         titleWrapper = WrapperUtils.wrapWidthFullHorizontal(chartLabel);
         titleWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         goalLabel = new TagLabel("", true, "small");
         titleWrapper.add(goalLabel);
-        add(titleWrapper, description, chart);
+        add(titleWrapper, chart);
         setPadding(false);
         setSpacing(false);
         addClassName("metric-chart-panel");
