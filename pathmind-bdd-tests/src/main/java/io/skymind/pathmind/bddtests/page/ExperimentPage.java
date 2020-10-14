@@ -249,11 +249,11 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
+        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
         Actions actions = new Actions(getDriver());
         actions.moveToElement(showBtn);
         actions.perform();
-        getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
+        getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
     }
 
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
