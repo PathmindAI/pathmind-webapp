@@ -295,4 +295,33 @@ public class ExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]")).getAttribute("href"), containsString(model));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]/vaadin-button")).getText(), is("Model ALP"));
     }
+
+    public void checkLearningProgressTitle(String title) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/span")).getText(), is(title));
+    }
+
+    public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "']")).getText(), is(tab));
+    }
+
+    public void checkLearningProgressBlockMetricsHint(String hint) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::iron-icon")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::p")).getText(), is(hint));
+    }
+
+    public void checkLearningProgressBlockDataChartIsShown() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::data-chart[1]")));
+    }
+
+    public void checkLearningProgressBlockMeanRewardScoreDataChartIsShown() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::data-chart[2]")));
+    }
+
+    public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
+        if (chosen){
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='"+variable+"' and @chosen]")).size(), is(not(0)));
+        }else {
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='"+variable+"' and not(@chosen)]")).size(), is(not(0)));
+        }
+    }
 }
