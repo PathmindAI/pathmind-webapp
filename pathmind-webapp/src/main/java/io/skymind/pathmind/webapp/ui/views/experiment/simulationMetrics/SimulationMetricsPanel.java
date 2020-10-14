@@ -11,6 +11,8 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.shared.Registration;
+
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -50,6 +52,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private List<RewardVariable> rewardVariables;
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
+    private List<Button> sparklineShowButtons = new ArrayList<>();
+    private List<Registration> showButtonClickListenerRegistrations = new ArrayList<>();
 
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
@@ -74,15 +78,59 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         add(rewardVariablesTable);
 
         if (showSimulationMetrics) {
-            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            metricsWrapper.addClassName("metrics-wrapper");
-            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            sparklinesWrapper.addClassName("sparklines-wrapper");
+            createSimulationMetricsSpansAndSparklines();
 
-            updateSimulationMetrics(true);
+            updateSimulationMetrics();
 
             add(metricsWrapper, sparklinesWrapper);
         }
+    }
+
+    private void createSimulationMetricsSpansAndSparklines() {
+        metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        metricsWrapper.addClassName("metrics-wrapper");
+        Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+        metricsHeader.addClassName("header");
+        metricsWrapper.add(metricsHeader);
+
+        sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        sparklinesWrapper.addClassName("sparklines-wrapper");
+        Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+        sparklineHeader.addClassName("header");
+        sparklinesWrapper.add(sparklineHeader);
+
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+
+        // Needed to convert the raw metrics to a format the UI can use.
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+
+        IntStream.range(0, rewardVariables.size())
+                .forEach(index -> {
+                    Span metricSpan = new Span();
+                    SparklineChart sparkline = new SparklineChart();
+                    metricSpans.add(metricSpan);
+                    sparklineCharts.add(sparkline);
+
+                    Button enlargeButton = new Button("Show");
+                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+
+                    VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        sparkline,
+                        enlargeButton
+                    );
+                    sparkLineWrapper.addClassName("sparkline");
+
+                    metricsWrapper.add(metricSpan);
+                    sparklinesWrapper.add(sparkLineWrapper);
+                    sparklineShowButtons.add(enlargeButton);
+                });
+
+        showMetricValuesAndSparklines(false);
+    }
+
+    private void showMetricValuesAndSparklines(Boolean show) {
+        metricsWrapper.setVisible(show);
+        sparklinesWrapper.setVisible(show);
     }
 
     @Override
@@ -105,25 +153,19 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        updateSimulationMetrics(true);
+        updateSimulationMetrics();
     }
 
     public void updatePolicies(List<Policy> updatedPolicies) {
         ExperimentUtils.addOrUpdatePolicies(experiment, updatedPolicies);
-        updateSimulationMetrics(true);
+        updateSimulationMetrics();
     }
 
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
 
-    // TODO -> it should only be true for the first time, but this is a hotfix
-    private void updateSimulationMetrics(Boolean createElementsFromScratch) {
-
-        if (createElementsFromScratch) {
-            metricsWrapper.removeAll();
-            sparklinesWrapper.removeAll();
-        }
+    private void updateSimulationMetrics() {
 
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
@@ -131,22 +173,12 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
 
         if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
+            showMetricValuesAndSparklines(false);
             return;
-        }
-
-        if (createElementsFromScratch) {
-            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
-            sparklineHeader.addClassName("header");
-            sparklinesWrapper.add(sparklineHeader);
-
-            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
-            metricsHeader.addClassName("header");
-            metricsWrapper.add(metricsHeader);
         }
 
         IntStream.range(0, bestPolicy.getSimulationMetrics().size())
                 .forEach(index -> {
-                    Span metricSpan = new Span();
                     Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
                     RewardVariable rewardVariable = rewardVariables.get(index);
 
@@ -158,35 +190,27 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     if (rewardVariable.getGoalConditionTypeEnum() != null){
                         Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
-                        metricSpan.addClassName(metricSpanColorClass);
+                        metricSpans.get(index).addClassName(metricSpanColorClass);
                     }
-                    if (createElementsFromScratch) {
-                        metricsWrapper.add(metricSpan);
-                        metricSpans.add(metricSpan);
-
-                        SparklineChart sparkline = new SparklineChart();
-                        sparkline.setSparkLine(sparklineData, rewardVariable, false);
-                        Button enlargeButton = new Button("Show");
-                        enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-                        enlargeButton.addClickListener(event -> {
-                            Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
-                            metricChartPanel.setGoals(rewardVariable, reachedGoal);
-                            metricChartPanel.setupChart(sparklineData, rewardVariable);
-                            metricChartDialog.open();
-                        });
-                        VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                            sparkline,
-                            enlargeButton
-                        );
-                        sparkLineWrapper.addClassName("sparkline");
-                        sparklinesWrapper.add(sparkLineWrapper);
-                        sparklineCharts.add(sparkline);
+                    if (showButtonClickListenerRegistrations.size() > index) {
+                        showButtonClickListenerRegistrations.get(index).remove();
+                    }
+                    Registration showButtonRegistration = sparklineShowButtons.get(index).addClickListener(event -> {
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
+                        metricChartPanel.setGoals(rewardVariable, reachedGoal);
+                        metricChartPanel.setupChart(sparklineData, rewardVariable);
+                        metricChartDialog.open();
+                    });
+                    if (showButtonClickListenerRegistrations.size() > index) {
+                        showButtonClickListenerRegistrations.set(index, showButtonRegistration);
                     } else {
-                        metricSpan = metricSpans.get(index);
-                        sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false);
+                        showButtonClickListenerRegistrations.add(index, showButtonRegistration);
                     }
-                    metricSpan.setText(metricValue);
+                    sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false);
+                    metricSpans.get(index).setText(metricValue);
                 });
+
+        showMetricValuesAndSparklines(true);
     }
 
     private void createEnlargedChartDialog() {
