@@ -13,9 +13,10 @@ import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.*;
@@ -30,8 +31,14 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.VariableParserUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
@@ -46,7 +53,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
-
+import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -276,7 +283,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     private void handleUploadWizardClicked() {
 		uploadModelWizardPanel.showFileCheckPanel();
-		projectFileCheckService.checkFile(this, model.getFile());
+		projectFileCheckService.checkFile(this, model);
 	}
 
 	private void setVisibleWizardPanel(Component wizardPanel) {

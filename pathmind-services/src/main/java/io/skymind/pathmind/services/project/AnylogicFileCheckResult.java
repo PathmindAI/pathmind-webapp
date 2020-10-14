@@ -17,10 +17,10 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private List<String> rewardVariables;
     private List<String> observationNames;
     private String modelType;
+    private int numberOfAgents;
 
     @Override
     public boolean isFileCheckComplete() {
-
         return fileCheckComplete;
     }
 
@@ -131,5 +131,13 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     public void setModelType(String modelType) {
         this.modelType = modelType;
+    }
+
+    public int getNumberOfAgents() {
+        return numberOfAgents;
+    }
+
+    public void setNumberOfAgents(int numberOfAgents) {
+        this.numberOfAgents = numberOfAgents;
     }
 }

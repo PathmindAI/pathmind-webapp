@@ -28,6 +28,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -73,9 +74,14 @@ public class ModelAnalyzerApiClient {
     }
 
     public HyperparametersDTO analyze(File file) {
+        return analyze(file, "");
+    }
+
+    public HyperparametersDTO analyze(File file, String message) {
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
 
-        AnalyzeRequestDTO req = new AnalyzeRequestDTO("1234");
+        String messageId = message + "_" + UUID.randomUUID().toString();
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(messageId);
         StringBody requestBody = null;
         try {
             requestBody = new StringBody(ObjectMapperHolder.getJsonMapper().writeValueAsString(req), ContentType.MULTIPART_FORM_DATA);
@@ -84,13 +90,14 @@ public class ModelAnalyzerApiClient {
         }
 
         post.setEntity(MultipartEntityBuilder.create()
-                .addPart("id", requestBody)
-                .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
-                .build());
+            .addPart("id", requestBody)
+            .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
+            .build());
 
 
         try (final CloseableHttpClient client = getCloseableHttpClient();
-        final CloseableHttpResponse resp = client.execute(post)) {
+             final CloseableHttpResponse resp = client.execute(post)) {
+            log.info(String.format("Analyze Request %s is sent", messageId));
             return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
         } catch (Exception e) {
             log.warn(e.getMessage());
