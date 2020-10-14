@@ -64,6 +64,7 @@ class ModelRepository
 		mod.setPackageName(model.getPackageName());
 		mod.setActionTupleSize(-1);
 		mod.setModelType(model.getModelType());
+		mod.setNumberOfAgents(model.getNumberOfAgents());
 		mod.store();
 		return mod.key().get(MODEL.ID);
 	}

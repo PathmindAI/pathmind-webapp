@@ -1778,4 +1778,16 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20201014-01" author="daehyun@skymind.io">
+        <comment>
+            Add the number of agents for MODEL
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="NUMBER_OF_AGENTS" type="INT" defaultValue="1"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="NUMBER_OF_AGENTS"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
