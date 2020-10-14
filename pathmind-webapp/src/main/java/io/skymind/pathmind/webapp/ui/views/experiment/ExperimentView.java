@@ -377,7 +377,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
                 updateScreenComponents();
-                simulationMetricsPanel.setExperiment(experiment);
             }
         }
     }
