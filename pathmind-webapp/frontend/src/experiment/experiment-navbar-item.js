@@ -9,12 +9,9 @@ class ExperimentNavbarItem extends PolymerElement {
 
     static get template() {
         return html`
-            <style include="styles">
+            <style>
                 :host {
                     box-sizing: border-box;
-                    display: flex;
-                    align-items: center;
-                    flex-shrink: 0;
                     width: 100%;
                     padding: 0.45rem var(--lumo-space-s);
                     border-top: 1px solid transparent;
@@ -26,6 +23,15 @@ class ExperimentNavbarItem extends PolymerElement {
                     background-color: white;
                     border-color: var(--pm-grey-color-lighter);
                 }
+                a {
+                    box-sizing: border-box;
+                    display: flex;
+                    align-items: center;
+                    flex-shrink: 0;
+                    width: 100%;
+                	color: var(--lumo-body-text-color);
+                	text-decoration: none;
+                }
                 .experiment-name {
                     font-size: var(--lumo-font-size-s);
                     line-height: 1em;
@@ -33,14 +39,6 @@ class ExperimentNavbarItem extends PolymerElement {
                 }
                 .experiment-name p {
                     margin: 0;
-                }
-                .experiment-name a {
-                	color: var(--lumo-body-text-color);
-                	text-decoration: none;
-                }
-                .experiment-name a:hover {
-                    color: var(--lumo-primary-color);
-                    text-decoration: none;
                 }
                 .experiment-name p:nth-child(2) {
                     font-size: var(--lumo-font-size-xs);
@@ -62,20 +60,22 @@ class ExperimentNavbarItem extends PolymerElement {
                     display: none;
                 }
             </style>
-            <status-icon status=[[status]]></status-icon>
-            <div class="experiment-name">
-                <p><a id="experimentLink">Experiment #[[experimentName]]</a><favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
-                <p>Created [[createdDate]]</p>
-                <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
-            </div>
-            <vaadin-button
-                class="action-button"
-                theme="tertiary-inline icon"
-                title="Archive"
-                on-click="onArchiveButtonClicked"
-            >
-                <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
-            </vaadin-button>
+            <a id="experimentLink">
+                <status-icon status=[[status]]></status-icon>
+                <div class="experiment-name">
+                    <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
+                    <p>Created [[createdDate]]</p>
+                    <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
+                </div>
+                <vaadin-button
+                    class="action-button"
+                    theme="tertiary-inline icon"
+                    title="Archive"
+                    on-click="onArchiveButtonClicked"
+                >
+                    <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
+                </vaadin-button>
+            </a>
         `;
     }
 
