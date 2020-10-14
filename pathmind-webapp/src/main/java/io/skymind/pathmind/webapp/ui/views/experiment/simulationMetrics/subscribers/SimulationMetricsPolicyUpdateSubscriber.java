@@ -5,6 +5,7 @@ import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -21,6 +22,7 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(getUiSupplier(), ui -> {
+            ExperimentUtils.addOrUpdatePolicies(event.getExperiment(), event.getPolicies());
             simulationMetricsPanel.setExperiment(event.getExperiment());
         });
     }
