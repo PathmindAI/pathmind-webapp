@@ -81,7 +81,7 @@ public class ProjectFileCheckService {
             return Optional.of("Failed to read model type.");
         } else if (!analysisResult.isEnabled()) {
             return Optional.of("Should enable PathmindHelper.");
-        } else if (!analysisResult.getAgents().isEmpty()) {
+        } else if (analysisResult.getAgents().isEmpty()) {
             return Optional.of("Failed to read the number of agents.");
         }
         return Optional.empty();

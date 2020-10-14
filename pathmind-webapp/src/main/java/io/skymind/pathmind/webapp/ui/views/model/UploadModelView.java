@@ -54,6 +54,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.Rewa
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +64,7 @@ import java.util.*;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
+@Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
 public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
 
@@ -312,6 +314,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
 			uploadModelWizardPanel.setError(error);
 			segmentIntegrator.modelImported(false);
+			log.info("Error occurred : " + error);
 		}));
 	}
 
@@ -328,6 +331,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
+                model.setNumberOfAgents(alResult.getNumberOfAgents());
 			}
             uploadALPWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
