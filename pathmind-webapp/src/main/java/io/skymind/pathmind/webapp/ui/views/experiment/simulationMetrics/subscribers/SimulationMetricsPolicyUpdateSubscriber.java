@@ -22,8 +22,8 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(getUiSupplier(), ui -> {
-            ExperimentUtils.addOrUpdatePolicies(event.getExperiment(), event.getPolicies());
-            simulationMetricsPanel.setExperiment(event.getExperiment());
+            ExperimentUtils.addOrUpdatePolicies(simulationMetricsPanel.getExperiment(), event.getPolicies());
+            simulationMetricsPanel.updateSimulationMetrics();
         });
     }
 

@@ -12,20 +12,17 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 
@@ -140,7 +137,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
             return;
         EventBus.subscribe(this,
                 new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this),
-                new SimulationMetricsPanelRunUpdateSubscriber(getUISupplier, this),
                 new SimulationMetricsPanelExperimentChangedViewSubscriber(getUISupplier, this));
     }
 
@@ -158,16 +154,11 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         updateSimulationMetrics();
     }
 
-    public void updatePolicies(List<Policy> updatedPolicies) {
-        ExperimentUtils.addOrUpdatePolicies(experiment, updatedPolicies);
-        updateSimulationMetrics();
-    }
-
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
 
-    private void updateSimulationMetrics() {
+    public void updateSimulationMetrics() {
 
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
