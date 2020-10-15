@@ -15,8 +15,8 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
@@ -171,8 +171,8 @@ public class ExperimentUtils
     }
 
     public static void addOrUpdateRun(Experiment experiment, Run updatedRun) {
-	    if (experiment.getRuns() == null) {
-	        experiment.setRuns(new ArrayList<>());
+        if (experiment.getRuns() == null) {
+            experiment.setRuns(new ArrayList<>());
         }
         experiment.getRuns().stream()
                 .filter(run -> run.getId() == updatedRun.getId())
@@ -182,6 +182,15 @@ public class ExperimentUtils
                         () -> experiment.getRuns().add(updatedRun));
     }
 
+    public static void addOrUpdateRuns(Experiment experiment, List<Run> updatedRuns) {
+        updatedRuns.forEach(updatedRun ->
+                addOrUpdateRun(experiment, updatedRun));
+    }
+
+    public static void updatedRunsForPolicies(Experiment experiment, List<Run> runs) {
+        runs.forEach(run ->
+                updatedRunForPolicies(experiment, run));
+    }
     public static void updatedRunForPolicies(Experiment experiment, Run run) {
         experiment.getPolicies().stream()
                 .filter(policy -> policy.getRunId() == run.getId())

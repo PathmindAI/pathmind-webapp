@@ -24,6 +24,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -150,10 +151,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
-    public void updateRun(Run run) {
-        experiment.updateRun(run);
+    public void updateRuns(List<Run> runs) {
+        experiment.updateRuns(runs);
         updateStatus(experiment.getTrainingStatusEnum());
-        updateGoalStatus(run.getExperiment().isGoalsReached());
+        // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
+        updateGoalStatus(experiment.isGoalsReached());
     }
 
 	public interface Model extends TemplateModel {

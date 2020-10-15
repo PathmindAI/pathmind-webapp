@@ -1,10 +1,11 @@
-package io.skymind.pathmind.webapp.bus.events;
+package io.skymind.pathmind.webapp.bus.events.main;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
+import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
-public class ExperimentCreatedBusEvent implements CloneablePathmindBusEvent {
+public class ExperimentCreatedBusEvent implements PathmindBusEvent {
+
     private Experiment experiment;
 
     public ExperimentCreatedBusEvent(Experiment experiment) {

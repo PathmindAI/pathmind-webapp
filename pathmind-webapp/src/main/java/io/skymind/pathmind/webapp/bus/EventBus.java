@@ -1,10 +1,6 @@
 package io.skymind.pathmind.webapp.bus;
 
 import com.vaadin.flow.component.Component;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 import java.util.*;
@@ -78,13 +74,8 @@ public class EventBus {
     }
 
     private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
-        EXECUTOR_SERVICE.execute(() -> {
-            PathmindBusEvent eventToFire = event;
-            if (event instanceof CloneablePathmindBusEvent) {
-                eventToFire = ((CloneablePathmindBusEvent) event).cloneForEventBus();
-            }
-            subscriber.handleBusEvent(eventToFire);
-        });
+        EXECUTOR_SERVICE.execute(() ->
+                subscriber.handleBusEvent(event.cloneForEventBus()));
     }
 
     /**

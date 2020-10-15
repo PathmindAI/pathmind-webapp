@@ -11,9 +11,9 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -145,14 +145,14 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
-                ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
+                ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
                 setupCharts(experiment, rewardVariables);
             });
         }
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event.getRun().getExperiment());
+            return isSameExperiment(event.getExperiment());
         }
     }
 
