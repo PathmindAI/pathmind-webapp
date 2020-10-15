@@ -1,16 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.VariableParserUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
-
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -37,7 +28,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -50,10 +41,9 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,10 @@ package io.skymind.pathmind.updater;
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.MetricsRawUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class ProgressInterpreter {
@@ -35,9 +37,9 @@ public class ProgressInterpreter {
             this.column = column;
         }
 
-        static String[] metricsColumns(int numReward) {
+        static String[] metricsColumns(int numReward, int numAgents) {
             List<String> columns = new ArrayList<>(Arrays.asList(TRAINING_ITERATION.column));
-            for (int i = 0; i < numReward; i++) {
+            for (int i = 0; i < numReward * numAgents; i++) {
                 columns.add(metricsMax(i));
                 columns.add(metricsMin(i));
                 columns.add(metricsMean(i));
@@ -111,14 +113,14 @@ public class ProgressInterpreter {
     }
 
     public static Policy interpret(Map.Entry<String, String> entry){
-        return interpret(entry, null, null, 0);
+        return interpret(entry, null, null, 0, 0);
     }
 
     public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores,
-                                   List<Metrics> previousMetrics, int numReward){
+                                   List<Metrics> previousMetrics, int numReward, int numAgents){
         final Policy policy = interpretKey(entry.getKey());
         interpretScores(entry, previousScores, policy);
-        interpretMetrics(entry, previousMetrics, policy, numReward);
+        interpretMetrics(entry, previousMetrics, policy, numReward, numAgents);
         return policy;
     }
 
@@ -155,13 +157,13 @@ public class ProgressInterpreter {
         }
     }
 
-    private static void interpretMetrics(Map.Entry<String, String> entry, List<Metrics> previousMetrics, Policy policy, int numReward) {
+    private static void interpretMetrics(Map.Entry<String, String> entry, List<Metrics> previousMetrics, Policy policy, int numReward, int numAgents) {
         final List<Metrics> metrics = previousMetrics == null || previousMetrics.size() == 0 ? new ArrayList<>() : previousMetrics;
         final int lastIteration = metrics.size() == 0 ? -1 : metrics.get(metrics.size() - 1).getIteration();
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
-        settings.selectFields((RAY_PROGRESS.metricsColumns(numReward)));
+        settings.selectFields((RAY_PROGRESS.metricsColumns(numReward, numAgents)));
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -176,25 +178,24 @@ public class ProgressInterpreter {
             final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
             if (iteration > lastIteration) {
-                List<MetricsThisIter> metricsThisIter = new ArrayList<>();
-                for (int idx = 0; idx < numReward; idx++) {
-                    final String max = record.getString(RAY_PROGRESS.metricsMax(idx));
-                    final String min = record.getString(RAY_PROGRESS.metricsMin(idx));
-                    final String mean = record.getString(RAY_PROGRESS.metricsMean(idx));
-                    metricsThisIter.add(new MetricsThisIter(
-                        idx,
-                        Double.valueOf(max.equals("nan") ? "NaN" : max),
-                        Double.valueOf(min.equals("nan") ? "NaN" : min),
-                        Double.valueOf(mean.equals("nan") ? "NaN" : mean)
-                    ));
+                for (int agent = 0; agent < numAgents; agent++) {
+                    for (int idx = 0; idx < numReward; idx++) {
+                        final String max = record.getString(RAY_PROGRESS.metricsMax((agent * numReward) + idx));
+                        final String min = record.getString(RAY_PROGRESS.metricsMin((agent * numReward) + idx));
+                        final String mean = record.getString(RAY_PROGRESS.metricsMean((agent * numReward) + idx));
+                        metrics.add(new Metrics(agent, iteration, idx, safeDouble(max),  safeDouble(min), safeDouble(mean)));
+                    }
                 }
-                metrics.add(new Metrics(iteration, metricsThisIter));
             }
             policy.setMetrics(metrics);
         }
     }
 
-    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward) {
+    private static double safeDouble(String value) {
+        return Double.valueOf(value.equals("nan") ? "NaN" : value);
+    }
+
+    public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward, int numAgents) {
         List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
         final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();;
 
@@ -210,11 +211,11 @@ public class ProgressInterpreter {
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
-        metricsRaws.addAll(parseMetricsRaw(allRecords, lastIteration, numReward));
+        metricsRaws.addAll(parseMetricsRaw(allRecords, lastIteration, numReward, numAgents));
         policy.setMetricsRaws(metricsRaws);
     }
 
-    public static List<MetricsRaw> parseMetricsRaw(List<Record> allRecords, int lastIteration, int numReward) {
+    public static List<MetricsRaw> parseMetricsRaw(List<Record> allRecords, int lastIteration, int numReward, int numAgents) {
         List<MetricsRaw> metricsRaws = new ArrayList<>();
         for(Record record : allRecords) {
             // missing information check
@@ -228,7 +229,7 @@ public class ProgressInterpreter {
             if (iteration > lastIteration) {
                 int episodesThisIter = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
                 String rawDataString = record.getString(RAY_PROGRESS.METRICS_RAW.column);
-                metricsRaws.add(new MetricsRaw(iteration, MetricsRawUtils.toMetricsRawDataList(rawDataString, episodesThisIter, numReward)));
+                metricsRaws.addAll(MetricsRawUtils.toMetricsRaw(rawDataString, iteration, episodesThisIter, numReward, numAgents));
             }
         }
         return metricsRaws;

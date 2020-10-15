@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Metrics extends TableImpl<MetricsRecord> {
 
-    private static final long serialVersionUID = 1303399523;
+    private static final long serialVersionUID = -932013717;
 
     /**
      * The reference instance of <code>public.metrics</code>
@@ -85,6 +85,11 @@ public class Metrics extends TableImpl<MetricsRecord> {
      * The column <code>public.metrics.iteration</code>.
      */
     public final TableField<MetricsRecord, Integer> ITERATION = createField(DSL.name("iteration"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.metrics.agent</code>.
+     */
+    public final TableField<MetricsRecord, Integer> AGENT = createField(DSL.name("agent"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.metrics</code> table reference
@@ -165,11 +170,11 @@ public class Metrics extends TableImpl<MetricsRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Integer, BigDecimal, BigDecimal, BigDecimal, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Long, Integer, BigDecimal, BigDecimal, BigDecimal, Integer, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
