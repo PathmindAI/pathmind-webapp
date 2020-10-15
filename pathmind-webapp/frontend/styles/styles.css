@@ -334,10 +334,6 @@ background-color: var(--pm-grey-color-light);
     align-items: center;
 }
 
-.projects-view .project-name-column span {
-    max-width: 13rem;
-}
-
 .projects-view .project-name-column vaadin-button {
     visibility: hidden;
 }
