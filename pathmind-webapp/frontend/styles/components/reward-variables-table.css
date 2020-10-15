@@ -51,7 +51,7 @@
     border-radius: var(--lumo-border-radius);
     word-break: break-all;
 }
-.reward-variables-table .reward-variable-name[chosen] {
+.reward-variables-table .reward-variable-name:not(.header-row)[chosen] {
     color: white;
     border-color: transparent;
 }
