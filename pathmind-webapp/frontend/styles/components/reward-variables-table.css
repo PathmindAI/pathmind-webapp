@@ -26,10 +26,12 @@
     width: 100%;
 }
 .upload-model-view .reward-variables-table .header-row span:last-child {
+    display: none; /* #2275: hide goals feature for now */
     box-sizing: border-box;
     padding-left: calc(var(--lumo-space-m));
 }
 .new-experiment-view .reward-variables-table .header-row span:last-child {
+    display: none; /* #2275: hide goals feature for now */
     justify-content: flex-end;
 }
 .reward-variables-table vaadin-horizontal-layout:not(.header-row) {
@@ -61,6 +63,7 @@
 .reward-variables-table.compact .reward-variable-name-field {
     display: none;
 }
+.reward-variables-table .goal-display-span,  /* #2275: hide goals feature for now */
 .reward-variables-table.compact .goal-display-span {
     display: none;
 }

@@ -35,7 +35,7 @@ public class RewardVariablesPanel extends VerticalLayout
 		add(rewardVariablesNameLine,
 				GuiUtils.getFullWidthHr(),
 		        new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation."),
-		        new Paragraph("The reward variables will be used as simulation metrics to track experiment results. You can add a goal for each metric to define what success will look like for this model."),
+		        // new Paragraph("The reward variables will be used as simulation metrics to track experiment results. You can add a goal for each metric to define what success will look like for this model."),
                 formPanel,
 				WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
@@ -58,7 +58,7 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	public void setupRewardVariables(List<RewardVariable> rewardVariables) {
 	    rewardVariablesTable.setRewardVariables(rewardVariables);
-	    rewardVariablesTable.makeEditable();
+	    // rewardVariablesTable.makeEditable();
     }
 	
 	public boolean canSaveChanges() {
