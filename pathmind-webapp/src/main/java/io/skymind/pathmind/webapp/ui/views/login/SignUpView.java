@@ -129,7 +129,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a 30-day Free Trial!");
+		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a free trial!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
 		policyText.setVisible(showPasswordPart);
