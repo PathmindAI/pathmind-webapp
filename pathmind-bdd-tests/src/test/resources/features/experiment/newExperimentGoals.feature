@@ -1,4 +1,4 @@
-# @experiment
+# @experiment @goals
 # Feature: New Experiment page goals
 
 #   Scenario: Create experiment with goals
