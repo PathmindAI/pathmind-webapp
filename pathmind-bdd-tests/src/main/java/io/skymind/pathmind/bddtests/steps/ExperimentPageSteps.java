@@ -168,4 +168,34 @@ public class ExperimentPageSteps {
     public void checkExportPolicyPage(String model) {
         experimentPage.checkExportPolicyPage(model);
     }
+
+    @Step
+    public void checkLearningProgressTitle(String title) {
+        experimentPage.checkLearningProgressTitle(title);
+    }
+
+    @Step
+    public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
+        experimentPage.checkLearningProgressBlockSelectedTabNameIs(selected, tab);
+    }
+
+    @Step
+    public void checkLearningProgressBlockMetricsHint(String hint) {
+        experimentPage.checkLearningProgressBlockMetricsHint(hint);
+    }
+
+    @Step
+    public void checkLearningProgressBlockDataChartIsShown() {
+        experimentPage.checkLearningProgressBlockDataChartIsShown();
+    }
+
+    @Step
+    public void checkLearningProgressBlockMeanRewardScoreDataChartIsShown() {
+        experimentPage.checkLearningProgressBlockMeanRewardScoreDataChartIsShown();
+    }
+
+    @Step
+    public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
+        experimentPage.checkVariableGoalReachedIsChosenTrue(variable, chosen);
+    }
 }

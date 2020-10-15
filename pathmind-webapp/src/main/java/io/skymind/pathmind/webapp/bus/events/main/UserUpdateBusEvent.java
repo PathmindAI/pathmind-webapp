@@ -1,11 +1,10 @@
-package io.skymind.pathmind.webapp.bus.events;
+package io.skymind.pathmind.webapp.bus.events.main;
 
-import io.skymind.pathmind.webapp.bus.BusEventType;
-import io.skymind.pathmind.webapp.bus.CloneablePathmindBusEvent;
-import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.webapp.bus.BusEventType;
+import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
-public class UserUpdateBusEvent implements CloneablePathmindBusEvent {
+public class UserUpdateBusEvent implements PathmindBusEvent {
 
     private PathmindUser user;
 
