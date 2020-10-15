@@ -4,6 +4,7 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -210,5 +211,10 @@ public class HomePage extends PageObject {
 
     public void waitForSearchResultPage() {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label']")));
+    }
+
+    public void clickAndSendEnterBtnToTheSearchField() {
+        searchBoxShadow.click();
+        searchBoxShadow.sendKeys(Keys.ENTER);
     }
 }

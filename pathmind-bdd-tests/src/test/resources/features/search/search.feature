@@ -104,3 +104,10 @@ Feature: Nav bar search
     Then Check search result tag is 'Project'
     When Refresh page
     Then Check search result group project is 'AutotestProject15'
+@debug
+  Scenario: Check search by enter btn
+    Given Login to the pathmind
+    When Choose search option Project
+    When Input 'AutotestProject16' to the notes search field
+    When Click and send enter btn to the search field
+    Then Check Search Results for value is 'AutotestProject16'
