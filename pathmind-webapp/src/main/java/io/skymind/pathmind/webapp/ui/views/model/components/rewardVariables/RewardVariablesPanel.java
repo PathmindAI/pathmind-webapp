@@ -1,11 +1,14 @@
-package io.skymind.pathmind.webapp.ui.views.model.components;
+package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -24,7 +27,9 @@ public class RewardVariablesPanel extends VerticalLayout
 
 	private Button nextStepButton;
 
-	public RewardVariablesPanel(){
+	private Supplier<Optional<UI>> getUISupplier;
+	public RewardVariablesPanel(Supplier<Optional<UI>> getUISupplier) {
+	    this.getUISupplier = getUISupplier;
 		setupForm();
         nextStepButton = UploadModelView.createNextStepButton();
 
@@ -49,9 +54,9 @@ public class RewardVariablesPanel extends VerticalLayout
 	}
 
 	private void setupForm() {
-        rewardVariablesTable = new RewardVariablesTable(() -> {
-            nextStepButton.setEnabled(canSaveChanges());
-        });
+        rewardVariablesTable = new RewardVariablesTable(
+                getUISupplier,
+                () -> nextStepButton.setEnabled(canSaveChanges()));
 		formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
 	}

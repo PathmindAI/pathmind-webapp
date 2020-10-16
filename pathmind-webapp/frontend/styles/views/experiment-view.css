@@ -48,12 +48,13 @@
 
 .experiment-view .reward-variables-table.compact .header-row {
     display: block;
-}
-
-.experiment-view .reward-variables-table .header-row span:last-child {
     justify-content: flex-start;
     line-height: 2rem;
     padding: 0;
+}
+
+.experiment-view .reward-variables-table .header-row span:last-child {
+    display: none;
 }
 
 .experiment-view .simulation-metrics-table-wrapper .header {
@@ -84,17 +85,17 @@
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
 }
-
-.experiment-view .reward-variables-table span:first-child {
-    display: none;
-}
-.experiment-view .reward-variables-table span:last-child {
+.experiment-view .reward-variables-table .goal-display-span {
     display: none;
 }
 .experiment-view .reward-variable-name-field {
     height: 1.75rem;
     border-radius: 3px;
     box-shadow: none;
+}
+
+.experiment-view .reward-variable-name {
+    cursor: pointer;
 }
 
 .experiment-view .metrics-wrapper span {
@@ -188,6 +189,21 @@
 .experiment-view .row-2-of-3 vaadin-vertical-layout {
     flex: 1;
     max-height: calc(100vh - 24rem);
+}
+
+.experiment-view vaadin-tabs {
+    margin-bottom: 0;
+}
+
+.experiment-view .hint-label {
+    color: var(--lumo-secondary-text-color);
+    margin-bottom: 0;
+}
+
+.experiment-view .hint-label iron-icon {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
+    margin-right: var(--lumo-space-xxs);
 }
 
 .experiment-view .buttons-wrapper {

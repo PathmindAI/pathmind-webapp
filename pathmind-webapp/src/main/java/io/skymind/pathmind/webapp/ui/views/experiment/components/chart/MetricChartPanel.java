@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -10,6 +10,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -21,14 +22,13 @@ public class MetricChartPanel extends VerticalLayout {
     private TagLabel goalLabel;
     private SparklineChart chart = new SparklineChart();
     private Span chartLabel = LabelFactory.createLabel("", BOLD_LABEL);
-    private Paragraph description = new Paragraph("This chart does not update automatically.");
 
     public MetricChartPanel() {
         titleWrapper = WrapperUtils.wrapWidthFullHorizontal(chartLabel);
         titleWrapper.setAlignItems(FlexComponent.Alignment.CENTER);
         goalLabel = new TagLabel("", true, "small");
         titleWrapper.add(goalLabel);
-        add(titleWrapper, description, chart);
+        add(titleWrapper, chart);
         setPadding(false);
         setSpacing(false);
         addClassName("metric-chart-panel");
@@ -38,12 +38,15 @@ public class MetricChartPanel extends VerticalLayout {
         String goalCondition = rewardVariable.getGoalConditionTypeEnum() != null ? rewardVariable.getGoalConditionTypeEnum().toString() : null;
         Double goalValue = rewardVariable.getGoalValue();
         if (goalCondition != null && goalValue != null) {
+            goalLabel.setVisible(true);
             goalLabel.setText("Goal: "+goalCondition+goalValue);
             if (reachedGoal) {
                 goalLabel.setClassName("success-text");
             } else {
                 goalLabel.setClassName("failure-text");
             }
+        } else {
+            goalLabel.setVisible(false);
         }
     }
 

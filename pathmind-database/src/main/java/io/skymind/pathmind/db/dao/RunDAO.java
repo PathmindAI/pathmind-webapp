@@ -269,22 +269,22 @@ public class RunDAO {
     }
 
     public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
-        if (bestPolicy == null) {
+        if(policies == null)
             return;
-        }
-        List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        if (experiment.isHasGoals()) {
-            List<RewardVariable> rewardVariablesWithGoals = rewardVariables.stream()
-                    .filter(rv -> rv.getGoalConditionType() != null).collect(Collectors.toList());
-            int goalsTotalNum = rewardVariablesWithGoals.size();
-            long goalsReachedLong = rewardVariablesWithGoals.stream().filter(rv -> PolicyUtils.isGoalReached(rv, bestPolicy)).count();
-            int goalsReached = Math.toIntExact(goalsReachedLong);
-            experiment.setTotalGoals(goalsTotalNum);
-            experiment.setGoalsReached(goalsReached);
-            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached, goalsTotalNum);
-        }
+        PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
+            List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
+            PolicyUtils.updateSimulationMetricsData(bestPolicy);
+            if (experiment.isHasGoals()) {
+                List<RewardVariable> rewardVariablesWithGoals = rewardVariables.stream()
+                        .filter(rv -> rv.getGoalConditionType() != null).collect(Collectors.toList());
+                int goalsTotalNum = rewardVariablesWithGoals.size();
+                long goalsReachedLong = rewardVariablesWithGoals.stream().filter(rv -> PolicyUtils.isGoalReached(rv, bestPolicy)).count();
+                int goalsReached = Math.toIntExact(goalsReachedLong);
+                experiment.setTotalGoals(goalsTotalNum);
+                experiment.setGoalsReached(goalsReached);
+                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached, goalsTotalNum);
+            }
+        });
     }
 
     public void updatePolicyData(Run run, List<Policy> policies) {

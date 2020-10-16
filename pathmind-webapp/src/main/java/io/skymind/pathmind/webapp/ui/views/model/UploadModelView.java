@@ -8,7 +8,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.VariableParserUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 
 import com.vaadin.flow.component.button.Button;
@@ -43,7 +43,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 
@@ -126,7 +126,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int)DataSize.parse(maxFileSizeAsStr).toBytes());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int)DataSize.parse(alpFileSizeAsStr).toBytes());
 		modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-		rewardVariablesPanel = new RewardVariablesPanel();
+		rewardVariablesPanel = new RewardVariablesPanel(() -> getUI());
 
 		modelBinder.readBean(model);
 

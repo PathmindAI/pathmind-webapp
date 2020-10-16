@@ -27,7 +27,6 @@ import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.TooltipContainer;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
@@ -104,16 +103,15 @@ public class ProjectsView extends PathMindDefaultView
 
 	private void setupProjectGrid()
 	{
-		projectGrid = new Grid<Project>();
+        projectGrid = new Grid<Project>();
 
-		projectGrid.addComponentColumn(project -> {
+        projectGrid.addComponentColumn(project -> {
                 String projectName = project.getName();
 				Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
                 renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                 renameProjectButton.addClassName("action-button");
-                HorizontalLayout projectNameColumn = new TooltipContainer(projectName, projectName, renameProjectButton);
+                HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(new Span(projectName), renameProjectButton);
 				projectNameColumn.addClassName("project-name-column");
-                projectNameColumn.setSpacing(false);
 				return projectNameColumn;
 		})
 				.setHeader("Name")
