@@ -35,14 +35,19 @@ public class ProgressInterpreterTest {
 
     @Test
     public void testInterpreter(){
-        final Policy policy = ProgressInterpreter.interpret(Map.entry(name, fileContents));
+        final Policy policy = ProgressInterpreter.interpret(Map.entry(name, fileContents), null, null, 4, 1);
 
         final LocalDateTime utcTime = LocalDateTime.parse("2020-08-18_22-16-53", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
         final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();
 
+        assertNotNull(policy.getScores());
+        assertNotNull(policy.getMetrics());
         assertEquals(time, policy.getStartedAt());
         assertEquals(51, policy.getScores().size());
         assertEquals(0.19725925509919762, policy.getScores().get(16).getMax(), 0);
+        assertEquals(1, policy.getMetrics().get(0).getIteration().longValue());
+        assertEquals(0, policy.getMetrics().get(0).getIndex().longValue());
+        assertEquals(0.7947621966401736, policy.getMetrics().get(0).getMean().doubleValue(), 0);
     }
 
     @Test
@@ -52,9 +57,9 @@ public class ProgressInterpreterTest {
 
         assertNotNull(policy.getMetricsRaws());
         assertEquals(11068, policy.getMetricsRaws().size());                           // total iteration
-//        assertEquals(1, policy.getMetricsRaws().get(0).getIteration().intValue());  // the current iteration number
-//        assertEquals(24, policy.getMetricsRaws().get(0).getEpisodeRaw().size());    // total episode for the current iteration
-//        assertEquals(4, policy.getMetricsRaws().get(0).getEpisodeRaw().get(0).size()); // total index
+        assertEquals(1, policy.getMetricsRaws().get(0).getIteration().longValue());  // the current iteration number
+        assertEquals(0, policy.getMetricsRaws().get(0).getAgent().longValue());    // agent
+        assertEquals(0, policy.getMetricsRaws().get(0).getIndex().longValue()); // index
     }
 
 

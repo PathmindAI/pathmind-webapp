@@ -112,10 +112,6 @@ public class ProgressInterpreter {
         return policy;
     }
 
-    public static Policy interpret(Map.Entry<String, String> entry){
-        return interpret(entry, null, null, 0, 0);
-    }
-
     public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores,
                                    List<Metrics> previousMetrics, int numReward, int numAgents){
         final Policy policy = interpretKey(entry.getKey());

@@ -19,6 +19,7 @@ public class MetricsRawUtils {
         // for example, let's say we have two rows and this model has 3 reward variables
         // 1) iter=1, episode_this_iter=2, metrics_raw=[1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
         // 2) iter=2, episode_this_iter=3, metrics_raw=[11.1 11.2 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
+        // for multi agent metrics, see https://github.com/SkymindIO/pathmind-webapp/pull/2287#issue-504424972
         List<Double> metircsRawData =
             Arrays.asList(rawDataString
                 .replace("[", "").replace("]", "")
