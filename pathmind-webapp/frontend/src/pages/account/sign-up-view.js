@@ -89,6 +89,7 @@ class SignUpView extends PolymerElement {
                 </vaadin-vertical-layout>
                 <p class="notes">No credit card required</p>
                 <vaadin-button
+                id="alreadyHaveAccount"
                 theme="tertiary small"
                 onclick="window.location.href='/sign-in'"
                 >Already have an account?
