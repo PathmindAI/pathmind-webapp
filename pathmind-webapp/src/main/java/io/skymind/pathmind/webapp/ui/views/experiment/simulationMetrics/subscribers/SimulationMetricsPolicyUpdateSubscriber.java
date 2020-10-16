@@ -1,12 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers;
 
 import com.vaadin.flow.component.UI;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -23,10 +22,8 @@ public class SimulationMetricsPolicyUpdateSubscriber extends PolicyUpdateSubscri
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         PushUtils.push(getUiSupplier(), ui -> {
-            // Only for the best policy.
-            Policy policy = PolicyUtils.selectBestPolicy(event.getPolicies());
-            if (simulationMetricsPanel.isShowSimulationMetrics() && policy!= null && policy.getMetrics() != null && policy.getMetrics().size() > 0)
-                simulationMetricsPanel.updateSimulationMetrics(policy, true); // TODO -> it should only be true for the first time, but this is a hotfix
+            ExperimentUtils.addOrUpdatePolicies(simulationMetricsPanel.getExperiment(), event.getPolicies());
+            simulationMetricsPanel.updateSimulationMetrics();
         });
     }
 

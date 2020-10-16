@@ -88,8 +88,8 @@ class RunRepository
     			.fetch(Tables.RUN.ID);
     }
     
-    protected static List<Run> getExecutingRuns(DSLContext ctx) {
-        return ctx.select(RUN.ID, RUN.NAME, RUN.EXPERIMENT_ID, RUN.JOB_ID, RUN.NOTIFICATION_SENT_AT, RUN.EC2_CREATED_AT, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS)
+    protected static List<Run> getExecutingRuns(DSLContext ctx, int completingAttempts) {
+        return ctx.select(RUN.ID, RUN.NAME, RUN.EXPERIMENT_ID, RUN.JOB_ID, RUN.NOTIFICATION_SENT_AT, RUN.EC2_CREATED_AT, RUN.RUN_TYPE, RUN.STARTED_AT, RUN.STOPPED_AT, RUN.STATUS, RUN.COMPLETING_UPDATES_ATTEMPTS)
         		.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.MODEL_ID, EXPERIMENT.HAS_GOALS, EXPERIMENT.DATE_CREATED, EXPERIMENT.LAST_ACTIVITY_DATE)
         		.select(MODEL.ID, MODEL.NAME)
         		.select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
@@ -109,6 +109,7 @@ class RunRepository
 							.leftJoin(RUN).on(RUN.ID.eq(POLICY.RUN_ID))
 							.where(
 									RUN.STATUS.eq(RunStatus.Completed.getValue())
+                                    .and(RUN.COMPLETING_UPDATES_ATTEMPTS.le(completingAttempts))
 									.and(POLICY.HAS_FILE.isFalse())
                                     .and(POLICY.IS_VALID.isTrue())))))
     			.fetch(record -> fetchRunLeftJoin(record));
@@ -138,6 +139,7 @@ class RunRepository
 				.set(Tables.RUN.RLLIB_ERROR, run.getRllibError())
                 .set(Tables.RUN.SUCCESS_MESSAGE, run.getSuccessMessage())
                 .set(Tables.RUN.WARNING_MESSAGE, run.getWarningMessage())
+                .set(Tables.RUN.COMPLETING_UPDATES_ATTEMPTS, run.getCompletingUpdatesAttempts())
                 .where(Tables.RUN.ID.eq(run.getId()))
                 .execute();
     }

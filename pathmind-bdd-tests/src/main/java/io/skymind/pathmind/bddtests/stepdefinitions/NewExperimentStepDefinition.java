@@ -117,4 +117,13 @@ public class NewExperimentStepDefinition {
         newExperimentSteps.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
     }
 
+    @When("^Check new experiment page train policy btn enabled '(.*)'$")
+    public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
+        newExperimentSteps.checkNewExperimentPageTrainPolicyBtn(btnStatus);
+    }
+
+    @When("^Clean new experiment reward function field$")
+    public void cleanNewExperimentRewardFunctionField() {
+        newExperimentSteps.cleanNewExperimentRewardFunctionField();
+    }
 }

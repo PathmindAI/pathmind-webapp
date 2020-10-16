@@ -33,7 +33,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
+import static io.skymind.pathmind.shared.constants.RunStatus.Completing;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
+import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 
 @Service
 @Slf4j
@@ -151,16 +153,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
-                // this is ugly, yes, but it is better to not rely on changing the state of a static object
-                ProviderJobStatus completingStatus = new ProviderJobStatus(ProviderJobStatus.COMPLETING.getRunStatus(), new ArrayList<>());
-                completingStatus.addExperimentState(experimentState);
+                ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
                 // let's follow what is being done with rlib and add a prefix to the message and add it to description
                 getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
                 getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
                 return completingStatus;
             }
 
-            return ProviderJobStatus.RUNNING.addExperimentState(experimentState);
+            return new ProviderJobStatus(Running, experimentState);
         }
 
         return ProviderJobStatus.STARTING;
@@ -300,14 +300,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
                     .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
-                    .map(it -> {
-                        final String key = it.getId();
-                        final LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(it.getLastUpdateTime()), ZoneId.systemDefault());
-                        return Map.entry(key, date);
-                    })
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    .collect(
+                            Collectors.toMap(
+                                    CheckPoint::getId,
+                                    cp -> LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.getLastUpdateTime()), ZoneId.systemDefault())
+                            )
+                    );
         }
-
         return Collections.emptyMap();
     }
 
@@ -386,6 +385,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_5:
             case VERSION_0_8_6:
             case VERSION_0_8_7:
+            case VERSION_1_0_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",

@@ -8,7 +8,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -212,7 +212,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
         observationsText.add(""+model.getNumberOfObservations());
 
         if (rewardVariableNames.size() > 0) {
-            RewardVariablesTable rewardVariablesTable = new RewardVariablesTable();
+            RewardVariablesTable rewardVariablesTable = new RewardVariablesTable(() -> getUI());
             rewardVariablesTable.setRewardVariables(rewardVariableNames);
             rewardVariablesTable.setCompactMode();
             rewardVariableNamesText.add(rewardVariablesTable);

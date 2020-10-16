@@ -1,14 +1,15 @@
-package io.skymind.pathmind.webapp.bus.events;
-
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.webapp.bus.BusEventType;
-
-import java.util.List;
+package io.skymind.pathmind.webapp.bus.events.main;
 
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class PolicyUpdateBusEvent implements PathmindBusEvent {
+
     private List<Policy> policies;
     private Experiment experiment;
 
@@ -28,6 +29,10 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
         });
 
         experiment = policies.get(0).getExperiment();
+
+        if(policies.stream().anyMatch(policy -> policy.getExperiment().getId() != experiment.getId()))
+            throw new IllegalStateException("One of the policies is for a different experiment");
+
         this.policies = policies;
     }
 
@@ -46,5 +51,10 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
 
     public Experiment getExperiment() {
         return experiment;
+    }
+    public PolicyUpdateBusEvent cloneForEventBus() {
+        return new PolicyUpdateBusEvent(policies.stream()
+                .map(policy -> policy.deepClone())
+                .collect(Collectors.toList()));
     }
 }

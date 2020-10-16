@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.webapp.ui.utils.*;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
@@ -50,10 +47,10 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -73,7 +70,7 @@ import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -121,6 +118,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Autowired
     private RunDAO runDAO;
     @Autowired
+    private PolicyDAO policyDAO;
+    @Autowired
     private RewardVariableDAO rewardVariableDAO;
 	@Autowired
 	private ObservationDAO observationDAO;
@@ -167,7 +166,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, experiment, experiments,
+        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, policyDAO, experiment, experiments,
                 selectedExperiment -> selectExperiment(selectedExperiment), segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
@@ -208,8 +207,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFnEditorWrapper.addClassName("reward-fn-editor-panel");
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-        
-        rewardVariablesTable = new RewardVariablesTable();
+
+        rewardVariablesTable = new RewardVariablesTable(() -> getUI());
         VerticalLayout rewardVariablesPanel = WrapperUtils
                 .wrapVerticalWithNoPaddingOrSpacing(
                         LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
@@ -275,11 +274,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
         return rewardFnEditorPanel;
     }
-	
+
 	private boolean canStartTraining() {
-		return ModelUtils.isValidModel(experiment.getModel()) 
-		        && rewardFunctionEditor.getOptionalValue().isPresent() && rewardFunctionErrors.size() == 0 
-		        && !observationsPanel.getSelectedObservations().isEmpty() 
+		return ModelUtils.isValidModel(experiment.getModel())
+                && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
+                && rewardFunctionErrors.size() == 0
+		        && !observationsPanel.getSelectedObservations().isEmpty()
 		        && canSaveDataInDB();
 	}
 
@@ -288,7 +288,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void setupBinder() {
-        binder.forField(rewardFunctionEditor).asRequired().bind(Experiment::getRewardFunction,
+        // To allow saving when the reward function editor is empty,
+        // the field is not set to forField(...).asRequired().bind(...)
+        binder.forField(rewardFunctionEditor).bind(Experiment::getRewardFunction,
                 Experiment::setRewardFunction);
     }
 
@@ -373,7 +375,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 			notesField.setNotesText(experiment.getUserNotes());
 			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
-			
+
 			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
 				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
 			} else {

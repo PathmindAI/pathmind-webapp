@@ -1,10 +1,6 @@
 package io.skymind.pathmind.webapp.bus;
 
 import com.vaadin.flow.component.Component;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
 import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 import java.util.*;
@@ -63,16 +59,23 @@ public class EventBus {
      */
     public static void post(PathmindBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
-                .filter(subscriber -> subscriber.filterSameUI(event) && subscriber.filterBusEvent(event) && subscriber.isAttached())
-                .forEach(subscriber -> {
-                    EXECUTOR_SERVICE.execute(() -> {
-                        PathmindBusEvent eventToFire = event;
-                        if (event instanceof CloneablePathmindBusEvent) {
-                            eventToFire = ((CloneablePathmindBusEvent)event).cloneForEventBus();
-                        }
-                        subscriber.handleBusEvent(eventToFire);
-                    });
-        });
+                .filter(subscriber -> subscriber.filterSameUI(event))
+                .filter(subscriber -> subscriber.filterBusEvent(event))
+                .filter(subscriber -> subscriber.isAttached())
+                .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
+    }
+
+    public static void post(PathmindViewBusEvent event) {
+        EVENT_BUS.subscribers.get(event.getEventType()).stream()
+                .filter(subscriber -> !subscriber.filterSameUI(event))
+                .filter(subscriber -> subscriber.filterBusEvent(event))
+                .filter(subscriber -> subscriber.isAttached())
+                .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
+    }
+
+    private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
+        EXECUTOR_SERVICE.execute(() ->
+                subscriber.handleBusEvent(event.cloneForEventBus()));
     }
 
     public static void subscribe(Component component, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {

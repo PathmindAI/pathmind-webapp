@@ -1,23 +1,35 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.*;
 
 public class TrainingStatusDetailsPanel extends HorizontalLayout {
+
 	private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
 	/**
 	 * Label for training progress status.
@@ -26,8 +38,13 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	private ElapsedTimer elapsedTimeLabel = new ElapsedTimer();
 	private PathmindTrainingProgress trainingProgress = new PathmindTrainingProgress();
 	private Span completedTimeLabel = LabelFactory.createLabel("");
+
+	private Experiment experiment;
+
+	private Supplier<Optional<UI>> getUISupplier;
 	
-	public TrainingStatusDetailsPanel() {
+	public TrainingStatusDetailsPanel(Supplier<Optional<UI>> getUISupplier) {
+	    this.getUISupplier = getUISupplier;
 		add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Status"), statusLabel, completedTimeLabel),
             WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Elapsed"), elapsedTimeLabel),
             trainingProgress);
@@ -36,18 +53,38 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 		setPadding(false);
 	}
 
-	public void updateTrainingDetailsPanel(Experiment experiment) {
-		RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-		statusLabel.setText(trainingStatus.toString());
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this,
+                new TrainingStatusDetailsPanelRunUpdateSubscriber(getUISupplier, this),
+                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(getUISupplier, this),
+                new TrainingStatusDetailsPanelExperimentChangedViewSubscriber(getUISupplier, this));
+    }
 
-		updateElapsedTimer(experiment, trainingStatus);
-		updateProgressRow(experiment, trainingStatus);
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
+    }
+
+	public void setExperiment(Experiment experiment) {
+	    this.experiment = experiment;
+	    update();
 	}
 
-	private void updateProgressRow(Experiment experiment, RunStatus trainingStatus) {
-		if(trainingStatus == Running) {
+	public void update() {
+        statusLabel.setText(experiment.getTrainingStatusEnum().toString());
+        updateElapsedTimer(experiment);
+        updateProgressRow(experiment);
+    }
+
+	public Experiment getExperiment() {
+	    return experiment;
+    }
+
+	private void updateProgressRow(Experiment experiment) {
+		if(experiment.getTrainingStatusEnum().equals(Running)) {
 			updateProgressBar(experiment);
-		} else if (trainingStatus == Completed) {
+		} else if (experiment.getTrainingStatusEnum().equals(Completed)) {
 			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
 				LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
 				final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
@@ -75,8 +112,8 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	 * Calculates a elapsed time and updates a timer. Elapsed time is a difference between training start date and it's
 	 * completed date (or current date in case the training is still in progress).
 	 */
-	private void updateElapsedTimer(Experiment experiment, RunStatus trainingStatus) {
-		final var isTrainingRunning = isRunning(trainingStatus);
+	private void updateElapsedTimer(Experiment experiment) {
+		final var isTrainingRunning = isRunning(experiment.getTrainingStatusEnum());
 		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment);
 		final var endTime = calculateEndTimeForElapsedTime(experiment, isTrainingRunning);
 		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();

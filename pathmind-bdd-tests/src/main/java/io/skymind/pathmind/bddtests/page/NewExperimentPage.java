@@ -18,8 +18,7 @@ import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class NewExperimentPage extends PageObject {
 
@@ -172,4 +171,24 @@ public class NewExperimentPage extends PageObject {
         assertThat(archiveButton.getAttribute("title"), is(tooltip));
     }
 
+    public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
+        waitABit(4000);
+        if (btnStatus){
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")));
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")));
+            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")).size(), is(not(0)));
+            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")).size(), is(not(0)));
+        }else {
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and @aria-disabled='true' and @disabled]")));
+            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("aria-disabled"), is("true"));
+            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("disabled"), is("true"));
+        }
+    }
+
+    public void cleanNewExperimentRewardFunctionField() {
+        waitABit(2500);
+        utils.clickElementRepeatIfStaleException(By.xpath("//juicy-ace-editor"));
+        rewardField.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        rewardField.sendKeys(Keys.BACK_SPACE);
+    }
 }

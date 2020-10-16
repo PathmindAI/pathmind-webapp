@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 1710343309;
+    private static final long serialVersionUID = -1950897361;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -126,6 +126,11 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.warning_message</code>.
      */
     public final TableField<RunRecord, String> WARNING_MESSAGE = createField(DSL.name("warning_message"), org.jooq.impl.SQLDataType.VARCHAR(1024), this, "");
+
+    /**
+     * The column <code>public.run.completing_updates_attempts</code>.
+     */
+    public final TableField<RunRecord, Integer> COMPLETING_UPDATES_ATTEMPTS = createField(DSL.name("completing_updates_attempts"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.run</code> table reference
@@ -220,11 +225,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String, Integer> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }

@@ -69,6 +69,9 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 	    runs.add(run);
     }
 
+    public void updateRuns(List<Run> runs) {
+        runs.forEach(this::updateRun);
+    }
     public void updateRun(Run run) {
         if(runs == null) {
             runs = new ArrayList<>();
@@ -77,8 +80,11 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
             IntStream.range(0, runs.size())
                     .filter(index -> runs.get(index).getId() == run.getId())
                     .findFirst()
-                    .ifPresent(index -> runs.set(index, run));
+                    .ifPresentOrElse(
+                            index -> runs.set(index, run),
+                            () -> runs.add(run));
         }
+        updateTrainingStatus();
     }
 
     @Override

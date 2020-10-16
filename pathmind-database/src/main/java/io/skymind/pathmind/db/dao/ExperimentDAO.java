@@ -32,13 +32,13 @@ public class ExperimentDAO
 		this.ctx = ctx;
 	}
 
-    public Optional<Experiment> getExperiment(long experimentId) {
-		var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
+	public Optional<Experiment> getExperiment(long experimentId) {
+		Experiment experiment = ExperimentRepository.getExperiment(ctx, experimentId);
         return Optional.ofNullable(experiment);
 	}
 
     public Optional<Experiment> getExperimentWithRuns(long experimentId) {
-        var experiment = ExperimentRepository.getExperiment(ctx, experimentId);
+        Experiment experiment = ExperimentRepository.getExperiment(ctx, experimentId);
         Optional<Experiment> result = Optional.ofNullable(experiment);
         result.ifPresent(e -> {
             List<Run> runsForExperiment = RunRepository.getRunsForExperiment(ctx, experiment.getId());
@@ -136,4 +136,15 @@ public class ExperimentDAO
 	public void updateUserNotes(long experimentId, String userNotes) {
 		ExperimentRepository.updateUserNotes(ctx, experimentId, userNotes);
 	}
+
+	public Optional<Experiment> getFullExperiment(long experimentId) {
+	    Optional<Experiment> optionalExperiment = getExperiment(experimentId);
+	    optionalExperiment.ifPresent(experiment -> {
+	        // REFACTOR -> STEPH -> Not good enough as there is a bunch of logic to parse the data in PolicyDAO therefore
+            // for now some code is outside of this method.
+	        experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experimentId));
+            experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experimentId));
+        });
+	    return optionalExperiment;
+    }
 }

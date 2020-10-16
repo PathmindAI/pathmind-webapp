@@ -179,4 +179,34 @@ public class ExperimentStepDefinitions {
     public void checkExportPolicyPage(String model) {
         experimentPageSteps.checkExportPolicyPage(model);
     }
+
+    @Then("^Check learning progress block title '(.*)'$")
+    public void checkLearningProgressTitle(String title) {
+        experimentPageSteps.checkLearningProgressTitle(title);
+    }
+
+    @Then("^Check learning progress block selected tab '(.*)' name is '(.*)'$")
+    public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
+        experimentPageSteps.checkLearningProgressBlockSelectedTabNameIs(selected, tab);
+    }
+
+    @Then("^Check learning progress block metrics hint '(.*)'$")
+    public void checkLearningProgressBlockMetricsHint(String hint) {
+        experimentPageSteps.checkLearningProgressBlockMetricsHint(hint);
+    }
+
+    @Then("^Check learning progress block metrics data-chart is shown$")
+    public void checkLearningProgressBlockDataChartIsShown() {
+        experimentPageSteps.checkLearningProgressBlockDataChartIsShown();
+    }
+
+    @Then("^Check learning progress block mean reward score data-chart is shown$")
+    public void checkLearningProgressBlockMeanRewardScoreDataChartIsShown() {
+        experimentPageSteps.checkLearningProgressBlockMeanRewardScoreDataChartIsShown();
+    }
+
+    @Then("^Check variable '(.*)' is chosen '(.*)'$")
+    public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
+        experimentPageSteps.checkVariableGoalReachedIsChosenTrue(variable, chosen);
+    }
 }

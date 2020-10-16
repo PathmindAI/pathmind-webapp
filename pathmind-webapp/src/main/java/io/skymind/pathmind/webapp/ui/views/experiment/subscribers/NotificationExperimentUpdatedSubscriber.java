@@ -2,8 +2,8 @@ package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
