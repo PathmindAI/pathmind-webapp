@@ -29,8 +29,7 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
-{
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
 	@Id("lastName")
 	private TextField lastName;
 
@@ -88,7 +87,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		getElement().appendChild(segmentIntegrator.getElement());
-	}
+    }
 
 	private void initView() {
 		emailPart.setSpacing(false);

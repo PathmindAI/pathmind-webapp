@@ -106,20 +106,6 @@ class SignUpView extends PolymerElement {
     </vaadin-horizontal-layout>`;
   }
 
-  ready() {
-      super.ready();
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.src = "https://www.googleoptimize.com/optimize.js?id=GTM-T2DSBKT";
-      document.head.appendChild(script);
-      // The documentation asked to put it at the top of the head tags
-      // However we use Java and Vaadin to run it so by the time this part is run,
-      // the head tags would have been parsed and executed
-      // so there's no point in appending it to the top.
-      // We'll need to look into the documentation and see how it impacts Google Optimize's usage
-      // https://support.google.com/optimize/answer/10106536?hl=en&ref_topic=6197443
-  }
-
   static get is() {
     return "sign-up-view";
   }
