@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +12,12 @@ import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
+import org.springframework.util.CollectionUtils;
 
 public class PolicyChart extends DataChart {
 
@@ -88,12 +90,16 @@ public class PolicyChart extends DataChart {
         return rowItem;
     }
 
-    public Map<Integer, List<RewardScore>> generatePolicyChartData(List<Policy> policyData, Policy bestPolicy) {
+    private Map<Integer, List<RewardScore>> generatePolicyChartData(Experiment experiment) {
+        if(experiment.getPolicies() == null)
+            return Collections.emptyMap();
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+
         List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
         Map<Integer, List<RewardScore>> allLinesData = new LinkedHashMap<>();
         List<Integer> iterationNumbers = new ArrayList<>();
-        int maxIteration = 0;
-        policyData.forEach(policy -> {
+
+        experiment.getPolicies().forEach(policy -> {
             List<RewardScore> rewardScoresList = policy.getScores().stream()
                     .filter(score -> !Double.isNaN(score.getMean()))
                     .collect(Collectors.toList());
@@ -103,7 +109,7 @@ public class PolicyChart extends DataChart {
             }
             iterationNumbers.add(rewardScoresList.size());
         });
-        maxIteration = Collections.max(iterationNumbers);
+        int maxIteration = Collections.max(iterationNumbers);
 
         // save a list of reward scores per iteration
         for (int i = 0; i < maxIteration; i++) {
@@ -130,16 +136,16 @@ public class PolicyChart extends DataChart {
         setData(cols, rows);
     }
 
-    public void setPolicyChart(List<Policy> policies) {
-        setPolicyChart(policies, PolicyUtils.selectBestPolicy(policies));
-    }
-
-    public void setPolicyChart(List<Policy> policies, Policy bestPolicy) {
-        if (policies == null || policies.isEmpty()) {
-            setChartEmpty();
-            return;
+    public void setPolicyChart(Experiment experiment) {
+        Boolean showEmptyChart = CollectionUtils.isEmpty(experiment.getPolicies());
+        Map<Integer, List<RewardScore>> policyChartData = new LinkedHashMap<>();
+        JsonObject series;
+        if (showEmptyChart) {
+            series = Json.createObject();
+        } else {
+            policyChartData = generatePolicyChartData(experiment);
+            series = createSeries(experiment.getPolicies().size(), bestPolicySeriesNumber);
         }
-        Map<Integer, List<RewardScore>> policyChartData = generatePolicyChartData(policies, bestPolicy);
 
         String type = "line";
         Boolean showTooltip = true;
@@ -148,7 +154,6 @@ public class PolicyChart extends DataChart {
         Boolean curveLines = true;
         String seriesType = null;
         Boolean stacked = null;
-        JsonObject series = createSeries(policies.size(), bestPolicySeriesNumber);
         JsonObject viewWindow = null;
 
         setupChart(
@@ -162,7 +167,12 @@ public class PolicyChart extends DataChart {
             stacked,
             viewWindow
         );
-        updateData(policies, policyChartData);
+        getModel().setDimlines(true);
+        if (showEmptyChart) {
+            setChartEmpty();
+        } else {
+            updateData(experiment.getPolicies(), policyChartData);
+        }
     }
     
 }

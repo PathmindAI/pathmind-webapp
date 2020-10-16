@@ -2,8 +2,8 @@ package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -37,14 +37,12 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
         if (isSameExperiment(event)) {
-            experiment.setTrainingStatusEnum(event.getRun().getExperiment().getTrainingStatusEnum());
-            ExperimentUtils.addOrUpdateRun(experiment, event.getRun());
-            ExperimentUtils.updatedRunForPolicies(experiment, event.getRun());
-            PushUtils.push(getUiSupplier(), () -> {
-                experimentView.setPolicyChartVisibility();
-                experimentView.updateDetailsForExperiment();
-            });
-        } else if (ExperimentUtils.isNewExperimentForModel(event.getRun().getExperiment(), experiments, experiment.getModelId())) {
+            experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
+            ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
+            ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
+            PushUtils.push(getUiSupplier(), () ->
+                    experimentView.updateDetailsForExperiment());
+        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, experiment.getModelId())) {
             experimentView.updateExperimentComponents();
         }
     }
@@ -55,6 +53,6 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     }
 
     private boolean isSameExperiment(RunUpdateBusEvent event) {
-        return ExperimentUtils.isSameExperiment(experiment, event.getRun().getExperiment());
+        return ExperimentUtils.isSameExperiment(experiment, event.getExperiment());
     }
 }

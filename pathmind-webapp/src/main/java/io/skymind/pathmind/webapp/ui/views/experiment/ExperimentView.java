@@ -26,13 +26,13 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
@@ -48,9 +48,8 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.PolicyChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStartingPlaceholder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
@@ -107,8 +106,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private VerticalLayout rewardVariablesGroup;
     private VerticalLayout rewardFunctionGroup;
     private CodeViewer codeViewer;
-    private TrainingStartingPlaceholder trainingStartingPlaceholder;
-    private PolicyChartPanel policyChartPanel;
+    private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
     private NotesField notesField;
 
@@ -182,10 +180,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Component getMainContent() {
         panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
-        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
+        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
         experimentsNavbar = new ExperimentsNavBar(
                 () -> getUI(),
                 experimentDAO,
+                policyDAO,
                 experiment,
                 experiments,
                 selectedExperiment -> selectExperiment(selectedExperiment),
@@ -248,9 +247,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 trainingService.startRun(experiment);
                 segmentIntegrator.discoveryRunStarted();
                 initLoadData();
-                trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
+                // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
+                trainingStatusDetailsPanel.setExperiment(experiment);
                 clearErrorState();
-                setPolicyChartVisibility();
+                experimentChartsPanel.setupCharts(experiment, rewardVariables);
             }
         });
         restartTraining.setVisible(false);
@@ -281,16 +281,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
-        policyChartPanel = new PolicyChartPanel();
-        trainingStartingPlaceholder = new TrainingStartingPlaceholder();
-
-        VerticalLayout chartWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        trainingStartingPlaceholder,
-                        policyChartPanel);
-        chartWrapper.addClassName("row-2-of-3");
-
+        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                chartWrapper,
+                experimentChartsPanel,
                 notesField);
         bottomPanel.addClassName("bottom-panel");
         bottomPanel.setPadding(false);
@@ -312,7 +305,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 "Stop Training",
                 () -> {
                     trainingService.stopRun(experiment);
-                    updateUIAfterExperimentIsStopped();
+                    stopTrainingButton.setVisible(false);
                     fireEvents();
                 },
                 ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName()
@@ -321,21 +314,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmPopup.open();
     }
 
-    private void updateUIAfterExperimentIsStopped() {
-        stopTrainingButton.setVisible(false);
-        trainingStartingPlaceholder.setVisible(false);
-        policyChartPanel.setVisible(true);
-        trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
-    }
-
     private void fireEvents() {
         // An event for each policy since we only need to update some of the policies in a run.
         if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
             EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
         // Send run updated event, meaning that all policies under the run is updated.
         // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        experiment.getRuns().stream().forEach(
-                run -> EventBus.post(new RunUpdateBusEvent(run)));
+        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
         EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
@@ -370,10 +355,12 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void selectExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+        // REFACTOR -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
+        // REFACTOR -> STEPH -> Finish moving this code to ExperimentChangedViewSubscriber (See https://github.com/SkymindIO/pathmind-webapp/issues/2259)
         synchronized (experimentLock) {
             experiment = experimentDAO.getExperiment(selectedExperiment.getId())
                     .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-            experimentViewRunUpdateSubscriber.setExperiment(experiment);
+            experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
             notesField.setNotesText(experiment.getUserNotes());
@@ -385,7 +372,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
                 updateScreenComponents();
-                simulationMetricsPanel.setExperiment(experiment);
             }
         }
     }
@@ -408,11 +394,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void loadExperimentData() {
         modelId = experiment.getModelId();
+        // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
+        // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
 		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
-        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
@@ -423,12 +411,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
+        // Part of a bigger refactoring. The goal is to eventually remove the selectExperiment code and use the ExperimentChangedViewSubscriber
+        // instead because the logic and code is not the same between loading the initial screen and when updateScreenComponents is called. There's
+        // a mix of logic and code between selectExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
+        // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
+        // load and any event updates as well as experiment select.
+        experimentChartsPanel.setupCharts(experiment, rewardVariables);
+        trainingStatusDetailsPanel.setExperiment(experiment);
         updateScreenComponents();
     }
 
     private void updateScreenComponents() {
         clearErrorState();
-        setPolicyChartVisibility();
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitle.setText("Experiment #"+experiment.getName());
         if (ModelUtils.isValidModel(experiment.getModel())) {
@@ -438,14 +432,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         observationsPanel.setSelectedObservations(experimentObservations);
-        policyChartPanel.setExperiment(experiment);
         updateDetailsForExperiment();
-    }
-
-    public void setPolicyChartVisibility() {
-        RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-        trainingStartingPlaceholder.setVisible(trainingStatus == RunStatus.Starting);
-        policyChartPanel.setVisible(trainingStatus != RunStatus.Starting);
     }
 
     private void updateUIForError(TrainingError error, String errorText) {
@@ -464,7 +451,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public void updateDetailsForExperiment() {
         updateButtonEnablement();
         archivedLabel.setVisible(experiment.isArchived());
-        trainingStatusDetailsPanel.updateTrainingDetailsPanel(experiment);
         RunStatus status = experiment.getTrainingStatusEnum();
         if (status == RunStatus.Error || status == RunStatus.Killed) {
             experiment.getRuns().stream()
@@ -541,11 +527,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 // Update or insert the policy in experiment.getPolicies
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
 
-                // Calculate the best policy again
-                List<Policy> policies = experiment.getPolicies();
-                bestPolicy = PolicyUtils.selectBestPolicy(policies);
                 PushUtils.push(getUI(), () -> {
-                    policyChartPanel.setExperiment(experiment);
                     updateDetailsForExperiment();
                 });
             }

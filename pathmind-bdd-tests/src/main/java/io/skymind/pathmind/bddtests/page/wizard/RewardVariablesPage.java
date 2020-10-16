@@ -24,8 +24,8 @@ public class RewardVariablesPage extends PageObject {
 
     public void checkThatThereIsAVariableNamed(String variableName) {
         List<String> variables = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
-            variables.add(webElement.getAttribute("value"));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::*[@class='reward-variable-name']"))) {
+            variables.add(webElement.getText());
         }
         assertThat(variables, hasItem(variableName));
     }
