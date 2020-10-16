@@ -8,14 +8,38 @@ class SignUpView extends PolymerElement {
             margin-left: var(--lumo-space-m);
             margin-right: var(--lumo-space-m);
         }
+        .content-wrapper {
+            max-width: 1100px;
+            width: 100%;
+        }
         .info {
             align-items: flex-start;
-            flex: 1 0 auto;
-            max-width: none;
-            width: auto;
+            flex: 1 0 60%;
+            max-width: 650px;
+        }
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.39%;
+            margin-bottom: var(--lumo-space-xl);
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
         }
         .info li {
             padding-bottom: var(--lumo-space-s);
+        }
+        @media screen and (max-width: 768px) {
+            .content-wrapper {
+                flex-wrap: wrap;
+            }
+            .inner-content {
+                max-width: none;
+            }
         }
     </style>
     <vaadin-horizontal-layout class="panel-wrapper">
@@ -26,8 +50,11 @@ class SignUpView extends PolymerElement {
           src="frontend/images/pathmind-logo.svg"
           alt="Pathmind logo"
         />
-        <vaadin-horizontal-layout>
+        <vaadin-horizontal-layout class="content-wrapper">
             <vaadin-vertical-layout class="inner-content info">
+                <div class="video-wrapper">
+                    <iframe src="//fast.wistia.net/embed/iframe/py4nssath2" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
+                </div>
                 <b>Create your free Pathmind account to:</b>
                 <ul>
                     <li>Access additional Pathmind-ready simulation models</li>
@@ -104,6 +131,20 @@ class SignUpView extends PolymerElement {
         <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     </vaadin-horizontal-layout>`;
+  }
+
+  ready() {
+    super.ready();
+    const script1 = document.createElement("script");
+    script1.type = "text/javascript";
+    script1.src = "https://fast.wistia.com/embed/medias/py4nssath2.jsonp";
+
+    const script2 = document.createElement("script");
+    script2.type = "text/javascript";
+    script2.src = "https://fast.wistia.com/assets/external/E-v1.js";
+
+    document.head.appendChild(script1);
+    document.head.appendChild(script2);
   }
 
   static get is() {
