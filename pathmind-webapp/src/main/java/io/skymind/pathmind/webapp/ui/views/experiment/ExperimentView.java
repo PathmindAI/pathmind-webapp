@@ -29,13 +29,6 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.ExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
@@ -58,10 +51,10 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
@@ -446,8 +439,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-            // TODO -> STEPH -> MERGE -> experimentViewRunUpdateSubscriber.setExperiments(experiments);
         }
+    }
+
+    public List<Experiment> getExperiments() {
+        return getExperiments();
     }
 
     private void setSharedWithSupportComponents() {
@@ -469,7 +465,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void updateScreenComponents() {
         clearErrorState();
-        setPolicyChartVisibility();
         setSharedWithSupportComponents();
         if(isShowNavBar())
             experimentsNavbar.setVisible(!experiment.isArchived());
@@ -504,7 +499,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         archivedLabel.setVisible(experiment.isArchived());
         RunStatus status = experiment.getTrainingStatusEnum();
         if (status == RunStatus.Error || status == RunStatus.Killed) {
-            // TODO -> STEPH -> MERGE -> Confirm ExperimentUtils correctly replaces the code.
             ExperimentUtils.getTrainingErrorAndMessage(trainingErrorDAO, experiment)
                     .ifPresent(pair -> {
                         this.updateUIForError(pair.getLeft(), pair.getRight());
@@ -532,7 +526,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public void updateExperimentComponents() {
         // REFACTOR -> We will want to adjust this code as it's performing a database call on almost all eventbus events which is both
         // a potential performance issue as well as cause potential multi-threading issues (racing conditions).
-        // TODO -> STEPH -> MERGE -> Confirm this post merge.
         experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {

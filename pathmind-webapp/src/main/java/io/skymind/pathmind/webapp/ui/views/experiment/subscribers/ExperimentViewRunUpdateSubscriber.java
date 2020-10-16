@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 @Slf4j
 public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
-    // TODO -> STEPH -> MERGE -> Confirm we no longer need experiments in this class.
     private Experiment experiment;
 
     private ExperimentView experimentView;
@@ -38,7 +37,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
             PushUtils.push(getUiSupplier(), () ->
                     experimentView.updateDetailsForExperiment());
-        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, experiment.getModelId())) {
+        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experiment.getModelId())) {
             experimentView.updateExperimentComponents();
         }
     }
