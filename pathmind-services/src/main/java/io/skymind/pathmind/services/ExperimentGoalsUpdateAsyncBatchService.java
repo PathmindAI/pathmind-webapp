@@ -5,13 +5,12 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Policy;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,7 +18,6 @@ import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ExperimentGoalsUpdateAsyncBatchService {
 
     private final PolicyDAO policyDAO;
@@ -27,14 +25,29 @@ public class ExperimentGoalsUpdateAsyncBatchService {
     private final ExperimentDAO experimentDAO;
     private final DSLContext ctx;
 
+    private final Boolean skip;
+
+    public ExperimentGoalsUpdateAsyncBatchService(@Value("${pathmind.skip-goals-migration}") boolean skip,
+                                                  PolicyDAO policyDAO, RunDAO runDAO, ExperimentDAO experimentDAO, DSLContext ctx) {
+        this.policyDAO = policyDAO;
+        this.runDAO = runDAO;
+        this.experimentDAO = experimentDAO;
+        this.ctx = ctx;
+        this.skip = skip;
+    }
+
     @Async
     public void migrateExperimentGoalsCalculation() {
+        if (skip) {
+            log.warn("Skipping goals migration");
+            return;
+        }
         log.info("Experiments goals migration started");
         List<Integer> butch;
         do {
             butch = getNextBatch(100);
             log.info("Updating goals for next batch of experiments");
-            for(Integer experimentId: butch) {
+            for (Integer experimentId : butch) {
                 try {
                     ctx.transaction(conf -> {
                         DSLContext transactionCtx = DSL.using(conf);
