@@ -1,10 +1,9 @@
-package io.skymind.pathmind.webapp.bus.subscribers;
+package io.skymind.pathmind.webapp.bus.subscribers.main;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 
 import java.util.Optional;
 import java.util.function.Supplier;

@@ -29,8 +29,8 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -234,12 +234,12 @@ public class DashboardView extends PathMindDefaultView
 
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getExperiment().getId()));
         }
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return event.getRun().getProject().getPathmindUserId() == loggedUserId;
+            return event.getProject().getPathmindUserId() == loggedUserId;
         }
     }
 }

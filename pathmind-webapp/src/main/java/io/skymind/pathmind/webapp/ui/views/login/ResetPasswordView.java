@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -12,11 +13,13 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +72,10 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 	private UserService userService;
 
 	@Autowired
-	private EmailNotificationService emailNotificationService;
+    private EmailNotificationService emailNotificationService;
+
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	@Value("${pathmind.reset.password.link.valid}")
 	private int resetTokenValidHours;
@@ -177,6 +183,11 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 	static boolean isValid(String email) {
 		return email.matches(EMAIL_REGEX);
+    }
+    
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		getElement().appendChild(segmentIntegrator.getElement());
 	}
 
 	@Override
