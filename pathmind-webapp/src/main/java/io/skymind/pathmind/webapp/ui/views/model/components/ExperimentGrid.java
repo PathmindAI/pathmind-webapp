@@ -61,43 +61,27 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setFlexGrow(0)
 				.setResizable(true)
                 .setSortable(true);
-        addComponentColumn(experiment -> {
-                    Span goalIcons = new Span();
-                    String successClassName = "success-text";
-                    if (experiment.isHasGoals() && !experiment.isDraft()) {
-                        // Get best policy
-                        List<Policy> policies = policyDAO.getPoliciesForExperiment(experiment.getId());
+        // addComponentColumn(experiment -> {
+        //             Span goalIcons = new Span();
+        //             String successClassName = "success-text";
+        //             if (experiment.isHasGoals() && !experiment.isDraft()) {
+        //                 // Get best policy
+        //                 List<Policy> policies = policyDAO.getPoliciesForExperiment(experiment.getId());
 
-                        if (policies != null && !policies.isEmpty()) {
-                            Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
-                            Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
-                            goalReachedIcon.addClassName(successClassName);
-                            int goalReachedCount = 0;
-
-                            // Get reward variables total reached goal count
-                            rewardVariables.forEach(rv -> {
-                                if (rv.getGoalConditionTypeEnum() != null) {
-                                    Boolean reachedGoal = PolicyUtils.isGoalReached(rv, bestPolicy);
-                                    if (reachedGoal){
-                                        // goalReachedCount++;
-                                    }
-                                }
-                            });
-                            if (goalReachedCount > 0) {
-                                goalIcons.add(LabelFactory.createLabel(""+goalReachedCount, successClassName), goalReachedIcon);
-                                return goalIcons;
-                            }
-                        }
-                    }
-                    goalIcons.setText("—");
-                    return goalIcons;
-                })
-				.setComparator(Comparator.comparing(Experiment::isGoalsReached))
-                .setHeader("Goals Reached")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
+        //                 if (policies != null && !policies.isEmpty()) {
+        //                     // TODO: since we are hiding the feature, this is not dealt with for now.
+        //                     // We'll have to add code here if we show the Goals feature again
+        //                 }
+        //             }
+        //             goalIcons.setText("—");
+        //             return goalIcons;
+        //         })
+		// 		.setComparator(Comparator.comparing(Experiment::isGoalsReached))
+        //         .setHeader("Goals Reached")
+        //         .setAutoWidth(true)
+        //         .setFlexGrow(0)
+        //         .setResizable(true)
+        //         .setSortable(true);
 		addColumn(experiment -> {
 					String userNotes = experiment.getUserNotes();
 					return userNotes.isEmpty() ? "—" : userNotes;

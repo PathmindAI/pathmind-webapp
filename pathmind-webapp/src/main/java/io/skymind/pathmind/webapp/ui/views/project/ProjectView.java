@@ -55,7 +55,7 @@ import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -142,7 +142,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             setupArchivesTabPanel();
             newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY);
             modelNotesField = createModelNotesField();
-            rewardVariablesTable = new RewardVariablesTable();
+            rewardVariablesTable = new RewardVariablesTable(() -> getUI());
             rewardVariablesTable.setRewardVariables(rewardVariables);
             observationsPanel = new ObservationsPanel(true);
             observationsPanel.setupObservationTable(modelObservations, null);
@@ -327,14 +327,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         project.setModels(models);
         if (models.size() > 0) {
             if (modelId == null) {
-                selectedModel = models.get(0);
+                selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
             } else {
                 selectedModel = models.stream()
                         .filter(model -> modelId.equals(model.getId()))
                         .findFirst()
                         .orElse(models.get(0));
             }
-            modelId = selectedModel.getId();
+            modelId = selectedModel != null ? selectedModel.getId() : null;
             experiments = experimentDAO.getExperimentsForModel(modelId);
             rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     		modelObservations = observationDAO.getObservationsForModel(modelId);
@@ -343,13 +343,15 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
-		if (project.getModels().isEmpty()) {
+		if (project.getModels().isEmpty() || modelId == null) {
             event.forwardTo(Routes.UPLOAD_MODEL, ""+projectId);
             return;
         }
         if (selectedModel.isDraft()) {
-            String target = String.format("%s/%s/%s", projectId, UploadMode.RESUME, modelId);
-            event.forwardTo(Routes.UPLOAD_MODEL, target);
+            if (project.getModels().size() == 1) {
+                String target = String.format("%s/%s/%s", projectId, UploadMode.RESUME, modelId);
+                event.forwardTo(Routes.UPLOAD_MODEL, target);
+            }
         }
         String modelNameText = "";
         modelNameText = "Model #"+selectedModel.getName();

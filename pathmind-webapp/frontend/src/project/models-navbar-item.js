@@ -63,6 +63,14 @@ class ModelsNavbarItem extends PolymerElement {
                 background-color: white;
                 border-color: var(--pm-grey-color-lighter);
             }
+            a {
+                display: flex;
+                align-items: center;
+                flex-shrink: 0;
+                width: 100%;
+                color: var(--lumo-body-text-color);
+                text-decoration: none;
+            }
             .model-name {
                 font-size: var(--lumo-font-size-s);
                 line-height: 1em;
@@ -70,17 +78,10 @@ class ModelsNavbarItem extends PolymerElement {
             .model-name div {
                 margin-bottom: var(--lumo-space-xxxs);
             }
-            a, p {
+            p {
                 margin: 0;
             }
-            a {
-                color: var(--lumo-body-text-color);
-                text-decoration: none;
-            }
-            a:hover {
-                opacity: 0.9;
-            }
-            .model-name p {
+            p:nth-of-type(2) {
                 font-size: var(--lumo-font-size-xs);
                 font-family: var(--lumo-font-family-header); /* This font should usually be used on a header. This is an exception. */
                 color: var(--pm-grey-color-dark);
@@ -103,31 +104,33 @@ class ModelsNavbarItem extends PolymerElement {
                 display: none;
             }
         </style>
-        <div class="model-name">
-            <div>
-                <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
+        <a router-link href=[[modelLink]]>
+            <div class="model-name">
+                <div>
+                    <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
+                </div>
+                <p>Model #[[modelName]] [[modelPackageNameInBrackets]]</p>
+                <p>Created [[createdDate]]</p>
             </div>
-            <a router-link href=[[modelLink]]>Model #[[modelName]] [[modelPackageNameInBrackets]]</a>
-            <p>Created [[createdDate]]</p>
-        </div>
-        <vaadin-button
-            class="action-button"
-            theme="tertiary-inline icon"
-            title="Archive"
-            on-click="onArchiveButtonClicked"
-            hidden="[[isArchived]]"
-        >
-            <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
-        </vaadin-button>
-        <vaadin-button
-            class="action-button"
-            theme="tertiary-inline icon"
-            title="Unarchive"
-            on-click="onUnarchiveButtonClicked"
-            hidden="[[!isArchived]]"
-        >
-            <iron-icon icon="vaadin:arrow-backward" slot="prefix"></iron-icon>
-        </vaadin-button>`;
+            <vaadin-button
+                class="action-button"
+                theme="tertiary-inline icon"
+                title="Archive"
+                on-click="onArchiveButtonClicked"
+                hidden="[[isArchived]]"
+            >
+                <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
+            </vaadin-button>
+            <vaadin-button
+                class="action-button"
+                theme="tertiary-inline icon"
+                title="Unarchive"
+                on-click="onUnarchiveButtonClicked"
+                hidden="[[!isArchived]]"
+            >
+                <iron-icon icon="vaadin:arrow-backward" slot="prefix"></iron-icon>
+            </vaadin-button>
+        </a>`;
     }
 
     ready() {
