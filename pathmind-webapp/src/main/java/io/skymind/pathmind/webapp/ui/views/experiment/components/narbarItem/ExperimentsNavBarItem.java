@@ -11,11 +11,13 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -26,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -40,17 +43,21 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
+    private PolicyDAO policyDAO;
 
     private Experiment experiment;
-
+    private Consumer<Experiment> selectExperimentConsumer;
     private SegmentIntegrator segmentIntegrator;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
+        this.policyDAO = policyDAO;
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
+        this.selectExperimentConsumer = selectExperimentConsumer;
+
         if (ExperimentUtils.isDraftRunType(experiment)) {
             experimentLink.setRoute(NewExperimentView.class, experiment.getId());
         } else {
@@ -63,6 +70,19 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void onFavoriteToggled() {
         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, !experiment.isFavorite());
+    }
+
+    @EventHandler
+    private void handleRowClicked() {
+        // REFACTOR -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
+        // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the experiment.
+        // REFACTOR -> STEPH -> Need some way to load everything for now because we can't just do it with experimentDAO. PolicyDAO also has multiple
+        // repository calls as well as some logic.
+        Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
+        selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
+
+        EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
+        selectExperimentConsumer.accept(selectedExperiment);
     }
 
     @EventHandler
@@ -143,10 +163,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
-    public void updateRun(Run run) {
-        experiment.updateRun(run);
+    public void updateRuns(List<Run> runs) {
+        experiment.updateRuns(runs);
         updateStatus(experiment.getTrainingStatusEnum());
-        updateGoalStatus(run.getExperiment().isGoalsReached());
+        // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
+        updateGoalStatus(experiment.isGoalsReached());
     }
 
 	public interface Model extends TemplateModel {

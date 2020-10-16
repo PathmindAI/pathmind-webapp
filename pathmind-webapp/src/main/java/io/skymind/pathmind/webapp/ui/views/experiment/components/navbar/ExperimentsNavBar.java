@@ -6,6 +6,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -43,12 +44,14 @@ public class ExperimentsNavBar extends VerticalLayout
     public long modelId;
 
     private ExperimentDAO experimentDAO;
+    private PolicyDAO policyDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator)
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.experimentDAO = experimentDAO;
+	    this.policyDAO = policyDAO;
 	    this.experiments = experiments;
 	    this.selectedExperiment = selectedExperiment;
 	    this.modelId = selectedExperiment.getModelId();
@@ -133,7 +136,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, selectExperimentConsumer, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {

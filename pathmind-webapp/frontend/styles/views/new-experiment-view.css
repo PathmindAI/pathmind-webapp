@@ -53,20 +53,20 @@
 }
 
 .new-experiment-view .reward-variables-table .header-row {
-    height: auto;
     padding: var(--lumo-space-s) 0;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
     margin-bottom: var(--lumo-space-s);
 }
 
 .new-experiment-view .reward-variables-table .header-row span {
+    width: auto;
     line-height: 1;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
 
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
-    height: auto;
+    justify-content: space-between;
     margin-bottom: var(--lumo-space-xxs);
 }
 

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
