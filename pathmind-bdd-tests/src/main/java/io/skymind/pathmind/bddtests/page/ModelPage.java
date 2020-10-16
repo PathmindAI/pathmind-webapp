@@ -59,8 +59,8 @@ public class ModelPage extends PageObject {
     public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='reward-variables-table']/descendant::vaadin-text-field"))) {
-            actual.add(webElement.getAttribute("value"));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variable-name']"))) {
+            actual.add(webElement.getText());
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
