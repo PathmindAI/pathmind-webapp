@@ -163,4 +163,9 @@ public class HomePageSteps {
     public void waitForSearchResultPage() {
         homePage.waitForSearchResultPage();
     }
+
+    @Step
+    public void clickAndSendEnterBtnToTheSearchField() {
+        homePage.clickAndSendEnterBtnToTheSearchField();
+    }
 }
