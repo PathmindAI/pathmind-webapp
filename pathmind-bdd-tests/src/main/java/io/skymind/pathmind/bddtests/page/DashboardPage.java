@@ -1,5 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
@@ -11,8 +13,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-
-import java.util.List;
 
 @DefaultUrl("page:home.page")
 public class DashboardPage extends PageObject {
@@ -70,7 +70,7 @@ public class DashboardPage extends PageObject {
 
     private String dashboardLineXPathPrefix(String projectName, String modelName) {
         return String.format("//*[@class='breadcrumb' and text()='%s']/following-sibling::span[text()='%s']/ancestor::*[@class='dashboard-line']",
-            projectName, modelName);
+                projectName, modelName);
     }
 
     public void clickInAutotestProjectStageBreadcrumb(String projectName) {
@@ -121,18 +121,18 @@ public class DashboardPage extends PageObject {
 
     public void checkDashboardPageProjectIsFavoriteTrue(String projectName, String experimentName, Boolean favoriteStatus) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='" + experimentName + "']/preceding-sibling::a[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
-        if (favoriteStatus){
+        if (favoriteStatus) {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
-        }else {
+        } else {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
         }
     }
 
     public void clickDashboardPageFavoriteButton(String projectName, String experimentName) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='" + experimentName + "']/preceding-sibling::a[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
     }

@@ -5,7 +5,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
@@ -26,7 +25,7 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
             JsonObject series,
             Boolean stacked,
             JsonObject viewWindow
-        ) {
+    ) {
         getModel().setType(type);
         getModel().setShowtooltip(showTooltip);
         getModel().setHaxistitle(hAxisTitle);
@@ -56,15 +55,22 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
     public void redraw() {
         getElement().callJsFunction("redraw");
     }
-    
-	public interface Model extends TemplateModel {
-		void setType(String type);
-		void setShowtooltip(Boolean showTooltip);
-		void setHaxistitle(String hAxisTitle);
-		void setVaxistitle(String vAxisTitle);
-		void setCurvelines(Boolean curveLines);
+
+    public interface Model extends TemplateModel {
+        void setType(String type);
+
+        void setShowtooltip(Boolean showTooltip);
+
+        void setHaxistitle(String hAxisTitle);
+
+        void setVaxistitle(String vAxisTitle);
+
+        void setCurvelines(Boolean curveLines);
+
         void setSeriestype(String seriesType);
+
         void setStacked(Boolean stacked);
+
         void setDimlines(Boolean useDimlines);
-	}
+    }
 }

@@ -9,19 +9,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class AuthenticationLogger
-{
-	@EventListener
-	public void auditEventHappened(AuditApplicationEvent auditApplicationEvent) {
+public class AuthenticationLogger {
+    @EventListener
+    public void auditEventHappened(AuditApplicationEvent auditApplicationEvent) {
 
-		AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
-		WebAuthenticationDetails details = (WebAuthenticationDetails) auditEvent.getData().get("details");
+        AuditEvent auditEvent = auditApplicationEvent.getAuditEvent();
+        WebAuthenticationDetails details = (WebAuthenticationDetails) auditEvent.getData().get("details");
 
-		if(!"anonymousUser".equals(auditEvent.getPrincipal())) {
-			log.info(auditEvent.getType() + " - Principal " + auditEvent.getPrincipal());
-			log.info("  Remote IP address: " + details.getRemoteAddress());
-			log.info("  Session Id: " + details.getSessionId());
-		}
-	}
+        if (!"anonymousUser".equals(auditEvent.getPrincipal())) {
+            log.info(auditEvent.getType() + " - Principal " + auditEvent.getPrincipal());
+            log.info("  Remote IP address: " + details.getRemoteAddress());
+            log.info("  Session Id: " + details.getSessionId());
+        }
+    }
 
 }

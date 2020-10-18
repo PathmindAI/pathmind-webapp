@@ -23,8 +23,12 @@ public class Observation {
 
     @Override
     public boolean equals(Object o) {
-        if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Observation obs = (Observation) o;
         // If there is no id in either then use the instance comparison.
         return id > -1 && obs.id > -1 ? id == obs.id : this == o;
@@ -38,7 +42,7 @@ public class Observation {
     public ObservationDataType getDataTypeEnum() {
         return ObservationDataType.getEnumFromValue(dataType).orElse(null);
     }
-    
+
     public void setDataTypeEnum(ObservationDataType dataTypeEnum) {
         dataType = dataTypeEnum.getValue();
     }

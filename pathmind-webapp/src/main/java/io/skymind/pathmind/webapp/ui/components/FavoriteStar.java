@@ -14,7 +14,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 public class FavoriteStar extends PolymerTemplate<TemplateModel> implements HasStyle {
     private boolean isFavorite = false;
     private Consumer<Boolean> onToggleFavorite;
-    
+
     public FavoriteStar(boolean isFavorite, Consumer<Boolean> toggleAction) {
         super();
         this.onToggleFavorite = toggleAction;

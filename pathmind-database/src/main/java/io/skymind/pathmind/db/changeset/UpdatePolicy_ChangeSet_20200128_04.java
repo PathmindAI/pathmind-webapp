@@ -1,5 +1,14 @@
 package io.skymind.pathmind.db.changeset;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
@@ -13,18 +22,9 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This has to be done this way because of how the values are parsed from the name in the policy table.
- *
+ * <p>
  * IMPORTANT -> This changeset is complete self contained so that any refactoring in the code base does NOT affect this code
  * change. This INCLUDES constants, etc.
  * NOTE -> I'm using JDBC because it's not possible to use JOOQ because of the order in which the changeset and JOOQ files are generated.
@@ -33,8 +33,7 @@ import java.util.Map;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, CustomSqlRollback
-{
+public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, CustomSqlRollback {
     // IMPORTANT -> These are copied from their various sources in case they change over time so that the database changeset is NOT affected.
     private static final int TRIAL_ID_LEN = 8;
     private static final int DATE_LEN = 19;
@@ -44,8 +43,7 @@ public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, Cust
     private static final String BATCH_SIZE = "sgd_minibatch_size";
 
     @Override
-    public SqlStatement[] generateStatements(Database database) throws CustomChangeException
-    {
+    public SqlStatement[] generateStatements(Database database) throws CustomChangeException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         Map<Long, String> policies = getPoliciesFromDatabase(connection);
@@ -64,7 +62,7 @@ public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, Cust
     // Rollback is not required as we would just delete the new hyperparameter columns but for completeness it's added anyways.
     @Override
     public SqlStatement[] generateRollbackStatements(Database database) throws CustomChangeException, RollbackImpossibleException {
-        return new SqlStatement[] {
+        return new SqlStatement[]{
                 new RawSqlStatement(
                         "UPDATE POLICY SET " +
                                 "LEARNING_RATE=NULL, " +
@@ -77,8 +75,9 @@ public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, Cust
         HashMap<Long, String> policies = new HashMap<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, EXTERNAL_ID FROM POLICY")) {
             ResultSet result = preparedStatement.executeQuery();
-            while(result.next())
+            while (result.next()) {
                 policies.put(result.getLong("ID"), result.getString("EXTERNAL_ID"));
+            }
             return policies;
         } catch (SQLException e) {
             log.error(e.getMessage(), e);
@@ -108,8 +107,7 @@ public class UpdatePolicy_ChangeSet_20200128_04 implements CustomSqlChange, Cust
 
     // Stripped down version of ProgressInterpreter.interpretKey for what we need. Also this way should we change the algorithm
     // this changeset will NOT be affected by it.
-    private ChangeSetHyperParameter interpretKey(String keyString)
-    {
+    private ChangeSetHyperParameter interpretKey(String keyString) {
         ChangeSetHyperParameter changeSetHyperParameter = new ChangeSetHyperParameter();
 
         int keyLength = keyString.length();

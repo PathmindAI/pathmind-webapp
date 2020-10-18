@@ -1,13 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
+import java.util.List;
+
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
-
-import java.util.List;
 
 public class RewardFunctionErrorPanel extends Div {
 

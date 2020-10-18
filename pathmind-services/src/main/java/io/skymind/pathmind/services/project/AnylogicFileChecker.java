@@ -1,10 +1,10 @@
 package io.skymind.pathmind.services.project;
 
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.FileSystemUtils;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +18,10 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.FileSystemUtils;
 
 /*To validate the model.jar uploaded by the user*/
 @Slf4j
@@ -76,7 +80,9 @@ public class AnylogicFileChecker implements FileChecker {
             statusUpdater.updateError("Exception in checking jar file: " + e.getMessage());
         } finally {
             anylogicFileCheckResult.setFileCheckComplete(true);
-            if (jarTempDir != null) deleteTempDirectory();
+            if (jarTempDir != null) {
+                deleteTempDirectory();
+            }
         }
         log.info("{} :- performFileCheck Completed", uuid);
         return anylogicFileCheckResult;

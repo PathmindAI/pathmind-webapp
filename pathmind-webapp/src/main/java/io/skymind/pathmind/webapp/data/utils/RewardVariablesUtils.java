@@ -11,7 +11,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 
 public class RewardVariablesUtils {
     public static void copyGoalsFromPreviousModel(RewardVariableDAO rewardVariableDAO, ModelDAO modelDAO, long projectId,
-                                            long currentModelId, List<RewardVariable> currentRewardVariables) {
+                                                  long currentModelId, List<RewardVariable> currentRewardVariables) {
         Optional<Model> prevModel = modelDAO.getPrevModelForProject(projectId, currentModelId);
         prevModel.ifPresent(pm -> {
             List<RewardVariable> previousRewardVariables = rewardVariableDAO.getRewardVariablesForModel(pm.getId());

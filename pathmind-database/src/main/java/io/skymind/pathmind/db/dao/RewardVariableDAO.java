@@ -3,11 +3,10 @@ package io.skymind.pathmind.db.dao;
 import java.util.List;
 
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
-
-import io.skymind.pathmind.shared.data.RewardVariable;
 
 @Repository
 public class RewardVariableDAO {

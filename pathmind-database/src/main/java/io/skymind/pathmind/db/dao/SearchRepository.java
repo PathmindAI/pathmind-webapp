@@ -1,21 +1,24 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
-import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
-import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import io.skymind.pathmind.db.jooq.tables.Model;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
 import io.skymind.pathmind.shared.data.SearchResult;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Record9;
+import org.jooq.SelectConditionStep;
+import org.jooq.SelectOptionStep;
+import org.jooq.SelectUnionStep;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
+
+import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
+import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
+import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 
 public class SearchRepository {
 
@@ -30,13 +33,13 @@ public class SearchRepository {
                 .limit(limit)
                 .fetch(record -> fetchIntoSearchResult(record));
     }
-    
+
     protected static int countSearchResults(DSLContext ctx, SearchDescription searchDescription, long userId) {
         assert !searchDescription.isEmpty();
         return ctx.selectCount().from(generateSearchQueryTable(ctx, searchDescription, userId)).fetchOne(DSL.count());
     }
-    
-    private static Table<Record9<String, Long, Boolean, LocalDateTime, LocalDateTime, String, String, String, String>> generateSearchQueryTable(DSLContext ctx, SearchDescription searchDescription, long userId){
+
+    private static Table<Record9<String, Long, Boolean, LocalDateTime, LocalDateTime, String, String, String, String>> generateSearchQueryTable(DSLContext ctx, SearchDescription searchDescription, long userId) {
         assert !searchDescription.isEmpty();
 
         List<SelectOptionStep<Record9<String, Long, Boolean, LocalDateTime, LocalDateTime, String, String, String, String>>> queries = new ArrayList<>();
@@ -72,9 +75,11 @@ public class SearchRepository {
     private static Condition generateModelCondition(Set<SearchDescription.OrClause> modelClauses) {
         return modelClauses.stream()
                 .map(orClause -> {
-                    switch (orClause.getField()){
-                        case NAME: return MODEL.NAME.equal(orClause.getKeyword());
-                        case USERNOTES: return MODEL.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
+                    switch (orClause.getField()) {
+                        case NAME:
+                            return MODEL.NAME.equal(orClause.getKeyword());
+                        case USERNOTES:
+                            return MODEL.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
                         default:
                             throw new RuntimeException("I can't happen");
                     }
@@ -85,9 +90,11 @@ public class SearchRepository {
     private static Condition generateExperimentCondition(Set<SearchDescription.OrClause> experimentClauses) {
         return experimentClauses.stream()
                 .map(orClause -> {
-                    switch (orClause.getField()){
-                        case NAME: return EXPERIMENT.NAME.equal(orClause.getKeyword());
-                        case USERNOTES: return EXPERIMENT.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
+                    switch (orClause.getField()) {
+                        case NAME:
+                            return EXPERIMENT.NAME.equal(orClause.getKeyword());
+                        case USERNOTES:
+                            return EXPERIMENT.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
                         default:
                             throw new RuntimeException("I can't happen");
                     }
@@ -98,10 +105,11 @@ public class SearchRepository {
     private static Condition generateProjectCondition(Set<SearchDescription.OrClause> projectClauses) {
         return projectClauses.stream()
                 .<Condition>map(orClause -> {
-                    switch (orClause.getField()){
+                    switch (orClause.getField()) {
                         case NAME:
                             return PROJECT.NAME.likeIgnoreCase(toLike(orClause.getKeyword()));
-                        case USERNOTES: return PROJECT.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
+                        case USERNOTES:
+                            return PROJECT.USER_NOTES.likeIgnoreCase(toLike(orClause.getKeyword()));
                         default:
                             throw new RuntimeException("I can't happen");
                     }

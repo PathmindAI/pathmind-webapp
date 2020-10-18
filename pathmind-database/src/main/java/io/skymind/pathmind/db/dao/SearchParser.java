@@ -7,9 +7,9 @@ import java.util.List;
 
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
 
-import static io.skymind.pathmind.db.dao.SearchDescription.OrClause;
 import static io.skymind.pathmind.db.dao.SearchDescription.Field.NAME;
 import static io.skymind.pathmind.db.dao.SearchDescription.Field.USERNOTES;
+import static io.skymind.pathmind.db.dao.SearchDescription.OrClause;
 
 public class SearchParser {
     public SearchDescription parseKeyword(String originalKeyword) {
@@ -41,8 +41,7 @@ public class SearchParser {
         String[] candidate = originalKeyword.split(":", 2);
         if (candidate.length == 2) {
             return candidate;
-        }
-        else {
+        } else {
             return new String[]{"all", candidate[0]};
         }
     }
@@ -68,11 +67,9 @@ public class SearchParser {
         ));
         if (matchTypeInKeyword(itemType, searchKeyword)) {
             orClauses.add(new OrClause(NAME, removeTypeFromKeyword(itemType, searchKeyword)));
-        }
-        else if (matchHashInKeyword(itemType, searchKeyword)) {
+        } else if (matchHashInKeyword(itemType, searchKeyword)) {
             orClauses.add(new OrClause(NAME, removeHashFromKeyword(itemType, searchKeyword)));
-        }
-        else {
+        } else {
             orClauses.add(new OrClause(NAME, searchKeyword));
         }
         return orClauses;

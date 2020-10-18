@@ -14,16 +14,16 @@ public class NewProjectView extends PathMindDefaultView {
     private final NewProjectViewContent newProjectViewContent;
 
     @Autowired
-	public NewProjectView(NewProjectViewContent newProjectViewContent) {
+    public NewProjectView(NewProjectViewContent newProjectViewContent) {
         this.newProjectViewContent = newProjectViewContent;
     }
 
-	protected Component getMainContent() {
+    protected Component getMainContent() {
         return newProjectViewContent;
-	}
+    }
 
-	@Override
-	protected VerticalLayout getTitlePanel() {
-		return null;
-	}
+    @Override
+    protected VerticalLayout getTitlePanel() {
+        return null;
+    }
 }

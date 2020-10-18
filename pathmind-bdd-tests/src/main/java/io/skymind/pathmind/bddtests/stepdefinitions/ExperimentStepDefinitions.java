@@ -1,12 +1,12 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.io.IOException;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.thucydides.core.annotations.Steps;
-
-import java.io.IOException;
 
 public class ExperimentStepDefinitions {
 

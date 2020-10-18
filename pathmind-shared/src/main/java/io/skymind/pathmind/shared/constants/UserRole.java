@@ -1,10 +1,10 @@
 package io.skymind.pathmind.shared.constants;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static io.skymind.pathmind.shared.constants.ViewPermission.BASIC_READ;
 import static io.skymind.pathmind.shared.constants.ViewPermission.EXTENDED_READ;
