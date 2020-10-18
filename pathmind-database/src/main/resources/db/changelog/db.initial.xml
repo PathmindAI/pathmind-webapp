@@ -3,7 +3,7 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
@@ -1796,6 +1796,15 @@
 
     <changeSet id="20201012-02" author="alexander.makarov@toptal.com">
         <dropColumn tableName="EXPERIMENT" columnName="GOALS_REACHED" />
+    </changeSet>
+    
+    <changeSet id="20201018-02" author="alexander.makarov@toptal.com">
+        <createIndex tableName="EXPERIMENT" indexName="GOALS_COUNT_MIGRATION_IDX">
+            <column name="HAS_GOALS" />
+            <column name="TRAINING_STATUS" />
+            <column name="GOALS_TOTAL_NUM" />
+            <column name="DATE_CREATED" descending="true" />
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>
