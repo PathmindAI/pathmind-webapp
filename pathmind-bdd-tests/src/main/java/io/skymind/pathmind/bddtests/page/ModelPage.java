@@ -59,8 +59,8 @@ public class ModelPage extends PageObject {
     public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='reward-variables-table']/descendant::vaadin-text-field"))) {
-            actual.add(webElement.getAttribute("value"));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variable-name']"))) {
+            actual.add(webElement.getText());
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
@@ -89,7 +89,7 @@ public class ModelPage extends PageObject {
 
     public void clickModelPageExperimentArchiveBtn(String experiment) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")));
         e.findElement(By.cssSelector("button")).click();
     }
 
