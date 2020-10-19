@@ -1,10 +1,9 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.shared.data.PathmindUser;
 import org.jooq.DSLContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-
-import io.skymind.pathmind.shared.data.PathmindUser;
 
 @Repository
 public class UserDAO
@@ -42,6 +41,10 @@ public class UserDAO
 	public PathmindUser findByToken(String token) {
 		return UserRepository.findByToken(ctx, token);
 	}
+
+    public PathmindUser findByApiKey(String apiKey) {
+        return UserRepository.findByApiKey(ctx, apiKey);
+    }
 
 	/**
 	 * Change a user's password.

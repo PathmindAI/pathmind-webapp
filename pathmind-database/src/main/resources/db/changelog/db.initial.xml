@@ -1778,4 +1778,13 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="20201019-01" author="alexander.makarov@topta.com">
+        <sql>create extension if not exists "uuid-ossp";</sql>
+        <addColumn tableName="PATHMIND_USER">
+            <column name="API_KEY" type="text" defaultValueComputed="uuid_generate_v4()">
+                <constraints unique="true" nullable="false" uniqueConstraintName="PATHMIND_USER_API_KEY_UNQ"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
