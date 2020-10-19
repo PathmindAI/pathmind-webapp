@@ -93,6 +93,7 @@ public class GenericPage extends PageObject {
         assertThat(errorMessage, first.isPresent());
         first.get().click();
         resetImplicitTimeout();
+        waitABit(4000);
     }
 
     public void switchProjectsTab() {
@@ -230,7 +231,7 @@ public class GenericPage extends PageObject {
     public void checkThatUnexpectedErrorAlertIsShown(Boolean status) {
         setImplicitTimeout(5, SECONDS);
         if (status) {
-            assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(1));
+            assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
         } else {
             assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
         }

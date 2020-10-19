@@ -59,11 +59,12 @@ Feature: Experiment page alerts in multiple views
     When Duplicate current tab
     When Click side nav archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
+    When Check that unexpected error alert is shown true
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'OK' button
-    Then Check that models page opened
+    Then Check that project page is opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
     When Open tab 1
