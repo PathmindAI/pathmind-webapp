@@ -21,8 +21,10 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
+        ExperimentUtils.addOrUpdateRuns(experimentsNavBarItem.getExperiment(), event.getRuns());
+        experimentsNavBarItem.getExperiment().updateTrainingStatus();
         PushUtils.push(getUiSupplier().get(), () ->
-            experimentsNavBarItem.updateRuns(event.getRuns()));
+            experimentsNavBarItem.update());
     }
 
     @Override
