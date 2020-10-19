@@ -150,6 +150,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     public void update() {
+        experiment.updateTrainingStatus();
         updateStatus(experiment.getTrainingStatusEnum());
         // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
         updateGoalStatus(experiment.isGoalsReached());
