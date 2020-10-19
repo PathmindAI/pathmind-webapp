@@ -63,13 +63,10 @@ public class Keys {
 
     public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
     public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
-    public static final Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Identities0.IDENTITY_OBSERVATION;
     public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
     public static final Identity<PolicyRecord, Long> IDENTITY_POLICY = Identities0.IDENTITY_POLICY;
     public static final Identity<ProjectRecord, Long> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
-    public static final Identity<RewardVariableRecord, Long> IDENTITY_REWARD_VARIABLE = Identities0.IDENTITY_REWARD_VARIABLE;
     public static final Identity<RunRecord, Long> IDENTITY_RUN = Identities0.IDENTITY_RUN;
-    public static final Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Identities0.IDENTITY_TRAINING_ERROR;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -82,6 +79,7 @@ public class Keys {
     public static final UniqueKey<ObservationRecord> OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = UniqueKeys0.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY;
     public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_PKEY = UniqueKeys0.PATHMIND_USER_PKEY;
     public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_EMAIL_KEY = UniqueKeys0.PATHMIND_USER_EMAIL_KEY;
+    public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_API_KEY_KEY = UniqueKeys0.PATHMIND_USER_API_KEY_KEY;
     public static final UniqueKey<PolicyRecord> POLICY_PKEY = UniqueKeys0.POLICY_PKEY;
     public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = UniqueKeys0.POLICY_RUN_ID_EXTERNAL_ID_KEY;
     public static final UniqueKey<ProjectRecord> PROJECT_PKEY = UniqueKeys0.PROJECT_PKEY;
@@ -120,13 +118,10 @@ public class Keys {
     private static class Identities0 {
         public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
         public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
-        public static Identity<ObservationRecord, Long> IDENTITY_OBSERVATION = Internal.createIdentity(Observation.OBSERVATION, Observation.OBSERVATION.ID);
         public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
         public static Identity<PolicyRecord, Long> IDENTITY_POLICY = Internal.createIdentity(Policy.POLICY, Policy.POLICY.ID);
         public static Identity<ProjectRecord, Long> IDENTITY_PROJECT = Internal.createIdentity(Project.PROJECT, Project.PROJECT.ID);
-        public static Identity<RewardVariableRecord, Long> IDENTITY_REWARD_VARIABLE = Internal.createIdentity(RewardVariable.REWARD_VARIABLE, RewardVariable.REWARD_VARIABLE.ID);
         public static Identity<RunRecord, Long> IDENTITY_RUN = Internal.createIdentity(Run.RUN, Run.RUN.ID);
-        public static Identity<TrainingErrorRecord, Long> IDENTITY_TRAINING_ERROR = Internal.createIdentity(TrainingError.TRAINING_ERROR, TrainingError.TRAINING_ERROR.ID);
     }
 
     private static class UniqueKeys0 {
@@ -137,6 +132,7 @@ public class Keys {
         public static final UniqueKey<ObservationRecord> OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(Observation.OBSERVATION, "observation_model_id_array_index_key", Observation.OBSERVATION.MODEL_ID, Observation.OBSERVATION.ARRAY_INDEX);
         public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_PKEY = Internal.createUniqueKey(PathmindUser.PATHMIND_USER, "pathmind_user_pkey", PathmindUser.PATHMIND_USER.ID);
         public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_EMAIL_KEY = Internal.createUniqueKey(PathmindUser.PATHMIND_USER, "pathmind_user_email_key", PathmindUser.PATHMIND_USER.EMAIL);
+        public static final UniqueKey<PathmindUserRecord> PATHMIND_USER_API_KEY_KEY = Internal.createUniqueKey(PathmindUser.PATHMIND_USER, "pathmind_user_api_key_key", PathmindUser.PATHMIND_USER.API_KEY);
         public static final UniqueKey<PolicyRecord> POLICY_PKEY = Internal.createUniqueKey(Policy.POLICY, "policy_pkey", Policy.POLICY.ID);
         public static final UniqueKey<PolicyRecord> POLICY_RUN_ID_EXTERNAL_ID_KEY = Internal.createUniqueKey(Policy.POLICY, "policy_run_id_external_id_key", Policy.POLICY.RUN_ID, Policy.POLICY.EXTERNAL_ID);
         public static final UniqueKey<ProjectRecord> PROJECT_PKEY = Internal.createUniqueKey(Project.PROJECT, "project_pkey", Project.PROJECT.ID);

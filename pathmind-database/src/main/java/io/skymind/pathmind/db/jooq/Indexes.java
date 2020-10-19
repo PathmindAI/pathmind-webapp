@@ -56,6 +56,7 @@ public class Indexes {
     public static final Index OBSERVATION_MODEL_FK_INDEX = Indexes0.OBSERVATION_MODEL_FK_INDEX;
     public static final Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index OBSERVATION_PKEY = Indexes0.OBSERVATION_PKEY;
+    public static final Index PATHMIND_USER_API_KEY_KEY = Indexes0.PATHMIND_USER_API_KEY_KEY;
     public static final Index PATHMIND_USER_EMAIL_KEY = Indexes0.PATHMIND_USER_EMAIL_KEY;
     public static final Index PATHMIND_USER_PKEY = Indexes0.PATHMIND_USER_PKEY;
     public static final Index POLICY_PKEY = Indexes0.POLICY_PKEY;
@@ -92,6 +93,7 @@ public class Indexes {
         public static Index OBSERVATION_MODEL_FK_INDEX = Internal.createIndex("observation_model_fk_index", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID }, false);
         public static Index OBSERVATION_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("observation_model_id_array_index_key", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.MODEL_ID, Observation.OBSERVATION.ARRAY_INDEX }, true);
         public static Index OBSERVATION_PKEY = Internal.createIndex("observation_pkey", Observation.OBSERVATION, new OrderField[] { Observation.OBSERVATION.ID }, true);
+        public static Index PATHMIND_USER_API_KEY_KEY = Internal.createIndex("pathmind_user_api_key_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.API_KEY }, true);
         public static Index PATHMIND_USER_EMAIL_KEY = Internal.createIndex("pathmind_user_email_key", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.EMAIL }, true);
         public static Index PATHMIND_USER_PKEY = Internal.createIndex("pathmind_user_pkey", PathmindUser.PATHMIND_USER, new OrderField[] { PathmindUser.PATHMIND_USER.ID }, true);
         public static Index POLICY_PKEY = Internal.createIndex("policy_pkey", Policy.POLICY, new OrderField[] { Policy.POLICY.ID }, true);

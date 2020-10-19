@@ -22,7 +22,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 363906254;
+    private static final long serialVersionUID = 1576754698;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -82,12 +82,12 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.firstname</code>.
      */
-    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.lastname</code>.
      */
-    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), org.jooq.impl.SQLDataType.VARCHAR(255).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.address</code>.
@@ -145,6 +145,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     public final TableField<PathmindUserRecord, String> NEW_EMAIL_TO_VERIFY = createField(DSL.name("new_email_to_verify"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
 
     /**
+     * The column <code>public.pathmind_user.api_key</code>.
+     */
+    public final TableField<PathmindUserRecord, String> API_KEY = createField(DSL.name("api_key"), org.jooq.impl.SQLDataType.CLOB.nullable(false).defaultValue(org.jooq.impl.DSL.field("uuid_generate_v4()", org.jooq.impl.SQLDataType.CLOB)), this, "");
+
+    /**
      * Create a <code>public.pathmind_user</code> table reference
      */
     public PathmindUser() {
@@ -184,7 +189,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.PATHMIND_USER_EMAIL_KEY, Indexes.PATHMIND_USER_PKEY);
+        return Arrays.<Index>asList(Indexes.PATHMIND_USER_API_KEY_KEY, Indexes.PATHMIND_USER_EMAIL_KEY, Indexes.PATHMIND_USER_PKEY);
     }
 
     @Override
@@ -199,7 +204,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
     @Override
     public List<UniqueKey<PathmindUserRecord>> getKeys() {
-        return Arrays.<UniqueKey<PathmindUserRecord>>asList(Keys.PATHMIND_USER_PKEY, Keys.PATHMIND_USER_EMAIL_KEY);
+        return Arrays.<UniqueKey<PathmindUserRecord>>asList(Keys.PATHMIND_USER_PKEY, Keys.PATHMIND_USER_EMAIL_KEY, Keys.PATHMIND_USER_API_KEY_KEY);
     }
 
     @Override
@@ -229,11 +234,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row18<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }
