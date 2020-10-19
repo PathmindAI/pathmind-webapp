@@ -100,9 +100,9 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelPageExperimentIsFavoriteTrue(experiment, favoriteStatus);
     }
 
-    @When("^Click model page experiment '(.*)' archive/unarchive btn$")
-    public void clickModelPageExperimentArchiveBtn(String experiment) {
-        modelPageSteps.clickModelPageExperimentArchiveBtn(experiment);
+    @When("^Click model page experiment '(.*)' btn '(.*)'$")
+    public void clickModelPageExperimentArchiveBtn(String experiment, String archive) {
+        modelPageSteps.clickModelPageExperimentArchiveBtn(experiment, archive);
     }
 
     @When("^Click model page model archive/unarchive button$")

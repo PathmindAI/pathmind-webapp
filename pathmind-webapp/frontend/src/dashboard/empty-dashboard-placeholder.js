@@ -46,7 +46,7 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                 alt="Pathmind"
               />
                 <vaadin-horizontal-layout>
-                    <a class="button-link" href="https://help.pathmind.com/en/articles/4478328-getting-started-with-product-delivery" target="_blank">Read our Getting Started Guide</a>
+                    <a class="button-link" href="http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic" target="_blank">Read our Getting Started Guide</a>
                 </vaadin-horizontal-layout>
                 <vaadin-horizontal-layout>
                     <span>or skip ahead to </span>
