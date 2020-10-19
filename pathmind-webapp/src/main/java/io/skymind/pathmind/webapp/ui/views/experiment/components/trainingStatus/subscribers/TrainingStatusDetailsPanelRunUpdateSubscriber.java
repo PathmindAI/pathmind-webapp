@@ -23,7 +23,6 @@ public class TrainingStatusDetailsPanelRunUpdateSubscriber extends RunUpdateSubs
     public void handleBusEvent(RunUpdateBusEvent event) {
         PushUtils.push(getUiSupplier().get(), () -> {
             ExperimentUtils.addOrUpdateRuns(trainingStatusDetailsPanel.getExperiment(), event.getRuns());
-            trainingStatusDetailsPanel.getExperiment().updateTrainingStatus();
             trainingStatusDetailsPanel.update();
         });
     }
