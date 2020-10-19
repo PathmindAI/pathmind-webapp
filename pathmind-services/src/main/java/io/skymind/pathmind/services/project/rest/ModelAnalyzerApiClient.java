@@ -86,7 +86,7 @@ public class ModelAnalyzerApiClient {
         try {
             requestBody = new StringBody(ObjectMapperHolder.getJsonMapper().writeValueAsString(req), ContentType.MULTIPART_FORM_DATA);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
         post.setEntity(MultipartEntityBuilder.create()
