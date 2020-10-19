@@ -68,7 +68,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         return model;
     }
 
-    public void setModelDetails(UI ui, Model model) {
+    private void setModelDetails(UI ui, Model model) {
         long projectId = model.getProjectId();
         long modelId = model.getId();
         getModel().setIsDraft(model.isDraft());
