@@ -39,7 +39,6 @@
         <dependency>
             <groupId>io.skymind</groupId>
             <artifactId>pathmind-services</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
