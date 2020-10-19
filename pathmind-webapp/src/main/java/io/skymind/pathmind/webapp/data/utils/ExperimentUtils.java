@@ -13,7 +13,6 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -21,6 +20,7 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
 public class ExperimentUtils
 {
@@ -244,7 +244,7 @@ public class ExperimentUtils
     public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
         Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
         if(firstUnarchivedExperiment.isEmpty())
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ProjectView.class, experiments.get(0).getProject().getId()+Routes.MODEL_PATH+experiments.get(0).getModelId()));
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
         else
             getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
     }

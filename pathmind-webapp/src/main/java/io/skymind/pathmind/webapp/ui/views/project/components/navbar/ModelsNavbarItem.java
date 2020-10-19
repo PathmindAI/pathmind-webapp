@@ -9,10 +9,9 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
@@ -76,8 +75,8 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         getModel().setModelName(model.getName());
         getModel().setModelPackageName(model.getPackageName());
         String target = model.isDraft() ?
-                String.format("/uploadModel/%s/%s/%s", projectId, UploadMode.RESUME, modelId)
-                : "/project/"+projectId+Routes.MODEL_PATH+modelId;
+                "/uploadModel/" + PathmindUtils.getResumeUploadModelPath(projectId, modelId)
+                : PathmindUtils.getProjectModelPath(projectId, modelId);
         getModel().setModelLink(target);
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
             getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(model.getDateCreated(), timeZoneId));

@@ -60,6 +60,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -498,7 +499,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experimentViewRunUpdateSubscriber.setExperiments(experiments);
 
         if (experiments.isEmpty()) {
-            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, experiments.get(0).getProject().getId()+Routes.MODEL_PATH+experiments.get(0).getModelId()));
+            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);

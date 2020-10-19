@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
-
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
@@ -44,6 +43,7 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 
@@ -391,7 +391,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 	}
 
 	public static String createResumeUploadTarget(Project project, Model model) {
-		return String.format("%s/%s/%s", project.getId(), UploadMode.RESUME, model.getId());
+        return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
 	}
 
 	public static Button createNextStepButton() {

@@ -41,6 +41,7 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
 @Route(value= Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
 public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String>{
@@ -110,7 +111,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
                 case MODEL :
                     Optional<Model> resultModel = modelService.getModel(item.getItemId());
                     resultModel.ifPresent(model -> {
-                        getUI().ifPresent(ui -> ui.navigate(ProjectView.class, model.getProjectId()+Routes.MODEL_PATH+item.getItemId()));
+                        getUI().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), item.getItemId())));
                     });
                     break;
                 case EXPERIMENT:

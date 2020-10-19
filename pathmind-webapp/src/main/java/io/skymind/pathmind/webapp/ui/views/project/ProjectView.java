@@ -13,6 +13,8 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -50,7 +52,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
@@ -58,6 +59,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -66,8 +68,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
-public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>
-{
+public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int MODEL_ID_SEGMENT = 2;
 
@@ -349,7 +350,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         }
         if (selectedModel.isDraft()) {
             if (project.getModels().size() == 1) {
-                String target = String.format("%s/%s/%s", projectId, UploadMode.RESUME, modelId);
+                String target = PathmindUtils.getResumeUploadModelPath(projectId, modelId);
                 event.forwardTo(Routes.UPLOAD_MODEL, target);
             }
         }
@@ -374,7 +375,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         });
         archivesTabPanel.initData(event.getUI());
         recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);
-	}
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
+    }
 
 	@Override
 	public void setParameter(BeforeEvent event, @WildcardParameter String parameter)
