@@ -56,6 +56,12 @@
             </dependency>
 
             <dependency>
+                <groupId>io.skymind</groupId>
+                <artifactId>pathmind-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>com.stripe</groupId>
                 <artifactId>stripe-java</artifactId>
                 <version>17.3.0</version>
