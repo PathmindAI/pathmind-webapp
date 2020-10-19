@@ -137,7 +137,7 @@ public class LoginPage extends PageObject {
     public void checkCreateNewUserPageElements() {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
 
-        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a 30-day Free Trial!"));
+        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a free trial!"));
 
         WebElement firstNameInputShadow = signUpView.findElement(By.id("firstName"));
         WebElement firstNameInput = utils.expandRootElement(firstNameInputShadow);
