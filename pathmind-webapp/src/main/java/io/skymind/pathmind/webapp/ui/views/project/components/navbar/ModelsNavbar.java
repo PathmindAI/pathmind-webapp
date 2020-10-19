@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ModelsNavbar extends VerticalLayout
@@ -24,21 +23,18 @@ public class ModelsNavbar extends VerticalLayout
     private List<ModelsNavbarItem> modelsNavbarItems = new ArrayList<>();
     private Select<String> categorySelect;
 	private VerticalLayout rowsWrapper;
-	private Consumer<Model> selectModelConsumer;
-    private ModelsNavbarItem currentModelNavItem;
     private UploadModelButton newModelButton;
     private SegmentIntegrator segmentIntegrator;
 
     private ModelDAO modelDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, Consumer<Model> selectModelConsumer, SegmentIntegrator segmentIntegrator)
+    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.modelDAO = modelDAO;
 	    this.models = models;
 	    this.selectedModel = selectedModel;
-        this.selectModelConsumer = selectModelConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
         rowsWrapper = new VerticalLayout();
@@ -95,25 +91,13 @@ public class ModelsNavbar extends VerticalLayout
                 modelsNavbarItems.add(navBarItem);
 				if (model.equals(selectedModel)) {
 					navBarItem.setAsCurrent();
-					currentModelNavItem = navBarItem;
 				}
 				rowsWrapper.add(navBarItem);
 		});
 	}
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, selectModelConsumer, segmentIntegrator);
+        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, segmentIntegrator);
     }
 
-    public void setCurrentModel(Model newCurrentModel) {
-	    if (currentModelNavItem != null) {
-	        currentModelNavItem.removeAsCurrent();
-	    }
-		modelsNavbarItems.stream().forEach(modelsNavbarItem -> {
-			if (modelsNavbarItem.getItemModel().equals(newCurrentModel)) {
-				currentModelNavItem = modelsNavbarItem;
-			}
-        });
-        selectedModel = newCurrentModel;
-    }
 }

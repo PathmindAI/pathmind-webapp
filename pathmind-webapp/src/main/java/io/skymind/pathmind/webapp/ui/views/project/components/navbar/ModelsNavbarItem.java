@@ -15,7 +15,6 @@ import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Tag("models-navbar-item")
@@ -23,22 +22,14 @@ import java.util.function.Supplier;
 public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerModel> {
     private ModelDAO modelDAO;
     private Model model;
-    private Consumer<Model> selectModelConsumer;
     private SegmentIntegrator segmentIntegrator;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, Consumer<Model> selectModelConsumer, SegmentIntegrator segmentIntegrator) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
 	    this.modelDAO = modelDAO;
 	    this.model = model;
-        this.selectModelConsumer = selectModelConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
         UI.getCurrent().getUI().ifPresent(ui -> setModelDetails(ui, model));
-    }
-
-    @EventHandler
-    private void handleItemClicked() {
-        setAsCurrent();
-        selectModelConsumer.accept(model);
     }
 
     @EventHandler
@@ -57,10 +48,6 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
     public void setAsCurrent() {
         getModel().setIsCurrent(true);
-    }
-
-    public void removeAsCurrent() {
-        getModel().setIsCurrent(false);
     }
 
     public Model getItemModel() {

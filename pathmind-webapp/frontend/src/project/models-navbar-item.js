@@ -148,6 +148,7 @@ class ModelsNavbarItem extends PolymerElement {
 
     handleItemClicked() {
         history.pushState(window.location.href, `Model #${this.modelName}`, this.modelLink);
+        this.isCurrent = true;
     }
 }
 

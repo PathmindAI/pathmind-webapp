@@ -153,7 +153,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelDAO,
                 selectedModel,
                 models,
-                selectedModel -> selectModel(selectedModel),
                 segmentIntegrator
             );
         }
@@ -281,36 +280,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
 	private Breadcrumbs createBreadcrumbs() {
 		return selectedModel != null ? new Breadcrumbs(project, selectedModel) : new Breadcrumbs(project);
-    }
-
-    private void selectModel(Model selectedModel) {
-        this.selectedModel = selectedModel;
-        getUI().ifPresent(ui -> {
-            if (selectedModel.isDraft()) {
-                String target = UploadModelView.createResumeUploadTarget(project, selectedModel);
-                ui.navigate(UploadModelView.class, target);
-            } else {
-                modelId = selectedModel.getId();
-                modelsNavbar.setCurrentModel(selectedModel);
-                experiments = experimentDAO.getExperimentsForModel(modelId);
-                experimentGrid.setItems(experiments);
-                String modelNameText = "";
-                modelNameText = "Model #"+selectedModel.getName();
-                if (selectedModel.getPackageName() != null) {
-                    modelNameText += " ("+selectedModel.getPackageName()+")";
-                }
-                modelArchivedLabel.setVisible(selectedModel.isArchived());
-                modelName.setText(modelNameText);
-                modelNotesField.setNotesText(selectedModel.getUserNotes());
-                newExperimentButton.setModelId(modelId);
-                VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-                    modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
-                });
-                pageBreadcrumbs.setText(2, modelNameText);
-                // the java method does recalculate the column width, so this workaround is implemeneted
-                experimentGrid.getElement().executeJs("setTimeout(() => $0.recalculateColumnWidths(), 0)");
-            }
-        });
     }
 
 	@Override
