@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.2.RELEASE</version>
+        <version>2.2.10.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -28,6 +28,7 @@
         <module>pathmind-webapp</module>
         <module>pathmind-updater</module>
         <module>pathmind-bdd-tests</module>
+        <module>pathmind-api</module>
     </modules>
 
     <!-- These are global dependencies that are applied to ALL modules in the project. -->
