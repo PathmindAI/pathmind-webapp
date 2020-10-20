@@ -20,7 +20,7 @@ Feature: Experiment page
     Then Click project start run button
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Check experiment status is Starting Cluster
+    Then Check experiment '1' status is 'Starting Cluster'
     Then Click the experiment name 1
     Then Check that the experiment status is 'Starting Cluster'
     When Click in 'Stop Training' button

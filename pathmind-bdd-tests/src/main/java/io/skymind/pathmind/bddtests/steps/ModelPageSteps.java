@@ -78,8 +78,8 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void checkExperimentModelStatusIsStarting(String status) {
-        modelPage.checkExperimentModelStatusIsStarting(status);
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        modelPage.checkExperimentModelStatusIsStarting(experiment, status);
     }
 
     @Step

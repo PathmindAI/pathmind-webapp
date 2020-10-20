@@ -75,9 +75,9 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelPageElements();
     }
 
-    @Then("^Check experiment status is (.*)$")
-    public void checkExperimentModelStatusIsStarting(String status) {
-        modelPageSteps.checkExperimentModelStatusIsStarting(status);
+    @Then("^Check experiment '(.*)' status is '(.*)'$")
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        modelPageSteps.checkExperimentModelStatusIsStarting(experiment, status);
     }
 
     @Then("^Check on the model page experiment (.*) notes is (.*)$")

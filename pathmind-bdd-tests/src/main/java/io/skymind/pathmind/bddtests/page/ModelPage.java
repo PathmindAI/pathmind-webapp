@@ -89,7 +89,7 @@ public class ModelPage extends PageObject {
 
     public void clickModelPageExperimentArchiveBtn(String experiment, String archive) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button[@title='" + archive + "']")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button[@title='" + archive + "']")));
         e.findElement(By.cssSelector("button")).click();
     }
 
@@ -119,12 +119,10 @@ public class ModelPage extends PageObject {
         assertThat(strings, hasItem("Model #1 (coffeeshop)"));
     }
 
-    public void checkExperimentModelStatusIsStarting(String status) {
-        List<String> strings = new ArrayList<>();
-        for (WebElement e : experimentModelsNames) {
-            strings.add(e.getText());
-        }
-        assertThat(strings, hasItem(status));
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status-text"), is(status));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status"), is("loading"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("title"), is(status));
     }
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
