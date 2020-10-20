@@ -87,9 +87,9 @@ public class ModelPage extends PageObject {
         getDriver().findElement(By.xpath("//*[@class='experiment-name']/following-sibling::vaadin-button")).click();
     }
 
-    public void clickModelPageExperimentArchiveBtn(String experiment) {
+    public void clickModelPageExperimentArchiveBtn(String experiment, String archive) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button[@title='" + archive + "']")));
         e.findElement(By.cssSelector("button")).click();
     }
 
@@ -138,18 +138,18 @@ public class ModelPage extends PageObject {
 
     public void clickModelPageExperimentStarButton(String experiment) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + "']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
     }
 
     public void checkModelPageExperimentIsFavoriteTrue(String experiment, Boolean favoriteStatus) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+"']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + "']/preceding-sibling::vaadin-grid-cell-content[1]/descendant::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
-        if (favoriteStatus){
+        if (favoriteStatus) {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
-        }else {
+        } else {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
         }
     }
@@ -159,12 +159,12 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
-        if (archived){
+        if (archived) {
             waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")));
             assertThat(getDriver().findElements(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).size(), is(1));
             assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is("Archived"));
 
-        }else {
+        } else {
             setImplicitTimeout(3, SECONDS);
             waitFor(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")));
             assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getAttribute("hidden"), is("true"));

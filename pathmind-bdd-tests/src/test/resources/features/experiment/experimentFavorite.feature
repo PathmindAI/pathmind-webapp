@@ -54,18 +54,18 @@ Feature: Experiment favorite feature
     When Refresh page
     Then Check model page experiment '1 ' is favorite false
     Then Check model page experiment '2 ' is favorite true
-    When Click model page experiment '1 ' archive/unarchive btn
+    When Click model page experiment '1 ' btn 'Archive'
     When In confirmation dialog click in 'Archive' button
-    When Click model page experiment '2 ' archive/unarchive btn
+    When Click model page experiment '2 ' btn 'Archive'
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     Then Check model page experiment '1 ' is favorite false
     Then Check model page experiment '2 ' is favorite true
     When Click model page experiment '1 ' star button
     When Click model page experiment '2 ' star button
-    When Click model page experiment '1 ' archive/unarchive btn
+    When Click model page experiment '1 ' btn 'Unarchive'
     When In confirmation dialog click in 'Unarchive' button
-    When Click model page experiment '2 ' archive/unarchive btn
+    When Click model page experiment '2 ' btn 'Unarchive'
     When In confirmation dialog click in 'Unarchive' button
     When Open projects/model/experiment archived tab
     Then Check model page experiment '1 ' is favorite true
