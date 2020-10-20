@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
@@ -19,9 +20,22 @@ public class SparklineChart extends DataChart {
         super();
     }
 
-    private JsonObject createSeries(Boolean showDetails) {
+    private JsonObject createSeries(Boolean showDetails, Integer index) {
         JsonObject series = Json.createObject();
-        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '#1a2949'}"));
+        List<String> colors = Arrays.asList(
+            "#17a747",
+            "#214e96",
+            "#318c81",
+            "#7550e5",
+            "#62a540",
+            "#e0667d",
+            "#5f8fd6",
+            "#931901",
+            "#bd52a3",
+            "#887100"
+        );
+        String color = index == null ? "#1a2949" : colors.get(index%10);
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '"+color+"'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
         series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
         return series;
@@ -91,6 +105,10 @@ public class SparklineChart extends DataChart {
     }
 
     public void setSparkLine(Map<Integer, Double> sparklineMap, RewardVariable rewardVariable, Boolean showDetails) {
+        setSparkLine(sparklineMap, rewardVariable, showDetails, null);
+    }
+
+    public void setSparkLine(Map<Integer, Double> sparklineMap, RewardVariable rewardVariable, Boolean showDetails, Integer index) {
         if (sparklineMap == null) {
             return;
         }
@@ -132,7 +150,7 @@ public class SparklineChart extends DataChart {
         String seriesType = "area";
         Boolean stacked = true;
         JsonObject viewWindow = calculateViewWindow(maxVal, minVal);
-        JsonObject series = createSeries(showDetails);
+        JsonObject series = createSeries(showDetails, index);
 
         Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
         setupChart(
