@@ -66,12 +66,12 @@ public class DashboardPageStepDefinitions {
         dashboardPageSteps.clickArchiveBtnFromDashboard("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
-    @When("^Check dashboard begin screen elements$")
+    @When("^Check pathmind begin screen elements$")
     public void checkDashboardBeginScreenElements() {
         dashboardPageSteps.checkDashboardBeginScreenElements();
     }
 
-    @When("^Click dashboard create your first project btn$")
+    @When("^Click pathmind create your first project btn$")
     public void clickDashboardCreateYourFirstProjectBtn() {
         dashboardPageSteps.clickDashboardCreateYourFirstProjectBtn();
     }
