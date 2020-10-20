@@ -157,7 +157,7 @@ public class GenericPageSteps {
     }
 
     @Step
-    public void checkThatUnexpectedErrorAlertIsShown(Boolean status) {
-        genericPage.checkThatUnexpectedErrorAlertIsShown(status);
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        genericPage.checkThatUnexpectedErrorAlertIsNotShown();
     }
 }

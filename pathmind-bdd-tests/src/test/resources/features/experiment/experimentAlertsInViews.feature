@@ -42,9 +42,9 @@ Feature: Experiment page alerts in multiple views
     When Click in 'Unarchive' button
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
-    When Check that unexpected error alert is shown false
+    When Check that unexpected error alert is Not shown
     When Open tab 0
-    When Check that unexpected error alert is shown false
+    When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'OK' button
     Then Check that 'Experiment #1' exist on the experiment page
@@ -59,7 +59,7 @@ Feature: Experiment page alerts in multiple views
     When Duplicate current tab
     When Click side nav archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
-    When Check that unexpected error alert is shown true
+    When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
