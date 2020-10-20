@@ -146,6 +146,18 @@ class SignUpView extends PolymerElement {
 
     document.head.appendChild(script1);
     document.head.appendChild(script2);
+
+    window.detectIntercomAndFireTrackEventWhenLoaded = this.detectIntercomAndFireTrackEventWhenLoaded;
+
+    detectIntercomAndFireTrackEventWhenLoaded();
+  }
+
+  detectIntercomAndFireTrackEventWhenLoaded() {
+    if (typeof Intercom === "undefined") {
+        requestAnimationFrame(detectIntercomAndFireTrackEventWhenLoaded);
+    } else {
+        Intercom('trackEvent', 'Visited Sign Up Page');
+    }
   }
 
   static get is() {
@@ -154,7 +166,6 @@ class SignUpView extends PolymerElement {
 
   static get properties() {
     return {
-      // Declare your properties here.
     };
   }
 }
