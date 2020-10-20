@@ -7,18 +7,16 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.time.Duration;
@@ -60,9 +58,10 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
                 new TrainingStatusDetailsPanelPolicyUpdateSubscriber(getUISupplier, this),
                 new TrainingStatusDetailsPanelExperimentChangedViewSubscriber(getUISupplier, this));
 
-        // We need to do this because the UI is not attached at the initial load time and we are relying on the
-        // UI to get the user's timezone.
-        updateProgressRow();
+        // This is required because ui.navigate() has a different lifecycle and so calls onAttach() before the
+        // experiment has loaded unlike a page refresh
+        if(experiment != null)
+            updateProgressRow();
     }
 
     @Override
