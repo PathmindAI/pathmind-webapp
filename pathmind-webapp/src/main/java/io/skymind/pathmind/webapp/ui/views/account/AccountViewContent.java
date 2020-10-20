@@ -108,6 +108,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		getModel().setEmail(user.getEmail());
 		getModel().setFirstName(user.getFirstname());
 		getModel().setLastName(user.getLastname());
+        getModel().setApiKey(user.getApiKey());
 		getModel().setSubscription(subscription != null ? "Professional": "Early Access");
 		if (subscription != null && subscription.getCancelAtPeriodEnd()) {
 			getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
@@ -122,6 +123,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		void setEmail(String email);
 		void setFirstName(String firstName);
 		void setLastName(String lastName);
+		void setApiKey(String apiKey);
 		void setSubscription(String subscription);
 		void setSubscriptionCancellationNote(String cancellationNote);
 		void setBillingInfo(String billingInfo);
