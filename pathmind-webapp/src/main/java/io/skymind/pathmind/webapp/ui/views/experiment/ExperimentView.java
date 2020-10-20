@@ -53,6 +53,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.Experimen
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
@@ -159,7 +160,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
-                new ExperimentViewPolicyUpdateSubscriber(() -> getUI()),
+                new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
                 new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
@@ -481,7 +482,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return message.split("\\n", 2)[0];
     }
 
-    private void updateButtonEnablement() {
+    public void updateButtonEnablement() {
         RunStatus trainingStatus = experiment.getTrainingStatusEnum();
         boolean isCompleted = trainingStatus == RunStatus.Completed;
         unarchiveExperimentButton.setVisible(experiment.isArchived());
@@ -512,31 +513,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
-    {
-        public ExperimentViewPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
+    public void setBestPolicy(Policy bestPolicy) {
+        this.bestPolicy = bestPolicy;
+    }
 
-        @Override
-        public void handleBusEvent(PolicyUpdateBusEvent event) {
-            synchronized (experimentLock) {
-                // Need a check in case the experiment was on hold waiting for the change of experiment to load
-                if (event.getExperimentId() != experimentId)
-                    return;
-                // Update or insert the policy in experiment.getPolicies
-                ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
+    public Object getExperimentLock() {
+        return experimentLock;
+    }
 
-                PushUtils.push(getUI(), () -> {
-                    updateDetailsForExperiment();
-                });
-            }
-        }
+    // ExperimentID is also added as the experiment can be null whereas the experimentID always has to have a value. Used by the Subscribers for the view.
+    public long getExperimentId() {
+        return experimentId;
+    }
 
-        @Override
-        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-            return experiment != null && experiment.getId() == event.getExperimentId();
-        }
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {

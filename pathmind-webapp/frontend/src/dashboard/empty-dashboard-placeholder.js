@@ -15,11 +15,14 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                     justify-content: flex-start;
                     align-items: center;
                 }
+                .panel-wrapper h3 {
+                    margin: 0;
+                }
                 vaadin-horizontal-layout {
                     flex-wrap: wrap;
                     justify-content: center;
                     align-items: center;
-                    margin: var(--lumo-space-m);
+                    margin: var(--lumo-space-xxl) auto;
                 }
                 .logo {
                     margin-bottom: calc(var(--lumo-space-xxl) * 2);
@@ -30,12 +33,14 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                     margin: var(--lumo-space-m);
                     border: 1px solid transparent;
                 }
-                .create-project-link {
+                a {
                     color: var(--lumo-primary-text-color);
-                    margin-left: 0.4em;
                 }
-                .create-project-link:hover {
+                a:hover {
                     text-decoration: underline;
+                }
+                li {
+                    margin: var(--lumo-space-s);
                 }
             </style>
             <vaadin-vertical-layout class="panel-wrapper">
@@ -45,12 +50,18 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                 src="frontend/images/pathmind-logo.svg"
                 alt="Pathmind"
               />
+                <vaadin-vertical-layout>
+                    <h3>Using AI may be easier than you think:</h3>
+                    <ul>
+                        <li>Upload a zip file of the simulation model to Pathmind. <a href="https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip" download>Download zip file</a></li>
+                        <li>Write a reward function (It's simple, just copy and past this: reward = after.goalReached - 0.1; ).</li>
+                        <li>Once training is complete, click on “Export Policy”.</li>
+                        <li>Load the trained AI into AnyLogic to see it perform.</li>
+                    </ul>
+                    <i>(For more detailed information, please see <a href="http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic" target="_blank">our tutorial</a>.)</i>
+                </vaadin-vertical-layout>
                 <vaadin-horizontal-layout>
-                    <a class="button-link" href="https://help.pathmind.com/en/articles/4478328-getting-started-with-product-delivery" target="_blank">Read our Getting Started Guide</a>
-                </vaadin-horizontal-layout>
-                <vaadin-horizontal-layout>
-                    <span>or skip ahead to </span>
-                    <a class="create-project-link" router-link="" href="newProject">create your first project.</a>
+                    <a class="button-link" router-link href="newProject">Create Your First Project Now</a>
                 </vaadin-horizontal-layout>
             </vaadin-vertical-layout>
         `;
