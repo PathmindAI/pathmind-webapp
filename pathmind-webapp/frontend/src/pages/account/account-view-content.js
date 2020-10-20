@@ -45,6 +45,12 @@ class AccountViewContent extends PolymerElement {
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
                         <vaadin-vertical-layout class="info">
+                            <div class="title">API Key</div>
+                            <div class="data">{{apiKey}}</div>
+                        </vaadin-vertical-layout>
+                    </vaadin-horizontal-layout>
+                    <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
+                        <vaadin-vertical-layout class="info">
                             <div class="title">Current Subscription</div>
                             <div class="data">{{subscription}}</div>
                             <div class="data small">{{subscriptionCancellationNote}}</div>

@@ -32,6 +32,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser>
 	private LocalDateTime passwordResetSendAt;
 	private String stripeCustomerId;
 	private String newEmailToVerify;
+	private String apiKey;
 
 	private List<Project> projects;
 
@@ -67,6 +68,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser>
                 .passwordResetSendAt(passwordResetSendAt)
                 .stripeCustomerId(stripeCustomerId)
                 .newEmailToVerify(newEmailToVerify)
+                .apiKey(apiKey)
                 .build();
     }
 }
