@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
@@ -13,6 +12,7 @@ import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ChartUtils;
 
 public class SparklineChart extends DataChart {
 
@@ -22,18 +22,7 @@ public class SparklineChart extends DataChart {
 
     private JsonObject createSeries(Boolean showDetails, Integer index) {
         JsonObject series = Json.createObject();
-        List<String> colors = Arrays.asList(
-            "#17a747",
-            "#214e96",
-            "#318c81",
-            "#7550e5",
-            "#62a540",
-            "#e0667d",
-            "#5f8fd6",
-            "#931901",
-            "#bd52a3",
-            "#887100"
-        );
+        List<String> colors = ChartUtils.colors();
         String color = index == null ? "#1a2949" : colors.get(index%10);
         series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '"+color+"'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
