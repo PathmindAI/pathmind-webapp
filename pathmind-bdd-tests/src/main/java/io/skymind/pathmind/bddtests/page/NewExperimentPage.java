@@ -68,6 +68,7 @@ public class NewExperimentPage extends PageObject {
         waitABit(2500);
         startDiscoveryRunBtn.click();
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and contains(text(),'Experiment')]")));
+        waitABit(3500);
     }
 
     public void inputRewardFunction(String rewardFunction) {

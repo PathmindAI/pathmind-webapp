@@ -47,7 +47,8 @@ public class ExperimentPage extends PageObject {
         WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
         WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        archiveButton.click();
+        WebElement button = utils.expandRootElement(archiveButton);
+        button.findElement(By.cssSelector("button")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
