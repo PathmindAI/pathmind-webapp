@@ -49,6 +49,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
     public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
     public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
+    private static final String OBS_SNIPPET_FILE = "obs.txt";
     
     public static final int RLLIB_MAX_LEN = 1024;
     public static final int SUCCESS_MAX_LEN = 1024;
@@ -79,7 +80,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
         installCheckpoint(job.getCheckpointFileId(), instructions, files);
-        installObsSnippet(buildJobId(job.getRunId()) + "/obs.txt", instructions, files);
+        installObsSnippet(buildJobId(job.getRunId()) + "/" + OBS_SNIPPET_FILE, instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -449,7 +450,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private void installObsSnippet(String obsSnippetS3Path, List<String> instructions, List<String> files) {
         if (obsSnippetS3Path != null) {
-            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, "obs.txt"));
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, OBS_SNIPPET_FILE));
         }
     }
 
@@ -458,7 +459,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
-                var("OBSERVATION_SNIPPET", "file:obs.txt"),
+                var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
@@ -520,7 +521,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             client.fileUpload(jobId + "/script.sh", script);
             client.fileUpload(jobId + "/errorCheck.sh", errChecker);
-            client.fileUpload(jobId + "/obs.txt", obsSnippet);
+            client.fileUpload(jobId + "/" + OBS_SNIPPET_FILE, obsSnippet);
             return client.jobSubmit(jobId, job.getType(), ec2InstanceType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
