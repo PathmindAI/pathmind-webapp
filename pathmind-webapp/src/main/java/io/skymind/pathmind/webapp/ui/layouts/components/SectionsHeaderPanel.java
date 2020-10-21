@@ -18,7 +18,9 @@ public class SectionsHeaderPanel extends HorizontalLayout
 
 			sectionsHorizontalLayout.add(
 					projectsLink,
-					getLearnAnchor());
+					getTutorialsAnchor(),
+					getFAQAnchor(),
+					getHelpAnchor());
 		}
 		add(sectionsHorizontalLayout);
 
@@ -32,9 +34,21 @@ public class SectionsHeaderPanel extends HorizontalLayout
 		return anchor;
 	}
 
-	private Anchor getLearnAnchor() {
-		Anchor anchor = new Anchor("https://help.pathmind.com/", "Learn");
+	private Anchor getTutorialsAnchor() {
+		return getAnchor("https://help.pathmind.com/en/collections/2106204-tutorials", "Tutorials");
+    }
+
+	private Anchor getFAQAnchor() {
+		return getAnchor("https://help.pathmind.com/en/collections/2299162-faq", "FAQ");
+    }
+
+	private Anchor getHelpAnchor() {
+		return getAnchor("https://help.pathmind.com/", "Help");
+    }
+    
+    private Anchor getAnchor(String url, String text) {
+		Anchor anchor = new Anchor(url, text);
 		anchor.setTarget("_blank");
 		return anchor;
-	}
+    }
 }

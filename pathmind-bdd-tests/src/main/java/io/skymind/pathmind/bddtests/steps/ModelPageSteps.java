@@ -103,8 +103,8 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void clickModelPageExperimentArchiveBtn(String experiment) {
-        modelPage.clickModelPageExperimentArchiveBtn(experiment);
+    public void clickModelPageExperimentArchiveBtn(String experiment, String archive) {
+        modelPage.clickModelPageExperimentArchiveBtn(experiment, archive);
     }
 
     @Step

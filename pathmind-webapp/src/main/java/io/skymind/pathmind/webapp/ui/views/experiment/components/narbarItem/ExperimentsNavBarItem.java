@@ -146,16 +146,15 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
-        updateStatus(experiment.getTrainingStatusEnum());
-        updateGoalStatus(experiment.isGoalsReached());
-        getModel().setIsFavorite(experiment.isFavorite());
+        update();
     }
 
-    public void updateRuns(List<Run> runs) {
-        experiment.updateRuns(runs);
+    public void update() {
+        experiment.updateTrainingStatus();
         updateStatus(experiment.getTrainingStatusEnum());
         // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
         updateGoalStatus(experiment.isGoalsReached());
+        getModel().setIsFavorite(experiment.isFavorite());
     }
 
 	public interface Model extends TemplateModel {
