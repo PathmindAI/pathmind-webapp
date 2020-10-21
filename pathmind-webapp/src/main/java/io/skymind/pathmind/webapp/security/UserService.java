@@ -133,6 +133,10 @@ public class UserService {
         return userDAO.findByToken(value);
     }
 
+    public void rotateApiKey(PathmindUser user) {
+        userDAO.rotateApiKey(user.getId());
+    }
+
     public static class PasswordValidationResults {
         private Collection<String> passwordValidationErrors = new ArrayList<>();
         private String confirmPasswordValidationError = "";

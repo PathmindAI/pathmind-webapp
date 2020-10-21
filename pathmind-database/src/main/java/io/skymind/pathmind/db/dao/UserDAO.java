@@ -5,6 +5,8 @@ import org.jooq.DSLContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public class UserDAO {
     private final DSLContext ctx;
@@ -54,5 +56,9 @@ public class UserDAO {
      */
     public boolean changePassword(long id, String newPassword) {
         return UserRepository.changePassword(ctx, id, passwordEncoder.encode(newPassword));
+    }
+
+    public void rotateApiKey(long userId) {
+        UserRepository.updateApiKey(ctx, userId, UUID.randomUUID().toString());
     }
 }
