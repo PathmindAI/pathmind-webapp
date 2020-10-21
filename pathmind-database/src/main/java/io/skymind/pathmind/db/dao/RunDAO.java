@@ -307,6 +307,16 @@ public class RunDAO {
         return MetricsRepository.getRewardNumForRun(ctx, runId);
     }
 
+    /**
+     * Gets the number of agents for AnyLogic Model for the given run id
+     *
+     * @param runId
+     * @return
+     */
+    public int getAgentsNumForRun(long runId) {
+        return MetricsRepository.getAgentsNumForRun(ctx, runId);
+    }
+
     public UserMetrics getRunUsageDataForUser(long userId) {
         return RunRepository.getRunUsageDataForUser(ctx, userId);
     }

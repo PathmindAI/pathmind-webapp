@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.project;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
+import io.skymind.pathmind.shared.data.Model;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -28,20 +29,20 @@ public class ProjectFileCheckService {
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
-    public void checkFile(StatusUpdater statusUpdater, byte[] data) {
+    public void checkFile(StatusUpdater statusUpdater, Model model) {
         Runnable runnable = () -> {
             try {
                 statusUpdater.updateStatus(0);
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
                 try {
-                    FileUtils.writeByteArrayToFile(tempFile, data);
+                    FileUtils.writeByteArrayToFile(tempFile, model.getFile());
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
 
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO analysisResult = client.analyze(tempFile);
+                        HyperparametersDTO analysisResult = client.analyze(tempFile, "project_" + model.getProjectId());
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
@@ -70,17 +71,18 @@ public class ProjectFileCheckService {
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
-        }
-        else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
+        } else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
-        }
-        else if (analysisResult.getRewardVariables().isEmpty()) {
+        } else if (analysisResult.getRewardVariables().isEmpty()) {
             return Optional.of("Failed to read reward variables.");
-        }
-        else if (analysisResult.getObservationsNames().isEmpty()) {
+        } else if (analysisResult.getObservationsNames().isEmpty()) {
             return Optional.of("Failed to read observations.");
         } else if (analysisResult.getMode().isEmpty()) {
             return Optional.of("Failed to read model type.");
+        } else if (!analysisResult.isEnabled()) {
+            return Optional.of("Should enable PathmindHelper.");
+        } else if (analysisResult.getAgents().isEmpty()) {
+            return Optional.of("Failed to read the number of agents.");
         }
         return Optional.empty();
     }
@@ -92,6 +94,7 @@ public class ProjectFileCheckService {
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
     	fileCheckResult.setObservationNames(params.getObservationsNames());
     	fileCheckResult.setModelType(params.getMode());
+    	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {

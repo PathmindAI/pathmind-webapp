@@ -179,11 +179,12 @@ public class UpdaterService {
                 List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
                 List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
                 int numReward = runDAO.getRewardNumForRun(runId);
-                Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward);
+                int numAgents = runDAO.getAgentsNumForRun(runId);
+                Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward, numAgents);
                 if (isFinalUpdate) {
                     List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
                     int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
-                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward);
+                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward, numAgents);
                 }
 
                 return policy;
