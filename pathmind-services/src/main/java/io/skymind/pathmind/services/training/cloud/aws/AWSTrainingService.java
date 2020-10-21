@@ -60,7 +60,7 @@ public class AWSTrainingService extends TrainingService {
                 numSamples,
                 model.getModelType() == ModelType.MULTI.getValue(),
                 false,
-                50,
+                25,
                 false,
                 true,
                 true
