@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
@@ -28,9 +27,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Tag("experiment-navbar-item")
@@ -46,17 +43,15 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private PolicyDAO policyDAO;
 
     private Experiment experiment;
-    private Consumer<Experiment> selectExperimentConsumer;
     private SegmentIntegrator segmentIntegrator;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment experiment, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment experiment, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
         this.policyDAO = policyDAO;
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
-        this.selectExperimentConsumer = selectExperimentConsumer;
 
         if (ExperimentUtils.isDraftRunType(experiment)) {
             experimentLink.setRoute(NewExperimentView.class, experiment.getId());
@@ -82,7 +77,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
 
         EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
-        selectExperimentConsumer.accept(selectedExperiment);
     }
 
     @EventHandler

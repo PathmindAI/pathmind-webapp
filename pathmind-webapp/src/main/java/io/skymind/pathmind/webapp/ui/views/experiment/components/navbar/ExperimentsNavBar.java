@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,6 @@ public class ExperimentsNavBar extends VerticalLayout
 
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
-	private Consumer<Experiment> selectExperimentConsumer;
     private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;
@@ -47,7 +45,7 @@ public class ExperimentsNavBar extends VerticalLayout
     private PolicyDAO policyDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator)
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.experimentDAO = experimentDAO;
@@ -136,7 +134,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, selectExperimentConsumer, segmentIntegrator);
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {

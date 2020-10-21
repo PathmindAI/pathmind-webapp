@@ -117,6 +117,7 @@ class ExperimentNavbarItem extends PolymerElement {
     
     ready() {
         super.ready();
+        this.addEventListener("click", this.handleRowClicked);
         this.shadowRoot.querySelector("favorite-star").toggleFavorite = this.onFavoriteToggled;
     }
 
