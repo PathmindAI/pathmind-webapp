@@ -452,7 +452,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         if (obsSnippetS3Path != null) {
             files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, OBS_SNIPPET_FILE));
 
-            instructions.add("mv obs.txt work");
+            instructions.add("mv ../obs.txt .");
         }
     }
 
