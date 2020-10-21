@@ -5,9 +5,6 @@ import io.skymind.pathmind.shared.data.Run;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-
-import static io.skymind.pathmind.shared.services.training.constant.RunConstants.*;
 
 public class RunUtils
 {
@@ -24,13 +21,6 @@ public class RunUtils
 				Duration.between(run.getStartedAt(), run.getStoppedAt()).toSeconds();
 	}
 
-	private static int getNumberOfDiscoveryRuns() {
-		return TRAINING_HYPERPARAMETERS.values().stream()
-				.mapToInt(List::size)
-				.reduce(Math::multiplyExact)
-				.orElse(0);
-	}
-	
 	/**
 	 * When a run is stopped by user, it still gets to killed status, but trainingErrorId is not assigned in this case
 	 */

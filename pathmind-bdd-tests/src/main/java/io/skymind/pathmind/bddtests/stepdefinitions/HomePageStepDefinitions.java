@@ -181,4 +181,9 @@ public class HomePageStepDefinitions {
     public void waitForSearchResultPage() {
         homePageSteps.waitForSearchResultPage();
     }
+
+    @When("^Click and send enter btn to the search field$")
+    public void clickAndSendEnterBtnToTheSearchField() {
+        homePageSteps.clickAndSendEnterBtnToTheSearchField();
+    }
 }

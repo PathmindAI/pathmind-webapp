@@ -7,18 +7,16 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import java.time.Duration;
@@ -59,6 +57,11 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
                 new TrainingStatusDetailsPanelRunUpdateSubscriber(getUISupplier, this),
                 new TrainingStatusDetailsPanelPolicyUpdateSubscriber(getUISupplier, this),
                 new TrainingStatusDetailsPanelExperimentChangedViewSubscriber(getUISupplier, this));
+
+        // This is required because ui.navigate() has a different lifecycle and so calls onAttach() before the
+        // experiment has loaded unlike a page refresh
+        if(experiment != null)
+            updateProgressRow();
     }
 
     @Override
@@ -72,16 +75,17 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	}
 
 	public void update() {
+        experiment.updateTrainingStatus();
         statusLabel.setText(experiment.getTrainingStatusEnum().toString());
-        updateElapsedTimer(experiment);
-        updateProgressRow(experiment);
+        updateElapsedTimer();
+        updateProgressRow();
     }
 
 	public Experiment getExperiment() {
 	    return experiment;
     }
 
-	private void updateProgressRow(Experiment experiment) {
+	private void updateProgressRow() {
 		if(experiment.getTrainingStatusEnum().equals(Running)) {
 			updateProgressBar(experiment);
 		} else if (experiment.getTrainingStatusEnum().equals(Completed)) {
@@ -112,15 +116,15 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 	 * Calculates a elapsed time and updates a timer. Elapsed time is a difference between training start date and it's
 	 * completed date (or current date in case the training is still in progress).
 	 */
-	private void updateElapsedTimer(Experiment experiment) {
+	private void updateElapsedTimer() {
 		final var isTrainingRunning = isRunning(experiment.getTrainingStatusEnum());
 		final var startTime = ExperimentUtils.getTrainingStartedDate(experiment);
-		final var endTime = calculateEndTimeForElapsedTime(experiment, isTrainingRunning);
+		final var endTime = calculateEndTimeForElapsedTime(isTrainingRunning);
 		final var timeElapsed = Duration.between(startTime, endTime).toSeconds();
 		elapsedTimeLabel.updateTimer(timeElapsed, isTrainingRunning);
 	}
 
-	private LocalDateTime calculateEndTimeForElapsedTime(Experiment experiment, boolean isTrainingRunning) {
+	private LocalDateTime calculateEndTimeForElapsedTime(boolean isTrainingRunning) {
 		if (isTrainingRunning) {
 			return LocalDateTime.now();
 		} else {

@@ -20,7 +20,10 @@ public class RunUpdateBusEvent implements PathmindBusEvent
 
 	public RunUpdateBusEvent(List<Run> runs)
 	{
-	    runs.forEach(run -> {
+        if(runs == null || runs.size() == 0)
+            throw new IllegalStateException("Runs cannot be null or empty");
+
+        runs.forEach(run -> {
             if(run.getExperiment() == null)
                 throw new IllegalStateException("Experiment is null");
             if(run.getModel() == null)
@@ -43,12 +46,12 @@ public class RunUpdateBusEvent implements PathmindBusEvent
 	}
 
 	public Experiment getExperiment() {
-        return experiment;
+        return runs.get(0).getExperiment();
     }
 
     // Helper method.
     public long getExperimentId() {
-        return experiment.getId();
+        return getExperiment().getId();
     }
 
     // Helper method.
@@ -60,7 +63,7 @@ public class RunUpdateBusEvent implements PathmindBusEvent
 	}
 
 	public long getModelId() {
-	    return this.runs.get(0).getModel().getId();
+	    return runs.get(0).getModel().getId();
     }
     @Override
     public RunUpdateBusEvent cloneForEventBus() {
