@@ -451,6 +451,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private void installObsSnippet(String obsSnippetS3Path, List<String> instructions, List<String> files) {
         if (obsSnippetS3Path != null) {
             files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, OBS_SNIPPET_FILE));
+
+            instructions.add("mv obs.txt work");
         }
     }
 
