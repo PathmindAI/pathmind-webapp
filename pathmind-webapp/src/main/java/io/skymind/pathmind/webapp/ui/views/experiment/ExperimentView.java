@@ -35,7 +35,6 @@ import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
@@ -123,7 +122,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Autowired
     private ModelService modelService;
     @Autowired
-    private ExperimentDAO experimentDAO;
+    protected ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
 	@Autowired
@@ -421,10 +420,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected void initLoadData() throws InvalidDataException {
         // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
         // we will no longer have to retrieve the user information when loading this page.
-        experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
+        experiment = getExperimentForUser()
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
         loadExperimentData();
+    }
+
+    // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
+    protected Optional<Experiment> getExperimentForUser() {
+        return experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId());
     }
 
     private void loadExperimentData() {

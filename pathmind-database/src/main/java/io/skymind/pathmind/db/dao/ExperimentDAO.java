@@ -51,9 +51,11 @@ public class ExperimentDAO
 	    ExperimentRepository.markAsFavorite(ctx, experimentId, isFavorite);
 	}
 
+    public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
+        return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+    }
+
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
-	    if(UserRepository.findById(ctx, userId).isSupportAccountType())
-	    	return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
         return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
     }
 

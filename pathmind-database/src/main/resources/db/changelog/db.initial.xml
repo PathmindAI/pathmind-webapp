@@ -1778,7 +1778,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20201016-01" author="bruno.rezende@ext.vaadin.com">
+    <changeSet id="20201021-01" author="bruno.rezende@ext.vaadin.com">
         <addColumn tableName="EXPERIMENT">
             <column name="SHARED_WITH_SUPPORT" type="BOOLEAN" defaultValueBoolean="false"/>
         </addColumn>

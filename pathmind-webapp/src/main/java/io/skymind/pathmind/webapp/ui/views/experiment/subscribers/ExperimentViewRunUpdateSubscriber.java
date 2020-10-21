@@ -9,7 +9,6 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -38,7 +37,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             PushUtils.push(getUiSupplier(), () -> {
                         experimentView.updateDetailsForExperiment();
                         experimentView.updateButtonEnablement();
-                    }
+                    });
         } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experiment.getModelId())) {
             experimentView.updateExperimentComponents();
         }

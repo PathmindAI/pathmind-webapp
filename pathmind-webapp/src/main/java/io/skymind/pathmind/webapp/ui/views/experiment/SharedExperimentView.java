@@ -5,7 +5,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.constants.ViewPermission;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.security.annotation.Permission;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -14,6 +16,7 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Route(value = Routes.SHARED_EXPERIMENT, layout = MainLayout.class)
@@ -32,6 +35,10 @@ public class SharedExperimentView extends ExperimentView
         return super.getViewSubscribers()
                 .stream().filter(eventBusSubscriber -> eventBusSubscriber instanceof ExperimentViewExperimentCreatedSubscriber)
                 .collect(Collectors.toList());
+    }
+
+    protected Optional<Experiment> getExperimentForUser() {
+        return experimentDAO.getExperimentForSupportIfAllowed(getExperimentId(), SecurityUtils.getUserId());
     }
 
     // We don't want breadcrumbs in the shared view.
