@@ -199,7 +199,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     } else {
                         showButtonClickListenerRegistrations.add(index, showButtonRegistration);
                     }
-                    sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false);
+                    sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false, index);
                     metricSpans.get(index).setText(metricValue);
                 });
 

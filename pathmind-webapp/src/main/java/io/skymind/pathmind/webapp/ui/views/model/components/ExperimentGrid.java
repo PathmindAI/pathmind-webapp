@@ -61,21 +61,21 @@ public class ExperimentGrid extends Grid<Experiment>
 				.setFlexGrow(0)
 				.setResizable(true)
                 .setSortable(true);
-        addComponentColumn(experiment -> {
-                    if (experiment.isHasGoals() && !experiment.isDraft() && experiment.isGoalsReached()) {
-                        Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
-                        goalReachedIcon.addClassName("success-text");
-                        return goalReachedIcon;
-                    }
-                    // to be replaced with the loading icon after the polymer loading icon component is merged
-                    return new Span("—");
-                })
-				.setComparator(Comparator.comparing(Experiment::isGoalsReached))
-                .setHeader("Goals Reached")
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
+        // addComponentColumn(experiment -> {
+        //             if (experiment.isHasGoals() && !experiment.isDraft() && experiment.isGoalsReached()) {
+        //                 Icon goalReachedIcon = new Icon(VaadinIcon.CHECK);
+        //                 goalReachedIcon.addClassName("success-text");
+        //                 return goalReachedIcon;
+        //             }
+        //             // to be replaced with the loading icon after the polymer loading icon component is merged
+        //             return new Span("—");
+        //         })
+		// 		.setComparator(Comparator.comparing(Experiment::isGoalsReached))
+        //         .setHeader("Goals Reached")
+        //         .setAutoWidth(true)
+        //         .setFlexGrow(0)
+        //         .setResizable(true)
+        //         .setSortable(true);
 		addColumn(experiment -> {
 					String userNotes = experiment.getUserNotes();
 					return userNotes.isEmpty() ? "—" : userNotes;

@@ -12,6 +12,7 @@ import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ChartUtils;
 
 public class SparklineChart extends DataChart {
 
@@ -19,9 +20,11 @@ public class SparklineChart extends DataChart {
         super();
     }
 
-    private JsonObject createSeries(Boolean showDetails) {
+    private JsonObject createSeries(Boolean showDetails, Integer index) {
         JsonObject series = Json.createObject();
-        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '#1a2949'}"));
+        List<String> colors = ChartUtils.colors();
+        String color = index == null ? "#1a2949" : colors.get(index%10);
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '"+color+"'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
         series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
         return series;
@@ -91,6 +94,10 @@ public class SparklineChart extends DataChart {
     }
 
     public void setSparkLine(Map<Integer, Double> sparklineMap, RewardVariable rewardVariable, Boolean showDetails) {
+        setSparkLine(sparklineMap, rewardVariable, showDetails, null);
+    }
+
+    public void setSparkLine(Map<Integer, Double> sparklineMap, RewardVariable rewardVariable, Boolean showDetails, Integer index) {
         if (sparklineMap == null) {
             return;
         }
@@ -132,7 +139,7 @@ public class SparklineChart extends DataChart {
         String seriesType = "area";
         Boolean stacked = true;
         JsonObject viewWindow = calculateViewWindow(maxVal, minVal);
-        JsonObject series = createSeries(showDetails);
+        JsonObject series = createSeries(showDetails, index);
 
         Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
         setupChart(
