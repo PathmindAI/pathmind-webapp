@@ -67,4 +67,9 @@ public class ProjectPageSteps {
     public void checkProjectPageModelNotExistInList(String model) {
         projectPage.checkProjectPageModelNotExistInList(model);
     }
+
+    @Step
+    public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
+        projectPage.checkThatModelsSidebarModelContainsDraftTagFalse(model, draft);
+    }
 }

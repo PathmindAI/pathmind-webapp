@@ -1,15 +1,17 @@
 package io.skymind.pathmind.bddtests.steps;
 
 import io.skymind.pathmind.bddtests.page.ModelPage;
+import io.skymind.pathmind.bddtests.page.ProjectPage;
 import net.thucydides.core.annotations.Step;
 
 public class ModelPageSteps {
 
     private ModelPage modelPage;
+    private ProjectPage projectPage;
 
     @Step
     public void clickTheModelName(String modelName) {
-        modelPage.clickTheModelName(modelName);
+        projectPage.clickModelFromLeftSidebar(modelName);
     }
 
     @Step

@@ -109,8 +109,34 @@ public class ProjectPage extends PageObject {
         }
     }
 
+    public void clickModelFromLeftSidebar(String modelId) {
+        List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
+        for (WebElement webElement : e) {
+            String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
+            if (modelNumber.equals(modelId)) {
+                webElement.click();
+            }
+        }
+    }
+
     public void changeModelsSidebarListTo(String modelsList) {
         getDriver().findElement(By.xpath("//vaadin-select[@theme='models-nav-bar-select small']")).click();
         getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[text()='" + modelsList + "']")).click();
+    }
+
+    public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
+        setImplicitTimeout(5, SECONDS);
+        List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
+        for (WebElement webElement : e) {
+            String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
+            if (modelNumber.equals(model)) {
+                WebElement tag = utils.expandRootElement(webElement);
+                if (draft) {
+                    assertThat(tag.findElements(By.cssSelector("tag-label:not([hidden])")).size(), is(1));
+                } else {
+                    assertThat(tag.findElements(By.cssSelector("tag-label[hidden]")).size(), is(1));
+                }
+            }
+        }
     }
 }

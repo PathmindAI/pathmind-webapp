@@ -74,4 +74,9 @@ public class ProjectPageStepDefinition {
     public void checkProjectPageModelNotExistInList(String model) {
         projectPageSteps.checkProjectPageModelNotExistInList(model);
     }
+
+    @Then("^Check that models sidebar model '(.*)' contains draft tag '(.*)'$")
+    public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
+        projectPageSteps.checkThatModelsSidebarModelContainsDraftTagFalse(model, draft);
+    }
 }
