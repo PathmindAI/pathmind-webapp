@@ -128,6 +128,7 @@ public class ProgressInterpreter {
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields(RAY_PROGRESS.scoreColumns());
         settings.getFormat().setLineSeparator("\n");
+        settings.setMaxColumns(1024);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -160,6 +161,7 @@ public class ProgressInterpreter {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields((RAY_PROGRESS.metricsColumns(numReward, numAgents)));
+        settings.setMaxColumns(1024);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -198,11 +200,12 @@ public class ProgressInterpreter {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         // to enable auto expansion we can set -1, but it can cause OOM
-        // so i set it 163920 for now
-        // https://s3.console.aws.amazon.com/s3/object/prod-training-dynamic-files.pathmind.com/id6704/output/PPO_PathmindEnvironment_0_num_sgd_iter%253D10%252Csgd_minibatch_size%253D512%252Ctrain_batch_size%253D12000_2020-09-25_19-01-16smkpmamf/progress.csv?region=us-east-1&tab=overview
+        // so i set it 327840 for now
+        // https://s3.console.aws.amazon.com/s3/object/dh-training-dynamic-files.pathmind.com/id1533/output/PPO_PathmindEnvironment_0_num_sgd_iter%253D20%252Csgd_minibatch_size%253D128%252Ctrain_batch_size%253D4000_2020-10-21_21-07-53dvdzg7i2/progress.csv?region=us-east-1&tab=overview
 //        settings.setMaxCharsPerColumn(-1);
-        settings.setMaxCharsPerColumn(163920);
+        settings.setMaxCharsPerColumn(327840);
         settings.selectFields((RAY_PROGRESS.metricsRawColumns()));
+        settings.setMaxColumns(1024);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
