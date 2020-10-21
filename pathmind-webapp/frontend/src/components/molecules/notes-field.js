@@ -2,6 +2,35 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { registerStyles, css } from "@vaadin/vaadin-themable-mixin/register-styles.js";
 import "@vaadin/vaadin-text-field/src/vaadin-text-area.js";
 
+registerStyles("vaadin-text-area", css`
+    :host {
+        box-sizing: border-box;
+        width: 100%;
+        line-height: 1.5em;
+        background-color: white;
+        padding: 0;
+        border-radius: var(--lumo-border-radius);
+        border: 1px solid var(--pm-grey-color);
+        overflow: hidden;
+    }
+    [part="input-field"],
+    [part="input-field"] ::slotted(textarea) {
+        line-height: 1.5em;
+        height: 12em;
+        background-color: white;
+        padding: 0.5rem var(--lumo-space-s);
+    }
+
+    :host(:hover:not([readonly]):not([focused])) [part="input-field"] {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    [part="input-field"] [part="value"],
+    [part="input-field"] ::slotted(textarea) {
+        height: 100% !important;
+        padding: 0;
+    }
+`);
 class NotesField extends PolymerElement {
     static get is() {
         return "notes-field";
@@ -12,14 +41,25 @@ class NotesField extends PolymerElement {
             title: {
                 type: String,
             },
+            placeholder: {
+                type: String,
+                value: "Add Notes",
+            },
             notes: {
                 type: String,
+                observer: "_notesChanged",
             },
             unsaved: {
                 type: Boolean,
+                value: false,
             },
             warning: {
-                type: String,
+                type: Boolean,
+                value: false,
+            },
+            max: {
+                type: Number,
+                value: 1000,
             },
         }
     }
@@ -101,50 +141,47 @@ class NotesField extends PolymerElement {
             </style>
             <div class="header">
                 <span class="title">[[title]]</span>
-                <span class="hint-label">Unsaved Notes!</span>
-                <span class="hint-label unsaved-and-too-big-text-label">[[warning]]</span>
-                <iron-icon icon="vaadin:check"></iron-icon>
-                <vaadin-button tabindex="0" role="button">Save</vaadin-button>
+                <span class="hint-label" hidden="[[!unsaved]]">Unsaved Notes!</span>
+                <span class="hint-label unsaved-and-too-big-text-label" hidden="[[!warning]]">Max. [[max]] characters</span>
+                <iron-icon icon="vaadin:check" id="saveIcon" hidden="[[!unsaved]]"></iron-icon>
+                <vaadin-button id="save" on-click="onSave">Save</vaadin-button>
             </div>
-            <vaadin-text-area tabindex="0"></vaadin-text-area>
+            <vaadin-text-area id="textarea" placeholder="[[placeholder]]"></vaadin-text-area>
         `;
     }
 
-    constructor() {
-        super();
-        registerStyles("vaadin-text-area", css`
-            :host {
-                box-sizing: border-box;
-                width: 100%;
-                line-height: 1.5em;
-                background-color: white;
-                padding: 0;
-                border-radius: var(--lumo-border-radius);
-                border: 1px solid var(--pm-grey-color);
-                overflow: hidden;
+    ready() {
+        super.ready();
+        this.$.textarea.value = this.notes;
+        this.$.textarea.addEventListener("change", event => {
+            if (this.$.textarea.value.length > this.max) {
+                this.warning = true;
+            } else if (this.$.textarea.value !== this.notes) {
+                this.unsaved = true;
             }
-            [part="input-field"],
-            [part="input-field"] ::slotted(textarea) {
-                line-height: 1.5em;
-                height: 12em;
-                background-color: white;
-                padding: 0.5rem var(--lumo-space-s);
-            }
-            
-            :host(:hover:not([readonly]):not([focused])) [part="input-field"] {
-                background-color: rgba(255, 255, 255, 0.8);
-            }
-            
-            [part="input-field"] [part="value"],
-            [part="input-field"] ::slotted(textarea) {
-                height: 100% !important;
-                padding: 0;
-            }
-        `);
+        });
+        this.$.textarea.addEventListener("blur", event => {
+            this.$.save.click();
+        });
     }
 
-    _isEmptyStringOrUnset(prop) {
-        return prop == null || prop === "";
+    canSave(updatedNotesText) {
+        return this.notes !== updatedNotesText && updatedNotesText.length <= this.max;
+    }
+
+    onSave(event) {
+        if (this.canSave(this.$.textarea.value)) {
+            this.notes = this.$.textarea.value;
+            this.$.saveIcon.classList.add('fade-in');
+            setTimeout(() => {
+                this.$.saveIcon.classList.remove('fade-in');
+                this.unsaved = false;
+            }, 3000);
+        }
+    }
+
+    _notesChanged(newValue, oldValue) {
+        this.$.textarea.value = newValue;
     }
 }
 
