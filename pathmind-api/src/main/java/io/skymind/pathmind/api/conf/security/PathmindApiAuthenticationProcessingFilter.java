@@ -6,6 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
 
@@ -23,12 +24,13 @@ public class PathmindApiAuthenticationProcessingFilter extends AbstractAuthentic
 	private static final AuthenticationSuccessHandler NOOP_SUCCESS_HANDLER = (request, response, authentication) -> {
 	};
 
-
-	public PathmindApiAuthenticationProcessingFilter(AuthenticationManager authenticationManager) {
+	public PathmindApiAuthenticationProcessingFilter(AuthenticationManager authenticationManager,
+                                                     AuthenticationFailureHandler authenticationFailureHandler) {
 		super(new RequestHeaderRequestMatcher(HEADER_API_TOKEN_NAME));
 		super.setAuthenticationManager(authenticationManager);
 		Objects.requireNonNull(authenticationManager, "AuthenticationManager should be provided");
 		this.setAuthenticationSuccessHandler(NOOP_SUCCESS_HANDLER);
+		this.setAuthenticationFailureHandler(authenticationFailureHandler);
 	}
 
 	@Override

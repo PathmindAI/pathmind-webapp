@@ -1787,4 +1787,15 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="20201021-01" author="alexander.makarov@topta.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="API_KEY_CREATED_AT" type="datetime" defaultValueComputed="now()">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <createIndex tableName="PATHMIND_USER" indexName="PATHMIND_USER_API_KEY_CREATED_AT_IDX">
+            <column name="API_KEY_CREATED_AT" />
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.api.conf;
 
+import io.skymind.pathmind.api.conf.security.AuthenticationFailureHandlerEntryPoint;
 import io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProcessingFilter;
 import io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(pathmindApiAuthenticationProvider);
 	}
 
+	@Autowired
+    private AuthenticationFailureHandlerEntryPoint authenticationFailureHandlerEntryPoint;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
@@ -36,14 +40,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationFailureHandlerEntryPoint)
+                .and()
                 .authorizeRequests()
-//                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-//                .antMatchers("**/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
 				.httpBasic().disable()
 				.addFilterBefore(
-						new PathmindApiAuthenticationProcessingFilter(authenticationManager()),
+						new PathmindApiAuthenticationProcessingFilter(
+						        authenticationManager(), authenticationFailureHandlerEntryPoint
+                        ),
 						BasicAuthenticationFilter.class
 				)
 				.cors()

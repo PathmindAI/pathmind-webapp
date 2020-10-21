@@ -22,7 +22,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row18;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 1576754698;
+    private static final long serialVersionUID = -1515602292;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -150,6 +150,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     public final TableField<PathmindUserRecord, String> API_KEY = createField(DSL.name("api_key"), org.jooq.impl.SQLDataType.CLOB.nullable(false).defaultValue(org.jooq.impl.DSL.field("uuid_generate_v4()", org.jooq.impl.SQLDataType.CLOB)), this, "");
 
     /**
+     * The column <code>public.pathmind_user.api_key_created_at</code>.
+     */
+    public final TableField<PathmindUserRecord, LocalDateTime> API_KEY_CREATED_AT = createField(DSL.name("api_key_created_at"), org.jooq.impl.SQLDataType.LOCALDATETIME.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
      * Create a <code>public.pathmind_user</code> table reference
      */
     public PathmindUser() {
@@ -189,7 +194,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.PATHMIND_USER_API_KEY_KEY, Indexes.PATHMIND_USER_EMAIL_KEY, Indexes.PATHMIND_USER_PKEY);
+        return Arrays.<Index>asList(Indexes.PATHMIND_USER_API_KEY_CREATED_AT_IDX, Indexes.PATHMIND_USER_API_KEY_KEY, Indexes.PATHMIND_USER_EMAIL_KEY, Indexes.PATHMIND_USER_PKEY);
     }
 
     @Override
@@ -234,11 +239,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row18 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row18<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String> fieldsRow() {
-        return (Row18) super.fieldsRow();
+    public Row19<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String, LocalDateTime> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }
