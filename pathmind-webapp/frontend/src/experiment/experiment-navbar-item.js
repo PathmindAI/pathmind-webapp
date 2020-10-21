@@ -121,6 +121,7 @@ class ExperimentNavbarItem extends PolymerElement {
     }
 
     onArchiveButtonClicked(event) {
+        event.preventDefault();
         event.stopPropagation();
     }
 }
