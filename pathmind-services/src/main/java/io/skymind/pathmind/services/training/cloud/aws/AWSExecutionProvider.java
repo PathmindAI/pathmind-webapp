@@ -79,6 +79,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
         installCheckpoint(job.getCheckpointFileId(), instructions, files);
+        installObsSnippet(buildJobId(job.getRunId()) + "/obs.txt", instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -446,12 +447,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installObsSnippet(String obsSnippetS3Path, List<String> instructions, List<String> files) {
+        if (obsSnippetS3Path != null) {
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, "obs.txt"));
+        }
+    }
+
     private void setupVariables(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
-                var("OBSERVATION_SNIPPET", BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations())),
+                var("OBSERVATION_SNIPPET", "file:obs.txt"),
                 var("METRICS_SNIPPET", job.getMetrics()),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
@@ -485,9 +492,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files, EC2InstanceType ec2InstanceType) {
         File script = null;
         File errChecker = null;
+        File obsSnippet = null;
         try {
             script = File.createTempFile("pathmind", UUID.randomUUID().toString());
             errChecker = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            obsSnippet = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
             // generate script.sh
             List<String> finalInstruction = new ArrayList<>();
@@ -503,10 +512,15 @@ public class AWSExecutionProvider implements ExecutionProvider {
             scriptStr = String.join(" ;\n", checkErrors());
             FileUtils.writeStringToFile(errChecker, scriptStr, Charset.defaultCharset());
 
+            // generate obs.txt
+            scriptStr = BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations());
+            FileUtils.writeStringToFile(obsSnippet, scriptStr, Charset.defaultCharset());
+
             String jobId = buildJobId(job.getRunId());
 
             client.fileUpload(jobId + "/script.sh", script);
             client.fileUpload(jobId + "/errorCheck.sh", errChecker);
+            client.fileUpload(jobId + "/obs.txt", obsSnippet);
             return client.jobSubmit(jobId, job.getType(), ec2InstanceType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
