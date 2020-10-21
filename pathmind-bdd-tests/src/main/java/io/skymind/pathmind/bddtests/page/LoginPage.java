@@ -299,6 +299,6 @@ public class LoginPage extends PageObject {
     }
 
     public void waitForSignInPageAntiFlickerScript() {
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("vaadin-devmode-gizmo")));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
     }
 }
