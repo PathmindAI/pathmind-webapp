@@ -49,6 +49,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
@@ -337,10 +338,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
-    private NotesField createViewNotesField() {
-        return new NotesField(
+    private ExperimentNotesField createViewNotesField() {
+        return new ExperimentNotesField(
+            () -> getUI(),
             "Notes",
-            experiment.getUserNotes(),
+            experiment,
             updatedNotes -> {
                 experimentDAO.updateUserNotes(experimentId, updatedNotes);
                 segmentIntegrator.updatedNotesExperimentView();
@@ -364,7 +366,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
-            notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
 
