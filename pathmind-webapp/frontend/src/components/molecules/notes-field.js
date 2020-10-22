@@ -4,7 +4,7 @@ import { debounce } from 'lodash';
 import "@vaadin/vaadin-text-field/src/vaadin-text-area.js";
 
 registerStyles("vaadin-text-area", css`
-    :host {
+    :host([theme~="notes-field"]) {
         box-sizing: border-box;
         width: 100%;
         line-height: 1.5em;
@@ -14,25 +14,25 @@ registerStyles("vaadin-text-area", css`
         border: 1px solid var(--pm-grey-color);
         overflow: hidden;
     }
-    :host([readonly]) {
+    :host([theme~="notes-field"][readonly]) {
         border: 1px solid var(--lumo-contrast-20pct);
     }
-    :host([readonly]) [part="input-field"] {
+    :host([theme~="notes-field"][readonly]) [part="input-field"] {
         background-color: var(--lumo-contrast-5pct);
         border: none;
     }
-    [part="input-field"],
-    [part="input-field"] ::slotted(textarea) {
+    :host([theme~="notes-field"]) [part="input-field"],
+    :host([theme~="notes-field"]) [part="input-field"] ::slotted(textarea) {
         line-height: 1.5em;
         height: 12em;
         background-color: white;
         padding: 0.5rem var(--lumo-space-s);
     }
-    :host(:hover:not([readonly]):not([focused])) [part="input-field"] {
-        background-color: rgba(255, 255, 255, 0.8);
+    :host([theme~="notes-field"]:hover:not([readonly]):not([focused])) [part="input-field"] {
+        background-color: rgba(0, 0, 0, 0.025);
     }
-    [part="input-field"] [part="value"],
-    [part="input-field"] ::slotted(textarea) {
+    :host([theme~="notes-field"]) [part="input-field"] [part="value"],
+    :host([theme~="notes-field"]) [part="input-field"] ::slotted(textarea) {
         height: 100% !important;
         padding: 0;
     }
@@ -159,7 +159,7 @@ class NotesField extends PolymerElement {
                 <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
                 <vaadin-button id="save" on-click="onSave" disabled=[[readonly]]>Save</vaadin-button>
             </div>
-            <vaadin-text-area id="textarea" placeholder="[[placeholder]]" readonly$=[[readonly]]></vaadin-text-area>
+            <vaadin-text-area id="textarea" theme="notes-field" placeholder="[[placeholder]]" readonly$=[[readonly]]></vaadin-text-area>
         `;
     }
 
