@@ -297,4 +297,8 @@ public class LoginPage extends PageObject {
     public void checkThatPopupIsShown(String popUp) {
         assertThat(getDriver().findElement(By.xpath("//span[@class='closeable-notification-text-label']")).getText(), is(popUp));
     }
+
+    public void waitForSignInPageAntiFlickerScript() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
+    }
 }

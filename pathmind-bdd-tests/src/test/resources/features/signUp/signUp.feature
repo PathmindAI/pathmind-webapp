@@ -27,6 +27,7 @@ Feature: Sign Up
     When Create new user click sign in button
     When Open pathmind page
     Then Login with new user email and <Password>
+    And Wait for sign-in page anti-flicker script
     Then Check that Create new user error Email is not verified shown
     Then Check that Create new user Resend btn is shown
 
@@ -45,6 +46,7 @@ Feature: Sign Up
     When Create new user click sign in button
     When Open pathmind page
     Then Login with new user email and Pass123456
+    And Wait for sign-in page anti-flicker script
     Then Check that Create new user error Email is not verified shown
     Then Click in 'Resend' button
     Then Check that Email verification was sent to your email. popup is shown
