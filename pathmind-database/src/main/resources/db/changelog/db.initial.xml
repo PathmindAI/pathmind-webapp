@@ -1797,7 +1797,7 @@
     <changeSet id="20201012-02" author="alexander.makarov@toptal.com">
         <dropColumn tableName="EXPERIMENT" columnName="GOALS_REACHED" />
     </changeSet>
-    
+
     <changeSet id="20201018-02" author="alexander.makarov@toptal.com">
         <createIndex tableName="EXPERIMENT" indexName="GOALS_COUNT_MIGRATION_IDX">
             <column name="HAS_GOALS" />
@@ -1805,6 +1805,36 @@
             <column name="GOALS_TOTAL_NUM" />
             <column name="DATE_CREATED" descending="true" />
         </createIndex>
+    </changeSet>
+
+    <changeSet id="20201014-01" author="daehyun@skymind.io">
+        <comment>
+            Add the number of agents for MODEL
+        </comment>
+        <addColumn tableName="MODEL">
+            <column name="NUMBER_OF_AGENTS" type="INT" defaultValue="1"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="NUMBER_OF_AGENTS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="20201014-02" author="daehyun@skymind.io">
+        <comment>
+            Add agent for METRICS, METRICS_RAW
+        </comment>
+        <addColumn tableName="METRICS">
+            <column name="AGENT" type="INT" defaultValue="0"/>
+        </addColumn>
+        <addColumn tableName="METRICS_RAW">
+            <column name="AGENT" type="INT" defaultValue="0"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="METRICS" columnName="AGENT"/>
+        </rollback>
+        <rollback>
+            <dropColumn tableName="METRICS_RAW" columnName="AGENT"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>
