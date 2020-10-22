@@ -1,12 +1,18 @@
 package io.skymind.pathmind.services.project.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -19,7 +25,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -65,14 +74,30 @@ public class ModelAnalyzerApiClient {
     }
 
     public HyperparametersDTO analyze(File file) {
+        return analyze(file, "");
+    }
+
+    public HyperparametersDTO analyze(File file, String message) {
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
+
+        String messageId = message + "_" + UUID.randomUUID().toString();
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(messageId);
+        StringBody requestBody = null;
+        try {
+            requestBody = new StringBody(ObjectMapperHolder.getJsonMapper().writeValueAsString(req), ContentType.MULTIPART_FORM_DATA);
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
+        }
+
         post.setEntity(MultipartEntityBuilder.create()
-                .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
-                .build());
+            .addPart("id", requestBody)
+            .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
+            .build());
 
 
         try (final CloseableHttpClient client = getCloseableHttpClient();
-        final CloseableHttpResponse resp = client.execute(post)) {
+             final CloseableHttpResponse resp = client.execute(post)) {
+            log.info(String.format("Analyze Request %s is sent", messageId));
             return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
         } catch (Exception e) {
             log.warn(e.getMessage());

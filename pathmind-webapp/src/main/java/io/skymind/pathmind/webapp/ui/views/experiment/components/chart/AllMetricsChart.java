@@ -23,18 +23,7 @@ public class AllMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        List<String> colors = Arrays.asList(
-            "#17a747",
-            "#214e96",
-            "#318c81",
-            "#7550e5",
-            "#62a540",
-            "#e0667d",
-            "#5f8fd6",
-            "#931901",
-            "#bd52a3",
-            "#887100"
-        );
+        List<String> colors = ChartUtils.colors();
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 String seriesColor = colors.get(rewardVariables[i].getArrayIndex()%10);
