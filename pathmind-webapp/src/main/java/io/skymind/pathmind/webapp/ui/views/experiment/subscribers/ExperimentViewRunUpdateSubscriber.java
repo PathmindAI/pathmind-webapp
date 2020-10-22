@@ -38,6 +38,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
                         experimentView.updateDetailsForExperiment();
                         experimentView.updateButtonEnablement();
                     });
+
         } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experiment.getModelId())) {
             experimentView.updateExperimentComponents();
         }

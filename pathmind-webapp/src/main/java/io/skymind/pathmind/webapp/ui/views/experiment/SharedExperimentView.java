@@ -59,4 +59,9 @@ public class SharedExperimentView extends ExperimentView
     protected Button[] getActionButtonList() {
         return new Button[] { exportPolicyButton };
     }
+
+    protected void updateScreenComponents() {
+        super.updateScreenComponents();
+        notesField.setReadOnly();
+    }
 }

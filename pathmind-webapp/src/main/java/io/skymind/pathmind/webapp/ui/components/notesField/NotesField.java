@@ -53,6 +53,12 @@ public class NotesField extends HorizontalLayout {
         return saveConsumer == null;
     }
 
+    public void setReadOnly() {
+        saveConsumer = null;
+        saveButton.setVisible(false);
+        blockEditableField.setReadOnly(true);
+    }
+
     private void updateInformationShownToUser(String notesValue) {
         warningWrapper.setVisible(false);
         hintWrapper.setVisible(false);

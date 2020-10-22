@@ -112,7 +112,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private CodeViewer codeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
-    private NotesField notesField;
+    protected NotesField notesField;
 
     private ObservationsPanel observationsPanel;
 
@@ -468,7 +468,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         updateScreenComponents();
     }
 
-    private void updateScreenComponents() {
+    protected void updateScreenComponents() {
         clearErrorState();
         setSharedWithSupportComponents();
         if(isShowNavBar())
