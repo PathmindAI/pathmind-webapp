@@ -1,5 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { registerStyles, css } from "@vaadin/vaadin-themable-mixin/register-styles.js";
+import { debounce } from 'lodash';
 import "@vaadin/vaadin-text-field/src/vaadin-text-area.js";
 
 registerStyles("vaadin-text-area", css`
@@ -56,10 +57,15 @@ class NotesField extends PolymerElement {
             warning: {
                 type: Boolean,
                 value: false,
+                computed: "_isOverMaxChar(wordcount)",
             },
             max: {
                 type: Number,
                 value: 1000,
+            },
+            wordcount: {
+                type: Number,
+                value: 0,
             },
         }
     }
@@ -105,10 +111,14 @@ class NotesField extends PolymerElement {
                     margin-left: auto;
                     margin-right: var(--lumo-space-m);
                 }
-                .hint-label.unsaved-and-too-big-text-label {
+                .wordcount-label {
                     align-self: center;
+                    font-size: var(--lumo-font-size-s);
+                    color: var(--lumo-secondary-text-color);
+                    margin-right: var(--lumo-space-s);
+                }
+                .wordcount-label[warning] {
                     color: var(--pm-danger-color);
-                    margin-left: var(--lumo-space-m);
                 }
                 .hint-label,
                 .fade-out-hint-label {
@@ -142,8 +152,8 @@ class NotesField extends PolymerElement {
             <div class="header">
                 <span class="title">[[title]]</span>
                 <span class="hint-label" hidden="[[!unsaved]]">Unsaved Notes!</span>
-                <span class="hint-label unsaved-and-too-big-text-label" hidden="[[!warning]]">Max. [[max]] characters</span>
-                <iron-icon icon="vaadin:check" id="saveIcon" hidden="[[!unsaved]]"></iron-icon>
+                <iron-icon icon="vaadin:check" id="saveIcon"></iron-icon>
+                <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
                 <vaadin-button id="save" on-click="onSave">Save</vaadin-button>
             </div>
             <vaadin-text-area id="textarea" placeholder="[[placeholder]]"></vaadin-text-area>
@@ -153,13 +163,12 @@ class NotesField extends PolymerElement {
     ready() {
         super.ready();
         this.$.textarea.value = this.notes;
-        this.$.textarea.addEventListener("change", event => {
-            if (this.$.textarea.value.length > this.max) {
-                this.warning = true;
-            } else if (this.$.textarea.value !== this.notes) {
+        this.$.textarea.addEventListener("keyup", debounce(event => {
+            this.calculateWordCount(this.$.textarea.value);
+            if (this.$.textarea.value !== this.notes && !this.unsaved) {
                 this.unsaved = true;
             }
-        });
+        }, 300));
         this.$.textarea.addEventListener("blur", event => {
             this.$.save.click();
         });
@@ -172,16 +181,25 @@ class NotesField extends PolymerElement {
     onSave(event) {
         if (this.canSave(this.$.textarea.value)) {
             this.notes = this.$.textarea.value;
+            this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
             setTimeout(() => {
                 this.$.saveIcon.classList.remove('fade-in');
-                this.unsaved = false;
-            }, 3000);
+            }, 1500);
         }
+    }
+
+    calculateWordCount(notes) {
+        this.wordcount = notes.length;
     }
 
     _notesChanged(newValue, oldValue) {
         this.$.textarea.value = newValue;
+        this.calculateWordCount(newValue);
+    }
+
+    _isOverMaxChar(wordcount) {
+        return wordcount > this.max;
     }
 }
 
