@@ -143,7 +143,7 @@ public class LoginPage extends PageObject {
         Check video block
          */
         setImplicitTimeout(3500, SECONDS);
-        waitFor(ExpectedConditions.visibilityOf(signUpView.findElement(By.cssSelector(".video-wrapper"))));
+        // waitFor(ExpectedConditions.visibilityOf(signUpView.findElement(By.cssSelector(".video-wrapper"))));
         resetImplicitTimeout();
         // assertThat(signUpView.findElements(By.cssSelector(".video-wrapper")).size(), is(not(0)));
         assertThat(signUpView.findElement(By.cssSelector("b")).getText(), is("Create your free Pathmind account to:"));
