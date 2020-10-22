@@ -105,6 +105,7 @@ public abstract class TrainingService {
             });
             experiment.updateTrainingStatus();
             experimentDAO.updateTrainingStatus(transactionCtx, experiment);
+            log.info("Stopped {} training job with id {}", DiscoveryRun, runs.get(0).getJobId());
         });
     }
 }
