@@ -360,7 +360,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		);
         notesField.setPlaceholder("Add Notes (optional)");
         if (experiment.isArchived()) {
-            // notesField.setEnabled(false);
+            notesField.setReadonly(true);
         }
 		return notesField;
 	}

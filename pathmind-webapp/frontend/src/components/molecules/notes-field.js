@@ -14,6 +14,13 @@ registerStyles("vaadin-text-area", css`
         border: 1px solid var(--pm-grey-color);
         overflow: hidden;
     }
+    :host([readonly]) {
+        border: 1px solid var(--lumo-contrast-20pct);
+    }
+    :host([readonly]) [part="input-field"] {
+        background-color: var(--lumo-contrast-5pct);
+        border: none;
+    }
     [part="input-field"],
     [part="input-field"] ::slotted(textarea) {
         line-height: 1.5em;
@@ -21,11 +28,9 @@ registerStyles("vaadin-text-area", css`
         background-color: white;
         padding: 0.5rem var(--lumo-space-s);
     }
-
     :host(:hover:not([readonly]):not([focused])) [part="input-field"] {
         background-color: rgba(255, 255, 255, 0.8);
     }
-
     [part="input-field"] [part="value"],
     [part="input-field"] ::slotted(textarea) {
         height: 100% !important;
@@ -67,6 +72,10 @@ class NotesField extends PolymerElement {
                 type: Number,
                 value: 0,
             },
+            readonly: {
+                type: Boolean,
+                value: false,
+            }
         }
     }
 
@@ -78,6 +87,10 @@ class NotesField extends PolymerElement {
                     flex-direction: column;
                     flex: 1;
                     width: 100%;
+                }
+                .fade-in {
+                    display: block !important;
+                    opacity: 1;
                 }
                 .header {
                     display: flex;
@@ -102,10 +115,6 @@ class NotesField extends PolymerElement {
                     opacity: 0;
                     transition: opacity 0.5s;
                 }
-                iron-icon.fade-in {
-                    display: block !important;
-                    opacity: 1;
-                }
                 .hint-label {
                     align-self: center;
                     margin-left: auto;
@@ -125,15 +134,9 @@ class NotesField extends PolymerElement {
                     font-size: var(--lumo-font-size-s);
                     color: var(--pm-primary-color);
                 }
-                
                 .fade-out-hint-label {
                     opacity: 0;
                     transition: opacity 0.5s;
-                }
-                
-                .fade-out-hint-label.fade-in {
-                    display: block !important;
-                    opacity: 1;
                 }
                 vaadin-button {
                     min-width: 45px;
@@ -154,9 +157,9 @@ class NotesField extends PolymerElement {
                 <span class="hint-label" hidden="[[!unsaved]]">Unsaved Notes!</span>
                 <iron-icon icon="vaadin:check" id="saveIcon"></iron-icon>
                 <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
-                <vaadin-button id="save" on-click="onSave">Save</vaadin-button>
+                <vaadin-button id="save" on-click="onSave" disabled=[[readonly]]>Save</vaadin-button>
             </div>
-            <vaadin-text-area id="textarea" placeholder="[[placeholder]]"></vaadin-text-area>
+            <vaadin-text-area id="textarea" placeholder="[[placeholder]]" readonly$=[[readonly]]></vaadin-text-area>
         `;
     }
 

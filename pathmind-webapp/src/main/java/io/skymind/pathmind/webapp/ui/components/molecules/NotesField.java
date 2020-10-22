@@ -35,6 +35,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setPlaceholder(placeholder);
     }
 
+    public void setReadonly(Boolean readonly) {
+        getModel().setReadonly(readonly);
+    }
+
     @EventHandler
     private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
@@ -55,5 +59,6 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setWarning(Boolean warning);
         void setUnsaved(Boolean unsaved);
         void setMax(Integer max);
+        void setReadonly(Boolean readonly);
 	}
 }
