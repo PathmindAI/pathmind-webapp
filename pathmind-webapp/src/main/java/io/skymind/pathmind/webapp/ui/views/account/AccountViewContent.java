@@ -110,15 +110,29 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 
         upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class)));
         cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription(subscription));
-        rotateApiKeyBtn.addClickListener(evt -> rotateApiKey(subscription));
+        rotateApiKeyBtn.addClickListener(evt -> rotateApiKey());
 	}
 
-    private void rotateApiKey(Subscription subscription) {
-
+    private void rotateApiKey() {
         userService.rotateApiKey(user);
         user = userService.getCurrentUser();
-        getUI().ifPresent(ui -> initContent(subscription));
+        setApiKey(user.getApiKey());
+    }
 
+    private void setApiKey(String apiKey) {
+        getModel().setApiKey(apiKey);
+        String expiresPhrase;
+        long daysToExpire = LocalDateTime.now().until(user.getApiKeyCreatedAt().plus(keyValidityDuration), ChronoUnit.DAYS);
+        if (daysToExpire < 0) {
+            expiresPhrase = "Expired. Please rotate.";
+        } else if (daysToExpire == 0) {
+            expiresPhrase = "Expires today";
+        } else if (daysToExpire == 1) {
+            expiresPhrase = "Expires tomorrow";
+        } else {
+            expiresPhrase = "Expires in " + daysToExpire + " days";
+        }
+        getModel().setApiKeyExpiresPhrase(expiresPhrase);
     }
 
     // This part will probably move to a separate view, but for now implementing it as a confirmation dialog
@@ -134,23 +148,11 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 		});
 	}
 
-    private void initContent(Subscription subscription) {
-        getModel().setEmail(user.getEmail());
-        getModel().setFirstName(user.getFirstname());
+	private void initContent(Subscription subscription) {
+		getModel().setEmail(user.getEmail());
+		getModel().setFirstName(user.getFirstname());
         getModel().setLastName(user.getLastname());
-        getModel().setApiKey(user.getApiKey());
-        String expiresPhrase;
-        long daysToExpire = LocalDateTime.now().until(user.getApiKeyCreatedAt().plus(keyValidityDuration), ChronoUnit.DAYS);
-        if (daysToExpire < 0) {
-            expiresPhrase = "Expired. Please rotate.";
-        } else if (daysToExpire == 0) {
-            expiresPhrase = "Expires today";
-        } else if (daysToExpire == 1) {
-            expiresPhrase = "Expires tomorrow";
-        } else {
-            expiresPhrase = "Expires in " + daysToExpire + " days";
-        }
-        getModel().setApiKeyExpiresPhrase(expiresPhrase);
+        setApiKey(user.getApiKey());
         getModel().setSubscription(subscription != null ? "Professional" : "Early Access");
         if (subscription != null && subscription.getCancelAtPeriodEnd()) {
             getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
