@@ -104,6 +104,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
+        waitABit(3500);
         utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button").click();
     }
 
