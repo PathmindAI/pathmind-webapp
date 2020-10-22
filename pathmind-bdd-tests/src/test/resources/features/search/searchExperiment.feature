@@ -37,3 +37,12 @@ Feature: Nav bar experiment search
       | experiment 1   | Experiment #1 |
       | 1              | Experiment #1 |
       | #1             | Experiment #1 |
+
+  Scenario: Open experiment in the new tab
+    Given Login to the pathmind
+    When Choose search option Experiment
+    When Input 'Experiment #1' to the notes search field
+    When Click notes search btn
+    When Click in the new tab 'Experiment #1' button
+    When Open tab 1
+    Then Check that experiment page title is 'Experiment #1'

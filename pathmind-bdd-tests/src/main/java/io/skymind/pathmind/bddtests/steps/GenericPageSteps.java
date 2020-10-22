@@ -155,4 +155,9 @@ public class GenericPageSteps {
     public void clickPopUpDialogCloseBtn() {
         genericPage.clickPopUpDialogCloseBtn();
     }
+
+    @Step
+    public void clickInTheNewTabModelButton(String text) {
+        genericPage.clickInTheNewTabModelButton(text);
+    }
 }

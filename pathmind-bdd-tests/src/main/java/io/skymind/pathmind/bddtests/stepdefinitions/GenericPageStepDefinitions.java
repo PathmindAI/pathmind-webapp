@@ -164,4 +164,9 @@ public class GenericPageStepDefinitions {
     public void clickPopUpDialogCloseBtn() {
         genericPageSteps.clickPopUpDialogCloseBtn();
     }
+
+    @When("^Click in the new tab '(.*)' button$")
+    public void clickInTheNewTabModelButton(String text) {
+        genericPageSteps.clickInTheNewTabModelButton(text);
+    }
 }

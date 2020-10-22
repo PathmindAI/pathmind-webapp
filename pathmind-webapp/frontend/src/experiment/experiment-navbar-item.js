@@ -12,20 +12,25 @@ class ExperimentNavbarItem extends PolymerElement {
             <style>
                 :host {
                     box-sizing: border-box;
-                    display: flex;
-                    align-items: center;
-                    flex-shrink: 0;
                     width: 100%;
                     padding: 0.45rem var(--lumo-space-s);
                     border-top: 1px solid transparent;
                     border-bottom: 1px solid transparent;
                     margin-top: -1px;
-                    cursor: pointer;
                 }
                 :host([is-current]),
                 :host(:hover) {
                     background-color: white;
                     border-color: var(--pm-grey-color-lighter);
+                }
+                a {
+                    box-sizing: border-box;
+                    display: flex;
+                    align-items: center;
+                    flex-shrink: 0;
+                    width: 100%;
+                	color: var(--lumo-body-text-color);
+                	text-decoration: none;
                 }
                 .experiment-name {
                     font-size: var(--lumo-font-size-s);
@@ -55,20 +60,22 @@ class ExperimentNavbarItem extends PolymerElement {
                     display: none;
                 }
             </style>
-            <status-icon status=[[status]]></status-icon>
-            <div class="experiment-name">
-                <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
-                <p>Created [[createdDate]]</p>
-                <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
-            </div>
-            <vaadin-button
-                class="action-button"
-                theme="tertiary-inline icon"
-                title="Archive"
-                on-click="onArchiveButtonClicked"
-            >
-                <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
-            </vaadin-button>
+            <a id="experimentLink">
+                <status-icon status=[[status]]></status-icon>
+                <div class="experiment-name">
+                    <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
+                    <p>Created [[createdDate]]</p>
+                    <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
+                </div>
+                <vaadin-button
+                    class="action-button"
+                    theme="tertiary-inline icon"
+                    title="Archive"
+                    on-click="onArchiveButtonClicked"
+                >
+                    <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
+                </vaadin-button>
+            </a>
         `;
     }
 
@@ -115,6 +122,7 @@ class ExperimentNavbarItem extends PolymerElement {
     }
 
     onArchiveButtonClicked(event) {
+        event.preventDefault();
         event.stopPropagation();
     }
 }

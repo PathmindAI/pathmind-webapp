@@ -96,17 +96,18 @@ public class DashboardPage extends PageObject {
         assertThat(emptyDashboardShadow.findElement(By.cssSelector(".welcome-text")).getText(), is("Welcome to"));
         assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
         assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".section-title-label")).getText(), is("Let's begin by opening the"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".button-link")).getText(), is("Getting Started Guide"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".button-link")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4004788-getting-started"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) span")).getText(), is("or skip ahead to"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) a")).getText(), is("create your first project."));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(2) a")).getAttribute("href"), containsString("newProject"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("h3")).getText(), is("Using AI may be easier than you think:"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("ul")).getText(), is("Upload a zip file of the simulation model to Pathmind. Download zip file\nWrite a reward function (It's simple, just copy and past this: reward = after.goalReached - 0.1; ).\nOnce training is complete, click on “Export Policy”.\nLoad the trained AI into AnyLogic to see it perform."));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("i")).getText(), is("(For more detailed information, please see our tutorial.)"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("li:nth-child(1) a")).getAttribute("href"), is("https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("i a")).getAttribute("href"), is("http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getText(), is("Create Your First Project Now"));
+        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getAttribute("href"), containsString("newProject"));
     }
 
     public void clickDashboardCreateYourFirstProjectBtn() {
         WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
-        element.findElement(By.cssSelector(".create-project-link")).click();
+        element.findElement(By.cssSelector(".button-link")).click();
     }
 
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
