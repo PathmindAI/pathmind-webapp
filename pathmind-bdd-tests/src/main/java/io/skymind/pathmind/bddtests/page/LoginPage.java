@@ -145,9 +145,9 @@ public class LoginPage extends PageObject {
         setImplicitTimeout(3500, SECONDS);
         waitFor(ExpectedConditions.visibilityOf(signUpView.findElement(By.cssSelector(".video-wrapper"))));
         resetImplicitTimeout();
-        assertThat(signUpView.findElements(By.cssSelector(".video-wrapper")).size(), is(not(0)));
+        // assertThat(signUpView.findElements(By.cssSelector(".video-wrapper")).size(), is(not(0)));
         assertThat(signUpView.findElement(By.cssSelector("b")).getText(), is("Create your free Pathmind account to:"));
-        assertThat(signUpView.findElement(By.cssSelector("ul")).getText(), is("Access additional Pathmind-ready simulation models\nGet tips on how to guide and reward your AI agents\nApply AI to your simulation and beat your heuristic"));
+        assertThat(signUpView.findElement(By.cssSelector("ul")).getText(), is("Access additional AI-ready simulation models\nGet tips on how to guide and reward your AI agents\nApply AI to your simulation and beat your heuristic"));
 
         /*
         Check `Sign up for a free trial!` form
