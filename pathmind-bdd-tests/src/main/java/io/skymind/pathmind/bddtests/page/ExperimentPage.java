@@ -105,7 +105,9 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button").click();
+        waitABit(3500);
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
+        element.findElement(By.cssSelector("button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
