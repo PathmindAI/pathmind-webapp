@@ -29,7 +29,7 @@ public class GenericPage extends PageObject {
     private WebElement popupShadow;
     @FindBy(xpath = "//vaadin-grid-cell-content")
     private List<WebElement> experimentModelsNames;
-    @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
+    @FindBy(xpath = "(//vaadin-text-area)[1]")
     private WebElement notesField;
     @FindBy(xpath = "//span[@class='section-title-label' and text()='Rename project']/following-sibling::vaadin-text-field")
     private WebElement editProjectNameInputShadow;

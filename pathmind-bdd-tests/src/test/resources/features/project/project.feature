@@ -31,7 +31,6 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
-    When In confirmation dialog click in 'Archive' button
     When Change models sidebar list to 'Archived'
     Then Check project page model '1' package name is coffeeshop
     When Change models sidebar list to 'Active'
@@ -43,10 +42,11 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
-    When In confirmation dialog click in 'Archive' button
+#    When In confirmation dialog click in 'Archive' button
     When Change models sidebar list to 'Archived'
     When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
-    When In confirmation dialog click in 'Unarchive' button
+#    When In confirmation dialog click in 'Unarchive' button
+    When Change models sidebar list to 'Archived'
     When Check project page model '1' not exist in the sidebar list
     When Change models sidebar list to 'Active'
     Then Check project page model '1' package name is coffeeshop

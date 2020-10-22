@@ -104,7 +104,8 @@ public class ProjectPage extends PageObject {
             String modelName = webElement.getText().split("\\(")[1].split("\\)")[0];
             if (modelNumber.equals(modelId) | modelName.equals(packageName)) {
                 WebElement shadow = utils.expandRootElement(webElement);
-                shadow.findElement(By.cssSelector("vaadin-button:not([hidden])")).click();
+                WebElement button = utils.expandRootElement(shadow.findElement(By.cssSelector("vaadin-button:not([hidden])")));
+                button.findElement(By.cssSelector("button")).click();
             }
         }
     }
