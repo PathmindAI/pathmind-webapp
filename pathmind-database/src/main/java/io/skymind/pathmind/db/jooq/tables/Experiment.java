@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 157390481;
+    private static final long serialVersionUID = 2040130485;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -121,7 +121,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.goals_reached_num</code>.
      */
-    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -163,7 +163,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY, Indexes.GOALS_COUNT_MIGRATION_IDX);
     }
 
     @Override
