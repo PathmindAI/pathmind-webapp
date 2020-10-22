@@ -17,11 +17,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row16;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 421124630;
+    private static final long serialVersionUID = -401031778;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -61,7 +60,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.id</code>.
      */
-    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('model_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.model.project_id</code>.
@@ -134,6 +133,11 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, Integer> MODEL_TYPE = createField(DSL.name("model_type"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
+     * The column <code>public.model.number_of_agents</code>.
+     */
+    public final TableField<ModelRecord, Integer> NUMBER_OF_AGENTS = createField(DSL.name("number_of_agents"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
      * Create a <code>public.model</code> table reference
      */
     public Model() {
@@ -174,11 +178,6 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
-    }
-
-    @Override
-    public Identity<ModelRecord, Long> getIdentity() {
-        return Keys.IDENTITY_MODEL;
     }
 
     @Override
@@ -227,11 +226,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row16<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }
