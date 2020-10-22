@@ -9,13 +9,13 @@ class SignUpView extends PolymerElement {
             margin-right: var(--lumo-space-m);
         }
         .content-wrapper {
-            max-width: 1100px;
+            justify-content: center;
             width: 100%;
         }
         .info {
             align-items: flex-start;
             flex: 1 0 60%;
-            max-width: 650px;
+            max-width: 400px;
         }
         .video-wrapper {
             position: relative;
@@ -52,12 +52,12 @@ class SignUpView extends PolymerElement {
         />
         <vaadin-horizontal-layout class="content-wrapper">
             <vaadin-vertical-layout class="inner-content info">
-                <div class="video-wrapper">
+                <!--<div class="video-wrapper">
                     <iframe src="//fast.wistia.net/embed/iframe/py4nssath2" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
-                </div>
+                </div>-->
                 <b>Create your free Pathmind account to:</b>
                 <ul>
-                    <li>Access additional Pathmind-ready simulation models</li>
+                    <li>Access additional AI-ready simulation models</li>
                     <li>Get tips on how to guide and reward your AI agents</li>
                     <li>Apply AI to your simulation and beat your heuristic</li>
                 </ul>
@@ -136,16 +136,6 @@ class SignUpView extends PolymerElement {
 
   ready() {
     super.ready();
-    const script1 = document.createElement("script");
-    script1.type = "text/javascript";
-    script1.src = "https://fast.wistia.com/embed/medias/py4nssath2.jsonp";
-
-    const script2 = document.createElement("script");
-    script2.type = "text/javascript";
-    script2.src = "https://fast.wistia.com/assets/external/E-v1.js";
-
-    document.head.appendChild(script1);
-    document.head.appendChild(script2);
 
     window.detectIntercomAndFireTrackEventWhenLoaded = this.detectIntercomAndFireTrackEventWhenLoaded;
 
