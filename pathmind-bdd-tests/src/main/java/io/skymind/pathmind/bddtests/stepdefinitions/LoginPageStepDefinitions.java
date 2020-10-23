@@ -236,7 +236,7 @@ public class LoginPageStepDefinitions {
 
     @When("Create new user (.*), (.*) with password (.*)")
     public void createNewUserWithPassword(String firstName, String lastName, String password) {
-        loginPageSteps.openPage(pathmindUrl + "early-access-sign-up");
+        loginPageSteps.openPage(pathmindUrl + "sign-up");
         loginPageSteps.newUserInputFirstName(firstName);
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
