@@ -56,3 +56,4 @@ Feature: Sign Up
   Scenario: Check create new user page elements
     Given Open page sign-up
     When Check create new user page elements
+    Then Check network errors

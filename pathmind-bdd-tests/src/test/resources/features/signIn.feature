@@ -28,6 +28,7 @@ Feature: Sign In form tests
     Given Open pathmind page
     And Wait for sign-in page anti-flicker script
     Then Check login page elements
+    Then Check network errors
 
   Scenario: Check Get started btn
     Given Open pathmind page

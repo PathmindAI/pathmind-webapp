@@ -16,6 +16,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -239,5 +241,14 @@ public class GenericPage extends PageObject {
         actions.click(button).build().perform();
         actions.keyUp(Keys.CONTROL).build().perform();
         waitABit(3000);
+    }
+
+    public void checkNetworkErrors() {
+        List<LogEntry> entries = getDriver().manage().logs().get(LogType.PERFORMANCE).getAll();
+        System.out.println(entries.size() + " " + LogType.PERFORMANCE + " log entries found");
+        for (LogEntry entry : entries) {
+            System.out.println(entry.getMessage());
+            assertThat(entry.getMessage(), not(containsString("\"status\":\"4")));
+        }
     }
 }
