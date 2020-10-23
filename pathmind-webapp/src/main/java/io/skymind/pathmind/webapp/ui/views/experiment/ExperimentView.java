@@ -498,7 +498,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experimentViewRunUpdateSubscriber.setExperiments(experiments);
 
         if (experiments.isEmpty()) {
-            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
+            Model model = modelService.getModel(modelId)
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
+
+            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);
