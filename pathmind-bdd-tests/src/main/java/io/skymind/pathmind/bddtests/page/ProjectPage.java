@@ -91,7 +91,6 @@ public class ProjectPage extends PageObject {
     }
 
     public void checkThatProjectPageIsOpened() {
-        assertThat(getDriver().getTitle(), is("Pathmind | Project"));
         assertThat(getDriver().getCurrentUrl(), containsString("/project/"));
     }
 

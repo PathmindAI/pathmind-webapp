@@ -101,7 +101,6 @@ public class ModelPage extends PageObject {
 
     public void checkThatModelsPageOpened() {
         assertThat(getDriver().getCurrentUrl(), containsString("/model/"));
-        assertThat(getDriver().getTitle(), is("Pathmind | Model"));
     }
 
     public void clickProjectPageNewExperimentButton() {

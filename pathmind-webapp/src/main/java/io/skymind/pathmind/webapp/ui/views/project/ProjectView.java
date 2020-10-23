@@ -98,6 +98,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private List<Observation> modelObservations = new ArrayList<>();
+    private String pageTitle = "Pathmind | ";
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
@@ -295,9 +296,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
         models = modelDAO.getModelsForProject(projectId);
         project.setModels(models);
+        pageTitle += project.getName();
         if (models.size() > 0) {
             if (modelId == null) {
-                selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
+                if (models.size() > 1) {
+                    selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
+                } else {
+                    selectedModel = models.get(0);
+                }
             } else {
                 selectedModel = models.stream()
                         .filter(model -> modelId.equals(model.getId()))
@@ -307,7 +313,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelId = selectedModel != null ? selectedModel.getId() : null;
             experiments = experimentDAO.getExperimentsForModel(modelId);
             rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-    		modelObservations = observationDAO.getObservationsForModel(modelId);
+            modelObservations = observationDAO.getObservationsForModel(modelId);
         }
 	}
 
@@ -357,10 +363,15 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
  		String[] segments = parameter.split("/");
 
  		if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
- 			this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+             this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
  		}
  		if (segments.length == 3) {
 			this.modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
  		}
+	}
+
+	@Override
+	public String getPageTitle() {
+		return pageTitle;
 	}
 }
