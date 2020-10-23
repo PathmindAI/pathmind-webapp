@@ -83,8 +83,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
     private Object experimentLock = new Object();
-
-    protected Button exportPolicyButton;
+    private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
     private Anchor downloadModelAlpLink;
@@ -128,7 +127,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 	@Autowired
 	private ObservationDAO observationDAO;
     @Autowired
-    private PolicyDAO policyDAO;
+    protected PolicyDAO policyDAO;
     @Autowired
     private TrainingErrorDAO trainingErrorDAO;
     @Autowired
@@ -136,7 +135,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Autowired
     private RunDAO runDAO;
     @Autowired
-    private SegmentIntegrator segmentIntegrator;
+    protected SegmentIntegrator segmentIntegrator;
     @Autowired
     private FeatureManager featureManager;
     @Autowired
@@ -316,7 +315,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     /**
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
-    protected Button[] getActionButtonList() {
+    protected Component[] getActionButtonList() {
         return new Button[] {
                 unarchiveExperimentButton,
                 restartTraining,
