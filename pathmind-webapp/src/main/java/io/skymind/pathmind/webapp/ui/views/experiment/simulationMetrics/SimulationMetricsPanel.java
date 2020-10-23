@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
@@ -56,8 +57,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
         super();
-        this.experiment = experiment;
-        this.rewardVariables= rewardVariables;
+        this.experiment = experiment.deepClone();
+        this.rewardVariables= RewardVariablesUtils.deepClone(rewardVariables);
         this.showSimulationMetrics = showSimulationMetrics;
         this.getUISupplier = getUISupplier;
 
@@ -150,7 +151,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
         updateSimulationMetrics();
     }
 
