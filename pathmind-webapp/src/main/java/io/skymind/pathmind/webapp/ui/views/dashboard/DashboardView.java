@@ -114,36 +114,10 @@ public class DashboardView extends PathMindDefaultView
                     currentExperiment.setRuns(runsForExperiment);
                 }
             }
-            return new DashboardLine(experimentDAO, item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
+            return new DashboardLine(experimentDAO, item, itm -> archiveItem(itm));
         });
         dashboardGrid.setSelectionMode(SelectionMode.NONE);
         dashboardGrid.setPageSize(10);
-    }
-
-    private void navigateFromDashboard(DashboardItem item) {
-        Stage stage = DashboardUtils.calculateStage(item);
-        switch (stage) {
-            case SetUpSimulation :
-                getUI().ifPresent(ui -> {
-                    if (item.getModel() != null && item.getModel().isDraft()) {
-                        ui.navigate(UploadModelView.class, UploadModelView.createResumeUploadTarget(item.getProject(), item.getModel()));
-                    }
-                    else {
-                        ui.navigate(UploadModelView.class, String.valueOf(item.getProject().getId()));
-                    }
-                });
-                break;
-            case WriteRewardFunction:
-                if (item.getExperiment() == null) {
-                    getUI().ifPresent(ui -> ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, item.getModel().getId()));
-                } else {
-                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
-                }
-                break;
-            default :
-                getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, item.getExperiment().getId()));
-                break;
-        }
     }
 
     private void archiveItem(DashboardItem item) {

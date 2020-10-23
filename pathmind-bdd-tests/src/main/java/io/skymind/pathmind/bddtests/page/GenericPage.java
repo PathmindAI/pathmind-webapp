@@ -13,7 +13,9 @@ import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -233,4 +235,17 @@ public class GenericPage extends PageObject {
         assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
         resetImplicitTimeout();
     }
+
+    public void clickInTheNewTabModelButton(String text) {
+        waitABit(2000);
+        WebElement button = getDriver().findElement(By.xpath("//*[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
+        Actions actions = new Actions(getDriver());
+        actions.keyDown(Keys.CONTROL).build().perform();
+        actions.moveToElement(button).build().perform();
+        waitABit(2500);
+        actions.click(button).build().perform();
+        actions.keyUp(Keys.CONTROL).build().perform();
+        waitABit(3000);
+    }
+
 }

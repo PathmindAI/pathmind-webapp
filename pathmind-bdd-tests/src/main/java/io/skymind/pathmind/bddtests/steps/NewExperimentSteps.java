@@ -112,4 +112,14 @@ public class NewExperimentSteps {
     public void cleanNewExperimentRewardFunctionField() {
         newExperimentPage.cleanNewExperimentRewardFunctionField();
     }
+
+    @Step
+    public void openExperimentFromSidebarInTheNewTab(String experiment) {
+        newExperimentPage.openExperimentFromSidebarInTheNewTab(experiment);
+    }
+
+    @Step
+    public void clickSideBarNewExperimentBtn() {
+        newExperimentPage.clickSideBarNewExperimentBtn();
+    }
 }

@@ -62,7 +62,7 @@ public class HomePageStepDefinitions {
         homePageSteps.clickBackButton();
     }
 
-    @When("^Click Getting Started Guide button$")
+    @When("^Click Getting Started tutorial button$")
     public void clickGettingStartedGuideButton() {
         homePageSteps.clickGettingStartedGuideButton();
     }

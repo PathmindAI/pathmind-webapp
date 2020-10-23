@@ -105,6 +105,15 @@ Feature: Nav bar search
     When Refresh page
     Then Check search result group project is 'AutotestProject15'
 
+  Scenario: Open project in the new tab
+    Given Login to the pathmind
+    When Choose search option Project
+    When Input 'AutotestProject' to the notes search field
+    When Click notes search btn
+    When Click in the new tab 'AutotestProject' button
+    When Open tab 1
+    Then Check that project page is opened
+
   Scenario: Check search by enter btn
     Given Login to the pathmind
     When Choose search option Project
@@ -118,3 +127,4 @@ Feature: Nav bar search
     When Input 'AutotestProject16' to the notes search field
     When Click create new project button
     Then Check that new project page opened
+

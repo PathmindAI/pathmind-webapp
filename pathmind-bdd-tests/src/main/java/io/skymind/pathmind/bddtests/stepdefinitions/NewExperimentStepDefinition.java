@@ -126,4 +126,14 @@ public class NewExperimentStepDefinition {
     public void cleanNewExperimentRewardFunctionField() {
         newExperimentSteps.cleanNewExperimentRewardFunctionField();
     }
+
+    @When("^Open experiment '(.*)' from sidebar in the new tab$")
+    public void openExperimentFromSidebarInTheNewTab(String experiment) {
+        newExperimentSteps.openExperimentFromSidebarInTheNewTab(experiment);
+    }
+
+    @When("^Click side bar new experiment btn$")
+    public void clickSideBarNewExperimentBtn() {
+        newExperimentSteps.clickSideBarNewExperimentBtn();
+    }
 }

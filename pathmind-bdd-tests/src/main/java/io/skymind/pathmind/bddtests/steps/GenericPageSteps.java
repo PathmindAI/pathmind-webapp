@@ -160,4 +160,9 @@ public class GenericPageSteps {
     public void checkThatUnexpectedErrorAlertIsNotShown() {
         genericPage.checkThatUnexpectedErrorAlertIsNotShown();
     }
+
+    public void clickInTheNewTabModelButton(String text) {
+        genericPage.clickInTheNewTabModelButton(text);
+    }
+
 }

@@ -169,4 +169,10 @@ public class GenericPageStepDefinitions {
     public void checkThatUnexpectedErrorAlertIsNotShown() {
         genericPageSteps.checkThatUnexpectedErrorAlertIsNotShown();
     }
+
+    @When("^Click in the new tab '(.*)' button$")
+    public void clickInTheNewTabModelButton(String text) {
+        genericPageSteps.clickInTheNewTabModelButton(text);
+    }
+
 }

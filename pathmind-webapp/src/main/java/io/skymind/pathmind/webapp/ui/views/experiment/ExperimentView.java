@@ -32,7 +32,6 @@ import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
@@ -189,7 +188,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 policyDAO,
                 experiment,
                 experiments,
-                selectedExperiment -> selectExperiment(selectedExperiment),
                 segmentIntegrator);
         setupExperimentContentPanel();
 
