@@ -72,4 +72,9 @@ public class ProjectPageSteps {
     public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
         projectPage.checkThatModelsSidebarModelContainsDraftTagFalse(model, draft);
     }
+
+    @Step
+    public void checkProjectTitleLabelTagIsArchived(String tag) {
+        projectPage.checkProjectTitleLabelTagIsArchived(tag);
+    }
 }

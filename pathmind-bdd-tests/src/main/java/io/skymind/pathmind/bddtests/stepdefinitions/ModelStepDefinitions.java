@@ -114,4 +114,9 @@ public class ModelStepDefinitions {
     public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
         modelPageSteps.checkModelPageModelArchivedTagIsShown(archived);
     }
+
+    @Then("^Check model title label tag is (.*)$")
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        modelPageSteps.checkModelTitleLabelTagIsArchived(tag);
+    }
 }

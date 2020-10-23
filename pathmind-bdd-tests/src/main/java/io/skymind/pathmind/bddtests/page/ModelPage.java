@@ -168,4 +168,8 @@ public class ModelPage extends PageObject {
             resetImplicitTimeout();
         }
     }
+
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='model-wrapper']/descendant::span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
+    }
 }

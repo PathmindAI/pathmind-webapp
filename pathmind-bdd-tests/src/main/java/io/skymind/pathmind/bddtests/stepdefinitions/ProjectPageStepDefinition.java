@@ -79,4 +79,9 @@ public class ProjectPageStepDefinition {
     public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
         projectPageSteps.checkThatModelsSidebarModelContainsDraftTagFalse(model, draft);
     }
+
+    @Then("^Check project title label tag is (.*)$")
+    public void checkProjectTitleLabelTagIsArchived(String tag) {
+        projectPageSteps.checkProjectTitleLabelTagIsArchived(tag);
+    }
 }

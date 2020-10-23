@@ -91,23 +91,25 @@ Feature: Model page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click model '1' archive/unarchive button
-    When In confirmation dialog click in 'Archive' button
-    When Open projects/model/experiment archived tab
-    When Click the model name 1
-    Then Check project/model title label tag is Archived
+    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Change models sidebar list to 'Archived'
+    Then Check model title label tag is Archived
 
   Scenario: Check draft model archived label
     Given Login to the pathmind
-    When Create new CoffeeShop project with draft model
+    When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click model '1' archive/unarchive button
-    When In confirmation dialog click in 'Archive' button
-    When Open projects/model/experiment archived tab
-    When Click the model name 1
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Change models sidebar list to 'Archived'
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click wizard reward variables next btn
     When Click model breadcrumb btn
-    Then Check project/model title label tag is Archived
+    Then Check model title label tag is Archived
+    Then Check that model/experiment name '2' exist in archived/not archived tab

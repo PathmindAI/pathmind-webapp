@@ -92,4 +92,4 @@ Feature: Project page
     When Open projects/model/experiment archived tab
     Then Check that project exist in project list AutotestProject
     When Open project AutotestProject on projects page
-    Then Check project/model title label tag is Archived
+    Then Check project title label tag is Archived

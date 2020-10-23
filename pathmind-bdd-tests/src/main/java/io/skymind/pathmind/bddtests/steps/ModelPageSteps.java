@@ -118,4 +118,9 @@ public class ModelPageSteps {
     public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
         modelPage.checkModelPageModelArchivedTagIsShown(archived);
     }
+
+    @Step
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        modelPage.checkModelTitleLabelTagIsArchived(tag);
+    }
 }

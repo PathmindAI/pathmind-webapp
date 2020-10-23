@@ -198,10 +198,6 @@ public class GenericPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void checkTitleLabelTagIsArchived(String tag) {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
-    }
-
     public void compareALPFileWithDownloadedFile(String alpFile) {
         File downloadedFile = new File(System.getProperty("user.dir") + "/models/" + alpFile);
         long downloadedFileSize = downloadedFile.length();

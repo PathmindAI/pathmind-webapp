@@ -150,11 +150,6 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkThatConfirmationDialogNotShown(status);
     }
 
-    @Then("^Check project/model title label tag is (.*)$")
-    public void checkTitleLabelTagIsArchived(String tag) {
-        genericPageSteps.checkTitleLabelTagIsArchived(tag);
-    }
-
     @Then("^Compare '(.*)' file with downloaded file$")
     public void compareALPFileWithDownloadedFile(String alpFile) {
         genericPageSteps.compareALPFileWithDownloadedFile(alpFile);
