@@ -19,7 +19,7 @@ Feature: Model page
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
-    When Click experiment archive button
+    When Click experiment '1' archive/unarchive button
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
@@ -32,7 +32,7 @@ Feature: Model page
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the model name 1
-    When Click experiment archive button
+    When Click experiment '1' archive/unarchive button
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
@@ -40,27 +40,6 @@ Feature: Model page
     When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
-
-  Scenario: Check model page model archive btn
-    Given Login to the pathmind
-    When Create new CoffeeShop project with draft experiment
-    When Open projects page
-    When Open project AutotestProject on projects page
-    Then Click the model name 1
-    Then Check model page model archived tag is shown false
-    When Click model page model archive/unarchive button
-    Then Check model page model archived tag is shown true
-    When Click project/ breadcrumb btn
-    When Open projects/model/experiment archived tab
-    Then Check that model/experiment name '1' exist in archived/not archived tab
-    When Click the model name 1
-    Then Check model page model archived tag is shown true
-    When Click model page model archive/unarchive button
-    Then Check model page model archived tag is shown false
-    When Click project/ breadcrumb btn
-    Then Check that model/experiment name '1' exist in archived/not archived tab
-    When Click the model name 1
-    Then Check model page model archived tag is shown false
 
   Scenario: Check model page elements
     Given Login to the pathmind

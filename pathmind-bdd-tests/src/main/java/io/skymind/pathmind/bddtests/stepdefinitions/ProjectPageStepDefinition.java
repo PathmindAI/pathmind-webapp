@@ -35,7 +35,7 @@ public class ProjectPageStepDefinition {
         projectPageSteps.projectPageCheckThatModelsCountIs(modelsCount);
     }
 
-    @When("^Click model '(.*)' archive/unarchive button$")
+    @When("^Click experiment '(.*)' archive/unarchive button$")
     public void clickModelArchiveButton(String model) {
         projectPageSteps.clickModelArchiveButton(model);
     }
