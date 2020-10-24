@@ -16,6 +16,7 @@ import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -97,10 +98,10 @@ public class ExperimentChartsPanel extends VerticalLayout {
         EventBus.unsubscribe(this);
     }
 
-    public void setupCharts(Experiment experiment, List<RewardVariable> rewardVariables) {
+    public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
 
-        this.experiment = experiment;
-        this.rewardVariables = rewardVariables;
+        this.experiment = newExperiment.deepClone();
+        this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
 
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);

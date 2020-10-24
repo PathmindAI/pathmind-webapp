@@ -31,9 +31,9 @@ public class PolicyChartPanel extends VerticalLayout
         setSpacing(false);
     }
 
-    public void setExperiment(Experiment experiment) {
+    public void setExperiment(Experiment newExperiment) {
         synchronized (experimentLock) {
-            this.experiment = experiment;
+            this.experiment = experiment.deepClone();
             chart.setPolicyChart(experiment);
         }
     }
