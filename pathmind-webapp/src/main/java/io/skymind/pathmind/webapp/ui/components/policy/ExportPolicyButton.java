@@ -29,6 +29,16 @@ public class ExportPolicyButton extends Anchor {
         this.policyFileService = policyFileService;
         this.getPolicySupplier = getPolicySupplier;
 
+        // If there isn't even a policy at this point, such as when an experiment is starting, then there's
+        // nothing to export. In the future we can add a subscriber to listen for the event at which point the
+        // export policy button can become visible but for now since it's only internally we will just omit the button
+        // and the support user can press the refresh button as the cost to add all this is not worth it compared
+        // to getting the initial PR into production.
+        if(getPolicySupplier.get() == null) {
+            setVisible(false);
+            return;
+        }
+
         policyFilename = PolicyUtils.generatePolicyFileName(getPolicySupplier.get());
 
         exportButton = new Button("Export Policy");
