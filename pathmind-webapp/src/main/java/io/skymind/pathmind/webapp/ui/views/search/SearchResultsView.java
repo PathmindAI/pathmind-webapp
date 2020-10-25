@@ -25,21 +25,15 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
 
@@ -93,28 +87,10 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         numberOfResults = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         VerticalLayout headerWrapper = new VerticalLayout(title, numberOfResults);
         headerWrapper.setSpacing(false);
-        grid.addSelectionListener(evt -> navigateToSelectedRecord(evt.getFirstSelectedItem()));
         
         FlexLayout gridWrapper = new ViewSection(headerWrapper, grid);
         gridWrapper.addClassName("page-content");
         return gridWrapper;
-    }
-
-    private void navigateToSelectedRecord(Optional<SearchResult> selectedItem) {
-        selectedItem.ifPresent(item -> {
-            switch (item.getItemType()) {
-                case PROJECT :
-                    getUI().ifPresent(ui -> ui.navigate(ProjectView.class, item.getItemId()));
-                    break;
-                case MODEL :
-                    getUI().ifPresent(ui -> ui.navigate(ModelView.class, item.getItemId()));
-                    break;
-                case EXPERIMENT:
-                    Experiment experiment = experimentDAO.getExperimentWithRuns(item.getItemId()).get();
-                    ExperimentUtils.navigateToExperiment(getUI(), experiment);
-                    break;
-            }
-        });
     }
 
     private Optional<MainLayout> getMainLayout() {

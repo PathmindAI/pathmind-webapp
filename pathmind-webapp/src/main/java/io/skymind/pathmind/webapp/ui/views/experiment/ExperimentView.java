@@ -200,7 +200,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 policyDAO,
                 experiment,
                 experiments,
-                selectedExperiment -> selectExperiment(selectedExperiment),
                 segmentIntegrator);
 
         setupExperimentContentPanel();

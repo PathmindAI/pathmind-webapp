@@ -46,6 +46,7 @@ class FavoriteStar extends PolymerElement {
     }
 
     _onClick(event) {
+        event.preventDefault();
         event.stopPropagation();
         this.toggleFavorite();
     }

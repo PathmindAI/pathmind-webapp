@@ -10,9 +10,9 @@ public final class RunConstants {
 	public static int PBT_NUM_SAMPLES;
 
     private RunConstants(
-        @Value("${pathmind.training.pbt_max_time_in_sec}")
-        int PBT_RUN_ITERATIONS,
         @Value("${pathmind.training.pbt_run_iterations}")
+        int PBT_RUN_ITERATIONS,
+        @Value("${pathmind.training.pbt_max_time_in_sec}")
         int PBT_MAX_TIME_IN_SEC,
         @Value("${pathmind.training.pbt_num_samples}")
         int PBT_NUM_SAMPLES ) {
