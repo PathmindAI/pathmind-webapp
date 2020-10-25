@@ -62,7 +62,7 @@ public class ExperimentsNavBar extends VerticalLayout
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
 		
-		newExperimentButton = new NewExperimentButton(experimentDAO, modelId);
+		newExperimentButton = new NewExperimentButton(experimentDAO, modelId, segmentIntegrator);
 
 		setPadding(false);
 		setSpacing(false);
