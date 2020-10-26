@@ -33,9 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
-import static io.skymind.pathmind.shared.constants.RunStatus.Completing;
+import static io.skymind.pathmind.shared.constants.RunStatus.*;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
-import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 
 @Service
 @Slf4j
@@ -156,9 +155,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
-                // let's follow what is being done with rlib and add a prefix to the message and add it to description
-                getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
-                getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
                 getExperimentReport(jobHandle).ifPresent(m -> {
                     String[] lines = m.split("\n");
                     Set<String> reasons = new HashSet<>();
@@ -306,16 +302,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
         }
         return exceptionLine;
-    }
-
-    public Optional<String> getSuccessMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.SUCCESS_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
-    }
-
-    public Optional<String> getWarningMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Optional<String> getExperimentReport(String jobHandle) {
