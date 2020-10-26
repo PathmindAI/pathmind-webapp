@@ -50,11 +50,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
     public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
     private static final String OBS_SNIPPET_FILE = "obs.txt";
-    
+
     public static final int RLLIB_MAX_LEN = 1024;
     public static final int SUCCESS_MAX_LEN = 1024;
     public static final int WARNING_MAX_LEN = 1024;
-    
+
     private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
             Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
@@ -319,6 +319,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_1_1:
             case VERSION_1_2_0:
             case VERSION_1_3_0:
+            case VERSION_EDWARD_LOCAL:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -344,6 +345,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_5_2:
             case VERSION_8_6_0:
             case VERSION_8_6_1:
+            case VERSION_EDWARD_LOCAL:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
