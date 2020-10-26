@@ -159,6 +159,26 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 // let's follow what is being done with rlib and add a prefix to the message and add it to description
                 getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
                 getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
+                getExperimentReport(jobHandle).ifPresent(m -> {
+                    String[] lines = m.split("\n");
+                    Set<String> reasons = new HashSet<>();
+                    Arrays.stream(lines)
+                        .filter(s -> s.contains("Early Stop Reason"))
+                        .forEach(s -> {
+                            reasons.add(s.split(":")[1].trim());
+                        });
+
+                    if (reasons.size() > 1) {
+                        log.info(String.format("The number of early stop reasons is more than 2: %s", reasons));
+                    }
+
+                    String reason = reasons.iterator().next();
+                    if (reason.equals("Training has converged")) {
+                        completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + reason);
+                    } else {
+                        completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + reason);
+                    }
+                });
                 return completingStatus;
             }
 
@@ -296,6 +316,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public Optional<String> getWarningMessage(String jobHandle) {
         return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
                 .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+    }
+
+    public Optional<String> getExperimentReport(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.REPORT_FILE)
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
