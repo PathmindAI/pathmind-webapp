@@ -33,14 +33,19 @@ public class ExperimentPage extends PageObject {
     private WebElement experimentNotes;
     @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
     private WebElement experimentStatus;
+    @FindBy(xpath = "//notes-field")
+    private WebElement notesBlock;
+    private By notesTextarea = By.cssSelector("#textarea");
+    private By notesSaveBtn = By.cssSelector("#save");
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
         assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8)));
     }
 
     public void addNoteToTheExperimentPage(String note) {
-        experimentNotes.click();
-        experimentNotes.sendKeys(note);
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(note);
     }
 
     public void clickCurrentExperimentArchiveButton() {
@@ -51,7 +56,8 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNotesIs(String note) {
-        assertThat(experimentNotes.getAttribute("value"), is(note.replaceAll("/n", "\n")));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {
@@ -167,9 +173,10 @@ public class ExperimentPage extends PageObject {
     public void clickCopyRewardFunctionBtn() {
         WebElement e = utils.expandRootElement(rewardFunction);
         e.findElement(By.cssSelector("vaadin-button")).click();
-        experimentNotes.click();
-        experimentNotes.sendKeys(Keys.CONTROL + "V");
-        getDriver().findElement(By.xpath("//*[text()='Save']")).click();
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "V");
+        notesShadow.findElement(notesSaveBtn).click();
     }
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
@@ -318,10 +325,10 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
-        if (chosen){
-            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='"+variable+"' and @chosen]")).size(), is(not(0)));
-        }else {
-            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='"+variable+"' and not(@chosen)]")).size(), is(not(0)));
+        if (chosen) {
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='" + variable + "' and @chosen]")).size(), is(not(0)));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='" + variable + "' and not(@chosen)]")).size(), is(not(0)));
         }
     }
 }
