@@ -194,9 +194,7 @@ public class UpdaterService {
 
     private void setEventualInformationAboutWhyTheRunEnded(Run run, ProviderJobStatus jobStatus) {
         final var status = jobStatus.getRunStatus();
-
         Collection<String> descriptions = CollectionUtils.emptyIfNull(jobStatus.getDescription());
-        log.info("kepricondebuggg L " + descriptions);
         if (status == RunStatus.Error && !CollectionUtils.isEmpty(descriptions)) {
             // TODO (KW): 05.02.2020 gets only first error, refactor if multiple errors scenario is possible
             final var errorMessage = descriptions.iterator().next();
