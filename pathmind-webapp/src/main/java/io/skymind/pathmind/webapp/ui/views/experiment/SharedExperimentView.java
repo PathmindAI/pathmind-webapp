@@ -66,12 +66,8 @@ public class SharedExperimentView extends ExperimentView
     @Override
     protected Component[] getActionButtonList() {
         return new Component[] {
-                new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> getBestPolicy())
+                new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> getExperiment())
         };
-    }
-
-    private Policy getBestPolicy() {
-        return PolicyUtils.selectBestPolicy(getExperiment().getPolicies()).orElse(null);
     }
 
     protected void updateScreenComponents() {
