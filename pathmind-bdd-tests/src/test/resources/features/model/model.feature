@@ -86,9 +86,4 @@ Feature: Model page
     When Open project AutotestProject on projects page
     When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
     When Change models sidebar list to 'Archived'
-    When Click wizard upload ALP next btn
-    When Click wizard model details next btn
-    When Click wizard reward variables next btn
-    When Click model breadcrumb btn
-    Then Check model title label tag is Archived
-    Then Check that model/experiment name '2' exist in archived/not archived tab
+    Then Check that models sidebar model '2' contains draft tag 'true'
