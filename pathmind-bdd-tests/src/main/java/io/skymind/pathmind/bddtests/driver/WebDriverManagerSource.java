@@ -33,9 +33,9 @@ public class WebDriverManagerSource implements DriverSource {
                 WebDriverManager.chromedriver().version(chromeVersion).setup();
                 ChromeOptions options = new ChromeOptions();
                 Map<String, Object> prefs = new HashMap<>();
-                LoggingPreferences logPrefs = new LoggingPreferences();
-                logPrefs.enable( LogType.PERFORMANCE, Level.ALL );
-                options.setCapability( "goog:loggingPrefs", logPrefs );
+                // LoggingPreferences logPrefs = new LoggingPreferences();
+                // logPrefs.enable( LogType.PERFORMANCE, Level.ALL );
+                // options.setCapability( "goog:loggingPrefs", logPrefs );
                 if (_headless.equals("true")) {
                     options.addArguments("--headless");
                 }
