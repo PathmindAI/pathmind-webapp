@@ -1,13 +1,16 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.project.subscribers.NotificationModelUpdatedSubscriber;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +22,8 @@ public class ModelsNavbar extends VerticalLayout
 {
     private List<Model> models;
     private Model selectedModel;
+
+    private NotificationModelUpdatedSubscriber notificationModelUpdatedSubscriber;
 
     private List<ModelsNavbarItem> modelsNavbarItems = new ArrayList<>();
     private Select<String> categorySelect;
@@ -36,6 +41,8 @@ public class ModelsNavbar extends VerticalLayout
 	    this.models = models;
 	    this.selectedModel = selectedModel;
         this.segmentIntegrator = segmentIntegrator;
+
+        notificationModelUpdatedSubscriber = new NotificationModelUpdatedSubscriber(getUISupplier, models, selectedModel);
 
         rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("models-navbar-items");
@@ -56,8 +63,17 @@ public class ModelsNavbar extends VerticalLayout
         addModelsToNavbar();
 	}
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this, notificationModelUpdatedSubscriber);
+    }
+
     public List<Model> getModels() {
         return models;
+    }
+
+    public Model getSelectedModel() {
+        return selectedModel;
     }
 
     private void createCategorySelect() {

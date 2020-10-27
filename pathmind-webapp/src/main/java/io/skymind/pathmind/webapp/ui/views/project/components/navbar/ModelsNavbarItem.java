@@ -11,6 +11,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.project.ModelNavigationUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -22,11 +23,13 @@ import java.util.function.Supplier;
 public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerModel> {
     private ModelDAO modelDAO;
     private Model model;
+    private ModelsNavbar modelsNavbar;
     private SegmentIntegrator segmentIntegrator;
 
     public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
 	    this.modelDAO = modelDAO;
-	    this.model = model;
+        this.model = model;
+        this.modelsNavbar = modelsNavbar;
         this.segmentIntegrator = segmentIntegrator;
 
         UI.getCurrent().getUI().ifPresent(ui -> setModelDetails(ui, model));
@@ -37,6 +40,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         modelDAO.archive(model.getId(), true);
         segmentIntegrator.archived(Model.class, true);
         getModel().setIsArchived(true);
+        reloadCurrentModelView();
     }
 
     @EventHandler
@@ -44,6 +48,11 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         modelDAO.archive(model.getId(), false);
         segmentIntegrator.archived(Model.class, false);
         getModel().setIsArchived(false);
+        reloadCurrentModelView();
+    }
+
+    private void reloadCurrentModelView() {
+        ModelNavigationUtils.navigateToModel(getUI(), modelsNavbar.getSelectedModel());
     }
 
     public void setAsCurrent() {
