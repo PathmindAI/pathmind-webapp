@@ -150,6 +150,16 @@ class ModelsNavbarItem extends PolymerElement {
         history.pushState(window.location.href, `Model #${this.modelName}`, this.modelLink);
         this.isCurrent = true;
     }
+
+    onArchiveButtonClicked(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    onUnarchiveButtonClicked(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
 }
 
 customElements.define(ModelsNavbarItem.is, ModelsNavbarItem);
