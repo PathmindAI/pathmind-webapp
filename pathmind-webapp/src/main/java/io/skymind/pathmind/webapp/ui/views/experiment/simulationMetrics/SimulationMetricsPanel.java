@@ -11,20 +11,24 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
+import com.vaadin.flow.shared.Registration;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.model.components.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,11 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private List<RewardVariable> rewardVariables;
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
+    private List<Button> sparklineShowButtons = new ArrayList<>();
+    private List<Registration> showButtonClickListenerRegistrations = new ArrayList<>();
+
+    // REFACTOR -> A quick somewhat hacky solution until we have time to refactor the code
+    private int indexClicked;
 
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
@@ -64,25 +73,69 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         createEnlargedChartDialog();
 
-        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable = new RewardVariablesTable(getUISupplier);
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
+        rewardVariablesTable.setSelectMode();
         rewardVariablesTable.setSizeFull();
         rewardVariablesTable.setRewardVariables(rewardVariables);
 
         add(rewardVariablesTable);
 
         if (showSimulationMetrics) {
-            metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            metricsWrapper.addClassName("metrics-wrapper");
-            sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-            sparklinesWrapper.addClassName("sparklines-wrapper");
+            createSimulationMetricsSpansAndSparklines();
 
-            if(!experiment.getPolicies().isEmpty())
-               updateSimulationMetrics(true);
+            updateSimulationMetrics();
 
             add(metricsWrapper, sparklinesWrapper);
         }
+    }
+
+    private void createSimulationMetricsSpansAndSparklines() {
+        metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        metricsWrapper.addClassName("metrics-wrapper");
+        Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+        metricsHeader.addClassName("header");
+        metricsWrapper.add(metricsHeader);
+
+        sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        sparklinesWrapper.addClassName("sparklines-wrapper");
+        Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+        sparklineHeader.addClassName("header");
+        sparklinesWrapper.add(sparklineHeader);
+
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+
+        // Needed to convert the raw metrics to a format the UI can use.
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+
+        IntStream.range(0, rewardVariables.size())
+                .forEach(index -> {
+                    Span metricSpan = new Span();
+                    SparklineChart sparkline = new SparklineChart();
+                    metricSpans.add(metricSpan);
+                    sparklineCharts.add(sparkline);
+
+                    Button enlargeButton = new Button("Show");
+                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+
+                    VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        sparkline,
+                        enlargeButton
+                    );
+                    sparkLineWrapper.addClassName("sparkline");
+
+                    metricsWrapper.add(metricSpan);
+                    sparklinesWrapper.add(sparkLineWrapper);
+                    sparklineShowButtons.add(enlargeButton);
+                });
+
+        showMetricValuesAndSparklines(false);
+    }
+
+    private void showMetricValuesAndSparklines(Boolean show) {
+        metricsWrapper.setVisible(show);
+        sparklinesWrapper.setVisible(show);
     }
 
     @Override
@@ -90,7 +143,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         if(experiment.isArchived())
             return;
         EventBus.subscribe(this,
-                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this));
+                new SimulationMetricsPolicyUpdateSubscriber(getUISupplier, this),
+                new SimulationMetricsPanelExperimentChangedViewSubscriber(getUISupplier, this),
+                new MetricChartPanelPolicyUpdateSubscriber(getUISupplier, metricChartPanel, experiment));
     }
 
     @Override
@@ -104,47 +159,27 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        updateSimulationMetrics(true);
-    }
-
-    public void updatePolicies(List<Policy> updatedPolicies) {
-        ExperimentUtils.addOrUpdatePolicies(experiment, updatedPolicies);
-        updateSimulationMetrics(true);
+        updateSimulationMetrics();
     }
 
     public boolean isShowSimulationMetrics() {
         return showSimulationMetrics;
     }
 
-    private void updateSimulationMetrics(Boolean createElementsFromScratch) {
+    public void updateSimulationMetrics() {
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies());
+        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
 
-        if (createElementsFromScratch) {
-            metricsWrapper.removeAll();
-            sparklinesWrapper.removeAll();
-        }
-
         if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
+            showMetricValuesAndSparklines(false);
             return;
-        }
-
-        if (createElementsFromScratch) {
-            Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
-            sparklineHeader.addClassName("header");
-            sparklinesWrapper.add(sparklineHeader);
-
-            Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
-            metricsHeader.addClassName("header");
-            metricsWrapper.add(metricsHeader);
         }
 
         IntStream.range(0, bestPolicy.getSimulationMetrics().size())
                 .forEach(index -> {
-                    Span metricSpan = new Span();
                     Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
                     RewardVariable rewardVariable = rewardVariables.get(index);
 
@@ -156,35 +191,28 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     if (rewardVariable.getGoalConditionTypeEnum() != null){
                         Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
-                        metricSpan.addClassName(metricSpanColorClass);
+                        metricSpans.get(index).addClassName(metricSpanColorClass);
                     }
-                    if (createElementsFromScratch) {
-                        metricsWrapper.add(metricSpan);
-                        metricSpans.add(metricSpan);
-
-                        SparklineChart sparkline = new SparklineChart();
-                        sparkline.setSparkLine(sparklineData, rewardVariable, false);
-                        Button enlargeButton = new Button("Show");
-                        enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-                        enlargeButton.addClickListener(event -> {
-                            Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
-                            metricChartPanel.setGoals(rewardVariable, reachedGoal);
-                            metricChartPanel.setupChart(sparklineData, rewardVariable);
-                            metricChartDialog.open();
-                        });
-                        VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                            sparkline,
-                            enlargeButton
-                        );
-                        sparkLineWrapper.addClassName("sparkline");
-                        sparklinesWrapper.add(sparkLineWrapper);
-                        sparklineCharts.add(sparkline);
+                    if (showButtonClickListenerRegistrations.size() > index) {
+                        showButtonClickListenerRegistrations.get(index).remove();
+                    }
+                    Registration showButtonRegistration = sparklineShowButtons.get(index).addClickListener(event -> {
+                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
+                        indexClicked = index;
+                        metricChartPanel.setGoals(rewardVariable, reachedGoal);
+                        metricChartPanel.setupChart(sparklineData, rewardVariable);
+                        metricChartDialog.open();
+                    });
+                    if (showButtonClickListenerRegistrations.size() > index) {
+                        showButtonClickListenerRegistrations.set(index, showButtonRegistration);
                     } else {
-                        metricSpan = metricSpans.get(index);
-                        sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false);
+                        showButtonClickListenerRegistrations.add(index, showButtonRegistration);
                     }
-                    metricSpan.setText(metricValue);
+                    sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false, index);
+                    metricSpans.get(index).setText(metricValue);
                 });
+
+        showMetricValuesAndSparklines(true);
     }
 
     private void createEnlargedChartDialog() {
@@ -196,4 +224,39 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         metricChartDialog.add(metricChartPanel, metricChartDialogCloseButton);
     }
 
+    class MetricChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
+
+        private MetricChartPanel metricChartPanel;
+        private Experiment experimentForSubscriber;
+
+        public MetricChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, MetricChartPanel metricChartPanel, Experiment experiment) {
+            super(getUISupplier);
+            this.metricChartPanel = metricChartPanel;
+            this.experimentForSubscriber = experiment.deepClone();
+        }
+
+        // Refactor -> This should be cleaned up along with the reward variable in MetricChartPanel. To avoid too big a refactoring
+        // here I've pushed this to the separate ticket of: https://github.com/SkymindIO/pathmind-webapp/issues/2327 In other words
+        // I'm concerned the refactoring could increase in scope so I've pushed it until after the feature is completed.
+        @Override
+        public void handleBusEvent(PolicyUpdateBusEvent event) {
+            ExperimentUtils.addOrUpdatePolicies(experimentForSubscriber, event.getPolicies());
+            Policy bestPolicy = PolicyUtils.selectBestPolicy(experimentForSubscriber.getPolicies()).orElse(null);
+            if(bestPolicy == null)
+                return;
+            Boolean reachedGoal = PolicyUtils.isGoalReached(metricChartPanel.getRewardVariable(), bestPolicy);
+            Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(indexClicked);
+            PushUtils.push(getUiSupplier(), ui -> {
+                // Doing it this way to let future developers know that we're reusing the reward variable because overloading
+                // the method in metricChartPanel could cause someone to ignore including the reward variable as a parameter
+                metricChartPanel.setGoals(metricChartPanel.getRewardVariable(), reachedGoal);
+                metricChartPanel.setupChart(sparklineData, metricChartPanel.getRewardVariable());
+            });
+        }
+
+        @Override
+        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
+            return experimentForSubscriber.getId() == event.getExperimentId() && metricChartDialog.isOpened();
+        }
+    }
 }

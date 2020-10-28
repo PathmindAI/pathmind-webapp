@@ -6,6 +6,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -35,7 +35,6 @@ public class ExperimentsNavBar extends VerticalLayout
 
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
 	private VerticalLayout rowsWrapper;
-	private Consumer<Experiment> selectExperimentConsumer;
     private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;
@@ -43,16 +42,17 @@ public class ExperimentsNavBar extends VerticalLayout
     public long modelId;
 
     private ExperimentDAO experimentDAO;
+    private PolicyDAO policyDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment selectedExperiment, List<Experiment> experiments, Consumer<Experiment> selectExperimentConsumer, SegmentIntegrator segmentIntegrator)
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, SegmentIntegrator segmentIntegrator)
 	{
  	    this.getUISupplier = getUISupplier;
 	    this.experimentDAO = experimentDAO;
+	    this.policyDAO = policyDAO;
 	    this.experiments = experiments;
 	    this.selectedExperiment = selectedExperiment;
 	    this.modelId = selectedExperiment.getModelId();
-        this.selectExperimentConsumer = selectExperimentConsumer;
         this.segmentIntegrator = segmentIntegrator;
 
         notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(getUISupplier, experiments, selectedExperiment);
@@ -62,7 +62,7 @@ public class ExperimentsNavBar extends VerticalLayout
 		rowsWrapper.setPadding(false);
 		rowsWrapper.setSpacing(false);
 		
-		newExperimentButton = new NewExperimentButton(experimentDAO, modelId);
+		newExperimentButton = new NewExperimentButton(experimentDAO, modelId, segmentIntegrator);
 
 		setPadding(false);
 		setSpacing(false);
@@ -134,7 +134,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	}
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, experiment, selectExperimentConsumer, segmentIntegrator);
+        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {

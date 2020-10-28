@@ -2,7 +2,7 @@
 Feature: User accounts tests
 
   Scenario: Edit user email in account page
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name EditEmail, User
     When Create new user click sign up button
     When Fill new user password Abcd1234
@@ -25,7 +25,7 @@ Feature: User accounts tests
     Then Check user email is correct
 
   Scenario: Login without email verify after email change
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name EditEmail, User
     When Create new user click sign up button
     When Fill new user password Abcd1234
@@ -42,10 +42,11 @@ Feature: User accounts tests
     When In confirmation dialog click in 'OK' button
     When Open pathmind page
     Then Login with new user email and Abcd1234
+    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
   Scenario: Login with old email after email change
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name EditEmail, User
     When Create new user click sign up button
     When Fill new user password Abcd1234
@@ -63,10 +64,11 @@ Feature: User accounts tests
     When Get email and verify user email
     When Open pathmind page
     When Login with old user email and password Abcd1234
+    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
   Scenario: Check verification email template
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name EditEmail, User
     When Create new user click sign up button
     When Fill new user password Abcd1234

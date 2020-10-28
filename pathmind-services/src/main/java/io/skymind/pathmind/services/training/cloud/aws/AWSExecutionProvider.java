@@ -33,9 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
-import static io.skymind.pathmind.shared.constants.RunStatus.Completing;
+import static io.skymind.pathmind.shared.constants.RunStatus.*;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
-import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 
 @Service
 @Slf4j
@@ -49,6 +48,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
     public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
     public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
+    private static final String OBS_SNIPPET_FILE = "obs.txt";
     
     public static final int RLLIB_MAX_LEN = 1024;
     public static final int SUCCESS_MAX_LEN = 1024;
@@ -79,6 +79,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         installHelper(env.getPathmindHelperVersion(), instructions, files);
         installModel(job.getModelFileId(), instructions, files);
         installCheckpoint(job.getCheckpointFileId(), instructions, files);
+        installObsSnippet(buildJobId(job.getRunId()) + "/" + OBS_SNIPPET_FILE, instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -154,9 +155,26 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
-                // let's follow what is being done with rlib and add a prefix to the message and add it to description
-                getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
-                getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
+                getExperimentReport(jobHandle).ifPresent(m -> {
+                    String[] lines = m.split("\n");
+                    Set<String> reasons = new HashSet<>();
+                    Arrays.stream(lines)
+                        .filter(s -> s.contains("Early Stop Reason"))
+                        .forEach(s -> {
+                            reasons.add(s.split(":")[1].trim());
+                        });
+
+                    if (reasons.size() > 1) {
+                        log.info(String.format("The number of early stop reasons is more than 2: %s", reasons));
+                    }
+
+                    String reason = reasons.iterator().next();
+                    if (reason.equals("Training has converged")) {
+                        completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + reason);
+                    } else {
+                        completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + reason);
+                    }
+                });
                 return completingStatus;
             }
 
@@ -286,14 +304,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return exceptionLine;
     }
 
-    public Optional<String> getSuccessMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.SUCCESS_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
-    }
-
-    public Optional<String> getWarningMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+    public Optional<String> getExperimentReport(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.REPORT_FILE)
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
@@ -446,12 +459,20 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installObsSnippet(String obsSnippetS3Path, List<String> instructions, List<String> files) {
+        if (obsSnippetS3Path != null) {
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), obsSnippetS3Path, OBS_SNIPPET_FILE));
+
+            instructions.add("mv ../obs.txt .");
+        }
+    }
+
     private void setupVariables(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
-                var("OBSERVATION_SNIPPET", BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations())),
+                var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
                 var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
@@ -466,7 +487,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
-                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables()))
+                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
+                var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory()))
         ));
     }
 
@@ -485,9 +507,11 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private String startTrainingRun(JobSpec job, List<String> instructions, List<String> files, EC2InstanceType ec2InstanceType) {
         File script = null;
         File errChecker = null;
+        File obsSnippet = null;
         try {
             script = File.createTempFile("pathmind", UUID.randomUUID().toString());
             errChecker = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            obsSnippet = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
             // generate script.sh
             List<String> finalInstruction = new ArrayList<>();
@@ -503,10 +527,15 @@ public class AWSExecutionProvider implements ExecutionProvider {
             scriptStr = String.join(" ;\n", checkErrors());
             FileUtils.writeStringToFile(errChecker, scriptStr, Charset.defaultCharset());
 
+            // generate obs.txt
+            scriptStr = BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations());
+            FileUtils.writeStringToFile(obsSnippet, scriptStr, Charset.defaultCharset());
+
             String jobId = buildJobId(job.getRunId());
 
             client.fileUpload(jobId + "/script.sh", script);
             client.fileUpload(jobId + "/errorCheck.sh", errChecker);
+            client.fileUpload(jobId + "/" + OBS_SNIPPET_FILE, obsSnippet);
             return client.jobSubmit(jobId, job.getType(), ec2InstanceType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

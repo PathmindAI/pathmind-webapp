@@ -23,11 +23,11 @@ public class StoppedTrainingNotification extends Span {
         addClassName(labelClass);
         setText(text);
         if (showEarlyStoppingLink) {
-            add(". See more info at ");
-            Anchor earlyStopping = new Anchor(earlyStoppingUrl, "Early Stopping");
+            add(". Click ");
+            Anchor earlyStopping = new Anchor(earlyStoppingUrl, "here");
             earlyStopping.setTarget("_blank");
             add(earlyStopping);
-            add(".");
+            add(" for more information.");
         }
         setVisible(true);
     }

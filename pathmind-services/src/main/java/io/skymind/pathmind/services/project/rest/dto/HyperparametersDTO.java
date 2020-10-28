@@ -14,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HyperparametersDTO {
+    @NotBlank(message = "isEnabled cannot be blank")
+    private boolean isEnabled;
+
+    @NotBlank(message = "oldVersionFound cannot be blank")
     private boolean oldVersionFound;
 
     @NotBlank(message = "Number of observations cannot be blank")
@@ -27,6 +31,9 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "rewardFunction cannot be blank")
     private String rewardFunction;
+
+    @NotBlank(message = "Number of agents cannot be blank")
+    private String agents;
 
     @NotBlank(message = "mode(modelType) cannot be blank")
     private String mode;

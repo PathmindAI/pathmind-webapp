@@ -62,7 +62,7 @@ public class HomePageStepDefinitions {
         homePageSteps.clickBackButton();
     }
 
-    @When("^Click Getting Started Guide button$")
+    @When("^Click Getting Started tutorial button$")
     public void clickGettingStartedGuideButton() {
         homePageSteps.clickGettingStartedGuideButton();
     }
@@ -180,5 +180,10 @@ public class HomePageStepDefinitions {
     @When("^Wait for search result page$")
     public void waitForSearchResultPage() {
         homePageSteps.waitForSearchResultPage();
+    }
+
+    @When("^Click and send enter btn to the search field$")
+    public void clickAndSendEnterBtnToTheSearchField() {
+        homePageSteps.clickAndSendEnterBtnToTheSearchField();
     }
 }

@@ -32,6 +32,8 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
 	private int rewardVariablesCount;
 	private String packageName;
 	private int invalidModel;
+    private int modelType;
+    private int numberOfAgents;
 
     @Override
     public Model shallowClone() {
@@ -48,7 +50,8 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
                 .rewardVariablesCount(rewardVariablesCount)
                 .packageName(packageName)
                 .invalidModel(invalidModel)
+                .modelType(modelType)
+                .numberOfAgents(numberOfAgents)
                 .build());
     }
-	private int modelType;
 }

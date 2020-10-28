@@ -269,19 +269,19 @@ public class RunDAO {
     }
 
     private void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(policies);
-        if (bestPolicy == null) {
+        if(policies == null)
             return;
-        }
-        List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        if (experiment.isHasGoals()) {
-            boolean goalsReached = rewardVariables.stream()
-                .filter(rv -> rv.getGoalConditionType() != null)
-                .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
-            experiment.setGoalsReached(goalsReached);
-            ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
-        }
+        PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
+            List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
+            PolicyUtils.updateSimulationMetricsData(bestPolicy);
+            if (experiment.isHasGoals()) {
+                boolean goalsReached = rewardVariables.stream()
+                        .filter(rv -> rv.getGoalConditionType() != null)
+                        .allMatch(rv -> PolicyUtils.isGoalReached(rv, bestPolicy));
+                experiment.setGoalsReached(goalsReached);
+                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
+            }
+        });
     }
 
     public void updatePolicyData(Run run, List<Policy> policies) {
@@ -305,6 +305,16 @@ public class RunDAO {
      */
     public int getRewardNumForRun(long runId) {
         return MetricsRepository.getRewardNumForRun(ctx, runId);
+    }
+
+    /**
+     * Gets the number of agents for AnyLogic Model for the given run id
+     *
+     * @param runId
+     * @return
+     */
+    public int getAgentsNumForRun(long runId) {
+        return MetricsRepository.getAgentsNumForRun(ctx, runId);
     }
 
     public UserMetrics getRunUsageDataForUser(long userId) {

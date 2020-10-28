@@ -2,6 +2,7 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
 import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.serenitybdd.core.Serenity;
@@ -15,6 +16,8 @@ public class NewExperimentStepDefinition {
     private NewExperimentSteps newExperimentSteps;
     @Steps
     private ProjectsPageSteps projectsPageSteps;
+    @Steps
+    private ExperimentPageSteps experimentPageSteps;
 
     @Then("^Check that new experiment (.*) page is opened$")
     public void checkThatExperimentPageIsOpened(String projectName) {
@@ -69,7 +72,7 @@ public class NewExperimentStepDefinition {
     @When("^Input unique experiment page note$")
     public void inputUniqueExperimentPageNoteNote() {
         Serenity.setSessionVariable("noteRandomNumber").to(new Date().getTime());
-        projectsPageSteps.inputExperimentNotes("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
+        experimentPageSteps.addNoteToTheExperimentPage("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo" + Serenity.sessionVariableCalled("noteRandomNumber"));
     }
 
     @Then("^Check newExperiment page reward variable error is shown (.*)$")
@@ -125,5 +128,15 @@ public class NewExperimentStepDefinition {
     @When("^Clean new experiment reward function field$")
     public void cleanNewExperimentRewardFunctionField() {
         newExperimentSteps.cleanNewExperimentRewardFunctionField();
+    }
+
+    @When("^Open experiment '(.*)' from sidebar in the new tab$")
+    public void openExperimentFromSidebarInTheNewTab(String experiment) {
+        newExperimentSteps.openExperimentFromSidebarInTheNewTab(experiment);
+    }
+
+    @When("^Click side bar new experiment btn$")
+    public void clickSideBarNewExperimentBtn() {
+        newExperimentSteps.clickSideBarNewExperimentBtn();
     }
 }

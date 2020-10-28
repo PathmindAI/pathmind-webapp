@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 
 @Slf4j
 public class PolicyUtils
@@ -86,13 +88,13 @@ public class PolicyUtils
         return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
     }
 
-    public static Policy selectBestPolicy(List<Policy> policies) {
-
+    public static Optional<Policy> selectBestPolicy(List<Policy> policies) {
+        if(policies == null)
+            return Optional.empty();
         return policies.stream()
             .filter(p -> p.getRun().getStatusEnum().equals(RunStatus.Completed) ? p.hasFile() : true)
             .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
-            .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration))
-            .orElse(null);
+            .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration));
     }
 
     public static void updateSimulationMetricsData(Policy policy) {
@@ -103,38 +105,36 @@ public class PolicyUtils
         policy.getUncertainty().clear();
 
         if (metricsList != null && metricsList.size() > 0) {
+            // (k:iteration, v:(k:index, v:averageMeanValue))
+            Map<Integer, Map<Integer, Double>> iterAndMetrics = metricsList.stream()
+                .collect(groupingBy(Metrics::getIteration, LinkedHashMap::new,
+                    groupingBy(Metrics::getIndex, LinkedHashMap::new,
+                        Collectors.averagingDouble(Metrics::getMean))));
+
             // The Simulation Metric value shown is the mean value of the metric in the last iteration
             // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
-            Metrics lastMetrics = metricsList.get(metricsList.size() - 1);
+            int lastIteration = Collections.max(iterAndMetrics.keySet());
+            iterAndMetrics.get(lastIteration).entrySet().stream()
+                .forEach(e -> policy.getSimulationMetrics().add(e.getKey(), e.getValue()));
 
-            lastMetrics.getMetricsThisIter().stream()
-                    .forEach(metricsThisIter -> policy.getSimulationMetrics().add(metricsThisIter.getMean()));
+            // (k:index, v:(k:iteration, v:averageMeanValue))
+            Map<Integer, Map<Integer, Double>> sparkLineMap = metricsList.stream()
+                .collect(groupingBy(Metrics::getIndex, LinkedHashMap::new,
+                    groupingBy(Metrics::getIteration, LinkedHashMap::new,
+                        Collectors.averagingDouble(Metrics::getMean))));
 
-            // index, metrics list
-            Map<Integer, Map<Integer, Double>> sparkLineMap = new LinkedHashMap<>();
-
-            // Loop by iteration
-            metricsList.stream().forEach(metrics ->
-                    // Loop by Number of Metrics for this Model, 
-                    // with their index, min, max, and mean as values provided
-                    metrics.getMetricsThisIter().forEach(mIter -> {
-                        int index = mIter.getIndex(); // this is the index of the metric
-
-                        // since this is for chart view, we need to make sure the order of data
-                        // we SHOULD use LinkedHashMap instead of HashMap
-                        Map<Integer, Double> data = sparkLineMap.containsKey(index) ? sparkLineMap.get(index) : new LinkedHashMap<>();
-                        // Put Iteration Number and Mean Value of metric into this LinkedHashMap
-                        data.put(metrics.getIteration(), mIter.getMean());
-                        sparkLineMap.put(index, data);
-                    })
-            );
             policy.setSparklinesData(sparkLineMap);
         }
 
         List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
+
         if (metricsRawList != null && metricsRawList.size() > 0) {
-            Collections.sort(metricsRawList, Comparator.comparingInt(MetricsRaw::getIteration));
-            Map<Integer, List<Double>> uncertaintyMap = MetricsRawUtils.toIndexAndMetricRawData(metricsRawList);
+            // (k: index, v: meanValueList)
+            Map<Integer, List<Double>> uncertaintyMap = policy.getMetricsRaws().stream()
+                .collect(groupingBy(MetricsRaw::getIndex,
+                    mapping(MetricsRaw::getValue, Collectors.toList())
+                    )
+                );
 
             policy.setUncertainty(uncertaintyMap.values().stream()
                     .map(list -> PathmindNumberUtils.calculateUncertainty(list))

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
@@ -13,7 +12,11 @@ import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -33,6 +36,11 @@ public class GenericPage extends PageObject {
     private WebElement notesField;
     @FindBy(xpath = "(//vaadin-text-field)[2]")
     private WebElement editProjectNameInputShadow;
+    @FindBy(xpath = "//notes-field")
+    private WebElement notesBlock;
+    private By notesTextarea = By.cssSelector("#textarea");
+    private By notesSaveBtn = By.cssSelector("#save");
+    private By saveIcon = By.cssSelector("saveIcon");
 
     public void checkThatButtonExists(String buttonText) {
         String xpath = String.format("//vaadin-button[text()='%s']", buttonText);
@@ -125,16 +133,19 @@ public class GenericPage extends PageObject {
     }
 
     public void addNoteToTheProjectPage(String note) {
-        notesField.click();
-        notesField.sendKeys(note);
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(note);
     }
 
     public void projectPageClickSaveBtn() {
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='notes-block']/descendant::vaadin-button")).click();
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesSaveBtn).click();
     }
 
     public void checkProjectNoteIs(String note) {
-        assertThat(notesField.getAttribute("value"), is(note));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void inputProjectNameToTheEditPopup(String projectName) {
@@ -146,7 +157,8 @@ public class GenericPage extends PageObject {
     }
 
     public void checkThatCheckmarkIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesSaveBtn).isDisplayed(), is(true));
     }
 
     public void duplicateCurrentTab() {
@@ -225,5 +237,26 @@ public class GenericPage extends PageObject {
 
     public void clickPopUpDialogCloseBtn() {
         getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::vaadin-button[last()]")).click();
+    }
+
+    public void clickInTheNewTabModelButton(String text) {
+        waitABit(2000);
+        WebElement button = getDriver().findElement(By.xpath("//*[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
+        Actions actions = new Actions(getDriver());
+        actions.keyDown(Keys.CONTROL).build().perform();
+        actions.moveToElement(button).build().perform();
+        waitABit(2500);
+        actions.click(button).build().perform();
+        actions.keyUp(Keys.CONTROL).build().perform();
+        waitABit(3000);
+    }
+
+    public void checkNetworkErrors() {
+        List<LogEntry> entries = getDriver().manage().logs().get(LogType.PERFORMANCE).getAll();
+        System.out.println(entries.size() + " " + LogType.PERFORMANCE + " log entries found");
+        for (LogEntry entry : entries) {
+            System.out.println(entry.getMessage());
+            assertThat(entry.getMessage(), not(containsString("\"status\":\"4")));
+        }
     }
 }

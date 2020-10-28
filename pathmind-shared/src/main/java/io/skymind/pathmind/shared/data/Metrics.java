@@ -14,11 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Metrics implements Serializable, DeepCloneableInterface<Metrics> {
+    private Integer agent;
     private Integer iteration;
-    private List<MetricsThisIter> metricsThisIter;
+    private Integer index;
+    private Double max;
+    private Double min;
+    private Double mean;
 
     @Override
     public Metrics shallowClone() {
-        return new Metrics(iteration, CloneUtils.shallowCloneList(metricsThisIter));
+        return new Metrics(agent, iteration, index, max, min, mean);
     }
 }
