@@ -12,6 +12,7 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-combo-box id="anylogicVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="nativerlVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="helperVersionCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="numSampleCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-vertical-layout id="buttonsCont">
                             	<vaadin-button id="saveBtn" theme="primary">
                                     Save

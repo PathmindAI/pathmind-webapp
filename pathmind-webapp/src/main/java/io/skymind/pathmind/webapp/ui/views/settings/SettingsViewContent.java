@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("helperVersionCB")
     private ComboBox<String> helperVersion;
 
+    @Id("numSampleCB")
+    private ComboBox<String> numSample;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -74,6 +78,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
             env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
+            env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -132,6 +137,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         helperVersion.setLabel("PM helper Version");
         helperVersion.setPlaceholder(env.getPathmindHelperVersion().toString());
         helperVersion.setValue(env.getPathmindHelperVersion().toString());
+
+        // init number of samples
+        List<String> numSamples = List.of("1", "2", "3", "4");
+
+        numSample.setItems(numSamples);
+        numSample.setLabel("Number of PBT samples");
+        numSample.setPlaceholder(String.valueOf(env.getPBT_NUM_SAMPLES()));
+        numSample.setValue(String.valueOf(env.getPBT_NUM_SAMPLES()));
     }
 
     public interface Model extends TemplateModel {

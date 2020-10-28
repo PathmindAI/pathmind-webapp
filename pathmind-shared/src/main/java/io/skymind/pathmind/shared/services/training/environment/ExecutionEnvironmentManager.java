@@ -19,7 +19,10 @@ public class ExecutionEnvironmentManager {
                 NativeRL.VERSION_1_3_0,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_0_0,
-                EC2InstanceType.IT_36CPU_72GB);
+                EC2InstanceType.IT_36CPU_72GB,
+                0,
+                0,
+                0);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {
