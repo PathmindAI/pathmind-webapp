@@ -142,15 +142,6 @@ public class PolicyUtils
         }
     }
 
-    // TODO -> STEPH -> DELETE -> Temporary for testing threading issues.
-    public static String getSimulationMetricsSize(Policy policy) {
-        if(policy == null)
-            return "policy null";
-        if(policy.getSimulationMetrics() == null)
-            return "simulationMetrics null : [" + policy.getId() + "]";
-        return Integer.toString(policy.getSimulationMetrics().size()) + ": [" + policy.getId() + "]";
-    }
-
     public static boolean isGoalReached(RewardVariable rv, Policy policy) {
         Double metricValue = 0.0, uncertaintyValue = 0.0;
         if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
