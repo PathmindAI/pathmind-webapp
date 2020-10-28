@@ -268,7 +268,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
                     return;
                 trainingService.startRun(experiment);
-                segmentIntegrator.discoveryRunStarted();
+                segmentIntegrator.restartTraining();
                 initLoadData();
                 // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
                 trainingStatusDetailsPanel.setExperiment(experiment);
