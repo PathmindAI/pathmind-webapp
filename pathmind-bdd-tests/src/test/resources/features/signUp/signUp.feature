@@ -2,7 +2,7 @@
 Feature: Sign Up
 
   Scenario Outline: Create new user
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
     When Create new user click sign up button
     When Fill new user password <Password>
@@ -19,7 +19,7 @@ Feature: Sign Up
       | Evgeniy    | Autotest  | Pass123456 |
 
   Scenario Outline: Create new user and login without email approve
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
     When Create new user click sign up button
     When Fill new user password <Password>
@@ -27,6 +27,7 @@ Feature: Sign Up
     When Create new user click sign in button
     When Open pathmind page
     Then Login with new user email and <Password>
+    And Wait for sign-in page anti-flicker script
     Then Check that Create new user error Email is not verified shown
     Then Check that Create new user Resend btn is shown
 
@@ -35,7 +36,7 @@ Feature: Sign Up
       | Evgeniy    | Autotest  | Pass123456 |
 
   Scenario: Create new user using email alias
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with first name Evgeniy
     When Fill new user form with last name Autotest
     When Fill temporary email with alias to the new user form
@@ -45,6 +46,7 @@ Feature: Sign Up
     When Create new user click sign in button
     When Open pathmind page
     Then Login with new user email and Pass123456
+    And Wait for sign-in page anti-flicker script
     Then Check that Create new user error Email is not verified shown
     Then Click in 'Resend' button
     Then Check that Email verification was sent to your email. popup is shown
@@ -52,5 +54,6 @@ Feature: Sign Up
 
   @smoke
   Scenario: Check create new user page elements
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Check create new user page elements
+    # Then Check network errors

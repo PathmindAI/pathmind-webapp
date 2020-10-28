@@ -68,14 +68,20 @@ Feature: Experiment archive
     Then Click side nav archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
     When Click in 'Model #1 (coffeeshop)' button
+    Then Check that model/experiment name '1' NOT exist in archived/not archived tab
+    Then Check that model/experiment name '2 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
+    Then Check that model/experiment name '2 Draft' NOT exist in archived/not archived tab
     Then Click the experiment name 1
     When Click in 'Unarchive' button
     When In confirmation dialog click in 'Unarchive' button
     When Click in 'Model #1 (coffeeshop)' button
     Then Check that model/experiment name '1' exist in archived/not archived tab
+    Then Check that model/experiment name '2 Draft' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     When Check that model/experiment name '1' NOT exist in archived/not archived tab
+    When Check that model/experiment name '2 Draft' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
     Then Click the experiment name 1
     When Click in 'Stop Training' button

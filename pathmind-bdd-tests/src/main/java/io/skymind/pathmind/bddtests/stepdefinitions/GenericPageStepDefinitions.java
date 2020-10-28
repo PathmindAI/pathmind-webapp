@@ -169,4 +169,9 @@ public class GenericPageStepDefinitions {
     public void clickInTheNewTabModelButton(String text) {
         genericPageSteps.clickInTheNewTabModelButton(text);
     }
+
+    @Then("^Check network errors$")
+    public void checkNetworkErrors() {
+        genericPageSteps.checkNetworkErrors();
+    }
 }

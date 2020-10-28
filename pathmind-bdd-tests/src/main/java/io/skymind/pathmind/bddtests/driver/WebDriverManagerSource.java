@@ -10,10 +10,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class WebDriverManagerSource implements DriverSource {
 
@@ -30,7 +33,9 @@ public class WebDriverManagerSource implements DriverSource {
                 WebDriverManager.chromedriver().version(chromeVersion).setup();
                 ChromeOptions options = new ChromeOptions();
                 Map<String, Object> prefs = new HashMap<>();
-
+                // LoggingPreferences logPrefs = new LoggingPreferences();
+                // logPrefs.enable( LogType.PERFORMANCE, Level.ALL );
+                // options.setCapability( "goog:loggingPrefs", logPrefs );
                 if (_headless.equals("true")) {
                     options.addArguments("--headless");
                 }
