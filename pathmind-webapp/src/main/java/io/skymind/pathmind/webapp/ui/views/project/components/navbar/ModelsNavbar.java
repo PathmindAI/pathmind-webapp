@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -23,8 +24,6 @@ public class ModelsNavbar extends VerticalLayout
     private List<Model> models;
     private Model selectedModel;
 
-    private NotificationModelUpdatedSubscriber notificationModelUpdatedSubscriber;
-
     private List<ModelsNavbarItem> modelsNavbarItems = new ArrayList<>();
     private Select<String> categorySelect;
 	private VerticalLayout rowsWrapper;
@@ -41,8 +40,6 @@ public class ModelsNavbar extends VerticalLayout
 	    this.models = models;
 	    this.selectedModel = selectedModel;
         this.segmentIntegrator = segmentIntegrator;
-
-        notificationModelUpdatedSubscriber = new NotificationModelUpdatedSubscriber(getUISupplier, models, selectedModel);
 
         rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("models-navbar-items");
@@ -65,7 +62,12 @@ public class ModelsNavbar extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, notificationModelUpdatedSubscriber);
+        // EventBus.subscribe(this, new NotificationModelUpdatedSubscriber(getUISupplier, models, selectedModel));
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        // EventBus.unsubscribe(this);
     }
 
     public List<Model> getModels() {

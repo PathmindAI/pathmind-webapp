@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+// TODO -> This may not be needed. Currently it is not in use. If this is needed, it should be refactored.
 public class NotificationModelUpdatedSubscriber extends EventBusSubscriber<ModelUpdatedBusEvent> {
     
     private List<Model> models;
@@ -28,8 +29,6 @@ public class NotificationModelUpdatedSubscriber extends EventBusSubscriber<Model
     }
 
     public void handleBusEvent(ModelUpdatedBusEvent event) {
-        // We need to update the internal models list for the navigation logic.
-        ModelUtils.updateModelInModelsList(models, event.getModel());
     }
 
     @Override
