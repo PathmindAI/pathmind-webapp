@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
@@ -35,6 +34,11 @@ public class GenericPage extends PageObject {
     private WebElement notesField;
     @FindBy(xpath = "(//vaadin-text-field)[2]")
     private WebElement editProjectNameInputShadow;
+    @FindBy(xpath = "//notes-field")
+    private WebElement notesBlock;
+    private By notesTextarea = By.cssSelector("#textarea");
+    private By notesSaveBtn = By.cssSelector("#save");
+    private By saveIcon = By.cssSelector("saveIcon");
 
     public void checkThatButtonExists(String buttonText) {
         String xpath = String.format("//vaadin-button[text()='%s']", buttonText);
@@ -127,16 +131,19 @@ public class GenericPage extends PageObject {
     }
 
     public void addNoteToTheProjectPage(String note) {
-        notesField.click();
-        notesField.sendKeys(note);
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(note);
     }
 
     public void projectPageClickSaveBtn() {
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='notes-block']/descendant::vaadin-button")).click();
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesSaveBtn).click();
     }
 
     public void checkProjectNoteIs(String note) {
-        assertThat(notesField.getAttribute("value"), is(note));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void inputProjectNameToTheEditPopup(String projectName) {
@@ -148,7 +155,8 @@ public class GenericPage extends PageObject {
     }
 
     public void checkThatCheckmarkIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:check' and @class='fade-in']")).isDisplayed(), is(true));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesSaveBtn).isDisplayed(), is(true));
     }
 
     public void duplicateCurrentTab() {
