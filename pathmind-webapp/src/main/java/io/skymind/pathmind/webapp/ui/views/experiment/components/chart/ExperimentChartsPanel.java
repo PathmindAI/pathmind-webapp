@@ -66,7 +66,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
             chartTabs,
             chartsPanel);
         addClassName("row-2-of-3");
-        setAllMetricsChartPanelVisible();
+
+        setAllMetricsChartPanelVisible(true);
     }
 
     private Tabs createChartTabs() {
@@ -74,15 +75,15 @@ public class ExperimentChartsPanel extends VerticalLayout {
         rewardScoreChartTab = new Tab("Mean Reward Score");
         chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
-        chartTabs.addSelectedChangeListener(event -> setVisiblePanel());
+        chartTabs.addSelectedChangeListener(event -> setVisiblePanel(true));
         return chartTabs;
     }
 
-    private void setVisiblePanel() {
+    private void setVisiblePanel(boolean isRedraw) {
         if (chartTabs.getSelectedIndex() == 0) {
-            setAllMetricsChartPanelVisible();
+            setAllMetricsChartPanelVisible(isRedraw);
         } else {
-            setPolicyChartPanelVisible();
+            setPolicyChartPanelVisible(isRedraw);
         }
     }
 
@@ -110,8 +111,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
-        } else if (!policyChartPanel.isVisible()){
-            setVisiblePanel();
+        } else {
+            setVisiblePanel(false);
         }
     }
 
@@ -121,18 +122,20 @@ public class ExperimentChartsPanel extends VerticalLayout {
         experiment.updateTrainingStatus();
     }
 
-    private void setAllMetricsChartPanelVisible() {
+    private void setAllMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
         allMetricsChartPanel.setVisible(true);
-        allMetricsChartPanel.redrawChart();
+        if(isRedraw)
+            allMetricsChartPanel.redrawChart();
     }
 
-    private void setPolicyChartPanelVisible() {
+    private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(true);
         allMetricsChartPanel.setVisible(false);
-        policyChartPanel.redrawChart();
+        if(isRedraw)
+           policyChartPanel.redrawChart();
     }
 
     private void setPlaceholderVisible() {
