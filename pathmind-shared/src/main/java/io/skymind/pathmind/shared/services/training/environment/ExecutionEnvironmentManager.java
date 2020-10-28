@@ -22,6 +22,7 @@ public class ExecutionEnvironmentManager {
                 EC2InstanceType.IT_36CPU_72GB,
                 0,
                 0,
+                0,
                 0);
     }
 

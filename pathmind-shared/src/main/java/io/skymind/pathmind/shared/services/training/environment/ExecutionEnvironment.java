@@ -20,6 +20,7 @@ public class ExecutionEnvironment {
     private int PBT_RUN_ITERATIONS;
     private int PBT_MAX_TIME_IN_SEC;
     private int PBT_NUM_SAMPLES;
+    private int maxMemory;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;
@@ -31,5 +32,9 @@ public class ExecutionEnvironment {
 
     public int getPBT_NUM_SAMPLES() {
         return PBT_NUM_SAMPLES == 0 ? RunConstants.PBT_NUM_SAMPLES : PBT_NUM_SAMPLES;
+    }
+
+    public int getMaxMemory() {
+        return maxMemory == 0 ? 4096 : maxMemory;
     }
 }
