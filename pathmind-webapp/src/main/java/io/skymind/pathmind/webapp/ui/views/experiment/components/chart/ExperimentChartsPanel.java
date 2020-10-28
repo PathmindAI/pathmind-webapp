@@ -101,6 +101,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
         setExperiment(newExperiment);
         this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
+        updateCharts();
     }
 
     private void updateCharts() {
@@ -109,7 +110,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
-        } else {
+        } else if (!policyChartPanel.isVisible()){
             setVisiblePanel();
         }
     }
