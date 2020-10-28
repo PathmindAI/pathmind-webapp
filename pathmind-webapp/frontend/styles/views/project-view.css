@@ -70,7 +70,7 @@
 
 .project-view .page-content-header {
     margin-bottom: 0;
-    padding: 0 var(--lumo-space-xs) 0 var(--lumo-space-m) ;
+    padding: 0 0 0 var(--lumo-space-m) ;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
@@ -113,30 +113,6 @@
 
 .project-view .observations-table vaadin-checkbox-group vaadin-checkbox[disabled] {
     color: var(--lumo-secondary-text-color);
-}
-
-.project-view .notes-block vaadin-text-area {
-    border: none;
-    border-left: 1px solid var(--pm-grey-color-lightest);
-    border-radius: 0;
-}
-
-.project-view .notes-block {
-    position: relative;
-    line-height: 1;
-}
-
-.project-view .notes-block .header {
-    position: absolute;
-    width: auto;
-    right: var(--lumo-space-xs);
-    bottom: var(--lumo-space-xs);
-    margin-bottom: 0;
-    z-index: 1;
-}
-
-.project-view .notes-block .header span:first-child {
-    display: none;
 }
 
 .models-navbar {

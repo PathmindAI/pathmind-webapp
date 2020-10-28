@@ -231,7 +231,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				updatedNotes -> {
 						projectDAO.updateUserNotes(projectId, updatedNotes);
 						segmentIntegrator.updatedNotesModelsView();
-                }
+                },
+                true
 			);
 	}
 
@@ -242,7 +243,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				updatedNotes -> {
 						modelDAO.updateUserNotes(selectedModel.getId(), updatedNotes);
 						segmentIntegrator.updatedNotesExperimentsView();
-                }
+                },
+                true
 			);
 	}
 

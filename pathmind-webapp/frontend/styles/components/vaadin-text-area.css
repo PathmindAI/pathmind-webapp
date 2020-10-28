@@ -15,11 +15,6 @@
     padding: 0.5rem var(--lumo-space-s);
 }
 
-:host([theme~="autoheight"]) [part="input-field"],
-:host([theme~="autoheight"]) [part="input-field"] ::slotted(textarea) {
-    height: auto;
-}
-
 :host(:hover:not([readonly]):not([focused])) [part="input-field"] {
     background-color: var(--lumo-contrast-10pct);
 }
