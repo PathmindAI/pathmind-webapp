@@ -104,8 +104,6 @@ public class PolicyUtils
         policy.getSimulationMetrics().clear();
         policy.getUncertainty().clear();
 
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> updateSimulationMetricsData pre " + PolicyUtils.getSimulationMetricsSize(policy));
-
         if (metricsList != null && metricsList.size() > 0) {
             // (k:iteration, v:(k:index, v:averageMeanValue))
             Map<Integer, Map<Integer, Double>> iterAndMetrics = metricsList.stream()
@@ -142,8 +140,6 @@ public class PolicyUtils
                     .map(list -> PathmindNumberUtils.calculateUncertainty(list))
                     .collect(Collectors.toList()));
         }
-
-        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> updateSimulationMetricsData post : " + getSimulationMetricsSize(policy));
     }
 
     // TODO -> STEPH -> DELETE -> Temporary for testing threading issues.

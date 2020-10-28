@@ -66,9 +66,7 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     private void selectBestPolicy() {
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-        log.info("..........> selectBestPolicy pre : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        log.info("..........> selectBestPolicy post : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
     }
 
     private void updateChartData() {

@@ -273,9 +273,7 @@ public class RunDAO {
             return;
         PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
             List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-            log.info("..........> calculateGoals pre : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
             PolicyUtils.updateSimulationMetricsData(bestPolicy);
-            log.info("..........> calculateGoals post : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
             if (experiment.isHasGoals()) {
                 boolean goalsReached = rewardVariables.stream()
                         .filter(rv -> rv.getGoalConditionType() != null)

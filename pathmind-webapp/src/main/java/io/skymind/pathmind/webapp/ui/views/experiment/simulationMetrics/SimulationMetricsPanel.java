@@ -88,7 +88,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         if (showSimulationMetrics) {
             createSimulationMetricsSpansAndSparklines();
 
-            log.info("+++++++> SimulationMetricsPanel.constructor");
             updateSimulationMetrics();
 
             add(metricsWrapper, sparklinesWrapper);
@@ -111,9 +110,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         // Needed to convert the raw metrics to a format the UI can use.
-        log.info("..........> createSimulationMetricsSpansAndSparklines pre : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        log.info("..........> createSimulationMetricsSpansAndSparklines post: " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
 
         IntStream.range(0, rewardVariables.size())
                 .forEach(index -> {
@@ -165,7 +162,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment.deepClone();
-        log.info("+++++++> SimulationMetricsPanel.setExperiment");
         updateSimulationMetrics();
     }
 
@@ -178,9 +174,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         // Needed to convert the raw metrics to a format the UI can use.
-        log.info("..........> updateSimulationMetrics pre : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
-        log.info("..........> updateSimulationMetrics post : " + PolicyUtils.getSimulationMetricsSize(bestPolicy));
 
         if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
             showMetricValuesAndSparklines(false);
