@@ -106,7 +106,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName, archiveButton),
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
             ),
-            new NewExperimentButton(experimentDAO, modelId));
+            new NewExperimentButton(experimentDAO, modelId, segmentIntegrator));
         headerWrapper.addClassName("page-content-header");
 
         FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);

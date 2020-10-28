@@ -38,8 +38,9 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_IMPORT_MODEL = "Import Model";
 	private static final String EVENT_CREATE_PROJECT = "Create Project";
 	private static final String EVENT_CREATE_REWARD_FUNTION = "Create Reward Function";
-	private static final String EVENT_START_DISCOVERY_RUN = "Start Discovery Run";
-	private static final String EVENT_START_FULL_RUN = "Start Full Run";
+    private static final String EVENT_START_TRAINING = "Start Training";
+    private static final String EVENT_STOP_TRAINING = "Stop Training";
+    private static final String EVENT_RESTART_TRAINING = "Restart Training";
 	private static final String EVENT_EXPORT_POLICY = "Export Policy";
     private static final String EVENT_SAVE_MODEL_DRAFT = "Save Model Draft";
 	private static final String EVENT_DOWNLOAD_MODEL_ALP = "Download Model ALP";
@@ -58,6 +59,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private static final String EVENT_ERROR_PAGE = "Error page displayed";
 	private static final String EVENT_ARCHIVED = "Archived";
 	private static final String EVENT_UNARCHIVED = "Unarchived";
+    private static final String EVENT_NEW_EXPERIMENT = "New Experiment";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -85,14 +87,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
 	public void rewardFuntionCreated() {
 		track(EVENT_CREATE_REWARD_FUNTION);
-	}
-
-	public void discoveryRunStarted() {
-		track(EVENT_START_DISCOVERY_RUN);
-	}
-
-	public void fullRunStarted() {
-		track(EVENT_START_FULL_RUN);
 	}
 
 	public void policyExported() {
@@ -145,6 +139,22 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void performedSearch() {
         track(EVENT_SEARCHED_SITE);
+    }
+
+    public void newExperiment() {
+        track(EVENT_NEW_EXPERIMENT);
+    }
+
+    public void startTraining() {
+        track(EVENT_START_TRAINING);
+    }
+
+    public void stopTraining() {
+        track(EVENT_STOP_TRAINING);
+    }
+
+    public void restartTraining() {
+        track(EVENT_RESTART_TRAINING);
     }
 
     public void downloadedALP() {
