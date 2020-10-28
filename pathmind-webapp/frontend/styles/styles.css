@@ -8,6 +8,7 @@ html {
     --pm-highlight-medium: rgba(240, 241, 246, 0.5);
     --pm-highlight-strong: rgba(240, 241, 246, 0.5);
     --pm-friendly-color: #3a966b;
+    --pm-friendly-color-bright: #b2ea17;
     --pm-danger-color: #d80947;
 
     /* pathmind color palette */
@@ -509,6 +510,10 @@ account-view {
 .success-label {
     background: var(--lumo-success-color-10pct);
     color: var(--lumo-success-color);
+}
+.success-label-bright-green {
+    background: var(--pm-friendly-color-bright);
+    color: black;
 }
 .warning-label {
     background: var(--pm-gold-color);

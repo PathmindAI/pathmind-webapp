@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
-import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
+import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 
 @Push(PushMode.AUTOMATIC)
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
@@ -61,7 +61,7 @@ public class MainLayout extends AppLayout implements PageConfigurator
 
 	@Override
 	public void configurePage(InitialPageSettings settings) {
-		VaadinUtils.setupFavIcon(settings);
+		PageConfigurationUtils.defaultPageConfiguration(settings);
 	}
 
 	public void clearSearchBoxValue() {

@@ -81,7 +81,7 @@ public class UpdaterService {
                 if (enforceComplete) {
                     log.info("Marking Completing run [{}] as Completed since limit of update attempts had been reached", run.getId());
                 }
-                providerJobStatus = new ProviderJobStatus(Completed, providerJobStatus.getExperimentState());
+                providerJobStatus = new ProviderJobStatus(Completed, providerJobStatus.getDescription(), providerJobStatus.getExperimentState());
             }
         }
         ExperimentState experimentState = providerJobStatus.getExperimentState();

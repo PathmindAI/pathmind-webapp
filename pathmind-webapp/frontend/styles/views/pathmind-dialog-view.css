@@ -17,6 +17,7 @@
     overflow: auto;
 }
 .panel-wrapper h3 {
+    font-weight: 600;
     margin: 0 auto var(--lumo-space-l);
 }
 

@@ -162,4 +162,9 @@ public class LoginPageSteps {
     public void checkThatPopupIsShown(String popUp) {
         loginPage.checkThatPopupIsShown(popUp);
     }
+
+    @Step
+    public void waitForSignInPageAntiFlickerScript() {
+        loginPage.waitForSignInPageAntiFlickerScript();
+    }
 }

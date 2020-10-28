@@ -470,17 +470,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     .findAny()
                     .ifPresent(r -> {
                         if (StringUtils.isNotBlank(r.getSuccessMessage())) {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getSuccessMessage()), SUCCESS_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped("Success! " + r.getSuccessMessage(), SUCCESS_LABEL_BRIGHT_GREEN, true);
                         }
                         else {
-                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(firstLine(r.getWarningMessage()), WARNING_LABEL, true);
+                            stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(r.getWarningMessage(), WARNING_LABEL, true);
                         }
                     });
         }
-    }
-
-    private String firstLine(String message) {
-        return message.split("\\n", 2)[0];
     }
 
     public void updateButtonEnablement() {
