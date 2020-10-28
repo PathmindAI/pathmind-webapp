@@ -99,10 +99,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
     }
 
     public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
-
-        this.experiment = newExperiment.deepClone();
+        setExperiment(newExperiment);
         this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
+    }
 
+    private void updateCharts() {
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
 
@@ -111,6 +112,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
         } else {
             setVisiblePanel();
         }
+    }
+
+    private void setExperiment(Experiment experiment) {
+        this.experiment = experiment.deepClone();
+        // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
+        experiment.updateTrainingStatus();
     }
 
     private void setAllMetricsChartPanelVisible() {
@@ -147,7 +154,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
                 ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
-                setupCharts(experiment, rewardVariables);
+                experiment.updateTrainingStatus();
+                updateCharts();
             });
         }
 
@@ -166,7 +174,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public void handleBusEvent(ExperimentChangedViewBusEvent event) {
             PushUtils.push(getUiSupplier(), () ->
-                setupCharts(event.getExperiment(), rewardVariables));
+                setExperiment(event.getExperiment()));
+                updateCharts();
         }
     }
 }
