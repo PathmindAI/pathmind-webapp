@@ -179,6 +179,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         public void handleBusEvent(ExperimentChangedViewBusEvent event) {
             PushUtils.push(getUiSupplier(), () ->
                 setExperiment(event.getExperiment()));
+                experiment.updateTrainingStatus();
                 updateCharts();
         }
     }
