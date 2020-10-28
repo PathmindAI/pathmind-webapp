@@ -1778,35 +1778,6 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="20201012-01" author="alexander.makarov@toptal.com">
-        <comment>
-            Add number of total and reached goals
-        </comment>
-        <addColumn tableName="EXPERIMENT">
-            <column name="GOALS_TOTAL_NUM" type="INT" defaultValue="0">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-        <addColumn tableName="EXPERIMENT">
-            <column name="GOALS_REACHED_NUM" type="INT" defaultValue="0">
-                <constraints nullable="false"/>
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="20201012-02" author="alexander.makarov@toptal.com">
-        <dropColumn tableName="EXPERIMENT" columnName="GOALS_REACHED" />
-    </changeSet>
-
-    <changeSet id="20201018-02" author="alexander.makarov@toptal.com">
-        <createIndex tableName="EXPERIMENT" indexName="GOALS_COUNT_MIGRATION_IDX">
-            <column name="HAS_GOALS" />
-            <column name="TRAINING_STATUS" />
-            <column name="GOALS_TOTAL_NUM" />
-            <column name="DATE_CREATED" descending="true" />
-        </createIndex>
-    </changeSet>
-
     <changeSet id="20201014-01" author="daehyun@skymind.io">
         <comment>
             Add the number of agents for MODEL
@@ -1835,6 +1806,35 @@
         <rollback>
             <dropColumn tableName="METRICS_RAW" columnName="AGENT"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="20201028-01" author="alexander.makarov@toptal.com">
+        <comment>
+            Add number of total and reached goals
+        </comment>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_TOTAL_NUM" type="INT" defaultValue="0">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="EXPERIMENT">
+            <column name="GOALS_REACHED_NUM" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20201028-02" author="alexander.makarov@toptal.com">
+        <dropColumn tableName="EXPERIMENT" columnName="GOALS_REACHED" />
+    </changeSet>
+
+    <changeSet id="20201028-03" author="alexander.makarov@toptal.com">
+        <createIndex tableName="EXPERIMENT" indexName="GOALS_COUNT_MIGRATION_IDX">
+            <column name="HAS_GOALS" />
+            <column name="TRAINING_STATUS" />
+            <column name="GOALS_TOTAL_NUM" />
+            <column name="DATE_CREATED" descending="true" />
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>
