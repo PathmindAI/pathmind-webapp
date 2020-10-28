@@ -336,6 +336,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void showStopTrainingConfirmationDialog() {
         ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
                 trainingService.stopRun(experiment);
+                segmentIntegrator.stopTraining();
                 stopTrainingButton.setVisible(false);
                 fireEvents();
         });
