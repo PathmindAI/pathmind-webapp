@@ -84,6 +84,7 @@ Feature: Model page
     When Check that model successfully uploaded
     When Open projects page
     When Open project AutotestProject on projects page
+    When Wait a bit 3000 ms
     When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
     When Change models sidebar list to 'Archived'
     Then Check that models sidebar model '2' contains draft tag 'true'
