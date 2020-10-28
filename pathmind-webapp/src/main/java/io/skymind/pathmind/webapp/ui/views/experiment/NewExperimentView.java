@@ -313,7 +313,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         trainingService.startRun(experiment);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment,
                 ExperimentUpdatedBusEvent.ExperimentUpdateType.StartTraining));
-        segmentIntegrator.discoveryRunStarted();
+        segmentIntegrator.startTraining();
 
         unsavedChanges.setVisible(false);
 
