@@ -39,8 +39,8 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
+import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -48,6 +48,7 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
@@ -245,7 +246,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
                     return;
                 trainingService.startRun(experiment);
-                segmentIntegrator.discoveryRunStarted();
+                segmentIntegrator.restartTraining();
                 initLoadData();
                 // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
                 trainingStatusDetailsPanel.setExperiment(experiment);
@@ -304,6 +305,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         confirmPopup.setConfirmButton(
                 "Stop Training",
                 () -> {
+                    segmentIntegrator.stopTraining();
                     trainingService.stopRun(experiment);
                     stopTrainingButton.setVisible(false);
                     fireEvents();
@@ -336,10 +338,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
-    private NotesField createViewNotesField() {
-        return new NotesField(
+    private ExperimentNotesField createViewNotesField() {
+        return new ExperimentNotesField(
+            () -> getUI(),
             "Notes",
-            experiment.getUserNotes(),
+            experiment,
             updatedNotes -> {
                 experimentDAO.updateUserNotes(experimentId, updatedNotes);
                 segmentIntegrator.updatedNotesExperimentView();
@@ -363,7 +366,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
             experimentId = selectedExperiment.getId();
             loadExperimentData();
-            notesField.setNotesText(experiment.getUserNotes());
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
 			experimentsNavbar.setCurrentExperiment(selectedExperiment);
 

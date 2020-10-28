@@ -44,8 +44,9 @@ import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
+import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -142,7 +143,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (selectedModel != null) {
             setupGrid();
             setupArchivesTabPanel();
-            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY);
+            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
             modelNotesField = createModelNotesField();
             rewardVariablesTable = new RewardVariablesTable(() -> getUI());
             rewardVariablesTable.setRewardVariables(rewardVariables);
@@ -230,8 +231,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				updatedNotes -> {
 						projectDAO.updateUserNotes(projectId, updatedNotes);
 						segmentIntegrator.updatedNotesModelsView();
-                },
-                true
+                }
 			);
 	}
 
@@ -242,8 +242,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 				updatedNotes -> {
 						modelDAO.updateUserNotes(selectedModel.getId(), updatedNotes);
 						segmentIntegrator.updatedNotesExperimentsView();
-                },
-                true
+                }
 			);
 	}
 

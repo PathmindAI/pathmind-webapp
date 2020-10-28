@@ -1,18 +1,17 @@
-:host([theme~="notes"]) {
+:host {
     box-sizing: border-box;
     width: 100%;
     line-height: 1.5em;
-    background-color: white;
     padding: 0;
     border-radius: var(--lumo-border-radius);
     border: 1px solid var(--pm-grey-color);
 }
 
-:host([theme~="notes"]) [part="input-field"],
-:host([theme~="notes"]) [part="input-field"] ::slotted(textarea) {
+:host [part="input-field"],
+:host [part="input-field"] ::slotted(textarea) {
     line-height: 1.5em;
     height: 12em;
-    background-color: white;
+    background-color: var(--lumo-contrast-5pct);
     padding: 0.5rem var(--lumo-space-s);
 }
 
@@ -21,11 +20,11 @@
     height: auto;
 }
 
-:host([theme~="notes"]:hover:not([readonly]):not([focused])) [part="input-field"] {
-    background-color: rgba(255, 255, 255, 0.8);
+:host(:hover:not([readonly]):not([focused])) [part="input-field"] {
+    background-color: var(--lumo-contrast-10pct);
 }
 
-:host([theme~="notes"]) [part="input-field"] [part="value"],
-:host([theme~="notes"]) [part="input-field"] ::slotted(textarea) {
+:host [part="input-field"] [part="value"],
+:host [part="input-field"] ::slotted(textarea) {
     padding: 0;
 }
