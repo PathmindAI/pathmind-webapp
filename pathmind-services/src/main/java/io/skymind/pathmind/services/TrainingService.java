@@ -54,19 +54,20 @@ public abstract class TrainingService {
     }
 
     public void startRun(Experiment exp){
+        // set the current Execution Environment for the given user
+        long userId = this.modelDAO.getUserForModel(exp.getModelId());
+        this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
+
         startRun(exp,
-                RunConstants.PBT_RUN_ITERATIONS,
-                RunConstants.PBT_MAX_TIME_IN_SEC,
-                RunConstants.PBT_NUM_SAMPLES
+            executionEnvironment.getPBT_RUN_ITERATIONS(),
+            executionEnvironment.getPBT_MAX_TIME_IN_SEC(),
+            executionEnvironment.getPBT_NUM_SAMPLES()
         );
     }
 
     private void startRun(Experiment exp, int iterations, int maxTimeInSec, int numSamples) {
     	ctx.transaction(conf -> {
             DSLContext transactionCtx = DSL.using(conf);
-    	    // set the current Execution Environment for the given user
-            long userId = this.modelDAO.getUserForModel(exp.getModelId());
-            this.executionEnvironment = this.executionEnvironmentManager.getEnvironment(userId);
 
     		Run run = runDAO.createRun(transactionCtx, exp, DiscoveryRun);
     		exp.addRun(run);
@@ -105,6 +106,7 @@ public abstract class TrainingService {
             });
             experiment.updateTrainingStatus();
             experimentDAO.updateTrainingStatus(transactionCtx, experiment);
+            log.info("Stopped {} training job with id {}", DiscoveryRun, runs.get(0).getJobId());
         });
     }
 }

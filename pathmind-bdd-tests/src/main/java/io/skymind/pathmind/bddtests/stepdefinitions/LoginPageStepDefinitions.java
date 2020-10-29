@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
 import cucumber.api.java.Before;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -235,7 +236,7 @@ public class LoginPageStepDefinitions {
 
     @When("Create new user (.*), (.*) with password (.*)")
     public void createNewUserWithPassword(String firstName, String lastName, String password) {
-        loginPageSteps.openPage(pathmindUrl + "early-access-sign-up");
+        loginPageSteps.openPage(pathmindUrl + "sign-up");
         loginPageSteps.newUserInputFirstName(firstName);
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
@@ -249,5 +250,10 @@ public class LoginPageStepDefinitions {
     @Then("^Check that (.*) popup is shown$")
     public void checkThatPopupIsShown(String popUp) {
         loginPageSteps.checkThatPopupIsShown(popUp);
+    }
+
+    @And("^Wait for sign-in page anti-flicker script$")
+    public void waitForSignInPageAntiFlickerScript() {
+        loginPageSteps.waitForSignInPageAntiFlickerScript();
     }
 }

@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.login;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -18,6 +19,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.UserService;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 
 @Tag("email-verification-view")
 @JsModule("./src/pages/account/email-verification-view.js")
@@ -29,9 +31,17 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 	private Button backToApp;
 
 	@Autowired
-	private UserService userService;
+    private UserService userService;
+
+	@Autowired
+	private SegmentIntegrator segmentIntegrator;
 
 	private String token;
+	
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		getElement().appendChild(segmentIntegrator.getElement());
+	}
 
 	@Override
 	public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String param) {

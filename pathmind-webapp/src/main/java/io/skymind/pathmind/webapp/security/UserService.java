@@ -3,7 +3,7 @@ package io.skymind.pathmind.webapp.security;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.UserUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.UserUpdateBusEvent;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.logging.log4j.util.Strings;
@@ -18,7 +18,6 @@ import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 @Service

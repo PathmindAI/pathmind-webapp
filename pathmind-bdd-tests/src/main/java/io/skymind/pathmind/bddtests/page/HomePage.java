@@ -4,15 +4,13 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -30,8 +28,8 @@ public class HomePage extends PageObject {
     private WebElement menuBarShadow;
     @FindBy(xpath = "(//vaadin-context-menu-item[@role='menuitem'])[last()]")
     private WebElement logoutBtn;
-    @FindBy(xpath = "//a[text()='Learn']")
-    private WebElement learnBtn;
+    @FindBy(xpath = "//a[text()='Help']")
+    private WebElement helpBtn;
     @FindBy(xpath = "//a[@href='dashboard']")
     private WebElement dashboardBtn;
     @FindBy(xpath = "//span[@class='breadcrumb']")
@@ -59,7 +57,7 @@ public class HomePage extends PageObject {
     }
 
     public void clickLearnBtn() {
-        learnBtn.click();
+        helpBtn.click();
     }
 
     public void checkThatLearnPageOpened(String learnPage) {
@@ -105,7 +103,7 @@ public class HomePage extends PageObject {
 
     public void clickGettingStartedGuideButton() {
         WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
-        element.findElement(By.cssSelector(".button-link")).click();
+        element.findElement(By.cssSelector("i a")).click();
     }
 
     public void checkThatProjectsButtonHighlightIs(Boolean status) {
@@ -156,11 +154,11 @@ public class HomePage extends PageObject {
     }
 
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
-        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper grid-notes-column']//span[@class='highlight-label' and contains(text(),'"+text+"')]")).click();
+        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper grid-notes-column']//span[@class='highlight-label' and contains(text(),'" + text + "')]/ancestor::*[@class='search-result-item']/descendant::a[contains(@href, 'newExperiment')]")).click();
     }
 
     public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '"+name+"')]/parent::div/parent::vaadin-vertical-layout[@class='name-row']/preceding-sibling::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
     }
 
     public void checkSearchResultsForValueIs(String value) {
@@ -210,5 +208,10 @@ public class HomePage extends PageObject {
 
     public void waitForSearchResultPage() {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label']")));
+    }
+
+    public void clickAndSendEnterBtnToTheSearchField() {
+        searchBoxShadow.click();
+        searchBoxShadow.sendKeys(Keys.ENTER);
     }
 }

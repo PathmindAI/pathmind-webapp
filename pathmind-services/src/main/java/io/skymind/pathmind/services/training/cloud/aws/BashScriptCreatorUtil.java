@@ -33,15 +33,17 @@ public class BashScriptCreatorUtil {
     // added to a bash script. But, I will let it here till we find a better place to move it to.
     public static String createObservationSnippet(List<Observation> selectedObservations) {
         assert selectedObservations != null && !selectedObservations.isEmpty();
-        List<String> selectedObservationsVars = selectedObservations.stream()
-                .flatMap(o -> {
-                    if (o.getDataTypeEnum() == ObservationDataType.NUMBER_ARRAY) {
-                        return IntStream.range(0, o.getMaxItems()).mapToObj(i -> String.format("%s[%s]", o.getVariable(), i));
-                    } else {
-                        return Stream.of(o.getVariable());
-                    }
-                })
-                .collect(Collectors.toList());
+        List<String> selectedObservationsVars = new ArrayList<>();
+        selectedObservations.stream().forEach(o -> {
+            if (o.getDataTypeEnum() == ObservationDataType.NUMBER_ARRAY) {
+                for (int i = 0; i < o.getMaxItems(); i++) {
+                    selectedObservationsVars.add(String.format("%s[%s]", o.getVariable(), i));
+                }
+            } else {
+                selectedObservationsVars.add(o.getVariable());
+            }
+        });
+
         List<String> statements = new ArrayList<>();
         statements.add(String.format("out = new double[%s];", selectedObservationsVars.size()));
         for (int i = 0; i < selectedObservationsVars.size(); i++) {

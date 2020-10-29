@@ -14,10 +14,9 @@ class TrainingStartingPlaceholder extends PolymerElement {
                     box-sizing: border-box;
                     justify-content: center;
                     align-items: center;
-                    flex: 1;
+                    flex: 1 0 100%;
                     position: relative;
                     width: 100%;
-                    min-height: 25rem;
                     background-color: var(--pm-highlight-light);
                     padding: var(--lumo-space-m) var(--lumo-space-xxl);
                     border: 1px solid var(--pm-grey-color);

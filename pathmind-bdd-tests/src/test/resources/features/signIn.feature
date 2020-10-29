@@ -13,7 +13,9 @@ Feature: Sign In form tests
 
   Scenario Outline: Login with invalid credentials
     Given Open pathmind page
+    And Wait for sign-in page anti-flicker script
     When Login with credentials <email>, <password>
+    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
     Examples:
@@ -24,7 +26,14 @@ Feature: Sign In form tests
 
   Scenario: Check login page elements
     Given Open pathmind page
+    And Wait for sign-in page anti-flicker script
     Then Check login page elements
+    # Then Check network errors
+
+  Scenario: Check Get started btn
+    Given Open pathmind page
+    Then Click in 'Get started' button
+    Then Check create new user page elements
 
   Scenario Outline: Check css styles error the name "vaadin-device-detector" has already been used with this registry
     Given Open pathmind page

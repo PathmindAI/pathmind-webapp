@@ -33,25 +33,32 @@ public class ExperimentPage extends PageObject {
     private WebElement experimentNotes;
     @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
     private WebElement experimentStatus;
+    @FindBy(xpath = "//notes-field")
+    private WebElement notesBlock;
+    private By notesTextarea = By.cssSelector("#textarea");
+    private By notesSaveBtn = By.cssSelector("#save");
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
         assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8)));
     }
 
     public void addNoteToTheExperimentPage(String note) {
-        experimentNotes.click();
-        experimentNotes.sendKeys(note);
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(note);
     }
 
     public void clickCurrentExperimentArchiveButton() {
         WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
         WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        archiveButton.click();
+        WebElement button = utils.expandRootElement(archiveButton);
+        button.findElement(By.cssSelector("button")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
-        assertThat(experimentNotes.getAttribute("value"), is(note.replaceAll("/n", "\n")));
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), is(note.replaceAll("/n", "\n")));
     }
 
     public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {
@@ -104,14 +111,16 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
-        utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button").click();
+        waitABit(3500);
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
+        element.findElement(By.cssSelector("button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-text-field"))) {
-            actual.add(webElement.getAttribute("value"));
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table']/descendant::*[@class='reward-variable-name']"))) {
+            actual.add(webElement.getText());
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
@@ -120,7 +129,7 @@ public class ExperimentPage extends PageObject {
     public void checkRunningExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variables-table compact']/descendant::vaadin-horizontal-layout/span[not(text()='Variable Name')][2]"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variable-name']"))) {
             actual.add(webElement.getText());
         }
 
@@ -167,9 +176,10 @@ public class ExperimentPage extends PageObject {
     public void clickCopyRewardFunctionBtn() {
         WebElement e = utils.expandRootElement(rewardFunction);
         e.findElement(By.cssSelector("vaadin-button")).click();
-        experimentNotes.click();
-        experimentNotes.sendKeys(Keys.CONTROL + "V");
-        getDriver().findElement(By.xpath("//*[text()='Save']")).click();
+        WebElement notesShadow = utils.expandRootElement(notesBlock);
+        notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "V");
+        notesShadow.findElement(notesSaveBtn).click();
     }
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
@@ -233,7 +243,7 @@ public class ExperimentPage extends PageObject {
             }
         }
         resetImplicitTimeout();
-        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[2]")).getText(), is("Variable Name"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Variable Name"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));
@@ -249,17 +259,16 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
+        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
         Actions actions = new Actions(getDriver());
         actions.moveToElement(showBtn);
         actions.perform();
-        getDriver().findElement(By.xpath("//span[contains(@class,'variable-color-0 reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
+        getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
     }
 
     public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::p")).getText(), is("This chart does not update automatically."));
         assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
     }
 
@@ -295,5 +304,34 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(".download-alp-link"))));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]")).getAttribute("href"), containsString(model));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]/vaadin-button")).getText(), is("Model ALP"));
+    }
+
+    public void checkLearningProgressTitle(String title) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/span")).getText(), is(title));
+    }
+
+    public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "']")).getText(), is(tab));
+    }
+
+    public void checkLearningProgressBlockMetricsHint(String hint) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::iron-icon")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::p")).getText(), is(hint));
+    }
+
+    public void checkLearningProgressBlockDataChartIsShown() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::data-chart[1]")));
+    }
+
+    public void checkLearningProgressBlockMeanRewardScoreDataChartIsShown() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::data-chart[2]")));
+    }
+
+    public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
+        if (chosen) {
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='" + variable + "' and @chosen]")).size(), is(not(0)));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//*[@class='reward-variable-name' and text()='" + variable + "' and not(@chosen)]")).size(), is(not(0)));
+        }
     }
 }

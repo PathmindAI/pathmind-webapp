@@ -92,9 +92,9 @@ public class LoginView extends HorizontalLayout
 
 		Div innerContent = new Div();
 		innerContent.setClassName("inner-content");
-		// Temporarily block new signups for public beta - issue https://github.com/SkymindIO/pathmind-webapp/issues/356
-		// innerContent.add(title, badCredentials, emailNotVerified, createLoginForm(), createSignUp());
-		innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
+		// Allow new users to sign up for free trials: https://github.com/SkymindIO/pathmind-webapp/issues/2199
+		innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm(), createSignUp());
+		// innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
 
 		Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
 		termsLink.setTarget("_blank");

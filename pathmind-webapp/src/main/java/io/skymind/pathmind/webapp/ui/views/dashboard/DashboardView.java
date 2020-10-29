@@ -29,8 +29,8 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -114,36 +114,10 @@ public class DashboardView extends PathMindDefaultView
                     currentExperiment.setRuns(runsForExperiment);
                 }
             }
-            return new DashboardLine(experimentDAO, item, itm -> navigateFromDashboard(itm), itm -> archiveItem(itm));
+            return new DashboardLine(experimentDAO, item, itm -> archiveItem(itm));
         });
         dashboardGrid.setSelectionMode(SelectionMode.NONE);
         dashboardGrid.setPageSize(10);
-    }
-
-    private void navigateFromDashboard(DashboardItem item) {
-        Stage stage = DashboardUtils.calculateStage(item);
-        switch (stage) {
-            case SetUpSimulation :
-                getUI().ifPresent(ui -> {
-                    if (item.getModel() != null && item.getModel().isDraft()) {
-                        ui.navigate(UploadModelView.class, UploadModelView.createResumeUploadTarget(item.getProject(), item.getModel()));
-                    }
-                    else {
-                        ui.navigate(UploadModelView.class, String.valueOf(item.getProject().getId()));
-                    }
-                });
-                break;
-            case WriteRewardFunction:
-                if (item.getExperiment() == null) {
-                    getUI().ifPresent(ui -> ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, item.getModel().getId()));
-                } else {
-                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, item.getExperiment().getId()));
-                }
-                break;
-            default :
-                getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, item.getExperiment().getId()));
-                break;
-        }
     }
 
     private void archiveItem(DashboardItem item) {
@@ -234,12 +208,12 @@ public class DashboardView extends PathMindDefaultView
 
         @Override
         public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getRun().getExperimentId()));
+            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getExperiment().getId()));
         }
 
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return event.getRun().getProject().getPathmindUserId() == loggedUserId;
+            return event.getProject().getPathmindUserId() == loggedUserId;
         }
     }
 }

@@ -23,6 +23,9 @@ Feature: E2E
     #    ------------------------
     #Check Simulation Metrics block
     Then Check that 1 metrics are shown for reward variables
+    Then Check variable 'goalReached' is chosen 'true'
+    When Click in 'goalReached' button
+    Then Check variable 'goalReached' is chosen 'false'
     Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
@@ -53,7 +56,21 @@ Feature: E2E
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp
     #    ------------------------
-    When Refresh page
+    #Check Learning Progress block
+    Then Check learning progress block title 'Learning Progress'
+    Then Check learning progress block selected tab 'true' name is 'Metrics'
+    Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
+    Then Check learning progress block metrics hint 'You can click on the simulation metric names above to toggle the lines on this chart.'
+    Then Check learning progress block metrics data-chart is shown
+    When Click in 'Mean Reward Score' button
+    Then Check learning progress block selected tab 'false' name is 'Metrics'
+    Then Check learning progress block selected tab 'true' name is 'Mean Reward Score'
+    Then Check learning progress block mean reward score data-chart is shown
+    When Click in 'Metrics' button
+    Then Check learning progress block selected tab 'true' name is 'Metrics'
+    Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
+    #    ------------------------
+    #Check export policy
     When Click in 'Export Policy' button
     Then Check export policy page 'simplestochastic'
     When Click in '< Back to Experiment #2' button
