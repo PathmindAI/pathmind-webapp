@@ -9,10 +9,12 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -127,7 +129,7 @@ public class LoginPage extends PageObject {
     }
 
     public void checkThatError(String errorText) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='email-not-verified-cont error-message']")).getText(), containsString(errorText));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='email-not-verified-cont error-message']/span")).getText(), is(errorText));
     }
 
     public void checkThatResendBtnIsShown() {
@@ -137,8 +139,20 @@ public class LoginPage extends PageObject {
     public void checkCreateNewUserPageElements() {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
 
-        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a 30-day Free Trial!"));
-        assertThat(signUpView.findElement(By.cssSelector(".do-not-share-url")).getText(), containsString("Please do not share this URL"));
+        /*
+        Check video block
+         */
+        setImplicitTimeout(3500, SECONDS);
+        // waitFor(ExpectedConditions.visibilityOf(signUpView.findElement(By.cssSelector(".video-wrapper"))));
+        resetImplicitTimeout();
+        // assertThat(signUpView.findElements(By.cssSelector(".video-wrapper")).size(), is(not(0)));
+        assertThat(signUpView.findElement(By.cssSelector("b")).getText(), is("Create your free Pathmind account to:"));
+        assertThat(signUpView.findElement(By.cssSelector("ul")).getText(), is("Access additional AI-ready simulation models\nGet tips on how to guide and reward your AI agents\nApply AI to your simulation and beat your heuristic"));
+
+        /*
+        Check `Sign up for a free trial!` form
+         */
+        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a free trial!"));
 
         WebElement firstNameInputShadow = signUpView.findElement(By.id("firstName"));
         WebElement firstNameInput = utils.expandRootElement(firstNameInputShadow);
@@ -160,7 +174,12 @@ public class LoginPage extends PageObject {
         WebElement field = utils.expandRootElement(signUpBtnShadow);
         assertThat(signUpBtnShadow.getText(), containsString("Sign up"));
         assertThat(field.findElements(By.id("button")).size(), is(1));
+        assertThat(signUpView.findElement(By.cssSelector("#buttonsCont + p")).getText(), is("No credit card required"));
+        assertThat(signUpView.findElement(By.cssSelector("#alreadyHaveAccount")).getText(), is("Already have an account?"));
 
+        /*
+        Check page footer
+         */
         assertThat(signUpView.findElements(By.cssSelector(".support")).size(), is(1));
         assertThat(signUpView.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
         assertThat(signUpView.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
@@ -251,6 +270,9 @@ public class LoginPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".policy")).getText(), containsString("By clicking Sign In, you agree to Pathmind's Terms of Use and Privacy Policy."));
         assertThat(getDriver().findElement(By.xpath("//a[text()='Terms of Use']")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
         assertThat(getDriver().findElement(By.xpath("//a[text()='Privacy Policy']")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/span")).getText(), is("Don't have an account?"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/a")).getText(), is("Get started"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='account-help-wrapper']/a")).getAttribute("href"), containsString("sign-up"));
     }
 
     public void checkConsoleError(String error) {
@@ -274,5 +296,9 @@ public class LoginPage extends PageObject {
 
     public void checkThatPopupIsShown(String popUp) {
         assertThat(getDriver().findElement(By.xpath("//span[@class='closeable-notification-text-label']")).getText(), is(popUp));
+    }
+
+    public void waitForSignInPageAntiFlickerScript() {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
     }
 }

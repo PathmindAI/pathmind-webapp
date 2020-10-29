@@ -1,10 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
-import com.vaadin.flow.data.validator.StringLengthValidator;
 import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
-import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -32,8 +29,7 @@ import io.skymind.pathmind.services.notificationservice.EmailNotificationService
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView
-{
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
 	@Id("lastName")
 	private TextField lastName;
 
@@ -91,7 +87,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		getElement().appendChild(segmentIntegrator.getElement());
-	}
+    }
 
 	private void initView() {
 		emailPart.setSpacing(false);
@@ -132,7 +128,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	}
 
 	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a 30-day Free Trial!");
+		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a free trial!");
 		emailPart.setVisible(!showPasswordPart);
 		passwordPart.setVisible(showPasswordPart);
 		policyText.setVisible(showPasswordPart);

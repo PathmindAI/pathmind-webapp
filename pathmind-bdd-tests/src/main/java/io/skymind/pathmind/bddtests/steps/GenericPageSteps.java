@@ -160,4 +160,9 @@ public class GenericPageSteps {
     public void clickInTheNewTabModelButton(String text) {
         genericPage.clickInTheNewTabModelButton(text);
     }
+
+    @Step
+    public void checkNetworkErrors() {
+        genericPage.checkNetworkErrors();
+    }
 }

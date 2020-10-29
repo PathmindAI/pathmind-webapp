@@ -42,7 +42,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -268,7 +267,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
                     return;
                 trainingService.startRun(experiment);
-                segmentIntegrator.discoveryRunStarted();
+                segmentIntegrator.restartTraining();
                 initLoadData();
                 // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
                 trainingStatusDetailsPanel.setExperiment(experiment);
@@ -363,10 +362,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
-    private NotesField createViewNotesField() {
-        return new NotesField(
+    private ExperimentNotesField createViewNotesField() {
+        return new ExperimentNotesField(
+            () -> getUI(),
             "Notes",
-            experiment.getUserNotes(),
+            experiment,
             updatedNotes -> {
                 experimentDAO.updateUserNotes(experimentId, updatedNotes);
                 segmentIntegrator.updatedNotesExperimentView();

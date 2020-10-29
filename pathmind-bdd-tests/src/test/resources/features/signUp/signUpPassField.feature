@@ -2,7 +2,7 @@
 Feature: Sign Up password field
 
   Scenario Outline: Check create new user password error message
-    Given Open page early-access-sign-up
+    Given Open page sign-up
     When Fill new user form with first name AutotestFirstName
     When Fill new user form with last name AutotestLastName
     When Fill new user form with email autotest@autotest.com

@@ -57,11 +57,11 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -97,7 +97,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private ExperimentsNavBar experimentsNavbar;
-    private NotesField notesField;
+    private ExperimentNotesField notesField;
     private Span panelTitleText;
     private Span unsavedChanges;
     private Span notesSavedHint;
@@ -306,7 +306,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         trainingService.startRun(experiment);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment,
                 ExperimentUpdatedBusEvent.ExperimentUpdateType.StartTraining));
-        segmentIntegrator.discoveryRunStarted();
+        segmentIntegrator.startTraining();
 
         unsavedChanges.setVisible(false);
 
@@ -335,10 +335,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
 	}
 
-	private NotesField createNotesField() {
-		notesField = new NotesField(
+	private ExperimentNotesField createNotesField() {
+		notesField = new ExperimentNotesField(
+            () -> getUI(),
 			"Notes",
-			experiment.getUserNotes(),
+			experiment,
 			updatedNotes -> {
 				experiment.setUserNotes(updatedNotes);
 				experimentDAO.updateUserNotes(experimentId, updatedNotes);
@@ -350,7 +351,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		);
         notesField.setPlaceholder("Add Notes (optional)");
         if (experiment.isArchived()) {
-            notesField.setEnabled(false);
+            notesField.setReadonly(true);
         }
 		return notesField;
 	}

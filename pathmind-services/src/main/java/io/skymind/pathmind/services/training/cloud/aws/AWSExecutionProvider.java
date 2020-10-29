@@ -33,9 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
-import static io.skymind.pathmind.shared.constants.RunStatus.Completing;
+import static io.skymind.pathmind.shared.constants.RunStatus.*;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
-import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 
 @Service
 @Slf4j
@@ -156,9 +155,26 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
             if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
-                // let's follow what is being done with rlib and add a prefix to the message and add it to description
-                getSuccessMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + m));
-                getWarningMessage(jobHandle).ifPresent(m -> completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + m));
+                getExperimentReport(jobHandle).ifPresent(m -> {
+                    String[] lines = m.split("\n");
+                    Set<String> reasons = new HashSet<>();
+                    Arrays.stream(lines)
+                        .filter(s -> s.contains("Early Stop Reason"))
+                        .forEach(s -> {
+                            reasons.add(s.split(":")[1].trim());
+                        });
+
+                    if (reasons.size() > 1) {
+                        log.info(String.format("The number of early stop reasons is more than 2: %s", reasons));
+                    }
+
+                    String reason = reasons.iterator().next();
+                    if (reason.equals("Training has converged")) {
+                        completingStatus.getDescription().add(SUCCESS_MESSAGE_PREFIX + reason);
+                    } else {
+                        completingStatus.getDescription().add(WARNING_MESSAGE_PREFIX + reason);
+                    }
+                });
                 return completingStatus;
             }
 
@@ -288,14 +304,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
         return exceptionLine;
     }
 
-    public Optional<String> getSuccessMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.SUCCESS_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
-    }
-
-    public Optional<String> getWarningMessage(String jobHandle) {
-        return getFile(jobHandle, TrainingFile.WARNING_MESSAGE)
-                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+    public Optional<String> getExperimentReport(String jobHandle) {
+        return getFile(jobHandle, TrainingFile.REPORT_FILE)
+            .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
@@ -476,7 +487,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("VALUE_PRED", "1"), // disabled for now
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
-                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables()))
+                var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
+                var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory()))
         ));
     }
 

@@ -1,2 +1,2 @@
 User-agent: *
-Disallow: /early-access-sign-up
+Disallow: /sign-up

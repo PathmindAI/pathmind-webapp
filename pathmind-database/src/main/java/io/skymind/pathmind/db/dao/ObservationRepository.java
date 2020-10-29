@@ -62,6 +62,7 @@ class ObservationRepository {
                 .from(OBSERVATION)
                 .leftJoin(EXPERIMENT_OBSERVATION).on(OBSERVATION.ID.eq(EXPERIMENT_OBSERVATION.OBSERVATION_ID))
                 .where(EXPERIMENT_OBSERVATION.EXPERIMENT_ID.eq(experimentId))
+                .orderBy(OBSERVATION.ARRAY_INDEX)
                 .fetchInto(Observation.class);
     }
 }

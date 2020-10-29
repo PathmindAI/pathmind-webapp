@@ -37,8 +37,8 @@ import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
+import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.notesField.NotesField;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -106,7 +106,7 @@ public class ModelView extends PathMindDefaultView implements HasUrlParameter<Lo
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName, archiveButton),
                 WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
             ),
-            new NewExperimentButton(experimentDAO, modelId));
+            new NewExperimentButton(experimentDAO, modelId, segmentIntegrator));
         headerWrapper.addClassName("page-content-header");
 
         FlexLayout leftPanel = new ViewSection(headerWrapper, archivesTabPanel, experimentGrid);
