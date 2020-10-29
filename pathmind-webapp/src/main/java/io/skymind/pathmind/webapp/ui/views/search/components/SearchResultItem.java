@@ -95,45 +95,70 @@ public class SearchResultItem extends VerticalLayout {
         String experimentNameText = "Experiment #"+searchResult.getExperimentName();
         RouterLink projectNameLink = new RouterLink();
         nameRow.add(highlightSearchResult(projectNameLink, searchResult.getProjectName(), null, resultTypeProject));
-        if (resultTypeProject) {
-            setRouterTarget(projectNameLink);
-        }
+        setProjectLinkRouterTarget(projectNameLink);
         if (resultTypeModel || resultTypeExperiment) {
             RouterLink modelNameLink = new RouterLink();
             nameRow.add(highlightSearchResult(modelNameLink, modelNameText, "(?i)Model\\s#?"+modelName,
                     resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
-            if (resultTypeModel) {
-                setRouterTarget(modelNameLink);
-            }
+            setModelLinkRouterTarget(modelNameLink);
         }
         if (resultTypeExperiment) {
             RouterLink experimentNameLink = new RouterLink();
             nameRow.add(highlightSearchResult(experimentNameLink, experimentNameText, "(?i)Experiment\\s#?"+experimentName,
                     resultTypeExperiment && matchedDecodedKeyword(decodedKeyword, "Experiment", experimentName)));
-            setRouterTarget(experimentNameLink);
+            setExperimentLinkRouterTarget(experimentNameLink);
         }
         nameRow.addClassName("name-row");
         return nameRow;
     }
 
-    private void setRouterTarget(RouterLink link) {
-        switch (searchResult.getItemType().getName()) {
+    private void setProjectLinkRouterTarget(RouterLink link) {
+        String searchResultTypeName = searchResult.getItemType().getName();
+        Long projectId = (long) 0;
+        switch (searchResultTypeName) {
             case "Project" :
-                link.setRoute(ProjectView.class, ""+searchResult.getItemId());
+                projectId = searchResult.getItemId();
                 break;
             case "Model" :
                 Model model = modelService.getModel(searchResult.getItemId())
-					    .orElseThrow(() -> new InvalidDataException("Attempted to get invalid model: " + searchResult.getItemId()));
-                link.setRoute(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), searchResult.getItemId()));
+                        .orElseThrow(() -> new InvalidDataException("Attempted to get invalid model: " + searchResult.getItemId()));
+                projectId = model.getProjectId();
+                break;
+            case "Experiment" :
+                projectId = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get().getProject().getId();
+                break;
+        }
+        link.setRoute(ProjectView.class, ""+projectId);
+    }
+
+    private void setModelLinkRouterTarget(RouterLink link) {
+        String searchResultTypeName = searchResult.getItemType().getName();
+        Long projectId = (long) 0;
+        Long modelId = (long) 0;
+
+        switch (searchResultTypeName) {
+            case "Model" :
+                Model model = modelService.getModel(searchResult.getItemId())
+                        .orElseThrow(() -> new InvalidDataException("Attempted to get invalid model: " + searchResult.getItemId()));
+                projectId = model.getProjectId();
+                modelId = searchResult.getItemId();
                 break;
             case "Experiment" :
                 Experiment experiment = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get();
-                if (ExperimentUtils.isDraftRunType(experiment)) {
-                    link.setRoute(NewExperimentView.class, searchResult.getItemId());
-                } else {
-                    link.setRoute(ExperimentView.class, searchResult.getItemId());
-                }
+                projectId = experiment.getProject().getId();
+                modelId = experiment.getModelId();
                 break;
+        }
+        link.setRoute(ProjectView.class, PathmindUtils.getProjectModelParameter(projectId, modelId));
+    }
+
+    private void setExperimentLinkRouterTarget(RouterLink link) {
+        Long experimentId = searchResult.getItemId();
+        Experiment experiment = experimentDAO.getExperimentWithRuns(experimentId).get();
+        if (ExperimentUtils.isDraftRunType(experiment)) {
+            link.setRoute(NewExperimentView.class, experimentId);
+        } else {
+            link.setRoute(ExperimentView.class, experimentId);
         }
     }
 
