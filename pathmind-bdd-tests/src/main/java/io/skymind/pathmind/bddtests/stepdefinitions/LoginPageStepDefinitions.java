@@ -74,7 +74,11 @@ public class LoginPageStepDefinitions {
 
     @When("^Open page (.*)$")
     public void openPage(String path) {
-        loginPageSteps.openPage(pathmindUrl + path);
+        if (path.equals("sharedExperimentUrl")) {
+            loginPageSteps.openPage(Serenity.sessionVariableCalled(path).toString().replaceAll("experiment", "sharedExperiment"));
+        } else {
+            loginPageSteps.openPage(pathmindUrl + path);
+        }
     }
 
     @When("^Fill new user form with name (.*), (.*)$")
@@ -102,7 +106,7 @@ public class LoginPageStepDefinitions {
     @When("^Fill temporary email with alias to the new user form$")
     public void fillFormWithEmailAliasFromApi() {
         String email = emailApi.getEmail();
-        String emailAlias = email.substring(0,email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@")+1);
+        String emailAlias = email.substring(0, email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@") + 1);
         loginPageSteps.newUserInputEmail(emailAlias);
         Serenity.setSessionVariable("email").to(emailAlias);
     }
