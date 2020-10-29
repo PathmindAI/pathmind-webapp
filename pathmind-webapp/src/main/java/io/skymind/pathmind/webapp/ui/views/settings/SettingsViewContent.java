@@ -24,6 +24,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,12 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("helperVersionCB")
     private ComboBox<String> helperVersion;
 
+    @Id("numSampleCB")
+    private ComboBox<String> numSample;
+
+    @Id("maxMemoryCB")
+    private ComboBox<String> maxMemory;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -74,6 +81,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
             env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
+            env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
+            env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -132,6 +141,22 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         helperVersion.setLabel("PM helper Version");
         helperVersion.setPlaceholder(env.getPathmindHelperVersion().toString());
         helperVersion.setValue(env.getPathmindHelperVersion().toString());
+
+        // init number of samples
+        List<String> numSamples = List.of("1", "2", "3", "4");
+
+        numSample.setItems(numSamples);
+        numSample.setLabel("Number of PBT samples");
+        numSample.setPlaceholder(String.valueOf(env.getPBT_NUM_SAMPLES()));
+        numSample.setValue(String.valueOf(env.getPBT_NUM_SAMPLES()));
+
+        // init max memory
+        List<String> maxMemories = List.of("4096", "16384");
+
+        maxMemory.setItems(maxMemories);
+        maxMemory.setLabel("Max memory size in MB");
+        maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
+        maxMemory.setValue(String.valueOf(env.getMaxMemory()));
     }
 
     public interface Model extends TemplateModel {
