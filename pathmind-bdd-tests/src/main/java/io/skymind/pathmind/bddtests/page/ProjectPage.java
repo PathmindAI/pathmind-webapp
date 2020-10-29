@@ -105,6 +105,7 @@ public class ProjectPage extends PageObject {
                 WebElement shadow = utils.expandRootElement(webElement);
                 WebElement button = utils.expandRootElement(shadow.findElement(By.cssSelector("vaadin-button:not([hidden])")));
                 button.findElement(By.cssSelector("button")).click();
+                break;
             }
         }
     }
