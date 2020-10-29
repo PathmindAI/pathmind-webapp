@@ -92,7 +92,7 @@ Feature: Nav bar search
     # the project page will redirect the user to the upload model page on the server side
     When Click notes search btn
     When Wait for search result page
-    When Click in 'AutotestProject' button
+    When Click text contains 'AutotestProject' link
     When Wait a bit 4000 ms
     Then Check that project page is opened
 

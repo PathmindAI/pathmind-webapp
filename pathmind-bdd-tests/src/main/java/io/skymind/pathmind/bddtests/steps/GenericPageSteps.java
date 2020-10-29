@@ -24,6 +24,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void clickTextContainsLink(String Text) {
+        genericPage.clickTextContainsLink(Text);
+    }
+
+    @Step
     public void clickInButton(String buttonText) {
         genericPage.clickInButton(buttonText);
     }

@@ -24,6 +24,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkThatButtonDoesntExist(buttonText);
     }
 
+    @When("^Click text contains '(.*)' link$")
+    public void clickTextContainsLink(String text) {
+        genericPageSteps.clickTextContainsLink(text);
+    }
+
     @When("^Click in '(.*)' button$")
     public void clickInButton(String buttonText) {
         genericPageSteps.clickInButton(buttonText);

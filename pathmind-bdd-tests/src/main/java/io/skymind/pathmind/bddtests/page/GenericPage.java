@@ -54,6 +54,12 @@ public class GenericPage extends PageObject {
         resetImplicitTimeout();
     }
 
+    public void clickTextContainsLink(String text) {
+        String xpath = String.format("//*[contains(text(), '%s')]", text);
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
+        System.out.println("user dir " + System.getProperty("user.dir"));
+    }
+
     public void clickInButton(String buttonText) {
         String xpath = String.format("//*[text()='%s']", buttonText);
 //        getDriver().findElement(By.xpath(xpath)).click();
