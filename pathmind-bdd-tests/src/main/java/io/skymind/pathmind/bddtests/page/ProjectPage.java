@@ -91,7 +91,7 @@ public class ProjectPage extends PageObject {
     }
 
     public void checkThatProjectPageIsOpened() {
-        assertThat(getDriver().getCurrentUrl(), containsString("/project/"));
+        waitFor(ExpectedConditions.urlContains("/project/"));
     }
 
     public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
