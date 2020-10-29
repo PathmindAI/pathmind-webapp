@@ -102,13 +102,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
     public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
         setExperiment(newExperiment);
         this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
-        updateCharts();
-    }
-
-    private void updateCharts() {
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
+        selectVisibleChart();
+    }
 
+    private void selectVisibleChart() {
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
         } else {
@@ -159,7 +158,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
             PushUtils.push(getUiSupplier(), () -> {
                 ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
                 experiment.updateTrainingStatus();
-                updateCharts();
+                selectVisibleChart();
             });
         }
 
@@ -180,7 +179,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
             PushUtils.push(getUiSupplier(), () -> {
                 setExperiment(event.getExperiment());
                 experiment.updateTrainingStatus();
-                updateCharts();
+                selectVisibleChart();
             });
         }
     }

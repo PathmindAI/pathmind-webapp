@@ -112,7 +112,6 @@ public class AllMetricsChartPanel extends VerticalLayout
 
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
                 selectBestPolicy();
-                // if(bestPolicy != null)
                 pushChartUpdate(getUiSupplier());
             }
         }
