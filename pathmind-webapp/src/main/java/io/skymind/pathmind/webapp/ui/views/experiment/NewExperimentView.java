@@ -50,8 +50,10 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -150,7 +152,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
                 new NewExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
+                new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
+                new NewExperimentViewExperimentChangedSubscriber(() -> getUI()));
     }
 
     @Override
@@ -217,7 +220,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
         observationsPanel = new ObservationsPanel();
-        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
         observationsPanel.addValueChangeListener(evt -> {
             unsavedChanges.setVisible(true);
             startRunButton.setEnabled(canStartTraining());
@@ -276,11 +278,38 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return rewardFnEditorPanel;
     }
 
+	private Breadcrumbs createBreadcrumbs() {
+		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+	}
+
+	private ExperimentNotesField createNotesField() {
+		notesField = new ExperimentNotesField(
+            () -> getUI(),
+			"Notes",
+			experiment,
+			updatedNotes -> {
+				experiment.setUserNotes(updatedNotes);
+				experimentDAO.updateUserNotes(experimentId, updatedNotes);
+				notesSavedHint.setVisible(true);
+				// addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
+				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
+				segmentIntegrator.addedNotesNewExperimentView();
+			}
+		);
+        notesField.setPlaceholder("Add Notes (optional)");
+        if (experiment.isArchived()) {
+            notesField.setReadonly(true);
+        }
+		return notesField;
+    }
+    
+    /************************************** UI element creations are above this line **************************************/
+
 	private boolean canStartTraining() {
 		return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
                 && rewardFunctionErrors.size() == 0
-		        && !observationsPanel.getSelectedObservations().isEmpty()
+                && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
 		        && canSaveDataInDB();
 	}
 
@@ -333,32 +362,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
-	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-	}
-
-	private ExperimentNotesField createNotesField() {
-		notesField = new ExperimentNotesField(
-            () -> getUI(),
-			"Notes",
-			experiment,
-			updatedNotes -> {
-				experiment.setUserNotes(updatedNotes);
-				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				notesSavedHint.setVisible(true);
-				// addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
-				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
-				segmentIntegrator.addedNotesNewExperimentView();
-			}
-		);
-        notesField.setPlaceholder("Add Notes (optional)");
-        if (experiment.isArchived()) {
-            notesField.setReadonly(true);
-        }
-		return notesField;
-	}
-
-	private void selectExperiment(Experiment selectedExperiment) {
+	private void setExperiment(Experiment selectedExperiment) {
 		triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
 		if (saveDraftButton.isEnabled()) {
 			navigateToAnotherDraftExperiment(selectedExperiment);
@@ -459,8 +463,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		startRunButton.setVisible(!experiment.isArchived());
 		saveDraftButton.setVisible(!experiment.isArchived());
 		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
-		rewardFunctionEditor.setVariableNames(rewardVariables);
+        rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
+        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
@@ -501,7 +506,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             }
             else {
                 PushUtils.push(getUI(), ui -> {
-                    selectExperiment(experiment);
+                    setExperiment(experiment);
                 });
             }
         }
@@ -509,7 +514,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void navigateToExperiment(UI ui, Experiment targetExperiment) {
         if (ExperimentUtils.isDraftRunType(targetExperiment)) {
-            ui.navigate(NewExperimentView.class, targetExperiment.getId());
+            navigateToAnotherDraftExperiment(targetExperiment);
         } else {
             ui.navigate(ExperimentView.class, targetExperiment.getId());
         }
@@ -539,10 +544,33 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (isSameExperiment(event.getExperiment()) && event.isStartedTrainingEventType()) {
                 navigateToExperimentView(event.getExperiment());
-            }
-            else if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
+            } else if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
                 updateExperimentComponents();
             }
+        }
+    }
+
+    class NewExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
+
+        public NewExperimentViewExperimentChangedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
+        @Override
+        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+            if (ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId())) {
+                PushUtils.push(getUI(), ui -> setExperiment(event.getExperiment()));
+            }
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
+            if (experiment == null) {
+                return false;
+            }
+            return ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId()) &&
+                    !ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
+
         }
     }
 }
