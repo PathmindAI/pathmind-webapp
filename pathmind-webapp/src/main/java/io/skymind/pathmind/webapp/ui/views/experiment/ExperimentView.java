@@ -33,8 +33,10 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.CodeViewer;
@@ -176,7 +178,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
+                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentChangedSubscriber(() -> getUI()));
     }
 
     @Override
@@ -383,28 +386,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.experimentId = experimentId;
     }
 
-    private void selectExperiment(Experiment selectedExperiment) {
+    private void setExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
         // REFACTOR -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
         // REFACTOR -> STEPH -> Finish moving this code to ExperimentChangedViewSubscriber (See https://github.com/SkymindIO/pathmind-webapp/issues/2259)
         synchronized (experimentLock) {
-            experiment = experimentDAO.getExperiment(selectedExperiment.getId())
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-            experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
-            experimentId = selectedExperiment.getId();
-            loadExperimentData();
-            notesField.setNotesText(experiment.getUserNotes());
-            // Check is needed for the shared experiment view which has no breadcrumb.
-            if(pageBreadcrumbs != null)
-                pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            if(isShowNavBar())
-                experimentsNavbar.setCurrentExperiment(selectedExperiment);
-
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
+                experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+    
+                experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
+                loadExperimentData();
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+
+                notesField.setNotesText(selectedExperiment.getUserNotes());
+                // Check is needed for the shared experiment view which has no breadcrumb.
+                if (pageBreadcrumbs != null) {
+                    System.out.println("Experiment? "+selectedExperiment.getName());
+                    pageBreadcrumbs.setText(3, "Experiment #" + selectedExperiment.getName());
+                }
                 updateScreenComponents();
             }
         }
@@ -460,9 +463,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
-        // Part of a bigger refactoring. The goal is to eventually remove the selectExperiment code and use the ExperimentChangedViewSubscriber
+        // Part of a bigger refactoring. The goal is to eventually remove the setExperiment code and use the ExperimentChangedViewSubscriber
         // instead because the logic and code is not the same between loading the initial screen and when updateScreenComponents is called. There's
-        // a mix of logic and code between selectExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
+        // a mix of logic and code between setExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
         // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
         // load and any event updates as well as experiment select.
         updateScreenComponents();
@@ -471,15 +474,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected void updateScreenComponents() {
         clearErrorState();
         setSharedWithSupportComponents();
-        if(isShowNavBar())
+        if (isShowNavBar()) {
             experimentsNavbar.setVisible(!experiment.isArchived());
+        }
         panelTitle.setText("Experiment #"+experiment.getName());
         if (ModelUtils.isValidModel(experiment.getModel())) {
             codeViewer.setValue(experiment.getRewardFunction());
         } else {
             codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-            if(isShowNavBar())
+            if (isShowNavBar()) {
                 experimentsNavbar.setAllowNewExperimentCreation(false);
+            }
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         updateDetailsForExperiment();
@@ -548,7 +553,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
             else {
-                PushUtils.push(getUI(), ui -> selectExperiment(experiment));
+                PushUtils.push(getUI(), ui -> setExperiment(experiment));
             }
         }
     }
@@ -609,6 +614,28 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 return ExperimentUtils.isSameModel(experiment, event.getModelId());
             }
+        }
+    }
+
+    class ExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
+
+        public ExperimentViewExperimentChangedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+            super(getUISupplier);
+        }
+
+        @Override
+        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+            PushUtils.push(getUI(), ui -> setExperiment(event.getExperiment()));
+        }
+
+        @Override
+        public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
+            if (experiment == null) {
+                return false;
+            }
+            return ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId()) &&
+                    !ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
+
         }
     }
 }
