@@ -72,8 +72,8 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
     }
 
     public boolean filterSameUI(T event) {
-        if(isListenForEventOnSameUI)
+        if(!isListenForEventOnSameUI)
             return true;
-        return !isSourceSameUI(event);
+        return isSourceSameUI(event);
     }
 }
