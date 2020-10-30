@@ -338,33 +338,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return bottomPanel;
     }
 
-    private void showStopTrainingConfirmationDialog() {
-        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
-                trainingService.stopRun(experiment);
-                segmentIntegrator.stopTraining();
-                stopTrainingButton.setVisible(false);
-                fireEvents();
-        });
-    }
-
-    private void fireEvents() {
-        // An event for each policy since we only need to update some of the policies in a run.
-        if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
-            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
-        // Send run updated event, meaning that all policies under the run is updated.
-        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
-    }
-
-    private void unarchiveExperiment() {
-        ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
-            segmentIntegrator.archived(Experiment.class, false);
-            ExperimentUtils.navigateToExperiment(getUI(), experiment);
-        });
-    }
-
     private Breadcrumbs createBreadcrumbs() {
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
@@ -381,6 +354,35 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         );
     }
 
+    private void showStopTrainingConfirmationDialog() {
+        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
+                trainingService.stopRun(experiment);
+                segmentIntegrator.stopTraining();
+                stopTrainingButton.setVisible(false);
+                fireEvents();
+        });
+    }
+
+    private void unarchiveExperiment() {
+        ConfirmationUtils.unarchive("experiment", () -> {
+            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
+            segmentIntegrator.archived(Experiment.class, false);
+            ExperimentUtils.navigateToExperiment(getUI(), experiment);
+        });
+    }
+
+    /************************************** UI element creations are above this line **************************************/
+
+    private void fireEvents() {
+        // An event for each policy since we only need to update some of the policies in a run.
+        if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
+            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    }
+
     @Override
     public void setParameter(BeforeEvent event, Long experimentId) {
         this.experimentId = experimentId;
@@ -393,29 +395,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
-                experiment = experimentDAO.getExperiment(selectedExperiment.getId())
+                experiment = getExperimentForUser(selectedExperiment.getId())
                         .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
     
                 experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
                 loadExperimentData();
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
 
-                notesField.setNotesText(selectedExperiment.getUserNotes());
-                // Check is needed for the shared experiment view which has no breadcrumb.
-                if (pageBreadcrumbs != null) {
-                    System.out.println("Experiment? "+selectedExperiment.getName());
-                    pageBreadcrumbs.setText(3, "Experiment #" + selectedExperiment.getName());
-                }
                 updateScreenComponents();
             }
-        }
-    }
-
-    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
-        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
-            ui.navigate(NewExperimentView.class, targetExperiment.getId());
-        } else {
-            ui.navigate(ExperimentView.class, targetExperiment.getId());
         }
     }
 
@@ -423,14 +411,14 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected void initLoadData() throws InvalidDataException {
         // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
         // we will no longer have to retrieve the user information when loading this page.
-        experiment = getExperimentForUser()
+        experiment = getExperimentForUser(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
         experimentViewRunUpdateSubscriber.setExperiment(experiment);
         loadExperimentData();
     }
 
     // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
-    protected Optional<Experiment> getExperimentForUser() {
+    protected Optional<Experiment> getExperimentForUser(long experimentId) {
         return experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId());
     }
 
@@ -476,6 +464,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setVisible(!experiment.isArchived());
         }
         panelTitle.setText("Experiment #"+experiment.getName());
+        notesField.setNotesText(experiment.getUserNotes());
+        // Check is needed for the shared experiment view which has no breadcrumb.
+        if (pageBreadcrumbs != null) {
+            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+        }
         if (ModelUtils.isValidModel(experiment.getModel())) {
             codeViewer.setValue(experiment.getRewardFunction());
         } else {
@@ -546,13 +539,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);
-            if (selectedExperimentWasArchived) {
-                Experiment newSelectedExperiment = experiments.get(0);
-                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
-            }
-            else {
-                PushUtils.push(getUI(), ui -> setExperiment(experiment));
-            }
+            Experiment targetExperiment = selectedExperimentWasArchived ? experiments.get(0) : experiment;
+            PushUtils.push(getUI(), ui -> setExperiment(targetExperiment));
         }
     }
 
