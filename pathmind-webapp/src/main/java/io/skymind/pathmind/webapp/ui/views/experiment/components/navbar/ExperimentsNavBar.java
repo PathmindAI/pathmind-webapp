@@ -14,6 +14,7 @@ import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentSelectedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 
@@ -79,6 +80,7 @@ public class ExperimentsNavBar extends VerticalLayout
                     notificationExperimentUpdatedSubscriber);
         } else {
             EventBus.subscribe(this,
+                    new NavBarExperimentSelectedSubscriber(getUISupplier, this),
                     new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
                     new NavBarExperimentCreatedSubscriber(getUISupplier, this),
                     notificationExperimentUpdatedSubscriber);
