@@ -5,6 +5,7 @@ import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 import java.util.*;
@@ -117,7 +118,7 @@ public class AllMetricsChart extends DataChart {
     }
 
     private void updateBestPolicy(Policy bestPolicy) {
-        metricsPolicy = bestPolicy;
+        metricsPolicy = bestPolicy.deepClone();
         allMetricsChartData = generateAllMetricsChartData(metricsPolicy.getSparklinesData());
     }
 
@@ -129,6 +130,8 @@ public class AllMetricsChart extends DataChart {
         } else {
             // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
             updateBestPolicy(bestPolicy);
+            // HOTFIX
+            selectedRewardVariables = RewardVariablesUtils.deepClone(selectedRewardVariables);
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
         }

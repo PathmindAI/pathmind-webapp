@@ -145,7 +145,7 @@ public class PolicyUtils
                     .collect(Collectors.toList()));
         }
     }
-    
+
     public static boolean isGoalReached(RewardVariable rv, Policy policy) {
         Double metricValue = 0.0, uncertaintyValue = 0.0;
         if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {

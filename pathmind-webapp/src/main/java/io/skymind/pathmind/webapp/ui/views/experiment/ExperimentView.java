@@ -464,8 +464,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // a mix of logic and code between selectExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
         // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
         // load and any event updates as well as experiment select.
-        experimentChartsPanel.setupCharts(experiment, rewardVariables);
-        trainingStatusDetailsPanel.setExperiment(experiment);
         updateScreenComponents();
     }
 
@@ -484,6 +482,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         updateDetailsForExperiment();
+        experimentChartsPanel.setupCharts(experiment, rewardVariables);
+        trainingStatusDetailsPanel.setExperiment(experiment);
     }
 
     private void updateUIForError(TrainingError error, String errorText) {

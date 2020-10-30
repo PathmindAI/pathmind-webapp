@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -29,6 +30,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricCha
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class SimulationMetricsPanel extends HorizontalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
@@ -63,8 +66,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
 
         super();
-        this.experiment = experiment;
-        this.rewardVariables= rewardVariables;
+        this.experiment = experiment.deepClone();
+        this.rewardVariables= RewardVariablesUtils.deepClone(rewardVariables);
         this.showSimulationMetrics = showSimulationMetrics;
         this.getUISupplier = getUISupplier;
 
@@ -158,7 +161,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
         updateSimulationMetrics();
     }
 

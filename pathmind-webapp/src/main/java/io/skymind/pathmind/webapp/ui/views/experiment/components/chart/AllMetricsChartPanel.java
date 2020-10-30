@@ -17,11 +17,13 @@ import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.RewardVariableSelectedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+@Slf4j
 public class AllMetricsChartPanel extends VerticalLayout
 {
     private Object experimentLock = new Object();
@@ -53,9 +55,9 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
-            this.experiment = experiment;
+            this.experiment = experiment.deepClone();
             rewardVariables.stream().forEach(rewardVariable ->
-                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable));
+                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone()));
             selectBestPolicy();
             updateChartData();
             redrawChart();
@@ -110,7 +112,6 @@ public class AllMetricsChartPanel extends VerticalLayout
 
                 ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
                 selectBestPolicy();
-                // if(bestPolicy != null)
                 pushChartUpdate(getUiSupplier());
             }
         }
