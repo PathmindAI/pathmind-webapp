@@ -16,7 +16,6 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -75,8 +74,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         // repository calls as well as some logic.
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
-
-        EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
     }
 
     @EventHandler
