@@ -59,7 +59,6 @@ public class EventBus {
      */
     public static void post(PathmindBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
-                .filter(subscriber -> subscriber.filterSameUI(event))
                 .filter(subscriber -> subscriber.filterBusEvent(event))
                 .filter(subscriber -> subscriber.isAttached())
                 .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
@@ -67,7 +66,7 @@ public class EventBus {
 
     public static void post(PathmindViewBusEvent event) {
         EVENT_BUS.subscribers.get(event.getEventType()).stream()
-                .filter(subscriber -> !subscriber.filterSameUI(event))
+                .filter(subscriber -> subscriber.isEventOnSameUI(event))
                 .filter(subscriber -> subscriber.filterBusEvent(event))
                 .filter(subscriber -> subscriber.isAttached())
                 .forEach(subscriber -> fireEventToSubscriber(event, subscriber));

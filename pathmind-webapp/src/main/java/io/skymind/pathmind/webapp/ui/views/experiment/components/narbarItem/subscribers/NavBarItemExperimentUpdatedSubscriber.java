@@ -15,7 +15,7 @@ public class NavBarItemExperimentUpdatedSubscriber extends ExperimentUpdatedSubs
     private ExperimentsNavBarItem experimentsNavBarItem;
 
     public NavBarItemExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentsNavBarItem experimentsNavBarItem) {
-        super(getUISupplier, true);
+        super(getUISupplier);
         this.experimentsNavBarItem = experimentsNavBarItem;
     }
 
@@ -29,10 +29,5 @@ public class NavBarItemExperimentUpdatedSubscriber extends ExperimentUpdatedSubs
         if(event.getExperiment().isArchived())
             return false;
         return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
-    }
-
-    @Override
-    public boolean isAttached() {
-        return getUiSupplier().get().isPresent();
     }
 }

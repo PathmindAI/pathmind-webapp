@@ -50,7 +50,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
         this.policyDAO = policyDAO;
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
         this.segmentIntegrator = segmentIntegrator;
 
         if (ExperimentUtils.isDraftRunType(experiment)) {
@@ -151,7 +151,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     public void updateExperiment(Experiment experiment) {
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
         update();
     }
 

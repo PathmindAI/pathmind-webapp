@@ -20,8 +20,8 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
 
     public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments, Experiment experiment) {
         super(getUISupplier);
-        this.experiments = experiments;
-        this.experiment = experiment;
+        this.experiments = ExperimentUtils.deepClone(experiments);
+        this.experiment = experiment.deepClone();
     }
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
@@ -61,11 +61,12 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
 
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-        return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment) &&
+        // We only want the notification to appear when the event is NOT on the same UI.
+        return !isEventOnSameUI(event) && ExperimentUtils.isSameExperiment(event.getExperiment(), experiment) &&
                 (event.isStartedTrainingEventType() || event.isArchiveEventType());
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
     }
 }

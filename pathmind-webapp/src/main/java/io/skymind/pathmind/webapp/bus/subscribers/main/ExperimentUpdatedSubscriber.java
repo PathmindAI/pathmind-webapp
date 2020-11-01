@@ -14,10 +14,6 @@ public abstract class ExperimentUpdatedSubscriber extends EventBusSubscriber<Exp
         super(getUISupplier);
     }
 
-    public ExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, boolean isListenForEventOnSameUI) {
-        super(getUISupplier, isListenForEventOnSameUI);
-    }
-
     @Override
     public BusEventType getEventType() {
         return BusEventType.ExperimentUpdate;

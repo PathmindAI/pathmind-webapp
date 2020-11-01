@@ -1,12 +1,5 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -20,6 +13,16 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ExperimentUtils
 {
@@ -245,5 +248,11 @@ public class ExperimentUtils
                 .findFirst().orElse(-1);
         if(index > -1)
             experiments.set(index, experiment);
+    }
+
+    public static List<Experiment> deepClone(List<Experiment> experiments) {
+        return experiments.stream()
+                .map(experiment -> experiment.deepClone())
+                .collect(Collectors.toList());
     }
 }
