@@ -339,7 +339,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private ExperimentNotesField createViewNotesField() {
         return new ExperimentNotesField(
-            () -> getUI(),
             "Notes",
             experiment,
             updatedNotes -> {

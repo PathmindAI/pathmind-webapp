@@ -12,9 +12,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -90,8 +88,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this,
-                new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier),
-                new ExperimentChartsPanelExperimentChangedViewSubscriber(getUISupplier));
+                new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier));
     }
 
     @Override
@@ -165,22 +162,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public boolean filterBusEvent(RunUpdateBusEvent event) {
             return isSameExperiment(event.getExperiment());
-        }
-    }
-
-    class ExperimentChartsPanelExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
-
-        public ExperimentChartsPanelExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> {
-                setExperiment(event.getExperiment());
-                experiment.updateTrainingStatus();
-                selectVisibleChart();
-            });
         }
     }
 }

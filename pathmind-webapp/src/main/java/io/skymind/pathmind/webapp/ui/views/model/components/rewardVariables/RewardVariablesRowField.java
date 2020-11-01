@@ -1,8 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -14,16 +11,10 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -43,9 +34,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
     // This is really only used to prevent eventbus updates for reward variables that are already set to show.
     private boolean isShow = true;
 
-    private Supplier<Optional<UI>> getUISupplier;
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
-        this.getUISupplier = getUISupplier;
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setAlignItems(Alignment.BASELINE);
@@ -106,17 +95,6 @@ public class RewardVariablesRowField extends HorizontalLayout {
         binder.setBean(rv);
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this,
-                new RewardVariablesRowFieldExperimentChangedViewSubscriber(getUISupplier));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
     private void setGoalFieldVisibility() {
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames+" not-none");
@@ -157,17 +135,5 @@ public class RewardVariablesRowField extends HorizontalLayout {
         getRewardVariableSpan().getElement().setAttribute("chosen", true);
         isShow = true;
         EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
-    }
-
-    class RewardVariablesRowFieldExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
-
-        public RewardVariablesRowFieldExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> reset());
-        }
     }
 }
