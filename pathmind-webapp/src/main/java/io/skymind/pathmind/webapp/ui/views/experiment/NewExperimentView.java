@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
@@ -157,6 +157,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
+    protected void onDetach(DetachEvent event) {
+        EventBus.unsubscribe(this);
+    }
+
+    @Override
     protected Component getTitlePanel() {
         pageBreadcrumbs = createBreadcrumbs();
         return new ScreenTitlePanel(pageBreadcrumbs);
@@ -219,7 +224,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        observationsPanel = new ObservationsPanel();
+        observationsPanel = new ObservationsPanel(() -> getUI(), observationDAO, modelObservations, experimentObservations);
         observationsPanel.addValueChangeListener(evt -> {
             unsavedChanges.setVisible(true);
             startRunButton.setEnabled(canStartTraining());
@@ -345,6 +350,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
+        System.out.println("Saving draft for... "+experiment.getId());
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
@@ -364,9 +370,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 	private void setExperiment(Experiment selectedExperiment) {
 		triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
-		if (saveDraftButton.isEnabled()) {
-			navigateToAnotherDraftExperiment(selectedExperiment);
-		}
 	}
 
 	private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
@@ -378,17 +381,21 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
 			loadExperimentData();
 			updateScreenComponents();
-			notesField.setNotesText(experiment.getUserNotes());
-			pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-			experimentsNavbar.setCurrentExperiment(selectedExperiment);
-
-			if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-				getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "newExperiment/" + experimentId));
-			} else {
-				getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
-			}
+            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            
+            PushUtils.push(getUI(), ui -> {
+                navigateToExperiment(ui, selectedExperiment);
+            });
 		}
 	}
+
+    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
+        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
+            ui.getPage().getHistory().pushState(null, "newExperiment/" + targetExperiment.getId());
+        } else {
+            navigateToExperimentView(targetExperiment);
+        }
+    }
 
 	private void navigateToExperimentView(Experiment experiment) {
 	    PushUtils.push(getUI(), ui -> {
@@ -465,7 +472,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
         rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
-        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
@@ -504,19 +510,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 Experiment newSelectedExperiment = experiments.get(0);
                 PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
             }
-            else {
-                PushUtils.push(getUI(), ui -> {
-                    setExperiment(experiment);
-                });
-            }
-        }
-    }
-
-    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
-        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
-            navigateToAnotherDraftExperiment(targetExperiment);
-        } else {
-            ui.navigate(ExperimentView.class, targetExperiment.getId());
         }
     }
 
@@ -544,7 +537,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         public void handleBusEvent(ExperimentUpdatedBusEvent event) {
             if (isSameExperiment(event.getExperiment()) && event.isStartedTrainingEventType()) {
                 navigateToExperimentView(event.getExperiment());
-            } else if (ExperimentUtils.isSameModel(experiment, event.getModelId())) {
+            } else if (!isSameExperiment(event.getExperiment()) && ExperimentUtils.isSameModel(experiment, event.getModelId())) {
                 updateExperimentComponents();
             }
         }
@@ -559,7 +552,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         @Override
         public void handleBusEvent(ExperimentChangedViewBusEvent event) {
             if (ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId())) {
-                PushUtils.push(getUI(), ui -> setExperiment(event.getExperiment()));
+                PushUtils.push(getUI(), ui -> {
+                    setExperiment(event.getExperiment());
+                });
             }
         }
 

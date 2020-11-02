@@ -258,8 +258,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(true);
-        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+        observationsPanel = new ObservationsPanel(() -> getUI(), observationDAO, modelObservations, experimentObservations, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
@@ -429,7 +428,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
@@ -464,7 +462,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             experimentsNavbar.setVisible(!experiment.isArchived());
         }
         panelTitle.setText("Experiment #"+experiment.getName());
-        notesField.setNotesText(experiment.getUserNotes());
         // Check is needed for the shared experiment view which has no breadcrumb.
         if (pageBreadcrumbs != null) {
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
@@ -477,7 +474,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 experimentsNavbar.setAllowNewExperimentCreation(false);
             }
         }
-        observationsPanel.setSelectedObservations(experimentObservations);
         updateDetailsForExperiment();
         trainingStatusDetailsPanel.setExperiment(experiment);
     }
