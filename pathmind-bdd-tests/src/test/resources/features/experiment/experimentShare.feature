@@ -52,3 +52,50 @@ Feature: Experiment share
     Examples:
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
+
+  Scenario Outline: Check that NOT shared experiment not shown to the normal users
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Click in 'Share with support' button
+    When Save experiment url into the variable 'sharedExperimentUrl'
+    When Delete all cookies
+    Given Open page sign-up
+    When Fill new user form with name <First Name>, <Last Name>
+    When Create new user click sign up button
+    When Fill new user password <Password>
+    When Fill new user confirmation password <Password>
+    When Create new user click sign in button
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <Password>
+    Then Check that user <First Name> <Last Name> successfully logged in
+    When Open page sharedExperimentUrl
+    Then Check that Oops page opened
+
+    Examples:
+      | First Name | Last Name | Password   |
+      | BDD        | Autotest  | Pass123456 |
+
+  Scenario Outline: Check that NOT shared experiment not shown to the support users
+    Given Open page sign-up
+    When Fill new user form with name <First Name>, <Last Name>
+    When Create new user click sign up button
+    When Fill new user password <Password>
+    When Fill new user confirmation password <Password>
+    When Create new user click sign in button
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <Password>
+    Then Check that user <First Name> <Last Name> successfully logged in
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Save experiment url into the variable 'sharedExperimentUrl'
+    When Delete all cookies
+    When Login to the pathmind
+    When Open page sharedExperimentUrl
+    Then Check that Invalid data error page opened
+
+    Examples:
+      | First Name | Last Name | Password   |
+      | BDD        | Autotest  | Pass123456 |
