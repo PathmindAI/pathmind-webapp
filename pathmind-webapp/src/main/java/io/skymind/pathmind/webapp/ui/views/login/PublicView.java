@@ -36,4 +36,3 @@ public interface PublicView extends HasDynamicTitle, PageConfigurator {
     }
 
 }
-// "<script src=\"https://www.googleoptimize.com/optimize.js?id=GTM-T2DSBKT\"></script>"
