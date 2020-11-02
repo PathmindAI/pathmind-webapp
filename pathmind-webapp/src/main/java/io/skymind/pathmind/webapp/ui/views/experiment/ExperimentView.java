@@ -329,7 +329,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
-        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
+        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 experimentChartsPanel,
                 notesField);
@@ -479,7 +479,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
         observationsPanel.setSelectedObservations(experimentObservations);
         updateDetailsForExperiment();
-        experimentChartsPanel.setupCharts(experiment, rewardVariables);
         trainingStatusDetailsPanel.setExperiment(experiment);
     }
 

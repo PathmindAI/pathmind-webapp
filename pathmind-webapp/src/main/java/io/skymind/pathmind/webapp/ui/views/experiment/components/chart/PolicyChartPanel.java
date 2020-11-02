@@ -35,6 +35,7 @@ public class PolicyChartPanel extends VerticalLayout
         synchronized (experimentLock) {
             this.experiment = newExperiment.deepClone();
             chart.setPolicyChart(experiment);
+            redrawChart();
         }
     }
 
