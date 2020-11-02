@@ -18,7 +18,6 @@
     background: white;
     border-radius: 0;
     padding: var(--lumo-space-m);
-    overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout {
@@ -212,7 +211,6 @@
 .experiment-view .buttons-wrapper {
     display: flex;
     justify-content: flex-end;
-    flex-wrap: wrap;
     width: 100%;
 }
 
