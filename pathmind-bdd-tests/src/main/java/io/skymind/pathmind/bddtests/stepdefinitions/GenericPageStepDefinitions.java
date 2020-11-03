@@ -24,6 +24,11 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkThatButtonDoesntExist(buttonText);
     }
 
+    @When("^Click text contains '(.*)' link$")
+    public void clickTextContainsLink(String text) {
+        genericPageSteps.clickTextContainsLink(text);
+    }
+
     @When("^Click in '(.*)' button$")
     public void clickInButton(String buttonText) {
         genericPageSteps.clickInButton(buttonText);
@@ -150,11 +155,6 @@ public class GenericPageStepDefinitions {
         genericPageSteps.checkThatConfirmationDialogNotShown(status);
     }
 
-    @Then("^Check project/model title label tag is (.*)$")
-    public void checkTitleLabelTagIsArchived(String tag) {
-        genericPageSteps.checkTitleLabelTagIsArchived(tag);
-    }
-
     @Then("^Compare '(.*)' file with downloaded file$")
     public void compareALPFileWithDownloadedFile(String alpFile) {
         genericPageSteps.compareALPFileWithDownloadedFile(alpFile);
@@ -163,6 +163,11 @@ public class GenericPageStepDefinitions {
     @When("^Click pop-up dialog close btn$")
     public void clickPopUpDialogCloseBtn() {
         genericPageSteps.clickPopUpDialogCloseBtn();
+    }
+
+    @When("^Check that unexpected error alert is Not shown$")
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        genericPageSteps.checkThatUnexpectedErrorAlertIsNotShown();
     }
 
     @When("^Click in the new tab '(.*)' button$")

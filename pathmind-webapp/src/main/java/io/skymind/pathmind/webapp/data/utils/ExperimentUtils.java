@@ -27,6 +27,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
 public class ExperimentUtils
 {
@@ -217,7 +219,20 @@ public class ExperimentUtils
         return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
     }
-    
+
+    public static String getIconStatus(Experiment experiment, RunStatus status) {
+        if(ExperimentUtils.isDraftRunType(experiment))
+            return "pencil";
+        if (RunStatus.isRunning(status)) {
+            return "loading";
+        } else if (status == RunStatus.Completed) {
+            return "check";
+        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
+            return "stopped";
+        }
+        return "exclamation";
+    }
+
     public static boolean trainingEnded(Experiment experiment) {
 	    return experiment.getTrainingStatusEnum().getValue() >= RunStatus.Completed.getValue();
     }
@@ -241,7 +256,7 @@ public class ExperimentUtils
     public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
         Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
         if(firstUnarchivedExperiment.isEmpty())
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiments.get(0).getModelId()));
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
         else
             getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
     }

@@ -60,10 +60,11 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentView
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -535,7 +536,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
-            PushUtils.push(getUI(), ui -> ui.navigate(ModelView.class, experiment.getModelId()));
+            Model model = modelService.getModel(modelId)
+					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
+
+            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);

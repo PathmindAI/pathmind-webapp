@@ -32,9 +32,9 @@ public class GenericPage extends PageObject {
     private WebElement popupShadow;
     @FindBy(xpath = "//vaadin-grid-cell-content")
     private List<WebElement> experimentModelsNames;
-    @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
+    @FindBy(xpath = "(//vaadin-text-area)[1]")
     private WebElement notesField;
-    @FindBy(xpath = "(//vaadin-text-field)[2]")
+    @FindBy(xpath = "//span[@class='section-title-label' and text()='Rename project']/following-sibling::vaadin-text-field")
     private WebElement editProjectNameInputShadow;
     @FindBy(xpath = "//notes-field")
     private WebElement notesBlock;
@@ -52,6 +52,12 @@ public class GenericPage extends PageObject {
         String xpath = String.format("//vaadin-button[text()='%s']", buttonText);
         waitFor(ExpectedConditions.invisibilityOfAllElements(getDriver().findElements(By.xpath(xpath))));
         resetImplicitTimeout();
+    }
+
+    public void clickTextContainsLink(String text) {
+        String xpath = String.format("//*[contains(text(), '%s')]", text);
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
+        System.out.println("user dir " + System.getProperty("user.dir"));
     }
 
     public void clickInButton(String buttonText) {
@@ -105,6 +111,7 @@ public class GenericPage extends PageObject {
         assertThat(errorMessage, first.isPresent());
         first.get().click();
         resetImplicitTimeout();
+        waitABit(4000);
     }
 
     public void switchProjectsTab() {
@@ -211,10 +218,6 @@ public class GenericPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void checkTitleLabelTagIsArchived(String tag) {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
-    }
-
     public void compareALPFileWithDownloadedFile(String alpFile) {
         File downloadedFile = new File(System.getProperty("user.dir") + "/models/" + alpFile);
         long downloadedFileSize = downloadedFile.length();
@@ -241,6 +244,12 @@ public class GenericPage extends PageObject {
 
     public void clickPopUpDialogCloseBtn() {
         getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::vaadin-button[last()]")).click();
+    }
+
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        setImplicitTimeout(5, SECONDS);
+        assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
+        resetImplicitTimeout();
     }
 
     public void clickInTheNewTabModelButton(String text) {

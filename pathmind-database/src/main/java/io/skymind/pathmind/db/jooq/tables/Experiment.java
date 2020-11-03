@@ -17,6 +17,7 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -42,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 710565154;
+    private static final long serialVersionUID = 2040130485;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -60,7 +61,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.id</code>.
      */
-    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('experiment_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
 
     /**
      * The column <code>public.experiment.model_id</code>.
@@ -90,22 +91,17 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.archived</code>.
      */
-    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.user_notes</code>.
      */
-    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.experiment.is_favorite</code>.
      */
     public final TableField<ExperimentRecord, Boolean> IS_FAVORITE = createField(DSL.name("is_favorite"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
-     * The column <code>public.experiment.goals_reached</code>.
-     */
-    public final TableField<ExperimentRecord, Boolean> GOALS_REACHED = createField(DSL.name("goals_reached"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.has_goals</code>.
@@ -118,9 +114,14 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Integer> TRAINING_STATUS = createField(DSL.name("training_status"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.experiment.shared_with_support</code>.
+     * The column <code>public.experiment.goals_total_num</code>.
      */
-    public final TableField<ExperimentRecord, Boolean> SHARED_WITH_SUPPORT = createField(DSL.name("shared_with_support"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ExperimentRecord, Integer> GOALS_TOTAL_NUM = createField(DSL.name("goals_total_num"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_reached_num</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -162,7 +163,12 @@ public class Experiment extends TableImpl<ExperimentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY, Indexes.GOALS_COUNT_MIGRATION_IDX);
+    }
+
+    @Override
+    public Identity<ExperimentRecord, Long> getIdentity() {
+        return Keys.IDENTITY_EXPERIMENT;
     }
 
     @Override
@@ -215,7 +221,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean, Integer, Boolean> fieldsRow() {
+    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Integer, Integer> fieldsRow() {
         return (Row13) super.fieldsRow();
     }
 }

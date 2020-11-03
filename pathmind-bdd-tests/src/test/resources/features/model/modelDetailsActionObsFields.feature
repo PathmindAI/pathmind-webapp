@@ -16,13 +16,12 @@ Feature: Check Model Details Actions/Observations fields
     Then Click project save draft btn
     When Open projects page
     When Open project <project name> on projects page
-    When Click the model name 1
     Then Check model page model details observations is <observations>
 
     Examples:
       | project name    | model                                 | reward function file                                | actions | observations |
-      | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | 3       | 9            |
+      | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | 3       | 3            |
       | AutotestProject | CoffeeShop/CoffeeShop.zip             | CoffeeShop/CoffeeShopRewardFunction.txt             | 4       | 5            |
-      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | 2       | 3            |
-      | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | 3       | 24           |
+      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | 2       | 1            |
+      | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | 3       | 4           |
       | AutotestProject | Warehouse/Warehouse.zip               | Warehouse/WarehouseRewardFunction.txt               | 2       | 2            |

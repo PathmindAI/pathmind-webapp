@@ -96,12 +96,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 		if(mainContent != null) add(mainContent);
 	}
 
-    private  Component getWarningMessage() {
-        HorizontalLayout result = WrapperUtils.wrapWidthFullCenterHorizontal(
-            LabelFactory.createLabel("Using Mock Backend")
-        );
-        result.addClassName("internal-banner");
-        return result;
+    private Component getWarningMessage() {
+        return LabelFactory.createLabel("Using Mock Backend", "mock-backend-header");
     }
 
     // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.

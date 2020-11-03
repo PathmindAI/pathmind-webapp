@@ -11,16 +11,29 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 
 public class NewExperimentButton extends Button
 {
-	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, SegmentIntegrator segmentIntegrator)
-	{
-		super("New Experiment");
+    private long modelId;
+
+	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, SegmentIntegrator segmentIntegrator) {
+        this(experimentDAO, modelId, ButtonVariant.LUMO_PRIMARY, segmentIntegrator);
+    }
+
+	public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, ButtonVariant buttonVariant, SegmentIntegrator segmentIntegrator) {
+        super("New Experiment");
+        setModelId(modelId);
 		setIcon(new Icon(VaadinIcon.PLUS));
 
         addClickListener(evt -> getUI().ifPresent(ui -> {
             segmentIntegrator.newExperiment();
-            ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, modelId);
+            ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, this.modelId);
         }));
+
+        addThemeVariants(buttonVariant);
+
+        addClassName("new-experiment-button");
 			
-		addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 	}
+
+    public void setModelId(long modelId) {
+        this.modelId = modelId;
+    }
 }

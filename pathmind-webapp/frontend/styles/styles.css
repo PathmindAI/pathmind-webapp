@@ -162,12 +162,15 @@ background-color: var(--pm-grey-color-light);
     color: var(--pm-gold-color);
 }
 
+.project-view [icon="vaadin:star"],
 .model-view [icon="vaadin:star"] {
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
     vertical-align: text-top;
 }
 
+.project-view [icon="vaadin:close"],
+.project-view [icon="vaadin:check"],
 .model-view [icon="vaadin:close"],
 .model-view [icon="vaadin:check"] {
     --iron-icon-width: var(--lumo-font-size-m);
@@ -359,15 +362,13 @@ background-color: var(--pm-grey-color-light);
 }
 
 .projects-view .view-section,
-.project-view .view-section,
 .model-view .view-section {
     padding: var(--lumo-space-m) var(--lumo-space-l);
     border-radius: 0;
 }
 
 .project-view .view-section,
-.model-view .view-section,
-.card.view-section {
+.model-view .view-section {
     min-width: unset;
     line-height: 1.6em;
     overflow: auto;
@@ -381,61 +382,9 @@ background-color: var(--pm-grey-color-light);
     word-break: break-word;
 }
 
-.card p,
-.card p + div {
-    margin: var(--lumo-space-m) 0 0;
-}
-
-.card p {
-    color: var(--lumo-secondary-text-color);
-}
-
-.card .bold-label {
-    display: block;
-    color: var(--lumo-body-text-color);
-}
-
 .project-view .section-subtitle-label,
-.model-view .section-subtitle-label,
 .search-results-view .section-subtitle-label {
     color: var(--lumo-secondary-text-color);
-}
-
-.project-view .section-subtitle-label + tag-label,
-.model-view .section-subtitle-label + tag-label {
-    margin-left: var(--lumo-space-xs);
-}
-
-.project-view .truncated-label {
-    max-width: 100%;
-    width: auto;
-}
-
-.project-view .section-title-label + vaadin-button,
-.model-view .section-title-label + vaadin-button {
-    min-width: var(--lumo-button-size);
-    height: 1.4rem;
-    line-height: calc(1.4rem - 2px);
-    font-size: var(--lumo-font-size-s);
-    font-weight: normal;
-    padding: 0 var(--lumo-space-xs);
-    margin: 0 0 0 var(--lumo-space-xs);
-}
-
-.model-view .model-reward-variables {
-    max-height: 180px;
-    line-height: 1;
-    color: var(--lumo-secondary-text-color);
-    overflow-y: auto;
-}
-
-.project-view .notes-field-wrapper,
-.model-view .notes-field-wrapper {
-    flex: 1 1 auto;
-}
-
-.model-view .notes-field-wrapper {
-    margin-top: var(--lumo-space-m);
 }
 
 .no-shrink {
@@ -511,6 +460,18 @@ account-view {
 
 .create-project-button {
     width: 275px;
+}
+
+.mock-backend-header {
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-family: var(--code-font-family);
+    font-weight: bold;
+    line-height: 1;
+    color: var(--lumo-body-text-color);
+    background-color: rgba(254, 187, 43, 0.9);
+    padding: var(--lumo-space-xs) 0;
+    text-align: center;
 }
 
 @media (min-width: 1281px) {
