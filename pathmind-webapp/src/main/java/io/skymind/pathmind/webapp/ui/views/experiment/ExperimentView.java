@@ -245,7 +245,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupExperimentContentPanel() {
-        codeViewer = new CodeViewer(experiment);
+        codeViewer = new CodeViewer(() -> getUI(), experiment);
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
