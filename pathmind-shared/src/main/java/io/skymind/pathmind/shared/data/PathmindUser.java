@@ -43,6 +43,10 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser>
         return UserRole.getEnumFromId(this.accountType);
     }
 
+    public boolean isSupportAccountType() {
+        return UserRole.Support.equals(getAccountType());
+    }
+
     public void setAccountType(int accountType) {
         this.accountType = accountType;
     }

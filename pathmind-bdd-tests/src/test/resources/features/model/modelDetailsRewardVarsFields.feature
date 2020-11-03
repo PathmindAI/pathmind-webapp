@@ -14,7 +14,6 @@ Feature: Check Model Details Reward Variables fields
     Then Check that new experiment <project name> page is opened
     When Open projects page
     When Open project <project name> on projects page
-    When Click the model name 1
     Then Check model page model details reward variables order
     Then Check model page model details reward variables is <variables>
 

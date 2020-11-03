@@ -209,4 +209,14 @@ public class ExperimentStepDefinitions {
     public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
         experimentPageSteps.checkVariableGoalReachedIsChosenTrue(variable, chosen);
     }
+
+    @Then("^Check experiment name tag label '(.*)'$")
+    public void checkExperimentNameTagLabel(String label) {
+        experimentPageSteps.checkExperimentNameTagLabel(label);
+    }
+
+    @When("^Save experiment url into the variable '(.*)'$")
+    public void saveExperimentUrlIntoTheVariable(String variable) {
+        experimentPageSteps.saveExperimentUrlIntoTheVariable(variable);
+    }
 }

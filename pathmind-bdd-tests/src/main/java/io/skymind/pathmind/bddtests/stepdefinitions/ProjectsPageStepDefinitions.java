@@ -53,4 +53,9 @@ public class ProjectsPageStepDefinitions {
     public void checkPageTitleIsProjects(String title) {
         projectsPageSteps.checkPageTitleIsProjects(title);
     }
+
+    @Then("^Check project page model ALP btn (.*)$")
+    public void checkProjectPageModelALPBtn(String filename) {
+        projectsPageSteps.checkProjectPageModelALPBtn(filename);
+    }
 }

@@ -88,6 +88,10 @@ public class PolicyUtils
         return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
     }
 
+    public static Optional<Policy> selectBestPolicy(Experiment experiment) {
+        return selectBestPolicy(experiment.getPolicies());
+    }
+
     public static Optional<Policy> selectBestPolicy(List<Policy> policies) {
         if(policies == null)
             return Optional.empty();

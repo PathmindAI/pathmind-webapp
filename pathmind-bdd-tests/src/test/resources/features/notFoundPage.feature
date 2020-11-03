@@ -12,16 +12,16 @@ Feature: Not found page
 
   Scenario: Check Oops page title and its error message
     Given Login to the pathmind
-    When Open page project/wrongUrl
+    When Open page experiment/wrongUrl
     Then Check that Oops page opened
 
   Scenario: Check Oops page signing out btn
     Given Login to the pathmind
-    When Open page project/wrongUrl
+    When Open page experiment/wrongUrl
     When Click in 'signing out' button
     Then Check that login page opened
     Given Login with default credentials
-    Then Check page url contains project/wrongUrl
+    Then Check page url contains experiment/wrongUrl
 
   Scenario: Check Invalid data error page title and its error message
     Given Login to the pathmind
@@ -34,7 +34,7 @@ Feature: Not found page
     When Click in 'status.pathmind.com' button
     Then Check that pathmind status page opened https://status.pathmind.com/
     Then Close browser tab
-    When Open page project/wrongUrl
+    When Open page experiment/wrongUrl
     When Click in 'status.pathmind.com' button
     Then Check that pathmind status page opened https://status.pathmind.com/
     Then Close browser tab
