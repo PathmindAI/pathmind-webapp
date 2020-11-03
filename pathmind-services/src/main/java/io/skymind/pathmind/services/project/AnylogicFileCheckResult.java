@@ -31,7 +31,12 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     @Override
     public boolean isFileCheckSuccessful() {
-        return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
+        boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
+        if (!isAllSuccessful) {
+            log.info(String.format("Correct File Type: %b, Model Jar Present: %b, Helper Present: %b, Helper Unique: %b",
+                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique()));
+        }
+        return isAllSuccessful;
     }
 
     @Override
@@ -69,6 +74,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         if (this.definedHelpers.size() == 1) {
             return true;
         } else {
+            log.info(String.format("Helper classes exist more than 1: %s", this.definedHelpers.toString()));
             return false;
         }
     }
