@@ -60,17 +60,21 @@ public class WrapperUtils
 	}
 
 	public static HorizontalLayout wrapWidthFullHorizontalNoSpacingAlignCenter(Component... components) {
-		HorizontalLayout wrapper = new HorizontalLayout(components);
-		wrapper.setWidthFull();
+		HorizontalLayout wrapper = wrapWidthFullHorizontal(components);
 		wrapper.setSpacing(false);
 		wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 		return wrapper;
 	}
 
+	public static HorizontalLayout wrapSizeFullHorizontal(Component... components) {
+        HorizontalLayout wrapper = new HorizontalLayout(components);
+		wrapper.setSizeFull();
+		return wrapper;
+	}
+
 	public static HorizontalLayout wrapSizeFullBetweenHorizontal(Component... components) {
-		HorizontalLayout wrapper = wrapWidthFullHorizontal(components);
+		HorizontalLayout wrapper = wrapSizeFullHorizontal(components);
 		wrapper.setSpacing(false);
-		wrapper.setHeightFull();
 		wrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 		return wrapper;
 	}
@@ -121,6 +125,10 @@ public class WrapperUtils
 
 	public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
 		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.HORIZONTAL);
+	}
+
+	public static SplitLayout wrapCenterAlignmentFullSplitLayoutVertical(Component primaryComponent, Component secondaryComponent, double splitterPosition) {
+		return wrapCenterAlignmentFullSplitLayout(primaryComponent, secondaryComponent, splitterPosition, SplitLayout.Orientation.VERTICAL);
 	}
 
 	private static SplitLayout wrapCenterAlignmentFullSplitLayout(Component primaryComponent, Component secondaryComponent, double splitterPosition, SplitLayout.Orientation orientation) {

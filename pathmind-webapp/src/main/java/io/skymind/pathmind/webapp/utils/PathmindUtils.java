@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.utils;
 
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
+import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
 
 public class PathmindUtils
 {
@@ -24,5 +25,17 @@ public class PathmindUtils
 
 	public static final String getPageTitle(String title) {
 		return "Pathmind | " + title;
-	}
+    }
+
+    public static final String getResumeUploadModelPath(long projectId, long modelId) {
+        return String.format("%s/%s/%s", projectId, UploadMode.RESUME, modelId);
+    }
+
+    public static final String getProjectModelPath(long projectId, long modelId) {
+        return String.format("/project/%s/model/%s", projectId, modelId);
+    }
+
+    public static final String getProjectModelParameter(long projectId, long modelId) {
+        return String.format("%s/model/%s", projectId, modelId);
+    }
 }

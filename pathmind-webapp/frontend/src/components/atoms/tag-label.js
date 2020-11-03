@@ -11,8 +11,6 @@ class TagLabel extends PolymerElement {
 
     ready() {
         super.ready();
-        this.setOutlineStyle();
-        this.setSize();
     }
 
     static get properties() {
@@ -25,10 +23,12 @@ class TagLabel extends PolymerElement {
             outline: {
                 type: Boolean,
                 value: false,
+                reflectToAttribute: true,
             },
             size: {
                 type: String,
                 value: "",
+                reflectToAttribute: true,
             }
         }
     }
@@ -47,7 +47,7 @@ class TagLabel extends PolymerElement {
         border-radius: var(--lumo-border-radius);
         margin: 0 var(--lumo-space-xxxs);
     }
-    :host([outline="true"]) {
+    :host([outline]) {
         background: transparent;
         border: 1px solid;
     }
@@ -56,22 +56,6 @@ class TagLabel extends PolymerElement {
         border-radius: var(--lumo-border-radius-s);
     }
 </style>[[text]]`;
-    }
-
-    setSize() {
-        if (this.size) {
-            this.setAttribute("size", this.size);
-        } else {
-            this.removeAttribute("size");
-        }
-    }
-
-    setOutlineStyle() {
-        if (this.outline) {
-            this.setAttribute("outline", true);
-        } else {
-            this.setAttribute("outline", false);
-        }
     }
 
     _textChanged(newValue) {

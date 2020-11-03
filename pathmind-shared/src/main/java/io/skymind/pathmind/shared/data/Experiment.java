@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
@@ -32,8 +33,10 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private String userNotes;
     private boolean isFavorite;
     private boolean hasGoals;
-    private boolean goalsReached;
+    private int totalGoals;
+    private int goalsReached;
     private int trainingStatus;
+    private boolean sharedWithSupport;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;
@@ -86,6 +89,10 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         updateTrainingStatus();
     }
 
+    public boolean isGoalsReached() {
+        return hasGoals && Objects.equals(goalsReached, totalGoals);
+    }
+
     @Override
     public Experiment shallowClone() {
         return super.shallowClone(Experiment.builder()
@@ -96,6 +103,9 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                 .userNotes(userNotes)
                 .isFavorite(isFavorite)
                 .trainingStatus(trainingStatus)
+                .hasGoals(hasGoals)
+                .goalsReached(goalsReached)
+                .totalGoals(totalGoals)
                 .build());
     }
 

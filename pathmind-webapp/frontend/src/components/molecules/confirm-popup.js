@@ -60,6 +60,7 @@ class ConfirmPopup extends PolymerElement {
                     box-sizing: border-box;
                     position: relative;
                     max-width: 30rem;
+                    min-width: 25rem;
                     line-height: 1.6em;
                     background-color: white;
                     padding: var(--lumo-space-l);

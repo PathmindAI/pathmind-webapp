@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.steps;
 
 import io.skymind.pathmind.bddtests.page.ExperimentPage;
+import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 
 import java.io.IOException;
@@ -197,5 +198,15 @@ public class ExperimentPageSteps {
     @Step
     public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
         experimentPage.checkVariableGoalReachedIsChosenTrue(variable, chosen);
+    }
+
+    @Step
+    public void checkExperimentNameTagLabel(String label) {
+        experimentPage.checkExperimentNameTagLabel(label);
+    }
+
+    @Step
+    public void saveExperimentUrlIntoTheVariable(String variable) {
+        Serenity.setSessionVariable(variable).to(experimentPage.getDriver().getCurrentUrl());
     }
 }

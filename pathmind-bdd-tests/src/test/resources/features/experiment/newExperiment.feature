@@ -7,7 +7,6 @@ Feature: New experiment page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     Then Check that new experiment AutotestProject page is opened
 
@@ -16,7 +15,6 @@ Feature: New experiment page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     Then Check that new experiment AutotestProject page is opened
     When Click projects breadcrumb btn
@@ -27,7 +25,6 @@ Feature: New experiment page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     Then Check that new experiment AutotestProject page is opened
     When Click project/ breadcrumb btn
@@ -38,17 +35,15 @@ Feature: New experiment page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     When Click model breadcrumb btn
-    Then Check that models page opened
+    Then Check that project page is opened
 
   Scenario: Edit exist experiment
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     Then Input reward function reward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3
     When Click project save draft btn
@@ -63,7 +58,6 @@ Feature: New experiment page
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Check on the model page experiment 1 notes is This is the experiment notes for this Coffee Shop project
     Then Click the experiment name 1
     Then Check experiment notes is This is the experiment notes for this Coffee Shop project
@@ -74,7 +68,6 @@ Feature: New experiment page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     When Click in 'Model #1 (coffeeshop)' button

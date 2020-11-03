@@ -34,10 +34,12 @@ public class ObservationsPanel extends VerticalLayout {
 
     public void setupObservationTable(Collection<Observation> allObservations, Collection<Observation> selection) {
         observationsTable.setItems(new HashSet<>(allObservations));
-        if (selection.isEmpty()) {
-            setSelectedObservations(allObservations);
-        } else {
-            setSelectedObservations(selection);
+        if (selection != null) {
+            if (selection.isEmpty()) {
+                setSelectedObservations(allObservations);
+            } else {
+                setSelectedObservations(selection);
+            }
         }
     }
 
