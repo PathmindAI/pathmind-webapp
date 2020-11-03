@@ -170,13 +170,19 @@ class ExperimentRepository
 				.execute();
 	}
 
-	protected static void updateGoalsReached(DSLContext ctx, long experimentId, int goalsReached, int totalGoals) {
+	protected static void updateGoalsReached(DSLContext ctx, long experimentId, int goalsReached) {
 	    ctx.update(Tables.EXPERIMENT)
 	    .set(Tables.EXPERIMENT.GOALS_REACHED_NUM, goalsReached)
-	    .set(Tables.EXPERIMENT.GOALS_TOTAL_NUM, totalGoals)
 	    .where(Tables.EXPERIMENT.ID.eq(experimentId))
 	    .execute();
 	}
+
+    protected static void updateGoalsTotal(DSLContext ctx, long experimentId, int totalGoals) {
+        ctx.update(Tables.EXPERIMENT)
+                .set(Tables.EXPERIMENT.GOALS_TOTAL_NUM, totalGoals)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+                .execute();
+    }
 
 	/**
 	 * Main method to retrieve List of {@link DashboardItem}.
