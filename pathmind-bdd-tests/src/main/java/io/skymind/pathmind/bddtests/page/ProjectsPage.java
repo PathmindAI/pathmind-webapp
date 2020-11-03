@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -26,8 +27,15 @@ public class ProjectsPage extends PageObject {
 
     public void clickCreateNewProjectBtn() {
         waitABit(3500);
-        waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']"))));
-        getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
+        setImplicitTimeout(3, SECONDS);
+        waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.cssSelector(".account-menu"))));
+        if (getDriver().findElements(By.xpath("//vaadin-button[text()='New Project']")).size() == 1){
+            getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
+        } else {
+            WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+            element.findElement(By.cssSelector(".button-link")).click();
+        }
+        resetImplicitTimeout();
     }
 
     public void checkThatProjectExistInProjectsList(String projectName) {

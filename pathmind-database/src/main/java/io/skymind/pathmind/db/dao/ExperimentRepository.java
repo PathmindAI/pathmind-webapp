@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.*;
@@ -44,6 +45,28 @@ class ExperimentRepository
 		return experiment;
 	}
 
+	protected static Experiment getSharedExperiment(DSLContext ctx, long experimentId, long userId) {
+        Record record = ctx
+                .select(EXPERIMENT.asterisk())
+                .select(MODEL.asterisk())
+                .select(PROJECT.asterisk())
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .join(PATHMIND_USER).on(PATHMIND_USER.ID.eq(userId).and(PATHMIND_USER.ACCOUNT_TYPE.eq(UserRole.Support.getId())))
+                .where(EXPERIMENT.ID.eq(experimentId))
+                .and(EXPERIMENT.SHARED_WITH_SUPPORT.eq(true).or(PROJECT.PATHMIND_USER_ID.eq(userId)))
+                .fetchOne();
+
+        if(record == null) {
+            return null;
+        }
+
+        Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+        addParentDataModelObjects(record, experiment);
+        return experiment;
+    }
+
 	protected static Experiment getExperimentIfAllowed(DSLContext ctx, long experimentId, long userId) {
 		Record record = ctx
 				.select(EXPERIMENT.asterisk())
@@ -53,7 +76,7 @@ class ExperimentRepository
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
 				.where(EXPERIMENT.ID.eq(experimentId))
-					.and(Tables.PROJECT.PATHMIND_USER_ID.eq(userId))
+					.and(PROJECT.PATHMIND_USER_ID.eq(userId))
 				.fetchOne();
 
 		if(record == null) {
@@ -65,7 +88,11 @@ class ExperimentRepository
 		return experiment;
 	}
 
-	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId) {
+	protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId, boolean isIncludeArchived) {
+	    Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
+	    if(!isIncludeArchived)
+	        condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
+
 		Result<?> result = ctx
 				.select(EXPERIMENT.asterisk())
 				.select(MODEL.ID, MODEL.NAME)
@@ -73,7 +100,7 @@ class ExperimentRepository
 				.from(EXPERIMENT)
 				.leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
 				.leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-				.where(EXPERIMENT.MODEL_ID.eq(modelId))
+				.where(condition)
                 .orderBy(EXPERIMENT.DATE_CREATED.desc())
 				.fetch();
 
@@ -301,23 +328,30 @@ class ExperimentRepository
 	}
 
 	protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
-		ctx.update(Tables.EXPERIMENT)
-				.set(Tables.EXPERIMENT.USER_NOTES, userNotes)
-				.where(Tables.EXPERIMENT.ID.eq(experimentId))
+		ctx.update(EXPERIMENT)
+				.set(EXPERIMENT.USER_NOTES, userNotes)
+				.where(EXPERIMENT.ID.eq(experimentId))
 				.execute();
 	}
 
     protected static void markAsFavorite(DSLContext ctx, long experimentId, boolean isFavorite) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.IS_FAVORITE, isFavorite)
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.IS_FAVORITE, isFavorite)
+                .where(EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
 
     protected static void updateTrainingStatus(DSLContext ctx, Experiment experiment) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.TRAINING_STATUS, experiment.getTrainingStatus())
-                .where(Tables.EXPERIMENT.ID.eq(experiment.getId()))
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.TRAINING_STATUS, experiment.getTrainingStatus())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+    }
+
+    protected static void shareExperimentWithSupport(DSLContext ctx, long experimentId) {
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.SHARED_WITH_SUPPORT, true)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
 }

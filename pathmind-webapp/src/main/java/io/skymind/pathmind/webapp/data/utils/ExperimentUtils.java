@@ -1,18 +1,13 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -21,6 +16,18 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ExperimentUtils
 {
@@ -224,7 +231,11 @@ public class ExperimentUtils
         }
         return "exclamation";
     }
-    
+
+    public static boolean trainingEnded(Experiment experiment) {
+	    return experiment.getTrainingStatusEnum().getValue() >= RunStatus.Completed.getValue();
+    }
+
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
     public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
@@ -259,5 +270,60 @@ public class ExperimentUtils
                 .findFirst().orElse(-1);
         if(index > -1)
             experiments.set(index, experiment);
+    }
+
+    public static Optional<Pair<TrainingError, String>> getTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
+        return experiment.getRuns().stream()
+                .filter(r -> RunStatus.isError(r.getStatusEnum()))
+                .findAny()
+                .flatMap(run -> trainingErrorDAO.getErrorById(run.getTrainingErrorId())
+                        .map(trainingError -> {
+                            if (run.getRllibError() != null) {
+                                return Pair.of(trainingError, run.getRllibError());
+                            } else {
+                                return Pair.of(trainingError, trainingError.getDescription());
+                            }
+                        }));
+    }
+
+    public static Optional<EarlyStopReason> getEarlyStopReason(Experiment experiment) {
+        return experiment.getRuns().stream()
+                .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
+                .findAny()
+                .flatMap(r -> {
+                    if (StringUtils.isNotBlank(r.getSuccessMessage())) {
+                        return Optional.of(new EarlyStopReason(true, firstLine(r.getSuccessMessage())));
+                    }
+                    else {
+                        return Optional.of(new EarlyStopReason(true, firstLine(r.getWarningMessage())));
+                    }
+                });
+    }
+
+    private static String firstLine(String message) {
+        return message.split("\\n", 2)[0];
+    }
+
+
+    public static class EarlyStopReason {
+        private final boolean success;
+        private final String message;
+
+        public EarlyStopReason(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public boolean isWarning() {
+            return !success;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

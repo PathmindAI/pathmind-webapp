@@ -36,6 +36,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private int totalGoals;
     private int goalsReached;
     private int trainingStatus;
+    private boolean sharedWithSupport;
 
 	// Helper GUI attributes not stored in the database
 	private Project project;

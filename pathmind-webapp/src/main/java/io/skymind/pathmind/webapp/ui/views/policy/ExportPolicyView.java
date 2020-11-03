@@ -1,22 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.policy;
 
-import java.io.ByteArrayInputStream;
-
-import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
-import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -28,15 +11,25 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.StreamResource;
-
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
-
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.components.policy.ExportPolicyButton;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
+import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
@@ -51,8 +44,7 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Autowired
 	private SegmentIntegrator segmentIntegrator;
 
-	private Button exportButton;
-	private Anchor exportLink;
+	private ExportPolicyButton exportButton;
     private Button cancelButton;
     private Anchor downloadModelAlpLink;
 	
@@ -73,22 +65,9 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 	@Override
 	protected Component getMainContent()
 	{
-		final String policyFileName = PolicyUtils.generatePolicyFileName(policy);
-
-		exportButton = new Button("Export Policy");
-		exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-		exportButton.setWidth("200px");
-		exportButton.addClickListener(evt -> {
-			policyDAO.updateExportedDate(policyId);
-			segmentIntegrator.policyExported();
-        });
+		exportButton = new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> policy);
 
         downloadModelAlpLink = new DownloadModelAlpLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true);
-
-		exportLink = new Anchor();
-		exportLink.add(exportButton);
-		exportLink.getElement().setAttribute("href", getResourceStream(policyFileName));
-		exportLink.getElement().setAttribute("download", true);
 
 		Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
 		learnMoreLink.setTarget("_blank");
@@ -99,10 +78,10 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
 						LabelFactory.createLabel("Export Policy", CssPathmindStyles.SECTION_TITLE_LABEL),
 						new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
-						LabelFactory.createLabel(policyFileName),
+						LabelFactory.createLabel(exportButton.getPolicyFilename()),
 						createInstructionsDiv(),
 						learnMoreLink,
-                        exportLink,
+                        exportButton,
                         downloadModelAlpLink);
 		wrapperContent.setClassName("view-section");
 		return WrapperUtils.wrapCenterVertical("100%", 
@@ -110,11 +89,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 				cancelButton);
 	}
 	
-	private StreamResource getResourceStream(String filename) {
-		return new StreamResource(removeInvalidChars(filename),
-				() -> new ByteArrayInputStream(policyFileService.getPolicyFile(policyId)));
-	}
-
 	private void handleCancelButtonClicked() {
 		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, policy.getExperiment().getId()));
 	}

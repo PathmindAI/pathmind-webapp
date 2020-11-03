@@ -1837,4 +1837,13 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="20201101-01" author="bruno.rezende@ext.vaadin.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="SHARED_WITH_SUPPORT" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="EXPERIMENT" columnName="SHARED_WITH_SUPPORT"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import org.apache.commons.lang3.StringUtils;
@@ -60,11 +61,6 @@ import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
@@ -175,12 +171,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, policyDAO, experiment, experiments, segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
-        unarchiveExperimentButton = new Button("Unarchive", VaadinIcon.ARROW_BACKWARD.create(),
-                click -> unarchiveExperiment());
-        unarchiveExperimentButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
-        startRunButton = new Button("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
-        startRunButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
         startRunButton.setEnabled(false);
 
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -492,7 +485,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void updateExperimentComponents() {
-        experiments = experimentDAO.getExperimentsForModel(modelId).stream().filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
             Model model = modelService.getModel(modelId)
