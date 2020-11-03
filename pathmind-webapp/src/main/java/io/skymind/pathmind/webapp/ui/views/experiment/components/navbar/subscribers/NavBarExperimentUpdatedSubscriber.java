@@ -22,7 +22,7 @@ public class NavBarExperimentUpdatedSubscriber extends ExperimentUpdatedSubscrib
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
         PushUtils.push(getUiSupplier().get(), ui -> {
-            if(event.getExperiment().isArchived()) {
+            if (event.getExperiment().isArchived()) {
                 experimentsNavBar.removeExperiment(event.getExperiment());
             } else {
                 experimentsNavBar.addExperiment(event.getExperiment());

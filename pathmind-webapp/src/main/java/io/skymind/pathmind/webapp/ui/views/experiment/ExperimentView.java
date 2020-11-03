@@ -245,7 +245,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupExperimentContentPanel() {
-        codeViewer = new CodeViewer();
+        codeViewer = new CodeViewer(experiment);
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
@@ -466,13 +466,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         if (pageBreadcrumbs != null) {
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
         }
-        if (ModelUtils.isValidModel(experiment.getModel())) {
-            codeViewer.setValue(experiment.getRewardFunction());
-        } else {
-            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-            if (isShowNavBar()) {
-                experimentsNavbar.setAllowNewExperimentCreation(false);
-            }
+        if (!ModelUtils.isValidModel(experiment.getModel()) && isShowNavBar()) {
+            experimentsNavbar.setAllowNewExperimentCreation(false);
         }
         updateDetailsForExperiment();
         trainingStatusDetailsPanel.setExperiment(experiment);
