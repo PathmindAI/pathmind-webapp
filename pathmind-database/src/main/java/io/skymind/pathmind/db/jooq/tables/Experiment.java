@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = -1834605390;
+    private static final long serialVersionUID = 114240522;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -103,11 +103,6 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Boolean> IS_FAVORITE = createField(DSL.name("is_favorite"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
-     * The column <code>public.experiment.goals_reached</code>.
-     */
-    public final TableField<ExperimentRecord, Boolean> GOALS_REACHED = createField(DSL.name("goals_reached"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
-
-    /**
      * The column <code>public.experiment.has_goals</code>.
      */
     public final TableField<ExperimentRecord, Boolean> HAS_GOALS = createField(DSL.name("has_goals"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
@@ -116,6 +111,21 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.training_status</code>.
      */
     public final TableField<ExperimentRecord, Integer> TRAINING_STATUS = createField(DSL.name("training_status"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_total_num</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> GOALS_TOTAL_NUM = createField(DSL.name("goals_total_num"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.goals_reached_num</code>.
+     */
+    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.experiment.shared_with_support</code>.
+     */
+    public final TableField<ExperimentRecord, Boolean> SHARED_WITH_SUPPORT = createField(DSL.name("shared_with_support"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.experiment</code> table reference
@@ -157,7 +167,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY);
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.EXPERIMENT_PKEY, Indexes.GOALS_COUNT_MIGRATION_IDX);
     }
 
     @Override
@@ -206,11 +216,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Boolean, Integer> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Integer, Integer, Boolean> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }

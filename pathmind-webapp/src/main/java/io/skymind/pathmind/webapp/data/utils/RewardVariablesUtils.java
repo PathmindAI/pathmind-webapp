@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.data.utils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -22,5 +23,11 @@ public class RewardVariablesUtils {
                 });
             });
         });
+    }
+
+    public static List<RewardVariable> deepClone(List<RewardVariable> rewardVariables) {
+        return rewardVariables.stream()
+                .map(rewardVariable -> rewardVariable.deepClone())
+                .collect(Collectors.toList());
     }
 }

@@ -16,6 +16,7 @@ import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -65,7 +66,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
             chartTabs,
             chartsPanel);
         addClassName("row-2-of-3");
-        setAllMetricsChartPanelVisible();
+
+        setAllMetricsChartPanelVisible(true);
     }
 
     private Tabs createChartTabs() {
@@ -73,15 +75,15 @@ public class ExperimentChartsPanel extends VerticalLayout {
         rewardScoreChartTab = new Tab("Mean Reward Score");
         chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
-        chartTabs.addSelectedChangeListener(event -> setVisiblePanel());
+        chartTabs.addSelectedChangeListener(event -> setVisiblePanel(true));
         return chartTabs;
     }
 
-    private void setVisiblePanel() {
+    private void setVisiblePanel(boolean isRedraw) {
         if (chartTabs.getSelectedIndex() == 0) {
-            setAllMetricsChartPanelVisible();
+            setAllMetricsChartPanelVisible(isRedraw);
         } else {
-            setPolicyChartPanelVisible();
+            setPolicyChartPanelVisible(isRedraw);
         }
     }
 
@@ -97,33 +99,42 @@ public class ExperimentChartsPanel extends VerticalLayout {
         EventBus.unsubscribe(this);
     }
 
-    public void setupCharts(Experiment experiment, List<RewardVariable> rewardVariables) {
-
-        this.experiment = experiment;
-        this.rewardVariables = rewardVariables;
-
+    public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
+        setExperiment(newExperiment);
+        this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
         policyChartPanel.setExperiment(experiment);
         allMetricsChartPanel.setupChart(experiment, rewardVariables);
+        selectVisibleChart();
+    }
 
+    private void selectVisibleChart() {
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
         } else {
-            setVisiblePanel();
+            setVisiblePanel(false);
         }
     }
 
-    private void setAllMetricsChartPanelVisible() {
+    private void setExperiment(Experiment experiment) {
+        this.experiment = experiment.deepClone();
+        // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
+        experiment.updateTrainingStatus();
+    }
+
+    private void setAllMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
         allMetricsChartPanel.setVisible(true);
-        allMetricsChartPanel.redrawChart();
+        if(isRedraw)
+            allMetricsChartPanel.redrawChart();
     }
 
-    private void setPolicyChartPanelVisible() {
+    private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(true);
         allMetricsChartPanel.setVisible(false);
-        policyChartPanel.redrawChart();
+        if(isRedraw)
+           policyChartPanel.redrawChart();
     }
 
     private void setPlaceholderVisible() {
@@ -146,7 +157,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
         public void handleBusEvent(RunUpdateBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
                 ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
-                setupCharts(experiment, rewardVariables);
+                experiment.updateTrainingStatus();
+                selectVisibleChart();
             });
         }
 
@@ -164,8 +176,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
         @Override
         public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUiSupplier(), () ->
-                setupCharts(event.getExperiment(), rewardVariables));
+            PushUtils.push(getUiSupplier(), () -> {
+                setExperiment(event.getExperiment());
+                experiment.updateTrainingStatus();
+                selectVisibleChart();
+            });
         }
     }
 }

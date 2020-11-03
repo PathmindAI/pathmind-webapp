@@ -1,7 +1,8 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import com.vaadin.flow.component.Html;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 
 public class ConfirmationUtils {
@@ -44,5 +45,30 @@ public class ConfirmationUtils {
         popup.setConfirmButton("OK", action);
 	    popup.open();
 	}
-	
+
+	public static void confirmationPopupDialog(String header, String message, String confirmText, Command confirmHandler) {
+        ConfirmPopup confirmPopup = new ConfirmPopup(header, message);
+        confirmPopup.setConfirmButton(
+                confirmText,
+                confirmHandler
+        );
+        confirmPopup.setCancelButtonText("Cancel");
+        confirmPopup.open();
+    }
+
+    public static void showStopTrainingConfirmationPopup(Command confirmHandler) {
+        ConfirmPopup confirmPopup = new ConfirmPopup();
+        confirmPopup.setHeader("Stop Training");
+        confirmPopup.setMessage(new Html(
+                "<div>"
+                + "<p>Are you sure you want to stop training?</p>"
+                + "<p>If you stop the training before it completes, you won't be able to download the policy. "
+                + "<b>If you decide you want to start the training again, you can start a new experiment and "
+                + "use the same reward function.</b>"
+                + "</p>"
+                + "</div>"));
+        confirmPopup.setConfirmButton("Stop Training", confirmHandler, ButtonVariant.LUMO_ERROR.getVariantName()+" "+ButtonVariant.LUMO_PRIMARY.getVariantName());
+        confirmPopup.setCancelButtonText("Cancel");
+        confirmPopup.open();
+    }
 }

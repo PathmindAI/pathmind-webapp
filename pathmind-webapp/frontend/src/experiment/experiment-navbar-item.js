@@ -61,7 +61,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 }
             </style>
             <a id="experimentLink">
-                <status-icon status=[[status]]></status-icon>
+                <status-icon status=[[status]] status-text=[[statusText]]></status-icon>
                 <div class="experiment-name">
                     <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                     <p>Created [[createdDate]]</p>
@@ -103,6 +103,9 @@ class ExperimentNavbarItem extends PolymerElement {
                 reflectToAttribute: true,
             },
             status: {
+                type: String,
+            },
+            statusText: {
                 type: String,
             },
             showGoals: {

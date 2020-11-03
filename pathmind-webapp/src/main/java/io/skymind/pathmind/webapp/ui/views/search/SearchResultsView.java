@@ -25,6 +25,7 @@ import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
@@ -47,6 +48,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private String numberOfResultsText;
     private Span numberOfResults;
 
+	@Autowired
+	private ModelService modelService;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -102,7 +105,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         grid.addClassName("search-results");
         grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(
-                searchResult -> new SearchResultItem(experimentDAO, searchResult, decodedKeyword)
+                searchResult -> new SearchResultItem(experimentDAO, modelService, searchResult, decodedKeyword)
             );
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);

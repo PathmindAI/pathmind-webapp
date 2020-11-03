@@ -88,6 +88,10 @@ public class PolicyUtils
         return removeInvalidChars(String.format("%s-M%s-%s-E%s-Policy.zip", toCamelCase(policy.getProject().getName()), policy.getModel().getName(), policy.getModel().getPackageName(), policy.getExperiment().getName()));
     }
 
+    public static Optional<Policy> selectBestPolicy(Experiment experiment) {
+        return selectBestPolicy(experiment.getPolicies());
+    }
+
     public static Optional<Policy> selectBestPolicy(List<Policy> policies) {
         if(policies == null)
             return Optional.empty();
@@ -141,7 +145,7 @@ public class PolicyUtils
                     .collect(Collectors.toList()));
         }
     }
-    
+
     public static boolean isGoalReached(RewardVariable rv, Policy policy) {
         Double metricValue = 0.0, uncertaintyValue = 0.0;
         if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
