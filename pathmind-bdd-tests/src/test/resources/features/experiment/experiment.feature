@@ -9,7 +9,6 @@ Feature: Experiment page
     Then Check that new experiment AutotestProject page is opened
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Click the experiment name 1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
@@ -21,8 +20,7 @@ Feature: Experiment page
     Then Click project start run button
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
-    Then Check experiment status is Starting Cluster
+    Then Check experiment '1' status is 'Starting Cluster'
     Then Click the experiment name 1
     Then Check that the experiment status is 'Starting Cluster'
     When Click in 'Stop Training' button
@@ -37,7 +35,6 @@ Feature: Experiment page
     Then Add note This is the experiment notes for this Coffee Shop project to the experiment page
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Click the model name 1
     Then Check on the model page experiment 1 notes is This is the experiment notes for this Coffee Shop project
     Then Click the experiment name 1
     Then Check experiment notes is This is the experiment notes for this Coffee Shop project

@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.RouterLink;
 
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 import org.junit.Test;
@@ -32,7 +31,7 @@ public class BreadcrumbsTest {
 
     @Test
     public void breadcrumbsWithoutRoot() {
-        KaribuUtils.setupRoutes(ProjectView.class, ModelView.class);
+        KaribuUtils.setupRoutes(ProjectView.class);
         Breadcrumbs breadcrumbsWithoutRoot = new Breadcrumbs(mockProject, mockModel, mockExperiment, false);
         RouterLink textLink = (RouterLink) breadcrumbsWithoutRoot.getChildren().findFirst().orElse(null);
         assertNotEquals("Projects", textLink.getText());
@@ -41,7 +40,7 @@ public class BreadcrumbsTest {
 
     @Test
     public void breadcrumbsWithRoot() {
-        KaribuUtils.setupRoutes(ProjectsView.class, ProjectView.class, ModelView.class);
+        KaribuUtils.setupRoutes(ProjectsView.class, ProjectView.class);
         Breadcrumbs breadcrumbsWithoutRoot = new Breadcrumbs(mockProject, mockModel, mockExperiment);
         RouterLink textLink = (RouterLink) breadcrumbsWithoutRoot.getChildren().findFirst().orElse(null);
         assertEquals("Projects", textLink.getText());
@@ -56,7 +55,7 @@ public class BreadcrumbsTest {
 
     @Test
     public void showModelPackageName() {
-        KaribuUtils.setupRoutes(ProjectsView.class, ProjectView.class, ModelView.class);
+        KaribuUtils.setupRoutes(ProjectsView.class, ProjectView.class);
         Breadcrumbs breadcrumbsWithoutRoot = new Breadcrumbs(mockProject, mockModel, mockExperiment);
         RouterLink modelTextLink = (RouterLink) breadcrumbsWithoutRoot.getChildren().filter(child -> !child.getElement().getText().equals(">")).collect(Collectors.toList()).get(2);
         assertThat(modelTextLink.getText(), containsString("(modelMock_v1)"));

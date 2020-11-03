@@ -19,7 +19,8 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
 public class ExperimentUtils
 {
@@ -210,6 +211,19 @@ public class ExperimentUtils
         return experiment.getRuns().stream()
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
     }
+
+    public static String getIconStatus(Experiment experiment, RunStatus status) {
+        if(ExperimentUtils.isDraftRunType(experiment))
+            return "pencil";
+        if (RunStatus.isRunning(status)) {
+            return "loading";
+        } else if (status == RunStatus.Completed) {
+            return "check";
+        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
+            return "stopped";
+        }
+        return "exclamation";
+    }
     
     // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
     // them as part of my bigger refactoring.
@@ -230,7 +244,7 @@ public class ExperimentUtils
     public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
         Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
         if(firstUnarchivedExperiment.isEmpty())
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ModelView.class, experiments.get(0).getModelId()));
+            getUISupplier.get().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
         else
             getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
     }

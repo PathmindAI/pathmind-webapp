@@ -20,10 +20,15 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     private Consumer<String> saveConsumer;
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
+        this(title, notesText, saveConsumer, false);
+    }
+
+    public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean compact) {
         this.saveConsumer = saveConsumer;
         setNotesText(notesText);
         getModel().setTitle(title);
         getModel().setMax(MAX_NOTES_SIZE);
+        setCompact(compact);
     }
 
     public void setNotesText(String notesText) {
@@ -37,6 +42,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     public void setReadonly(Boolean readonly) {
         getModel().setReadonly(readonly);
+    }
+
+    public void setCompact(Boolean compact) {
+        getModel().setCompact(compact);
     }
 
     @EventHandler
@@ -60,5 +69,6 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setUnsaved(Boolean unsaved);
         void setMax(Integer max);
         void setReadonly(Boolean readonly);
+        void setCompact(Boolean compact);
 	}
 }
