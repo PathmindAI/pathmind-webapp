@@ -1,12 +1,5 @@
 package io.skymind.pathmind.webapp.data.utils;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
@@ -21,14 +14,20 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.ModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ExperimentUtils
 {
