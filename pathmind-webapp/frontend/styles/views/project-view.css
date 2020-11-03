@@ -1,0 +1,148 @@
+.project-view .view-section {
+    padding: 0;
+    border-radius: 0;
+}
+
+.project-view .view-section + .view-section {
+    flex: 0;
+}
+
+.project-view .view-section:last-child {
+    padding: var(--lumo-space-m) var(--lumo-space-l);
+}
+
+.project-view .section-subtitle-label + tag-label {
+    margin-left: var(--lumo-space-xs);
+}
+
+.project-view .truncated-label {
+    max-width: 100%;
+    width: auto;
+}
+
+.project-view .section-title-label + vaadin-button {
+    min-width: var(--lumo-button-size);
+    height: 1.4rem;
+    line-height: calc(1.4rem - 2px);
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    padding: 0 var(--lumo-space-xs);
+    margin: 0 0 0 var(--lumo-space-xs);
+}
+
+.project-view .reward-variables-table {
+    max-height: 16rem;
+    line-height: 1;
+    color: var(--lumo-secondary-text-color);
+    margin-top: var(--lumo-space-xs);
+    overflow-y: auto;
+}
+
+.project-view .model-reward-variables span:first-child {
+    display: inline-block;
+    width: 30px;
+    color: var(--lumo-secondary-text-color);
+}
+.project-view .reward-variables-table .goal-display-span {
+    display: none;
+}
+.project-view .model-reward-variables .reward-variables-table[readonly] vaadin-horizontal-layout {
+    height: auto;
+    line-height: 1.1;
+}
+
+.project-view .notes-field-wrapper {
+    flex: 1 1 auto;
+}
+
+.project-view .model-wrapper {
+    height: auto !important;
+}
+
+
+.project-view .reward-variables-table .header-row {
+    display: none;
+}
+
+.project-view .reward-variables-table .header-row span:last-child {
+    justify-content: flex-end;
+}
+
+.project-view .page-content-header {
+    margin-bottom: 0;
+    padding: 0 0 0 var(--lumo-space-m) ;
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
+
+.project-view .page-content-header > vaadin-vertical-layout {
+    flex: 0 0 auto;
+    width: auto !important;
+    padding: var(--lumo-space-m) 0;
+}
+
+.project-view .page-content-header + vaadin-horizontal-layout {
+    flex: 1;
+}
+
+.project-view .model-wrapper .section-title-label {
+    font-size: var(--lumo-font-size-l);
+}
+
+.project-view vaadin-tabs {
+    height: var(--lumo-size-l);
+    margin-bottom: 0;
+}
+
+.project-view .model-wrapper .new-experiment-button {
+    flex: 1 0 auto;
+    padding-right: var(--lumo-space-s);
+    border-radius: 0;
+    margin: 0;
+    box-shadow: inset 0 -2px 0 0 var(--pm-grey-color-lighter);
+}
+
+.project-view .observations-panel {
+    max-height: 16rem;
+    padding: 0;
+    border: none;
+}
+
+.project-view .observations-table {
+    padding-top: 0;
+}
+
+.project-view .observations-table vaadin-checkbox-group vaadin-checkbox[disabled] {
+    color: var(--lumo-secondary-text-color);
+}
+
+.models-navbar {
+    height: calc(100vh - 10.5rem);
+    background-color: var(--pm-app-bg-color);
+    border-right: 1px solid var(--pm-grey-color-lightest);
+}
+
+.models-navbar vaadin-select {
+    width: 100%;
+}
+
+.models-navbar vaadin-select:not([show-archived]) ~ .models-navbar-items models-navbar-item[is-archived] {
+    display: none;
+}
+
+.models-navbar vaadin-select[show-archived] ~ .models-navbar-items models-navbar-item[is-archived] {
+    display: flex;
+}
+
+.models-navbar vaadin-select[show-archived] ~ .models-navbar-items models-navbar-item:not([is-archived]) {
+    display: none;
+}
+
+.models-navbar-items {
+    height: 100%;
+    overflow: auto;
+}
+
+.models-navbar > vaadin-button {
+    border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
+    margin: 0;
+}

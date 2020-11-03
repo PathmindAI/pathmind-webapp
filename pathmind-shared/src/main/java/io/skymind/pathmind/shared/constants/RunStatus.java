@@ -23,6 +23,7 @@ public enum RunStatus {
 	private static final EnumSet<RunStatus> RUNNING_STATES = EnumSet.of(Starting, Running, Restarting, Completing);
     private static final EnumSet<RunStatus> COMPLETING_STATES = EnumSet.of(Completing, Completed);
 	private static final EnumSet<RunStatus> FINISHED_STATES = EnumSet.of(Completed, Error, Killed);
+    private static final EnumSet<RunStatus> ERROR_STATES = EnumSet.of(Error, Killed);
 
 	RunStatus(int id, String name) {
 		this.id = id;
@@ -59,5 +60,9 @@ public enum RunStatus {
 
 	public static boolean isCompleting(RunStatus status) {
 	    return COMPLETING_STATES.contains(status);
+    }
+
+    public static boolean isError(RunStatus status) {
+	    return ERROR_STATES.contains(status);
     }
 }

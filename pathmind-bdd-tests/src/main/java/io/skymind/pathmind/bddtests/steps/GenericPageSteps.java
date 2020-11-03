@@ -24,6 +24,11 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void clickTextContainsLink(String Text) {
+        genericPage.clickTextContainsLink(Text);
+    }
+
+    @Step
     public void clickInButton(String buttonText) {
         genericPage.clickInButton(buttonText);
     }
@@ -142,11 +147,6 @@ public class GenericPageSteps {
     }
 
     @Step
-    public void checkTitleLabelTagIsArchived(String tag) {
-        genericPage.checkTitleLabelTagIsArchived(tag);
-    }
-
-    @Step
     public void compareALPFileWithDownloadedFile(String alpFile) {
         genericPage.compareALPFileWithDownloadedFile(alpFile);
     }
@@ -154,6 +154,11 @@ public class GenericPageSteps {
     @Step
     public void clickPopUpDialogCloseBtn() {
         genericPage.clickPopUpDialogCloseBtn();
+    }
+
+    @Step
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        genericPage.checkThatUnexpectedErrorAlertIsNotShown();
     }
 
     @Step

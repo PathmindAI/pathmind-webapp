@@ -26,7 +26,7 @@ public class ModelStepDefinitions {
     }
 
     @Then("^Check model page model details observations is (.*)$")
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
         modelPageSteps.checkModelPageModelDetailsObservationsIs(observations);
     }
 
@@ -75,9 +75,9 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelPageElements();
     }
 
-    @Then("^Check experiment status is (.*)$")
-    public void checkExperimentModelStatusIsStarting(String status) {
-        modelPageSteps.checkExperimentModelStatusIsStarting(status);
+    @Then("^Check experiment '(.*)' status is '(.*)'$")
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        modelPageSteps.checkExperimentModelStatusIsStarting(experiment, status);
     }
 
     @Then("^Check on the model page experiment (.*) notes is (.*)$")
@@ -113,5 +113,10 @@ public class ModelStepDefinitions {
     @Then("^Check model page model archived tag is shown (.*)$")
     public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
         modelPageSteps.checkModelPageModelArchivedTagIsShown(archived);
+    }
+
+    @Then("^Check model title label tag is (.*)$")
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        modelPageSteps.checkModelTitleLabelTagIsArchived(tag);
     }
 }

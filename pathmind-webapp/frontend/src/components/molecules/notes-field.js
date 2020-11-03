@@ -26,15 +26,24 @@ registerStyles("vaadin-text-area", css`
         line-height: 1.5em;
         height: 12em;
         background-color: white;
-        padding: 0.5rem var(--lumo-space-s);
+    }
+    :host([theme~="notes-field"]) [part="input-field"] {
+        padding: 0;
+        overflow: hidden;
     }
     :host([theme~="notes-field"]:hover:not([readonly]):not([focused])) [part="input-field"] {
         background-color: rgba(0, 0, 0, 0.025);
     }
     :host([theme~="notes-field"]) [part="input-field"] [part="value"],
     :host([theme~="notes-field"]) [part="input-field"] ::slotted(textarea) {
+        box-sizing: border-box;
         height: 100% !important;
-        padding: 0;
+        padding: 0.5rem var(--lumo-space-s);
+        overflow: auto;
+    }
+    :host([theme~="notes-field"][compact]) [part="input-field"],
+    :host([theme~="notes-field"][compact]) [part="input-field"] ::slotted(textarea) {
+        height: auto;
     }
 `);
 class NotesField extends PolymerElement {
@@ -75,7 +84,12 @@ class NotesField extends PolymerElement {
             readonly: {
                 type: Boolean,
                 value: false,
-            }
+            },
+            compact: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+            },
         }
     }
 
@@ -88,6 +102,10 @@ class NotesField extends PolymerElement {
                     flex: 1;
                     width: 100%;
                 }
+                :host([compact]) {
+                    position: relative;
+                    line-height: 1;
+                }
                 .fade-in {
                     display: block !important;
                     opacity: 1;
@@ -99,6 +117,16 @@ class NotesField extends PolymerElement {
                     width: 100%;
                     margin-bottom: var(--lumo-space-xs);
                 }
+                :host([compact]) .header {
+                    position: absolute;
+                    width: auto;
+                    right: 0;
+                    bottom: 0;
+                    background-color: rgba(255,255,255,0.85);
+                    padding: var(--lumo-space-xs);
+                    margin-bottom: 0;
+                    z-index: 1;
+                }
                 .header span:first-child {
                     font-weight: bold;
                     color: var(--pm-text-color);
@@ -107,7 +135,11 @@ class NotesField extends PolymerElement {
                 .title {
                     flex: 1 1 0%;
                 }
+                :host([compact]) .title {
+                    display: none;
+                }
                 iron-icon {
+                    display: none;
                     width: var(--lumo-font-size-m);
                     height: var(--lumo-font-size-m);
                     color: var(--pm-friendly-color);
@@ -151,6 +183,11 @@ class NotesField extends PolymerElement {
                     width: 100%;
                     height: 100%;
                 }
+                :host([compact]) vaadin-text-area {
+                    border: none;
+                    border-left: 1px solid var(--pm-grey-color-lightest);
+                    border-radius: 0;
+                }
             </style>
             <div class="header">
                 <span class="title">[[title]]</span>
@@ -159,7 +196,12 @@ class NotesField extends PolymerElement {
                 <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
                 <vaadin-button id="save" on-click="onSave" disabled=[[readonly]]>Save</vaadin-button>
             </div>
-            <vaadin-text-area id="textarea" theme="notes-field" placeholder="[[placeholder]]" readonly$=[[readonly]]></vaadin-text-area>
+            <vaadin-text-area
+                id="textarea"
+                theme="notes-field"
+                placeholder="[[placeholder]]"
+                readonly$=[[readonly]]
+                compact$=[[compact]]></vaadin-text-area>
         `;
     }
 

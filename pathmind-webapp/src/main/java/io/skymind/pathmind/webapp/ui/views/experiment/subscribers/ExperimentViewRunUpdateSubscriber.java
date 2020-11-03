@@ -9,14 +9,12 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 @Slf4j
 public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
-    private List<Experiment> experiments;
     private Experiment experiment;
 
     private ExperimentView experimentView;
@@ -30,10 +28,6 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         this.experiment = experiment;
     }
 
-    public void setExperiments(List<Experiment> experiments) {
-        this.experiments = experiments;
-    }
-
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
         if (isSameExperiment(event)) {
@@ -41,10 +35,11 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
             ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
             PushUtils.push(getUiSupplier(), () -> {
-                experimentView.updateDetailsForExperiment();
-                experimentView.updateButtonEnablement();
-            });
-        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, experiment.getModelId())) {
+                        experimentView.updateDetailsForExperiment();
+                        experimentView.updateButtonEnablement();
+                    });
+
+        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experiment.getModelId())) {
             experimentView.updateExperimentComponents();
         }
     }
