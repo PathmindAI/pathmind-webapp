@@ -1,13 +1,13 @@
 @brokenModels
 Feature: Broken Models tests
 
-  Scenario: Upload broken model file
-    Given Login to the pathmind
-    When Open projects page
-    When Click create new project button
-    When Input name of the new project AutotestProject and click Create project button
-    When Upload model problematic_models/ABrokenModel.zip
-    Then Check that error message in model check panel is "The uploaded file is invalid, check it and upload again."
+#  Scenario: Upload broken model file
+#    Given Login to the pathmind
+#    When Open projects page
+#    When Click create new project button
+#    When Input name of the new project AutotestProject and click Create project button
+#    When Upload model problematic_models/ABrokenModel.zip
+#    Then Check that error message in model check panel is "The uploaded file is invalid, check it and upload again."
 
   Scenario: Upload broken model file 220Mb
     Given Login to the pathmind
