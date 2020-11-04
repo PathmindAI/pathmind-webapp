@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -139,6 +140,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs pageBreadcrumbs;
     private Binder<Experiment> binder;
 
+    // Needed because it's a special case where different views use different data id's for the subscribers.
+    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
+
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -150,10 +154,15 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
+        // Special case described on declaration.
+        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(() -> getUI(), observationDAO, observationsPanel);
+        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
+
         EventBus.subscribe(this,
                 new NewExperimentViewExperimentCreatedSubscriber(() -> getUI()),
                 new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
-                new NewExperimentViewExperimentChangedSubscriber(() -> getUI()));
+                new NewExperimentViewExperimentChangedSubscriber(() -> getUI()),
+                observationsPanelExperimentChangedViewSubscriber);
     }
 
     @Override
@@ -224,7 +233,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        observationsPanel = new ObservationsPanel(() -> getUI(), observationDAO, modelObservations, experimentObservations);
+        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false);
         observationsPanel.addValueChangeListener(evt -> {
             unsavedChanges.setVisible(true);
             startRunButton.setEnabled(canStartTraining());
@@ -461,7 +470,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 	@Override
 	protected void initScreen(BeforeEnterEvent event) {
 		updateScreenComponents();
-	}
+    }
 
 	private void updateScreenComponents() {
 		binder.setBean(experiment);

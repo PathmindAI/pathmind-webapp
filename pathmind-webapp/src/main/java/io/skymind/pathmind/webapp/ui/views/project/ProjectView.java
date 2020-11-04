@@ -147,7 +147,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelNotesField = createModelNotesField();
             rewardVariablesTable = new RewardVariablesTable(() -> getUI());
             rewardVariablesTable.setRewardVariables(rewardVariables);
-            observationsPanel = new ObservationsPanel(() -> getUI(), observationDAO, modelObservations, null, true);
+            observationsPanel = new ObservationsPanel(modelObservations);
 
             modelsNavbar = new ModelsNavbar(
                 () -> getUI(),

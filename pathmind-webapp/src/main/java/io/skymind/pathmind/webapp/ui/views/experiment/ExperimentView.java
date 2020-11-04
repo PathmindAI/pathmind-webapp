@@ -56,8 +56,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
@@ -152,6 +153,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     // REFACTOR -> Temporary placeholder until I finish the merging
     private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
+    // Needed because it's a special case where different views use different data id's for the subscribers.
+    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
 
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
@@ -174,12 +177,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
+        // Special case described on declaration.
+        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(() -> getUI(), observationDAO, observationsPanel);
+        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
+
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
                 new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentChangedSubscriber(() -> getUI()));
+                new ExperimentViewExperimentChangedSubscriber(() -> getUI()),
+                observationsPanelExperimentChangedViewSubscriber);
     }
 
     @Override
@@ -258,7 +266,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(() -> getUI(), observationDAO, modelObservations, experimentObservations, true);
+        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
