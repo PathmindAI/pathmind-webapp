@@ -1,6 +1,7 @@
 @signup
 Feature: Sign Up fields length
 
+  @tempEmail
   Scenario Outline: Check First/Last Name max length
     Given Open page sign-up
     When Fill new user form with first name <text>
@@ -14,6 +15,7 @@ Feature: Sign Up fields length
       | 250        | Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium. |
       | 249        | Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium  |
 
+  @tempEmail
   Scenario: Check First/Last Name 251 chars length error
     Given Open page sign-up
     When Fill new user form with first name Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium q
@@ -23,6 +25,7 @@ Feature: Sign Up fields length
     Then Check that early access error message First Name must not exceed 250 characters is shown for First Name field
     Then Check that early access error message Last Name must not exceed 250 characters is shown for Last Name field
 
+  @tempEmail
   Scenario: Check password 51 chars length error
     Given Open page sign-up
     When Fill new user form with first name AutotestFirstName

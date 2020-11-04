@@ -8,6 +8,7 @@ Feature: Sign Up required fields
     Then Check that early access error message Last Name is required is shown for Last Name field
     Then Check that early access error message Email is required is shown for Work Email field
 
+  @tempEmail
   Scenario: Check early access First/Last Name required messages are shown
     Given Open page sign-up
     When Fill temporary email to the new user form
@@ -15,6 +16,7 @@ Feature: Sign Up required fields
     Then Check that early access error message First Name is required is shown for First Name field
     Then Check that early access error message Last Name is required is shown for Last Name field
 
+  @tempEmail
   Scenario: Check early access First Name required messages is shown
     Given Open page sign-up
     When Fill new user form with last name AutotestLastName
@@ -22,6 +24,7 @@ Feature: Sign Up required fields
     When Create new user click sign up button
     Then Check that early access error message First Name is required is shown for First Name field
 
+  @tempEmail
   Scenario: Check early access Last Name required messages is shown
     Given Open page sign-up
     When Fill new user form with first name AutotestFirstName
