@@ -15,17 +15,15 @@ import java.util.function.Supplier;
 // TODO -> This may not be needed. Currently it is not in use. If this is needed, it should be refactored.
 public class NotificationModelUpdatedSubscriber extends EventBusSubscriber<ModelUpdatedBusEvent> {
     
-    private List<Model> models;
     private Model model;
 
-    public NotificationModelUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, List<Model> models, Model model) {
+    public NotificationModelUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, Model model) {
         super(getUISupplier);
-        this.models = models;
         this.model = model;
     }
 
-    public NotificationModelUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, boolean isListenForEventOnSameUI) {
-        super(getUISupplier, isListenForEventOnSameUI);
+    public NotificationModelUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
+        super(getUISupplier);
     }
 
     public void handleBusEvent(ModelUpdatedBusEvent event) {
