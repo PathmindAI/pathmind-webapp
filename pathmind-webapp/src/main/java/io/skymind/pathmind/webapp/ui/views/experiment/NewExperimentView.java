@@ -190,17 +190,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
-        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
-        startRunButton.setEnabled(false);
-
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
 
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
-        }));
-        saveDraftButton.setEnabled(false);
+        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
+        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
+        setButtonsEnablement();
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
@@ -235,9 +232,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false);
         observationsPanel.addValueChangeListener(evt -> {
-            unsavedChanges.setVisible(true);
-            startRunButton.setEnabled(canStartTraining());
-            saveDraftButton.setEnabled(canSaveDataInDB());
+            setButtonsEnablement();
         });
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
@@ -270,14 +265,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private VerticalLayout getRewardFnEditorPanel() {
         rewardFunctionEditor = new RewardFunctionEditor();
         rewardFunctionEditor.addValueChangeListener(changeEvent -> {
-            unsavedChanges.setVisible(true);
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(),
                     rewardVariables);
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
 
-            startRunButton.setEnabled(canStartTraining());
-            saveDraftButton.setEnabled(canSaveDataInDB());
+            setButtonsEnablement();
         });
         rewardEditorErrorLabel = LabelFactory.createLabel(
                 "Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
@@ -324,11 +317,29 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
                 && rewardFunctionErrors.size() == 0
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
-		        && canSaveDataInDB();
+                && canSaveDataInDB()
+                && !experiment.isArchived();
 	}
 
     private boolean canSaveDataInDB() {
         return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
+    }
+
+    private boolean experimentDetailsHasChanged() {
+        if (rewardFunctionEditor == null || observationsPanel == null) {
+            return false;
+        }
+        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) &&
+                observationsPanel.getSelectedObservations() != experimentObservations;
+    }
+
+    private void setButtonsEnablement() {
+        boolean hasChanged = experimentDetailsHasChanged();
+        if (unsavedChanges != null) {
+            unsavedChanges.setVisible(hasChanged);
+        }
+        startRunButton.setEnabled(hasChanged && canStartTraining());
+        saveDraftButton.setEnabled(hasChanged && canSaveDataInDB());
     }
 
     private void setupBinder() {
@@ -359,7 +370,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        System.out.println("Saving draft for... "+experiment.getId());
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
@@ -476,8 +486,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 		binder.setBean(experiment);
 		experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitleText.setText("Experiment #"+experiment.getName());
-		startRunButton.setVisible(!experiment.isArchived());
-		saveDraftButton.setVisible(!experiment.isArchived());
+        experimentDetailsHasChanged();
 		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
         rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
@@ -531,7 +540,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         @Override
         public void handleBusEvent(ExperimentCreatedBusEvent event) {
             if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId)) {
-                updateExperimentComponents();
+                PushUtils.push(getUI(), ui -> {
+                    updateExperimentComponents();
+                });
             }
         }
     }
@@ -547,7 +558,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             if (isSameExperiment(event.getExperiment()) && event.isStartedTrainingEventType()) {
                 navigateToExperimentView(event.getExperiment());
             } else if (!isSameExperiment(event.getExperiment()) && ExperimentUtils.isSameModel(experiment, event.getModelId())) {
-                updateExperimentComponents();
+                PushUtils.push(getUI(), ui -> {
+                    updateExperimentComponents();
+                });
             }
         }
     }
