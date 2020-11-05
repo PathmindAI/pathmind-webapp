@@ -1,6 +1,7 @@
 @experiment
 Feature: Experiment share
 
+  @tempEmail
   Scenario Outline: Check experiment share
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
@@ -27,6 +28,7 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that shared experiment not shown to the normal users
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -53,6 +55,7 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that NOT shared experiment not shown to the normal users
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -77,6 +80,7 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that NOT shared experiment not shown to the support users
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>

@@ -18,16 +18,18 @@ class CookieConsentBox extends PolymerElement {
 
     ready() {
         super.ready();
-        window.cookieconsent.initialise({
-            container: document.querySelector("vaadin-app-layout"),
-            content: {
-              message: "This website uses cookies to ensure you get the best experience.",
-              dismiss: "Got it!",
-              link: "Learn more",
-              href: "https://pathmind.com/privacy"
-            },
-            position: "bottom-left",
-        });
+        if (document.querySelectorAll(".cc-window[aria-label~='cookieconsent']").length === 0) {
+            window.cookieconsent.initialise({
+                container: document.querySelector("vaadin-app-layout"),
+                content: {
+                  message: "This website uses cookies to ensure you get the best experience.",
+                  dismiss: "Got it!",
+                  link: "Learn more",
+                  href: "https://pathmind.com/privacy"
+                },
+                position: "bottom-left",
+            });
+        }
     }
 }
 

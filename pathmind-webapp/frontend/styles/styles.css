@@ -249,6 +249,17 @@ background-color: var(--pm-grey-color-light);
     width: 100%;
 }
 
+.panel-title-label {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
 .light-text-label {
     font-size: var(--lumo-font-size-m);
     color: var(--pm-orange-color);

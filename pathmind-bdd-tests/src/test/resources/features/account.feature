@@ -1,6 +1,7 @@
 @account
 Feature: User accounts tests
 
+  @tempEmail
   Scenario: Edit user email in account page
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
@@ -24,6 +25,7 @@ Feature: User accounts tests
     When Open user account page
     Then Check user email is correct
 
+  @tempEmail
   Scenario: Login without email verify after email change
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
@@ -45,6 +47,7 @@ Feature: User accounts tests
     And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
+  @tempEmail
   Scenario: Login with old email after email change
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
@@ -67,6 +70,7 @@ Feature: User accounts tests
     And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
+  @tempEmail
   Scenario: Check verification email template
     Given Open page sign-up
     When Fill new user form with name EditEmail, User

@@ -1,4 +1,4 @@
- Feature: Dashboard page
+Feature: Dashboard page
 
 #   @saveModelDraft
 #   Scenario Outline: Check that Model Drafts are shown correctly
@@ -13,17 +13,17 @@
 #       | Click action                              |
 #       | Click AutotestProject dashboard item  |
 #       | Click in AutotestProject stage breadcrumb |
-
-   Scenario: Check pathmind begin screen elements
-     Given Create new user Autotest, User with password Pass123456
-     When Open pathmind page
-     Then Login with new user email and Pass123456
-     When Check pathmind begin screen elements
-     When Click pathmind create your first project btn
-     When Check that new project page opened
-     When Click in 'Projects' button
-     When Click Getting Started tutorial button
-     Then Check that learn page https://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic opened
+  @tempEmail
+  Scenario: Check pathmind begin screen elements
+    Given Create new user Autotest, User with password Pass123456
+    When Open pathmind page
+    Then Login with new user email and Pass123456
+    When Check pathmind begin screen elements
+    When Click pathmind create your first project btn
+    When Check that new project page opened
+    When Click in 'Projects' button
+    When Click Getting Started tutorial button
+    Then Check that learn page https://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic opened
 
 #   @smoke
 #   Scenario: Check start page with the getting started message user see after login
