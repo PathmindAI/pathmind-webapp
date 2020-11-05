@@ -29,6 +29,13 @@ class UserRepository {
                 .fetchOneInto(PathmindUser.class);
     }
 
+    protected static PathmindUser findByApiKey(DSLContext ctx, String apiKey) {
+        return ctx
+                .selectFrom(PATHMIND_USER)
+                .where(PATHMIND_USER.API_KEY.eq(apiKey))
+                .fetchOneInto(PathmindUser.class);
+    }
+
     /**
      * Change a user's password.
      *

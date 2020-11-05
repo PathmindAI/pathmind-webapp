@@ -41,6 +41,10 @@ public class UserDAO {
         return UserRepository.findByToken(ctx, token);
     }
 
+    public PathmindUser findByApiKey(String apiKey) {
+        return UserRepository.findByApiKey(ctx, apiKey);
+    }
+
     /**
      * Change a user's password.
      *
