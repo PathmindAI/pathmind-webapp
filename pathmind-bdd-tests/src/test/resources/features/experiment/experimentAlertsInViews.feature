@@ -118,6 +118,7 @@ Feature: Experiment page alerts in multiple views
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+    Then Check that 'Experiment #2' status icon is 'icon-stopped'
 
   @otherView
   Scenario: Check experiment side bar when an experiment is created and stopped in other tab (few experiments)
