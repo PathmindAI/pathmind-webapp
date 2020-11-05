@@ -81,6 +81,15 @@ class PublicHeaderMenu extends PolymerElement {
                     --iron-icon-height: var(--lumo-font-size-m);
                     margin-right: var(--lumo-space-xs);
                 }
+                @media screen and (max-width: 768px) {
+                    .logo {
+                      width: 120px;
+                      margin-right: var(--lumo-space-m);
+                    }
+                    .support span {
+                        display: none;
+                    }
+                }
             </style>
             <vaadin-horizontal-layout>
                 <a href="https://pathmind.com/" class="logo-wrapper"><img
@@ -102,7 +111,7 @@ class PublicHeaderMenu extends PolymerElement {
                 </ul>
                 <div class="right-cta">
                     <a class="support" href="{{contactlink}}">
-                        <iron-icon icon="vaadin:envelope-o"></iron-icon> Support
+                        <iron-icon icon="vaadin:envelope-o"></iron-icon><span>Support</span>
                     </a>
                 </div>
             </vaadin-horizontal-layout>
