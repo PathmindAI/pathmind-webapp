@@ -89,6 +89,9 @@ class PublicHeaderMenu extends PolymerElement {
                     .support span {
                         display: none;
                     }
+                    li {
+                        margin: 0 var(--lumo-space-s);
+                    }
                 }
             </style>
             <vaadin-horizontal-layout>
