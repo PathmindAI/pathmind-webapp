@@ -12,6 +12,16 @@ class CodeViewer extends PolymerElement {
     ready() {
         super.ready();
         const codeElement = this.shadowRoot.querySelector("code");
+        codeElement.addEventListener("copy", event => {
+            // This will handle the clipboard data to eliminate extra linebreak at the end of the string
+            const selection = document.getSelection().toString();
+            if (event.clipboardData) {
+                event.clipboardData.setData("text/plain", selection);
+            } else {
+                window.clipboardData.setData("text", selection);
+            }
+            event.preventDefault();
+        });
 
         const copyButton = this.shadowRoot.querySelector("vaadin-button");
         copyButton.addEventListener("click", event => {
