@@ -31,10 +31,10 @@
 }
 
 .project-view .reward-variables-table {
-    max-height: 16rem;
+    max-height: 26rem;
     line-height: 1;
     color: var(--lumo-secondary-text-color);
-    margin-top: var(--lumo-space-xs);
+    padding: var(--lumo-space-xs);
     overflow-y: auto;
 }
 
@@ -51,6 +51,24 @@
     line-height: 1.1;
 }
 
+.project-view .observations-panel-wrapper {
+    border-top: 1px solid var(--pm-grey-color-lightest);
+}
+
+.project-view .observations-panel-wrapper .bold-label {
+    /* same as .panel-title-label but since this panel is reused on Experiment &
+       New Experiment view, we're going to keep it as .bold-label for now */
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
+
 .project-view .notes-field-wrapper {
     flex: 1 1 auto;
 }
@@ -59,6 +77,11 @@
     height: auto !important;
 }
 
+.project-view .reward-variables-table {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: var(--lumo-space-xs) 0 0 var(--lumo-space-xs);
+}
 
 .project-view .reward-variables-table .header-row {
     display: none;
@@ -66,6 +89,11 @@
 
 .project-view .reward-variables-table .header-row span:last-child {
     justify-content: flex-end;
+}
+
+.project-view .reward-variables-table > vaadin-horizontal-layout:not(.header-row) {
+    width: auto !important;
+    margin-right: var(--lumo-space-xs);
 }
 
 .project-view .page-content-header {
@@ -102,8 +130,8 @@
 }
 
 .project-view .observations-panel {
-    max-height: 16rem;
-    padding: 0;
+    max-height: 19.5rem;
+    padding: 0 0 0 var(--lumo-space-xs);
     border: none;
 }
 
@@ -116,7 +144,7 @@
 }
 
 .models-navbar {
-    height: calc(100vh - 10.5rem);
+    height: calc(100vh - 10.6rem);
     background-color: var(--pm-app-bg-color);
     border-right: 1px solid var(--pm-grey-color-lightest);
 }
@@ -143,6 +171,7 @@
 }
 
 .models-navbar > vaadin-button {
+    width: 100%;
     border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
     margin: 0;
 }

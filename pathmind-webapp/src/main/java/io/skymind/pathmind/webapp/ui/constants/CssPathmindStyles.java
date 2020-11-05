@@ -5,6 +5,7 @@ public class CssPathmindStyles
 	public static final String ACTION_BUTTON = "action-button";
 
 	public static final String BOLD_LABEL = "bold-label";
+	public static final String PANEL_TITLE_LABEL = "panel-title-label";
 	public static final String NO_TOP_MARGIN_LABEL = "no-top-margin-label";
 	public static final String TRUNCATED_LABEL = "truncated-label";
     public static final String ERROR_LABEL = "error-label";

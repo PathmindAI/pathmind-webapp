@@ -7,7 +7,6 @@ import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -269,20 +268,31 @@ public class RunDAO {
     }
 
     public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
-        if(policies == null)
-            return;
+        final List<RewardVariable> rewardVariablesWithGoals = new ArrayList<>();
+        if (experiment.isHasGoals()) {
+            List<RewardVariable> rewardVariablesForModel =
+                    RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
+            for (RewardVariable rv: rewardVariablesForModel) {
+                if (rv.getGoalConditionType() != null) {
+                    rewardVariablesWithGoals.add(rv);
+                }
+            }
+            int goalsTotalNum = rewardVariablesWithGoals.size();
+            experiment.setTotalGoals(goalsTotalNum);
+            ExperimentRepository.updateGoalsTotal(transactionCtx, experiment.getId(), goalsTotalNum);
+        }
+
         PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
-            List<RewardVariable> rewardVariables = RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
             PolicyUtils.updateSimulationMetricsData(bestPolicy);
             if (experiment.isHasGoals()) {
-                List<RewardVariable> rewardVariablesWithGoals = rewardVariables.stream()
-                        .filter(rv -> rv.getGoalConditionType() != null).collect(Collectors.toList());
-                int goalsTotalNum = rewardVariablesWithGoals.size();
-                long goalsReachedLong = rewardVariablesWithGoals.stream().filter(rv -> PolicyUtils.isGoalReached(rv, bestPolicy)).count();
-                int goalsReached = Math.toIntExact(goalsReachedLong);
-                experiment.setTotalGoals(goalsTotalNum);
+                int goalsReached = 0;
+                for(RewardVariable rv: rewardVariablesWithGoals) {
+                    if (PolicyUtils.isGoalReached(rv, bestPolicy)) {
+                        goalsReached += 1;
+                    }
+                }
                 experiment.setGoalsReached(goalsReached);
-                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached, goalsTotalNum);
+                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
             }
         });
     }
