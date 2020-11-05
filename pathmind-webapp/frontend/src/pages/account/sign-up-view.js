@@ -8,7 +8,6 @@ class SignUpView extends PolymerElement {
         .inner-content {
             margin-top: 0;
             margin-left: var(--lumo-space-m);
-            margin-right: var(--lumo-space-m);
         }
         .content-wrapper {
             justify-content: center;
@@ -86,6 +85,7 @@ class SignUpView extends PolymerElement {
             }
             .inner-content {
                 max-width: none;
+                margin-left: 0;
             }
             .info {
               font-size: var(--lumo-font-size-l);

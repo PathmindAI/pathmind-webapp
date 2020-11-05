@@ -21,7 +21,7 @@ class PublicHeaderMenu extends PolymerElement {
                     border-bottom: 1px solid var(--pm-grey-color-lightest);
                 }
                 vaadin-horizontal-layout {
-                    max-width: 1280px;
+                    max-width: 1000px;
                     width: 100%;
                 }
                 .logo {
