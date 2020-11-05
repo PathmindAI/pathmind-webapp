@@ -41,6 +41,9 @@ class SignUpView extends PolymerElement {
                 max-width: none;
             }
         }
+        #firstName, #lastName {
+          display: none;
+        }
     </style>
     <vaadin-horizontal-layout class="panel-wrapper">
       <div class="content">
@@ -67,10 +70,12 @@ class SignUpView extends PolymerElement {
                 <vaadin-text-field
                 id="firstName"
                 label="First Name"
+                value=""
                 ></vaadin-text-field>
                 <vaadin-text-field
                 id="lastName"
                 label="Last Name"
+                value=""
                 ></vaadin-text-field>
                 <vaadin-text-field id="email" label="Work Email"></vaadin-text-field>
                 <p class="notes" hidden$="{{isEmailUsed}}">
@@ -87,7 +92,6 @@ class SignUpView extends PolymerElement {
                     Sign up
                 </vaadin-button>
                 </vaadin-vertical-layout>
-                <p class="notes">No credit card required</p>
                 <vaadin-button
                 id="alreadyHaveAccount"
                 theme="tertiary small"

@@ -16,16 +16,16 @@ public class PathmindUserBinders {
     public static void bindFirstName(Binder<PathmindUser> binder, TextField field) {
         binder.forField(field)
                 .withConverter(new TrimmedStringConverter())
-                .asRequired("First Name is required")
-                .withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 250))
+                // .asRequired("First Name is required")
+                // .withValidator(new StringLengthValidator("First Name must not exceed 250 characters", 0, 250))
                 .bind(PathmindUser::getFirstname, PathmindUser::setFirstname);
     }
 
     public static void bindLastName(Binder<PathmindUser> binder, TextField field) {
         binder.forField(field)
                 .withConverter(new TrimmedStringConverter())
-                .asRequired("Last Name is required")
-                .withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 250))
+                // .asRequired("Last Name is required")
+                // .withValidator(new StringLengthValidator("Last Name must not exceed 250 characters", 0, 250))
                 .bind(PathmindUser::getLastname, PathmindUser::setLastname);
     }
 
