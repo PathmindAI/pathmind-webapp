@@ -48,11 +48,11 @@ class SignUpView extends PolymerElement {
     <vaadin-horizontal-layout class="panel-wrapper">
       <div class="content">
         <span class="welcome-text">Welcome to</span>
-        <img
+        <a href="https://pathmind.com/"><img
           class="logo"
           src="frontend/images/pathmind-logo.svg"
           alt="Pathmind logo"
-        />
+        /></a>
         <vaadin-horizontal-layout class="content-wrapper">
             <vaadin-vertical-layout class="inner-content info">
                 <!--<div class="video-wrapper">

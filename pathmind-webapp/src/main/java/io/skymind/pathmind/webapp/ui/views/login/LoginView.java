@@ -77,6 +77,9 @@ public class LoginView extends HorizontalLayout
 		Image img = new Image("frontend/images/pathmind-logo.svg", "Pathmind logo");
 		img.setClassName("logo");
 		img.setWidth("200px");
+		Anchor logo = new Anchor();
+		logo.add(img);
+		logo.setHref("https://pathmind.com/");
 
 		H3 title = new H3("Sign In");
 
@@ -113,7 +116,7 @@ public class LoginView extends HorizontalLayout
 		Div loginPanel = new Div();
 		add(loginPanel);
 		loginPanel.setClassName("content");
-		loginPanel.add(welcome, img, innerContent, policy);
+		loginPanel.add(welcome, logo, innerContent, policy);
 		setSpacing(false);
 	}
 
