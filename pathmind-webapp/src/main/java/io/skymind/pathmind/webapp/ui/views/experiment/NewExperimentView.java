@@ -326,14 +326,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private boolean experimentDetailsHasChanged() {
-        if (rewardFunctionEditor == null || observationsPanel == null) {
-            return false;
-        }
         return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) &&
                 observationsPanel.getSelectedObservations() != experimentObservations;
     }
 
     private void setButtonsEnablement() {
+        if (rewardFunctionEditor == null || observationsPanel == null) {
+            return;
+        }
         boolean hasChanged = experimentDetailsHasChanged();
         if (unsavedChanges != null) {
             unsavedChanges.setVisible(hasChanged);
