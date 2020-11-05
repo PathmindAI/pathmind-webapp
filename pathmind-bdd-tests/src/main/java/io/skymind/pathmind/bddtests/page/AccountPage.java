@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
 import io.skymind.pathmind.bddtests.Utils;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
@@ -99,5 +100,10 @@ public class AccountPage extends PageObject {
         inputFieldShadow.click();
         inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         jse.executeScript("arguments[0].value='" + lastName + "';", inputFieldShadow);
+    }
+
+    public void saveAccountPageApiKeyToTheEnvironmentVariable() {
+        WebElement e = utils.expandRootElement(accountViewShadow);
+        Serenity.setSessionVariable("apiKey").to(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(2)")).getText());
     }
 }

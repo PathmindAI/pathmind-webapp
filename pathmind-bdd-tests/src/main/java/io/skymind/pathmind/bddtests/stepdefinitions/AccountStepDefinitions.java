@@ -50,6 +50,11 @@ public class AccountStepDefinitions {
         accountPageSteps.checkUserEmailIsCorrect(Serenity.sessionVariableCalled("email"));
     }
 
+    @Then("^Save account page api key to the environment variable$")
+    public void saveAccountPageApiKeyToTheEnvironmentVariable() {
+        accountPageSteps.saveAccountPageApiKeyToTheEnvironmentVariable();
+    }
+
     @When("^Input account page first name '(.*)'$")
     public void inputAccountPageFirstName(String firstName) {
         Serenity.setSessionVariable("firstNameRandomNumber").to(new Date().getTime());
