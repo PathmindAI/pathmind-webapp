@@ -114,7 +114,7 @@ Feature: Experiment page alerts in multiple views
     When Open tab 0
     Then Check that 'Experiment #2' exist on the experiment page
     Then Check that 'Experiment #2' status icon is 'loading-spinner'
-    When Click in 'Experiment #2' button
+    When Click side bar experiment Experiment #2
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
