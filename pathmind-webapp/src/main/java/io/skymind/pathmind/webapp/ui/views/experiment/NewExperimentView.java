@@ -338,7 +338,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         if (unsavedChanges != null) {
             unsavedChanges.setVisible(hasChanged);
         }
-        startRunButton.setEnabled(hasChanged && canStartTraining());
+        startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(hasChanged && canSaveDataInDB());
     }
 
