@@ -29,7 +29,6 @@ Feature: Dashboard page
 #   Scenario: Check start page with the getting started message user see after login
 #     Given Open page sign-up
 #     When Fill new user form with name EditEmail, User
-#     When Create new user click sign up button
 #     When Fill new user password Abcd1234
 #     When Fill new user confirmation password Abcd1234
 #     When Create new user click sign in button

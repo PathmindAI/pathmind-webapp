@@ -5,7 +5,6 @@ Feature: Experiment share
   Scenario Outline: Check experiment share
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button
@@ -40,7 +39,6 @@ Feature: Experiment share
     When Delete all cookies
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button
@@ -65,7 +63,6 @@ Feature: Experiment share
     When Delete all cookies
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button
@@ -84,7 +81,6 @@ Feature: Experiment share
   Scenario Outline: Check that NOT shared experiment not shown to the support users
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button

@@ -6,7 +6,6 @@ Feature: Sign Up password field
     When Fill new user form with first name AutotestFirstName
     When Fill new user form with last name AutotestLastName
     When Fill new user form with email autotest@autotest.com
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Confirm password>
     When Create new user click sign in button

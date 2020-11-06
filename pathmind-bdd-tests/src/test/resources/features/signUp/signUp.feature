@@ -5,7 +5,6 @@ Feature: Sign Up
   Scenario Outline: Create new user
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button
@@ -23,7 +22,6 @@ Feature: Sign Up
   Scenario Outline: Create new user and login without email approve
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
     When Fill new user password <Password>
     When Fill new user confirmation password <Password>
     When Create new user click sign in button
@@ -43,7 +41,6 @@ Feature: Sign Up
     When Fill new user form with first name Evgeniy
     When Fill new user form with last name Autotest
     When Fill temporary email with alias to the new user form
-    When Create new user click sign up button
     When Fill new user password Pass123456
     When Fill new user confirmation password Pass123456
     When Create new user click sign in button

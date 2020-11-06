@@ -64,11 +64,6 @@ public class LoginPageSteps {
     }
 
     @Step
-    public void clickSignUpButton() {
-        loginPage.clickSignUpButton();
-    }
-
-    @Step
     public void fillNewUserPassword(String password) {
         loginPage.fillNewUserPassword(password);
     }
@@ -96,11 +91,6 @@ public class LoginPageSteps {
     @Step
     public void checkCreateNewUserPageElements() {
         loginPage.checkCreateNewUserPageElements();
-    }
-
-    @Step
-    public void clickCreateNewUserCancelBtn() {
-        loginPage.clickCreateNewUserCancelBtn();
     }
 
     @Step

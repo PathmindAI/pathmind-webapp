@@ -117,11 +117,6 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputEmail(Serenity.sessionVariableCalled("randomNumber") + email);
     }
 
-    @When("^Create new user click sign up button$")
-    public void clickSignUpButton() {
-        loginPageSteps.clickSignUpButton();
-    }
-
     @When("^Fill new user password (.*)$")
     public void fillNewUserPassword(String password) {
         loginPageSteps.fillNewUserPassword(password);
@@ -160,11 +155,6 @@ public class LoginPageStepDefinitions {
     @When("^Check create new user page elements$")
     public void checkCreateNewUserPageElements() {
         loginPageSteps.checkCreateNewUserPageElements();
-    }
-
-    @When("^Click create new user cancel btn$")
-    public void clickCreateNewUserCancelBtn() {
-        loginPageSteps.clickCreateNewUserCancelBtn();
     }
 
     @Then("^Check that login page opened$")
