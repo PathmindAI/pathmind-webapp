@@ -1,6 +1,7 @@
 @signup
 Feature: Sign Up
 
+  @tempEmail
   Scenario Outline: Create new user
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
@@ -18,6 +19,7 @@ Feature: Sign Up
       | First Name | Last Name | Password   |
       | Evgeniy    | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Create new user and login without email approve
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
@@ -35,6 +37,7 @@ Feature: Sign Up
       | First Name | Last Name | Password   |
       | Evgeniy    | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario: Create new user using email alias
     Given Open page sign-up
     When Fill new user form with first name Evgeniy

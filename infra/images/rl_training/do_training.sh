@@ -191,6 +191,8 @@ EOF
                     --data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                     https://hooks.slack.com/services/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
                 sleep 20
+                mkdir ./work/PPO/ray_debug
+                cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
                 aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
                 #Wait for the instace to be taken
                 sleep 300
