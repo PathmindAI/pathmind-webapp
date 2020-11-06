@@ -234,7 +234,6 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputFirstName(firstName);
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
-        loginPageSteps.clickSignUpButton();
         loginPageSteps.fillNewUserPassword(password);
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
