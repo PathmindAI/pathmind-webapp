@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -11,7 +12,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private boolean correctFileType;
     private boolean modelJarFilePresent;
     private List<String> zipContentFileNames;
-    private List<String> definedHelpers;
+    private List<String> definedHelpers = new ArrayList<>();
     private int numObservation;
     private String rewardVariableFunction;
     private List<String> rewardVariables;
@@ -31,7 +32,12 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     @Override
     public boolean isFileCheckSuccessful() {
-        return isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
+        boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
+        if (!isAllSuccessful) {
+            log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}",
+                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique());
+        }
+        return isAllSuccessful;
     }
 
     @Override
@@ -69,6 +75,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
         if (this.definedHelpers.size() == 1) {
             return true;
         } else {
+            log.info("Helper classes is not unique : {}", this.definedHelpers);
             return false;
         }
     }

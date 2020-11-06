@@ -44,7 +44,6 @@ import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -53,7 +52,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
@@ -66,7 +64,7 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PANEL_TITLE_LABEL;
 
 @Route(value= Routes.PROJECT_URL, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
@@ -149,6 +147,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             rewardVariablesTable.setRewardVariables(rewardVariables);
             observationsPanel = new ObservationsPanel(true);
             observationsPanel.setupObservationTable(modelObservations, null);
+            observationsPanel.addClassName("observations-panel-wrapper");
 
             modelsNavbar = new ModelsNavbar(
                 () -> getUI(),
@@ -213,10 +212,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private VerticalLayout createRightPanel() {
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
-        VerticalLayout rightPanelCard = new VerticalLayout(
+        VerticalLayout rightPanelCard = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 errorMessage,
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                    LabelFactory.createLabel("Simulation Metrics", BOLD_LABEL),
+                    LabelFactory.createLabel("Simulation Metrics", PANEL_TITLE_LABEL),
                     rewardVariablesTable
                 ),
                 observationsPanel);

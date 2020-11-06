@@ -50,8 +50,7 @@ public class ProjectFileCheckService {
                             setHyperparams(result, analysisResult);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
-                    }
-                    else {
+                    } else {
                         statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
                     }
                 } finally {
