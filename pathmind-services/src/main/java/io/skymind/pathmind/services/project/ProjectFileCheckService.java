@@ -70,12 +70,15 @@ public class ProjectFileCheckService {
     private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
         if (analysisResult != null && analysisResult.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
-        } else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
+        } else if (analysisResult == null || analysisResult.getObservationsNames() == null
+            || analysisResult.getObservationsTypes() == null || analysisResult.getRewardVariables() == null) {
             return Optional.of("Unable to analyze the model.");
         } else if (analysisResult.getRewardVariables().isEmpty()) {
             return Optional.of("Failed to read reward variables.");
-        } else if (analysisResult.getObservationsNames().isEmpty()) {
+        } else if (analysisResult.getObservationsNames().isEmpty() || analysisResult.getObservationsTypes().isEmpty()) {
             return Optional.of("Failed to read observations.");
+        } else if (analysisResult.getObservationsNames().size() != analysisResult.getObservationsTypes().size()) {
+            return Optional.of("Should be the same number of observation names and types.");
         } else if (analysisResult.getMode().isEmpty()) {
             return Optional.of("Failed to read model type.");
         } else if (!analysisResult.isEnabled()) {
@@ -92,6 +95,7 @@ public class ProjectFileCheckService {
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
     	fileCheckResult.setRewardVariables(params.getRewardVariables());
     	fileCheckResult.setObservationNames(params.getObservationsNames());
+    	fileCheckResult.setObservationTypes(params.getObservationsTypes());
     	fileCheckResult.setModelType(params.getMode());
     	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
     }

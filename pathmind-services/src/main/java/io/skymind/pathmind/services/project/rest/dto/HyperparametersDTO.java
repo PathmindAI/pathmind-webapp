@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Getter
@@ -23,8 +22,11 @@ public class HyperparametersDTO {
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
     
-    @NotBlank(message = "Observations cannot be empty")
+    @NotBlank(message = "Observations names cannot be empty")
     private List<String> observationsNames;
+
+    @NotBlank(message = "Observations types cannot be empty")
+    private List<String> observationsTypes;
 
     @NotBlank(message = "Reward variables cannot be empty")
     private List<String> rewardVariables;
