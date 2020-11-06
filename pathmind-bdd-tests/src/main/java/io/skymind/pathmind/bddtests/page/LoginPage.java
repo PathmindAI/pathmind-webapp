@@ -161,9 +161,9 @@ public class LoginPage extends PageObject {
         assertThat(signUpView.findElements(By.cssSelector("vaadin-text-field[id='email'][required]")).size(), is(1));
         assertThat(emailInput.findElements(By.cssSelector("input")).size(), is(1));
 
-        WebElement signUpBtnShadow = signUpView.findElement(By.id("signUp"));
+        WebElement signUpBtnShadow = signUpView.findElement(By.id("signIn"));
         WebElement field = utils.expandRootElement(signUpBtnShadow);
-        assertThat(signUpBtnShadow.getText(), containsString("Sign up"));
+        assertThat(signUpBtnShadow.getText(), containsString("Create Free Account"));
         assertThat(field.findElements(By.id("button")).size(), is(1));
         assertThat(signUpView.findElement(By.cssSelector("#alreadyHaveAccount")).getText(), is("Already have an account?"));
     }
