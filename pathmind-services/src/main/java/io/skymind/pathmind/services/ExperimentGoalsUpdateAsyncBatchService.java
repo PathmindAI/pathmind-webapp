@@ -43,11 +43,11 @@ public class ExperimentGoalsUpdateAsyncBatchService {
             return;
         }
         log.info("Experiments goals migration started");
-        List<Integer> butch;
+        List<Integer> batch;
         do {
-            butch = getNextBatch(100);
+            batch = getNextBatch(100);
             log.info("Updating goals for next batch of experiments");
-            for (Integer experimentId : butch) {
+            for (Integer experimentId : batch) {
                 try {
                     ctx.transaction(conf -> {
                         DSLContext transactionCtx = DSL.using(conf);
@@ -60,7 +60,7 @@ public class ExperimentGoalsUpdateAsyncBatchService {
                     log.error("Failed to update experiment {}", experimentId, err);
                 }
             }
-        } while (!butch.isEmpty());
+        } while (!batch.isEmpty());
         log.info("Experiments goals migration complete");
     }
 
