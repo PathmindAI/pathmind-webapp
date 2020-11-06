@@ -1,6 +1,7 @@
 html {
     /* pathmind-colors */
     --pm-primary-color: #4f97aa;
+    --pm-primary-color-bright: #38a9c1;
     --pm-text-color: #1a2949;
     --pm-secondary-text-color: #888888;
     --pm-app-bg-color: #f6f8fa;

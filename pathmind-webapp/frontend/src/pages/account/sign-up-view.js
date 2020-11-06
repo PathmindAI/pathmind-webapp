@@ -6,6 +6,7 @@ class SignUpView extends PolymerElement {
     return html`
     <style include="shared-styles pathmind-dialog-view sign-up-view-styles">
         :host {
+          --lumo-primary-color: var(--pm-primary-color-bright);
           height: auto;
           min-height: 100%;
         }
@@ -25,7 +26,7 @@ class SignUpView extends PolymerElement {
         }
         .info {
           align-items: flex-start;
-          flex: 1 0 60%;
+          flex: 1 1 60%;
           max-width: 600px;
           font-size: var(--lumo-font-size-l);
           padding-top: var(--lumo-space-xl);
@@ -52,6 +53,7 @@ class SignUpView extends PolymerElement {
           margin: var(--lumo-space-xl) 0 var(--lumo-space-m);
         }
         .info ul {
+          --lumo-primary-color: var(--pm-primary-color);
           padding: 0 0 0 var(--lumo-font-size-xxl);
           margin-top: 0;
         }
@@ -75,6 +77,7 @@ class SignUpView extends PolymerElement {
           display: none;
         }
         h3 {
+          font-weight: 600;
           margin-top: var(--lumo-space-xs);
         }
         .names-wrapper {
@@ -86,6 +89,9 @@ class SignUpView extends PolymerElement {
         }
         .passwords-wrapper {
           width: 100%;
+        }
+        .policy a {
+          color: var(--pm-primary-color);
         }
         @media screen and (max-width: 768px) {
             .content {
@@ -121,7 +127,7 @@ class SignUpView extends PolymerElement {
               <p>Get your free Pathmind account to:</p>
               <ul>
                   <li>Access additional AI-ready simulation models</li>
-                  <li>Get tips on how to guide and reward your AI agents</li>
+                  <li>Get tips on how-to guide and reward your AI agents</li>
                   <li>Apply AI to your simulation and beat your heuristic</li>
               </ul>
               <!--<div class="video-wrapper">
