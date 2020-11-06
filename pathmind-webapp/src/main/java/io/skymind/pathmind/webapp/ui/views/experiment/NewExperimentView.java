@@ -313,6 +313,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     /************************************** UI element creations are above this line **************************************/
 
 	private boolean canStartTraining() {
+        if (rewardFunctionEditor == null || observationsPanel == null) {
+            return false;
+        }
 		return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
                 && rewardFunctionErrors.size() == 0
@@ -326,14 +329,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private boolean experimentDetailsHasChanged() {
+        if (rewardFunctionEditor == null || observationsPanel == null) {
+            return false;
+        }
         return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) &&
                 observationsPanel.getSelectedObservations() != experimentObservations;
     }
 
     private void setButtonsEnablement() {
-        if (rewardFunctionEditor == null || observationsPanel == null) {
-            return;
-        }
         boolean hasChanged = experimentDetailsHasChanged();
         if (unsavedChanges != null) {
             unsavedChanges.setVisible(hasChanged);
