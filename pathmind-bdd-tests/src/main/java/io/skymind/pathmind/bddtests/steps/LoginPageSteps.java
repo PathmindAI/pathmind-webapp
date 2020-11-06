@@ -157,4 +157,14 @@ public class LoginPageSteps {
     public void waitForSignInPageAntiFlickerScript() {
         loginPage.waitForSignInPageAntiFlickerScript();
     }
+
+    @Step
+    public void clickSignUpWhatWeOfferButton() {
+        loginPage.clickSignUpWhatWeOfferButton();
+    }
+
+    @Step
+    public void clickSignUpAboutUsButton() {
+        loginPage.clickSignUpAboutUsButton();
+    }
 }

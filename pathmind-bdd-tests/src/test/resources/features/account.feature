@@ -5,8 +5,8 @@ Feature: User accounts tests
   Scenario: Edit user email in account page
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
-    When Fill new user password Abcd1234
-    When Fill new user confirmation password Abcd1234
+    When Fill new user password 'Abcd1234'
+    When Fill new user confirmation password 'Abcd1234'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -28,8 +28,8 @@ Feature: User accounts tests
   Scenario: Login without email verify after email change
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
-    When Fill new user password Abcd1234
-    When Fill new user confirmation password Abcd1234
+    When Fill new user password 'Abcd1234'
+    When Fill new user confirmation password 'Abcd1234'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -49,8 +49,8 @@ Feature: User accounts tests
   Scenario: Login with old email after email change
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
-    When Fill new user password Abcd1234
-    When Fill new user confirmation password Abcd1234
+    When Fill new user password 'Abcd1234'
+    When Fill new user confirmation password 'Abcd1234'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -71,8 +71,8 @@ Feature: User accounts tests
   Scenario: Check verification email template
     Given Open page sign-up
     When Fill new user form with name EditEmail, User
-    When Fill new user password Abcd1234
-    When Fill new user confirmation password Abcd1234
+    When Fill new user password 'Abcd1234'
+    When Fill new user confirmation password 'Abcd1234'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page

@@ -117,12 +117,12 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputEmail(Serenity.sessionVariableCalled("randomNumber") + email);
     }
 
-    @When("^Fill new user password (.*)$")
+    @When("^Fill new user password '(.*)'$")
     public void fillNewUserPassword(String password) {
         loginPageSteps.fillNewUserPassword(password);
     }
 
-    @When("^Fill new user confirmation password (.*)$")
+    @When("^Fill new user confirmation password '(.*)'$")
     public void fillNewUserConfirmationPassword(String password) {
         loginPageSteps.fillNewUserConfirmationPassword(password);
     }
@@ -248,5 +248,15 @@ public class LoginPageStepDefinitions {
     @And("^Wait for sign-in page anti-flicker script$")
     public void waitForSignInPageAntiFlickerScript() {
         loginPageSteps.waitForSignInPageAntiFlickerScript();
+    }
+
+    @When("^Click sign-up what we offer button$")
+    public void clickSignUpWhatWeOfferButton() {
+        loginPageSteps.clickSignUpWhatWeOfferButton();
+    }
+
+    @When("^Click sign-up about us button$")
+    public void clickSignUpAboutUsButton() {
+        loginPageSteps.clickSignUpAboutUsButton();
     }
 }

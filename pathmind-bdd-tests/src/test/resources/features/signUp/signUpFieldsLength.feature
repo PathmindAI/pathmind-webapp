@@ -32,7 +32,7 @@ Feature: Sign Up fields length
     When Fill new user form with first name AutotestFirstName
     When Fill new user form with last name AutotestLastName
     When Fill temporary email to the new user form
-    When Fill new user password Lorem ipsum dolor sit amet, consectetuer adipiscing
-    When Fill new user confirmation password Lorem ipsum dolor sit amet, consectetuer adipiscing
+    When Fill new user password 'Lorem ipsum dolor sit amet, consectetuer adipiscing'
+    When Fill new user confirmation password 'Lorem ipsum dolor sit amet, consectetuer adipiscing'
     When Create new user click sign in button
     Then Create new user check that error message shown * 50 max characters

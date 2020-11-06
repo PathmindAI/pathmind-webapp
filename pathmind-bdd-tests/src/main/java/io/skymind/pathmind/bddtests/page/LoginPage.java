@@ -35,6 +35,8 @@ public class LoginPage extends PageObject {
     private WebElement loginFormWraper;
     @FindBy(xpath = "//sign-up-view")
     private WebElement signUpShadow;
+    @FindBy(css = "public-header-menu")
+    private WebElement headerShadow;
     @FindBy(xpath = "//vaadin-button[@title='Send verification email again.']")
     private WebElement resendBtnShadow;
     @FindBy(xpath = "//reset-password-view")
@@ -99,6 +101,7 @@ public class LoginPage extends PageObject {
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement inputField = field.findElement(By.cssSelector("input"));
         inputField.click();
+        inputField.clear();
         inputField.sendKeys(password);
     }
 
@@ -278,5 +281,17 @@ public class LoginPage extends PageObject {
 
     public void waitForSignInPageAntiFlickerScript() {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
+    }
+
+    public void clickSignUpWhatWeOfferButton() {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
+        headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(1) > a")).click();
+    }
+
+    public void clickSignUpAboutUsButton() {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
+        headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(2) > a")).click();
     }
 }
