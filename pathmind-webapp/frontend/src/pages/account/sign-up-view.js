@@ -5,38 +5,43 @@ class SignUpView extends PolymerElement {
   static get template() {
     return html`
     <style include="shared-styles pathmind-dialog-view sign-up-view-styles">
+        :host {
+          height: auto;
+          min-height: 100%;
+        }
         .inner-content {
-            margin-top: 0;
-            margin-left: var(--lumo-space-m);
+          max-width: 460px;
+          margin-top: 0;
+          margin-left: var(--lumo-space-m);
         }
         .content-wrapper {
-            justify-content: center;
-            width: 100%;
+          justify-content: center;
+          width: 100%;
         }
         .content {
           box-sizing: border-box;
           width: 100%;
-          padding: 6rem var(--lumo-space-xl);
+          padding: 6rem var(--lumo-space-m);
         }
         .info {
-            align-items: flex-start;
-            flex: 1 0 60%;
-            max-width: 600px;
-            font-size: var(--lumo-font-size-l);
-            padding-top: var(--lumo-space-xl);
+          align-items: flex-start;
+          flex: 1 0 60%;
+          max-width: 600px;
+          font-size: var(--lumo-font-size-l);
+          padding-top: var(--lumo-space-xl);
         }
         .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.39%;
-            margin-bottom: var(--lumo-space-xl);
+          position: relative;
+          width: 100%;
+          padding-bottom: 56.39%;
+          margin-bottom: var(--lumo-space-xl);
         }
         .video-wrapper iframe {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
         }
         .info h1 {
           color: var(--lumo-primary-color);
@@ -72,11 +77,17 @@ class SignUpView extends PolymerElement {
         h3 {
           margin-top: var(--lumo-space-xs);
         }
+        .names-wrapper {
+          justify-content: space-between;
+          width: 100%;
+        }
+        .names-wrapper vaadin-text-field {
+          width: calc(50% - var(--lumo-space-xs));
+        }
+        .passwords-wrapper {
+          width: 100%;
+        }
         @media screen and (max-width: 768px) {
-            :host {
-              height: auto;
-              min-height: 100%;
-            }
             .content {
               padding: var(--lumo-space-xxl) var(--lumo-space-s);
             }
@@ -91,9 +102,12 @@ class SignUpView extends PolymerElement {
               font-size: var(--lumo-font-size-l);
               padding: 0 var(--lumo-space-s);
             }
-        }
-        #firstName, #lastName {
-          display: none;
+            .names-wrapper {
+              flex-direction: column;
+            }
+            .names-wrapper vaadin-text-field {
+              width: 100%;
+            }
         }
     </style>
     <public-header-menu contactlink="{{contactLink}}"></public-header-menu>
@@ -116,33 +130,39 @@ class SignUpView extends PolymerElement {
           </vaadin-vertical-layout>
           <vaadin-vertical-layout class="inner-content" id="emailPart">
               <h3>Make Better Decisions With AI</h3>
-              <vaadin-text-field
-                id="firstName"
-                label="First Name"
-                value=""
-                ></vaadin-text-field>
-              <vaadin-text-field
-                id="lastName"
-                label="Last Name"
-                value=""
-                ></vaadin-text-field>
+              <vaadin-horizontal-layout class="names-wrapper">
+                <vaadin-text-field
+                  id="firstName"
+                  label="First Name"
+                  ></vaadin-text-field>
+                <vaadin-text-field
+                  id="lastName"
+                  label="Last Name"
+                  ></vaadin-text-field>
+              </vaadin-horizontal-layout>
               <vaadin-text-field id="email" label="Work Email"></vaadin-text-field>
               <p class="notes" hidden$="{{isEmailUsed}}">
               The email will be used as the User Email during sign in
               </p>
-              <vaadin-password-field
-                  id="newPassword"
-                  label="Create Password"
-              ></vaadin-password-field>
               <vaadin-vertical-layout
-                  id="newPassNotes"
-                  class="notes"
-                  style="width: 100%;"
-              ></vaadin-vertical-layout>
-              <vaadin-password-field
-                  id="confirmNewPassword"
-                  label="Confirm Password"
-              ></vaadin-password-field>
+                class="passwords-wrapper"
+                hidden$="{{isEmailUsed}}">
+                <vaadin-password-field
+                    id="newPassword"
+                    label="Create Password"
+                    on-keyup="onCreatePasswordInput"
+                ></vaadin-password-field>
+                <vaadin-vertical-layout
+                    id="newPassNotes"
+                    class="notes"
+                    style="width: 100%;"
+                ></vaadin-vertical-layout>
+                <vaadin-password-field
+                    id="confirmNewPassword"
+                    label="Confirm Password"
+                    hidden$="{{!hasCreatedPassword}}"
+                ></vaadin-password-field>
+              </vaadin-vertical-layout>
               <vaadin-button
                 id="forgotPasswordBtn"
                 theme="tertiary small"
@@ -161,7 +181,7 @@ class SignUpView extends PolymerElement {
                 >Already have an account?
               </vaadin-button>
               <div class="policy" id="policyText">
-                <span>By submitting the form, you agree to Pathmind's </span>
+                <span>By submitting the form, you agree to our </span>
                 <a href="https://pathmind.com/subscription-agreement" target="_blank"
                   >Terms of Use</a
                 ><span> and </span>
@@ -190,12 +210,21 @@ class SignUpView extends PolymerElement {
     }
   }
 
+  onCreatePasswordInput(event) {
+    const passwordValue = event.target.value;
+    this.hasCreatedPassword = (passwordValue.length > 0);
+  }
+
   static get is() {
     return "sign-up-view";
   }
 
   static get properties() {
     return {
+      hasCreatedPassword: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 }

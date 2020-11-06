@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -77,12 +76,14 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	private void initView() {
 		passwordValidationNotes.setSpacing(false);
 		passwordValidationNotes.setPadding(false);
+		newPassword.setRequired(true);
+		confirmNewPassword.setRequired(true);
 
 		signIn.addClickListener(e -> {
 			UserService.PasswordValidationResults validationResults = userService
 					.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-			if (validationResults.isOk()) {
+			if (binder.validate().isOk() && validationResults.isOk()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
