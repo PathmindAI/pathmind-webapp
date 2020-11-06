@@ -1,11 +1,10 @@
 package io.skymind.pathmind.shared.data;
 
-import java.util.Objects;
-
 import io.skymind.pathmind.shared.constants.ObservationDataType;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Objects;
 
 @Getter
 @Setter
