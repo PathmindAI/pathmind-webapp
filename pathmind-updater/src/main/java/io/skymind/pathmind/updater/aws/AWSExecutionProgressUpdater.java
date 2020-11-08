@@ -1,6 +1,7 @@
 package io.skymind.pathmind.updater.aws;
 
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
@@ -24,15 +25,18 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
     private final int updateCompletingAttemptsLimit;
+    private final SegmentTrackerService segmentTrackerService;
 
     public AWSExecutionProgressUpdater(RunDAO runDAO,
                                        @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
-                                       UpdaterService updaterService) {
+                                       UpdaterService updaterService,
+                                       SegmentTrackerService segmentTrackerService) {
         this.runDAO = runDAO;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
         this.updateCompletingAttemptsLimit = completingAttempts;
+        this.segmentTrackerService = segmentTrackerService;
     }
 
     @Override
@@ -54,10 +58,17 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             	ProviderJobStatus providerJobStatus =
                         updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNamesForRuns);
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
+                trackCompletedTrainingInSegment(run, providerJobStatus);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
             }
         });
+    }
+
+    private void trackCompletedTrainingInSegment(Run run, ProviderJobStatus providerJobStatus) {
+        if(RunStatus.isFinished(providerJobStatus.getRunStatus())) {
+            segmentTrackerService.trainingCompleted(runDAO.getUserIdForRun(run.getId()), run);
+        }
     }
 
     /**
