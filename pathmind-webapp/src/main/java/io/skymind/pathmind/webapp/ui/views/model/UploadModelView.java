@@ -316,7 +316,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			List<Observation> observationList = new ArrayList<>();
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
-			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
+			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
 			    observationList = convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
@@ -363,14 +363,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return new ArrayList<>(auxObservations.values());
     }
 
-    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
+    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariableNames, List<String> rewardVaribaleTypes) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
-        for (int i = 0; i < rewardVariablesNames.size(); i++) {
+        for (int i = 0; i < rewardVariableNames.size(); i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
-            rv.setName(rewardVariablesNames.get(i));
-            rv.setDataType("double");
+            rv.setName(rewardVariableNames.get(i));
+            rv.setDataType(rewardVaribaleTypes.get(i));
             rewardVariables.add(rv);
         }
         return rewardVariables;
