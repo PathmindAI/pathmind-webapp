@@ -82,10 +82,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	}
 
 	public void emailVerified(PathmindUser user) {
-        JsonObject additionalInfo = Json.createObject();
-        additionalInfo.put("userId", user.getId());
-        additionalInfo.put("userName", user.getName());
-        additionalInfo.put("userEmail", user.getEmail());
+		JsonObject additionalInfo = Json.createObject();
+		if (user != null) {
+			additionalInfo.put("userId", user.getId());
+			additionalInfo.put("userName", user.getName());
+			additionalInfo.put("userEmail", user.getEmail());
+		}
 		track(EVENT_VERIFY_EMAIL, additionalInfo);
 	}
 
