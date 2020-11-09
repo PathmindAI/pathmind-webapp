@@ -204,12 +204,8 @@ public class NewExperimentPage extends PageObject {
 
     public void openExperimentFromSidebarInTheNewTab(String experiment) {
         waitABit(2000);
-        Actions actions = new Actions(getDriver());
-        actions.keyDown(Keys.CONTROL).build().perform();
-        actions.moveToElement(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        waitABit(2500);
-        actions.click(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        actions.keyUp(Keys.CONTROL).build().perform();
+        WebElement experimentNavItem = utils.getExperimentNavbarItemByExperimentName(experiment, null);
+        experimentNavItem.sendKeys(Keys.CONTROL + "t");
         waitABit(3000);
     }
 }
