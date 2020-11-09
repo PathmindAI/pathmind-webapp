@@ -37,6 +37,11 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 	private SegmentIntegrator segmentIntegrator;
 
 	private String token;
+	private PathmindUser user;
+
+	public EmailVerificationView() {
+		segmentIntegrator.emailVerified(user);
+	}
 	
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
@@ -53,7 +58,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 		backToApp.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
 
 		try {
-			PathmindUser user = userService.verifyEmailByToken(token);
+			user = userService.verifyEmailByToken(token);
 			if (user == null) {
 				getModel().setError(true);
 				return;
