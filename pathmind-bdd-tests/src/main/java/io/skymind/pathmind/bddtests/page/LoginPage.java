@@ -35,6 +35,8 @@ public class LoginPage extends PageObject {
     private WebElement loginFormWraper;
     @FindBy(xpath = "//sign-up-view")
     private WebElement signUpShadow;
+    @FindBy(css = "public-header-menu")
+    private WebElement headerShadow;
     @FindBy(xpath = "//vaadin-button[@title='Send verification email again.']")
     private WebElement resendBtnShadow;
     @FindBy(xpath = "//reset-password-view")
@@ -93,21 +95,13 @@ public class LoginPage extends PageObject {
         inputField.sendKeys(email);
     }
 
-    public void clickSignUpButton() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
-        WebElement signUpBtnShadow = signUpView.findElement(By.id("signUp"));
-        WebElement field = utils.expandRootElement(signUpBtnShadow);
-        WebElement signUpBtn = field.findElement(By.id("button"));
-        signUpBtn.click();
-        waitABit(2000);
-    }
-
     public void fillNewUserPassword(String password) {
         WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inputFieldShadow = signUpView.findElement(By.id("newPassword"));
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement inputField = field.findElement(By.cssSelector("input"));
         inputField.click();
+        inputField.clear();
         inputField.sendKeys(password);
     }
 
@@ -146,13 +140,13 @@ public class LoginPage extends PageObject {
         // waitFor(ExpectedConditions.visibilityOf(signUpView.findElement(By.cssSelector(".video-wrapper"))));
         resetImplicitTimeout();
         // assertThat(signUpView.findElements(By.cssSelector(".video-wrapper")).size(), is(not(0)));
-        assertThat(signUpView.findElement(By.cssSelector("b")).getText(), is("Create your free Pathmind account to:"));
-        assertThat(signUpView.findElement(By.cssSelector("ul")).getText(), is("Access additional AI-ready simulation models\nGet tips on how to guide and reward your AI agents\nApply AI to your simulation and beat your heuristic"));
+        assertThat(signUpView.findElement(By.cssSelector(".info p")).getText(), is("Get your free Pathmind account to:"));
+        assertThat(signUpView.findElement(By.cssSelector(".info ul")).getText(), is("Access additional AI-ready simulation models\nGet tips on how-to guide and reward your AI agents\nApply AI to your simulation and beat your heuristic"));
 
         /*
         Check `Sign up for a free trial!` form
          */
-        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Sign up for a free trial!"));
+        assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), containsString("Make Better Decisions With AI"));
 
         WebElement firstNameInputShadow = signUpView.findElement(By.id("firstName"));
         WebElement firstNameInput = utils.expandRootElement(firstNameInputShadow);
@@ -170,24 +164,11 @@ public class LoginPage extends PageObject {
         assertThat(signUpView.findElements(By.cssSelector("vaadin-text-field[id='email'][required]")).size(), is(1));
         assertThat(emailInput.findElements(By.cssSelector("input")).size(), is(1));
 
-        WebElement signUpBtnShadow = signUpView.findElement(By.id("signUp"));
+        WebElement signUpBtnShadow = signUpView.findElement(By.id("signIn"));
         WebElement field = utils.expandRootElement(signUpBtnShadow);
-        assertThat(signUpBtnShadow.getText(), containsString("Sign up"));
+        assertThat(signUpBtnShadow.getText(), containsString("Create Free Account"));
         assertThat(field.findElements(By.id("button")).size(), is(1));
-        assertThat(signUpView.findElement(By.cssSelector("#buttonsCont + p")).getText(), is("No credit card required"));
         assertThat(signUpView.findElement(By.cssSelector("#alreadyHaveAccount")).getText(), is("Already have an account?"));
-
-        /*
-        Check page footer
-         */
-        assertThat(signUpView.findElements(By.cssSelector(".support")).size(), is(1));
-        assertThat(signUpView.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
-        assertThat(signUpView.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
-    }
-
-    public void clickCreateNewUserCancelBtn() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
-        signUpView.findElement(By.id("cancelSignUpBtn")).click();
     }
 
     public void checkThatLoginPageOpened() {
@@ -300,5 +281,17 @@ public class LoginPage extends PageObject {
 
     public void waitForSignInPageAntiFlickerScript() {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
+    }
+
+    public void clickSignUpWhatWeOfferButton() {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
+        headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(1) > a")).click();
+    }
+
+    public void clickSignUpAboutUsButton() {
+        WebElement signUpView = utils.expandRootElement(signUpShadow);
+        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
+        headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(2) > a")).click();
     }
 }
