@@ -203,7 +203,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void openExperimentFromSidebarInTheNewTab(String experiment) {
-        waitABit(2000);
+        waitABit(4500);
         WebElement experimentNavItem = utils.getExperimentNavbarItemByExperimentName(experiment, null);
         experimentNavItem.sendKeys(Keys.CONTROL + "t");
         waitABit(3000);
