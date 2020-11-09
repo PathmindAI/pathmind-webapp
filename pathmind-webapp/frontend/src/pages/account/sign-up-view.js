@@ -212,7 +212,7 @@ class SignUpView extends PolymerElement {
     if (typeof Intercom === "undefined") {
         requestAnimationFrame(detectIntercomAndFireTrackEventWhenLoaded);
     } else {
-        Intercom('trackEvent', 'Visited Sign Up Page');
+        Intercom('trackEvent', 'Sign Up Page Visited');
     }
   }
 

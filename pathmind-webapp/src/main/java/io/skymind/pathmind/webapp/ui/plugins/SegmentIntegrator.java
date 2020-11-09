@@ -13,6 +13,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.Json;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.ArchivableData;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -33,33 +34,34 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private boolean enabled;
 	private PathmindUserDetails user;
 
-	private static final String EVENT_SIGN_UP = "Sign up";
-	private static final String EVENT_LOGIN = "Login";
-	private static final String EVENT_IMPORT_MODEL = "Import Model";
-	private static final String EVENT_CREATE_PROJECT = "Create Project";
-	private static final String EVENT_CREATE_REWARD_FUNTION = "Create Reward Function";
-    private static final String EVENT_START_TRAINING = "Start Training";
-    private static final String EVENT_STOP_TRAINING = "Stop Training";
-    private static final String EVENT_RESTART_TRAINING = "Restart Training";
-	private static final String EVENT_EXPORT_POLICY = "Export Policy";
-    private static final String EVENT_SAVE_MODEL_DRAFT = "Save Model Draft";
-	private static final String EVENT_DOWNLOAD_MODEL_ALP = "Download Model ALP";
-	private static final String EVENT_SAVE_DRAFT = "Save Draft";
-	private static final String EVENT_CHANGE_PW = "Change Password";
-	private static final String EVENT_EDIT_INFO = "Edit Info";
-	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgrade";
-	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
-	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
-	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
-	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
-	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
-    private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
-    private static final String EVENT_SEARCHED_SITE = "Performed a search using search box";
-	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit";
-	private static final String EVENT_ERROR_PAGE = "Error page displayed";
+	private static final String EVENT_SIGN_UP = "Signed up";
+	private static final String EVENT_VERIFY_EMAIL = "Email Verified";
+	private static final String EVENT_LOGIN = "Signed in";
+	private static final String EVENT_IMPORT_MODEL = "Model Uploaded";
+	private static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
+	private static final String EVENT_CREATE_PROJECT = "Project Created";
+    private static final String EVENT_START_TRAINING = "Training Started";
+    private static final String EVENT_STOP_TRAINING = "Training Stopped";
+    private static final String EVENT_RESTART_TRAINING = "Training Restarted";
+	private static final String EVENT_EXPORT_POLICY = "Policy Exported";
+    private static final String EVENT_SAVE_MODEL_DRAFT = "Model Draft Saved";
+	private static final String EVENT_DOWNLOAD_MODEL_ALP = "Model ALP Downloaded";
+	private static final String EVENT_SAVE_EXPERIMENT_DRAFT = "Experiment Draft Saved";
+	private static final String EVENT_CHANGE_PW = "Password Changed";
+	private static final String EVENT_EDIT_INFO = "Info Edited";
+	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgraded";
+	private static final String EVENT_CANCEL_SUBSCRIPTION = "Subscription Cancelled";
+	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Notes on Models View Updated";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Notes on Experiments View Updated";
+	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Notes on Experiment View Updated";
+	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Notes on Upload Model View Added";
+    private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Notes on New Experiment View Added";
+    private static final String EVENT_SEARCHED_SITE = "A Search Using Search Box Performed";
+	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit Reached";
+	private static final String EVENT_ERROR_PAGE = "Error Page Displayed";
 	private static final String EVENT_ARCHIVED = "Archived";
 	private static final String EVENT_UNARCHIVED = "Unarchived";
-    private static final String EVENT_NEW_EXPERIMENT = "New Experiment";
+    private static final String EVENT_NEW_EXPERIMENT = "New Experiment Created";
 
 	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
 			@Value("${skymind.segment.enabled}") Boolean enabled) {
@@ -71,9 +73,22 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_LOGIN);
 	}
 
-	public void userRegistered() {
-		track(EVENT_SIGN_UP);
+	public void userRegistered(PathmindUser user) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("userId", user.getId());
+        additionalInfo.put("userName", user.getName());
+        additionalInfo.put("userEmail", user.getEmail());
+		track(EVENT_SIGN_UP, additionalInfo);
 	}
+
+	public void emailVerified(PathmindUser user) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("userId", user.getId());
+        additionalInfo.put("userName", user.getName());
+        additionalInfo.put("userEmail", user.getEmail());
+		track(EVENT_VERIFY_EMAIL, additionalInfo);
+	}
+
 
 	public void modelImported(boolean result) {
 		JsonObject additionalInfo = Json.createObject();
@@ -81,12 +96,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_IMPORT_MODEL, additionalInfo);
 	}
 
-	public void projectCreated() {
-		track(EVENT_CREATE_PROJECT);
+	public void createFirstProject() {
+		track(EVENT_CREATE_FIRST_PROJECT);
 	}
 
-	public void rewardFuntionCreated() {
-		track(EVENT_CREATE_REWARD_FUNTION);
+	public void projectCreated() {
+		track(EVENT_CREATE_PROJECT);
 	}
 
 	public void policyExported() {
@@ -94,7 +109,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	}
 
 	public void draftSaved() {
-		track(EVENT_SAVE_DRAFT);
+		track(EVENT_SAVE_EXPERIMENT_DRAFT);
 	}
 
 	public void modelDraftSaved() {
