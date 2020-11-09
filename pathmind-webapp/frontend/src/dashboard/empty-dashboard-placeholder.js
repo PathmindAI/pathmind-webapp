@@ -61,7 +61,7 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                     <i>(For more detailed information, please see <a href="http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic" target="_blank">our tutorial</a>.)</i>
                 </vaadin-vertical-layout>
                 <vaadin-horizontal-layout>
-                    <a class="button-link" router-link href="newProject">Create Your First Project Now</a>
+                    <a class="button-link" id="newProjectButton" router-link href="newProject">Create Your First Project Now</a>
                 </vaadin-horizontal-layout>
             </vaadin-vertical-layout>
         `;

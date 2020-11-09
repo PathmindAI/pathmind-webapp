@@ -88,7 +88,7 @@ public class DashboardView extends PathMindDefaultView
     protected Component getMainContent(){
         title = LabelFactory.createLabel("Recent", CssPathmindStyles.SECTION_TITLE_LABEL);
         newProjectButtonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton());
-        placeholder = new EmptyDashboardPlaceholder();
+        placeholder = new EmptyDashboardPlaceholder(segmentIntegrator);
         setupDashboardGrid();
 
         VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(

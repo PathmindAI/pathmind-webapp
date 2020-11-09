@@ -303,7 +303,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
 		experimentDAO.updateExperiment(experiment);
 		observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
-		segmentIntegrator.rewardFuntionCreated();
 
         trainingService.startRun(experiment);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment,

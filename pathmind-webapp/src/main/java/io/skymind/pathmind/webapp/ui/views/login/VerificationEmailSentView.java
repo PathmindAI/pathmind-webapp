@@ -32,5 +32,6 @@ public class VerificationEmailSentView extends PolymerTemplate<TemplateModel> im
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		getElement().appendChild(segmentIntegrator.getElement());
+		segmentIntegrator.verificationEmailSent();
 	}
 }
