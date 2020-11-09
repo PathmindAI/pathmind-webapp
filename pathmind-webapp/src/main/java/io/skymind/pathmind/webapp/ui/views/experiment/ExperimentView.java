@@ -450,7 +450,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     public List<Experiment> getExperiments() {
-        return getExperiments();
+        return experiments;
     }
 
     private void setSharedWithSupportComponents() {

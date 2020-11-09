@@ -117,17 +117,12 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputEmail(Serenity.sessionVariableCalled("randomNumber") + email);
     }
 
-    @When("^Create new user click sign up button$")
-    public void clickSignUpButton() {
-        loginPageSteps.clickSignUpButton();
-    }
-
-    @When("^Fill new user password (.*)$")
+    @When("^Fill new user password '(.*)'$")
     public void fillNewUserPassword(String password) {
         loginPageSteps.fillNewUserPassword(password);
     }
 
-    @When("^Fill new user confirmation password (.*)$")
+    @When("^Fill new user confirmation password '(.*)'$")
     public void fillNewUserConfirmationPassword(String password) {
         loginPageSteps.fillNewUserConfirmationPassword(password);
     }
@@ -160,11 +155,6 @@ public class LoginPageStepDefinitions {
     @When("^Check create new user page elements$")
     public void checkCreateNewUserPageElements() {
         loginPageSteps.checkCreateNewUserPageElements();
-    }
-
-    @When("^Click create new user cancel btn$")
-    public void clickCreateNewUserCancelBtn() {
-        loginPageSteps.clickCreateNewUserCancelBtn();
     }
 
     @Then("^Check that login page opened$")
@@ -244,7 +234,6 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputFirstName(firstName);
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
-        loginPageSteps.clickSignUpButton();
         loginPageSteps.fillNewUserPassword(password);
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
@@ -259,5 +248,15 @@ public class LoginPageStepDefinitions {
     @And("^Wait for sign-in page anti-flicker script$")
     public void waitForSignInPageAntiFlickerScript() {
         loginPageSteps.waitForSignInPageAntiFlickerScript();
+    }
+
+    @When("^Click sign-up what we offer button$")
+    public void clickSignUpWhatWeOfferButton() {
+        loginPageSteps.clickSignUpWhatWeOfferButton();
+    }
+
+    @When("^Click sign-up about us button$")
+    public void clickSignUpAboutUsButton() {
+        loginPageSteps.clickSignUpAboutUsButton();
     }
 }

@@ -54,7 +54,7 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                     <h3>Using AI may be easier than you think:</h3>
                     <ul>
                         <li>Upload a zip file of the simulation model to Pathmind. <a href="https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip" download>Download zip file</a></li>
-                        <li>Write a reward function (It's simple, just copy and past this: reward = after.goalReached - 0.1; ).</li>
+                        <li>Write a reward function (It's simple, just copy and paste this: reward = after.goalReached - 0.1; ).</li>
                         <li>Once training is complete, click on “Export Policy”.</li>
                         <li>Load the trained AI into AnyLogic to see it perform.</li>
                     </ul>

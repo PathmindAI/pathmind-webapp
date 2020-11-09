@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -39,12 +38,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 	@Id("email")
 	private TextField email;
 
-	@Id("cancelSignInBtn")
-	private Button cancelSignInBtn;
-
-	@Id("signUp")
-	private Button signUp;
-
 	@Id("signIn")
 	private Button signIn;
 
@@ -56,15 +49,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
 	@Id("newPassNotes")
 	private VerticalLayout passwordValidationNotes;
-
-	@Id("emailPart")
-	private VerticalLayout emailPart;
-
-	@Id("passwordPart")
-	private VerticalLayout passwordPart;
-
-	@Id("policyText")
-	private Div policyText;
 
 	private final UserService userService;
 	private final EmailNotificationService emailNotificationService;
@@ -90,28 +74,16 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
     }
 
 	private void initView() {
-		emailPart.setSpacing(false);
-		emailPart.setPadding(false);
-		passwordPart.setSpacing(false);
-		passwordPart.setPadding(false);
 		passwordValidationNotes.setSpacing(false);
 		passwordValidationNotes.setPadding(false);
-
-		showPassword(false);
-
-		cancelSignInBtn.addClickListener(e -> showPassword(false));
-
-		signUp.addClickListener(e -> {
-			if (binder.validate().isOk()) {
-			    showPassword(true);
-			} 
-		});
+		newPassword.setRequired(true);
+		confirmNewPassword.setRequired(true);
 
 		signIn.addClickListener(e -> {
 			UserService.PasswordValidationResults validationResults = userService
 					.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-			if (validationResults.isOk()) {
+			if (binder.validate().isOk() && validationResults.isOk()) {
 				user.setPassword(newPassword.getValue());
 				user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
@@ -125,13 +97,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 				confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
 			}
         });
-	}
-
-	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a free trial!");
-		emailPart.setVisible(!showPasswordPart);
-		passwordPart.setVisible(showPasswordPart);
-		policyText.setVisible(showPasswordPart);
 	}
 
 	private void initBinder() {
@@ -149,7 +114,6 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
     }
 
     public interface Model extends TemplateModel {
-		void setTitle(String title);
 		void setIsEmailUsed(Boolean isEmailUsed);
 		void setContactLink(String contactLink);
 	}

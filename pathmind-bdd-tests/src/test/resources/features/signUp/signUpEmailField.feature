@@ -4,7 +4,7 @@ Feature: Sign Up email field
   Scenario Outline: Check create new user page wrong email alert
     Given Open page sign-up
     When Fill new user form with wrong email <Email>
-    When Create new user click sign up button
+    When Create new user click sign in button
     Then Check new user page email alert message
 
     Examples:
@@ -25,7 +25,7 @@ Feature: Sign Up email field
     When Fill new user form with first name AutotestFirstName
     When Fill new user form with last name AutotestLastName
     When Fill new user form with exist email evegeniy@skymind.io
-    When Create new user click sign up button
+    When Create new user click sign in button
     Then Create new user check that error message for email field shown This email is already used
     Then Create new user check that forgot password btn exist
 
@@ -34,6 +34,6 @@ Feature: Sign Up email field
     When Fill new user form with first name AutotestFirstName
     When Fill new user form with last name AutotestLastName
     When Fill new user form with exist email evegeniy@skymind.io
-    When Create new user click sign up button
+    When Create new user click sign in button
     When Create new user click reset password btn
     Then Check password recovery page elements
