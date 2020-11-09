@@ -35,6 +35,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	private PathmindUserDetails user;
 
 	private static final String EVENT_SIGN_UP = "Signed up";
+	private static final String EVENT_VERIFICATION_EMAIL = "Verification Email Sent";
 	private static final String EVENT_VERIFY_EMAIL = "Email Verified";
 	private static final String EVENT_LOGIN = "Signed in";
 	private static final String EVENT_IMPORT_MODEL = "Model Uploaded";
@@ -81,6 +82,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_SIGN_UP, additionalInfo);
 	}
 
+	public void verificationEmailSent() {
+		track(EVENT_VERIFICATION_EMAIL);
+	}
+
 	public void emailVerified(PathmindUser user) {
 		JsonObject additionalInfo = Json.createObject();
 		if (user != null) {
@@ -90,7 +95,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		}
 		track(EVENT_VERIFY_EMAIL, additionalInfo);
 	}
-
 
 	public void modelImported(boolean result) {
 		JsonObject additionalInfo = Json.createObject();
