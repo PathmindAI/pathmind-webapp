@@ -18,7 +18,8 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private List<String> definedHelpers = new ArrayList<>();
     private int numObservation;
     private String rewardVariableFunction;
-    private List<String> rewardVariables;
+    private List<String> rewardVariableNames;
+    private List<String> rewardVariableTypes;
     private List<String> observationNames;
     private List<String> observationTypes;
     private String modelType;
