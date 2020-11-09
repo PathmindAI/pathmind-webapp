@@ -28,7 +28,7 @@ public class VariableParserUtils {
         } else if (type.equals(NUMBER.toString()) || type.equals("double")) {
             return isArray ? NUMBER_ARRAY : NUMBER;
         } else if (type.equals(BOOLEAN.toString())) {
-            return BOOLEAN;
+            return isArray ? BOOLEAN_ARRAY : BOOLEAN;
         } else {
             throw new IllegalStateException(String.format("Not supported observation type: %s for %s", type, name));
         }
