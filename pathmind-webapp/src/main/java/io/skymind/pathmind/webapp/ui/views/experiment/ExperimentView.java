@@ -56,6 +56,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentChangedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
@@ -185,7 +186,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI(), this),
                 new ExperimentViewExperimentUpdatedSubscriber(() -> getUI(), this),
-                new ExperimentViewExperimentChangedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentChangedSubscriber(() -> getUI(), this),
                 observationsPanelExperimentChangedViewSubscriber);
     }
 
@@ -394,7 +395,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.experimentId = experimentId;
     }
 
-    private void setExperiment(Experiment selectedExperiment) {
+    public void setExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
         synchronized (experimentLock) {
@@ -566,25 +567,4 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return modelId;
     }
 
-    class ExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
-
-        public ExperimentViewExperimentChangedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUI(), ui -> setExperiment(event.getExperiment()));
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            return ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId()) &&
-                    !ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-
-        }
-    }
 }
