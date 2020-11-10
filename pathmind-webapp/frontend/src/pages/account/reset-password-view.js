@@ -1,5 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
+import "../../components/organisms/public-header-menu.js";
 
 /**
  * `forgot-password-view`
@@ -13,14 +14,9 @@ class ResetPasswordView extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view"></style>
+      <public-header-menu contactlink="{{contactLink}}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
-        <span class="welcome-text">Welcome to</span>
-        <img
-          class="logo"
-          src="frontend/images/pathmind-logo.svg"
-          alt="Pathmind"
-        />
         <vaadin-vertical-layout id="prePart" class="inner-content">
           <h3>Reset Your Password</h3>
           <p>
@@ -47,7 +43,6 @@ class ResetPasswordView extends PolymerElement {
 
         <vaadin-vertical-layout class="inner-content" id="postPart">
           <h3>Set a New Password</h3>
-          <p>Choose a new password</p>
           <vaadin-password-field
             id="newPassword"
             label="New Password"
@@ -67,7 +62,6 @@ class ResetPasswordView extends PolymerElement {
             >
           </vaadin-vertical-layout>
         </vaadin-vertical-layout>
-        <a class="support" href="{{contactLink}}">Contact Support</a>
       </div>
     </vaadin-horizontal-layout>`;
   }
