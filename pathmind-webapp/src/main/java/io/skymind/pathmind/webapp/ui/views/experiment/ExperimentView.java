@@ -29,13 +29,10 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -59,6 +56,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
@@ -185,7 +183,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
-                new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentCreatedSubscriber(() -> getUI(), this),
                 new ExperimentViewExperimentUpdatedSubscriber(() -> getUI(), this),
                 new ExperimentViewExperimentChangedSubscriber(() -> getUI()),
                 observationsPanelExperimentChangedViewSubscriber);
@@ -564,22 +562,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return experiment;
     }
 
-    protected class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
-
-        public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
-        }
-
+    public long getModelId() {
+        return modelId;
     }
 
     class ExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
