@@ -1,5 +1,7 @@
 package io.skymind.pathmind.bddtests;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import io.restassured.response.ValidatableResponse;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
@@ -39,8 +41,24 @@ public class ApiService extends PageObject {
             when().
             get(PATHMIND_API_URL + "projects").
             then().
-            log().
-            all().
             statusCode(200);
+    }
+
+    public JsonObject getProjectByProjectName(String projectName) {
+        JsonArray jsonArray = SerenityRest.
+            given().
+            header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
+            when().
+            get(PATHMIND_API_URL + "projects").
+            as(JsonArray.class);
+
+        JsonObject jsonObject = new JsonObject();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonObject = jsonArray.get(i).getAsJsonObject();
+            if (jsonObject.get("name").getAsString().equals(projectName)) {
+                return jsonObject;
+            }
+        }
+        return jsonObject;
     }
 }

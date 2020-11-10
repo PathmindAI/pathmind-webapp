@@ -20,4 +20,9 @@ public class ApiStepDefinitions {
     public void checkThatPathmindAPIReturnProjectWithName(String projectName) {
         apiSteps.checkThatPathmindAPIReturnProjectWithName(projectName + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @Then("^Check API /projects '(.*)' archived '(.*)'$")
+    public void checkAPIProjectsIdArchivedTrue(String projectName, String archived) {
+        apiSteps.checkAPIProjectsIdArchivedTrue(projectName + Serenity.sessionVariableCalled("randomNumber"), archived);
+    }
 }
