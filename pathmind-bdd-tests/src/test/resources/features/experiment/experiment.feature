@@ -82,17 +82,6 @@ Feature: Experiment page
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
-  Scenario: Check copy reward function button 4 variables reward
-    Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
-    When Click project save draft btn
-    When Click project start run button
-    When Click copy reward function btn and paste text to the notes field
-    Then Check experiment notes is reward += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchen cleanliness test1/nreward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2/nreward -= after.balkedCustomers - before.balkedCustomers; // Minimize balked customers test3/nreward -= after.avgServiceTime - before.avgServiceTime; // Minimize average service time test4
-    When Click in 'Stop Training' button
-    Then Check that the 'Stop Training' confirmation dialog is shown
-    When In confirmation dialog click in 'Stop Training' button
-
   Scenario: Check that experiment not shown in other projects
     Given Login to the pathmind
     When Create new CoffeeShop project with 4 variables reward function

@@ -1,10 +1,10 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers;
 
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 
 import java.util.Optional;
 import java.util.function.Supplier;

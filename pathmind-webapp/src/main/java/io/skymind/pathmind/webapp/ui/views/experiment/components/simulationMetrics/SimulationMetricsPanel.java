@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -27,8 +27,8 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 import lombok.extern.slf4j.Slf4j;
 
