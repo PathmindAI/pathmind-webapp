@@ -97,6 +97,9 @@
 }
 
 .experiment-view .reward-variable-name {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
     cursor: pointer;
 }
 

@@ -10,18 +10,22 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class ObservationsPanel extends VerticalLayout {
-    private ObservationsTable observationsTable;
 
-    public ObservationsPanel() {
-        this(false);
+    private ObservationsTable observationsTable;
+    private List<Observation> allObservations;
+
+    public ObservationsPanel(List<Observation> observations) {
+        this(observations, null, true);
     }
 
-    public ObservationsPanel(Boolean isReadOnly) {
+    public ObservationsPanel(List<Observation> observations, List<Observation> selectedObservations, Boolean isReadOnly) {
+        this.allObservations = observations;
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
@@ -30,16 +34,15 @@ public class ObservationsPanel extends VerticalLayout {
         setWidthFull();
         setPadding(false);
         setSpacing(false);
+        setupObservationTable(selectedObservations);
     }
 
-    public void setupObservationTable(Collection<Observation> allObservations, Collection<Observation> selection) {
+    private void setupObservationTable(Collection<Observation> selection) {
         observationsTable.setItems(new HashSet<>(allObservations));
-        if (selection != null) {
-            if (selection.isEmpty()) {
-                setSelectedObservations(allObservations);
-            } else {
-                setSelectedObservations(selection);
-            }
+        if (selection == null || selection.isEmpty()) {
+            setSelectedObservations(allObservations);
+        } else {
+            setSelectedObservations(selection);
         }
     }
 
@@ -64,5 +67,4 @@ public class ObservationsPanel extends VerticalLayout {
         wrapper.addClassName("observations-panel");
         return wrapper;
     }
-
 }

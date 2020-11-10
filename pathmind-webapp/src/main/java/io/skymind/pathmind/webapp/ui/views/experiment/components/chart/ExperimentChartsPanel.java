@@ -42,7 +42,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier) {
+    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables) {
 
         this.getUISupplier = getUISupplier;
 
@@ -68,6 +68,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
         addClassName("row-2-of-3");
 
         setAllMetricsChartPanelVisible(true);
+
+        setupCharts(experiment, rewardVariables);
     }
 
     private Tabs createChartTabs() {
@@ -125,16 +127,18 @@ public class ExperimentChartsPanel extends VerticalLayout {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
         allMetricsChartPanel.setVisible(true);
-        if(isRedraw)
+        if (isRedraw) {
             allMetricsChartPanel.redrawChart();
+        }
     }
 
     private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(true);
         allMetricsChartPanel.setVisible(false);
-        if(isRedraw)
-           policyChartPanel.redrawChart();
+        if (isRedraw) {
+            policyChartPanel.redrawChart();
+        }
     }
 
     private void setPlaceholderVisible() {
@@ -177,9 +181,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         @Override
         public void handleBusEvent(ExperimentChangedViewBusEvent event) {
             PushUtils.push(getUiSupplier(), () -> {
-                setExperiment(event.getExperiment());
-                experiment.updateTrainingStatus();
-                selectVisibleChart();
+                setupCharts(event.getExperiment(), rewardVariables);
             });
         }
     }

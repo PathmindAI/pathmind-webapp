@@ -72,7 +72,7 @@ public class ProjectsView extends PathMindDefaultView
 		HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
         headerWrapper.addClassName("page-content-header");
 
-        placeholder = new EmptyDashboardPlaceholder();
+        placeholder = new EmptyDashboardPlaceholder(segmentIntegrator);
 
 		gridWrapper = new ViewSection(
 				headerWrapper, 

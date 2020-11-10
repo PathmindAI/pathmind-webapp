@@ -1,12 +1,12 @@
 @experiment
 Feature: Experiment share
 
+  @tempEmail
   Scenario Outline: Check experiment share
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
-    When Fill new user password <Password>
-    When Fill new user confirmation password <Password>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -27,6 +27,7 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that shared experiment not shown to the normal users
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -38,9 +39,8 @@ Feature: Experiment share
     When Delete all cookies
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
-    When Fill new user password <Password>
-    When Fill new user confirmation password <Password>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -53,6 +53,7 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that NOT shared experiment not shown to the normal users
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
@@ -62,9 +63,8 @@ Feature: Experiment share
     When Delete all cookies
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
-    When Fill new user password <Password>
-    When Fill new user confirmation password <Password>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page
@@ -77,12 +77,12 @@ Feature: Experiment share
       | First Name | Last Name | Password   |
       | BDD        | Autotest  | Pass123456 |
 
+  @tempEmail
   Scenario Outline: Check that NOT shared experiment not shown to the support users
     Given Open page sign-up
     When Fill new user form with name <First Name>, <Last Name>
-    When Create new user click sign up button
-    When Fill new user password <Password>
-    When Fill new user confirmation password <Password>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
     When Create new user click sign in button
     When Get email and verify user email
     When Open pathmind page

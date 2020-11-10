@@ -1,6 +1,7 @@
 html {
     /* pathmind-colors */
     --pm-primary-color: #4f97aa;
+    --pm-primary-color-bright: #38a9c1;
     --pm-text-color: #1a2949;
     --pm-secondary-text-color: #888888;
     --pm-app-bg-color: #f6f8fa;
@@ -249,6 +250,17 @@ background-color: var(--pm-grey-color-light);
     width: 100%;
 }
 
+.panel-title-label {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
 .light-text-label {
     font-size: var(--lumo-font-size-m);
     color: var(--pm-orange-color);
@@ -492,6 +504,26 @@ account-view {
     }
 }
 
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
+        --lumo-font-size-xxl: 1.5rem;
+        --lumo-font-size-xl: 1.25rem;
+        --lumo-font-size-l: 1.125rem;
+        --lumo-font-size-m: 1rem;
+        --lumo-font-size-s: 0.925rem;
+        --lumo-font-size-xs: 0.875rem;
+        --lumo-space-xxl: 2rem;
+        --lumo-space-xl: 1.5rem;
+        --lumo-space-l: 1.25rem;
+        --lumo-space-m: 1rem;
+        --lumo-space-s: 0.75rem;
+        --lumo-space-xs: 0.5rem;
+        --lumo-space-xxs: 0.375rem;
+        --lumo-space-xxxs: 0.25rem;
+    }
+}
+
 /* General Helper Styles */
 .style-text-align-center {
     text-align: center;
@@ -515,6 +547,9 @@ account-view {
 .success-label {
     background: var(--lumo-success-color-10pct);
     color: var(--lumo-success-color);
+}
+.reason-why-the-training-stopped.success-label a {
+    color: var(--pm-grey-color-darker);
 }
 .success-label-bright-green {
     background: var(--pm-friendly-color-bright);

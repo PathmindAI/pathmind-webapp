@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -204,12 +205,11 @@ public class NewExperimentPage extends PageObject {
 
     public void openExperimentFromSidebarInTheNewTab(String experiment) {
         waitABit(2000);
-        Actions actions = new Actions(getDriver());
-        actions.keyDown(Keys.CONTROL).build().perform();
-        actions.moveToElement(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        waitABit(2500);
-        actions.click(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        actions.keyUp(Keys.CONTROL).build().perform();
+        WebDriver driver = getDriver();
+        WebElement experimentNavItemAnchor = utils.getExperimentNavbarItemByExperimentName(experiment, "a");
+        String linkPath = experimentNavItemAnchor.getAttribute("href");
+        String jsCommand = String.format("window.open('%s', '_blank');", linkPath);
+        ((JavascriptExecutor)driver).executeScript(jsCommand);
         waitABit(3000);
     }
 }
