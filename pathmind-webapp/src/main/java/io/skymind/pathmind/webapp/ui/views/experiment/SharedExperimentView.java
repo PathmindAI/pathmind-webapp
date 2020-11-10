@@ -1,22 +1,20 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.constants.ViewPermission;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.security.annotation.Permission;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.policy.ExportPolicyButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentCreatedSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
