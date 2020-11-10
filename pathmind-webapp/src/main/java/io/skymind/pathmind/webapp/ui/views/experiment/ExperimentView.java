@@ -59,6 +59,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
@@ -185,7 +186,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
                 new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI(), this),
                 new ExperimentViewExperimentChangedSubscriber(() -> getUI()),
                 observationsPanelExperimentChangedViewSubscriber);
     }
@@ -579,30 +580,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
         }
 
-    }
-
-    class ExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
-
-        public ExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            if (experiment.isArchived()) {
-                return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-            } else {
-                return ExperimentUtils.isSameModel(experiment, event.getModelId());
-            }
-        }
     }
 
     class ExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
