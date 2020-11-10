@@ -548,6 +548,9 @@ account-view {
     background: var(--lumo-success-color-10pct);
     color: var(--lumo-success-color);
 }
+.reason-why-the-training-stopped.success-label a {
+    color: var(--pm-grey-color-darker);
+}
 .success-label-bright-green {
     background: var(--pm-friendly-color-bright);
     color: black;
