@@ -11,10 +11,9 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.RewardVariableSelectedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -88,6 +87,10 @@ public class AllMetricsChartPanel extends VerticalLayout
         return experiment.getId();
     }
 
+    public Map getRewardVariableFilters() {
+        return rewardVariableFilters;
+    }
+
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
@@ -97,7 +100,7 @@ public class AllMetricsChartPanel extends VerticalLayout
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
                 new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier, this),
-                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier));
+                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier, this));
     }
 
     public void pushChartUpdate(Supplier<Optional<UI>> getUISupplier) {
@@ -107,22 +110,5 @@ public class AllMetricsChartPanel extends VerticalLayout
         });
     }
 
-    class AllMetricsChartPanelRewardVariableSelectedViewSubscriber extends RewardVariableSelectedViewSubscriber {
-
-        public AllMetricsChartPanelRewardVariableSelectedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(RewardVariableSelectedViewBusEvent event) {
-            if(event.isShow()) {
-                rewardVariableFilters.putIfAbsent(event.getRewardVariable().getId(), event.getRewardVariable());
-            } else {
-                rewardVariableFilters.remove(event.getRewardVariable().getId());
-            }
-
-            pushChartUpdate(getUiSupplier());
-        }
-    }
 }
 
