@@ -11,12 +11,10 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.RewardVariableSelectedViewSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelPolicyUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -64,7 +62,7 @@ public class AllMetricsChartPanel extends VerticalLayout
         }
     }
 
-    private void selectBestPolicy() {
+    public void selectBestPolicy() {
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
     }
@@ -78,6 +76,18 @@ public class AllMetricsChartPanel extends VerticalLayout
         chart.redraw();
     }
 
+    public Object getExperimentLock() {
+        return experimentLock;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    public long getExperimentId() {
+        return experiment.getId();
+    }
+
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
@@ -86,40 +96,15 @@ public class AllMetricsChartPanel extends VerticalLayout
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this,
-                new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier),
+                new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier, this),
                 new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier));
     }
 
-    private void pushChartUpdate(Supplier<Optional<UI>> getUISupplier) {
+    public void pushChartUpdate(Supplier<Optional<UI>> getUISupplier) {
         PushUtils.push(getUISupplier, () -> {
             updateChartData();
             redrawChart();
         });
-    }
-
-    class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
-
-        public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(PolicyUpdateBusEvent event) {
-            synchronized (experimentLock) {
-                // We need to check after the lock is acquired as changing experiments can take up to several seconds.
-                if (event.getExperimentId() != experiment.getId())
-                    return;
-
-                ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
-                selectBestPolicy();
-                pushChartUpdate(getUiSupplier());
-            }
-        }
-
-        @Override
-        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-            return experiment.getId() == event.getExperimentId();
-        }
     }
 
     class AllMetricsChartPanelRewardVariableSelectedViewSubscriber extends RewardVariableSelectedViewSubscriber {
