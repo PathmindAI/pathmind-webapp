@@ -105,7 +105,7 @@ then
         rm -rf /app/work/PPO/*
         touch restarting
         aws s3 cp restarting ${s3_url}/output/
-        aws s3 sync ${s3_url}/output/ /app/work/PPO/
+        aws s3 sync ${s3_url}/output/ /app/work/PPO/ --exclude ray_debug/*
         echo `ls -1 /app/work/PPO/ | wc -l`" files were downloaded from ${s3_url}/output/"
         aws s3 cp ${s3_url}/output/ ${s3_url}/output_backup_`date '+%Y%m%d%H%M'`/ --recursive
         aws s3 rm ${s3_url}/output/ --recursive
@@ -240,6 +240,8 @@ cd ..
 #Check errors
 bash errorCheck.sh
 #Upload the final files only after policy and checkpoint are uploaded
+mkdir ./work/PPO/ray_debug
+cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
 aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
 aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
 aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null

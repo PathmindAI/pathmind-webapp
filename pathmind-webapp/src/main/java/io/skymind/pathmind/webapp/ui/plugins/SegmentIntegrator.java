@@ -13,6 +13,7 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.Json;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.ArchivableData;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -45,8 +46,26 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_LOGIN);
 	}
 
-	public void userRegistered() {
-		track(EVENT_SIGN_UP);
+	public void userRegistered(PathmindUser user) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("userId", user.getId());
+        additionalInfo.put("userName", user.getName());
+        additionalInfo.put("userEmail", user.getEmail());
+		track(EVENT_SIGN_UP, additionalInfo);
+	}
+
+	public void verificationEmailSent() {
+		track(EVENT_VERIFICATION_EMAIL);
+	}
+
+	public void emailVerified(PathmindUser user) {
+		JsonObject additionalInfo = Json.createObject();
+		if (user != null) {
+			additionalInfo.put("userId", user.getId());
+			additionalInfo.put("userName", user.getName());
+			additionalInfo.put("userEmail", user.getEmail());
+		}
+		track(EVENT_VERIFY_EMAIL, additionalInfo);
 	}
 
 	public void modelImported(boolean result) {
@@ -55,12 +74,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 		track(EVENT_IMPORT_MODEL, additionalInfo);
 	}
 
-	public void projectCreated() {
-		track(EVENT_CREATE_PROJECT);
+	public void createFirstProject() {
+		track(EVENT_CREATE_FIRST_PROJECT);
 	}
 
-	public void rewardFuntionCreated() {
-		track(EVENT_CREATE_REWARD_FUNTION);
+	public void projectCreated() {
+		track(EVENT_CREATE_PROJECT);
 	}
 
 	public void policyExported() {
@@ -68,7 +87,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 	}
 
 	public void draftSaved() {
-		track(EVENT_SAVE_DRAFT);
+		track(EVENT_SAVE_EXPERIMENT_DRAFT);
 	}
 
 	public void modelDraftSaved() {
