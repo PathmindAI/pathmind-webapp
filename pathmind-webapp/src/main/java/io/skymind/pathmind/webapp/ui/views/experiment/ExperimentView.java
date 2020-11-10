@@ -29,13 +29,10 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -59,6 +56,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentChangedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
@@ -184,9 +184,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
                 experimentViewRunUpdateSubscriber,
-                new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentChangedSubscriber(() -> getUI()),
+                new ExperimentViewExperimentCreatedSubscriber(() -> getUI(), this),
+                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI(), this),
+                new ExperimentViewExperimentChangedSubscriber(() -> getUI(), this),
                 observationsPanelExperimentChangedViewSubscriber);
     }
 
@@ -395,7 +395,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.experimentId = experimentId;
     }
 
-    private void setExperiment(Experiment selectedExperiment) {
+    public void setExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
         synchronized (experimentLock) {
@@ -563,67 +563,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return experiment;
     }
 
-    protected class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
-
-        public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
-        }
-
+    public long getModelId() {
+        return modelId;
     }
 
-    class ExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
-
-        public ExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            if (experiment.isArchived()) {
-                return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-            } else {
-                return ExperimentUtils.isSameModel(experiment, event.getModelId());
-            }
-        }
-    }
-
-    class ExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
-
-        public ExperimentViewExperimentChangedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUI(), ui -> setExperiment(event.getExperiment()));
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            return ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId()) &&
-                    !ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-
-        }
-    }
 }
