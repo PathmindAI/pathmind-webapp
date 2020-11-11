@@ -25,10 +25,14 @@ public class VariableParserUtils {
 
         if (type.equals(INTEGER.toString())){
             return isArray ? INTEGER_ARRAY : INTEGER;
-        } else if (type.equals(NUMBER.toString()) || type.equals("double")) {
-            return isArray ? NUMBER_ARRAY : NUMBER;
         } else if (type.equals(BOOLEAN.toString())) {
             return isArray ? BOOLEAN_ARRAY : BOOLEAN;
+        } else if (type.equals(LONG.toString())) {
+            return isArray ? LONG_ARRAY : LONG;
+        } else if (type.equals(FLOAT.toString())) {
+            return isArray ? FLOAT_ARRAY : FLOAT;
+        } else if (type.equals(NUMBER.toString()) || type.equals("double")) {
+            return isArray ? NUMBER_ARRAY : NUMBER;
         } else {
             throw new IllegalStateException(String.format("Not supported observation type: %s for %s", type, name));
         }
