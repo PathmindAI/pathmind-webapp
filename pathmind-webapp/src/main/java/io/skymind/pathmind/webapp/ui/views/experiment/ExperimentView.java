@@ -440,6 +440,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
 		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
+        experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
