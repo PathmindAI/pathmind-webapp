@@ -22,7 +22,7 @@ public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscrib
                 return;
 
             ExperimentUtils.addOrUpdatePolicies(policyChartPanel.getExperiment(), event.getPolicies());
-            policyChartPanel.setExperiment(policyChartPanel.getExperiment());
+            policyChartPanel.updateChart();
         }
     }
 
