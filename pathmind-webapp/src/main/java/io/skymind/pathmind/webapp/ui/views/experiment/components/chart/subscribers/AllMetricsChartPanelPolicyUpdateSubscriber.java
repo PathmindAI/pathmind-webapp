@@ -14,7 +14,7 @@ public class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubs
 
     private AllMetricsChartPanel allMetricsChartPanel;
 
-    public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, AllMetricsChartPanel llMetricsChartPanel) {
+    public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, AllMetricsChartPanel allMetricsChartPanel) {
         super(getUISupplier);
         this.allMetricsChartPanel = allMetricsChartPanel;
     }
