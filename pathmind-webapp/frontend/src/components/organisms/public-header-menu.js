@@ -95,7 +95,7 @@ class PublicHeaderMenu extends PolymerElement {
                 }
             </style>
             <vaadin-horizontal-layout>
-                <a href="https://pathmind.com/" class="logo-wrapper"><img
+                <a href="{{logoLink}}" class="logo-wrapper"><img
                     class="logo"
                     src="frontend/images/pathmind-logo.svg"
                     alt="Pathmind logo"
@@ -121,10 +121,22 @@ class PublicHeaderMenu extends PolymerElement {
         `;
     }
 
+    getLogoLink(isLogoLinkToWebapp) {
+        return isLogoLinkToWebapp ? "/" : "https://pathmind.com/";
+    }
+
     static get properties() {
       return {
           contactlink: {
               type: String,
+          },
+          linktowebapp: {
+              type: Boolean,
+              value: false,
+          },
+          logoLink: {
+              type: String,
+              computed: 'getLogoLink(linktowebapp)',
           },
       };
     }

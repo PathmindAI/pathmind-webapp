@@ -225,8 +225,6 @@ public class LoginPage extends PageObject {
         assertThat(sendBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
         WebElement cancelBtnView = utils.expandRootElement(resetPassView.findElement(By.cssSelector("#cancelBtn")));
         assertThat(cancelBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
-        assertThat(resetPassView.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
-        assertThat(resetPassView.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
     }
 
     public void checkLoginPageElements() {
