@@ -363,14 +363,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return new ArrayList<>(auxObservations.values());
     }
 
-    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariableNames, List<String> rewardVaribaleTypes) {
+    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariableNames, List<String> rewardVariableTypes) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
         for (int i = 0; i < rewardVariableNames.size(); i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
             rv.setName(rewardVariableNames.get(i));
-            rv.setDataType(rewardVaribaleTypes.get(i));
+            rv.setDataType(rewardVariableTypes.get(i));
             rewardVariables.add(rv);
         }
         return rewardVariables;
