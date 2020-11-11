@@ -19,8 +19,8 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     private ExperimentView experimentView;
 
-    public ExperimentViewRunUpdateSubscriber(ExperimentView experimentView, Supplier<Optional<UI>> getUISupplier) {
-        super(getUISupplier);
+    public ExperimentViewRunUpdateSubscriber(ExperimentView experimentView) {
+        super();
         this.experimentView = experimentView;
     }
 
@@ -34,10 +34,8 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
             ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
             ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
-            PushUtils.push(getUiSupplier(), () -> {
-                        experimentView.updateDetailsForExperiment();
-                        experimentView.updateButtonEnablement();
-                    });
+            experimentView.updateDetailsForExperiment();
+            experimentView.updateButtonEnablement();
 
         } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experiment.getModelId())) {
             experimentView.updateExperimentComponents();

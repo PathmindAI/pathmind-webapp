@@ -1,25 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
 
     private List<Experiment> experiments;
     private Experiment experiment;
 
-    public NotificationExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments, Experiment experiment) {
-        super(getUISupplier);
+    public NotificationExperimentUpdatedSubscriber(List<Experiment> experiments, Experiment experiment) {
+        super();
         this.experiments = experiments;
         this.experiment = experiment;
     }
@@ -28,12 +24,10 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
         // We need to update the internal experiments list for the navigation logic.
         ExperimentUtils.updateExperimentInExperimentsList(experiments, event.getExperiment());
-        PushUtils.push(getUiSupplier().get(), ui -> {
-            if(event.isStartedTrainingEventType())
-                alertThenNotifyStarted(event);
-            if(event.isArchiveEventType())
-                alertThenNotifyArchive(event);
-        });
+        if(event.isStartedTrainingEventType())
+            alertThenNotifyStarted(event);
+        if(event.isArchiveEventType())
+            alertThenNotifyArchive(event);
     }
 
     private void alertThenNotifyArchive(ExperimentUpdatedBusEvent event) {

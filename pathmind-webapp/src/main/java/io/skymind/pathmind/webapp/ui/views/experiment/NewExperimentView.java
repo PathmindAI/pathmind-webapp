@@ -1,20 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import io.skymind.pathmind.webapp.ui.utils.*;
-import io.skymind.pathmind.db.dao.*;
-import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -28,18 +13,14 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
-import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
@@ -49,12 +30,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -64,18 +40,31 @@ import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.*;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentChangedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
@@ -155,13 +144,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void onAttach(AttachEvent event) {
         // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(() -> getUI(), observationDAO, observationsPanel);
+        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
         observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
 
-        EventBus.subscribe(this,
-                new NewExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new NewExperimentViewExperimentUpdatedSubscriber(() -> getUI()),
-                new NewExperimentViewExperimentChangedSubscriber(() -> getUI()),
+        EventBus.subscribe(this, () -> getUI(),
+                new NewExperimentViewExperimentCreatedSubscriber(this),
+                new NewExperimentViewExperimentUpdatedSubscriber(this),
+                new NewExperimentViewExperimentChangedSubscriber(this),
                 observationsPanelExperimentChangedViewSubscriber);
     }
 
@@ -389,7 +378,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
-	private void setExperiment(Experiment selectedExperiment) {
+	public void setExperiment(Experiment selectedExperiment) {
 		triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
 	}
 
@@ -511,11 +500,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return sb.toString();
     }
 
-    private boolean isSameExperiment(Experiment eventExperiment) {
-        return ExperimentUtils.isSameModel(experiment, eventExperiment.getModelId()) && experiment.equals(eventExperiment);
+    public Experiment getExperiment() {
+	    return experiment;
     }
 
-    private void updateExperimentComponents() {
+    public void updateExperimentComponents() {
         experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
@@ -532,64 +521,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             }
         }
     }
-
-    class NewExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
-
-        public NewExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId)) {
-                PushUtils.push(getUI(), ui -> {
-                    updateExperimentComponents();
-                });
-            }
-        }
+    public List<Experiment> getExperiments() {
+        return experiments;
     }
 
-    class NewExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
-
-        public NewExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            if (isSameExperiment(event.getExperiment()) && event.isStartedTrainingEventType()) {
-                navigateToExperimentView(event.getExperiment());
-            } else if (!isSameExperiment(event.getExperiment()) && ExperimentUtils.isSameModel(experiment, event.getModelId())) {
-                PushUtils.push(getUI(), ui -> {
-                    updateExperimentComponents();
-                });
-            }
-        }
-    }
-
-    class NewExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
-
-        public NewExperimentViewExperimentChangedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            if (ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId())) {
-                PushUtils.push(getUI(), ui -> {
-                    setExperiment(event.getExperiment());
-                });
-            }
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            return ExperimentUtils.isSameModel(experiment, event.getExperiment().getModelId()) &&
-                    !ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-
-        }
+    public long getModelId() {
+        return modelId;
     }
 }

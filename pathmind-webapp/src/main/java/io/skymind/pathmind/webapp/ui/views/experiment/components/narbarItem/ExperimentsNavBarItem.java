@@ -107,9 +107,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     protected void onAttach(AttachEvent attachEvent) {
         if(experiment.isArchived())
             return;
-        EventBus.subscribe(this,
-                new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this),
-                new NavBarItemRunUpdateSubscriber(getUISupplier, this));
+        EventBus.subscribe(this, getUISupplier,
+                new NavBarItemExperimentUpdatedSubscriber(this),
+                new NavBarItemRunUpdateSubscriber(this));
     }
 
     @Override

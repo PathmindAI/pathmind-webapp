@@ -1,21 +1,16 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.PolicyChartPanel;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
     private PolicyChartPanel policyChartPanel;
 
-    public PolicyChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, PolicyChartPanel policyChartPanel) {
-        super(getUISupplier);
+    public PolicyChartPanelPolicyUpdateSubscriber(PolicyChartPanel policyChartPanel) {
+        super();
         this.policyChartPanel = policyChartPanel;
     }
 
@@ -27,7 +22,7 @@ public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscrib
                 return;
 
             ExperimentUtils.addOrUpdatePolicies(policyChartPanel.getExperiment(), event.getPolicies());
-            PushUtils.push(getUiSupplier(), () -> policyChartPanel.updateChart());
+            policyChartPanel.updateChart();
         }
     }
 

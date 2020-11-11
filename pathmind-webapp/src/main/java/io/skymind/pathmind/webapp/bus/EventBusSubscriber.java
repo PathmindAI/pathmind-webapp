@@ -42,12 +42,11 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
         return getUiSupplier().get().isPresent();
     }
 
-    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier) {
-        this(uiSupplier, false);
+    public EventBusSubscriber() {
+        this(false);
     }
 
-    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier, boolean isListenForEventOnSameUI) {
-        this.uiSupplier = uiSupplier;
+    public EventBusSubscriber(boolean isListenForEventOnSameUI) {
         this.isListenForEventOnSameUI = isListenForEventOnSameUI;
     }
 
@@ -69,6 +68,10 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
 
     public Supplier<Optional<UI>> getUiSupplier() {
         return uiSupplier;
+    }
+
+    public void setUiSupplier(Supplier<Optional<UI>> uiSupplier) {
+        this.uiSupplier = uiSupplier;
     }
 
     public boolean filterSameUI(T event) {

@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -32,11 +31,9 @@ import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.CodeViewer;
+import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
@@ -75,7 +72,6 @@ import org.springframework.beans.factory.annotation.Value;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
@@ -168,25 +164,26 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected ExperimentView() {
         super();
         addClassName("experiment-view");
-        experimentViewRunUpdateSubscriber = new ExperimentViewRunUpdateSubscriber(this, () -> getUI());
+        experimentViewRunUpdateSubscriber = new ExperimentViewRunUpdateSubscriber(this);
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getViewSubscribers());
+        EventBus.subscribe(this, () -> getUI(),
+                getViewSubscribers());
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(() -> getUI(), observationDAO, observationsPanel);
+        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
         observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
 
         return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
+                new ExperimentViewPolicyUpdateSubscriber(this),
                 experimentViewRunUpdateSubscriber,
-                new ExperimentViewExperimentCreatedSubscriber(() -> getUI(), this),
-                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI(), this),
-                new ExperimentViewExperimentChangedSubscriber(() -> getUI(), this),
+                new ExperimentViewExperimentCreatedSubscriber(this),
+                new ExperimentViewExperimentUpdatedSubscriber(this),
+                new ExperimentViewExperimentChangedSubscriber(this),
                 observationsPanelExperimentChangedViewSubscriber);
     }
 

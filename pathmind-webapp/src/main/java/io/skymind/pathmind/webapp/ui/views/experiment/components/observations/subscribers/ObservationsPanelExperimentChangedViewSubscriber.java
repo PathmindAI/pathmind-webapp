@@ -1,16 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * This one is odd because we are re-using the subscriber in different views and in one view we need the experimentId whereas the other view
@@ -25,8 +21,8 @@ public class ObservationsPanelExperimentChangedViewSubscriber extends Experiment
 
     private long experimentId;
 
-    public ObservationsPanelExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier, ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
-        super(getUISupplier);
+    public ObservationsPanelExperimentChangedViewSubscriber(ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
+        super();
         this.observationsPanel = observationsPanel;
         this.observationDAO = observationDAO;
     }
@@ -41,8 +37,6 @@ public class ObservationsPanelExperimentChangedViewSubscriber extends Experiment
         observationDAO.saveExperimentObservations(experimentId, observationsPanel.getSelectedObservations());
         experimentId = event.getExperiment().getId();
         List<Observation> experimentObservations = observationDAO.getObservationsForExperiment(event.getExperiment().getId());
-        PushUtils.push(getUiSupplier(), () -> {
-            observationsPanel.setSelectedObservations(experimentObservations);
-        });
+        observationsPanel.setSelectedObservations(experimentObservations);
     }
 }

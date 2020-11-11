@@ -13,15 +13,12 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.UserUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.UserUpdateSubscriber;
 import io.skymind.pathmind.webapp.security.VaadinSecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.SearchBox;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.layouts.components.subscribers.AccountHeaderUserUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
-
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsView;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +31,10 @@ public class AccountHeaderPanel extends HorizontalLayout
 	private PathmindUser user;
 	private SearchBox searchBox;
 
-	public AccountHeaderPanel(PathmindUser user, FeatureManager featureManager) {
+    private Supplier<Optional<UI>> getUISupplier;
+
+	public AccountHeaderPanel(Supplier<Optional<UI>> getUISupplier, PathmindUser user, FeatureManager featureManager) {
+	    this.getUISupplier = getUISupplier;
 		this.user = user;
 		addClassName("nav-account-links");
 
@@ -48,7 +48,7 @@ public class AccountHeaderPanel extends HorizontalLayout
 		menuBar.setThemeName("tertiary");
 		menuBar.addClassName("account-menu");
 
-		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER), user));
+		MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER)));
 		account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
 		if (VaadinSecurityUtils.isAuthorityGranted(SettingsView.class)) {
             account.getSubMenu().addItem("Settings", e -> getUI().ifPresent(ui -> ui.navigate(SettingsView.class)));
@@ -56,15 +56,15 @@ public class AccountHeaderPanel extends HorizontalLayout
 		account.getSubMenu().addItem("Sign out", e -> getUI().ifPresent(ui -> VaadinUtils.signout(ui, false)));
 	}
 
-	private HorizontalLayout createItem(Icon icon, PathmindUser user) {
-        updateData(user);
+	private HorizontalLayout createItem(Icon icon) {
+        updateComponent();
 		HorizontalLayout hl = WrapperUtils.wrapWidthFullHorizontal(icon, usernameLabel);
 		return hl;
 	}
 
-	private void updateData(PathmindUser pathmindUser) {
+	public void updateComponent() {
 		if (usernameLabel != null) {
-			usernameLabel.setText(getUsername(pathmindUser));
+			usernameLabel.setText(getUsername(user));
 		}
 	}
 
@@ -79,9 +79,9 @@ public class AccountHeaderPanel extends HorizontalLayout
 
 	@Override
 	protected void onAttach(AttachEvent event) {
-		EventBus.subscribe(this, new AccountHeaderUserUpdateSubscriber(() -> getUI()));
+		EventBus.subscribe(this, getUISupplier,
+                new AccountHeaderUserUpdateSubscriber(this));
 	}
-
 
     public void clearSearchBoxValue() {
 	    if (searchBox != null) {
@@ -97,21 +97,11 @@ public class AccountHeaderPanel extends HorizontalLayout
 	    return searchBox.getValue();
     }
 
-    class AccountHeaderUserUpdateSubscriber extends UserUpdateSubscriber {
+    public void setUser(PathmindUser user) {
+        this.user = user;
+    }
 
-        public AccountHeaderUserUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(UserUpdateBusEvent event) {
-            user = event.getPathmindUser();
-            PushUtils.push(getUiSupplier(), () -> updateData(event.getPathmindUser()));
-        }
-
-        @Override
-        public boolean filterBusEvent(UserUpdateBusEvent event) {
-            return user.getId() == event.getPathmindUser().getId();
-        }
-   }
+    public PathmindUser getUser() {
+        return user;
+    }
 }

@@ -56,7 +56,7 @@ public class ExperimentsNavBar extends VerticalLayout
 	    this.modelId = selectedExperiment.getModelId();
         this.segmentIntegrator = segmentIntegrator;
 
-        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(getUISupplier, experiments, selectedExperiment);
+        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(experiments, selectedExperiment);
 
         rowsWrapper = new VerticalLayout();
 		rowsWrapper.addClassName("experiments-navbar-items");
@@ -76,13 +76,13 @@ public class ExperimentsNavBar extends VerticalLayout
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         if(selectedExperiment.isArchived()) {
-            EventBus.subscribe(this,
+            EventBus.subscribe(this, getUISupplier,
                     notificationExperimentUpdatedSubscriber);
         } else {
-            EventBus.subscribe(this,
-                    new NavBarExperimentSelectedSubscriber(getUISupplier, this),
-                    new NavBarExperimentUpdatedSubscriber(getUISupplier, this),
-                    new NavBarExperimentCreatedSubscriber(getUISupplier, this),
+            EventBus.subscribe(this, getUISupplier,
+                    new NavBarExperimentSelectedSubscriber(this),
+                    new NavBarExperimentUpdatedSubscriber(this),
+                    new NavBarExperimentCreatedSubscriber(this),
                     notificationExperimentUpdatedSubscriber);
         }
     }

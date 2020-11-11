@@ -98,17 +98,14 @@ public class AllMetricsChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this,
-                new AllMetricsChartPanelPolicyUpdateSubscriber(getUISupplier, this),
-                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(getUISupplier, this));
+        EventBus.subscribe(this, getUISupplier,
+                new AllMetricsChartPanelPolicyUpdateSubscriber(this),
+                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(this));
     }
 
-    public void pushChartUpdate(Supplier<Optional<UI>> getUISupplier) {
-        PushUtils.push(getUISupplier, () -> {
-            updateChartData();
-            redrawChart();
-        });
+    public void updateChart() {
+        updateChartData();
+        redrawChart();
     }
-
 }
 
