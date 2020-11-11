@@ -51,7 +51,7 @@ public class MainLayout extends AppLayout implements PageConfigurator
 		boolean hasLoginUser = user != null && user.getUser() != null;
 		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
 		if (hasLoginUser) {
-            accountHeaderPanel = new AccountHeaderPanel(user.getUser(), featureManager);
+            accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
 			addToNavbar(accountHeaderPanel);
 		}
 

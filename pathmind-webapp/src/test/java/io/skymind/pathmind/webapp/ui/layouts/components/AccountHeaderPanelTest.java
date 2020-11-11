@@ -18,6 +18,8 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Optional;
+
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.junit.Assert.assertEquals;
 
@@ -35,7 +37,7 @@ public class AccountHeaderPanelTest {
         TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        accountHeaderPanel = new AccountHeaderPanel(user, new FeatureManager(false));
+        accountHeaderPanel = new AccountHeaderPanel(() -> Optional.of(ui), user, new FeatureManager(false));
         ui = KaribuUtils.setup(accountHeaderPanel);
     }
 

@@ -14,8 +14,8 @@ public class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreated
 
     private ExperimentView experimentView;
 
-    public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier, ExperimentView experimentView) {
-        super(getUISupplier);
+    public ExperimentViewExperimentCreatedSubscriber(ExperimentView experimentView) {
+        super();
         this.experimentView = experimentView;
     }
 

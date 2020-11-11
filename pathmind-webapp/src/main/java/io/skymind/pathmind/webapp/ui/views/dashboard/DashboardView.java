@@ -1,17 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -23,36 +11,34 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
-import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
+import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataProvider;
+import io.skymind.pathmind.webapp.ui.views.dashboard.subscribers.DashboardViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView
@@ -192,7 +178,8 @@ public class DashboardView extends PathMindDefaultView
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, new DashboardViewRunUpdateSubscriber(() -> getUI()));
+        EventBus.subscribe(this, () -> getUI(),
+                new DashboardViewRunUpdateSubscriber(this));
     }
 
     @Override
@@ -200,20 +187,11 @@ public class DashboardView extends PathMindDefaultView
         EventBus.unsubscribe(this);
     }
 
-    class DashboardViewRunUpdateSubscriber extends RunUpdateSubscriber {
+    public void refreshExperiment(long experimentId) {
+        dataProvider.refreshItemByExperiment(experimentId);
+    }
 
-        public DashboardViewRunUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> dataProvider.refreshItemByExperiment(event.getExperiment().getId()));
-        }
-
-        @Override
-        public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return event.getProject().getPathmindUserId() == loggedUserId;
-        }
+    public long getLoggedUserId() {
+        return loggedUserId;
     }
 }

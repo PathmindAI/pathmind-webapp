@@ -59,7 +59,8 @@ public class PolicyChartPanel extends VerticalLayout
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, new PolicyChartPanelPolicyUpdateSubscriber(getUISupplier, this));
+        EventBus.subscribe(this, getUISupplier,
+                new PolicyChartPanelPolicyUpdateSubscriber(this));
     }
 
 }

@@ -1,10 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
-
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -14,8 +9,8 @@ public class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubs
 
     private AllMetricsChartPanel allMetricsChartPanel;
 
-    public AllMetricsChartPanelPolicyUpdateSubscriber(Supplier<Optional<UI>> getUISupplier, AllMetricsChartPanel llMetricsChartPanel) {
-        super(getUISupplier);
+    public AllMetricsChartPanelPolicyUpdateSubscriber(AllMetricsChartPanel allMetricsChartPanel) {
+        super();
         this.allMetricsChartPanel = allMetricsChartPanel;
     }
 
@@ -28,7 +23,7 @@ public class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubs
 
             ExperimentUtils.addOrUpdatePolicies(allMetricsChartPanel.getExperiment(), event.getPolicies());
             allMetricsChartPanel.selectBestPolicy();
-            allMetricsChartPanel.pushChartUpdate(getUiSupplier());
+            allMetricsChartPanel.updateChart();
         }
     }
 

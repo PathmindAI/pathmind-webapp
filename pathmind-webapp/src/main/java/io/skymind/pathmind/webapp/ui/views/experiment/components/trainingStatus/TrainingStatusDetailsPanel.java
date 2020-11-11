@@ -53,10 +53,10 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this,
-                new TrainingStatusDetailsPanelRunUpdateSubscriber(getUISupplier, this),
-                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(getUISupplier, this),
-                new TrainingStatusDetailsPanelExperimentChangedViewSubscriber(getUISupplier, this));
+        EventBus.subscribe(this, getUISupplier,
+                new TrainingStatusDetailsPanelRunUpdateSubscriber(this),
+                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(this),
+                new TrainingStatusDetailsPanelExperimentChangedViewSubscriber(this));
 
         // This is required because ui.navigate() has a different lifecycle and so calls onAttach() before the
         // experiment has loaded unlike a page refresh

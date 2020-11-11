@@ -24,8 +24,8 @@ public class ExperimentNotesField extends NotesField {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this,
-                new ExperimentNotesFieldExperimentChangedViewSubscriber(getUISupplier, this));
+        EventBus.subscribe(this, getUISupplier,
+                new ExperimentNotesFieldExperimentChangedViewSubscriber(this));
     }
 
     @Override

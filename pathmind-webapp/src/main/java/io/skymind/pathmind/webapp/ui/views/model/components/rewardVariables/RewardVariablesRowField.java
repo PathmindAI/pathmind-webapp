@@ -14,13 +14,11 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.subscribers.RewardVariablesRowFieldExperimentChangedViewSubscriber;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -44,6 +42,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
     private boolean isShow = true;
 
     private Supplier<Optional<UI>> getUISupplier;
+
     protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
         this.getUISupplier = getUISupplier;
         this.rewardVariable = rv;
@@ -108,8 +107,8 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this,
-                new RewardVariablesRowFieldExperimentChangedViewSubscriber(getUISupplier));
+        EventBus.subscribe(this, getUISupplier,
+                new RewardVariablesRowFieldExperimentChangedViewSubscriber(this));
     }
 
     @Override
@@ -157,17 +156,5 @@ public class RewardVariablesRowField extends HorizontalLayout {
         getRewardVariableSpan().getElement().setAttribute("chosen", true);
         isShow = true;
         EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
-    }
-
-    class RewardVariablesRowFieldExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
-
-        public RewardVariablesRowFieldExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> reset());
-        }
     }
 }
