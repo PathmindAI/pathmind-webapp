@@ -332,8 +332,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         if (rewardFunctionEditor == null || observationsPanel == null) {
             return false;
         }
-        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) &&
-                observationsPanel.getSelectedObservations() != experimentObservations;
+        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
+                !observationsPanel.getSelectedObservations().equals(experimentObservations);
     }
 
     private void setButtonsEnablement() {
