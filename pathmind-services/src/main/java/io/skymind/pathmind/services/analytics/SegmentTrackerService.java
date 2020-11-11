@@ -25,8 +25,8 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_TRA
 @Slf4j
 public class SegmentTrackerService {
 	
-	private Analytics analytics;
-	private boolean enabled;
+	private final Analytics analytics;
+	private final boolean enabled;
 	
 	public SegmentTrackerService(@Value("${skymind.segment.server.source.key}") String key, @Value("${skymind.segment.enabled}") Boolean enabled) {
 		analytics = Analytics.builder(key).build();
