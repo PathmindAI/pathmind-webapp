@@ -209,4 +209,9 @@ public class ExperimentPageSteps {
     public void saveExperimentUrlIntoTheVariable(String variable) {
         Serenity.setSessionVariable(variable).to(experimentPage.getDriver().getCurrentUrl());
     }
+
+    @Step
+    public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
+        experimentPage.checkExperimentPageObservationIsSelected(observation, isSelected);
+    }
 }

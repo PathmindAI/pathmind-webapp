@@ -219,4 +219,9 @@ public class ExperimentStepDefinitions {
     public void saveExperimentUrlIntoTheVariable(String variable) {
         experimentPageSteps.saveExperimentUrlIntoTheVariable(variable);
     }
+
+    @Then("^Check experiment page observation '(.*)' is selected '(.*)'$")
+    public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
+        experimentPageSteps.checkExperimentPageObservationIsSelected(observation, isSelected);
+    }
 }
