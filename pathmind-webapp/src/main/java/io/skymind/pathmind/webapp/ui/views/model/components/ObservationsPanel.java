@@ -8,6 +8,7 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -46,8 +47,8 @@ public class ObservationsPanel extends VerticalLayout {
         }
     }
 
-    public Collection<Observation> getSelectedObservations() {
-        return observationsTable.getValue();
+    public List<Observation> getSelectedObservations() {
+        return new ArrayList<>(observationsTable.getValue());
     }
 
     public void setSelectedObservations(Collection<Observation> observations) {
