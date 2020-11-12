@@ -139,4 +139,9 @@ public class NewExperimentStepDefinition {
     public void clickSideBarNewExperimentBtn() {
         newExperimentSteps.clickSideBarNewExperimentBtn();
     }
+
+    @When("^Click new experiment page observation checkbox '(.*)'$")
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        newExperimentSteps.clickNewExperimentPageObservationCheckbox(observation);
+    }
 }

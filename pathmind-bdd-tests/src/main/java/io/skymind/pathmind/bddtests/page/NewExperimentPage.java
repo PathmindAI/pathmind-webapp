@@ -209,7 +209,11 @@ public class NewExperimentPage extends PageObject {
         WebElement experimentNavItemAnchor = utils.getExperimentNavbarItemByExperimentName(experiment, "a");
         String linkPath = experimentNavItemAnchor.getAttribute("href");
         String jsCommand = String.format("window.open('%s', '_blank');", linkPath);
-        ((JavascriptExecutor)driver).executeScript(jsCommand);
+        ((JavascriptExecutor) driver).executeScript(jsCommand);
         waitABit(3000);
+    }
+
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).click();
     }
 }
