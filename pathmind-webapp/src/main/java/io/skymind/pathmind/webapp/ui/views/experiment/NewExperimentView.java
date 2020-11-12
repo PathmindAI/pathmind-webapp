@@ -129,9 +129,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs pageBreadcrumbs;
     private Binder<Experiment> binder;
 
-    // Needed because it's a special case where different views use different data id's for the subscribers.
-    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
-
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -143,15 +140,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
-        // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
-        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
-
         EventBus.subscribe(this, () -> getUI(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentChangedSubscriber(this),
-                observationsPanelExperimentChangedViewSubscriber);
+                new ObservationsPanelExperimentChangedViewSubscriber(() -> getExperiment().getId(), observationDAO, observationsPanel));
     }
 
     @Override
