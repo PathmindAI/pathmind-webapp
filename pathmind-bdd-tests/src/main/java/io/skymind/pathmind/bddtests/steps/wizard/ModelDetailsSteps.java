@@ -26,4 +26,11 @@ public class ModelDetailsSteps {
     public void checkThatModelSuccessfullyUploaded() {
         modelDetailsPage.checkThatModelSuccessfullyUploaded();
     }
+
+    @Step
+    public void checkObservationsListContains(String[] observations) {
+        for (int i = 0; i < observations.length; i++) {
+            modelDetailsPage.checkObservationsListContains(observations[i]);
+        }
+    }
 }
