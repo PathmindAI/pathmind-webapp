@@ -56,19 +56,13 @@ public class AllMetricsChartPanel extends VerticalLayout
             rewardVariables.stream().forEach(rewardVariable ->
                     rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone()));
             selectBestPolicy();
-            updateChartData();
-            redrawChart();
+            updateChart();
         }
     }
 
     public void selectBestPolicy() {
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
-    }
-
-    private void updateChartData() {
-        List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-        chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
     }
 
     public void redrawChart() {
@@ -104,7 +98,10 @@ public class AllMetricsChartPanel extends VerticalLayout
     }
 
     public void updateChart() {
-        updateChartData();
+        // Update chart data
+        List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
+        chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
+
         redrawChart();
     }
 }

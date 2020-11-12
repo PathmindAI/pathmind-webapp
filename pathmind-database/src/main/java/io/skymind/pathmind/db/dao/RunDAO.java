@@ -33,12 +33,12 @@ public class RunDAO {
         return RunRepository.getRunsForExperiment(ctx, experiment.getId());
     }
 
-    public Run createRun(DSLContext transactionCtx, Experiment experiment, RunType runType){
-    	RunRepository.clearNotificationSentInfo(transactionCtx, experiment.getId());
+    public Run createRun(DSLContext transactionCtx, Experiment experiment, RunType runType) {
+        RunRepository.clearNotificationSentInfo(transactionCtx, experiment.getId());
         return RunRepository.createRun(transactionCtx, experiment, runType);
     }
 
-    public void markAsStarting(DSLContext transactionCtx, long runId, String jobId){
+    public void markAsStarting(DSLContext transactionCtx, long runId, String jobId) {
         RunRepository.markAsStarting(transactionCtx, runId, jobId);
     }
 
@@ -105,44 +105,44 @@ public class RunDAO {
     }
 
     private void updatePolicies(Run run, List<Policy> policies, DSLContext transactionCtx) {
-    	// We need this line because the policies are generated from the progress string from the backend and are NOT retrieved from the database.
-    	policies.forEach(policy -> policy.setRunId(run.getId()));
-    	
-    	PolicyRepository.updateOrInsertPolicies(transactionCtx, policies);
-    	loadPersistedPolicies(transactionCtx, policies, run);
+        // We need this line because the policies are generated from the progress string from the backend and are NOT retrieved from the database.
+        policies.forEach(policy -> policy.setRunId(run.getId()));
+
+        PolicyRepository.updateOrInsertPolicies(transactionCtx, policies);
+        loadPersistedPolicies(transactionCtx, policies, run);
 
         List<Long> policyIds = policies.stream().mapToLong(Policy::getId).boxed().collect(Collectors.toList());
 
-    	// Find max reward score iterations in DB, and calculate new reward scores to be inserted into db
-    	Map<Long, Integer> maxRewardScoreIterations = RewardScoreRepository.getMaxRewardScoreIterationForPolicies(transactionCtx, policyIds);
-    	Map<Long, List<RewardScore>> rewardScoresMap = new HashMap<>();
-    	policies.forEach(policy -> {
-    		Integer maxRewardScoreIteration = maxRewardScoreIterations.getOrDefault(policy.getId(), 0);
-    		List<RewardScore> newRewardScores = policy.getScores().stream()
-					.filter(score -> score.getIteration() > maxRewardScoreIteration)
-					.collect(Collectors.toList());
-			rewardScoresMap.put(policy.getId(), newRewardScores);
-    	});
-
-    	// Insert all new reward scores in a single batch
-    	if (!rewardScoresMap.isEmpty()) {
-    		RewardScoreRepository.insertRewardScores(transactionCtx, rewardScoresMap);
-    	}
-
-    	// Find max metric iteration in DB, and calculate new metrics to be inserted into db
-        Map<Long, Integer> maxMetricsIterations = MetricsRepository.getMaxMetricsIterationForPolicies(transactionCtx, policyIds);
-    	Map<Long, List<Metrics>> metricsMap = new HashMap<>();
-    	policies.forEach(policy -> {
-    	    Integer maxMetricsIteration = maxMetricsIterations.getOrDefault(policy.getId(), 0);
-    	    if (policy.getMetrics() != null) {
-                List<Metrics> newMetrics = policy.getMetrics().stream()
-                    .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
+        // Find max reward score iterations in DB, and calculate new reward scores to be inserted into db
+        Map<Long, Integer> maxRewardScoreIterations = RewardScoreRepository.getMaxRewardScoreIterationForPolicies(transactionCtx, policyIds);
+        Map<Long, List<RewardScore>> rewardScoresMap = new HashMap<>();
+        policies.forEach(policy -> {
+            Integer maxRewardScoreIteration = maxRewardScoreIterations.getOrDefault(policy.getId(), 0);
+            List<RewardScore> newRewardScores = policy.getScores().stream()
+                    .filter(score -> score.getIteration() > maxRewardScoreIteration)
                     .collect(Collectors.toList());
+            rewardScoresMap.put(policy.getId(), newRewardScores);
+        });
+
+        // Insert all new reward scores in a single batch
+        if (!rewardScoresMap.isEmpty()) {
+            RewardScoreRepository.insertRewardScores(transactionCtx, rewardScoresMap);
+        }
+
+        // Find max metric iteration in DB, and calculate new metrics to be inserted into db
+        Map<Long, Integer> maxMetricsIterations = MetricsRepository.getMaxMetricsIterationForPolicies(transactionCtx, policyIds);
+        Map<Long, List<Metrics>> metricsMap = new HashMap<>();
+        policies.forEach(policy -> {
+            Integer maxMetricsIteration = maxMetricsIterations.getOrDefault(policy.getId(), 0);
+            if (policy.getMetrics() != null) {
+                List<Metrics> newMetrics = policy.getMetrics().stream()
+                        .filter(metrics -> metrics.getIteration() > maxMetricsIteration)
+                        .collect(Collectors.toList());
                 metricsMap.put(policy.getId(), newMetrics);
             }
         });
 
-    	// Insert all new metrics in a single batch
+        // Insert all new metrics in a single batch
         if (!metricsMap.isEmpty()) {
             MetricsRepository.insertMetrics(transactionCtx, metricsMap);
         }
@@ -154,8 +154,8 @@ public class RunDAO {
             Integer maxMetricsRawIteration = maxMetricsRawIterations.getOrDefault(policy.getId(), 0);
             if (policy.getMetricsRaws() != null) {
                 List<MetricsRaw> newMetricsRaw = policy.getMetricsRaws().stream()
-                    .filter(metricsRaw -> metricsRaw.getIteration() > maxMetricsRawIteration)
-                    .collect(Collectors.toList());
+                        .filter(metricsRaw -> metricsRaw.getIteration() > maxMetricsRawIteration)
+                        .collect(Collectors.toList());
                 metricsRawMap.put(policy.getId(), newMetricsRaw);
             }
         });
@@ -198,18 +198,18 @@ public class RunDAO {
     }
 
     private void loadPersistedPolicies(DSLContext transactionCtx, List<Policy> policies, Run run) {
-    	List<String> externalIds = policies.stream().map(Policy::getExternalId).collect(Collectors.toList());
-		List<Policy> persistedPolicies = PolicyRepository.getPoliciesForRunAndExternalIds(transactionCtx, run.getId(), externalIds);
-		policies.forEach(policy -> {
-			persistedPolicies.stream()
-				.filter(pp -> pp.getRunId() == policy.getRunId() && Objects.equals(pp.getExternalId(), policy.getExternalId()))
-				.findAny()
-				.ifPresent(pp -> {
-					PolicyUtils.loadPolicyDataModel(policy, pp.getId(), run);
-				});
-		});
-		
-	}
+        List<String> externalIds = policies.stream().map(Policy::getExternalId).collect(Collectors.toList());
+        List<Policy> persistedPolicies = PolicyRepository.getPoliciesForRunAndExternalIds(transactionCtx, run.getId(), externalIds);
+        policies.forEach(policy -> {
+            persistedPolicies.stream()
+                    .filter(pp -> pp.getRunId() == policy.getRunId() && Objects.equals(pp.getExternalId(), policy.getExternalId()))
+                    .findAny()
+                    .ifPresent(pp -> {
+                        PolicyUtils.loadPolicyDataModel(policy, pp.getId(), run);
+                    });
+        });
+
+    }
 
     public List<String> unfinishedPolicyIds(long runId) {
         return PolicyRepository.getPoliciesForRun(ctx, runId).stream()
@@ -228,7 +228,7 @@ public class RunDAO {
     }
 
     public List<Policy> updateRun(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies,
-            List<PolicyUpdateInfo> policiesUpdateInfo, List<String> validExternalIds) {
+                                  List<PolicyUpdateInfo> policiesUpdateInfo, List<String> validExternalIds) {
         return ctx.transactionResult(configuration -> {
             List<Policy> policiesToRaiseUpdateEvent = new ArrayList<>();
             DSLContext transactionCtx = DSL.using(configuration);
@@ -240,17 +240,17 @@ public class RunDAO {
             updateExperimentTrainingStatus(transactionCtx, run);
 
             if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
-            	policiesUpdateInfo.forEach(policyInfo -> {
-            		Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
-            		PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
-            		
-            		Optional.ofNullable(getPolicy(transactionCtx, policyId)).ifPresent(policy -> {
-            			policy.setHasFile(true);
-            			policiesToRaiseUpdateEvent.add(policy);
-            		});
-            	});
-            	
-            	cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
+                policiesUpdateInfo.forEach(policyInfo -> {
+                    Long policyId = PolicyRepository.getPolicyIdByRunIdAndExternalId(transactionCtx, run.getId(), policyInfo.getName());
+                    PolicyRepository.setHasFileAndCheckPoint(transactionCtx, policyId, true, policyInfo.getCheckpointFileKey());
+
+                    Optional.ofNullable(getPolicy(transactionCtx, policyId)).ifPresent(policy -> {
+                        policy.setHasFile(true);
+                        policiesToRaiseUpdateEvent.add(policy);
+                    });
+                });
+
+                cleanUpInvalidPolicies(transactionCtx, run.getId(), validExternalIds);
             }
             return policiesToRaiseUpdateEvent;
         });
@@ -272,7 +272,7 @@ public class RunDAO {
         if (experiment.isHasGoals()) {
             List<RewardVariable> rewardVariablesForModel =
                     RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-            for (RewardVariable rv: rewardVariablesForModel) {
+            for (RewardVariable rv : rewardVariablesForModel) {
                 if (rv.getGoalConditionType() != null) {
                     rewardVariablesWithGoals.add(rv);
                 }
@@ -286,7 +286,7 @@ public class RunDAO {
             PolicyUtils.updateSimulationMetricsData(bestPolicy);
             if (experiment.isHasGoals()) {
                 int goalsReached = 0;
-                for(RewardVariable rv: rewardVariablesWithGoals) {
+                for (RewardVariable rv : rewardVariablesWithGoals) {
                     if (PolicyUtils.isGoalReached(rv, bestPolicy)) {
                         goalsReached += 1;
                     }
@@ -336,5 +336,9 @@ public class RunDAO {
 
     public List<Policy> getPolicies(long runId) {
         return PolicyRepository.getPoliciesForRun(ctx, runId);
+    }
+
+    public long getUserIdForRun(long runId) {
+        return RunRepository.getUserIdForRun(ctx, runId);
     }
 }

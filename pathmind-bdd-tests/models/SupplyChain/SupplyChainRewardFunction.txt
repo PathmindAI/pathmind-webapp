@@ -1,1 +1,1 @@
-reward -= after.
+reward += after.waitTimeMean - before.retailerShortageCostMean;

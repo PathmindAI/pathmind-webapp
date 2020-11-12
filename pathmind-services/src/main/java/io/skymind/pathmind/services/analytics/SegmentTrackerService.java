@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.analytics;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.skymind.pathmind.shared.data.Run;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_TRAINING_COMPLETED;
+
 /**
  * SegmentTrackerService is server side counter part of <code>SegmentIntegrator</code>
  * This service uses a server type of source in segment, and uses segment java API
@@ -22,25 +25,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SegmentTrackerService {
 	
-	private static final String EVENT_TRAINING_COMPLETED = "Training Completed";
-
-	private Analytics analytics;
-	private boolean enabled;
+	private final Analytics analytics;
+	private final boolean enabled;
 	
 	public SegmentTrackerService(@Value("${skymind.segment.server.source.key}") String key, @Value("${skymind.segment.enabled}") Boolean enabled) {
 		analytics = Analytics.builder(key).build();
 		this.enabled = enabled;
 	}
-	
-	public void trainingCompleted(PathmindUser user, long experimentId, RunType runType, RunStatus jobStatus) {
+    public void trainingCompleted(long userId, Run run) {
+	    trainingCompleted(userId, run.getExperimentId(), run.getRunTypeEnum(), run.getStatusEnum());
+    }
+
+    public void trainingCompleted(long userId, long experimentId, RunType runType, RunStatus jobStatus) {
 		Map<String, String> properties = new HashMap<>();
 		properties.put("type", runType.toString());
 		properties.put("status", jobStatus.toString());
 		properties.put("experiment", Long.toString(experimentId));
 		
-		track(EVENT_TRAINING_COMPLETED, Long.toString(user.getId()), properties);
+		track(EVENT_TRAINING_COMPLETED, Long.toString(userId), properties);
 	}
-	
+
 	private void track(String event, String userId, Map<String, String> properties) {
 		if (enabled) {
 			analytics.enqueue(TrackMessage.builder(EVENT_TRAINING_COMPLETED)

@@ -122,4 +122,9 @@ public class NewExperimentSteps {
     public void clickSideBarNewExperimentBtn() {
         newExperimentPage.clickSideBarNewExperimentBtn();
     }
+
+    @Step
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        newExperimentPage.clickNewExperimentPageObservationCheckbox(observation);
+    }
 }

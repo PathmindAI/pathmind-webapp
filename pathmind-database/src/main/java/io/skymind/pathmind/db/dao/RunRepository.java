@@ -192,4 +192,14 @@ class RunRepository
                 (Integer)record.getValue("runsToday"),
                 (Integer)record.getValue("runsThisMonth"));
     }
+
+    protected static long getUserIdForRun(DSLContext ctx, long runId) {
+        return ctx.select(PROJECT.PATHMIND_USER_ID)
+                .from(RUN)
+                .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(RUN.ID.eq(runId))
+                .fetchOne(0, long.class);
+    }
 }
