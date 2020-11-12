@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.shared.data.Observation;
@@ -21,21 +22,26 @@ public class ObservationsPanel extends VerticalLayout {
     private ObservationsTable observationsTable;
     private List<Observation> allObservations;
 
-    public ObservationsPanel(List<Observation> observations) {
-        this(observations, null, true);
+    public ObservationsPanel(List<Observation> observations, Boolean hideCheckboxes) {
+        this(observations, null, true, true);
     }
 
-    public ObservationsPanel(List<Observation> observations, List<Observation> selectedObservations, Boolean isReadOnly) {
+    public ObservationsPanel(List<Observation> observations, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
         this.allObservations = observations;
-        observationsTable = new ObservationsTable(isReadOnly);
-
+        
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
-        add(getObservationsPanel(isReadOnly));
+        
+        if (hideCheckboxes) {
+            add(createObservationsList());
+        } else {
+            observationsTable = new ObservationsTable(isReadOnly);
+            add(getObservationsPanel(isReadOnly));
+            setupObservationTable(selectedObservations);
+        }
 
         setWidthFull();
         setPadding(false);
         setSpacing(false);
-        setupObservationTable(selectedObservations);
     }
 
     private void setupObservationTable(Collection<Observation> selection) {
@@ -45,6 +51,14 @@ public class ObservationsPanel extends VerticalLayout {
         } else {
             setSelectedObservations(selection);
         }
+    }
+
+    private Component createObservationsList() {
+        HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter();
+        allObservations.forEach(observation -> {
+            wrapper.add(LabelFactory.createLabel(observation.getVariable(), "observation-label"));
+        });
+        return wrapper;
     }
 
     public List<Observation> getSelectedObservations() {

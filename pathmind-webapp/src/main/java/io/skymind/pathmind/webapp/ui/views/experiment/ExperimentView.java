@@ -33,10 +33,10 @@ import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -263,7 +263,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true);
+        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true, false);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
