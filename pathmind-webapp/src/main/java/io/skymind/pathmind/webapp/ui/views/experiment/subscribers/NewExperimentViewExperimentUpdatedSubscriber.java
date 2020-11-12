@@ -20,10 +20,8 @@ public class NewExperimentViewExperimentUpdatedSubscriber extends ExperimentUpda
             if (event.isStartedTrainingEventType()) {
                 getUiSupplier().get().get().navigate(ExperimentView.class, event.getExperiment().getId());
             }
-        } else {
-            if (ExperimentUtils.isSameModel(newExperimentView.getExperiment(), event.getModelId())) {
-                newExperimentView.updateExperimentComponents();
-            }
+        } else if (ExperimentUtils.isSameModel(newExperimentView.getExperiment(), event.getModelId())) {
+            newExperimentView.updateExperimentComponents();
         }
     }
 
