@@ -1,12 +1,5 @@
 package io.skymind.pathmind.services.training;
 
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.updater.ProgressInterpreter;
-import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.util.ResourceUtils;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.Clock;
@@ -15,6 +8,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.updater.ProgressInterpreter;
+import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.util.ResourceUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

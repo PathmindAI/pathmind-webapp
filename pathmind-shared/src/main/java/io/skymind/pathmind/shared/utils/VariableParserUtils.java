@@ -1,10 +1,19 @@
 package io.skymind.pathmind.shared.utils;
 
-import io.skymind.pathmind.shared.constants.ObservationDataType;
-
 import java.util.regex.Pattern;
 
-import static io.skymind.pathmind.shared.constants.ObservationDataType.*;
+import io.skymind.pathmind.shared.constants.ObservationDataType;
+
+import static io.skymind.pathmind.shared.constants.ObservationDataType.BOOLEAN;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.BOOLEAN_ARRAY;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.FLOAT;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.FLOAT_ARRAY;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.INTEGER;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.INTEGER_ARRAY;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.LONG;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.LONG_ARRAY;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.NUMBER;
+import static io.skymind.pathmind.shared.constants.ObservationDataType.NUMBER_ARRAY;
 
 public class VariableParserUtils {
 
@@ -23,7 +32,7 @@ public class VariableParserUtils {
     public static ObservationDataType observationType(String name, String type) {
         boolean isArray = isArray(name);
 
-        if (type.equals(INTEGER.toString())){
+        if (type.equals(INTEGER.toString())) {
             return isArray ? INTEGER_ARRAY : INTEGER;
         } else if (type.equals(BOOLEAN.toString())) {
             return isArray ? BOOLEAN_ARRAY : BOOLEAN;
