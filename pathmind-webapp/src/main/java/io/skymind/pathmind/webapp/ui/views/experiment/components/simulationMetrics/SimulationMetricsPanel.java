@@ -25,14 +25,12 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.SimulationMetricsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.SimulationMetricsPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
@@ -148,7 +146,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         EventBus.subscribe(this, getUISupplier,
                 new SimulationMetricsPolicyUpdateSubscriber(this),
                 new SimulationMetricsPanelExperimentChangedViewSubscriber(this),
-                new MetricChartPanelPolicyUpdateSubscriber(metricChartPanel, experiment));
+                new PopupSimulationMetricChartPanelPolicyUpdateSubscriber(this, metricChartPanel));
     }
 
     @Override
@@ -227,38 +225,11 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         metricChartDialog.add(metricChartPanel, metricChartDialogCloseButton);
     }
 
-    class MetricChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
+    public boolean isMetricChartPopupOpen() {
+        return metricChartDialog.isOpened();
+    }
 
-        private MetricChartPanel metricChartPanel;
-        private Experiment experimentForSubscriber;
-
-        public MetricChartPanelPolicyUpdateSubscriber(MetricChartPanel metricChartPanel, Experiment experiment) {
-            super();
-            this.metricChartPanel = metricChartPanel;
-            this.experimentForSubscriber = experiment.deepClone();
-        }
-
-        // Refactor -> This should be cleaned up along with the reward variable in MetricChartPanel. To avoid too big a refactoring
-        // here I've pushed this to the separate ticket of: https://github.com/SkymindIO/pathmind-webapp/issues/2327 In other words
-        // I'm concerned the refactoring could increase in scope so I've pushed it until after the feature is completed.
-        @Override
-        public void handleBusEvent(PolicyUpdateBusEvent event) {
-            ExperimentUtils.addOrUpdatePolicies(experimentForSubscriber, event.getPolicies());
-            Policy bestPolicy = PolicyUtils.selectBestPolicy(experimentForSubscriber.getPolicies()).orElse(null);
-            if (bestPolicy == null) {
-                return;
-            }
-            Boolean reachedGoal = PolicyUtils.isGoalReached(metricChartPanel.getRewardVariable(), bestPolicy);
-            Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(indexClicked);
-            // Doing it this way to let future developers know that we're reusing the reward variable because overloading
-            // the method in metricChartPanel could cause someone to ignore including the reward variable as a parameter
-            metricChartPanel.setGoals(metricChartPanel.getRewardVariable(), reachedGoal);
-            metricChartPanel.setupChart(sparklineData, metricChartPanel.getRewardVariable());
-        }
-
-        @Override
-        public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-            return experimentForSubscriber.getId() == event.getExperimentId() && metricChartDialog.isOpened();
-        }
+    public int getSparklineIndexClicked() {
+        return indexClicked;
     }
 }

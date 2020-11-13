@@ -19,23 +19,17 @@ public class ObservationsPanelExperimentChangedViewSubscriber extends Experiment
     private ObservationsPanel observationsPanel;
     private ObservationDAO observationDAO;
 
-    private long experimentId;
-
+    // We use a supplier because this subscriber is used by more than one view.
     public ObservationsPanelExperimentChangedViewSubscriber(ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
         super();
         this.observationsPanel = observationsPanel;
         this.observationDAO = observationDAO;
     }
 
-    // Set the initial experimentID on page load. Once set it should never be called again and we should ony be relying on the event itself.
-    public void setExperimentId(long experimentId) {
-        this.experimentId = experimentId;
-    }
-
     @Override
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-        observationDAO.saveExperimentObservations(experimentId, observationsPanel.getSelectedObservations());
-        experimentId = event.getExperiment().getId();
+        observationDAO.saveExperimentObservations(observationsPanel.getExperiment().getId(), observationsPanel.getSelectedObservations());
+        observationsPanel.setExperiment(event.getExperiment());
         List<Observation> experimentObservations = observationDAO.getObservationsForExperiment(event.getExperiment().getId());
         observationsPanel.setSelectedObservations(experimentObservations);
     }
