@@ -224,7 +224,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false, false, false);
+        observationsPanel = new ObservationsPanel(experiment, false);
         observationsPanel.addValueChangeListener(evt -> {
             setButtonsEnablement();
         });
