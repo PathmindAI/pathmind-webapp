@@ -2,16 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.model;
 
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.VariableParserUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
@@ -32,7 +22,6 @@ import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
-import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -54,11 +43,8 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesPanel;
-import lombok.extern.slf4j.Slf4j;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -330,8 +316,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 			List<Observation> observationList = new ArrayList<>();
 			if (result != null) {
 			    AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
-			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariables());
-			    observationList = convertToObservations(alResult.getObservationNames());
+			    rewardVariables = convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
+			    observationList = convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
 				model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
@@ -348,19 +334,20 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 		}));
 	}
 
-    private List<Observation> convertToObservations(List<String> observationNames) {
+    private List<Observation> convertToObservations(List<String> observationNames, List<String> observationTypes) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
-        for (String name: observationNames) {
+        for (int i = 0; i < observationNames.size(); i++) {
+            String name = observationNames.get(i);
+            String type = observationTypes.get(i);
             if (VariableParserUtils.isArray(name)) {
                 String correctName = VariableParserUtils.removeArrayIndexFromVariableName(name);
                 if (auxObservations.containsKey(correctName)) {
                     Observation obs = auxObservations.get(correctName);
                     obs.setMaxItems(obs.getMaxItems() + 1);
-                }
-                else {
+                } else {
                     Observation obs = new Observation();
                     obs.setVariable(correctName);
-                    obs.setDataTypeEnum(ObservationDataType.NUMBER_ARRAY);
+                    obs.setDataTypeEnum(VariableParserUtils.observationType(name, type));
                     obs.setArrayIndex(auxObservations.size());
                     obs.setMaxItems(1);
                     auxObservations.put(correctName, obs);
@@ -368,7 +355,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             } else {
                 Observation obs = new Observation();
                 obs.setVariable(name);
-                obs.setDataTypeEnum(ObservationDataType.NUMBER);
+                obs.setDataTypeEnum(VariableParserUtils.observationType(name, type));
                 obs.setArrayIndex(auxObservations.size());
                 auxObservations.put(name, obs);
             }
@@ -376,14 +363,14 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return new ArrayList<>(auxObservations.values());
     }
 
-    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariablesNames) {
+    private List<RewardVariable> convertToRewardVariables(long modelId, List<String> rewardVariableNames, List<String> rewardVariableTypes) {
         List<RewardVariable> rewardVariables = new ArrayList<>();
-        for (int i = 0; i < rewardVariablesNames.size(); i++) {
+        for (int i = 0; i < rewardVariableNames.size(); i++) {
             RewardVariable rv = new RewardVariable();
             rv.setArrayIndex(i);
             rv.setModelId(modelId);
-            rv.setName(rewardVariablesNames.get(i));
-            rv.setDataType("double");
+            rv.setName(rewardVariableNames.get(i));
+            rv.setDataType(rewardVariableTypes.get(i));
             rewardVariables.add(rv);
         }
         return rewardVariables;

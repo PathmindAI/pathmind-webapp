@@ -6,11 +6,15 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public enum ObservationDataType {
-    NUMBER("number"), INTEGER("int"), BOOLEAN("boolean"), NUMBER_ARRAY("number[]"), INTEGER_ARRAY("int[]");
+    NUMBER("number"), NUMBER_ARRAY("number[]"),
+    INTEGER("int"), INTEGER_ARRAY("int[]"),
+    FLOAT("float"), FLOAT_ARRAY("float[]"),
+    LONG("long"), LONG_ARRAY("long[]"),
+    BOOLEAN("boolean"), BOOLEAN_ARRAY("boolean[]");
     
     private String name;
 
-    private ObservationDataType(String name) {
+    ObservationDataType(String name) {
         this.name = name;
     }
 
@@ -35,9 +39,9 @@ public enum ObservationDataType {
     }
     
     public static boolean isNumeric(ObservationDataType dataType) {
-        return dataType == NUMBER || dataType == INTEGER;
+        return !isArray(dataType);
     }
     public static boolean isArray(ObservationDataType dataType) {
-        return dataType == NUMBER_ARRAY || dataType == INTEGER_ARRAY;
+        return dataType.name.endsWith("[]");
     }
 }
