@@ -1,5 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
@@ -10,20 +17,18 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
-import java.util.*;
-import java.util.function.Supplier;
-
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout {
 
-	private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
+    private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
     private Supplier<Optional<UI>> getUISupplier;
 
     public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier) {
-        this(getUISupplier, () -> {});
+        this(getUISupplier, () -> {
+        });
     }
 
     public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier, Command goalFieldValueChangeHandler) {
@@ -40,7 +45,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setCodeEditorMode() {
         setClassName("with-container-border");
     }
-    
+
     public void setCompactMode() {
         container.addClassName("compact");
     }
@@ -48,7 +53,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setSelectMode() {
         actAsMultiSelect = true;
     }
-    
+
     /**
      * By the default the table is readonly, as there is only a single case it's editable
      */
@@ -65,7 +70,7 @@ public class RewardVariablesTable extends VerticalLayout {
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
 
         container.add(headerRow);
-        
+
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
             RewardVariablesRowField row = new RewardVariablesRowField(getUISupplier, rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect);

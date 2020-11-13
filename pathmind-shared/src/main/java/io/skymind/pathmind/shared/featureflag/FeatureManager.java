@@ -14,7 +14,7 @@ public class FeatureManager {
 
     public FeatureManager(
             @Value("${pathmind.toggle.simulation-metrics:true}") boolean simulationMetrics
-            ) {
+    ) {
         this.simulationMetrics = simulationMetrics;
 
         log.info("Toggles: {}", this);

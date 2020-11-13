@@ -1,7 +1,7 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import net.thucydides.core.annotations.Step;
 import io.skymind.pathmind.bddtests.page.DashboardPage;
+import net.thucydides.core.annotations.Step;
 
 public class DashboardPageSteps {
 

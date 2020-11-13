@@ -1,18 +1,18 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.util.Date;
+
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 import io.skymind.pathmind.bddtests.steps.HomePageSteps;
 import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
+import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.ModelDetailsSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.ModelUploadSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.NewProjectSteps;
-import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.RewardVariablesSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-
-import java.util.Date;
 
 public class CreateProjectStepDefinitions {
 

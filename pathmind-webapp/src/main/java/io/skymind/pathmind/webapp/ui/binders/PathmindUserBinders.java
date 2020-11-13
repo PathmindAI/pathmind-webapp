@@ -10,7 +10,7 @@ import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.converter.TrimmedStringConverter;
 
 public class PathmindUserBinders {
-    
+
     private static final String EMAIL_IS_USED = "This email is already used";
 
     public static void bindFirstName(Binder<PathmindUser> binder, TextField field) {

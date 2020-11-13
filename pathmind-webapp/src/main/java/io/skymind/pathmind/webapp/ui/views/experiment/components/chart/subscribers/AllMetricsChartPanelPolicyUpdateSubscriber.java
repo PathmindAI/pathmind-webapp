@@ -18,8 +18,9 @@ public class AllMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubs
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         synchronized (allMetricsChartPanel.getExperimentLock()) {
             // We need to check after the lock is acquired as changing experiments can take up to several seconds.
-            if (event.getExperimentId() != allMetricsChartPanel.getExperimentId())
+            if (event.getExperimentId() != allMetricsChartPanel.getExperimentId()) {
                 return;
+            }
 
             ExperimentUtils.addOrUpdatePolicies(allMetricsChartPanel.getExperiment(), event.getPolicies());
             allMetricsChartPanel.selectBestPolicy();

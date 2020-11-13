@@ -10,7 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 
 public class ModelUploadPage extends PageObject {
 

@@ -12,8 +12,10 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 @Tag("confirm-popup")
 @JsModule("./src/components/molecules/confirm-popup.js")
 public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
-    private Command confirmHandler = () -> {};
-    private Command cancelHandler = () -> {};
+    private Command confirmHandler = () -> {
+    };
+    private Command cancelHandler = () -> {
+    };
 
     public ConfirmPopup() {
         attachToDOM();
@@ -105,12 +107,17 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
         getModel().setConfirmButtonThemes(confirmThemes);
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setHeaderText(String headerText);
+
         void setMessage(String message);
+
         void setCancelText(String cancelText);
+
         void setConfirmText(String confirmText);
+
         void setConfirmButtonThemes(String confirmButtonThemes);
+
         void setOpened(Boolean opened);
-	}
+    }
 }

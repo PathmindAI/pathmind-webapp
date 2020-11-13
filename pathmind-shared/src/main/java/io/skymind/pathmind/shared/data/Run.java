@@ -1,13 +1,16 @@
 package io.skymind.pathmind.shared.data;
 
+import java.time.LocalDateTime;
+
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import io.skymind.pathmind.shared.utils.CloneUtils;
-import lombok.*;
-
-import java.awt.*;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.layouts.components;
 
+import java.util.Optional;
+
 import com.github.mvysny.kaributesting.v10.ContextMenuKt;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
@@ -17,8 +19,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Optional;
 
 import static com.github.mvysny.kaributesting.v10.LocatorJ._get;
 import static org.junit.Assert.assertEquals;

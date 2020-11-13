@@ -1,5 +1,13 @@
 package io.skymind.pathmind.webapp.bus;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.MessageAttributeValue;
@@ -21,15 +29,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.CARGO_ATTRIBUTE;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.FILTER_ATTRIBUTE;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_RUN;
 
 @Slf4j
 @Component
@@ -96,8 +99,8 @@ public class UpdaterListener {
                                                     .getOrDefault(policyId, Collections.emptyList());
                                     policy.setMetrics(metrics);
                                     List<MetricsRaw> metricsRaw =
-                                        policyDAO.getMetricsRawForPolicies(Collections.singletonList(policyId))
-                                            .getOrDefault(policyId, Collections.emptyList());
+                                            policyDAO.getMetricsRawForPolicies(Collections.singletonList(policyId))
+                                                    .getOrDefault(policyId, Collections.emptyList());
                                     policy.setMetricsRaws(metricsRaw);
                                     EventBus.post(new PolicyUpdateBusEvent(Collections.singletonList(policy)));
                                     break;

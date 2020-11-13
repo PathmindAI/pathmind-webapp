@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Synchronize;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
-
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
@@ -28,77 +27,77 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-autocomplete.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
-	public JuicyAceEditor() {
-		super("value", "", false);
-	}
+    public JuicyAceEditor() {
+        super("value", "", false);
+    }
 
-	public void setMode(JuicyAceMode mode) {
-		this.getElement().setAttribute("mode", "ace/mode/" + mode);
-	}
+    public void setMode(JuicyAceMode mode) {
+        this.getElement().setAttribute("mode", "ace/mode/" + mode);
+    }
 
-	public void setTheme(JuicyAceTheme theme) {
-		this.getElement().setAttribute("theme", "ace/theme/" + theme);
-	}
-	
-	public void setAutoComplete(List<RewardVariable> rewardVariables) {
-	    JsonArray localVariables = generateLocalVariablesAutocompleteOption(rewardVariables);
+    public void setTheme(JuicyAceTheme theme) {
+        this.getElement().setAttribute("theme", "ace/theme/" + theme);
+    }
+
+    public void setAutoComplete(List<RewardVariable> rewardVariables) {
+        JsonArray localVariables = generateLocalVariablesAutocompleteOption(rewardVariables);
         getElement().executeJs("window.Pathmind.autocomplete.enableAutoComplete($0, $1)", getElement(), localVariables);
     }
 
     public void setFontsize(Integer fontsize) {
-		this.getElement().setAttribute("fontsize", String.valueOf(fontsize));
-	}
+        this.getElement().setAttribute("fontsize", String.valueOf(fontsize));
+    }
 
-	public void setSofttabs(Boolean softtabs) {
-		this.getElement().setAttribute("softtabs", softtabs);
-	}
+    public void setSofttabs(Boolean softtabs) {
+        this.getElement().setAttribute("softtabs", softtabs);
+    }
 
-	public void setTabsize(Integer tabsize) {
-		this.getElement().setAttribute("tabsize", String.valueOf(tabsize));
-	}
+    public void setTabsize(Integer tabsize) {
+        this.getElement().setAttribute("tabsize", String.valueOf(tabsize));
+    }
 
-	public void setReadonly(Boolean readonly) {
-		this.getElement().setAttribute("readonly", readonly);
-	}
+    public void setReadonly(Boolean readonly) {
+        this.getElement().setAttribute("readonly", readonly);
+    }
 
-	public void setWrapmode(Boolean wrapmode) {
-		this.getElement().setAttribute("wrapmode", wrapmode);
-	}
+    public void setWrapmode(Boolean wrapmode) {
+        this.getElement().setAttribute("wrapmode", wrapmode);
+    }
 
-	public void setMaxLines(Integer maxLines) {
-		this.getElement().setAttribute("max-lines", String.valueOf(maxLines));
-	}
+    public void setMaxLines(Integer maxLines) {
+        this.getElement().setAttribute("max-lines", String.valueOf(maxLines));
+    }
 
-	public void setMinLines(Integer minLines) {
-		this.getElement().setAttribute("min-lines", String.valueOf(minLines));
-	}
+    public void setMinLines(Integer minLines) {
+        this.getElement().setAttribute("min-lines", String.valueOf(minLines));
+    }
 
-	public void setShadowStyle(String shadowStyle) {
-		this.getElement().setAttribute("shadow-style", String.valueOf(shadowStyle));
-	}
+    public void setShadowStyle(String shadowStyle) {
+        this.getElement().setAttribute("shadow-style", String.valueOf(shadowStyle));
+    }
 
-	public void clear() {
-		this.getElement().setProperty("value", "");
-	}
+    public void clear() {
+        this.getElement().setProperty("value", "");
+    }
 
-	public void setValue(String value) {
+    public void setValue(String value) {
         this.getElement().setProperty("value", value);
         // By default Ace editor highlight the new value
         // This is to override default behaviour of Ace editor
         this.getElement().executeJs("this.editor.clearSelection()");
-	}
+    }
 
-	@Synchronize({"change"})
-	public String getValue() {
-		return this.getElement().getProperty("value");
-	}
-	
-	private JsonArray generateLocalVariablesAutocompleteOption(List<RewardVariable> rewardVariables) {
+    @Synchronize({"change"})
+    public String getValue() {
+        return this.getElement().getProperty("value");
+    }
+
+    private JsonArray generateLocalVariablesAutocompleteOption(List<RewardVariable> rewardVariables) {
         JsonArray localVariables = Json.createArray();
         localVariables.set(localVariables.length(), createVariableAutocompleteOption("reward"));
         for (RewardVariable rewardVariable : rewardVariables) {
-            localVariables.set(localVariables.length(), createVariableAutocompleteOption("before."+rewardVariable.getName()));
-            localVariables.set(localVariables.length(), createVariableAutocompleteOption("after."+rewardVariable.getName()));
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("before." + rewardVariable.getName()));
+            localVariables.set(localVariables.length(), createVariableAutocompleteOption("after." + rewardVariable.getName()));
         }
         return localVariables;
     }

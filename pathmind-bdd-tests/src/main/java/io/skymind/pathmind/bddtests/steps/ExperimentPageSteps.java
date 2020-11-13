@@ -1,10 +1,10 @@
 package io.skymind.pathmind.bddtests.steps;
 
+import java.io.IOException;
+
 import io.skymind.pathmind.bddtests.page.ExperimentPage;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
-
-import java.io.IOException;
 
 public class ExperimentPageSteps {
 

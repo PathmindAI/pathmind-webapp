@@ -18,8 +18,8 @@ public class PathmindNumberUtils {
         DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
         double variance = calculateVariance(list);
         double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
-        double uncertainty = 2*sd;
-        return setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2)  +"\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
+        double uncertainty = 2 * sd;
+        return setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2) + "\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
     }
 
     /**
@@ -40,15 +40,15 @@ public class PathmindNumberUtils {
     /**
      * Strip decimals off numbers >=10 and round them.
      * For numbers < 10, show 2 sig. fig. at most.
-     * @param originalNumber
-     *            the original number to be formatted
-    */
+     *
+     * @param originalNumber the original number to be formatted
+     */
     public static String formatNumber(Double originalNumber) {
         if (originalNumber >= 10) {
             return String.valueOf((int) Math.rint(originalNumber));
         }
         BigDecimal bd = BigDecimal.valueOf(originalNumber);
-        int newScale = 2-bd.precision()+bd.scale();
+        int newScale = 2 - bd.precision() + bd.scale();
         return bd.setScale(newScale, RoundingMode.HALF_UP).toString();
     }
 
@@ -58,12 +58,10 @@ public class PathmindNumberUtils {
      * This is used for formatting the simulation metric value which shows at the end of the training along with the uncertainty value.
      * <p>
      * For detailed explanation of the calculations involved, please visit <a href="https://github.com/SkymindIO/pathmind-webapp/wiki/Calculations-for-formatting-metrics-with-&-without-uncertainty-value-on-UI">the GitHub wiki page</a>.
-     * @param originalNumber
-     *            the original number to be formatted.
-     * @param refNumber
-     *            the ref number with its designated number of significant figures which doesn't require further formatting.
-     * @param refNumberSigFig
-     *            is used for determining the actual sig. fig. of figures ending with 0 at its last position.
+     *
+     * @param originalNumber  the original number to be formatted.
+     * @param refNumber       the ref number with its designated number of significant figures which doesn't require further formatting.
+     * @param refNumberSigFig is used for determining the actual sig. fig. of figures ending with 0 at its last position.
      */
     public static String setSigFigBasedOnAnotherDouble(Double originalNumber, Double refNumber, int refNumberSigFig) {
         BigDecimal _refNumber;
@@ -79,7 +77,7 @@ public class PathmindNumberUtils {
         }
         int originalNumberPrecision = _originalNumber.precision();
         int originalNumberScale = _originalNumber.scale();
-        int originalNumberNonDecimalDigits =  getNumberOfNonDecimalDigits(originalNumberPrecision, originalNumberScale);
+        int originalNumberNonDecimalDigits = getNumberOfNonDecimalDigits(originalNumberPrecision, originalNumberScale);
         int refNumberInsignificantPrecision = getInsignificantPrecision(_refNumber.precision(), refNumberSigFig);
         int sigFig = originalNumberNonDecimalDigits + _refNumber.scale() - refNumberInsignificantPrecision;
         if (_refNumber.signum() == 0) {

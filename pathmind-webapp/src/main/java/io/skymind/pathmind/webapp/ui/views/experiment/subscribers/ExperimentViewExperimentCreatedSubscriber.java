@@ -1,10 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
-
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;

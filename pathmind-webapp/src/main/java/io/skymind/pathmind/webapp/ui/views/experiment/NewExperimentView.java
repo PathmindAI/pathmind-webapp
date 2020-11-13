@@ -1,5 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -13,17 +18,25 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
+import com.vaadin.flow.router.BeforeLeaveObserver;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-import io.skymind.pathmind.db.dao.*;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
@@ -40,7 +53,12 @@ import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.*;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
@@ -61,11 +79,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
@@ -83,8 +96,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
     private List<String> rewardFunctionErrors = new ArrayList<>();
-    private List<Observation> modelObservations = new ArrayList<>();
-    private List<Observation> experimentObservations = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
@@ -115,8 +126,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private PolicyDAO policyDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
-	@Autowired
-	private ObservationDAO observationDAO;
+    @Autowired
+    private ObservationDAO observationDAO;
     @Autowired
     private TrainingService trainingService;
     @Autowired
@@ -129,9 +140,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs pageBreadcrumbs;
     private Binder<Experiment> binder;
 
-    // Needed because it's a special case where different views use different data id's for the subscribers.
-    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
-
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -143,15 +151,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
-        // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
-        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
-
         EventBus.subscribe(this, () -> getUI(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentChangedSubscriber(this),
-                observationsPanelExperimentChangedViewSubscriber);
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -185,16 +189,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
 
         startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
+        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
+        }));
         setButtonsEnablement();
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
-        panelTitleText = LabelFactory.createLabel("Experiment #"+experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL);
+        panelTitleText = LabelFactory.createLabel("Experiment #" + experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 WrapperUtils.wrapWidthFullHorizontal(
-                    panelTitleText,
-                    downloadModelAlpLink
+                        panelTitleText,
+                        downloadModelAlpLink
                 ),
                 LabelFactory.createLabel(
                         "To judge if an action is a good one, we calculate a reward score. "
@@ -219,7 +224,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false, false);
+        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false, false, false);
         observationsPanel.addValueChangeListener(evt -> {
             setButtonsEnablement();
         });
@@ -274,44 +279,44 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return rewardFnEditorPanel;
     }
 
-	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-	}
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+    }
 
-	private ExperimentNotesField createNotesField() {
-		notesField = new ExperimentNotesField(
-            () -> getUI(),
-			"Notes",
-			experiment,
-			updatedNotes -> {
-				experiment.setUserNotes(updatedNotes);
-				experimentDAO.updateUserNotes(experimentId, updatedNotes);
-				notesSavedHint.setVisible(true);
-				// addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
-				notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
-				segmentIntegrator.addedNotesNewExperimentView();
-			}
-		);
+    private ExperimentNotesField createNotesField() {
+        notesField = new ExperimentNotesField(
+                () -> getUI(),
+                "Notes",
+                experiment,
+                updatedNotes -> {
+                    experiment.setUserNotes(updatedNotes);
+                    experimentDAO.updateUserNotes(experimentId, updatedNotes);
+                    notesSavedHint.setVisible(true);
+                    // addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
+                    notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
+                    segmentIntegrator.addedNotesNewExperimentView();
+                }
+        );
         notesField.setPlaceholder("Add Notes (optional)");
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
         }
-		return notesField;
+        return notesField;
     }
-    
+
     /************************************** UI element creations are above this line **************************************/
 
-	private boolean canStartTraining() {
+    private boolean canStartTraining() {
         if (rewardFunctionEditor == null || observationsPanel == null) {
             return false;
         }
-		return ModelUtils.isValidModel(experiment.getModel())
+        return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
                 && rewardFunctionErrors.size() == 0
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
                 && canSaveDataInDB()
                 && !experiment.isArchived();
-	}
+    }
 
     private boolean canSaveDataInDB() {
         return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
@@ -322,7 +327,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return false;
         }
         return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
-                !observationsPanel.getSelectedObservations().equals(experimentObservations);
+                !observationsPanel.getSelectedObservations().equals(experiment.getSelectedObservations());
     }
 
     private void setButtonsEnablement() {
@@ -341,14 +346,16 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 Experiment::setRewardFunction);
     }
 
-	private void handleStartRunButtonClicked() {
-		if (!FormUtils.isValidForm(binder, experiment))
-			return;
-		if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
+    private void handleStartRunButtonClicked() {
+        if (!FormUtils.isValidForm(binder, experiment)) {
             return;
+        }
+        if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
+            return;
+        }
 
-		experimentDAO.updateExperiment(experiment);
-		observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
+        experimentDAO.updateExperiment(experiment);
+        observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
         trainingService.startRun(experiment);
         EventBus.post(new ExperimentUpdatedBusEvent(experiment,
@@ -378,26 +385,26 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
-	public void setExperiment(Experiment selectedExperiment) {
-		triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
-	}
+    public void setExperiment(Experiment selectedExperiment) {
+        triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
+    }
 
-	private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
-		// The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-		// same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-		synchronized (experimentLock) {
-			experimentId = selectedExperiment.getId();
-			experiment = experimentDAO.getExperiment(experimentId)
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-			loadExperimentData();
-			updateScreenComponents();
+    private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
+        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+        synchronized (experimentLock) {
+            experimentId = selectedExperiment.getId();
+            experiment = experimentDAO.getExperiment(experimentId)
+                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+            loadExperimentData();
+            updateScreenComponents();
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            
+
             PushUtils.push(getUI(), ui -> {
                 navigateToExperiment(ui, selectedExperiment);
             });
-		}
-	}
+        }
+    }
 
     private void navigateToExperiment(UI ui, Experiment targetExperiment) {
         if (ExperimentUtils.isDraftRunType(targetExperiment)) {
@@ -407,22 +414,22 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         }
     }
 
-	private void navigateToExperimentView(Experiment experiment) {
-	    PushUtils.push(getUI(), ui -> {
+    private void navigateToExperimentView(Experiment experiment) {
+        PushUtils.push(getUI(), ui -> {
             ui.navigate(ExperimentView.class, experiment.getId());
         });
     }
 
-	private void triggerSaveDraft(Command cancelListener) {
-		if (unsavedChanges.isVisible()) {
-			if (saveDraftButton.isEnabled()) {
-				handleSaveDraftClicked(cancelListener);
-			} else {
-				errorPopup(cancelListener);
-			}
-		} else {
-			cancelListener.execute();
-		}
+    private void triggerSaveDraft(Command cancelListener) {
+        if (unsavedChanges.isVisible()) {
+            if (saveDraftButton.isEnabled()) {
+                handleSaveDraftClicked(cancelListener);
+            } else {
+                errorPopup(cancelListener);
+            }
+        } else {
+            cancelListener.execute();
+        }
     }
 
     private void errorPopup(Command cancelAction) {
@@ -430,7 +437,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         String header = "Before you leave....";
         String text = "";
         if (isRewardFunctionTooLong) {
-            text += "Your changes in the reward function cannot be saved because it has exceeded "+REWARD_FUNCTION_MAX_LENGTH+" characters. ";
+            text += "Your changes in the reward function cannot be saved because it has exceeded " + REWARD_FUNCTION_MAX_LENGTH + " characters. ";
         }
         text += "Please check and fix the errors.";
         ConfirmPopup popup = new ConfirmPopup(header, text);
@@ -439,57 +446,57 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         popup.open();
     }
 
-	@Override
-	public void beforeLeave(BeforeLeaveEvent event) {
-		ContinueNavigationAction action = event.postpone();
-		triggerSaveDraft(() -> action.proceed());
-	}
-
-	@Override
-	public void setParameter(BeforeEvent event, Long experimentId) {
-		this.experimentId = experimentId;
-	}
-
-	@Override
-	protected void initLoadData() {
-		experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
-				.orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-		loadExperimentData();
-	}
-
-	private void loadExperimentData() {
-		modelId = experiment.getModelId();
-		rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
-		if (!experiment.isArchived()) {
-            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-		}
-	}
-
-	@Override
-	protected void initScreen(BeforeEnterEvent event) {
-		updateScreenComponents();
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        ContinueNavigationAction action = event.postpone();
+        triggerSaveDraft(() -> action.proceed());
     }
 
-	private void updateScreenComponents() {
-		binder.setBean(experiment);
-		experimentsNavbar.setVisible(!experiment.isArchived());
-        panelTitleText.setText("Experiment #"+experiment.getName());
+    @Override
+    public void setParameter(BeforeEvent event, Long experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    @Override
+    protected void initLoadData() {
+        experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        loadExperimentData();
+    }
+
+    private void loadExperimentData() {
+        modelId = experiment.getModelId();
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
+        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
+        if (!experiment.isArchived()) {
+            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    protected void initScreen(BeforeEnterEvent event) {
+        updateScreenComponents();
+    }
+
+    private void updateScreenComponents() {
+        binder.setBean(experiment);
+        experimentsNavbar.setVisible(!experiment.isArchived());
+        panelTitleText.setText("Experiment #" + experiment.getName());
         experimentDetailsHasChanged();
-		rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
+        rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
         rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-	}
+    }
 
     private String generateRewardFunction() {
         StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
-            for(RewardVariable rv: rewardVariables) {
+            for (RewardVariable rv : rewardVariables) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
                     sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
@@ -501,7 +508,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     public Experiment getExperiment() {
-	    return experiment;
+        return experiment;
     }
 
     public void updateExperimentComponents() {
@@ -509,7 +516,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         if (experiments.isEmpty()) {
             Model model = modelService.getModel(modelId)
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
+                    .orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
 
             PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
         } else {
@@ -521,6 +528,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             }
         }
     }
+
     public List<Experiment> getExperiments() {
         return experiments;
     }

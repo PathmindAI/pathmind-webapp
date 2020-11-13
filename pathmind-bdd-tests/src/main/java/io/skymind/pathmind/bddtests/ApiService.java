@@ -1,13 +1,12 @@
 package io.skymind.pathmind.bddtests;
 
+import javax.xml.bind.DatatypeConverter;
+
 import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
-
-import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
 
 public class ApiService extends PageObject {
 
@@ -20,11 +19,11 @@ public class ApiService extends PageObject {
         try {
             System.out.println(PATHMIND_URL + "api/newVersionAvailable");
             SerenityRest.
-                given().
-                header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
-                when().
-                post(PATHMIND_URL + "api/newVersionAvailable").
-                then().log().all().statusCode(200);
+                    given().
+                    header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
+                    when().
+                    post(PATHMIND_URL + "api/newVersionAvailable").
+                    then().log().all().statusCode(200);
         } catch (Exception e) {
             e.printStackTrace();
         }

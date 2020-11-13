@@ -11,7 +11,7 @@ public abstract class RunUpdateSubscriber extends EventBusSubscriber<RunUpdateBu
     }
 
     @Override
-    public  BusEventType getEventType() {
+    public BusEventType getEventType() {
         return BusEventType.RunUpdate;
     }
 }

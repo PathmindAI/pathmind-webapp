@@ -1,12 +1,12 @@
 package io.skymind.pathmind.bddtests.stepdefinitions.wizard;
 
+import java.util.Date;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.wizard.NewProjectSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-
-import java.util.Date;
 
 public class NewProjectStepDefinitions {
 

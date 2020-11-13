@@ -1,6 +1,9 @@
 package io.skymind.pathmind.webapp.ui.karibu;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.github.mvysny.kaributesting.v10.MockedUI;
@@ -43,15 +46,15 @@ public class KaribuUtils {
         MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
     }
 
-	public static Class<? extends HasElement> getActiveViewClass() {
-		return UI.getCurrent().getInternals().getActiveRouterTargetsChain().get(0).getClass();
-	}
+    public static Class<? extends HasElement> getActiveViewClass() {
+        return UI.getCurrent().getInternals().getActiveRouterTargetsChain().get(0).getClass();
+    }
 
     public static void assertActiveViewClass(Class<? extends Component> expectedActiveViewClass) {
         assertSame(expectedActiveViewClass, KaribuUtils.getActiveViewClass());
     }
 
-	public static void mockExtendedClientDetails() {
+    public static void mockExtendedClientDetails() {
         UI.getCurrent().getInternals().setExtendedClientDetails(new KaribuExtendedClientDetails());
     }
 }

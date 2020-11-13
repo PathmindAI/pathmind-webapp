@@ -1,13 +1,18 @@
 package io.skymind.pathmind.services.training.versions;
 
-import io.skymind.pathmind.shared.services.training.versions.*;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
+import io.skymind.pathmind.shared.services.training.versions.Conda;
+import io.skymind.pathmind.shared.services.training.versions.JDK;
+import io.skymind.pathmind.shared.services.training.versions.NativeRL;
+import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
+import io.skymind.pathmind.shared.services.training.versions.VersionEnum;
 
 public class AWSFileManager {
     private static AWSFileManager instance;

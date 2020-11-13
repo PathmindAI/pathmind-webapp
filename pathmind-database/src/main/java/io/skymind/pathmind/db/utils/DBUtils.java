@@ -6,7 +6,7 @@ public class DBUtils {
 
     /**
      * Raises an exception if a transaction is locked for 'timeInSeconds' seconds.
-     *
+     * <p>
      * This is useful to prevent deadlocks when multiple transactions are trying to change the same set of objects.
      *
      * @param transactionCtx

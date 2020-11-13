@@ -18,8 +18,9 @@ public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscrib
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         synchronized (policyChartPanel.getExperimentLock()) {
             // We need to check after the lock is acquired as changing experiments can take up to several seconds.
-            if (event.getExperimentId() != policyChartPanel.getExperimentId())
+            if (event.getExperimentId() != policyChartPanel.getExperimentId()) {
                 return;
+            }
 
             ExperimentUtils.addOrUpdatePolicies(policyChartPanel.getExperiment(), event.getPolicies());
             policyChartPanel.updateChart();

@@ -6,8 +6,7 @@ import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
-public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
-{
+public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
     private ExperimentView experimentView;
 
     public ExperimentViewPolicyUpdateSubscriber(ExperimentView experimentView) {
@@ -19,8 +18,9 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         synchronized (experimentView.getExperimentLock()) {
             // Need a check in case the experiment was on hold waiting for the change of experiment to load
-            if (event.getExperimentId() != event.getExperimentId())
+            if (event.getExperimentId() != event.getExperimentId()) {
                 return;
+            }
             // Update or insert the policy in experiment.getPolicies
             ExperimentUtils.addOrUpdatePolicies(experimentView.getExperiment(), event.getPolicies());
             // This is needed for other subscriber updates that rely on the best policy being updated.

@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.security;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +30,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.firewall.RequestRejectedException;
-
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.db.dao.UserDAO;
 
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -104,7 +103,7 @@ public class SecurityConfiguration {
                     username != null ? userDAO.findByEmailIgnoreCase(username) : null;
             return () -> user;
         }
-        
+
         @Bean
         public static ErrorPageRegistrar securityErrorPageRegistrar() {
             return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT_URL));
@@ -114,7 +113,7 @@ public class SecurityConfiguration {
          * Registers our UserDetailsService and the password encoder to be used on login attempts.
          */
         @Override
-        protected void configure (AuthenticationManagerBuilder auth) throws Exception {
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
             super.configure(auth);
             auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         }
@@ -123,7 +122,7 @@ public class SecurityConfiguration {
          * Require login to access internal pages and configure login form.
          */
         @Override
-        protected void configure (HttpSecurity http) throws Exception {
+        protected void configure(HttpSecurity http) throws Exception {
             // Not using Spring CSRF here to be able to use plain HTML for the login page
             http.csrf().disable()
 
@@ -159,7 +158,7 @@ public class SecurityConfiguration {
                     .and().logout().logoutUrl("/" + Routes.LOGOUT_URL).logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
         }
 
-        private AuthenticationFailureHandler getFailureHandler () {
+        private AuthenticationFailureHandler getFailureHandler() {
             Map<String, String> failureUrlMap = new HashMap();
             failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
             failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
@@ -174,7 +173,7 @@ public class SecurityConfiguration {
          * Allows access to static resources, bypassing Spring security.
          */
         @Override
-        public void configure (WebSecurity web) throws Exception {
+        public void configure(WebSecurity web) throws Exception {
             web.ignoring().antMatchers(
                     // Vaadin Flow static resources
                     "/VAADIN/**",

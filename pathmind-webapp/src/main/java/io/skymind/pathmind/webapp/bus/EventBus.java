@@ -1,16 +1,22 @@
 package io.skymind.pathmind.webapp.bus;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 /**
  * For now I've implemented a custom EventBus for several reasons. Should we need to extend the EventBus then we should
@@ -78,7 +84,7 @@ public class EventBus {
 
     private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
         EXECUTOR_SERVICE.execute(() ->
-                    PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event.cloneForEventBus())));
+                PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event.cloneForEventBus())));
     }
 
     public static void subscribe(Component component, Supplier<Optional<UI>> getUISupplier, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
@@ -103,8 +109,9 @@ public class EventBus {
     public static void unsubscribe(Component component) {
         List<EventBusSubscriber> subscribers = componentSubscribers.get(component);
         componentSubscribers.remove(component);
-        if(subscribers != null)
+        if (subscribers != null) {
             subscribers.forEach(subscriber -> unsubscribe(subscriber));
+        }
     }
 
     private static void unsubscribe(EventBusSubscriber subscriber) {

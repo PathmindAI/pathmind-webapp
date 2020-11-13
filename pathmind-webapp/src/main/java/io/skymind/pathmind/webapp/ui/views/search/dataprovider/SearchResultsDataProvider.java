@@ -2,16 +2,14 @@ package io.skymind.pathmind.webapp.ui.views.search.dataprovider;
 
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
-
 import io.skymind.pathmind.db.dao.SearchDAO;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
@@ -19,7 +17,7 @@ public class SearchResultsDataProvider extends AbstractBackEndDataProvider<Searc
 
     @Autowired
     private SearchDAO dao;
-    
+
     @Override
     protected Stream<SearchResult> fetchFromBackEnd(Query<SearchResult, String> query) {
         if (query.getFilter().isPresent()) {

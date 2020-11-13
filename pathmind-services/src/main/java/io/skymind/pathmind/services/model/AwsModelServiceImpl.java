@@ -2,15 +2,14 @@ package io.skymind.pathmind.services.model;
 
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Service
 class AwsModelServiceImpl implements ModelService {
@@ -58,7 +57,7 @@ class AwsModelServiceImpl implements ModelService {
         return awsApiClient.fileContents(buildModelPath(modelId), true);
     }
 
-    public void saveModelFile(long modelId,  byte[] file) {
+    public void saveModelFile(long modelId, byte[] file) {
         awsApiClient.fileUpload(buildModelPath(modelId), file);
     }
 

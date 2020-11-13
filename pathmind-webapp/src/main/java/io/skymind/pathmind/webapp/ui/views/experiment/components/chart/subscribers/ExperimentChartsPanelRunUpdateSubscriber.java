@@ -8,6 +8,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.Experimen
 public class ExperimentChartsPanelRunUpdateSubscriber extends RunUpdateSubscriber {
 
     private ExperimentChartsPanel experimentChartsPanel;
+
     public ExperimentChartsPanelRunUpdateSubscriber(ExperimentChartsPanel experimentChartsPanel) {
         super();
         this.experimentChartsPanel = experimentChartsPanel;

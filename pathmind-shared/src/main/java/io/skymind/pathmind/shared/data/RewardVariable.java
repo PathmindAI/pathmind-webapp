@@ -21,7 +21,7 @@ public class RewardVariable extends Data implements DeepCloneableInterface<Rewar
     public RewardVariable(long modelId, String name, int arrayIndex) {
         this(modelId, name, arrayIndex, "double");
     }
-    
+
     public RewardVariable(long modelId, String name, int arrayIndex, String dataType) {
         this.modelId = modelId;
         this.arrayIndex = arrayIndex;
@@ -41,6 +41,7 @@ public class RewardVariable extends Data implements DeepCloneableInterface<Rewar
     public GoalConditionType getGoalConditionTypeEnum() {
         return GoalConditionType.getEnumFromCode(goalConditionType).orElse(null);
     }
+
     public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
         goalConditionType = conditionType != null ? conditionType.getCode() : null;
     }

@@ -5,7 +5,7 @@ import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubs
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
-public class NewExperimentViewExperimentChangedSubscriber  extends ExperimentChangedViewSubscriber {
+public class NewExperimentViewExperimentChangedSubscriber extends ExperimentChangedViewSubscriber {
 
     private NewExperimentView newExperimentView;
 

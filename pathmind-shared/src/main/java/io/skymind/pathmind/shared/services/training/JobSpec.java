@@ -23,7 +23,7 @@ public class JobSpec {
     private final String reset;
     private final String reward;
     private final String metrics = ""; // Disabled for now. Proper Metrics support will probably need a bit of
-                                       // re-engineering across the webapp, Pathmind Helper and NativeRL
+    // re-engineering across the webapp, Pathmind Helper and NativeRL
     private final List<Observation> selectedObservations;
     private final int iterations;
 
@@ -41,6 +41,7 @@ public class JobSpec {
 
     private final boolean recordMetricsRaw;
     private final boolean namedVariables;
+
     public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables) {
         this.userId = userId;
         this.modelId = modelId;

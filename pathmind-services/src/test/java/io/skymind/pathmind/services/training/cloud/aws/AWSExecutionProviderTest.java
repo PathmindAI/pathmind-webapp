@@ -1,13 +1,13 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import org.apache.tika.io.IOUtils;
-import org.junit.Test;
-import org.springframework.util.ResourceUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.tika.io.IOUtils;
+import org.junit.Test;
+import org.springframework.util.ResourceUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,5 +1,12 @@
 package io.skymind.pathmind.webapp;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.ExperimentGoalsUpdateAsyncBatchService;
@@ -23,15 +30,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind", exclude = ErrorMvcAutoConfiguration.class)
@@ -39,35 +39,34 @@ import java.util.stream.Stream;
 @EnableCaching
 @EnableScheduling
 @EnableAsync
-public class PathmindApplication implements CommandLineRunner
-{
-	public static void main(String[] args) {
-		SpringApplication.run(PathmindApplication.class, args);
-	}
+public class PathmindApplication implements CommandLineRunner {
+    public static void main(String[] args) {
+        SpringApplication.run(PathmindApplication.class, args);
+    }
 
-	@Bean
-	public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
-		return Executors.newFixedThreadPool(poolSize);
-	}
+    @Bean
+    public ExecutorService checkerExecutorService(@Value("${pathmind.filecheck.poolsize}") int poolSize) {
+        return Executors.newFixedThreadPool(poolSize);
+    }
 
-	@Bean
-	ActiveSessionsRegistry activeSessionsRegistry() {
-		return new ActiveSessionsRegistry();
-	}
+    @Bean
+    ActiveSessionsRegistry activeSessionsRegistry() {
+        return new ActiveSessionsRegistry();
+    }
 
-	@Bean
-	public ServletListenerRegistrationBean<ActiveSessionsRegistry> httpSessionEventPublisher() {
-		return new ServletListenerRegistrationBean<>(activeSessionsRegistry());
-	}
+    @Bean
+    public ServletListenerRegistrationBean<ActiveSessionsRegistry> httpSessionEventPublisher() {
+        return new ServletListenerRegistrationBean<>(activeSessionsRegistry());
+    }
 
-	@Primary
-	@Bean
-	public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-		ObjectMapper objectMapper = builder.createXmlMapper(false).build();
-		objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+    @Primary
+    @Bean
+    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+        objectMapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
 
-		return objectMapper;
-	}
+        return objectMapper;
+    }
 
     @Bean
     public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
@@ -75,41 +74,41 @@ public class PathmindApplication implements CommandLineRunner
         return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportLastestVersionURL);
     }
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void lookForTransactionalAnnotations() {
-		try {
-			ClassPathScanningCandidateComponentProvider provider
-					= new ClassPathScanningCandidateComponentProvider(true);
-			List<String> allProblems = new ArrayList<>();
-			for (BeanDefinition beanDefinition : provider.findCandidateComponents("io.skymind.pathmind")) {
-				Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
-				if (clazz.getAnnotation(Transactional.class) != null) {
-					allProblems.add(clazz.getName());
-				}
-				allProblems.addAll(
-						Stream.of(clazz.getDeclaredMethods())
-								.filter(m -> m.getAnnotation(Transactional.class) != null)
-								.map(m ->
-										String.format("%s.%s(...)", clazz.getName(), m.getName())
-								)
-								.collect(Collectors.toList())
-				);
-			}
-			if (!allProblems.isEmpty()) {
-				throw new RuntimeException(
-						"WE DON'T SUPPORT THE @Transactional ANNOTATION. FOR MORE DETAILS, SEE: " +
-								"https://github.com/SkymindIO/pathmind-webapp/issues/531.\n"
-								+ "Places using @Transactional:\n"
-								+ String.join("\n", allProblems)
+    @EventListener(ApplicationReadyEvent.class)
+    public void lookForTransactionalAnnotations() {
+        try {
+            ClassPathScanningCandidateComponentProvider provider
+                    = new ClassPathScanningCandidateComponentProvider(true);
+            List<String> allProblems = new ArrayList<>();
+            for (BeanDefinition beanDefinition : provider.findCandidateComponents("io.skymind.pathmind")) {
+                Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
+                if (clazz.getAnnotation(Transactional.class) != null) {
+                    allProblems.add(clazz.getName());
+                }
+                allProblems.addAll(
+                        Stream.of(clazz.getDeclaredMethods())
+                                .filter(m -> m.getAnnotation(Transactional.class) != null)
+                                .map(m ->
+                                        String.format("%s.%s(...)", clazz.getName(), m.getName())
+                                )
+                                .collect(Collectors.toList())
+                );
+            }
+            if (!allProblems.isEmpty()) {
+                throw new RuntimeException(
+                        "WE DON'T SUPPORT THE @Transactional ANNOTATION. FOR MORE DETAILS, SEE: " +
+                                "https://github.com/SkymindIO/pathmind-webapp/issues/531.\n"
+                                + "Places using @Transactional:\n"
+                                + String.join("\n", allProblems)
 
-				);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+                );
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	@Autowired
+    @Autowired
     private ExperimentGoalsUpdateAsyncBatchService goalsUpdateAsyncBatchService;
 
     @Override
