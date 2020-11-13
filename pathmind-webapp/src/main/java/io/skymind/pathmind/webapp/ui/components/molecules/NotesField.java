@@ -31,7 +31,8 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         setCompact(compact);
     }
 
-    public void setNotesText(String notesText) {
+    // We need to use synchronized because a save can happen outside of the change experiment event (auto-save)
+    public synchronized void setNotesText(String notesText) {
         this.notesText = notesText;
         getModel().setNotes(notesText);
     }
@@ -48,8 +49,9 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setCompact(compact);
     }
 
+    // We need to use synchronized because a save can happen outside of the change experiment event (auto-save)
     @EventHandler
-    private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
+    private synchronized void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
         if (canSave(updatedNotesText)) {
             notesText = updatedNotesText;
