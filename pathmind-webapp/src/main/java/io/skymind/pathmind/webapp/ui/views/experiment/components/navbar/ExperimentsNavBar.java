@@ -1,5 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -18,16 +25,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscrib
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 @CssImport("./styles/views/experiment/experiment-navbar.css")
-public class ExperimentsNavBar extends VerticalLayout
-{
+public class ExperimentsNavBar extends VerticalLayout {
     private List<Experiment> experiments;
     private Experiment selectedExperiment;
 
@@ -35,7 +34,7 @@ public class ExperimentsNavBar extends VerticalLayout
     private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
 
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
-	private VerticalLayout rowsWrapper;
+    private VerticalLayout rowsWrapper;
     private NewExperimentButton newExperimentButton;
 
     private SegmentIntegrator segmentIntegrator;
@@ -46,36 +45,35 @@ public class ExperimentsNavBar extends VerticalLayout
     private PolicyDAO policyDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, SegmentIntegrator segmentIntegrator)
-	{
- 	    this.getUISupplier = getUISupplier;
-	    this.experimentDAO = experimentDAO;
-	    this.policyDAO = policyDAO;
-	    this.experiments = experiments;
-	    this.selectedExperiment = selectedExperiment;
-	    this.modelId = selectedExperiment.getModelId();
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, SegmentIntegrator segmentIntegrator) {
+        this.getUISupplier = getUISupplier;
+        this.experimentDAO = experimentDAO;
+        this.policyDAO = policyDAO;
+        this.experiments = experiments;
+        this.selectedExperiment = selectedExperiment;
+        this.modelId = selectedExperiment.getModelId();
         this.segmentIntegrator = segmentIntegrator;
 
         notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(experiments, selectedExperiment);
 
         rowsWrapper = new VerticalLayout();
-		rowsWrapper.addClassName("experiments-navbar-items");
-		rowsWrapper.setPadding(false);
-		rowsWrapper.setSpacing(false);
-		
-		newExperimentButton = new NewExperimentButton(experimentDAO, modelId, segmentIntegrator);
+        rowsWrapper.addClassName("experiments-navbar-items");
+        rowsWrapper.setPadding(false);
+        rowsWrapper.setSpacing(false);
 
-		setPadding(false);
-		setSpacing(false);
-		add(newExperimentButton);
-		add(rowsWrapper);
-		addClassName("experiments-navbar");
+        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, segmentIntegrator);
+
+        setPadding(false);
+        setSpacing(false);
+        add(newExperimentButton);
+        add(rowsWrapper);
+        addClassName("experiments-navbar");
         addExperimentsToNavBar();
-	}
+    }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(selectedExperiment.isArchived()) {
+        if (selectedExperiment.isArchived()) {
             EventBus.subscribe(this, getUISupplier,
                     notificationExperimentUpdatedSubscriber);
         } else {
@@ -121,34 +119,34 @@ public class ExperimentsNavBar extends VerticalLayout
     }
 
     private void addExperimentsToNavBar() {
-		rowsWrapper.removeAll();
-		experimentsNavBarItems.clear();
-		
-		experiments.stream()
-			.forEach(experiment -> {
-                ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
-                experimentsNavBarItems.add(navBarItem);
-				if(experiment.equals(selectedExperiment)) {
-					navBarItem.setAsCurrent();
-				}
-				rowsWrapper.add(navBarItem);
-		});
-	}
+        rowsWrapper.removeAll();
+        experimentsNavBarItems.clear();
+
+        experiments.stream()
+                .forEach(experiment -> {
+                    ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
+                    experimentsNavBarItems.add(navBarItem);
+                    if (experiment.equals(selectedExperiment)) {
+                        navBarItem.setAsCurrent();
+                    }
+                    rowsWrapper.add(navBarItem);
+                });
+    }
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
         return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, segmentIntegrator);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
-		experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+        experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
             experimentsNavBarItem.removeAsCurrent();
-			if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
-				experimentsNavBarItem.setAsCurrent();
-			}
-		});
+            if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
+                experimentsNavBarItem.setAsCurrent();
+            }
+        });
         notificationExperimentUpdatedSubscriber.setExperiment(newCurrentExperiment);
     }
-    
+
     public void setAllowNewExperimentCreation(boolean allowNewExperimentCreation) {
         newExperimentButton.setEnabled(allowNewExperimentCreation);
     }

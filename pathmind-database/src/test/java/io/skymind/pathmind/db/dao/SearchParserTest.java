@@ -1,11 +1,11 @@
 package io.skymind.pathmind.db.dao;
 
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
-import static io.skymind.pathmind.db.dao.SearchDescription.OrClause;
 import static io.skymind.pathmind.db.dao.SearchDescription.Field.NAME;
 import static io.skymind.pathmind.db.dao.SearchDescription.Field.USERNOTES;
+import static io.skymind.pathmind.db.dao.SearchDescription.OrClause;
 
 public class SearchParserTest {
     private void assertParseResultWillBe(String keyword, SearchDescription expected) {

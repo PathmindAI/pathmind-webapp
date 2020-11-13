@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services.model;
 
+import java.util.List;
+
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.PolicyServerService;
@@ -8,8 +10,6 @@ import io.skymind.pathmind.shared.data.Observation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service

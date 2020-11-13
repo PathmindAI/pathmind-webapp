@@ -3,7 +3,9 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.notification;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 public class StoppedTrainingNotification extends Span {
 

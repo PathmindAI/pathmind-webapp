@@ -7,7 +7,7 @@ public class Routes {
 
     public static final String LOGIN_URL = "sign-in";
     public static final String LOGIN_PROCESSING_URL = "sign-in";
-    
+
     public static final String LOGOUT_URL = "sign-out";
     public static final String LOGOUT_SUCCESS_URL = "";
     public static final String SESSION_EXPIRED = "session-expired";

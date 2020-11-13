@@ -61,14 +61,21 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         return !Objects.equals(updatedNotesText, notesText) && updatedNotesText.length() <= MAX_NOTES_SIZE;
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setTitle(String title);
+
         void setPlaceholder(String placerholder);
+
         void setNotes(String notes);
+
         void setWarning(Boolean warning);
+
         void setUnsaved(Boolean unsaved);
+
         void setMax(Integer max);
+
         void setReadonly(Boolean readonly);
+
         void setCompact(Boolean compact);
-	}
+    }
 }

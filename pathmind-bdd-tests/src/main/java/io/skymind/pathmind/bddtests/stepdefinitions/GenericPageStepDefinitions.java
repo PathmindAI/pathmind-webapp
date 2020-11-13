@@ -1,13 +1,13 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import net.serenitybdd.core.Serenity;
-import net.thucydides.core.annotations.Steps;
-import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
-
 import java.io.IOException;
 import java.util.Date;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
+import net.serenitybdd.core.Serenity;
+import net.thucydides.core.annotations.Steps;
 
 public class GenericPageStepDefinitions {
 

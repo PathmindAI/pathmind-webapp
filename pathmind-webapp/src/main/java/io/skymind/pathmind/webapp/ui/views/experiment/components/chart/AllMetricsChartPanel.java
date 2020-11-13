@@ -1,5 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -11,18 +18,12 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
-
 @Slf4j
-public class AllMetricsChartPanel extends VerticalLayout
-{
+public class AllMetricsChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
 
     private AllMetricsChart chart = new AllMetricsChart();
@@ -44,7 +45,7 @@ public class AllMetricsChartPanel extends VerticalLayout
     private Paragraph hintMessage() {
         Paragraph hintMessage = new Paragraph(VaadinIcon.INFO_CIRCLE_O.create());
         hintMessage.add(
-            "You can click on the simulation metric names above to toggle the lines on this chart."
+                "You can click on the simulation metric names above to toggle the lines on this chart."
         );
         hintMessage.addClassName("hint-label");
         return hintMessage;

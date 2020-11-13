@@ -2,8 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.errors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
@@ -14,7 +12,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.ParentLayout;
-
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -24,6 +21,7 @@ import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * TODO -> Implement correctly, this is just a quick stub.
@@ -31,11 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 @CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
 @Slf4j
-public class ErrorView extends PathMindDefaultView implements HasErrorParameter<Exception>
-{
+public class ErrorView extends PathMindDefaultView implements HasErrorParameter<Exception> {
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-    
+
     private String errorId;
 
     public ErrorView() {
@@ -62,7 +59,7 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
         signOutButton.addClickListener(evt -> {
             getUI().ifPresent(ui -> VaadinUtils.signout(ui, true));
         });
-        
+
         return WrapperUtils.wrapWidthFullCenterVertical(
                 new Span(new Text("An unexpected error occurred. Try "), signOutButton, new Text(" of Pathmind and signing back in.")),
                 LabelFactory.createLabel(String.format("If you still see this error, please contact Pathmind for assistance (#%s).", errorId), CssPathmindStyles.NO_TOP_MARGIN_LABEL),

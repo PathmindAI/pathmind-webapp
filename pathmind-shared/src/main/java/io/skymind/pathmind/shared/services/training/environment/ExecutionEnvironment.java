@@ -2,7 +2,11 @@ package io.skymind.pathmind.shared.services.training.environment;
 
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
-import io.skymind.pathmind.shared.services.training.versions.*;
+import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
+import io.skymind.pathmind.shared.services.training.versions.Conda;
+import io.skymind.pathmind.shared.services.training.versions.JDK;
+import io.skymind.pathmind.shared.services.training.versions.NativeRL;
+import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

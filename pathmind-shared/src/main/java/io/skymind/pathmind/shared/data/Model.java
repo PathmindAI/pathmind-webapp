@@ -1,12 +1,14 @@
 package io.skymind.pathmind.shared.data;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
-import lombok.*;
-
-import javax.swing.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
+
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -16,22 +18,22 @@ import java.util.Arrays;
 public class Model extends ArchivableData implements DeepCloneableInterface<Model> {
     private static final long serialVersionUID = 3143001029296125340L;
 
-	public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
+    public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
 
-	public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
+    public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
 
-	private LocalDateTime dateCreated;
-	private LocalDateTime lastActivityDate;
-	private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
-	private transient byte[] file;
+    private LocalDateTime dateCreated;
+    private LocalDateTime lastActivityDate;
+    private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;
+    private transient byte[] file;
     private transient byte[] alpFile;
-	private long projectId;
-	private String userNotes;
-	private boolean draft;
-	private boolean hasGoals;
-	private int rewardVariablesCount;
-	private String packageName;
-	private int invalidModel;
+    private long projectId;
+    private String userNotes;
+    private boolean draft;
+    private boolean hasGoals;
+    private int rewardVariablesCount;
+    private String packageName;
+    private int invalidModel;
     private int modelType;
     private int numberOfAgents;
 

@@ -1,7 +1,7 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import net.thucydides.core.annotations.Step;
 import io.skymind.pathmind.bddtests.page.AccountPage;
+import net.thucydides.core.annotations.Step;
 
 public class AccountPageSteps {
 

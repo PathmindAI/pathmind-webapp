@@ -10,21 +10,20 @@ import com.vaadin.flow.component.checkbox.CheckboxGroupVariant;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.shared.data.Observation;
 
 @CssImport(value = "./styles/components/observations-table.css")
 public class ObservationsTable extends CustomField<Set<Observation>> implements HasStyle {
 
-	private Set<Observation> observationsList = new HashSet<>();
+    private Set<Observation> observationsList = new HashSet<>();
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
 
-	public ObservationsTable(Boolean isReadOnly) {
-	    VerticalLayout container = new VerticalLayout();
-	    container.setPadding(false);
-	    container.setSpacing(false);
-	    container.setClassName("observations-table");
-        
+    public ObservationsTable(Boolean isReadOnly) {
+        VerticalLayout container = new VerticalLayout();
+        container.setPadding(false);
+        container.setSpacing(false);
+        container.setClassName("observations-table");
+
         Checkbox checkboxSelectAll = new Checkbox("Select All");
         checkboxSelectAll.addClassName("select-all");
         checkboxGroup.addThemeVariants(CheckboxGroupVariant.LUMO_VERTICAL);
@@ -55,7 +54,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
         }
         add(container);
     }
-    
+
     public void setItems(Set<Observation> observations) {
         observationsList = observations;
         checkboxGroup.setItems(observationsList);

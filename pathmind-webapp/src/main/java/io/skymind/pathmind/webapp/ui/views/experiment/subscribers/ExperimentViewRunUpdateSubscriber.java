@@ -1,16 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 @Slf4j
 public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {

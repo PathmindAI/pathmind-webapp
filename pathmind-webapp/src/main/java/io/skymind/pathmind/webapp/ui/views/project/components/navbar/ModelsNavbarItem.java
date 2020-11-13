@@ -1,12 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
@@ -14,9 +16,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.project.ModelNavigationUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 @Tag("models-navbar-item")
 @JsModule("./src/project/models-navbar-item.js")
@@ -27,7 +26,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     private SegmentIntegrator segmentIntegrator;
 
     public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
-	    this.modelDAO = modelDAO;
+        this.modelDAO = modelDAO;
         this.model = model;
         this.modelsNavbar = modelsNavbar;
         this.segmentIntegrator = segmentIntegrator;
@@ -79,13 +78,19 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         });
     }
 
-	public interface PolymerModel extends TemplateModel {
+    public interface PolymerModel extends TemplateModel {
         void setModelName(String modelName);
+
         void setModelPackageName(String modelPackageName);
+
         void setModelLink(String modelLink);
+
         void setCreatedDate(String createdDate);
+
         void setIsCurrent(boolean isCurrent);
+
         void setIsDraft(boolean isDraft);
+
         void setIsArchived(boolean isArchived);
     }
 }

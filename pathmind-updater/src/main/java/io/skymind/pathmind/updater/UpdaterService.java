@@ -1,5 +1,18 @@
 package io.skymind.pathmind.updater;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
@@ -12,7 +25,14 @@ import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSNS;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Data;
+import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
+import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +42,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.*;
-import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.*;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_ERROR_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.RLLIB_MAX_LEN;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.SUCCESS_MAX_LEN;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.SUCCESS_MESSAGE_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.WARNING_MAX_LEN;
+import static io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider.WARNING_MESSAGE_PREFIX;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.CARGO_ATTRIBUTE;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.FILTER_ATTRIBUTE;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_POLICY;
+import static io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent.TYPE_RUN;
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.KILLED_TRAINING_KEYWORD;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
@@ -51,12 +71,12 @@ public class UpdaterService {
 
     @Autowired
     public UpdaterService(AWSExecutionProvider provider,
-            RunDAO runDAO,
-            PolicyFileService policyFileService, TrainingErrorDAO trainingErrorDAO,
-            AwsApiClientSNS snsClient,
-            @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
-            @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
-            ObjectMapper objectMapper) {
+                          RunDAO runDAO,
+                          PolicyFileService policyFileService, TrainingErrorDAO trainingErrorDAO,
+                          AwsApiClientSNS snsClient,
+                          @Value("${pathmind.aws.sns.updater_topic_arn}") String topicArn,
+                          @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
+                          ObjectMapper objectMapper) {
         this.provider = provider;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
@@ -104,10 +124,10 @@ public class UpdaterService {
     }
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
-        
+
         List<Policy> policiesToRaiseUpdateEvent = runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
         policiesToRaiseUpdateEvent.addAll(ensurePolicyDataIfRunIsCompleted(run, providerJobStatus));
-        
+
         // The EventBus updates have to be done AFTER the transaction is completed and NOT during in case the transaction fails.
         fireEventUpdates(run, policies);
         policiesToRaiseUpdateEvent
@@ -124,7 +144,7 @@ public class UpdaterService {
             setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
             runDAO.updatePolicyData(run, policies);
             Map<String, Boolean> dbPolicies = runDAO.getPolicies(run.getId()).stream()
-                .collect(Collectors.toMap(Policy::getExternalId, Policy::hasFile));
+                    .collect(Collectors.toMap(Policy::getExternalId, Policy::hasFile));
             policies.stream().forEach(p -> p.setHasFile(dbPolicies.getOrDefault(p.getExternalId(), false)));
             return policies;
         }
@@ -132,16 +152,16 @@ public class UpdaterService {
     }
 
     private List<String> getValidExternalIdsIfCompleted(ProviderJobStatus providerJobStatus) {
-    	if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
-    		return providerJobStatus.getExperimentState().getCheckpoints().stream()
-    				.map(CheckPoint::getId)
-    				.collect(Collectors.toList());
-    	}
-    	
-    	return Collections.emptyList();
-	}
+        if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
+            return providerJobStatus.getExperimentState().getCheckpoints().stream()
+                    .map(CheckPoint::getId)
+                    .collect(Collectors.toList());
+        }
 
-	private void updateInfoInAWS(Run run, List<PolicyUpdateInfo> policiesUpdateInfo) {
+        return Collections.emptyList();
+    }
+
+    private void updateInfoInAWS(Run run, List<PolicyUpdateInfo> policiesUpdateInfo) {
         policiesUpdateInfo.forEach(policyInfo -> {
             policyFileService.savePolicyFile(run.getId(), policyInfo.getName(), policyInfo.getPolicyFile());
             if (policyInfo.getCheckpointFile() != null) {
@@ -175,21 +195,21 @@ public class UpdaterService {
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
 
         return rawProgress.entrySet().stream()
-            .map(e -> {
-                List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
-                List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
-                int numReward = runDAO.getRewardNumForRun(runId);
-                int numAgents = runDAO.getAgentsNumForRun(runId);
-                Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward, numAgents);
-                if (isFinalUpdate) {
-                    List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
-                    int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
-                    ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward, numAgents);
-                }
+                .map(e -> {
+                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
+                    List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
+                    int numReward = runDAO.getRewardNumForRun(runId);
+                    int numAgents = runDAO.getAgentsNumForRun(runId);
+                    Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward, numAgents);
+                    if (isFinalUpdate) {
+                        List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
+                        int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
+                        ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward, numAgents);
+                    }
 
-                return policy;
-            })
-            .collect(Collectors.toList());
+                    return policy;
+                })
+                .collect(Collectors.toList());
     }
 
     private void setEventualInformationAboutWhyTheRunEnded(Run run, ProviderJobStatus jobStatus) {
@@ -232,7 +252,7 @@ public class UpdaterService {
                     return e;
                 });
     }
-    
+
     private void fireEventUpdates(Run run, List<Policy> policies) {
         for (Policy policy : CollectionUtils.emptyIfNull(policies)) {
             serializeAndFireEvent(policy, TYPE_POLICY);
@@ -245,7 +265,7 @@ public class UpdaterService {
             return;
         }
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream out = new ObjectOutputStream(bos)) {
+             ObjectOutputStream out = new ObjectOutputStream(bos)) {
             out.writeObject(data);
             out.flush();
             byte[] bytes = bos.toByteArray();
@@ -286,7 +306,7 @@ public class UpdaterService {
     }
 
     private List<PolicyUpdateInfo> getPoliciesUpdateInfo(List<String> stoppedPoliciesNames, Long runId,
-            String jobHandle, ProviderJobStatus providerJobStatus) {
+                                                         String jobHandle, ProviderJobStatus providerJobStatus) {
         List<PolicyUpdateInfo> policiesInfo = new ArrayList<>();
         if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);

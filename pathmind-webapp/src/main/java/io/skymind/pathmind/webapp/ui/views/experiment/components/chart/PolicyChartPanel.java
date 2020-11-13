@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -8,11 +11,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.PolicyChartPanelPolicyUpdateSubscriber;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-public class PolicyChartPanel extends VerticalLayout
-{
+public class PolicyChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
 
     private PolicyChart chart = new PolicyChart();

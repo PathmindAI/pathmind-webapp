@@ -33,94 +33,91 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
-public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long>
-{
+public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long> {
     @Autowired
     private ModelService modelService;
-	@Autowired
-	private PolicyDAO policyDAO;
-	@Autowired
-	private PolicyFileService policyFileService;
-	@Autowired
-	private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private PolicyDAO policyDAO;
+    @Autowired
+    private PolicyFileService policyFileService;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
-	private ExportPolicyButton exportButton;
+    private ExportPolicyButton exportButton;
     private Button cancelButton;
     private Anchor downloadModelAlpLink;
-	
-	private long policyId;
-	private Policy policy;
 
-	public ExportPolicyView()
-	{
+    private long policyId;
+    private Policy policy;
+
+    public ExportPolicyView() {
         super();
         addClassName("export-policy-view");
-	}
+    }
 
-	@Override
-	protected Component getTitlePanel() {
-		return new ScreenTitlePanel(createBreadcrumbs());
-	}
+    @Override
+    protected Component getTitlePanel() {
+        return new ScreenTitlePanel(createBreadcrumbs());
+    }
 
-	@Override
-	protected Component getMainContent()
-	{
-		exportButton = new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> policy);
+    @Override
+    protected Component getMainContent() {
+        exportButton = new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> policy);
 
         downloadModelAlpLink = new DownloadModelAlpLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true);
 
-		Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
-		learnMoreLink.setTarget("_blank");
+        Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
+        learnMoreLink.setTarget("_blank");
 
-		cancelButton = new Button("< Back to Experiment #"+policy.getExperiment().getName(), click -> handleCancelButtonClicked());
-		cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancelButton = new Button("< Back to Experiment #" + policy.getExperiment().getName(), click -> handleCancelButtonClicked());
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
-		VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
-						LabelFactory.createLabel("Export Policy", CssPathmindStyles.SECTION_TITLE_LABEL),
-						new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
-						LabelFactory.createLabel(exportButton.getPolicyFilename()),
-						createInstructionsDiv(),
-						learnMoreLink,
-                        exportButton,
-                        downloadModelAlpLink);
-		wrapperContent.setClassName("view-section");
-		return WrapperUtils.wrapCenterVertical("100%", 
-				wrapperContent,
-				cancelButton);
-	}
-	
-	private void handleCancelButtonClicked() {
-		getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, policy.getExperiment().getId()));
-	}
+        VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
+                LabelFactory.createLabel("Export Policy", CssPathmindStyles.SECTION_TITLE_LABEL),
+                new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
+                LabelFactory.createLabel(exportButton.getPolicyFilename()),
+                createInstructionsDiv(),
+                learnMoreLink,
+                exportButton,
+                downloadModelAlpLink);
+        wrapperContent.setClassName("view-section");
+        return WrapperUtils.wrapCenterVertical("100%",
+                wrapperContent,
+                cancelButton);
+    }
 
-	@Override
-	public void setParameter(BeforeEvent event, Long policyId) {
-		this.policyId = policyId;
-	}
+    private void handleCancelButtonClicked() {
+        getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, policy.getExperiment().getId()));
+    }
 
-	@Override
-	protected void initLoadData() {
-		policy = policyDAO.getPolicyIfAllowed(policyId, SecurityUtils.getUserId())
-			.orElseThrow(() -> new InvalidDataException("Attempted to access Policy: " + policyId));
-	}
-	
-	private Div createInstructionsDiv() {
-		Div div = new Div();
-		div.getElement().setProperty("innerHTML",
-				"<h3>To use your policy:</h3>" +
-				"<ol>" +
-					"<li>Download this file.</li>" +
-					"<li>Return to AnyLogic and open the Pathmind Helper properties in your simulation.</li>" +
-					"<ul>" +
-						"<li>Change the 'Mode' to 'Use Policy'.</li>" +
-						"<li>In 'policyFile', click 'Browse' and select the file you downloaded.</li>" +
-					"</ul>" +
-					"<li>Run the simulation to see the policy in action.</li>" +
-				"</ol>");
-		return div;
-	}
-	
-	private Breadcrumbs createBreadcrumbs() {
-		return new Breadcrumbs(policy.getProject(), policy.getModel(), policy.getExperiment(), "Export");
-	}
+    @Override
+    public void setParameter(BeforeEvent event, Long policyId) {
+        this.policyId = policyId;
+    }
+
+    @Override
+    protected void initLoadData() {
+        policy = policyDAO.getPolicyIfAllowed(policyId, SecurityUtils.getUserId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Policy: " + policyId));
+    }
+
+    private Div createInstructionsDiv() {
+        Div div = new Div();
+        div.getElement().setProperty("innerHTML",
+                "<h3>To use your policy:</h3>" +
+                        "<ol>" +
+                        "<li>Download this file.</li>" +
+                        "<li>Return to AnyLogic and open the Pathmind Helper properties in your simulation.</li>" +
+                        "<ul>" +
+                        "<li>Change the 'Mode' to 'Use Policy'.</li>" +
+                        "<li>In 'policyFile', click 'Browse' and select the file you downloaded.</li>" +
+                        "</ul>" +
+                        "<li>Run the simulation to see the policy in action.</li>" +
+                        "</ol>");
+        return div;
+    }
+
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(policy.getProject(), policy.getModel(), policy.getExperiment(), "Export");
+    }
 }

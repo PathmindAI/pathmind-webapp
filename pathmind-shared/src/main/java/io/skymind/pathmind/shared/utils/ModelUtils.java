@@ -1,15 +1,15 @@
 package io.skymind.pathmind.shared.utils;
 
-import io.skymind.pathmind.shared.constants.InvalidModelType;
-import io.skymind.pathmind.shared.data.Model;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
+
+import io.skymind.pathmind.shared.constants.InvalidModelType;
+import io.skymind.pathmind.shared.data.Model;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 
@@ -43,7 +43,7 @@ public class ModelUtils {
     private static byte[] getModelJar(byte[] projectFile) {
         return ZipUtils.processZipEntryInFile(projectFile, s -> s.endsWith("model.jar"), entryContentExtractor());
     }
-    
+
     public static Optional<InvalidModelType> checkIfModelIsInvalid(Model model) {
         return InvalidModelType.getEnumFromValue(model.getInvalidModel());
     }

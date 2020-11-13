@@ -23,8 +23,9 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
         // If it's archived then we don't need to update anything since there is no NavBar.
-        if(event.getExperiment().isArchived())
+        if (event.getExperiment().isArchived()) {
             return false;
+        }
         return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
     }
 }

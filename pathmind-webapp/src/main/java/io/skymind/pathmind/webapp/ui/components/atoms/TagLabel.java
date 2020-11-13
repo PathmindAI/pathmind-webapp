@@ -24,17 +24,19 @@ public class TagLabel extends PolymerTemplate<TagLabel.Model> implements HasStyl
     public TagLabel(String text, Boolean outlineStyle, String size) {
         super();
         setText(text);
-		getModel().setOutline(outlineStyle);
-		getModel().setSize(size);
+        getModel().setOutline(outlineStyle);
+        getModel().setSize(size);
     }
 
     public void setText(String text) {
-		getModel().setText(text);
+        getModel().setText(text);
     }
 
-	public interface Model extends TemplateModel {
-		void setText(String text);
-		void setOutline(Boolean outlineStyle);
-		void setSize(String size);
-	}
+    public interface Model extends TemplateModel {
+        void setText(String text);
+
+        void setOutline(Boolean outlineStyle);
+
+        void setSize(String size);
+    }
 }

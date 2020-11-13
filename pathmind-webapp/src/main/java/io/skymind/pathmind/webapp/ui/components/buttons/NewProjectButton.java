@@ -4,7 +4,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-
 import io.skymind.pathmind.webapp.ui.views.project.NewProjectView;
 
 public class NewProjectButton extends Button {

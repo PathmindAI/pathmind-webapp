@@ -26,91 +26,91 @@ import org.springframework.context.annotation.Scope;
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordViewContent.Model> {
-	@Id("currentPassword")
-	private PasswordField currentPassword;
+    @Id("currentPassword")
+    private PasswordField currentPassword;
 
-	@Id("newPassword")
-	private PasswordField newPassword;
+    @Id("newPassword")
+    private PasswordField newPassword;
 
-	@Id("confirmNewPassword")
-	private PasswordField confirmNewPassword;
+    @Id("confirmNewPassword")
+    private PasswordField confirmNewPassword;
 
-	@Id("newPassNotes")
-	private VerticalLayout passwordValidationNotes;
+    @Id("newPassNotes")
+    private VerticalLayout passwordValidationNotes;
 
-	@Id("currentPassNotes")
-	private VerticalLayout currentPasswordValidationNotes;
+    @Id("currentPassNotes")
+    private VerticalLayout currentPasswordValidationNotes;
 
-	@Id("cancelBtn")
-	private Button cancelBtn;
+    @Id("cancelBtn")
+    private Button cancelBtn;
 
-	@Id("updateBtn")
-	private Button updateBtn;
+    @Id("updateBtn")
+    private Button updateBtn;
 
-	private PathmindUser user;
+    private PathmindUser user;
 
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	public ChangePasswordViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink) {
-		getModel().setContactLink(contactLink);
-		user = currentUser.getUser();
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
 
-		passwordValidationNotes.setPadding(false);
+    @Autowired
+    public ChangePasswordViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink) {
+        getModel().setContactLink(contactLink);
+        user = currentUser.getUser();
+
+        passwordValidationNotes.setPadding(false);
         passwordValidationNotes.setSpacing(false);
         currentPasswordValidationNotes.setPadding(false);
         currentPasswordValidationNotes.setSpacing(false);
 
-		cancelBtn.addClickShortcut(Key.ESCAPE);
+        cancelBtn.addClickShortcut(Key.ESCAPE);
 
 
-		cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
-		updateBtn.addClickListener(e -> {
-			if (validate())  {
-				if (userService.changePassword(user, newPassword.getValue())) {
-					NotificationUtils.showSuccess("Password was successfully changed.");
-					segmentIntegrator.passwordChanged();
-					getUI().ifPresent(ui -> ui.navigate(AccountView.class));
-				} else {
-					NotificationUtils.showError("There was an error during changing password, please try again");
-				}
-			}
-		});
-	}
+        cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
+        updateBtn.addClickListener(e -> {
+            if (validate()) {
+                if (userService.changePassword(user, newPassword.getValue())) {
+                    NotificationUtils.showSuccess("Password was successfully changed.");
+                    segmentIntegrator.passwordChanged();
+                    getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+                } else {
+                    NotificationUtils.showError("There was an error during changing password, please try again");
+                }
+            }
+        });
+    }
 
-	private void validateCurrentPassword() {
-		currentPasswordValidationNotes.removeAll();
-		if (!userService.isCurrentPassword(user, currentPassword.getValue())) {
-			currentPasswordValidationNotes.removeAll();
-			currentPasswordValidationNotes.add(new Span("Password is incorrect"));
-			currentPassword.setInvalid(true);
-		}
-	}
+    private void validateCurrentPassword() {
+        currentPasswordValidationNotes.removeAll();
+        if (!userService.isCurrentPassword(user, currentPassword.getValue())) {
+            currentPasswordValidationNotes.removeAll();
+            currentPasswordValidationNotes.add(new Span("Password is incorrect"));
+            currentPassword.setInvalid(true);
+        }
+    }
 
-	private void validateNewPassword() {
-		passwordValidationNotes.removeAll();
-		UserService.PasswordValidationResults validationResults = userService
-				.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
-		if (!validationResults.isOk()) {
-			newPassword.setInvalid(true);
-			passwordValidationNotes.removeAll();
-			validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
-			confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
-			confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
-		}
-	}
+    private void validateNewPassword() {
+        passwordValidationNotes.removeAll();
+        UserService.PasswordValidationResults validationResults = userService
+                .validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+        if (!validationResults.isOk()) {
+            newPassword.setInvalid(true);
+            passwordValidationNotes.removeAll();
+            validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+            confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+            confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
+        }
+    }
 
-	private boolean validate() {
-		validateCurrentPassword();
-		validateNewPassword();
-		return !currentPassword.isInvalid() && !newPassword.isInvalid();
-	}
+    private boolean validate() {
+        validateCurrentPassword();
+        validateNewPassword();
+        return !currentPassword.isInvalid() && !newPassword.isInvalid();
+    }
 
-	public interface Model extends TemplateModel {
-		void setContactLink(String contactLink);
-	}
+    public interface Model extends TemplateModel {
+        void setContactLink(String contactLink);
+    }
 }

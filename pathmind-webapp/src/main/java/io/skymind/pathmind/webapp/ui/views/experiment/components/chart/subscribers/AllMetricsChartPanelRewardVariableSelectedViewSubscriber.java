@@ -15,7 +15,7 @@ public class AllMetricsChartPanelRewardVariableSelectedViewSubscriber extends Re
 
     @Override
     public void handleBusEvent(RewardVariableSelectedViewBusEvent event) {
-        if(event.isShow()) {
+        if (event.isShow()) {
             allMetricsChartPanel.getRewardVariableFilters().putIfAbsent(event.getRewardVariable().getId(), event.getRewardVariable());
         } else {
             allMetricsChartPanel.getRewardVariableFilters().remove(event.getRewardVariable().getId());

@@ -1,8 +1,8 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT_OBSERVATION;
-
 import org.jooq.DSLContext;
+
+import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT_OBSERVATION;
 
 
 class ExperimentObservationRepository {

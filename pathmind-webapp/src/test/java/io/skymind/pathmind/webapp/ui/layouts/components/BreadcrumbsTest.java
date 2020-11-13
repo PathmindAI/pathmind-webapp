@@ -4,24 +4,22 @@ import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.RouterLink;
-
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
-import org.junit.Test;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.karibu.KaribuUtils;
-import io.skymind.pathmind.webapp.ui.mocks.ProjectMock;
-import io.skymind.pathmind.webapp.ui.mocks.ModelMock;
 import io.skymind.pathmind.webapp.ui.mocks.ExperimentMock;
+import io.skymind.pathmind.webapp.ui.mocks.ModelMock;
+import io.skymind.pathmind.webapp.ui.mocks.ProjectMock;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
+import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class BreadcrumbsTest {
 

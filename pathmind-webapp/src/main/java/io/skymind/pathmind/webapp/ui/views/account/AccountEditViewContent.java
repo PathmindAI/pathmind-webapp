@@ -9,7 +9,6 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
@@ -31,82 +30,82 @@ import org.springframework.stereotype.Component;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class AccountEditViewContent extends PolymerTemplate<AccountEditViewContent.Model> {
 
-	@Id("lastName")
-	private TextField lastName;
+    @Id("lastName")
+    private TextField lastName;
 
-	@Id("firstName")
-	private TextField firstName;
+    @Id("firstName")
+    private TextField firstName;
 
-	@Id("email")
-	private TextField email;
+    @Id("email")
+    private TextField email;
 
-	@Id("cancelBtn")
-	private Button cancelBtn;
+    @Id("cancelBtn")
+    private Button cancelBtn;
 
-	@Id("updateBtn")
-	private Button updateBtn;
+    @Id("updateBtn")
+    private Button updateBtn;
 
-	private PathmindUser user;
+    private PathmindUser user;
 
-	private Binder<PathmindUser> binder;
+    private Binder<PathmindUser> binder;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private EmailNotificationService emailNotificationService;
+    @Autowired
+    private EmailNotificationService emailNotificationService;
 
-	@Autowired
-	public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService,
-						   @Value("${pathmind.contact-support.address}") String contactLink) {
-		getModel().setContactLink(contactLink);
-		user = currentUser.getUser();
-		this.userService = userService;
-		this.emailNotificationService = emailNotificationService;
-		initBinder();
+    @Autowired
+    public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService,
+                                  @Value("${pathmind.contact-support.address}") String contactLink) {
+        getModel().setContactLink(contactLink);
+        user = currentUser.getUser();
+        this.userService = userService;
+        this.emailNotificationService = emailNotificationService;
+        initBinder();
 
-		cancelBtn.addClickShortcut(Key.ESCAPE);
+        cancelBtn.addClickShortcut(Key.ESCAPE);
 
-		cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
-		updateBtn.addClickListener(e -> {
-			if (!FormUtils.isValidForm(binder, user)) {
-				return;
-			}
-			boolean isEmailChanged = !SecurityUtils.getUsername().equals(user.getEmail());
-			if (isEmailChanged) {
-                ConfirmationUtils.emailUpdateConfirmation(user.getEmail(), () -> updateUserInformation(true)); 
+        cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
+        updateBtn.addClickListener(e -> {
+            if (!FormUtils.isValidForm(binder, user)) {
+                return;
+            }
+            boolean isEmailChanged = !SecurityUtils.getUsername().equals(user.getEmail());
+            if (isEmailChanged) {
+                ConfirmationUtils.emailUpdateConfirmation(user.getEmail(), () -> updateUserInformation(true));
             } else {
                 updateUserInformation(false);
             }
-		});
-	}
-	
-	private void updateUserInformation(boolean isEmailChanged) {
-	    if (isEmailChanged) {
+        });
+    }
+
+    private void updateUserInformation(boolean isEmailChanged) {
+        if (isEmailChanged) {
             userService.setNewEmailToVerify(user, SecurityUtils.getUsername(), user.getEmail());
         }
         userService.update(user);
 
-         if (isEmailChanged) {
-             emailNotificationService.sendVerificationEmail(user, user.getNewEmailToVerify(), false);
-             ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
-         } else {
-             getUI().ifPresent(ui -> ui.navigate(AccountView.class));
-         }
+        if (isEmailChanged) {
+            emailNotificationService.sendVerificationEmail(user, user.getNewEmailToVerify(), false);
+            ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+        } else {
+            getUI().ifPresent(ui -> ui.navigate(AccountView.class));
+        }
 
-     }
+    }
 
-	private void initBinder() {
-		binder = new Binder<>(PathmindUser.class);
+    private void initBinder() {
+        binder = new Binder<>(PathmindUser.class);
 
-		PathmindUserBinders.bindEmail(userService, binder, email);
-		PathmindUserBinders.bindFirstName(binder, firstName);
-		PathmindUserBinders.bindLastName(binder, lastName);
+        PathmindUserBinders.bindEmail(userService, binder, email);
+        PathmindUserBinders.bindFirstName(binder, firstName);
+        PathmindUserBinders.bindLastName(binder, lastName);
 
-		binder.setBean(user);
-	}
+        binder.setBean(user);
+    }
 
-	public interface Model extends TemplateModel {
-		void setContactLink(String contactLink);
-	}
+    public interface Model extends TemplateModel {
+        void setContactLink(String contactLink);
+    }
 }

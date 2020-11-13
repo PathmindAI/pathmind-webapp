@@ -39,7 +39,7 @@ public class NewProjectPage extends PageObject {
         assertThat(e.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
         assertThat(e.findElement(By.cssSelector("h3")).getText(), containsString("Start a New Project!"));
         assertThat(e.findElement(By.cssSelector("h3 + p")).getText(), containsString("Projects organize your Pathmind Experiments based on your AnyLogic model"));
-        
+
         WebElement e2 = utils.expandRootElement(e.findElement(By.cssSelector("#projectName")));
         WebElement inputField = e2.findElement(By.cssSelector("label[part='label']"));
         assertThat(inputField.getText(), containsString("Give your project a name"));

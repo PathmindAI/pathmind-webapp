@@ -1,11 +1,11 @@
 package io.skymind.pathmind.shared.services.training;
 
-import io.skymind.pathmind.shared.data.ProviderJobStatus;
-import io.skymind.pathmind.shared.constants.RunStatus;
-
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
+
+import io.skymind.pathmind.shared.data.ProviderJobStatus;
 
 public interface ExecutionProvider {
     /**
@@ -26,6 +26,7 @@ public interface ExecutionProvider {
 
     /**
      * Collect the status of the training job identified by the given job handle.
+     *
      * @param jobHandle Job Handle
      * @return The current status
      */
@@ -33,15 +34,15 @@ public interface ExecutionProvider {
 
     /**
      * Collects the current progress of the training job identified by the given job handle.
-     *
+     * <p>
      * Because each training job can produce multiple training runs, this matches up the training run to the contents
      * of its progress.csv file.
-     *
+     * <p>
      * If called while a training job is still running, this may result incomplete results, both in not producing full
      * progress files as well as adding new training runs as they are started.
-     *
+     * <p>
      * The training run keys typically contain all tuned training parameters and a unique id.
-     *
+     * <p>
      * To interpret the results of this method take a look at {@link ProgressInterpreter}.
      *
      * @param jobHandle Job Handle
@@ -53,7 +54,7 @@ public interface ExecutionProvider {
      * Collects the current progress of the training job identified by the given job handle.
      * Will ignore policies if it doesn't exist in valid external ids list
      *
-     * @param jobHandle Job Handle
+     * @param jobHandle        Job Handle
      * @param validExternalIds Valid external Id list
      * @return Map of training run to the contents of its progress file
      */
@@ -62,7 +63,7 @@ public interface ExecutionProvider {
     /**
      * Download the policy file from the given jobHandle and trainingRun
      *
-     * @param jobHandle Job Handle
+     * @param jobHandle   Job Handle
      * @param trainingRun Training Run Name, as given as a key by `progress(jobHandle)`
      * @return policy file contents or null if no such file is available
      */
@@ -78,8 +79,8 @@ public interface ExecutionProvider {
     Map.Entry<@NotNull String, byte[]> snapshot(String jobHandle, String trainingRun);
 
     /**
-     *  Download the current console output for the given jobHandle. Best used for debugging purposes; usually not
-     *  exposed to end users.
+     * Download the current console output for the given jobHandle. Best used for debugging purposes; usually not
+     * exposed to end users.
      *
      * @param jobHandle Job Handle
      * @return Console Output
