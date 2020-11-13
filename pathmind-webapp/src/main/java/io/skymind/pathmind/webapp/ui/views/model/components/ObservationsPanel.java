@@ -14,6 +14,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import org.springframework.util.CollectionUtils;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -27,14 +28,17 @@ public class ObservationsPanel extends VerticalLayout {
     public ObservationsPanel(List<Observation> modelObservations) {
         this(modelObservations, modelObservations, true);
     }
+
     public ObservationsPanel(Experiment experiment) {
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), true);
         this.experiment = experiment;
     }
+
     public ObservationsPanel(Experiment experiment, Boolean isReadOnly) {
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly);
         this.experiment = experiment;
     }
+
     public ObservationsPanel(List<Observation> modelObservatons, List<Observation> selectedObservations, Boolean isReadOnly) {
 
         observationsTable = new ObservationsTable(isReadOnly);
@@ -45,12 +49,13 @@ public class ObservationsPanel extends VerticalLayout {
         setWidthFull();
         setPadding(false);
         setSpacing(false);
+
         setupObservationTable(modelObservatons, selectedObservations);
     }
 
     private void setupObservationTable(List<Observation> modelObservations, Collection<Observation> selectedObservations) {
         observationsTable.setItems(new HashSet<>(modelObservations));
-        setSelectedObservations(selectedObservations);
+        setSelectedObservations(CollectionUtils.isEmpty(selectedObservations) ? modelObservations : selectedObservations);
     }
 
     public List<Observation> getSelectedObservations() {
