@@ -262,7 +262,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true, false, true);
+        observationsPanel = new ObservationsPanel(experiment, false);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
