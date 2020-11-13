@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -19,9 +22,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.subscribers.RewardVariablesRowFieldExperimentChangedViewSubscriber;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -83,7 +83,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
         goalField.addValueChangeListener(event -> goalFieldValueChangeHandler.execute());
 
-        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().toString()+rv.getGoalValue());
+        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().toString() + rv.getGoalValue());
         goalSpan = LabelFactory.createLabel(goalDisplayText, "goal-display-span");
 
         goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, goalField, goalSpan);
@@ -118,7 +118,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     private void setGoalFieldVisibility() {
         if (conditionType.getValue() != null) {
-            conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames+" not-none");
+            conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
         } else {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         }
@@ -150,8 +150,9 @@ public class RewardVariablesRowField extends HorizontalLayout {
     }
 
     public void reset() {
-        if(isShow)
+        if (isShow) {
             return;
+        }
 
         getRewardVariableSpan().getElement().setAttribute("chosen", true);
         isShow = true;

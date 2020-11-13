@@ -8,12 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 /**
- * DTO for search result object, which can be one of these: Project, Model, Experiment 
+ * DTO for search result object, which can be one of these: Project, Model, Experiment
  */
 @AllArgsConstructor
 @Builder
 public class SearchResult {
-	
+
     private SearchResultItemType itemType;
     private long itemId;
     private Boolean isArchived;
@@ -24,19 +24,23 @@ public class SearchResult {
     private String modelName;
     private String experimentName;
 
-	@Override
- 	public boolean equals(Object o) {
- 		if(this == o) return true;
- 		if(o == null || getClass() != o.getClass()) return false;
- 		SearchResult item = (SearchResult) o;
- 		return Objects.equals(item.getItemType(), getItemType()) 
- 				&& Objects.equals(item.getItemId(), getItemId());
- 	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SearchResult item = (SearchResult) o;
+        return Objects.equals(item.getItemType(), getItemType())
+                && Objects.equals(item.getItemId(), getItemId());
+    }
 
- 	@Override
- 	public int hashCode() {
- 		return Objects.hash(getItemType(), getItemId());
- 	}
+    @Override
+    public int hashCode() {
+        return Objects.hash(getItemType(), getItemId());
+    }
 
     public long getItemId() {
         return itemId;

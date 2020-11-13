@@ -1,6 +1,12 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.db.dao.*;
+import java.util.List;
+
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.ModelType;
@@ -16,8 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
 @Service
@@ -25,6 +29,7 @@ import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 public class AWSTrainingService extends TrainingService {
     private final FeatureManager featureManager;
     private final ObservationDAO observationDAO;
+
     public AWSTrainingService(ExecutionEnvironmentManager executionEnvironmentManager,
                               FeatureManager featureManager,
                               ExecutionProvider executionProvider, RunDAO runDAO, ModelService modelService,
@@ -33,15 +38,15 @@ public class AWSTrainingService extends TrainingService {
                               ObservationDAO observationDAO,
                               ExperimentDAO experimentDAO,
                               DSLContext ctx) {
-    	super(executionProvider, runDAO, modelService, executionEnvironmentManager, policyDAO, modelDAO, experimentDAO, ctx);
-    	this.observationDAO = observationDAO;
-    	this.featureManager = featureManager;
+        super(executionProvider, runDAO, modelService, executionEnvironmentManager, policyDAO, modelDAO, experimentDAO, ctx);
+        this.observationDAO = observationDAO;
+        this.featureManager = featureManager;
     }
 
     protected String startRun(Model model, Experiment exp, Run run, int iterations, int maxTimeInSec, int numSamples) {
         // Get model from the database, as the one we can get from the experiment doesn't have all fields
         final String modelFileId = modelService.buildModelPath(model.getId());
-        List<Observation> observations =  observationDAO.getObservationsForExperiment(exp.getId());
+        List<Observation> observations = observationDAO.getObservationsForExperiment(exp.getId());
 
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),
@@ -66,7 +71,7 @@ public class AWSTrainingService extends TrainingService {
                 true
         );
 
-        return executionProvider.execute(spec);        
+        return executionProvider.execute(spec);
     }
 
 

@@ -1,10 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.Map;
+
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
@@ -12,8 +13,6 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-
-import java.util.Map;
 
 public class MetricChartPanel extends VerticalLayout {
 
@@ -41,7 +40,7 @@ public class MetricChartPanel extends VerticalLayout {
         Double goalValue = rewardVariable.getGoalValue();
         if (goalCondition != null && goalValue != null) {
             goalLabel.setVisible(true);
-            goalLabel.setText("Goal: "+goalCondition+goalValue);
+            goalLabel.setText("Goal: " + goalCondition + goalValue);
             if (reachedGoal) {
                 goalLabel.setClassName("success-text");
             } else {

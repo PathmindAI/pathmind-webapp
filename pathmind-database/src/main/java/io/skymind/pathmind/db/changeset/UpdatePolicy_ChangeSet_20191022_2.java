@@ -1,5 +1,14 @@
 package io.skymind.pathmind.db.changeset;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
@@ -17,15 +26,6 @@ import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * INFO -> I decided to use CustomTaskChange rather than CustomSQLChange because the only option I could see
  * to run SQL statements was with RaqSQLStatement which should be ok for SQL injection but didn't really give us
@@ -36,11 +36,9 @@ import java.util.List;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, CustomSqlRollback
-{
+public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, CustomSqlRollback {
     @Override
-    public SqlStatement[] generateStatements(Database database) throws CustomChangeException
-    {
+    public SqlStatement[] generateStatements(Database database) throws CustomChangeException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         List<Changeset201910222_2_Policy> policies = getPoliciesFromDatabase(connection);
@@ -57,10 +55,10 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
      * Copied this code from PolicyUtils.processProgressJson so that it can be changed independently without worrying about breaking
      * the database changelog.
      */
-    public static void processProgressJson(ObjectMapper objectMapper, Changeset201910222_2_Policy policy, String progressString)
-    {
-        if(StringUtils.isEmpty(progressString))
+    public static void processProgressJson(ObjectMapper objectMapper, Changeset201910222_2_Policy policy, String progressString) {
+        if (StringUtils.isEmpty(progressString)) {
             return;
+        }
 
         try {
             final Changeset201910222_2_Policy jsonPolicy = objectMapper.readValue(progressString, Changeset201910222_2_Policy.class);
@@ -82,35 +80,34 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
         return rollbackPoliciesInDatabase(policies);
     }
 
-    private SqlStatement[] rollbackPoliciesInDatabase(List<Changeset201910222_2_Policy> policies)
-    {
+    private SqlStatement[] rollbackPoliciesInDatabase(List<Changeset201910222_2_Policy> policies) {
         return policies.stream().map(policy ->
                 new RawSqlStatement(
                         "UPDATE POLICY SET " +
                                 "STARTEDAT=null, " +
                                 "STOPPEDAT=null, " +
                                 "ALGORITHM=null, " +
-                        "WHERE " +
+                                "WHERE " +
                                 "id=" + policy.getId())
         ).toArray(SqlStatement[]::new);
     }
 
-    private SqlStatement[] updatePoliciesInDatabase(List<Changeset201910222_2_Policy> policies)
-    {
+    private SqlStatement[] updatePoliciesInDatabase(List<Changeset201910222_2_Policy> policies) {
         return policies.stream().map(policy ->
-            new RawSqlStatement(
-                    "UPDATE POLICY SET " +
-                            "STARTEDAT=" + getLocalDateTime(policy.getStartedAt()) + ", " +
-                            "STOPPEDAT=" + getLocalDateTime(policy.getStoppedAt()) + ", " +
-                            "ALGORITHM='" + policy.getAlgorithm() + "' " +
-                    "WHERE " +
-                            "id=" + policy.getId())
+                new RawSqlStatement(
+                        "UPDATE POLICY SET " +
+                                "STARTEDAT=" + getLocalDateTime(policy.getStartedAt()) + ", " +
+                                "STOPPEDAT=" + getLocalDateTime(policy.getStoppedAt()) + ", " +
+                                "ALGORITHM='" + policy.getAlgorithm() + "' " +
+                                "WHERE " +
+                                "id=" + policy.getId())
         ).toArray(SqlStatement[]::new);
     }
 
     private String getLocalDateTime(LocalDateTime localDateTime) {
-        if(localDateTime == null)
+        if (localDateTime == null) {
             return "null";
+        }
         return "'" + localDateTime.withNano(0) + "'";
     }
 
@@ -118,7 +115,7 @@ public class UpdatePolicy_ChangeSet_20191022_2 implements CustomSqlChange, Custo
         ArrayList<Changeset201910222_2_Policy> policies = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, PROGRESS FROM POLICY")) {
             ResultSet result = preparedStatement.executeQuery();
-            while(result.next()) {
+            while (result.next()) {
                 Changeset201910222_2_Policy policy = new Changeset201910222_2_Policy();
                 policy.setId(result.getLong("ID"));
                 policy.setProgress(result.getString("PROGRESS"));

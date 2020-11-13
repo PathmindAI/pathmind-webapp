@@ -1,5 +1,12 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
@@ -11,16 +18,16 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsInRelativeOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @DefaultUrl("page:home.page")
 public class ExperimentPage extends PageObject {
@@ -292,10 +299,10 @@ public class ExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::span")).getText(), containsString(model));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/h3")).getText(), is("To use your policy:"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/ol")).getText(), is("Download this file.\n" +
-            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
-            "Change the 'Mode' to 'Use Policy'.\n" +
-            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
-            "Run the simulation to see the policy in action."));
+                "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
+                "Change the 'Mode' to 'Use Policy'.\n" +
+                "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
+                "Run the simulation to see the policy in action."));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getText(), is("Learn how to validate your policy"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]"))));
@@ -337,5 +344,9 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentNameTagLabel(String label) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/descendant::span[@class='section-title-label']/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
+    }
+
+    public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).getAttribute("aria-checked"), is(isSelected));
     }
 }

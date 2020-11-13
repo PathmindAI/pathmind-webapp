@@ -1,13 +1,10 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Observation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO: we should consider refactoring the whole AWSExecutionProvider code related with script.sh creation and move
 // the operations to a BashScriptCreator class. I won't do that now because it will generate a lot of changes and my
@@ -35,7 +32,9 @@ public class BashScriptCreatorUtil {
         assert selectedObservations != null && !selectedObservations.isEmpty();
         List<String> selectedObservationsVars = new ArrayList<>();
         selectedObservations.stream().forEach(o -> {
-            if (o.getDataTypeEnum() == ObservationDataType.NUMBER_ARRAY) {
+            if (o.getDataTypeEnum() == ObservationDataType.BOOLEAN) {
+                selectedObservationsVars.add(String.format("%s ? 1.0 : 0.0", o.getVariable()));
+            } else if (ObservationDataType.isArray(o.getDataTypeEnum())) {
                 for (int i = 0; i < o.getMaxItems(); i++) {
                     selectedObservationsVars.add(String.format("%s[%s]", o.getVariable(), i));
                 }

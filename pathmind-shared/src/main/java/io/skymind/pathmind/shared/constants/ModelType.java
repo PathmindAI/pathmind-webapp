@@ -24,15 +24,15 @@ public enum ModelType {
 
     public static ModelType fromValue(int value) {
         return Arrays.stream(values())
-            .filter(modelType -> modelType.getValue() == value)
-            .findAny()
-            .get();
+                .filter(modelType -> modelType.getValue() == value)
+                .findAny()
+                .get();
     }
 
     public static ModelType fromName(String name) {
         return Arrays.stream(values())
-            .filter(it -> it.name.equals(name))
-            .findAny()
-            .get();
+                .filter(it -> it.name.equals(name))
+                .findAny()
+                .get();
     }
 }

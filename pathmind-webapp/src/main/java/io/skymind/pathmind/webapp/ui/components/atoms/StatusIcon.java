@@ -4,7 +4,6 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -22,8 +21,9 @@ public class StatusIcon extends PolymerTemplate<StatusIcon.Model> {
         return ExperimentUtils.getIconStatus(experiment, status);
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setStatus(String iconStatus);
+
         void setStatusText(String statusText);
     }
 }

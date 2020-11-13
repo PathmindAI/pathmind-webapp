@@ -35,7 +35,7 @@ class AwsApiClientBuilder {
         return endpointConfiguration != null;
     }
 
-    protected  <S extends AwsClientBuilder<S, T>, T> S configure(S builder, boolean mockService) {
+    protected <S extends AwsClientBuilder<S, T>, T> S configure(S builder, boolean mockService) {
         builder.withCredentials(new AWSStaticCredentialsProvider(credentials));
         if (mocking() && mockService) {
             builder.withEndpointConfiguration(endpointConfiguration);

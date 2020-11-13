@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.components.policy;
 
+import java.io.ByteArrayInputStream;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
@@ -11,9 +14,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-
-import java.io.ByteArrayInputStream;
-import java.util.function.Supplier;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 
@@ -27,8 +27,11 @@ public class ExportPolicyButton extends Anchor {
     private String policyFilename;
 
     // Hack -> Quick little solution to deal "same erasure" issue with lambda's.
-    public interface ExperimentSupplier extends Supplier<Experiment> {}
-    public interface PolicySupplier extends Supplier<Policy> {}
+    public interface ExperimentSupplier extends Supplier<Experiment> {
+    }
+
+    public interface PolicySupplier extends Supplier<Policy> {
+    }
 
     public ExportPolicyButton(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO, PolicySupplier getPolicySupplier) {
         super();
@@ -41,7 +44,7 @@ public class ExportPolicyButton extends Anchor {
         this.policy = PolicyUtils.selectBestPolicy(getExperimentSupplier.get()).orElse(null);
 
         // Temporary solution until we hook up the eventbus. In the meantime we only make the decision to render on page reload.
-        if(getExperimentSupplier.get().getTrainingStatusEnum() != RunStatus.Completed) {
+        if (getExperimentSupplier.get().getTrainingStatusEnum() != RunStatus.Completed) {
             setVisible(false);
             return;
         }
@@ -56,7 +59,7 @@ public class ExportPolicyButton extends Anchor {
         // export policy button can become visible but for now since it's only internally we will just omit the button
         // and the support user can press the refresh button as the cost to add all this is not worth it compared
         // to getting the initial PR into production.
-        if(policy == null) {
+        if (policy == null) {
             setVisible(false);
             return;
         }

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
 /**
@@ -15,31 +16,31 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
  */
 public class ActiveSessionsRegistry implements HttpSessionListener {
 
-	Map<String, HttpSession> activeSessions = new ConcurrentHashMap<>();
+    Map<String, HttpSession> activeSessions = new ConcurrentHashMap<>();
 
-	@Override
-	public void sessionCreated(HttpSessionEvent se) {
-		HttpSession httpSession = se.getSession();
-		activeSessions.put(httpSession.getId(), httpSession);
-	}
+    @Override
+    public void sessionCreated(HttpSessionEvent se) {
+        HttpSession httpSession = se.getSession();
+        activeSessions.put(httpSession.getId(), httpSession);
+    }
 
-	@Override
-	public void sessionDestroyed(HttpSessionEvent se) {
-		String id = se.getSession().getId();
-		activeSessions.remove(id);
-	}
+    @Override
+    public void sessionDestroyed(HttpSessionEvent se) {
+        String id = se.getSession().getId();
+        activeSessions.remove(id);
+    }
 
-	public Collection<HttpSession> getActiveAuthenticatedSessions() {
-		return activeSessions.values().stream()
-			.filter(this::hasSpringSecurityContext)
-			.collect(Collectors.toList());
-	}
+    public Collection<HttpSession> getActiveAuthenticatedSessions() {
+        return activeSessions.values().stream()
+                .filter(this::hasSpringSecurityContext)
+                .collect(Collectors.toList());
+    }
 
-	private boolean hasSpringSecurityContext(HttpSession session) {
-		try {
-			return session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null;
-		} catch (IllegalStateException  e) {
-			return false;
-		}
-	}
+    private boolean hasSpringSecurityContext(HttpSession session) {
+        try {
+            return session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) != null;
+        } catch (IllegalStateException e) {
+            return false;
+        }
+    }
 }

@@ -1,5 +1,9 @@
 package io.skymind.pathmind.db.dao;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
@@ -9,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static java.text.MessageFormat.format;
 import static java.util.Objects.nonNull;
@@ -27,7 +27,7 @@ public class PolicyDAO {
     }
 
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
-        Optional<Policy> optionalPolicy  = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+        Optional<Policy> optionalPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
         optionalPolicy
                 .ifPresent(policy -> policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId)));
         return optionalPolicy;

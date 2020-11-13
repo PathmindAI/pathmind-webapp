@@ -1,5 +1,8 @@
 package io.skymind.pathmind.db.changeset;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -14,19 +17,12 @@ import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This changeset is to be able to automatically reset the S3 bucket for the developers
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange
-{
+public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange {
     private static final String RESET_S3_BUCKET_ON_DATABASE_RESET = "RESET_S3_BUCKET_ON_DATABASE_RESET";
 
     private static final List<String> DO_NOT_EMPTY_BUCKETS = List.of("dev", "prod", "test");
@@ -35,7 +31,7 @@ public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange
     public void execute(Database database) throws CustomChangeException {
 
         // Check that RESET_S3_BUCKET_ON_DATABASE_RESET is enabled otherwise skip this whole changeset
-        if(!isResetS3EnabledEnvironmentVariable()) {
+        if (!isResetS3EnabledEnvironmentVariable()) {
             log.info("S3 bucket NOT reset.");
             return;
         }
@@ -50,7 +46,7 @@ public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange
         log.info("Emptying S3 bucket : " + bucket);
 
         // Extra security precaution. I'm not throwing an exception because in those cases we just want to stop.
-        if(DO_NOT_EMPTY_BUCKETS.stream().anyMatch(specialBuckets -> bucket.startsWith(specialBuckets))) {
+        if (DO_NOT_EMPTY_BUCKETS.stream().anyMatch(specialBuckets -> bucket.startsWith(specialBuckets))) {
             log.info("Bucket " + bucket + " will NOT be emptied");
             return;
         }
@@ -64,7 +60,7 @@ public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange
         // Amazon S3 limits deletions to 1000 objects per call.
         ObjectListing objectListing = s3Client.listObjects(bucket);
         deleteObjects(objectListing, s3Client, bucket);
-        while(objectListing.isTruncated()) {
+        while (objectListing.isTruncated()) {
             objectListing = s3Client.listNextBatchOfObjects(objectListing);
             deleteObjects(objectListing, s3Client, bucket);
         }
@@ -86,8 +82,9 @@ public class UpdatePolicy_ChangeSet_20200724_01 implements CustomTaskChange
                 .toArray(String[]::new);
 
         // In case the S3 bucket is already empty otherwise it will throw an error when trying to delete the objects (malformed xml).
-        if(ArrayUtils.isEmpty(objectKeys))
+        if (ArrayUtils.isEmpty(objectKeys)) {
             return;
+        }
 
         DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucket)
                 .withKeys(objectKeys);

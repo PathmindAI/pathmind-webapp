@@ -1,6 +1,14 @@
 package io.skymind.pathmind.db.changeset;
 
-import io.skymind.pathmind.shared.constants.RunStatus;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
 import liquibase.change.custom.CustomSqlChange;
@@ -14,22 +22,10 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Slf4j
-public class UpdateExperiment_ChangeSet_20200923_02 implements CustomSqlChange
-{
+public class UpdateExperiment_ChangeSet_20200923_02 implements CustomSqlChange {
     @Override
-    public SqlStatement[] generateStatements(Database database) throws CustomChangeException
-    {
+    public SqlStatement[] generateStatements(Database database) throws CustomChangeException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         List<DataNeededForMigration> data = getDataNeededForMigration(connection);
@@ -59,12 +55,12 @@ public class UpdateExperiment_ChangeSet_20200923_02 implements CustomSqlChange
                 "left join run r on e.id=r.experiment_id\n" +
                 "order by e.id")) {
             ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 result.add(new DataNeededForMigration(
                         rs.getInt("ID"),
                         rs.getInt("STATUS"),
                         rs.getInt("training_error_id")
-                        ));
+                ));
             }
             return result;
         } catch (SQLException e) {

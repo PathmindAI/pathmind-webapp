@@ -1,11 +1,11 @@
 package io.skymind.pathmind.db.dao;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.shared.data.RewardVariable;
 import org.jooq.DSLContext;
 import org.jooq.Query;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.jooq.tables.RewardVariable.REWARD_VARIABLE;
 
@@ -18,7 +18,7 @@ class RewardVariableRepository {
         final List<Query> saveQueries = rewardVariables.stream()
                 .map(rewardVariable ->
                         ctx.insertInto(REWARD_VARIABLE)
-                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX, REWARD_VARIABLE.DATA_TYPE, 
+                                .columns(REWARD_VARIABLE.MODEL_ID, REWARD_VARIABLE.NAME, REWARD_VARIABLE.ARRAY_INDEX, REWARD_VARIABLE.DATA_TYPE,
                                         REWARD_VARIABLE.GOAL_CONDITION_TYPE, REWARD_VARIABLE.GOAL_VALUE)
                                 .values(rewardVariable.getModelId(), rewardVariable.getName(), rewardVariable.getArrayIndex(), rewardVariable.getDataType(),
                                         rewardVariable.getGoalConditionType(), rewardVariable.getGoalValue())

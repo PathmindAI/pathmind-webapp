@@ -1,9 +1,5 @@
 package io.skymind.pathmind.shared.data;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
-import io.skymind.pathmind.shared.utils.CloneUtils;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,16 +7,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
+import io.skymind.pathmind.shared.utils.CloneUtils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Policy extends Data implements DeepCloneableInterface<Policy>
-{
+public class Policy extends Data implements DeepCloneableInterface<Policy> {
     private static final long serialVersionUID = -2089053095112497536L;
-	private long runId;
-	private String externalId;
+    private long runId;
+    private String externalId;
 
     private LocalDateTime startedAt;
     private LocalDateTime stoppedAt;
@@ -32,12 +35,12 @@ public class Policy extends Data implements DeepCloneableInterface<Policy>
     private String checkPointFileKey;
 
     // Helper GUI attributes not stored in the database
-	private Project project;
-	private Model model;
-	private Experiment experiment;
-	private Run run;
-	private transient List<Metrics> metrics;
-	private transient List<MetricsRaw> metricsRaws;
+    private Project project;
+    private Model model;
+    private Experiment experiment;
+    private Run run;
+    private transient List<Metrics> metrics;
+    private transient List<MetricsRaw> metricsRaws;
 
     // Helper Simulation Metrics GUI attributes not stored in the database
     private List<Double> simulationMetrics = new ArrayList<>();

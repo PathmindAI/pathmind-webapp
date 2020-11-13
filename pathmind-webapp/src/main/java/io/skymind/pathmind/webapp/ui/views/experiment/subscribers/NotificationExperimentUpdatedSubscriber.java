@@ -1,13 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
+import java.util.List;
+
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-
-import java.util.List;
 
 public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
 
@@ -24,10 +24,12 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
         // We need to update the internal experiments list for the navigation logic.
         ExperimentUtils.updateExperimentInExperimentsList(experiments, event.getExperiment());
-        if(event.isStartedTrainingEventType())
+        if (event.isStartedTrainingEventType()) {
             alertThenNotifyStarted(event);
-        if(event.isArchiveEventType())
+        }
+        if (event.isArchiveEventType()) {
             alertThenNotifyArchive(event);
+        }
     }
 
     private void alertThenNotifyArchive(ExperimentUpdatedBusEvent event) {
@@ -39,10 +41,11 @@ public class NotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSu
     }
 
     private void navigateToView(Experiment experiment) {
-        if(experiment.isArchived())
+        if (experiment.isArchived()) {
             ExperimentUtils.navigateToFirstUnarchivedOrModel(getUiSupplier(), experiments);
-        else
+        } else {
             ExperimentUtils.navigateToExperiment(getUiSupplier().get(), experiment);
+        }
     }
 
     private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {

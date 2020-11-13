@@ -1,5 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -16,10 +20,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.ExperimentChartsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.ExperimentChartsPanelRunUpdateSubscriber;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -59,8 +59,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
         setSpacing(false);
         setPadding(false);
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL),
-            chartTabs,
-            chartsPanel);
+                chartTabs,
+                chartsPanel);
         addClassName("row-2-of-3");
 
         setAllMetricsChartPanelVisible(true);

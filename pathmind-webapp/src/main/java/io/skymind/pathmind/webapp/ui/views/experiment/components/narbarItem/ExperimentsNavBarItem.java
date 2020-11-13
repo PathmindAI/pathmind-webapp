@@ -1,5 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
@@ -26,9 +29,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 @Tag("experiment-navbar-item")
 @JsModule("./src/experiment/experiment-navbar-item.js")
 public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
@@ -53,9 +53,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.segmentIntegrator = segmentIntegrator;
 
         if (ExperimentUtils.isDraftRunType(experiment)) {
-            experimentLink.setHref(Routes.NEW_EXPERIMENT+"/"+experiment.getId());
+            experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
         } else {
-            experimentLink.setHref(Routes.EXPERIMENT_URL+"/"+experiment.getId());
+            experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
         }
 
         UI.getCurrent().getUI().ifPresent(ui -> setExperimentDetails(ui, experiment));
@@ -80,7 +80,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        ConfirmationUtils.archive("Experiment #"+experiment.getName(), () -> {
+        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
             segmentIntegrator.archived(Experiment.class, true);
             ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
@@ -105,8 +105,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(experiment.isArchived())
+        if (experiment.isArchived()) {
             return;
+        }
         EventBus.subscribe(this, getUISupplier,
                 new NavBarItemExperimentUpdatedSubscriber(this),
                 new NavBarItemRunUpdateSubscriber(this));
@@ -155,16 +156,25 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setExperimentStatus(String experimentStatus);
+
         void setExperimentName(String experimentName);
+
         void setCreatedDate(String createdDate);
+
         void setIsCurrent(boolean isCurrent);
+
         void setIsDraft(boolean isDraft);
+
         void setIsFavorite(boolean isFavorite);
+
         void setStatus(String iconStatus);
+
         void setStatusText(String statusText);
+
         void setShowGoals(boolean showGoals);
+
         void setGoalsReached(boolean goalsReached);
     }
 }

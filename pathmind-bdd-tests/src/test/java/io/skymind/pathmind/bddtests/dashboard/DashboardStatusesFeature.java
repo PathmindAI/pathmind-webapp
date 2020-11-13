@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-    plugin = {"pretty", "html:target/cucumber"},
-    glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-    features = "src/test/resources/features/dashboard/dashboardStatuses.feature"
+        plugin = {"pretty", "html:target/cucumber"},
+        glue = "io.skymind.pathmind.bddtests.stepdefinitions",
+        features = "src/test/resources/features/dashboard/dashboardStatuses.feature"
 )
 public class DashboardStatusesFeature {
 }

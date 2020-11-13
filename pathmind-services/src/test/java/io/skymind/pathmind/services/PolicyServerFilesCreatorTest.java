@@ -1,12 +1,12 @@
 package io.skymind.pathmind.services;
 
+import java.util.Arrays;
+
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Observation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 public class PolicyServerFilesCreatorTest {
     private PolicyServerFilesCreator policyServerFilesCreator;

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers;
 
+import java.util.List;
+
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;

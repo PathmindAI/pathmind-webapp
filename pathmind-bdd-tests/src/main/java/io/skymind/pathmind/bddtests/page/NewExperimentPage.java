@@ -1,5 +1,10 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.io.FileUtils;
@@ -12,14 +17,11 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class NewExperimentPage extends PageObject {
 
@@ -209,7 +211,11 @@ public class NewExperimentPage extends PageObject {
         WebElement experimentNavItemAnchor = utils.getExperimentNavbarItemByExperimentName(experiment, "a");
         String linkPath = experimentNavItemAnchor.getAttribute("href");
         String jsCommand = String.format("window.open('%s', '_blank');", linkPath);
-        ((JavascriptExecutor)driver).executeScript(jsCommand);
+        ((JavascriptExecutor) driver).executeScript(jsCommand);
         waitABit(3000);
+    }
+
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).click();
     }
 }

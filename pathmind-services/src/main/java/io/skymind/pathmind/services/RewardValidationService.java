@@ -1,37 +1,24 @@
 package io.skymind.pathmind.services;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import io.skymind.pathmind.shared.data.RewardVariable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 
 import static io.skymind.pathmind.shared.utils.VariableParserUtils.isArray;
-import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIndexFromVariableName;;
+import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIndexFromVariableName;
 
 @Slf4j
 @Service
 public class RewardValidationService {
-
-    private final boolean multiAgent;
-
-    public RewardValidationService(@Value("${pathmind.training.multiagent:false}") boolean multiAgent) {
-        this.multiAgent = multiAgent;
-    }
-
     public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables){
-
-        if (multiAgent) {
-            log.warn("Skip reward function validation in multi-agent mode");
-            return Collections.emptyList();
-        }
-
         final String code = fillInTemplate(rewardFunction, rewardVariables);
         final String[] lines = code.split("\n");
         int startReward = 0;
@@ -120,7 +107,7 @@ public class RewardValidationService {
                 if (!alreadyExist) {
                     RewardVariable arrayVariable = new RewardVariable();
                     arrayVariable.setName(arrayName);
-                    arrayVariable.setDataType("double[]");
+                    arrayVariable.setDataType(rewardVariable.getDataType() + "[]");
                     normalizedRewardVariables.add(arrayVariable);
                 }
             } else {

@@ -1,5 +1,12 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -29,13 +36,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
 @Slf4j
 public class SimulationMetricsPanel extends HorizontalLayout {
 
@@ -64,7 +64,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
         super();
         this.experiment = experiment.deepClone();
-        this.rewardVariables= RewardVariablesUtils.deepClone(rewardVariables);
+        this.rewardVariables = RewardVariablesUtils.deepClone(rewardVariables);
         this.showSimulationMetrics = showSimulationMetrics;
         this.getUISupplier = getUISupplier;
 
@@ -120,8 +120,8 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
                     VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        sparkline,
-                        enlargeButton
+                            sparkline,
+                            enlargeButton
                     );
                     sparkLineWrapper.addClassName("sparkline");
 
@@ -140,8 +140,9 @@ public class SimulationMetricsPanel extends HorizontalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(experiment.isArchived())
+        if (experiment.isArchived()) {
             return;
+        }
         EventBus.subscribe(this, getUISupplier,
                 new SimulationMetricsPolicyUpdateSubscriber(this),
                 new SimulationMetricsPanelExperimentChangedViewSubscriber(this),
@@ -188,7 +189,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                             ? bestPolicy.getUncertainty().get(index)
                             : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(index));
 
-                    if (rewardVariable.getGoalConditionTypeEnum() != null){
+                    if (rewardVariable.getGoalConditionTypeEnum() != null) {
                         Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
                         metricSpans.get(index).addClassName(metricSpanColorClass);

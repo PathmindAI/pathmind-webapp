@@ -8,15 +8,13 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
-
-import org.apache.commons.lang3.ObjectUtils;
-
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import org.apache.commons.lang3.ObjectUtils;
 
-import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 public class DownloadModelAlpLink extends Anchor {
 
@@ -24,7 +22,7 @@ public class DownloadModelAlpLink extends Anchor {
     private long modelId;
     private String modelName;
     private String modelPackageName;
-    
+
     public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator) {
         this(projectName, model, modelService, segmentIntegrator, false);
     }
@@ -56,12 +54,12 @@ public class DownloadModelAlpLink extends Anchor {
     }
 
     private String generateFileName() {
-        if(!ObjectUtils.allNotNull(projectName, modelName, modelPackageName)) {
+        if (!ObjectUtils.allNotNull(projectName, modelName, modelPackageName)) {
             return "-";
         }
         return removeInvalidChars(String.format("%s-M%s-%s.alp", toCamelCase(projectName), modelName, modelPackageName));
     }
-    
+
     private StreamResource getResourceStream(byte[] resource) {
         return new StreamResource(generateFileName(), () -> new ByteArrayInputStream(resource));
     }

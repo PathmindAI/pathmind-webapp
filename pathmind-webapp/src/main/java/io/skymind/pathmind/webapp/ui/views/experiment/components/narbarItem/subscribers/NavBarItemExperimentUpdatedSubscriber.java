@@ -20,8 +20,9 @@ public class NavBarItemExperimentUpdatedSubscriber extends ExperimentUpdatedSubs
 
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-        if(event.getExperiment().isArchived())
+        if (event.getExperiment().isArchived()) {
             return false;
+        }
         return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
     }
 }

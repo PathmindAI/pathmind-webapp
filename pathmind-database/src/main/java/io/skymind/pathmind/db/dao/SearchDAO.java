@@ -1,16 +1,16 @@
 package io.skymind.pathmind.db.dao;
 
-import java.util.*;
+import java.util.List;
 
+import io.skymind.pathmind.shared.data.SearchResult;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
-import io.skymind.pathmind.shared.data.SearchResult;
-
 @Repository
 public class SearchDAO {
-    
+
     private final DSLContext ctx;
+
     SearchDAO(DSLContext ctx) {
         this.ctx = ctx;
     }
@@ -20,7 +20,7 @@ public class SearchDAO {
         return SearchRepository.findSearchResults(ctx, searchDescription,
                 userId, offset, limit);
     }
-    
+
     public int countSearchResults(long userId, String keyword) {
         SearchDescription searchDescription = processKeyword(keyword);
         return SearchRepository.countSearchResults(ctx, searchDescription, userId);

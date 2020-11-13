@@ -1,10 +1,10 @@
 package io.skymind.pathmind.shared.constants;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 import java.util.Arrays;
 
-public enum  EC2InstanceType {
+import com.fasterxml.jackson.annotation.JsonValue;
+
+public enum EC2InstanceType {
     IT_16CPU_32GB("16cpu_32gb"),
     IT_16CPU_64GB("16cpu_64gb"),
     IT_8CPU_16GB("8cpu_16gb"),

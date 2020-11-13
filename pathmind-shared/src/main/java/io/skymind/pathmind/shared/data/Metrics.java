@@ -1,14 +1,11 @@
 package io.skymind.pathmind.shared.data;
 
+import java.io.Serializable;
+
 import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
-import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
