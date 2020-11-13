@@ -32,6 +32,8 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     }
 
     public void setNotesText(String notesText) {
+        System.out.println("in set Notes Text");
+        System.out.println("notesText: "+notesText);
         this.notesText = notesText;
         getModel().setNotes(notesText);
     }

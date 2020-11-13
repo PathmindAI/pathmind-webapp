@@ -64,6 +64,14 @@ class NotesField extends PolymerElement {
                 type: String,
                 observer: "_notesChanged",
             },
+            _notesChangeObserverLock: {
+                type: Boolean,
+                value: false,
+            },
+            _notesChangedObserverTriggered: {
+                type: Boolean,
+                value: false,
+            },
             unsaved: {
                 type: Boolean,
                 value: false,
@@ -220,11 +228,18 @@ class NotesField extends PolymerElement {
     }
 
     canSave(updatedNotesText) {
+        console.log("----------- in canSave -----------");
+        console.log("this.notes: "+this.notes);
+        console.log("updatedNotesText: "+updatedNotesText);
         return this.notes !== updatedNotesText && updatedNotesText.length <= this.max;
     }
 
     onSave(event) {
-        if (this.canSave(this.$.textarea.value)) {
+        if (this.canSave(this.$.textarea.value) && !this._notesChangedObserverTriggered) {
+            console.log("----------- in onSave -----------");
+            console.log("this.notes: "+this.notes);
+            console.log("this.$.textarea.value: "+this.$.textarea.value);
+            this._notesChangeObserverLock = true;
             this.notes = this.$.textarea.value;
             this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
@@ -232,6 +247,7 @@ class NotesField extends PolymerElement {
                 this.$.saveIcon.classList.remove('fade-in');
             }, 1500);
         }
+        this._notesChangedObserverTriggered = false;
     }
 
     calculateWordCount(notes) {
@@ -239,6 +255,15 @@ class NotesField extends PolymerElement {
     }
 
     _notesChanged(newValue, oldValue) {
+        if (this._notesChangeObserverLock) {
+            this._notesChangeObserverLock = false;
+            return;
+        }
+        this._notesChangedObserverTriggered = true;
+        console.log("----------- in _notesChanged -----------");
+        console.log("this.notes: "+this.notes);
+        console.log("this.$.textarea.value: "+this.$.textarea.value);
+        console.log("newValue: "+newValue);
         this.$.textarea.value = newValue;
         this.calculateWordCount(newValue);
     }
