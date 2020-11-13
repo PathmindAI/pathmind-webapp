@@ -1,5 +1,11 @@
 package io.skymind.pathmind.api.conf.security;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.stereotype.Component;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Optional;
 
 @Slf4j
 @Component

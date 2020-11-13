@@ -1,5 +1,14 @@
 package io.skymind.pathmind.api.conf.security;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.gson.Gson;
 import liquibase.util.StringUtils;
 import org.springframework.http.HttpHeaders;
@@ -9,14 +18,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;

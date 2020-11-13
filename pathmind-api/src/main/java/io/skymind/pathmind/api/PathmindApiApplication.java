@@ -8,8 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource({"application.properties", "shared.properties"})
 public class PathmindApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PathmindApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PathmindApiApplication.class, args);
+    }
 
 }

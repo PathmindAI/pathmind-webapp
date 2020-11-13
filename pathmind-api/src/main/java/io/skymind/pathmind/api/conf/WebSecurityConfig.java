@@ -22,45 +22,45 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @ComponentScan("io.skymind.pathmind.api")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	private PathmindApiAuthenticationProvider pathmindApiAuthenticationProvider;
+    @Autowired
+    private PathmindApiAuthenticationProvider pathmindApiAuthenticationProvider;
 
-	@Override
-	protected void configure(final AuthenticationManagerBuilder auth) {
-		auth.authenticationProvider(pathmindApiAuthenticationProvider);
-	}
+    @Override
+    protected void configure(final AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(pathmindApiAuthenticationProvider);
+    }
 
-	@Autowired
+    @Autowired
     private AuthenticationFailureHandlerEntryPoint authenticationFailureHandlerEntryPoint;
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
 
-		http
-				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and()
-				.csrf().disable()
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationFailureHandlerEntryPoint)
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
-				.httpBasic().disable()
-				.addFilterBefore(
-						new PathmindApiAuthenticationProcessingFilter(
-						        authenticationManager(), authenticationFailureHandlerEntryPoint
+                .httpBasic().disable()
+                .addFilterBefore(
+                        new PathmindApiAuthenticationProcessingFilter(
+                                authenticationManager(), authenticationFailureHandlerEntryPoint
                         ),
-						BasicAuthenticationFilter.class
-				)
-				.cors()
-		;
-	}
+                        BasicAuthenticationFilter.class
+                )
+                .cors()
+        ;
+    }
 
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
 }
