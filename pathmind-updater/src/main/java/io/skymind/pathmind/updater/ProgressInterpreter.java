@@ -1,15 +1,5 @@
 package io.skymind.pathmind.updater;
 
-import com.univocity.parsers.common.record.Record;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsRaw;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardScore;
-import io.skymind.pathmind.shared.utils.MetricsRawUtils;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.ByteArrayInputStream;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -21,9 +11,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.univocity.parsers.common.record.Record;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
+import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.utils.MetricsRawUtils;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class ProgressInterpreter {
-    enum  RAY_PROGRESS {
+    enum RAY_PROGRESS {
         EPISODE_REWARD_MAX("episode_reward_max"),
         EPISODE_REWARD_MIN("episode_reward_min"),
         EPISODE_REWARD_MEAN("episode_reward_mean"),
@@ -49,11 +49,11 @@ public class ProgressInterpreter {
         }
 
         static RAY_PROGRESS[] scoreColumns() {
-            return new RAY_PROGRESS[] {EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
+            return new RAY_PROGRESS[]{EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
         }
 
         static String[] metricsRawColumns() {
-            return new String[] {EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
+            return new String[]{EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
         }
 
         static final String metrics_max = "custom_metrics/metrics_%d_max";
@@ -113,7 +113,7 @@ public class ProgressInterpreter {
     }
 
     public static Policy interpret(Map.Entry<String, String> entry, List<RewardScore> previousScores,
-                                   List<Metrics> previousMetrics, int numReward, int numAgents){
+                                   List<Metrics> previousMetrics, int numReward, int numAgents) {
         final Policy policy = interpretKey(entry.getKey());
         interpretScores(entry, previousScores, policy);
         interpretMetrics(entry, previousMetrics, policy, numReward, numAgents);
@@ -133,7 +133,7 @@ public class ProgressInterpreter {
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
-        for(Record record : allRecords){
+        for (Record record : allRecords) {
             final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
             if (iteration > lastIteration) {
@@ -143,11 +143,11 @@ public class ProgressInterpreter {
                 final Integer episodeCount = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
 
                 scores.add(new RewardScore(
-                    Double.valueOf(max.equals("nan") ? "NaN" : max),
-                    Double.valueOf(min.equals("nan") ? "NaN" : min),
-                    Double.valueOf(mean.equals("nan") ? "NaN" : mean),
-                    iteration,
-                    episodeCount
+                        Double.valueOf(max.equals("nan") ? "NaN" : max),
+                        Double.valueOf(min.equals("nan") ? "NaN" : min),
+                        Double.valueOf(mean.equals("nan") ? "NaN" : mean),
+                        iteration,
+                        episodeCount
                 ));
             }
             policy.setScores(scores);
@@ -166,7 +166,7 @@ public class ProgressInterpreter {
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
 
-        for(Record record : allRecords) {
+        for (Record record : allRecords) {
             // missing information check
             if (Arrays.asList(record.getValues()).contains(null)) {
                 log.debug("There are missing information in the csv contents");
@@ -181,7 +181,7 @@ public class ProgressInterpreter {
                         final String max = record.getString(RAY_PROGRESS.metricsMax((agent * numReward) + idx));
                         final String min = record.getString(RAY_PROGRESS.metricsMin((agent * numReward) + idx));
                         final String mean = record.getString(RAY_PROGRESS.metricsMean((agent * numReward) + idx));
-                        metrics.add(new Metrics(agent, iteration, idx, safeDouble(max),  safeDouble(min), safeDouble(mean)));
+                        metrics.add(new Metrics(agent, iteration, idx, safeDouble(max), safeDouble(min), safeDouble(mean)));
                     }
                 }
             }
@@ -195,7 +195,8 @@ public class ProgressInterpreter {
 
     public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward, int numAgents) {
         List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
-        final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();;
+        final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();
+        ;
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
@@ -216,7 +217,7 @@ public class ProgressInterpreter {
 
     public static List<MetricsRaw> parseMetricsRaw(List<Record> allRecords, int lastIteration, int numReward, int numAgents) {
         List<MetricsRaw> metricsRaws = new ArrayList<>();
-        for(Record record : allRecords) {
+        for (Record record : allRecords) {
             // missing information check
             if (Arrays.asList(record.getValues()).contains(null)) {
                 log.debug("There are missing information in the csv contents");

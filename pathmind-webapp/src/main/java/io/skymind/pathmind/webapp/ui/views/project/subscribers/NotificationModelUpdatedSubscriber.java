@@ -8,7 +8,7 @@ import io.skymind.pathmind.webapp.data.utils.ModelUtils;
 
 // TODO -> This may not be needed. Currently it is not in use. If this is needed, it should be refactored.
 public class NotificationModelUpdatedSubscriber extends EventBusSubscriber<ModelUpdatedBusEvent> {
-    
+
     private Model model;
 
     public NotificationModelUpdatedSubscriber(Model model) {

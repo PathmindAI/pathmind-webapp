@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.dashboard;
 
+import java.util.List;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
@@ -15,7 +17,11 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -38,11 +44,8 @@ import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
-@Route(value= Routes.DASHBOARD_URL, layout = MainLayout.class)
-public class DashboardView extends PathMindDefaultView
-{
+@Route(value = Routes.DASHBOARD_URL, layout = MainLayout.class)
+public class DashboardView extends PathMindDefaultView {
     @Autowired
     private DashboardDataProvider dataProvider;
     @Autowired
@@ -66,29 +69,28 @@ public class DashboardView extends PathMindDefaultView
 
     private long loggedUserId;
 
-    public DashboardView(){
+    public DashboardView() {
         super();
         addClassName("dashboard-view");
     }
 
-    protected Component getMainContent(){
+    protected Component getMainContent() {
         title = LabelFactory.createLabel("Recent", CssPathmindStyles.SECTION_TITLE_LABEL);
         newProjectButtonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton());
         placeholder = new EmptyDashboardPlaceholder(segmentIntegrator);
         setupDashboardGrid();
 
         VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
-            title,
-            placeholder,
-            dashboardGrid,
-            newProjectButtonWrapper);
+                title,
+                placeholder,
+                dashboardGrid,
+                newProjectButtonWrapper);
         gridWrapper.setPadding(false);
 
         return gridWrapper;
     }
 
-    private void setupDashboardGrid()
-    {
+    private void setupDashboardGrid() {
         dashboardGrid = new Grid<>();
         dashboardGrid.addClassName("dashboard");
         dashboardGrid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
@@ -109,7 +111,7 @@ public class DashboardView extends PathMindDefaultView
     private void archiveItem(DashboardItem item) {
         Stage stage = DashboardUtils.calculateStage(item);
         switch (stage) {
-            case SetUpSimulation :
+            case SetUpSimulation:
                 if (item.getModel() == null) {
                     archiveProject(item);
                 } else {
@@ -123,7 +125,7 @@ public class DashboardView extends PathMindDefaultView
                     archiveExperiment(item);
                 }
                 break;
-            default :
+            default:
                 archiveExperiment(item);
                 break;
         }

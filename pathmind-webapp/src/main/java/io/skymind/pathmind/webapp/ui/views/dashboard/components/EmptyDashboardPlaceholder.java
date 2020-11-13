@@ -6,13 +6,12 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 
 @Tag("empty-dashboard-placeholder")
 @JsModule("./src/dashboard/empty-dashboard-placeholder.js")
 public class EmptyDashboardPlaceholder extends PolymerTemplate<TemplateModel> {
-	@Id("newProjectButton")
+    @Id("newProjectButton")
     private Anchor newProjectButton;
 
     public EmptyDashboardPlaceholder(SegmentIntegrator segmentIntegrator) {

@@ -1,5 +1,14 @@
 package io.skymind.pathmind.webapp.ui.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.dom.Element;
@@ -8,41 +17,38 @@ import com.vaadin.flow.server.InitialPageSettings;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.utils.CookieUtils;
 
-import java.util.*;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-public class VaadinUtils
-{
-	private VaadinUtils() {
-	}
-
-	public static NumberField generateNumberField(long min, long max, long value) {
-		NumberField numberField = new NumberField();
-		numberField.setHasControls(true);
-		numberField.setMin(min);
-		numberField.setMax(max);
-		numberField.setValue((double)value);
-		return numberField;
-	}
-
-	/**
-	 * Until Vaadin has the ability to get the view names https://github.com/vaadin/flow/issues/1897 this is a workaround.
-	 */
-	public static String getViewName() {
-		return UI.getCurrent().getInternals().getActiveViewLocation().getFirstSegment();
-	}
-
-	public static void setupFavIcon(InitialPageSettings settings) {
-		settings.addFavIcon("icon", "frontend/images/favicon.png", "32x32");
+public class VaadinUtils {
+    private VaadinUtils() {
     }
-    
+
+    public static NumberField generateNumberField(long min, long max, long value) {
+        NumberField numberField = new NumberField();
+        numberField.setHasControls(true);
+        numberField.setMin(min);
+        numberField.setMax(max);
+        numberField.setValue((double) value);
+        return numberField;
+    }
+
+    /**
+     * Until Vaadin has the ability to get the view names https://github.com/vaadin/flow/issues/1897 this is a workaround.
+     */
+    public static String getViewName() {
+        return UI.getCurrent().getInternals().getActiveViewLocation().getFirstSegment();
+    }
+
+    public static void setupFavIcon(InitialPageSettings settings) {
+        settings.addFavIcon("icon", "frontend/images/favicon.png", "32x32");
+    }
+
     public static Optional<Element> getElementById(UI ui, String id) {
-        if (id == null) return Optional.empty();
+        if (id == null) {
+            return Optional.empty();
+        }
         return ui.getElement().getChildren()
                 .filter((element) -> id.equals(element.getAttribute("id"))).findFirst();
     }
-    
+
     public static void signout(UI ui, boolean keepCurrentUrl) {
         CookieUtils.deleteAWSCanCookie();
         if (keepCurrentUrl) {
@@ -64,7 +70,7 @@ public class VaadinUtils
                         entry -> new ArrayList<>(entry.getValue())));
 
         // If this is a new parameter then we need to add it.
-        if(!parameters.containsKey(name)) {
+        if (!parameters.containsKey(name)) {
             parameters.put(name, new ArrayList<>());
         }
 
@@ -104,14 +110,16 @@ public class VaadinUtils
     }
 
     private static String getLocationWithoutParameters(String location) {
-        if(location.indexOf("?") < 0)
+        if (location.indexOf("?") < 0) {
             return location;
+        }
         return location.substring(0, location.indexOf("?"));
     }
 
     private static List<String> getExistingParameterList(String location) {
-        if(location.indexOf("?") < 0)
+        if (location.indexOf("?") < 0) {
             return new ArrayList<>();
+        }
         String parameterString = location.substring(location.indexOf("?") + 1);
         // The convoluted code below is so that we can add the new parameter to the list.
         return new ArrayList<>(Arrays.asList(parameterString.split("\\s*&\\s*")));

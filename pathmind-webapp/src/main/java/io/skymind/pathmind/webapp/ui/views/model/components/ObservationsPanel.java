@@ -1,5 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -7,12 +13,6 @@ import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 

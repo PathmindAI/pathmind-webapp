@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.Optional;
 
 import com.vaadin.flow.component.UI;
-
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 

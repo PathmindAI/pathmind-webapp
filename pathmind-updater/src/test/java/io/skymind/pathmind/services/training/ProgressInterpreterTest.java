@@ -34,7 +34,7 @@ public class ProgressInterpreterTest {
 
 
     @Test
-    public void testInterpreter(){
+    public void testInterpreter() {
         final Policy policy = ProgressInterpreter.interpret(Map.entry(name, fileContents), null, null, 4, 1);
 
         final LocalDateTime utcTime = LocalDateTime.parse("2020-08-18_22-16-53", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
@@ -61,7 +61,6 @@ public class ProgressInterpreterTest {
         assertEquals(0, policy.getMetricsRaws().get(0).getAgent().longValue());    // agent
         assertEquals(0, policy.getMetricsRaws().get(0).getIndex().longValue()); // index
     }
-
 
 
 }

@@ -66,7 +66,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private void trackCompletedTrainingInSegment(Run run, ProviderJobStatus providerJobStatus) {
-        if(RunStatus.isFinished(providerJobStatus.getRunStatus())) {
+        if (RunStatus.isFinished(providerJobStatus.getRunStatus())) {
             segmentTrackerService.trainingCompleted(runDAO.getUserIdForRun(run.getId()), run);
         }
     }

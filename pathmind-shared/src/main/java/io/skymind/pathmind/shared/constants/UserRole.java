@@ -16,8 +16,7 @@ public enum UserRole {
     Premium(2, "Premium", Set.of(BASIC_READ)),
     Admin(3, "Admin", Set.of(BASIC_READ, SETTINGS_READ)),
     Master(4, "Master", Set.of(BASIC_READ, SETTINGS_READ)),
-    Support(5, "Support", Set.of(BASIC_READ, EXTENDED_READ, SETTINGS_READ))
-    ;
+    Support(5, "Support", Set.of(BASIC_READ, EXTENDED_READ, SETTINGS_READ));
 
     private int id;
     private String name;

@@ -1,5 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.settings;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -22,12 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
-
-import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Tag("settings-view-content")
 @JsModule("./src/settings/settings-view-content.js")
@@ -104,8 +104,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
         // init NativeRL versions
         List<String> nativerlVersions = NativeRL.activeValues().stream()
-            .map(NativeRL::toString)
-            .collect(Collectors.toList());
+                .map(NativeRL::toString)
+                .collect(Collectors.toList());
 
         nativerlVersion.setItems(nativerlVersions);
         nativerlVersion.setLabel("NativeRL Version");
@@ -124,8 +124,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
         // init conda versions
         List<String> condaVersions = Arrays.stream(Conda.values())
-            .map(Conda::toString)
-            .collect(Collectors.toList());
+                .map(Conda::toString)
+                .collect(Collectors.toList());
 
         condaVersion.setItems(condaVersions);
         condaVersion.setLabel("Conda Version");
@@ -134,8 +134,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
         // init pathmind helper versions
         List<String> helperVersions = Arrays.stream(PathmindHelper.values())
-            .map(PathmindHelper::toString)
-            .collect(Collectors.toList());
+                .map(PathmindHelper::toString)
+                .collect(Collectors.toList());
 
         helperVersion.setItems(helperVersions);
         helperVersion.setLabel("PM helper Version");
