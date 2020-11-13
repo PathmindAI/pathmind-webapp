@@ -21,6 +21,11 @@ public class ExperimentNotesField extends NotesField {
         this.getUISupplier = getUISupplier;
     }
 
+    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer, Boolean allowAutoSave, Boolean hideSaveButton) {
+        super(title, experiment.getUserNotes(), saveConsumer, false, allowAutoSave, hideSaveButton);
+        this.getUISupplier = getUISupplier;
+    }
+
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this, getUISupplier,

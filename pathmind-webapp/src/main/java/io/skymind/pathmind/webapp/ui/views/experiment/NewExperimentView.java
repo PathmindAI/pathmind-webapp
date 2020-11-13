@@ -298,16 +298,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 () -> getUI(),
                 "Notes",
                 experiment,
-                updatedNotes -> {
-                    experiment.setUserNotes(updatedNotes);
-                    experimentDAO.updateUserNotes(experimentId, updatedNotes);
-                    notesSavedHint.setVisible(true);
-                    // addClassName() only works for the first time when the class name is removed via JS; so JS is used instead
-                    notesSavedHint.getElement().executeJs("$0.classList.add('fade-in'); setTimeout(() => {$0.classList.remove('fade-in');}, 3000)");
-                    segmentIntegrator.addedNotesNewExperimentView();
-                }
+                updatedNotes -> {},
+                false,
+                true
         );
         notesField.setPlaceholder("Add Notes (optional)");
+        notesField.setOnNotesChangeHandler(() -> {
+            setButtonsEnablement();
+        });
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
         }
@@ -337,7 +335,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return false;
         }
         return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
-                !observationsPanel.getSelectedObservations().equals(experimentObservations);
+                !observationsPanel.getSelectedObservations().equals(experimentObservations) ||
+                !notesField.getNotesText().equals(experiment.getUserNotes());
     }
 
     private void setButtonsEnablement() {
@@ -364,6 +363,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return;
         }
 
+        saveNotes();
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
@@ -378,6 +378,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
+        saveNotes();
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
@@ -385,6 +386,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesSavedHint.setVisible(false);
         NotificationUtils.showSuccess("Draft successfully saved");
         afterClickedCallback.execute();
+    }
+
+    private void saveNotes() {
+        experiment.setUserNotes(notesField.getNotesText());
+        experimentDAO.updateUserNotes(experimentId, notesField.getNotesText());
+        segmentIntegrator.addedNotesNewExperimentView();
     }
 
     private void unarchiveExperiment() {

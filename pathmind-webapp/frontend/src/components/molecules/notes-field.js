@@ -72,6 +72,16 @@ class NotesField extends PolymerElement {
                 type: Boolean,
                 value: false,
             },
+            allowautosave: {
+                type: Boolean,
+                value: true,
+                observer: "_allowAutoSaveChanged",
+            },
+            hidesavebutton: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+            },
             unsaved: {
                 type: Boolean,
                 value: false,
@@ -164,7 +174,6 @@ class NotesField extends PolymerElement {
                     align-self: center;
                     font-size: var(--lumo-font-size-s);
                     color: var(--lumo-secondary-text-color);
-                    margin-right: var(--lumo-space-s);
                 }
                 .wordcount-label[warning] {
                     color: var(--pm-danger-color);
@@ -178,6 +187,9 @@ class NotesField extends PolymerElement {
                     opacity: 0;
                     transition: opacity 0.5s;
                 }
+                :host([hidesavebutton]) .hint-label {
+                    display: none;
+                }
                 vaadin-button {
                     min-width: 45px;
                     height: 1.4rem;
@@ -186,6 +198,7 @@ class NotesField extends PolymerElement {
                     font-weight: normal;
                     padding: 0 var(--lumo-space-xs);
                     margin: 0;
+                    margin-left: var(--lumo-space-s);
                 }
                 vaadin-text-area {
                     width: 100%;
@@ -202,14 +215,15 @@ class NotesField extends PolymerElement {
                 <span class="hint-label" hidden="[[!unsaved]]">Unsaved Notes!</span>
                 <iron-icon icon="vaadin:check" id="saveIcon"></iron-icon>
                 <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
-                <vaadin-button id="save" on-click="onSave" disabled=[[readonly]]>Save</vaadin-button>
+                <vaadin-button id="save" on-click="onSave" disabled=[[readonly]] hidden$=[[hidesavebutton]]>Save</vaadin-button>
             </div>
             <vaadin-text-area
                 id="textarea"
                 theme="notes-field"
                 placeholder="[[placeholder]]"
                 readonly$=[[readonly]]
-                compact$=[[compact]]></vaadin-text-area>
+                compact$=[[compact]]
+                on-change="onNotesChange"></vaadin-text-area>
         `;
     }
 
@@ -222,9 +236,19 @@ class NotesField extends PolymerElement {
                 this.unsaved = true;
             }
         }, 300));
-        this.$.textarea.addEventListener("blur", event => {
-            this.$.save.click();
-        });
+    }
+
+    autoSave(event) {
+        this.$.save.click();
+    }
+
+    _allowAutoSaveChanged(newValue, oldValue) {
+        console.log("allow auto save changed: ", newValue)
+        if (newValue) {
+            this.$.textarea.addEventListener("blur", this.autoSave);
+        } else {
+            this.$.textarea.removeEventListener("blur", this.autoSave);
+        }
     }
 
     canSave(updatedNotesText) {
@@ -235,11 +259,10 @@ class NotesField extends PolymerElement {
     }
 
     onSave(event) {
-        if (this.canSave(this.$.textarea.value) && !this._notesChangedObserverTriggered) {
+        if (this.canSave(this.$.textarea.value)) {
             console.log("----------- in onSave -----------");
             console.log("this.notes: "+this.notes);
             console.log("this.$.textarea.value: "+this.$.textarea.value);
-            this._notesChangeObserverLock = true;
             this.notes = this.$.textarea.value;
             this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
@@ -247,7 +270,6 @@ class NotesField extends PolymerElement {
                 this.$.saveIcon.classList.remove('fade-in');
             }, 1500);
         }
-        this._notesChangedObserverTriggered = false;
     }
 
     calculateWordCount(notes) {
@@ -255,11 +277,6 @@ class NotesField extends PolymerElement {
     }
 
     _notesChanged(newValue, oldValue) {
-        if (this._notesChangeObserverLock) {
-            this._notesChangeObserverLock = false;
-            return;
-        }
-        this._notesChangedObserverTriggered = true;
         console.log("----------- in _notesChanged -----------");
         console.log("this.notes: "+this.notes);
         console.log("this.$.textarea.value: "+this.$.textarea.value);

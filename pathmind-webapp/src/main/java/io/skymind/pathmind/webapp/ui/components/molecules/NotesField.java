@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("notes-field")
@@ -18,17 +19,24 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     private String notesText;
     private Consumer<String> saveConsumer;
+    private Command onNotesChangeHandler;
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
-        this(title, notesText, saveConsumer, false);
+        this(title, notesText, saveConsumer, false, true, false);
     }
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean compact) {
+        this(title, notesText, saveConsumer, compact, true, false);
+    }
+
+    public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean compact, Boolean allowAutoSave, Boolean hideSaveButton) {
         this.saveConsumer = saveConsumer;
         setNotesText(notesText);
         getModel().setTitle(title);
         getModel().setMax(MAX_NOTES_SIZE);
         setCompact(compact);
+        setAllowAutoSave(allowAutoSave);
+        setHideSaveButton(hideSaveButton);
     }
 
     public void setNotesText(String notesText) {
@@ -36,6 +44,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         System.out.println("notesText: "+notesText);
         this.notesText = notesText;
         getModel().setNotes(notesText);
+    }
+
+    public String getNotesText() {
+        return notesText;
     }
 
     public void setPlaceholder(String placeholder) {
@@ -46,8 +58,28 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setReadonly(readonly);
     }
 
+    public void setAllowAutoSave(Boolean allowAutoSave) {
+        getModel().setAllowautosave(allowAutoSave);
+    }
+
+    public void setHideSaveButton(Boolean hideSaveButton) {
+        getModel().setHidesavebutton(hideSaveButton);
+    }
+
     public void setCompact(Boolean compact) {
         getModel().setCompact(compact);
+    }
+
+    public void setOnNotesChangeHandler(Command onNotesChangeHandler) {
+        this.onNotesChangeHandler = onNotesChangeHandler;
+    }
+
+    @EventHandler
+    private void onNotesChange(@EventData("event.target.value") String updatedNotesText) {
+        if (canSave(updatedNotesText)) {
+            notesText = updatedNotesText;
+            onNotesChangeHandler.execute();
+        }
     }
 
     @EventHandler
@@ -77,6 +109,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setMax(Integer max);
 
         void setReadonly(Boolean readonly);
+
+        void setAllowautosave(Boolean allowautosave);
+
+        void setHidesavebutton(Boolean hidesavebutton);
 
         void setCompact(Boolean compact);
     }
