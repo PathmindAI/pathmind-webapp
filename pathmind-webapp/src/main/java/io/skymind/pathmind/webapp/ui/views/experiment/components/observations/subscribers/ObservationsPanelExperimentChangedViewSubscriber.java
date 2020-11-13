@@ -8,9 +8,6 @@ import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
 
-import java.util.List;
-import java.util.function.Supplier;
-
 /**
  * This one is odd because we are re-using the subscriber in different views and in one view we need the experimentId whereas the other view
  * we use the modelId. Meaning we can't rely on the component for the value of the listener like we normally do, we have to override the
@@ -19,21 +16,20 @@ import java.util.function.Supplier;
  */
 public class ObservationsPanelExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
 
-    private Supplier<Long> getExperimentIdSupplier;
     private ObservationsPanel observationsPanel;
     private ObservationDAO observationDAO;
 
     // We use a supplier because this subscriber is used by more than one view.
-    public ObservationsPanelExperimentChangedViewSubscriber(Supplier<Long> getExperimentIdSupplier, ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
+    public ObservationsPanelExperimentChangedViewSubscriber(ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
         super();
-        this.getExperimentIdSupplier = getExperimentIdSupplier;
         this.observationsPanel = observationsPanel;
         this.observationDAO = observationDAO;
     }
 
     @Override
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-        observationDAO.saveExperimentObservations(getExperimentIdSupplier.get(), observationsPanel.getSelectedObservations());
+        observationDAO.saveExperimentObservations(observationsPanel.getExperiment().getId(), observationsPanel.getSelectedObservations());
+        observationsPanel.setExperiment(event.getExperiment());
         List<Observation> experimentObservations = observationDAO.getObservationsForExperiment(event.getExperiment().getId());
         observationsPanel.setSelectedObservations(experimentObservations);
     }

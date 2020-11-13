@@ -30,7 +30,6 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -110,9 +109,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
-    private List<Observation> modelObservations = new ArrayList<>();
-    private List<Observation> experimentObservations = new ArrayList<>();
-
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
@@ -187,7 +183,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewExperimentCreatedSubscriber(this),
                 new ExperimentViewExperimentUpdatedSubscriber(this),
                 new ExperimentViewExperimentChangedSubscriber(this),
-                new ObservationsPanelExperimentChangedViewSubscriber(() -> getExperimentId(), observationDAO, observationsPanel));
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -266,7 +262,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true);
+        observationsPanel = new ObservationsPanel(experiment, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
@@ -438,8 +434,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-        experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
+        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
+        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
