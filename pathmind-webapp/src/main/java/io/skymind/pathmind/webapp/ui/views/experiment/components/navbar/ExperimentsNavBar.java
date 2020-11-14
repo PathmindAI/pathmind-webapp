@@ -20,11 +20,11 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentSelectedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarNotificationExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarNotificationExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.view.NavBarExperimentSelectedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentUpdatedSubscriber;
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout {
@@ -75,7 +75,7 @@ public class ExperimentsNavBar extends VerticalLayout {
                     new NavBarNotificationExperimentArchivedSubscriber(this));
         } else {
             EventBus.subscribe(this, getUISupplier,
-                    new NavBarExperimentSelectedSubscriber(this),
+                    new NavBarExperimentSelectedViewSubscriber(this),
                     new NavBarExperimentArchivedSubscriber(this),
                     new NavBarExperimentCreatedSubscriber(this),
                     new NavBarNotificationExperimentUpdatedSubscriber(this),

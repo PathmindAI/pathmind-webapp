@@ -64,14 +64,14 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentChangedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
@@ -182,7 +182,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewRunUpdateSubscriber(this),
                 new ExperimentViewExperimentCreatedSubscriber(this),
                 new ExperimentViewExperimentUpdatedSubscriber(this),
-                new ExperimentViewExperimentChangedSubscriber(this),
+                new ExperimentViewExperimentChangedViewSubscriber(this),
                 new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 

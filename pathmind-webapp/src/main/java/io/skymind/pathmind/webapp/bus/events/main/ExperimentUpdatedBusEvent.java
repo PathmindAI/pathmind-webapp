@@ -40,10 +40,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
     }
 
-    public ExperimentUpdateType getExperimentUpdateType() {
-        return experimentUpdateType;
-    }
-
     @Override
     public ExperimentUpdatedBusEvent cloneForEventBus() {
         return new ExperimentUpdatedBusEvent(experiment.deepClone(), experimentUpdateType);

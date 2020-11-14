@@ -19,9 +19,9 @@ import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.TrainingStatusDetailsPanelRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
