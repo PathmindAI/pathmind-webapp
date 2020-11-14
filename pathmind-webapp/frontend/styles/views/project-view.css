@@ -59,6 +59,8 @@
     /* same as .panel-title-label but since this panel is reused on Experiment &
        New Experiment view, we're going to keep it as .bold-label for now */
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
     width: 100%;
     font-size: var(--lumo-font-size-s);
     font-weight: normal;
@@ -69,12 +71,42 @@
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
+.project-view .observations-panel-wrapper vaadin-horizontal-layout {
+    flex-wrap: wrap;
+    padding: var(--lumo-space-xs) 0 0 var(--lumo-space-xs);
+}
+
+.project-view .observations-panel-wrapper .observation-label {
+    color: var(--lumo-secondary-text-color);
+    font-size: var(--lumo-font-size-s);
+    line-height: 1;
+    padding: 0.4em;
+    border: 1px solid currentColor;
+    border-radius: var(--lumo-border-radius);
+    margin-right: var(--lumo-space-xs);
+    margin-bottom: var(--lumo-space-xs);
+}
+
 .project-view .notes-field-wrapper {
     flex: 1 1 auto;
 }
 
 .project-view .model-wrapper {
     height: auto !important;
+}
+
+.project-view .model-wrapper > [slot="secondary"] {
+    height: calc(100vh - 11rem);
+}
+
+.project-view .model-wrapper > [slot="secondary"] > vaadin-vertical-layout {
+    flex: 1 1 50%;
+    overflow: auto;
+}
+
+.project-view .model-wrapper > [slot="secondary"] .panel-title-label {
+    position: sticky;
+    top: 0;
 }
 
 .project-view .reward-variables-table {
@@ -137,10 +169,6 @@
 
 .project-view .observations-table {
     padding-top: 0;
-}
-
-.project-view .observations-table vaadin-checkbox-group vaadin-checkbox[disabled] {
-    color: var(--lumo-secondary-text-color);
 }
 
 .models-navbar {

@@ -43,7 +43,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelDetailsObservationsIs(int observations) {
-        assertThat(getDriver().findElements(By.xpath("//*[@class='observations-table']/descendant::vaadin-checkbox[not(@hidden)]")).size(), is(observations));
+        assertThat(getDriver().findElements(By.xpath("//*[@class='observations-panel-wrapper']//span[@class='observation-label']")).size(), is(observations));
     }
 
     public void checkModelPageModelDetailsRewardVariablesOrder() {
