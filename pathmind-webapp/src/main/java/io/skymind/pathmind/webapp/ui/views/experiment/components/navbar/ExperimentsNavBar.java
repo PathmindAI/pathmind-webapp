@@ -22,16 +22,14 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentSelectedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NotificationExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarNotificationExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.NavBarNotificationExperimentUpdatedSubscriber;
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout {
     private List<Experiment> experiments;
     private Experiment selectedExperiment;
-
-    // REFACTOR -> Temporary placeholder until I finish the merging
-    private NotificationExperimentUpdatedSubscriber notificationExperimentUpdatedSubscriber;
 
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
     private VerticalLayout rowsWrapper;
@@ -54,8 +52,6 @@ public class ExperimentsNavBar extends VerticalLayout {
         this.modelId = selectedExperiment.getModelId();
         this.segmentIntegrator = segmentIntegrator;
 
-        notificationExperimentUpdatedSubscriber = new NotificationExperimentUpdatedSubscriber(experiments, selectedExperiment);
-
         rowsWrapper = new VerticalLayout();
         rowsWrapper.addClassName("experiments-navbar-items");
         rowsWrapper.setPadding(false);
@@ -75,13 +71,15 @@ public class ExperimentsNavBar extends VerticalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         if (selectedExperiment.isArchived()) {
             EventBus.subscribe(this, getUISupplier,
-                    notificationExperimentUpdatedSubscriber);
+                    new NavBarNotificationExperimentUpdatedSubscriber(this),
+                    new NavBarNotificationExperimentArchivedSubscriber(this));
         } else {
             EventBus.subscribe(this, getUISupplier,
                     new NavBarExperimentSelectedSubscriber(this),
-                    new NavBarExperimentUpdatedSubscriber(this),
+                    new NavBarExperimentArchivedSubscriber(this),
                     new NavBarExperimentCreatedSubscriber(this),
-                    notificationExperimentUpdatedSubscriber);
+                    new NavBarNotificationExperimentUpdatedSubscriber(this),
+                    new NavBarNotificationExperimentArchivedSubscriber(this));
         }
     }
 
@@ -118,6 +116,10 @@ public class ExperimentsNavBar extends VerticalLayout {
         return experiments;
     }
 
+    public Experiment getSelectedExperiment() {
+        return selectedExperiment;
+    }
+
     private void addExperimentsToNavBar() {
         rowsWrapper.removeAll();
         experimentsNavBarItems.clear();
@@ -144,7 +146,7 @@ public class ExperimentsNavBar extends VerticalLayout {
                 experimentsNavBarItem.setAsCurrent();
             }
         });
-        notificationExperimentUpdatedSubscriber.setExperiment(newCurrentExperiment);
+        selectedExperiment = newCurrentExperiment;
     }
 
     public void setAllowNewExperimentCreation(boolean allowNewExperimentCreation) {

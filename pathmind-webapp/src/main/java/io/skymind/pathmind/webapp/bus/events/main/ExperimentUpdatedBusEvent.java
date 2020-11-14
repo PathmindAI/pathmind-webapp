@@ -10,7 +10,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         ExperimentDataUpdate,
         StartTraining,
         Favorite,
-        Archive
     }
 
     private Experiment experiment;
@@ -40,10 +39,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     public boolean isStartedTrainingEventType() {
         return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
-    }
-
-    public boolean isArchiveEventType() {
-        return ExperimentUpdateType.Archive.equals(experimentUpdateType);
     }
 
     public ExperimentUpdateType getExperimentUpdateType() {

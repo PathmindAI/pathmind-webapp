@@ -20,6 +20,7 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -142,7 +143,7 @@ public class ExperimentUtils {
     public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
         experimentDAO.archive(experiment.getId(), isArchive);
         experiment.setArchived(isArchive);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment, ExperimentUpdatedBusEvent.ExperimentUpdateType.Archive));
+        EventBus.post(new ExperimentArchivedBusEvent(experiment));
     }
 
     public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
