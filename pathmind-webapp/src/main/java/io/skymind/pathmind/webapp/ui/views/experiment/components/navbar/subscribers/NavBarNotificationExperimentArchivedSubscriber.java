@@ -19,7 +19,8 @@ public class NavBarNotificationExperimentArchivedSubscriber extends ExperimentAr
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
     public void handleBusEvent(ExperimentArchivedBusEvent event) {
-            alertThenNotifyArchive(event);
+        ExperimentUtils.updateExperimentInExperimentsList(experimentsNavBar.getExperiments(), event.getExperiment());
+        alertThenNotifyArchive(event);
     }
 
     private void alertThenNotifyArchive(ExperimentArchivedBusEvent event) {
