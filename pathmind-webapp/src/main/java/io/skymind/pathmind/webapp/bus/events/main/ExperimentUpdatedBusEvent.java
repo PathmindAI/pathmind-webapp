@@ -9,7 +9,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
     public enum ExperimentUpdateType {
         ExperimentDataUpdate,
         StartTraining,
-        Favorite,
     }
 
     private Experiment experiment;

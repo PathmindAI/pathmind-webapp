@@ -22,7 +22,7 @@ import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentFavoriteBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
@@ -45,10 +45,6 @@ public class ExperimentUtils {
 
     public static boolean isDraftRunType(Experiment experiment) {
         return experiment.isDraft();
-    }
-
-    public static boolean isFavorite(Experiment experiment) {
-        return experiment.isFavorite();
     }
 
     public static String getProjectName(Experiment experiment) {
@@ -149,7 +145,7 @@ public class ExperimentUtils {
     public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
         experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
         experiment.setFavorite(newIsFavorite);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment, ExperimentUpdatedBusEvent.ExperimentUpdateType.Favorite));
+        EventBus.post(new ExperimentFavoriteBusEvent(experiment));
     }
 
     public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {
