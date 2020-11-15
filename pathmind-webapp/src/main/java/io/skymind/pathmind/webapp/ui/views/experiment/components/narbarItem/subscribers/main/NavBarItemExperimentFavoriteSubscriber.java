@@ -1,9 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main;
 
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentFavoriteBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentFavoriteSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 

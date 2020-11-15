@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main;
 
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
@@ -23,11 +23,11 @@ public class NavBarNotificationExperimentStartTrainingSubscriber extends Experim
 
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
-    public void handleBusEvent(ExperimentUpdatedBusEvent event) {
+    public void handleBusEvent(ExperimentStartTrainingBusEvent event) {
         alertThenNotifyStarted(event);
     }
 
-    private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {
+    private void alertThenNotifyStarted(ExperimentStartTrainingBusEvent event) {
         NotificationUtils.alertAndThen(
                 getUiSupplier(),
                 "Training Started",
@@ -36,7 +36,7 @@ public class NavBarNotificationExperimentStartTrainingSubscriber extends Experim
     }
 
     @Override
-    public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
+    public boolean filterBusEvent(ExperimentStartTrainingBusEvent event) {
         return ExperimentUtils.isSameExperiment(event.getExperiment(), experimentsNavBar.getSelectedExperiment());
     }
 }

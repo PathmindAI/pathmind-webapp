@@ -21,14 +21,7 @@ public class ExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdated
 
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-        if (experimentView.getExperiment() == null) {
-            return false;
-        }
-        if (experimentView.getExperiment().isArchived()) {
-            return ExperimentUtils.isSameExperiment(event.getExperiment(), experimentView.getExperiment());
-        } else {
-            return ExperimentUtils.isSameModel(experimentView.getExperiment(), event.getModelId());
-        }
+        return ExperimentUtils.isSameExperiment(event.getExperiment(), experimentView.getExperiment());
     }
 
 }
