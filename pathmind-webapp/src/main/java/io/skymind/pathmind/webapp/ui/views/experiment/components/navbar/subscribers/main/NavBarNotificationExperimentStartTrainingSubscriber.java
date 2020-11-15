@@ -1,21 +1,22 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main;
 
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
-public class NavBarNotificationExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
+public class NavBarNotificationExperimentStartTrainingSubscriber extends ExperimentStartTrainingSubscriber {
 
     private ExperimentsNavBar experimentsNavBar;
 
-    public NavBarNotificationExperimentUpdatedSubscriber(ExperimentsNavBar experimentsNavBar) {
+    public NavBarNotificationExperimentStartTrainingSubscriber(ExperimentsNavBar experimentsNavBar) {
+        super();
         this.experimentsNavBar = experimentsNavBar;
     }
 
-    public NavBarNotificationExperimentUpdatedSubscriber(boolean isListenForEventOnSameUI, ExperimentsNavBar experimentsNavBar) {
+    public NavBarNotificationExperimentStartTrainingSubscriber(boolean isListenForEventOnSameUI, ExperimentsNavBar experimentsNavBar) {
         super(isListenForEventOnSameUI);
         this.experimentsNavBar = experimentsNavBar;
     }
@@ -23,11 +24,7 @@ public class NavBarNotificationExperimentUpdatedSubscriber extends ExperimentUpd
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
     public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-        // We need to update the internal experiments list for the navigation logic.
-        ExperimentUtils.updateExperimentInExperimentsList(experimentsNavBar.getExperiments(), event.getExperiment());
-        if (event.isStartedTrainingEventType()) {
-            alertThenNotifyStarted(event);
-        }
+        alertThenNotifyStarted(event);
     }
 
     private void alertThenNotifyStarted(ExperimentUpdatedBusEvent event) {
@@ -40,6 +37,6 @@ public class NavBarNotificationExperimentUpdatedSubscriber extends ExperimentUpd
 
     @Override
     public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-        return ExperimentUtils.isSameExperiment(event.getExperiment(), experimentsNavBar.getSelectedExperiment()) && event.isStartedTrainingEventType();
+        return ExperimentUtils.isSameExperiment(event.getExperiment(), experimentsNavBar.getSelectedExperiment());
     }
 }

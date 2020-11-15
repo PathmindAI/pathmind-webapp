@@ -43,7 +43,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -65,9 +65,10 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionE
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
@@ -154,6 +155,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         EventBus.subscribe(this, () -> getUI(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
+                new NewExperimentViewExperimentStartTrainingSubscriber(this),
                 new NewExperimentViewExperimentChangedViewSubscriber(this),
                 new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
@@ -358,8 +360,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
         trainingService.startRun(experiment);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment,
-                ExperimentUpdatedBusEvent.ExperimentUpdateType.StartTraining));
+        EventBus.post(new ExperimentStartTrainingBusEvent(experiment));
         segmentIntegrator.startTraining();
 
         unsavedChanges.setVisible(false);

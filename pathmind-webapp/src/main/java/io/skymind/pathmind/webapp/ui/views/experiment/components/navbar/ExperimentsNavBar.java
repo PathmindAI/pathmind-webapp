@@ -24,7 +24,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscrib
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.view.NavBarExperimentSelectedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentStartTrainingSubscriber;
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout {
@@ -71,14 +71,14 @@ public class ExperimentsNavBar extends VerticalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         if (selectedExperiment.isArchived()) {
             EventBus.subscribe(this, getUISupplier,
-                    new NavBarNotificationExperimentUpdatedSubscriber(this),
+                    new NavBarNotificationExperimentStartTrainingSubscriber(this),
                     new NavBarNotificationExperimentArchivedSubscriber(this));
         } else {
             EventBus.subscribe(this, getUISupplier,
                     new NavBarExperimentSelectedViewSubscriber(this),
                     new NavBarExperimentArchivedSubscriber(this),
                     new NavBarExperimentCreatedSubscriber(this),
-                    new NavBarNotificationExperimentUpdatedSubscriber(this),
+                    new NavBarNotificationExperimentStartTrainingSubscriber(this),
                     new NavBarNotificationExperimentArchivedSubscriber(this));
         }
     }

@@ -7,8 +7,7 @@ import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     public enum ExperimentUpdateType {
-        ExperimentDataUpdate,
-        StartTraining,
+        ExperimentDataUpdate
     }
 
     private Experiment experiment;
@@ -34,10 +33,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     public long getModelId() {
         return experiment.getModelId();
-    }
-
-    public boolean isStartedTrainingEventType() {
-        return ExperimentUpdateType.StartTraining.equals(experimentUpdateType);
     }
 
     @Override
