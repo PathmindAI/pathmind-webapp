@@ -6,22 +6,12 @@ import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
 public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
-    public enum ExperimentUpdateType {
-        ExperimentDataUpdate
-    }
-
     private Experiment experiment;
-    private ExperimentUpdateType experimentUpdateType;
 
     public ExperimentUpdatedBusEvent(Experiment experiment) {
-        this(experiment, ExperimentUpdateType.ExperimentDataUpdate);
-    }
-
-    public ExperimentUpdatedBusEvent(Experiment experiment, ExperimentUpdateType experimentUpdateType) {
+        super();
         this.experiment = experiment;
-        this.experimentUpdateType = experimentUpdateType;
     }
-
     @Override
     public BusEventType getEventType() {
         return BusEventType.ExperimentUpdate;
@@ -37,6 +27,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
 
     @Override
     public ExperimentUpdatedBusEvent cloneForEventBus() {
-        return new ExperimentUpdatedBusEvent(experiment.deepClone(), experimentUpdateType);
+        return new ExperimentUpdatedBusEvent(experiment.deepClone());
     }
 }
