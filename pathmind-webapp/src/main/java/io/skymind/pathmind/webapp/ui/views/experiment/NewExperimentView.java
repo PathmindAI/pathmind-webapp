@@ -228,7 +228,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         observationsPanel = new ObservationsPanel(experiment, false);
         observationsPanel.addValueChangeListener(evt -> {
-            setButtonsEnablement();
+            if (observationsPanel.getExperiment().equals(experiment)) {
+                setButtonsEnablement();
+            }
         });
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
@@ -372,8 +374,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
-        unsavedChanges.setVisible(false);
-        notesSavedHint.setVisible(false);
+        disabledSaveDraft();
         NotificationUtils.showSuccess("Draft successfully saved");
         afterClickedCallback.execute();
     }
@@ -489,9 +490,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
         rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
+        disabledSaveDraft();
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
+    }
+
+    private void disabledSaveDraft() {
+        saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
-        unarchiveExperimentButton.setVisible(experiment.isArchived());
     }
 
     private String generateRewardFunction() {

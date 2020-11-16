@@ -28,7 +28,6 @@ public class ObservationsPanelExperimentChangedViewSubscriber extends Experiment
 
     @Override
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-        observationDAO.saveExperimentObservations(observationsPanel.getExperiment().getId(), observationsPanel.getSelectedObservations());
         observationsPanel.setExperiment(event.getExperiment());
         List<Observation> experimentObservations = observationDAO.getObservationsForExperiment(event.getExperiment().getId());
         observationsPanel.setSelectedObservations(experimentObservations);
