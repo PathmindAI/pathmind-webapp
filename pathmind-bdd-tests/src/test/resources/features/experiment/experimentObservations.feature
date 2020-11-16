@@ -232,7 +232,25 @@ Feature: Experiment observations
     Then Check experiment page observation 'factoryOrdersSize' is selected 'true'
     Then Check experiment page observation 'factoryBacklog' is selected 'true'
     Then Check experiment page observation 'simTime' is selected 'true'
+    When Click new experiment page observation checkbox 'retailerI'
+    When Click new experiment page observation checkbox 'retailerDemandsSize'
+    When Click new experiment page observation checkbox 'retailerExpected'
+    When Click project page new experiment button
+    When Wait a bit 3000 ms
+    Then Check experiment page observation 'retailerI' is selected 'true'
+    Then Check experiment page observation 'retailerDemandsSize' is selected 'true'
+    Then Check experiment page observation 'retailerExpected' is selected 'true'
+    Then Check experiment page observation 'retailerBacklog' is selected 'true'
+    Then Check experiment page observation 'wholesalerI' is selected 'true'
+    Then Check experiment page observation 'wholesalerOrdersSize' is selected 'true'
+    Then Check experiment page observation 'wholesalerExpected' is selected 'true'
+    Then Check experiment page observation 'wholesalerBacklog' is selected 'true'
+    Then Check experiment page observation 'factoryI' is selected 'true'
+    Then Check experiment page observation 'factoryOrdersSize' is selected 'true'
+    Then Check experiment page observation 'factoryBacklog' is selected 'true'
+    Then Check experiment page observation 'simTime' is selected 'true'
 
     Examples:
       | project name    | model                       | reward function file                      |
       | AutotestProject | SupplyChain/SupplyChain.zip | SupplyChain/SupplyChainRewardFunction.txt |
+
