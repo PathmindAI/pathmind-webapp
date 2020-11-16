@@ -167,4 +167,9 @@ public class LoginPageSteps {
     public void clickSignUpAboutUsButton() {
         loginPage.clickSignUpAboutUsButton();
     }
+
+    @Step
+    public void checkHeaderUsername(String name) {
+        loginPage.checkHeaderUsername(name);
+    }
 }

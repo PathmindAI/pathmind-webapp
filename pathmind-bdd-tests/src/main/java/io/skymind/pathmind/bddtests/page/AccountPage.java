@@ -4,6 +4,8 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -77,5 +79,23 @@ public class AccountPage extends PageObject {
     public void checkUserEmailIsCorrect(String email) {
         WebElement e = utils.expandRootElement(accountViewShadow);
         assertThat(e.findElement(By.cssSelector(".data:nth-of-type(2)")).getText(), is(email));
+    }
+
+    public void inputAccountPageFirstName(String firstName) {
+        JavascriptExecutor jse = (JavascriptExecutor) getDriver();
+        WebElement e = utils.expandRootElement(accountEditViewShadow);
+        WebElement inputFieldShadow = e.findElement(By.id("firstName"));
+        inputFieldShadow.click();
+        inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        jse.executeScript("arguments[0].value='" + firstName + "';", inputFieldShadow);
+    }
+
+    public void inputAccountPageLastName(String lastName) {
+        JavascriptExecutor jse = (JavascriptExecutor) getDriver();
+        WebElement e = utils.expandRootElement(accountEditViewShadow);
+        WebElement inputFieldShadow = e.findElement(By.id("lastName"));
+        inputFieldShadow.click();
+        inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+        jse.executeScript("arguments[0].value='" + lastName + "';", inputFieldShadow);
     }
 }
