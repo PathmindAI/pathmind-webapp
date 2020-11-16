@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components;
+package io.skymind.pathmind.webapp.ui.views.project.components;
 
 import java.util.Arrays;
 import java.util.Comparator;

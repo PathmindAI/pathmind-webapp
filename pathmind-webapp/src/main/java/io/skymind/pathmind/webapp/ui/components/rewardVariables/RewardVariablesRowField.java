@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
+package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusE
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentChangedViewSubscriber;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 

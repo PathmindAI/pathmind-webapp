@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components;
+package io.skymind.pathmind.webapp.ui.components.observations;
 
 import java.util.HashSet;
 import java.util.Set;

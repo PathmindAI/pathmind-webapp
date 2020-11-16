@@ -33,7 +33,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricCha
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.SimulationMetricsPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

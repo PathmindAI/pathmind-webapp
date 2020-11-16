@@ -72,9 +72,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.Experimen
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;

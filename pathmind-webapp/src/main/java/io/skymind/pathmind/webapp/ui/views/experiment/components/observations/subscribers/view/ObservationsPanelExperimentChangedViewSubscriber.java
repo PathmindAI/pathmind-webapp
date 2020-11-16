@@ -6,7 +6,7 @@ import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 
 /**
  * This one is odd because we are re-using the subscriber in different views and in one view we need the experimentId whereas the other view

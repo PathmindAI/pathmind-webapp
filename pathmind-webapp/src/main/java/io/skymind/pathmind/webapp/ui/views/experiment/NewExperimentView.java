@@ -70,10 +70,10 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperi
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model;
+package io.skymind.pathmind.webapp.ui.components.modelChecker;
 
 import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;

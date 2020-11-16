@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components;
+package io.skymind.pathmind.webapp.ui.components.alp;
 
 import java.io.ByteArrayInputStream;
 

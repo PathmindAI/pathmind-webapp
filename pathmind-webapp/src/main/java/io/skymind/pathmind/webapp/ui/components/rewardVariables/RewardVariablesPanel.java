@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables;
+package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
 import java.util.List;
 import java.util.Optional;
