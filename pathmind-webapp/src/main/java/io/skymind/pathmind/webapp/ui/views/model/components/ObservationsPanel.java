@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -77,7 +78,7 @@ public class ObservationsPanel extends VerticalLayout {
     }
 
     public void setSelectedObservations(Collection<Observation> observations) {
-        observationsTable.setValue(new HashSet<>(observations));
+        observationsTable.setValue(new LinkedHashSet<>(observations));
     }
 
     public void addValueChangeListener(SerializableConsumer<Set<Observation>> listener) {

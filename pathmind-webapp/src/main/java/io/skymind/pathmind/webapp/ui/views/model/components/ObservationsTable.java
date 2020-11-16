@@ -1,6 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.vaadin.flow.component.HasStyle;
@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.data.Observation;
 @CssImport(value = "./styles/components/observations-table.css")
 public class ObservationsTable extends CustomField<Set<Observation>> implements HasStyle {
 
-    private Set<Observation> observationsList = new HashSet<>();
+    private Set<Observation> observationsList = new LinkedHashSet<>();
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
 
     public ObservationsTable(Boolean isReadOnly) {
