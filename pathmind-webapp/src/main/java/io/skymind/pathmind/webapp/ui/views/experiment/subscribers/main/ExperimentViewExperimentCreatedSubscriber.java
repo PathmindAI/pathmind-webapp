@@ -16,7 +16,7 @@ public class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreated
 
     @Override
     public void handleBusEvent(ExperimentCreatedBusEvent event) {
-        experimentView.updateExperimentComponents();
+        experimentView.updateExperimentComponentsForSubscribers();
     }
 
     @Override

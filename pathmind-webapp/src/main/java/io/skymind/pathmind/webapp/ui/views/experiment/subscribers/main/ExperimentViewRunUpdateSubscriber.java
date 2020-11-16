@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main;
 
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -26,7 +25,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             experimentView.updateDetailsForExperiment();
             experimentView.updateButtonEnablement();
         } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experimentView.getExperiment().getModelId())) {
-            experimentView.updateExperimentComponents();
+            experimentView.updateExperimentComponentsForSubscribers();
         }
     }
 
