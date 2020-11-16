@@ -26,6 +26,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -112,7 +113,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         EventBus.subscribe(this, getUISupplier,
                 new NavBarItemExperimentFavoriteSubscriber(this),
                 new NavBarItemExperimentUpdatedSubscriber(this),
-                new NavBarItemRunUpdateSubscriber(this));
+                new NavBarItemRunUpdateSubscriber(this),
+                new NavBarItemNotificationExperimentStartTrainingSubscriber(this));
     }
 
     @Override

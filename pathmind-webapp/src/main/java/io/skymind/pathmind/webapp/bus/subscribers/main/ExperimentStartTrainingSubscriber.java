@@ -7,6 +7,7 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEven
 public abstract class ExperimentStartTrainingSubscriber extends EventBusSubscriber<ExperimentStartTrainingBusEvent> {
 
     public ExperimentStartTrainingSubscriber() {
+        super();
     }
 
     public ExperimentStartTrainingSubscriber(boolean isListenForEventOnSameUI) {
