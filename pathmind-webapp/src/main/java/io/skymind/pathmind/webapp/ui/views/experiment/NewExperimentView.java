@@ -301,6 +301,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesField.setOnNotesChangeHandler(() -> {
             if (notesField.getExperiment().equals(experiment)) {
                 setButtonsEnablement();
+                setNotes();
             }
         });
         if (experiment.isArchived()) {
@@ -360,7 +361,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return;
         }
 
-        saveNotes();
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
@@ -374,7 +374,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        saveNotes();
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
@@ -383,7 +382,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         afterClickedCallback.execute();
     }
 
-    private void saveNotes() {
+    private void setNotes() {
         if (notesField.getExperiment().equals(experiment)) {
             experiment.setUserNotes(notesField.getNotesText());
             segmentIntegrator.addedNotesNewExperimentView();
@@ -406,16 +405,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
         synchronized (experimentLock) {
+            experiment = selectedExperiment;
             experimentId = selectedExperiment.getId();
-            experiment = experimentDAO.getExperiment(experimentId)
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
             loadExperimentData();
             updateScreenComponents();
             pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-
-            PushUtils.push(getUI(), ui -> {
-                navigateToExperiment(ui, selectedExperiment);
-            });
+            getUI().ifPresent(ui -> navigateToExperiment(ui, selectedExperiment));
         }
     }
 
