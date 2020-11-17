@@ -38,7 +38,7 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataProvider;
-import io.skymind.pathmind.webapp.ui.views.dashboard.subscribers.DashboardViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.dashboard.subscribers.main.DashboardViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;

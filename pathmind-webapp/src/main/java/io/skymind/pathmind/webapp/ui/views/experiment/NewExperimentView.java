@@ -43,7 +43,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -64,16 +64,17 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.ExperimentNotesFieldExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentChangedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.view.ExperimentNotesFieldExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -155,7 +156,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         EventBus.subscribe(this, () -> getUI(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
-                new NewExperimentViewExperimentChangedSubscriber(this),
+                new NewExperimentViewExperimentStartTrainingSubscriber(this),
+                new NewExperimentViewExperimentChangedViewSubscriber(this),
                 new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel),
                 new ExperimentNotesFieldExperimentChangedViewSubscriber(notesField));
     }
@@ -364,8 +366,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
         trainingService.startRun(experiment);
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment,
-                ExperimentUpdatedBusEvent.ExperimentUpdateType.StartTraining));
+        EventBus.post(new ExperimentStartTrainingBusEvent(experiment));
         segmentIntegrator.startTraining();
 
         unsavedChanges.setVisible(false);
