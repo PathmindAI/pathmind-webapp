@@ -291,7 +291,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private ExperimentNotesField createNotesField() {
         notesField = new ExperimentNotesField(
-                () -> getUI(),
                 "Notes",
                 experiment,
                 updatedNotes -> {},

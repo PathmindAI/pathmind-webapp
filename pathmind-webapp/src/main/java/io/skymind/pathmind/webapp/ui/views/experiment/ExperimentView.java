@@ -51,7 +51,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
-import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -65,6 +64,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.Experime
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.view.ExperimentNotesFieldExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentUpdatedSubscriber;
@@ -120,7 +120,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private CodeViewer codeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
-    protected NotesField notesField;
+    protected ExperimentNotesField notesField;
 
     private ObservationsPanel observationsPanel;
 
@@ -182,7 +182,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewExperimentCreatedSubscriber(this),
                 new ExperimentViewExperimentUpdatedSubscriber(this),
                 new ExperimentViewExperimentChangedViewSubscriber(this),
-                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel),
+                new ExperimentNotesFieldExperimentChangedViewSubscriber(notesField));
     }
 
     @Override
@@ -347,7 +348,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private ExperimentNotesField createViewNotesField() {
         return new ExperimentNotesField(
-                () -> getUI(),
                 "Notes",
                 experiment,
                 updatedNotes -> {
@@ -429,6 +429,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void loadExperimentData() {
         modelId = experiment.getModelId();
+        experimentId = experiment.getId();
         // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
