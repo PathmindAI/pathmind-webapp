@@ -31,4 +31,14 @@ public class AccountPageSteps {
     public void checkUserEmailIsCorrect(String email) {
         accountPage.checkUserEmailIsCorrect(email);
     }
+
+    @Step
+    public void inputAccountPageFirstName(String firstName) {
+        accountPage.inputAccountPageFirstName(firstName);
+    }
+
+    @Step
+    public void inputAccountPageLastName(String lastName) {
+        accountPage.inputAccountPageLastName(lastName);
+    }
 }

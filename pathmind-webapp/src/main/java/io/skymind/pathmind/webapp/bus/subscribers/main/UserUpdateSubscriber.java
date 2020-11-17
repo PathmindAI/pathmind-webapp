@@ -7,7 +7,7 @@ import io.skymind.pathmind.webapp.bus.events.main.UserUpdateBusEvent;
 public abstract class UserUpdateSubscriber extends EventBusSubscriber<UserUpdateBusEvent> {
 
     public UserUpdateSubscriber() {
-        super();
+        super(true);
     }
 
     @Override

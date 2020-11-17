@@ -8,43 +8,68 @@ import java.util.Set;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import org.springframework.util.CollectionUtils;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class ObservationsPanel extends VerticalLayout {
 
     private ObservationsTable observationsTable;
-    private List<Observation> allObservations;
+    // Only used for ExperimentView and NewExperimentView and NOT ProjectView - for the changed experiment logic in the subscriber
+    private Experiment experiment;
 
-    public ObservationsPanel(List<Observation> observations) {
-        this(observations, null, true);
+    // For ProjectView only
+    public ObservationsPanel(List<Observation> modelObservations, Boolean hideCheckboxes) {
+        this(modelObservations, modelObservations, true, true);
     }
 
-    public ObservationsPanel(List<Observation> observations, List<Observation> selectedObservations, Boolean isReadOnly) {
-        this.allObservations = observations;
+    public ObservationsPanel(Experiment experiment) {
+        this(experiment.getModelObservations(), experiment.getSelectedObservations(), true, false);
+        this.experiment = experiment;
+    }
+
+    public ObservationsPanel(Experiment experiment, Boolean isReadOnly) {
+        this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly, false);
+        this.experiment = experiment;
+    }
+
+    public ObservationsPanel(List<Observation> modelObservatons, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
+
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
-        add(getObservationsPanel(isReadOnly));
+        
+        if (hideCheckboxes) {
+            add(createObservationsList(modelObservatons));
+        } else {
+            observationsTable = new ObservationsTable(isReadOnly);
+            add(getObservationsPanel(isReadOnly));
+            setupObservationTable(modelObservatons, selectedObservations);
+        }
 
         setWidthFull();
         setPadding(false);
         setSpacing(false);
-        setupObservationTable(selectedObservations);
     }
 
-    private void setupObservationTable(Collection<Observation> selection) {
-        observationsTable.setItems(new HashSet<>(allObservations));
-        if (selection == null || selection.isEmpty()) {
-            setSelectedObservations(allObservations);
-        } else {
-            setSelectedObservations(selection);
-        }
+    private void setupObservationTable(List<Observation> modelObservations, Collection<Observation> selectedObservations) {
+        observationsTable.setItems(new HashSet<>(modelObservations));
+        setSelectedObservations(CollectionUtils.isEmpty(selectedObservations) ? modelObservations : selectedObservations);
+    }
+
+    private Component createObservationsList(List<Observation> modelObservations) {
+        HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter();
+        modelObservations.forEach(observation -> {
+            wrapper.add(LabelFactory.createLabel(observation.getVariable(), "observation-label"));
+        });
+        return wrapper;
     }
 
     public List<Observation> getSelectedObservations() {
@@ -67,5 +92,13 @@ public class ObservationsPanel extends VerticalLayout {
         wrapper.add(observationsTable);
         wrapper.addClassName("observations-panel");
         return wrapper;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 }

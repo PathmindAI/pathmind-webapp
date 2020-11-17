@@ -37,7 +37,6 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
@@ -97,8 +96,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
     private List<String> rewardFunctionErrors = new ArrayList<>();
-    private List<Observation> modelObservations = new ArrayList<>();
-    private List<Observation> experimentObservations = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
@@ -143,9 +140,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Breadcrumbs pageBreadcrumbs;
     private Binder<Experiment> binder;
 
-    // Needed because it's a special case where different views use different data id's for the subscribers.
-    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
-
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -157,15 +151,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
-        // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
-        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
-
         EventBus.subscribe(this, () -> getUI(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentChangedSubscriber(this),
-                observationsPanelExperimentChangedViewSubscriber);
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -234,9 +224,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, false);
+        observationsPanel = new ObservationsPanel(experiment, false);
         observationsPanel.addValueChangeListener(evt -> {
-            setButtonsEnablement();
+            if (observationsPanel.getExperiment().equals(experiment)) {
+                setButtonsEnablement();
+            }
         });
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
@@ -335,7 +327,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return false;
         }
         return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
-                !observationsPanel.getSelectedObservations().equals(experimentObservations) ||
+                !observationsPanel.getSelectedObservations().equals(experiment.getSelectedObservations()) ||
                 !notesField.getNotesText().equals(experiment.getUserNotes());
     }
 
@@ -382,8 +374,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentDAO.updateExperiment(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
-        unsavedChanges.setVisible(false);
-        notesSavedHint.setVisible(false);
+        disabledSaveDraft();
         NotificationUtils.showSuccess("Draft successfully saved");
         afterClickedCallback.execute();
     }
@@ -484,8 +475,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void loadExperimentData() {
         modelId = experiment.getModelId();
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-        experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
+        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
+        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                     .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
@@ -505,9 +496,14 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
         rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
+        disabledSaveDraft();
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
+    }
+
+    private void disabledSaveDraft() {
+        saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
-        unarchiveExperimentButton.setVisible(experiment.isArchived());
     }
 
     private String generateRewardFunction() {

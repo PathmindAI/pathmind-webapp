@@ -30,7 +30,6 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -110,9 +109,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
 
-    private List<Observation> modelObservations = new ArrayList<>();
-    private List<Observation> experimentObservations = new ArrayList<>();
-
     private UserCaps userCaps;
 
     private HorizontalLayout middlePanel;
@@ -160,11 +156,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
 
-    // REFACTOR -> Temporary placeholder until I finish the merging
-    private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
-    // Needed because it's a special case where different views use different data id's for the subscribers.
-    private ObservationsPanelExperimentChangedViewSubscriber observationsPanelExperimentChangedViewSubscriber;
-
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -177,7 +168,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected ExperimentView() {
         super();
         addClassName("experiment-view");
-        experimentViewRunUpdateSubscriber = new ExperimentViewRunUpdateSubscriber(this);
     }
 
     @Override
@@ -187,17 +177,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
-        // Special case described on declaration.
-        observationsPanelExperimentChangedViewSubscriber = new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel);
-        observationsPanelExperimentChangedViewSubscriber.setExperimentId(experimentId);
-
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
-                experimentViewRunUpdateSubscriber,
+                new ExperimentViewRunUpdateSubscriber(this),
                 new ExperimentViewExperimentCreatedSubscriber(this),
                 new ExperimentViewExperimentUpdatedSubscriber(this),
                 new ExperimentViewExperimentChangedSubscriber(this),
-                observationsPanelExperimentChangedViewSubscriber);
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -276,7 +262,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(modelObservations, experimentObservations, true);
+        observationsPanel = new ObservationsPanel(experiment, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
@@ -416,8 +402,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
             } else {
                 experiment = getExperimentForUser(selectedExperiment.getId())
                         .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-
-                experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
                 loadExperimentData();
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
 
@@ -432,7 +416,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // we will no longer have to retrieve the user information when loading this page.
         experiment = getExperimentForUser()
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        experimentViewRunUpdateSubscriber.setExperiment(experiment);
         loadExperimentData();
     }
 
@@ -451,8 +434,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-        experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
+        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
+        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {

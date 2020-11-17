@@ -7,9 +7,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ModelDetailsPage extends PageObject {
 
@@ -54,5 +57,13 @@ public class ModelDetailsPage extends PageObject {
 
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Your model was successfully uploaded!']")));
         resetImplicitTimeout();
+    }
+
+    public void checkObservationsListContains(String variableName) {
+        List<String> variables = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.cssSelector(".observation-label"))) {
+            variables.add(webElement.getText());
+        }
+        assertThat(variables, hasItem(variableName));
     }
 }

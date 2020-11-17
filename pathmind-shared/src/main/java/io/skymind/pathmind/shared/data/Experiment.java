@@ -46,6 +46,8 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private Model model;
     private transient List<Policy> policies;
     private transient List<Run> runs;
+    private List<Observation> modelObservations;
+    private List<Observation> selectedObservations;
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);

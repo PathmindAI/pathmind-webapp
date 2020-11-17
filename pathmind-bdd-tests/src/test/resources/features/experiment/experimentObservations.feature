@@ -20,10 +20,15 @@ Feature: Experiment observations
     Then Check experiment page observation 'powerXYZ' is selected 'false'
     Then Check experiment page observation 'moduleXYZ' is selected 'true'
     Then Check experiment page observation 'distanceXYZ' is selected 'false'
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
 
     Examples:
-      | project name    | model                       | reward function file                      |
-      | AutotestProject | MoonLanding/MoonLanding.zip | MoonLanding/MoonLandingRewardFunction.txt |
+      | project name    | model                       | reward function file                      | observations                   |
+      | AutotestProject | MoonLanding/MoonLanding.zip | MoonLanding/MoonLandingRewardFunction.txt | powerXYZ,moduleXYZ,distanceXYZ |
 
   Scenario Outline: Check CoffeeShop.zip observations checkboxes status
     Given Login to the pathmind
@@ -47,10 +52,15 @@ Feature: Experiment observations
     Then Check experiment page observation 'timeOfDay' is selected 'false'
     Then Check experiment page observation 'orderQueueSize' is selected 'true'
     Then Check experiment page observation 'collectQueueSize' is selected 'false'
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
 
     Examples:
-      | project name    | model                     | reward function file                    |
-      | AutotestProject | CoffeeShop/CoffeeShop.zip | CoffeeShop/CoffeeShopRewardFunction.txt |
+      | project name    | model                     | reward function file                    | observations                                                                       |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip | CoffeeShop/CoffeeShopRewardFunction.txt | orderQueueSize,collectQueueSize,payBillQueueSize,kitchenCleanlinessLevel,timeOfDay |
 
   Scenario Outline: Check ProductDelivery.zip observations checkboxes status
     Given Login to the pathmind
@@ -73,10 +83,15 @@ Feature: Experiment observations
     Then Check experiment page observation 'orders' is selected 'false'
     Then Check experiment page observation 'stocks' is selected 'false'
     Then Check experiment page observation 'vehicles' is selected 'false'
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
 
     Examples:
-      | project name    | model                               | reward function file                              |
-      | AutotestProject | ProductDelivery/ProductDelivery.zip | ProductDelivery/ProductDeliveryRewardFunction.txt |
+      | project name    | model                               | reward function file                              | observations                        |
+      | AutotestProject | ProductDelivery/ProductDelivery.zip | ProductDelivery/ProductDeliveryRewardFunction.txt | stocks,vehicles,freeVehicles,orders |
 
   Scenario Outline: Check Warehouse.zip observations checkboxes status
     Given Login to the pathmind
@@ -95,10 +110,15 @@ Feature: Experiment observations
     Then Click project start run button
     Then Check experiment page observation 'delayTime1' is selected 'false'
     Then Check experiment page observation 'delayTime2' is selected 'true'
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
 
     Examples:
-      | project name    | model                   | reward function file                  |
-      | AutotestProject | Warehouse/Warehouse.zip | Warehouse/WarehouseRewardFunction.txt |
+      | project name    | model                   | reward function file                  | observations          |
+      | AutotestProject | Warehouse/Warehouse.zip | Warehouse/WarehouseRewardFunction.txt | delayTime1,delayTime2 |
 
   Scenario Outline: Check SupplyChain.zip observations checkboxes status
     Given Login to the pathmind
@@ -134,7 +154,32 @@ Feature: Experiment observations
     Then Check experiment page observation 'factoryOrdersSize' is selected 'true'
     Then Check experiment page observation 'factoryBacklog' is selected 'false'
     Then Check experiment page observation 'simTime' is selected 'false'
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
 
     Examples:
-      | project name    | model                       | reward function file                      |
-      | AutotestProject | SupplyChain/SupplyChain.zip | SupplyChain/SupplyChainRewardFunction.txt |
+      | project name    | model                       | reward function file                      | observations                                                                                                                                                                           |
+      | AutotestProject | SupplyChain/SupplyChain.zip | SupplyChain/SupplyChainRewardFunction.txt | retailerI,retailerDemandsSize,retailerExpected,retailerBacklog,wholesalerI,wholesalerOrdersSize,wholesalerExpected,wholesalerBacklog,factoryI,factoryOrdersSize,factoryBacklog,simTime |
+
+  Scenario Outline: Check SimpleStochastic.zip observations
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project <project name> and click Create project button
+    When Upload model <model>
+    When Check that model successfully uploaded
+    Then Check that wizard upload alp file page is opened
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment <project name> page is opened
+    Then Input from file reward function <reward function file>
+    When Click model breadcrumb btn
+    Then Check observations list contains <observations>
+
+    Examples:
+      | project name    | model                                 | reward function file                                | observations    |
+      | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | stateChartState |

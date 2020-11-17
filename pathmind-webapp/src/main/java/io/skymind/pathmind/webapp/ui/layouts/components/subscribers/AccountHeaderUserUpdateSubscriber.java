@@ -9,6 +9,7 @@ public class AccountHeaderUserUpdateSubscriber extends UserUpdateSubscriber {
     private AccountHeaderPanel accountHeaderPanel;
 
     public AccountHeaderUserUpdateSubscriber(AccountHeaderPanel accountHeaderPanel) {
+        super();
         this.accountHeaderPanel = accountHeaderPanel;
     }
 

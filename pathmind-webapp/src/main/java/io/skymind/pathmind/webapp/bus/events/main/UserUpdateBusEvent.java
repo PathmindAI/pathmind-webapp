@@ -21,10 +21,6 @@ public class UserUpdateBusEvent implements PathmindBusEvent {
         return user;
     }
 
-    public void setPathmindUser(PathmindUser user) {
-        this.user = user;
-    }
-
     @Override
     public UserUpdateBusEvent cloneForEventBus() {
         return new UserUpdateBusEvent(user.shallowClone());
