@@ -9,7 +9,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.PolicyChartPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.PolicyChartPanelPolicyUpdateSubscriber;
 
 public class PolicyChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();

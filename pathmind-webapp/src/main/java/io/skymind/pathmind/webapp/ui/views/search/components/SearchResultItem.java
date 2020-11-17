@@ -69,8 +69,7 @@ public class SearchResultItem extends VerticalLayout {
         if (searchResultType.equals(SearchResultItemType.EXPERIMENT)) {
             Experiment experiment = experimentDAO.getExperiment(searchResult.getItemId()).orElse(null);
             if (experiment != null) {
-                boolean isFavorite = ExperimentUtils.isFavorite(experiment);
-                tags.add(new FavoriteStar(isFavorite, newIsFavorite ->
+                tags.add(new FavoriteStar(experiment.isFavorite(), newIsFavorite ->
                         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }

@@ -18,8 +18,8 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.AllMetricsChartPanelRewardVariableSelectedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.AllMetricsChartPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.AllMetricsChartPanelRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

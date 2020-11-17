@@ -10,7 +10,7 @@ import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.ExperimentNotesFieldExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.view.ExperimentNotesFieldExperimentChangedViewSubscriber;
 
 public class ExperimentNotesField extends NotesField {
 

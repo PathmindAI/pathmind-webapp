@@ -28,7 +28,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
