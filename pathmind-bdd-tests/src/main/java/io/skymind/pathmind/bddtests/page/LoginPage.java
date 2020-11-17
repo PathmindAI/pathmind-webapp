@@ -292,4 +292,8 @@ public class LoginPage extends PageObject {
         WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
         headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(2) > a")).click();
     }
+
+    public void checkHeaderUsername(String name) {
+        assertThat(getDriver().findElement(By.cssSelector(".account-menu")).getText(), is(name));
+    }
 }
