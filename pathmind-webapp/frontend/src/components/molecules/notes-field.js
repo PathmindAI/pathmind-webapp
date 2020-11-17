@@ -223,8 +223,15 @@ class NotesField extends PolymerElement {
                 placeholder="[[placeholder]]"
                 readonly$=[[readonly]]
                 compact$=[[compact]]
-                on-change="onNotesChange"></vaadin-text-area>
+                on-keyup="onNotesChange"></vaadin-text-area>
         `;
+    }
+
+    _allowAutoSaveChanged(newValue, oldValue) {
+        this.$.textarea.removeEventListener("blur", this.autoSave.bind(this));
+        if (newValue) {
+            this.$.textarea.addEventListener("blur", this.autoSave.bind(this));
+        }
     }
 
     ready() {
@@ -236,33 +243,19 @@ class NotesField extends PolymerElement {
                 this.unsaved = true;
             }
         }, 300));
+        this._allowAutoSaveChanged(this.allowautosave);
     }
 
     autoSave(event) {
         this.$.save.click();
     }
 
-    _allowAutoSaveChanged(newValue, oldValue) {
-        console.log("allow auto save changed: ", newValue)
-        if (newValue) {
-            this.$.textarea.addEventListener("blur", this.autoSave);
-        } else {
-            this.$.textarea.removeEventListener("blur", this.autoSave);
-        }
-    }
-
     canSave(updatedNotesText) {
-        console.log("----------- in canSave -----------");
-        console.log("this.notes: "+this.notes);
-        console.log("updatedNotesText: "+updatedNotesText);
         return this.notes !== updatedNotesText && updatedNotesText.length <= this.max;
     }
 
     onSave(event) {
         if (this.canSave(this.$.textarea.value)) {
-            console.log("----------- in onSave -----------");
-            console.log("this.notes: "+this.notes);
-            console.log("this.$.textarea.value: "+this.$.textarea.value);
             this.notes = this.$.textarea.value;
             this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
@@ -277,10 +270,6 @@ class NotesField extends PolymerElement {
     }
 
     _notesChanged(newValue, oldValue) {
-        console.log("----------- in _notesChanged -----------");
-        console.log("this.notes: "+this.notes);
-        console.log("this.$.textarea.value: "+this.$.textarea.value);
-        console.log("newValue: "+newValue);
         this.$.textarea.value = newValue;
         this.calculateWordCount(newValue);
     }

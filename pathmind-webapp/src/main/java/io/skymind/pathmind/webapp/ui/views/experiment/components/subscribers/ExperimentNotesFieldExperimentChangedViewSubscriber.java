@@ -15,9 +15,7 @@ public class ExperimentNotesFieldExperimentChangedViewSubscriber extends Experim
 
     @Override
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-        System.out.println("--------- Experiment Changed! ---------");
-        System.out.println("event.getExperiment().getId(): "+event.getExperiment().getId());
-        System.out.println("event.getExperiment().getUserNotes(): "+event.getExperiment().getUserNotes());
+        experimentNotesField.setExperiment(event.getExperiment());
         experimentNotesField.setNotesText(event.getExperiment().getUserNotes());
     }
 

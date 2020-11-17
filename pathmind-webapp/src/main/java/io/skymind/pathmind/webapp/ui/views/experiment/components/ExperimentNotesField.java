@@ -4,37 +4,33 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.ExperimentNotesFieldExperimentChangedViewSubscriber;
 
 public class ExperimentNotesField extends NotesField {
 
     private Supplier<Optional<UI>> getUISupplier;
+    private Experiment experiment;
 
     public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer) {
         super(title, experiment.getUserNotes(), saveConsumer);
         this.getUISupplier = getUISupplier;
+        this.experiment = experiment;
     }
 
     public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer, Boolean allowAutoSave, Boolean hideSaveButton) {
         super(title, experiment.getUserNotes(), saveConsumer, false, allowAutoSave, hideSaveButton);
         this.getUISupplier = getUISupplier;
+        this.experiment = experiment;
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentNotesFieldExperimentChangedViewSubscriber(this));
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
     }
 
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
+    public Experiment getExperiment() {
+        return experiment;
     }
 
 }

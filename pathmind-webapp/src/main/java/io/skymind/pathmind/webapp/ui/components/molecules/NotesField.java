@@ -19,7 +19,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     private String notesText;
     private Consumer<String> saveConsumer;
-    private Command onNotesChangeHandler;
+    private Command onNotesChangeHandler = () -> {};
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
         this(title, notesText, saveConsumer, false, true, false);
@@ -40,8 +40,6 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     }
 
     public void setNotesText(String notesText) {
-        System.out.println("in set Notes Text");
-        System.out.println("notesText: "+notesText);
         this.notesText = notesText;
         getModel().setNotes(notesText);
     }
@@ -85,10 +83,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     @EventHandler
     private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
-        if (canSave(updatedNotesText)) {
-            notesText = updatedNotesText;
-            saveConsumer.accept(updatedNotesText);
-        }
+        saveConsumer.accept(updatedNotesText);
     }
 
     private boolean canSave(String updatedNotesText) {

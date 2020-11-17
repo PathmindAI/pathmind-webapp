@@ -65,6 +65,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionE
 import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.ExperimentNotesFieldExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentChangedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewExperimentUpdatedSubscriber;
@@ -155,7 +156,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentChangedSubscriber(this),
-                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel),
+                new ExperimentNotesFieldExperimentChangedViewSubscriber(notesField));
     }
 
     @Override
@@ -296,7 +298,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         );
         notesField.setPlaceholder("Add Notes (optional)");
         notesField.setOnNotesChangeHandler(() -> {
-            setButtonsEnablement();
+            if (notesField.getExperiment().equals(experiment)) {
+                setButtonsEnablement();
+            }
         });
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
@@ -380,9 +384,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void saveNotes() {
-        experiment.setUserNotes(notesField.getNotesText());
-        experimentDAO.updateUserNotes(experimentId, notesField.getNotesText());
-        segmentIntegrator.addedNotesNewExperimentView();
+        if (notesField.getExperiment().equals(experiment)) {
+            experiment.setUserNotes(notesField.getNotesText());
+            segmentIntegrator.addedNotesNewExperimentView();
+        }
     }
 
     private void unarchiveExperiment() {
