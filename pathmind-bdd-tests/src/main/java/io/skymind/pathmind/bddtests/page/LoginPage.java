@@ -41,6 +41,8 @@ public class LoginPage extends PageObject {
     private WebElement resendBtnShadow;
     @FindBy(xpath = "//reset-password-view")
     private WebElement resetPassViewShadow;
+    @FindBy(xpath = "//verification-email-sent-view")
+    private WebElement verificationEmailShadow;
 
     public void inputEmail(String email) {
         emailField.click();
@@ -295,5 +297,10 @@ public class LoginPage extends PageObject {
 
     public void checkHeaderUsername(String name) {
         assertThat(getDriver().findElement(By.cssSelector(".account-menu")).getText(), is(name));
+    }
+
+    public void checkThatVerificationEmailPageOpened() {
+        WebElement verificationView = utils.expandRootElement(verificationEmailShadow);
+        assertThat(verificationView.findElement(By.cssSelector("h3")).getText(), is("We sent you a verification email."));
     }
 }
