@@ -4,66 +4,70 @@ import "../../components/organisms/public-header-menu.js";
 class SignUpView extends PolymerElement {
   static get template() {
     return html`
-    <style include="shared-styles pathmind-dialog-view sign-up-view-styles">
-        :host {
+    <style>
+        body {
+            background-color: var(--pm-app-bg-color);
+        }
+        sign-up-view {
           --lumo-primary-color: var(--pm-primary-color-bright);
           height: auto;
           min-height: 100%;
         }
-        .inner-content {
+        sign-up-view .inner-content {
+          align-items: center;
           max-width: 460px;
           margin-top: 0;
           margin-left: var(--lumo-space-m);
         }
-        .content-wrapper {
+        sign-up-view .content-wrapper {
           justify-content: center;
           width: 100%;
         }
-        .content {
+        sign-up-view .content {
           box-sizing: border-box;
           width: 100%;
           padding: 6rem var(--lumo-space-m);
         }
-        .info {
+        sign-up-view .info {
           align-items: flex-start;
           flex: 1 1 60%;
           max-width: 600px;
           font-size: var(--lumo-font-size-l);
           padding-top: var(--lumo-space-xl);
         }
-        .video-wrapper {
+        sign-up-view .video-wrapper {
           position: relative;
           width: 100%;
           padding-bottom: 56.39%;
           margin-bottom: var(--lumo-space-xl);
         }
-        .video-wrapper iframe {
+        sign-up-view .video-wrapper iframe {
           position: absolute;
           width: 100%;
           height: 100%;
           top: 0;
           left: 0;
         }
-        .info h1 {
+        sign-up-view .info h1 {
           color: var(--lumo-primary-color);
           line-height: 1.5;
           margin: 0;
         }
-        .info p {
+        sign-up-view .info p {
           margin: var(--lumo-space-xl) 0 var(--lumo-space-m);
         }
-        .info ul {
+        sign-up-view .info ul {
           --lumo-primary-color: var(--pm-primary-color);
           padding: 0 0 0 var(--lumo-font-size-xxl);
           margin-top: 0;
         }
-        .info li {
+        sign-up-view .info li {
           list-style: none;
           position: relative;
           padding-left: var(--lumo-font-size-xl);
           margin-bottom: var(--lumo-space-s);
         }
-        .info li::before {
+        sign-up-view .info li::before {
           content: '';
           display: block;
           position: absolute;
@@ -73,45 +77,48 @@ class SignUpView extends PolymerElement {
           height: var(--lumo-space-s);
           background-color: var(--lumo-primary-color);
         }
-        .info li::marker {
+        sign-up-view .info li::marker {
           display: none;
         }
-        h3 {
+        sign-up-view h3 {
           font-weight: 600;
           margin-top: var(--lumo-space-xs);
         }
-        .names-wrapper {
+        sign-up-view .names-wrapper {
           justify-content: space-between;
           width: 100%;
         }
-        .names-wrapper vaadin-text-field {
+        sign-up-view .names-wrapper vaadin-text-field {
           width: calc(50% - var(--lumo-space-xs));
         }
-        .passwords-wrapper {
+        sign-up-view .passwords-wrapper {
           width: 100%;
         }
-        .policy a {
+        sign-up-view vaadin-text-field {
+            text-align: left;
+        }
+        sign-up-view .policy a {
           color: var(--pm-primary-color);
         }
         @media screen and (max-width: 768px) {
-            .content {
+            sign-up-view .content {
               padding: var(--lumo-space-xxl) var(--lumo-space-s);
             }
-            .content-wrapper {
+            sign-up-view .content-wrapper {
                 flex-wrap: wrap;
             }
-            .inner-content {
+            sign-up-view .inner-content {
                 max-width: none;
                 margin-left: 0;
             }
-            .info {
+            sign-up-view .info {
               font-size: var(--lumo-font-size-l);
               padding: 0 var(--lumo-space-s);
             }
-            .names-wrapper {
+            sign-up-view .names-wrapper {
               flex-direction: column;
             }
-            .names-wrapper vaadin-text-field {
+            sign-up-view .names-wrapper vaadin-text-field {
               width: 100%;
             }
         }
@@ -198,6 +205,10 @@ class SignUpView extends PolymerElement {
           </vaadin-vertical-layout>
       </div>
     </vaadin-horizontal-layout>`;
+  }
+
+  _attachDom(dom) {
+    this.appendChild(dom);
   }
 
   ready() {
