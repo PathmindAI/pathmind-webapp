@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 @Tag("email-verification-view")
 @JsModule("./src/pages/account/email-verification-view.js")
@@ -35,6 +36,10 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 
     private String token;
     private PathmindUser verifiedUser;
+
+    public EmailVerificationView(@Value("${pathmind.contact-support.address}") String contactLink) {
+        getModel().setContactLink(contactLink);
+    }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
@@ -68,5 +73,7 @@ public class EmailVerificationView extends PolymerTemplate<EmailVerificationView
 
     public interface Model extends TemplateModel {
         void setError(boolean error);
+
+        void setContactLink(String contactLink);
     }
 }
