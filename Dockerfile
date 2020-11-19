@@ -8,5 +8,6 @@ RUN mvn package -Pproduction
 FROM azul/zulu-openjdk-alpine:11
 COPY --from=webapp-build /app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar /app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar
 COPY --from=webapp-build /app/pathmind-updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar /app/pathmind-updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar
+COPY --from=webapp-build /app/pathmind-api/target/pathmind-api-0.0.1-SNAPSHOT.jar /app/pathmind-api/target/pathmind-api-0.0.1-SNAPSHOT.jar
 EXPOSE 80
 CMD ["java", "-Xmx4096m", "-XX:+UseG1GC", "-Dvaadin.productionMode", "-jar", "/app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar", "--server.port=80"]
