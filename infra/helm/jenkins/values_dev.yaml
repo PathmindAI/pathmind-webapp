@@ -28,7 +28,7 @@ service:
   targetPort: 8080
 
 pvc:
-  claimName: jenkins-pvc
+  claimName: jenkins-pvc-ebs
   volumeHandle: fs-14641c97
 
 ingress:
@@ -57,8 +57,14 @@ resources:
     cpu: 3
     memory: 6G
 
-tolerations: []
+tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "jenkins"
+    effect: "NoSchedule"
 
-nodeSelector: {}
+nodeSelector: 
+  dedicated: jenkins
 
 affinity: {}
+
