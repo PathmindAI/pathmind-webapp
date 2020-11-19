@@ -39,6 +39,7 @@ env:
   SNS_UPDATER_SQS_FILTER_ATTR: prod
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 1000
+  API_WEBAPP_URL: https://app.pathmind.com/
 
 readinessprobe: {}
 
