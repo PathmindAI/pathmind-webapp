@@ -4,6 +4,9 @@ class NewProjectView extends PolymerElement {
   static get template() {
     return html`
     <style>
+        new-project-view .panel-wrapper {
+            margin-top: var(--lumo-space-l);
+        }
         new-project-view p,
         new-project-view vaadin-text-field {
             text-align: left;
