@@ -259,4 +259,9 @@ public class LoginPageStepDefinitions {
     public void clickSignUpAboutUsButton() {
         loginPageSteps.clickSignUpAboutUsButton();
     }
+
+    @Then("^Check that verification email page opened$")
+    public void checkThatVerificationEmailPageOpened() {
+        loginPageSteps.checkThatVerificationEmailPageOpened();
+    }
 }
