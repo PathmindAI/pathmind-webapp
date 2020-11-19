@@ -7,39 +7,34 @@ class EmptyDashboardPlaceholder extends PolymerElement {
 
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                a {
-                    text-decoration: none;
+            <style>
+                empty-dashboard-placeholder {
+                    width: 100%;
                 }
-                .panel-wrapper {
+                empty-dashboard-placeholder .panel-wrapper {
                     justify-content: flex-start;
                     align-items: center;
+                    margin-top: var(--lumo-space-l);
                 }
-                .panel-wrapper h3 {
+                empty-dashboard-placeholder .panel-wrapper h3 {
                     margin: 0;
                 }
-                vaadin-horizontal-layout {
+                empty-dashboard-placeholder vaadin-horizontal-layout {
                     flex-wrap: wrap;
                     justify-content: center;
                     align-items: center;
                     margin: var(--lumo-space-xxl) auto;
                 }
-                .logo {
-                    margin-bottom: calc(var(--lumo-space-xxl) * 2);
+                empty-dashboard-placeholder .logo {
+                    margin-bottom: calc(var(--lumo-space-xxl) + var(--lumo-space-m));
                 }
-                .button-link {
+                empty-dashboard-placeholder .button-link {
                     font-size: var(--lumo-font-size-l);
                     padding: var(--lumo-space-l);
                     margin: var(--lumo-space-m);
                     border: 1px solid transparent;
                 }
-                a {
-                    color: var(--lumo-primary-text-color);
-                }
-                a:hover {
-                    text-decoration: underline;
-                }
-                li {
+                empty-dashboard-placeholder li {
                     margin: var(--lumo-space-s);
                 }
             </style>
@@ -65,6 +60,10 @@ class EmptyDashboardPlaceholder extends PolymerElement {
                 </vaadin-horizontal-layout>
             </vaadin-vertical-layout>
         `;
+    }
+
+    _attachDom(dom) {
+      this.appendChild(dom);
     }
 }
 
