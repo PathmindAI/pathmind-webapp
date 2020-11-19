@@ -10,9 +10,9 @@ import java.util.Map;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class AllMetricsChart extends DataChart {

@@ -33,6 +33,11 @@ public class AccountPageSteps {
     }
 
     @Step
+    public void saveAccountPageApiKeyToTheEnvironmentVariable() {
+        accountPage.saveAccountPageApiKeyToTheEnvironmentVariable();
+    }
+
+    @Step
     public void inputAccountPageFirstName(String firstName) {
         accountPage.inputAccountPageFirstName(firstName);
     }

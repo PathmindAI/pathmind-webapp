@@ -1,4 +1,4 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 
 class AccountViewContent extends PolymerElement {
     static get template() {
@@ -42,6 +42,18 @@ class AccountViewContent extends PolymerElement {
                         <vaadin-button id="changePasswordBtn" theme="small">
                             Change
                         </vaadin-button>
+                    </vaadin-horizontal-layout>
+                    <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
+                        <vaadin-vertical-layout class="info" style="width: 100%;">
+                            <div class="title">API Key</div>
+                            <div class="data">{{apiKey}}</div>
+                            <vaadin-horizontal-layout style="width: 100%;" class="block">
+                                <div class="data small">{{apiKeyExpiresPhrase}}</div>
+                                <vaadin-button id="rotateApiKeyBtn" theme="small">
+                                    Rotate
+                                </vaadin-button>
+                            </vaadin-horizontal-layout>
+                        </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
                         <vaadin-vertical-layout class="info">

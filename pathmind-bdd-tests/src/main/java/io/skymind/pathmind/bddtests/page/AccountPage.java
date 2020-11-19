@@ -1,6 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
 import io.skymind.pathmind.bddtests.Utils;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
@@ -40,10 +41,11 @@ public class AccountPage extends PageObject {
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(3)")).getText(), containsString("First Name"));
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(5)")).getText(), containsString("Last Name"));
         assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(2) .info div:nth-child(1)")).getText(), containsString("Password"));
-        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
-        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(2)")).getText(), containsString("Early Access"));
-        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Payment"));
-        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Billing Information"));
+        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("API Key"));
+        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
+        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Early Access"));
+        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(1)")).getText(), containsString("Payment"));
+        assertThat(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(2)")).getText(), containsString("Billing Information"));
         assertThat(e.findElement(By.id("editInfoBtn")).isDisplayed(), is(true));
         assertThat(e.findElement(By.id("editInfoBtn")).getText(), containsString("Edit"));
         assertThat(e.findElement(By.id("changePasswordBtn")).isDisplayed(), is(true));
@@ -98,5 +100,10 @@ public class AccountPage extends PageObject {
         inputFieldShadow.click();
         inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         jse.executeScript("arguments[0].value='" + lastName + "';", inputFieldShadow);
+    }
+
+    public void saveAccountPageApiKeyToTheEnvironmentVariable() {
+        WebElement e = utils.expandRootElement(accountViewShadow);
+        Serenity.setSessionVariable("apiKey").to(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(2)")).getText());
     }
 }

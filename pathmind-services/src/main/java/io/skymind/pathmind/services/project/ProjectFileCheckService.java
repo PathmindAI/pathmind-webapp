@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 @Slf4j
 public class ProjectFileCheckService {
@@ -29,7 +30,7 @@ public class ProjectFileCheckService {
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
-    public void checkFile(StatusUpdater statusUpdater, Model model) {
+    public Future<?> checkFile(StatusUpdater statusUpdater, Model model) {
         Runnable runnable = () -> {
             try {
                 statusUpdater.updateStatus(0);
@@ -64,7 +65,7 @@ public class ProjectFileCheckService {
                 log.info("Checking : completed");
             }
         };
-        checkerExecutorService.submit(runnable);
+        return checkerExecutorService.submit(runnable);
     }
 
     private Optional<String> verifyAnalysisResult(HyperparametersDTO param) {

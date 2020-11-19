@@ -1,5 +1,8 @@
 package io.skymind.pathmind.db.dao;
 
+import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -26,6 +29,13 @@ class UserRepository {
         return ctx
                 .selectFrom(PATHMIND_USER)
                 .where(PATHMIND_USER.EMAIL_VERIFICATION_TOKEN.eq(UUID.fromString(token)))
+                .fetchOneInto(PathmindUser.class);
+    }
+
+    protected static PathmindUser findByApiKey(DSLContext ctx, String apiKey) {
+        return ctx
+                .selectFrom(PATHMIND_USER)
+                .where(PATHMIND_USER.API_KEY.eq(apiKey))
                 .fetchOneInto(PathmindUser.class);
     }
 
@@ -82,6 +92,14 @@ class UserRepository {
     protected static void delete(DSLContext ctx, long id) {
         ctx.delete(PATHMIND_USER)
                 .where(PATHMIND_USER.ID.eq(id))
+                .execute();
+    }
+
+    public static void updateApiKey(DSLContext ctx, long userId, String newApiKey) {
+        ctx.update(PATHMIND_USER)
+                .set(PATHMIND_USER.API_KEY, newApiKey)
+                .set(PATHMIND_USER.API_KEY_CREATED_AT, LocalDateTime.now())
+                .where(PATHMIND_USER.ID.eq(userId))
                 .execute();
     }
 }
