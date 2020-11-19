@@ -32,7 +32,7 @@ public class ProjectsPage extends PageObject {
         if (getDriver().findElements(By.xpath("//vaadin-button[text()='New Project']")).size() == 1){
             getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
         } else {
-            WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+            WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
             element.findElement(By.cssSelector(".button-link")).click();
         }
         resetImplicitTimeout();

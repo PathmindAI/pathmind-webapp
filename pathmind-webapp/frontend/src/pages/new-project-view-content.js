@@ -3,8 +3,12 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class NewProjectView extends PolymerElement {
   static get template() {
     return html`
-    <style include="shared-styles pathmind-dialog-view">
-        p, vaadin-text-field {
+    <style>
+        new-project-view .panel-wrapper {
+            margin-top: var(--lumo-space-l);
+        }
+        new-project-view p,
+        new-project-view vaadin-text-field {
             text-align: left;
         }
     </style>
@@ -32,6 +36,10 @@ class NewProjectView extends PolymerElement {
         </vaadin-vertical-layout>
       </div>
     </vaadin-horizontal-layout>`;
+  }
+
+  _attachDom(dom) {
+    this.appendChild(dom);
   }
 
   ready() {
