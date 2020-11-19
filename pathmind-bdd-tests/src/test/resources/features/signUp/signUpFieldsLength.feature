@@ -7,9 +7,10 @@ Feature: Sign Up fields length
     When Fill new user form with first name <text>
     When Fill new user form with last name <text>
     When Fill temporary email to the new user form
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
     When Create new user click sign in button
-    Then Check new password page opened
-    # the final step should be changed to check the "email verification sent" page is opened
+    Then Check that verification email page opened
 
     Examples:
       | characters | text                                                                                                                                                                                                                                                       |
