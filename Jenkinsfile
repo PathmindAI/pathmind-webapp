@@ -233,7 +233,7 @@ pipeline {
                 stage('Deploying pathmind-api') {
                     steps {
                         script {
-                            sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-api.yaml -n ${DOCKER_TAG}"
+                            sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
@@ -297,7 +297,7 @@ pipeline {
                 stage('Deploying pathmind-api') {
                     steps {
                         script {
-                            sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-api.yaml"
+                            sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml"
                         }
                     }
                 }
