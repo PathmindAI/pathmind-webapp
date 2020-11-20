@@ -1,5 +1,8 @@
 package io.skymind.pathmind.services.project;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -10,12 +13,9 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileUtilsTest {
@@ -43,8 +43,8 @@ public class FileUtilsTest {
         fileLogger.addAppender(listAppender);
         List<String> fileList = fileUtils.listFiles(inValidPath);
         List<ILoggingEvent> logsList = listAppender.list;
-        assertThat(logsList.get(0).getLevel(),is(equalTo(Level.ERROR)));
-        assertThat(logsList.get(0).getMessage(),is(equalTo("Invalid input file path")));
+        assertThat(logsList.get(0).getLevel(), is(equalTo(Level.ERROR)));
+        assertThat(logsList.get(0).getMessage(), is(equalTo("Invalid input file path")));
         assertThat(fileList, is(equalTo(expectedList)));
     }
 }

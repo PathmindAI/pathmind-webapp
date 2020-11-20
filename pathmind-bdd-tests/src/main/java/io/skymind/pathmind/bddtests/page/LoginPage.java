@@ -34,13 +34,15 @@ public class LoginPage extends PageObject {
     @FindBy(xpath = "//vaadin-login-form-wrapper[@part='vaadin-login-native-form-wrapper']")
     private WebElement loginFormWraper;
     @FindBy(xpath = "//sign-up-view")
-    private WebElement signUpShadow;
+    private WebElement signUpView;
     @FindBy(css = "public-header-menu")
-    private WebElement headerShadow;
+    private WebElement headerView;
     @FindBy(xpath = "//vaadin-button[@title='Send verification email again.']")
     private WebElement resendBtnShadow;
     @FindBy(xpath = "//reset-password-view")
     private WebElement resetPassViewShadow;
+    @FindBy(xpath = "//verification-email-sent-view")
+    private WebElement verificationEmailSentView;
 
     public void inputEmail(String email) {
         emailField.click();
@@ -69,7 +71,6 @@ public class LoginPage extends PageObject {
     }
 
     public void newUserInputFirstName(String firstName) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inputFieldShadow = signUpView.findElement(By.id("firstName"));
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement firstNameInputField = field.findElement(By.cssSelector("input"));
@@ -78,7 +79,6 @@ public class LoginPage extends PageObject {
     }
 
     public void newUserInputLastName(String lastName) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inputFieldShadow = signUpView.findElement(By.id("lastName"));
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement inputField = field.findElement(By.cssSelector("input"));
@@ -87,7 +87,6 @@ public class LoginPage extends PageObject {
     }
 
     public void newUserInputEmail(String email) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inputFieldShadow = signUpView.findElement(By.id("email"));
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement inputField = field.findElement(By.cssSelector("input"));
@@ -96,7 +95,6 @@ public class LoginPage extends PageObject {
     }
 
     public void fillNewUserPassword(String password) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inputFieldShadow = signUpView.findElement(By.id("newPassword"));
         WebElement field = utils.expandRootElement(inputFieldShadow);
         WebElement inputField = field.findElement(By.cssSelector("input"));
@@ -106,7 +104,6 @@ public class LoginPage extends PageObject {
     }
 
     public void fillNewUserConfirmationPassword(String password) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement confirmInputFieldShadow = signUpView.findElement(By.id("confirmNewPassword"));
         WebElement configrmField = utils.expandRootElement(confirmInputFieldShadow);
         WebElement confirmPasswordField = configrmField.findElement(By.cssSelector("input"));
@@ -115,7 +112,6 @@ public class LoginPage extends PageObject {
     }
 
     public void createNewUserClickSignInButton() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement signUpBtnShadow = signUpView.findElement(By.id("signIn"));
         WebElement field = utils.expandRootElement(signUpBtnShadow);
         WebElement signInBtn = field.findElement(By.id("button"));
@@ -131,7 +127,6 @@ public class LoginPage extends PageObject {
     }
 
     public void checkCreateNewUserPageElements() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
 
         /*
         Check video block
@@ -177,14 +172,12 @@ public class LoginPage extends PageObject {
     }
 
     public void checkNewUserPageEmailAlertBtn() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement emailInputShadow = signUpView.findElement(By.id("email"));
         WebElement emailInput = utils.expandRootElement(emailInputShadow);
         assertThat(emailInput.findElement(By.cssSelector("div.vaadin-text-field-container div[part='error-message']")).getText(), containsString("This doesn't look like a valid email address"));
     }
 
     public void createNewUserCheckThatErrorMessageShown(List<String> errorMsg) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
 
         List<WebElement> listE = signUpView.findElements(By.cssSelector("#newPassNotes span"));
         List<String> errorsList = new ArrayList<>();
@@ -198,19 +191,16 @@ public class LoginPage extends PageObject {
     }
 
     public void createNewUserCheckThatErrorMessageForEmailFieldShown(String errorMsg) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement emailView = utils.expandRootElement(signUpView.findElement(By.cssSelector("#email")));
         assertThat(emailView.findElement(By.cssSelector("#vaadin-text-field-error-2")).getText(), containsString(errorMsg));
     }
 
     public void createNewUserCheckThatForgotPasswordBtnExist() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         assertThat(signUpView.findElement(By.id("forgotPasswordBtn")).isDisplayed(), is(true));
         assertThat(signUpView.findElement(By.id("forgotPasswordBtn")).getText(), containsString("Want to reset password?"));
     }
 
     public void createNewUserClickResetPasswordBtn() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         signUpView.findElement(By.id("forgotPasswordBtn")).click();
     }
 
@@ -225,8 +215,6 @@ public class LoginPage extends PageObject {
         assertThat(sendBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
         WebElement cancelBtnView = utils.expandRootElement(resetPassView.findElement(By.cssSelector("#cancelBtn")));
         assertThat(cancelBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
-        assertThat(resetPassView.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
-        assertThat(resetPassView.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
     }
 
     public void checkLoginPageElements() {
@@ -265,13 +253,11 @@ public class LoginPage extends PageObject {
     }
 
     public void checkThatEarlyAccessErrorMessageIsShownForField(String error, String field) {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         WebElement inpuView = utils.expandRootElement(signUpView.findElement(By.cssSelector("vaadin-text-field[label='" + field + "']")));
         assertThat(inpuView.findElement(By.cssSelector("div[part='error-message']")).getText(), is(error));
     }
 
     public void checkNewPasswordPageOpened() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
         assertThat(signUpView.findElement(By.cssSelector("h3")).getText(), is("Create Password"));
     }
 
@@ -284,14 +270,18 @@ public class LoginPage extends PageObject {
     }
 
     public void clickSignUpWhatWeOfferButton() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
-        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
         headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(1) > a")).click();
     }
 
     public void clickSignUpAboutUsButton() {
-        WebElement signUpView = utils.expandRootElement(signUpShadow);
-        WebElement headerView = utils.expandRootElement(signUpView.findElement(By.cssSelector("public-header-menu")));
         headerView.findElement(By.cssSelector("vaadin-horizontal-layout > ul > li:nth-child(2) > a")).click();
+    }
+
+    public void checkHeaderUsername(String name) {
+        assertThat(getDriver().findElement(By.cssSelector(".account-menu")).getText(), is(name));
+    }
+
+    public void checkThatVerificationEmailPageOpened() {
+        assertThat(verificationEmailSentView.findElement(By.cssSelector("h3")).getText(), is("We sent you a verification email."));
     }
 }

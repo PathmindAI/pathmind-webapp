@@ -54,9 +54,9 @@ public class BashScriptCreatorUtilTest {
                 "out[1] = in.second[0];\n" +
                 "out[2] = in.second[1];\n" +
                 "out[3] = in.third;\n" +
-                "out[4] = in.fourth[0];\n"+
-                "out[5] = in.fourth[1];\n"+
-                "out[6] = in.fourth[2];\n"+
+                "out[4] = in.fourth[0];\n" +
+                "out[5] = in.fourth[1];\n" +
+                "out[6] = in.fourth[2];\n" +
                 "out[7] = in.fourth[3];";
         Assert.assertEquals(expected, BashScriptCreatorUtil.createObservationSnippet(selectedObservations));
     }

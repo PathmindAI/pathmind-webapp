@@ -1,34 +1,31 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.constants.ViewPermission;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.security.annotation.Permission;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.policy.ExportPolicyButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentCreatedSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Route(value = Routes.SHARED_EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 @Permission(permissions = ViewPermission.EXTENDED_READ)
-public class SharedExperimentView extends ExperimentView
-{
+public class SharedExperimentView extends ExperimentView {
     @Autowired
     private PolicyFileService policyFileService;
 
@@ -53,7 +50,7 @@ public class SharedExperimentView extends ExperimentView
     @Override
     protected Component getTitlePanel() {
         HorizontalLayout readOnlyBanner = WrapperUtils.wrapWidthFullCenterHorizontal(
-            LabelFactory.createLabel("Read-Only Mode")
+                LabelFactory.createLabel("Read-Only Mode")
         );
         readOnlyBanner.addClassName("internal-banner");
         return readOnlyBanner;
@@ -65,7 +62,7 @@ public class SharedExperimentView extends ExperimentView
 
     @Override
     protected Component[] getActionButtonList() {
-        return new Component[] {
+        return new Component[]{
                 new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> getExperiment())
         };
     }

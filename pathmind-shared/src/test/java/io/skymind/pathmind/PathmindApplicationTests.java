@@ -9,12 +9,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PathmindApplicationTests
-{
+public class PathmindApplicationTests {
 
-	@Test
-	public void contextLoads()
-	{
-	}
+    @Test
+    public void contextLoads() {
+    }
 
 }

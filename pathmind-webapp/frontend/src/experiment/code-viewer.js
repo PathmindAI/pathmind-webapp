@@ -11,13 +11,9 @@ class CodeViewer extends PolymerElement {
 
     ready() {
         super.ready();
-
-        // text in pseudo elements i.e. ::before and ::after are unselectable and uncopyable on
-        // modern browsers like Chrome, Firefox, and Edge, however IE11 doesn't behave in the same way,
-        // (user can paste the pseudo element text, but document.getSelection() excludes the pseudo element text)
-        // so this copy eventlistener is needed. Once we remove support for IE11, this can be removed.
         const codeElement = this.shadowRoot.querySelector("code");
         codeElement.addEventListener("copy", event => {
+            // This will handle the clipboard data to eliminate extra linebreak at the end of the string
             const selection = document.getSelection().toString();
             if (event.clipboardData) {
                 event.clipboardData.setData("text/plain", selection);
@@ -36,12 +32,7 @@ class CodeViewer extends PolymerElement {
             const select = window.getSelection();
             select.removeAllRanges();
             select.addRange(range);
-            if (window.clipboardData) {
-                // This is for IE11.
-                window.clipboardData.setData("text", select.toString());
-            } else {
-                document.execCommand("copy");
-            }
+            document.execCommand("copy");
             select.removeAllRanges();
 
             copyIcon.removeAttribute("active");

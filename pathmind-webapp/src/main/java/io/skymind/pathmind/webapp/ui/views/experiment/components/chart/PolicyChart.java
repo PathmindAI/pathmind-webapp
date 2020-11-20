@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
@@ -31,23 +30,23 @@ public class PolicyChart extends DataChart {
         JsonObject series = Json.createObject();
         String highlightColor = "#1a2949";
         List<String> colors = Arrays.asList(
-            "#7cb5ec",
-            "#737378",
-            "#90ed7d",
-            "#f7a35c",
-            "#8085e9",
-            "#f15c80",
-            "#e4d354",
-            "#2b908f",
-            "#f45b5b",
-            "#91e8e1"
+                "#7cb5ec",
+                "#737378",
+                "#90ed7d",
+                "#f7a35c",
+                "#8085e9",
+                "#f15c80",
+                "#e4d354",
+                "#2b908f",
+                "#f45b5b",
+                "#91e8e1"
         );
         for (int i = 0; i < numberOfSeries; i++) {
-            String seriesColor = colors.get(i%10);
+            String seriesColor = colors.get(i % 10);
             if (bestPolicySeriesNumber != null && i == bestPolicySeriesNumber) {
                 seriesColor = highlightColor;
             }
-            series.put(""+i, Json.parse("{'color': '"+seriesColor+"'}"));
+            series.put("" + i, Json.parse("{'color': '" + seriesColor + "'}"));
         }
         return series;
     }
@@ -57,8 +56,8 @@ public class PolicyChart extends DataChart {
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
         policies.forEach((policy) -> {
             int index = cols.length();
-            cols.set(index, Json.parse("{'label':'Policy "+policy.getName()+"', 'type':'number'}"));
-            cols.set(index+1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
+            cols.set(index, Json.parse("{'label':'Policy " + policy.getName() + "', 'type':'number'}"));
+            cols.set(index + 1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
         });
         return cols;
     }
@@ -81,18 +80,19 @@ public class PolicyChart extends DataChart {
                 int episodeCount = rewardScore.getEpisodeCount();
                 rowItem.set(index, meanRewardScoreValue);
                 String meanRewardScoreValueFormatted = Math.abs(meanRewardScoreValue) > 1 ? String.format("%.2f", meanRewardScoreValue) : String.format("%.4f", meanRewardScoreValue);
-                rowItem.set(index+1, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Reward</b> "+meanRewardScoreValueFormatted+"<br><b>Episode Count</b> "+episodeCount+"</div>");
+                rowItem.set(index + 1, "<div><b>Iteration #</b>" + iteration + "<br><b>Mean Reward</b> " + meanRewardScoreValueFormatted + "<br><b>Episode Count</b> " + episodeCount + "</div>");
             } else {
                 rowItem.set(index, Json.createNull());
-                rowItem.set(index+1, Json.createNull());
+                rowItem.set(index + 1, Json.createNull());
             }
         });
         return rowItem;
     }
 
     private Map<Integer, List<RewardScore>> generatePolicyChartData(Experiment experiment) {
-        if(experiment.getPolicies() == null)
+        if (experiment.getPolicies() == null) {
             return Collections.emptyMap();
+        }
         Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
@@ -105,7 +105,7 @@ public class PolicyChart extends DataChart {
                     .collect(Collectors.toList());
             allRewardScoresLists.add(rewardScoresList);
             if (bestPolicy != null && policy.getId() == bestPolicy.getId()) {
-                bestPolicySeriesNumber = allRewardScoresLists.size()-1;
+                bestPolicySeriesNumber = allRewardScoresLists.size() - 1;
             }
             iterationNumbers.add(rewardScoresList.size());
         });
@@ -117,16 +117,16 @@ public class PolicyChart extends DataChart {
             List<RewardScore> thisIterationRewardScores = new ArrayList<>();
             allRewardScoresLists.stream().forEach(rewardScoresList -> {
                 rewardScoresList.stream()
-                        .filter(rewardScore -> rewardScore.getIteration().equals(index+1))
+                        .filter(rewardScore -> rewardScore.getIteration().equals(index + 1))
                         .findAny()
                         .ifPresentOrElse(rewardScore -> {
                                     thisIterationRewardScores.add(rewardScore);
                                 },
                                 () -> thisIterationRewardScores.add(null));
             });
-            allLinesData.put(i+1, thisIterationRewardScores);
+            allLinesData.put(i + 1, thisIterationRewardScores);
         }
-        
+
         return allLinesData;
     }
 
@@ -157,15 +157,15 @@ public class PolicyChart extends DataChart {
         JsonObject viewWindow = null;
 
         setupChart(
-            type,
-            showTooltip,
-            hAxisTitle,
-            vAxisTitle,
-            curveLines,
-            seriesType,
-            series,
-            stacked,
-            viewWindow
+                type,
+                showTooltip,
+                hAxisTitle,
+                vAxisTitle,
+                curveLines,
+                seriesType,
+                series,
+                stacked,
+                viewWindow
         );
         getModel().setDimlines(true);
         if (showEmptyChart) {
@@ -174,5 +174,5 @@ public class PolicyChart extends DataChart {
             updateData(experiment.getPolicies(), policyChartData);
         }
     }
-    
+
 }

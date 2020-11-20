@@ -32,8 +32,9 @@ public class DateAndTimeUtils {
      * to figure out how to conditionally printout the hours, minutes, and seconds.
      */
     public static final String formatDurationTime(long totalSeconds) {
-        if (totalSeconds == 0)
+        if (totalSeconds == 0) {
             return "0 sec";
+        }
 
         long hours = totalSeconds / 3600;
         long minutes = (totalSeconds % 3600) / 60;
@@ -48,14 +49,15 @@ public class DateAndTimeUtils {
         long hours = Math.round(totalSeconds / 3600d);
         long minutes = Math.round((totalSeconds % 3600) / 60d);
 
-        if (hours > 12)
+        if (hours > 12) {
             return "12+ hr";
-        else if (hours > 0)
+        } else if (hours > 0) {
             return hours + " hr";
-        else if (minutes > 0)
+        } else if (minutes > 0) {
             return minutes + " min";
-        else
+        } else {
             return "less than a minute";
+        }
     }
 
     public static NumberFormat getElapsedTimeNumberFormat() {

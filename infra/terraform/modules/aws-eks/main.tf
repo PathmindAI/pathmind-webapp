@@ -13,6 +13,14 @@ data "aws_subnet_ids" "selected" {
   }
 }
 
+data "aws_subnet_ids" "selected_us_east_1a" {
+  vpc_id = data.aws_vpc.selected.id
+  filter {
+    name   = "tag:Name"
+    values = ["${var.environment}-private-us-east-1a"]
+  }
+}
+
 data "aws_eks_cluster" "cluster" {
   name = module.cluster.cluster_id
 }
@@ -36,7 +44,7 @@ module "cluster" {
   subnets                               = data.aws_subnet_ids.selected.ids
   vpc_id                                = data.aws_vpc.selected.id
   cluster_endpoint_private_access       = true
-  cluster_endpoint_public_access        = false
+  cluster_endpoint_public_access        = true
 
   worker_groups_launch_template = [
     {
@@ -152,6 +160,26 @@ module "cluster" {
       instance_type        = var.instance_type
       asg_max_size         = var.asg_max_size
       asg_desired_capacity = var.asg_desired_capacity
+      tags = [
+        {
+          "key"                 = "k8s.io/cluster-autoscaler/enabled"
+          "propagate_at_launch" = "false"
+          "value"               = "true"
+        },
+        {
+          "key"                 = "k8s.io/cluster-autoscaler/${var.cluster_name}"
+          "propagate_at_launch" = "false"
+          "value"               = "true"
+        }
+      ]
+    },
+    {
+      name                 = "jenkins"
+      instance_type        = var.instance_type
+      asg_max_size         = var.asg_max_size
+      asg_desired_capacity = 1
+      subnets = data.aws_subnet_ids.selected_us_east_1a.ids
+      kubelet_extra_args      = "--node-labels=dedicated=jenkins --register-with-taints=dedicated=jenkins:NoSchedule"
       tags = [
         {
           "key"                 = "k8s.io/cluster-autoscaler/enabled"

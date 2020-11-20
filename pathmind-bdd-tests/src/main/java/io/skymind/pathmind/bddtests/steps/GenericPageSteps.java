@@ -1,10 +1,10 @@
 package io.skymind.pathmind.bddtests.steps;
 
+import java.io.IOException;
+
 import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.thucydides.core.annotations.Step;
-
-import java.io.IOException;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 

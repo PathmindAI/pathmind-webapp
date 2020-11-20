@@ -1,9 +1,9 @@
 package io.skymind.pathmind.webapp.bus;
 
-import com.vaadin.flow.component.UI;
-
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import com.vaadin.flow.component.UI;
 
 /**
  * Any View or Component that wants to subscribe to events needs to extend this class. However it is strongly
@@ -42,12 +42,11 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
         return getUiSupplier().get().isPresent();
     }
 
-    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier) {
-        this(uiSupplier, false);
+    public EventBusSubscriber() {
+        this(false);
     }
 
-    public EventBusSubscriber(Supplier<Optional<UI>> uiSupplier, boolean isListenForEventOnSameUI) {
-        this.uiSupplier = uiSupplier;
+    public EventBusSubscriber(boolean isListenForEventOnSameUI) {
         this.isListenForEventOnSameUI = isListenForEventOnSameUI;
     }
 
@@ -62,8 +61,9 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
     }
 
     public boolean isSourceSameUI(T event) {
-        if(event.getSourceId() < 0 || uiSupplier.get().isEmpty())
+        if (event.getSourceId() < 0 || uiSupplier.get().isEmpty()) {
             return false;
+        }
         return event.getSourceId() == uiSupplier.get().get().getUIId();
     }
 
@@ -71,9 +71,14 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
         return uiSupplier;
     }
 
+    public void setUiSupplier(Supplier<Optional<UI>> uiSupplier) {
+        this.uiSupplier = uiSupplier;
+    }
+
     public boolean filterSameUI(T event) {
-        if(isListenForEventOnSameUI)
+        if (isListenForEventOnSameUI) {
             return true;
+        }
         return !isSourceSameUI(event);
     }
 }

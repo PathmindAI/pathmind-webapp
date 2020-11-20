@@ -1,5 +1,7 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.util.Date;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
@@ -7,8 +9,6 @@ import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-
-import java.util.Date;
 
 public class NewExperimentStepDefinition {
 
@@ -138,5 +138,10 @@ public class NewExperimentStepDefinition {
     @When("^Click side bar new experiment btn$")
     public void clickSideBarNewExperimentBtn() {
         newExperimentSteps.clickSideBarNewExperimentBtn();
+    }
+
+    @When("^Click new experiment page observation checkbox '(.*)'$")
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        newExperimentSteps.clickNewExperimentPageObservationCheckbox(observation);
     }
 }

@@ -22,7 +22,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class GenericPage extends PageObject {
 
@@ -102,11 +106,11 @@ public class GenericPage extends PageObject {
 
         List<WebElement> buttons = popupShadowRoot.findElements(By.cssSelector("vaadin-button"));
         Optional<WebElement> first = buttons.stream()
-            .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
-            .findFirst();
+                .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
+                .findFirst();
         String errorMessage = String.format("Button '%s' doesn't exist. Available buttons: %s.",
-            buttonText,
-            StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
+                buttonText,
+                StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
         );
         assertThat(errorMessage, first.isPresent());
         first.get().click();
@@ -228,8 +232,9 @@ public class GenericPage extends PageObject {
         if (file.exists() && file.isDirectory()) {
             String[] files = file.list();
             for (String fileName : files) {
-                if (fileName.contains(Serenity.sessionVariableCalled("randomNumber").toString()))
+                if (fileName.contains(Serenity.sessionVariableCalled("randomNumber").toString())) {
                     filesContainingSubstring.add(fileName);
+                }
             }
         }
 

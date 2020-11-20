@@ -1,6 +1,11 @@
 package io.skymind.pathmind.updater.aws;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
@@ -12,10 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @Service
 @Slf4j
 public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
@@ -24,15 +25,18 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final EmailNotificationService emailNotificationService;
     private final UpdaterService updaterService;
     private final int updateCompletingAttemptsLimit;
+    private final SegmentTrackerService segmentTrackerService;
 
     public AWSExecutionProgressUpdater(RunDAO runDAO,
                                        @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
-                                       UpdaterService updaterService) {
+                                       UpdaterService updaterService,
+                                       SegmentTrackerService segmentTrackerService) {
         this.runDAO = runDAO;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
         this.updateCompletingAttemptsLimit = completingAttempts;
+        this.segmentTrackerService = segmentTrackerService;
     }
 
     @Override
@@ -42,7 +46,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         // This means that errors after the info is saved in AWS but before the info is saved in DB won't cause the
         // system to be in an inconsistent state.
         // Also, completed runs that doesn't have policy file information in the db will be returned by this call.
-    	final List<Run> runs = runDAO.getExecutingRuns(updateCompletingAttemptsLimit);
+        final List<Run> runs = runDAO.getExecutingRuns(updateCompletingAttemptsLimit);
         final List<Long> runIds = runs.stream().map(Run::getId).collect(Collectors.toList());
         final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
         final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
@@ -51,13 +55,20 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
 
         runsWithAwsJobs.parallelStream().forEach(run -> {
             try {
-            	ProviderJobStatus providerJobStatus =
+                ProviderJobStatus providerJobStatus =
                         updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNamesForRuns);
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
+                trackCompletedTrainingInSegment(run, providerJobStatus);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
             }
         });
+    }
+
+    private void trackCompletedTrainingInSegment(Run run, ProviderJobStatus providerJobStatus) {
+        if (RunStatus.isFinished(providerJobStatus.getRunStatus())) {
+            segmentTrackerService.trainingCompleted(runDAO.getUserIdForRun(run.getId()), run);
+        }
     }
 
     /**
@@ -73,8 +84,9 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private boolean hasJobId(Run run) {
-        if (run.getJobId() == null)
+        if (run.getJobId() == null) {
             log.error("Run {} marked as executing but no aws run id found for it.", run.getId());
+        }
         return run.getJobId() != null;
     }
 

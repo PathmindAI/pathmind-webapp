@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 @Slf4j
 public class ProjectFileCheckService {
@@ -29,7 +30,7 @@ public class ProjectFileCheckService {
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
-    public void checkFile(StatusUpdater statusUpdater, Model model) {
+    public Future<?> checkFile(StatusUpdater statusUpdater, Model model) {
         Runnable runnable = () -> {
             try {
                 statusUpdater.updateStatus(0);
@@ -64,23 +65,28 @@ public class ProjectFileCheckService {
                 log.info("Checking : completed");
             }
         };
-        checkerExecutorService.submit(runnable);
+        return checkerExecutorService.submit(runnable);
     }
 
-    private Optional<String> verifyAnalysisResult(HyperparametersDTO analysisResult) {
-        if (analysisResult != null && analysisResult.isOldVersionFound()) {
+    private Optional<String> verifyAnalysisResult(HyperparametersDTO param) {
+        if (param != null && param.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
-        } else if (analysisResult == null || analysisResult.getObservationsNames() == null || analysisResult.getRewardVariables() == null) {
+        } else if (param == null || param.getObservationNames() == null
+            || param.getObservationTypes() == null || param.getRewardVariableNames() == null || param.getRewardVariableTypes() == null) {
             return Optional.of("Unable to analyze the model.");
-        } else if (analysisResult.getRewardVariables().isEmpty()) {
+        } else if (param.getRewardVariableNames().isEmpty() || param.getRewardVariableTypes().isEmpty()) {
             return Optional.of("Failed to read reward variables.");
-        } else if (analysisResult.getObservationsNames().isEmpty()) {
+        } else if (param.getRewardVariableNames().size() != param.getRewardVariableTypes().size()) {
+            return Optional.of("Should be the same number of reward variable names and types.");
+        } else if (param.getObservationNames().isEmpty() || param.getObservationTypes().isEmpty()) {
             return Optional.of("Failed to read observations.");
-        } else if (analysisResult.getMode().isEmpty()) {
+        } else if (param.getObservationNames().size() != param.getObservationTypes().size()) {
+            return Optional.of("Should be the same number of observation names and types.");
+        } else if (param.getMode().isEmpty()) {
             return Optional.of("Failed to read model type.");
-        } else if (!analysisResult.isEnabled()) {
+        } else if (!param.isEnabled()) {
             return Optional.of("Should enable PathmindHelper.");
-        } else if (analysisResult.getAgents().isEmpty()) {
+        } else if (param.getAgents().isEmpty()) {
             return Optional.of("Failed to read the number of agents.");
         }
         return Optional.empty();
@@ -90,8 +96,10 @@ public class ProjectFileCheckService {
     	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
     	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
     	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
-    	fileCheckResult.setRewardVariables(params.getRewardVariables());
-    	fileCheckResult.setObservationNames(params.getObservationsNames());
+    	fileCheckResult.setRewardVariableNames(params.getRewardVariableNames());
+    	fileCheckResult.setRewardVariableTypes(params.getRewardVariableTypes());
+    	fileCheckResult.setObservationNames(params.getObservationNames());
+    	fileCheckResult.setObservationTypes(params.getObservationTypes());
     	fileCheckResult.setModelType(params.getMode());
     	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
     }

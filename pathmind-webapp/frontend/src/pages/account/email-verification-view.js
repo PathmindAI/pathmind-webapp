@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/public-header-menu.js";
 
 /**
  * `email-verification-view`
@@ -11,11 +12,12 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class EmailVerificationView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view">
-        p {
+      <style>
+        email-verification-view p {
             width: 100%;
         }
       </style>
+      <public-header-menu contactlink="{{contactLink}}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
         <span class="welcome-text">Welcome to</span>
@@ -40,6 +42,10 @@ class EmailVerificationView extends PolymerElement {
         </vaadin-vertical-layout>
       </div>
     </vaadin-horizontal-layout>`;
+  }
+
+  _attachDom(dom) {
+    this.appendChild(dom);
   }
 
   static get is() {

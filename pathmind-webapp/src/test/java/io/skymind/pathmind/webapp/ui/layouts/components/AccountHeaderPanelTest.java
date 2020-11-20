@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.layouts.components;
 
+import java.util.Optional;
+
 import com.github.mvysny.kaributesting.v10.ContextMenuKt;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
@@ -35,7 +37,7 @@ public class AccountHeaderPanelTest {
         TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        accountHeaderPanel = new AccountHeaderPanel(user, new FeatureManager(false));
+        accountHeaderPanel = new AccountHeaderPanel(() -> Optional.of(ui), user, new FeatureManager(false));
         ui = KaribuUtils.setup(accountHeaderPanel);
     }
 

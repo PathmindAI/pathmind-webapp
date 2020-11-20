@@ -96,3 +96,12 @@ Feature: User accounts tests
     When Open page account/change-password
     When Click account breadcrumb btn
     Then Check that user account page opened
+
+  Scenario: Check account name edit
+    Given Login to the pathmind
+    When Open page account
+    When Click account edit btn
+    When Input account page first name 'FirstName'
+    When Input account page last name 'LastName'
+    When Click account edit update btn
+    Then Check that user name changed to 'FirstName' 'LastName'

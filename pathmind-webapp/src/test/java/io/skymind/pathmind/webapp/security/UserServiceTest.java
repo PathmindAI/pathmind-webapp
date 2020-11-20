@@ -1,21 +1,22 @@
 package io.skymind.pathmind.webapp.security;
 
+import java.util.UUID;
+
 import io.skymind.pathmind.PathmindApplicationTests;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.db.testutils.UserTestUtils;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Ignore
 @Transactional
-public class UserServiceTest extends PathmindApplicationTests
-{
+public class UserServiceTest extends PathmindApplicationTests {
     @Autowired
     UserService userService;
 
@@ -49,12 +50,12 @@ public class UserServiceTest extends PathmindApplicationTests
 
     @Test
     public void validatePassword() {
-        assertTrue( userService.validatePassword("password", "password").getPasswordValidationErrors().contains(userService.UPPERCASE_MISSING));
-        assertTrue( userService.validatePassword("password", "password1").getPasswordValidationErrors().contains(userService.NOT_MATCHING));
-        assertTrue( userService.validatePassword("PASS", "PASS").getPasswordValidationErrors().contains(userService.LOWERCASE_MISSING));
-        assertTrue( userService.validatePassword("Password", "").getPasswordValidationErrors().isEmpty());
-        assertTrue( userService.validatePassword("Password", "").getConfirmPasswordValidationError().equals(userService.CONFIRMATION_REQUIRED));
-        assertTrue( userService.validatePassword("PASS", "PASS").getPasswordValidationErrors().contains(userService.TOO_SHORT));
-        assertTrue( userService.validatePassword("Password", "Password").getPasswordValidationErrors().isEmpty());
+        assertTrue(userService.validatePassword("password", "password").getPasswordValidationErrors().contains(userService.UPPERCASE_MISSING));
+        assertTrue(userService.validatePassword("password", "password1").getPasswordValidationErrors().contains(userService.NOT_MATCHING));
+        assertTrue(userService.validatePassword("PASS", "PASS").getPasswordValidationErrors().contains(userService.LOWERCASE_MISSING));
+        assertTrue(userService.validatePassword("Password", "").getPasswordValidationErrors().isEmpty());
+        assertTrue(userService.validatePassword("Password", "").getConfirmPasswordValidationError().equals(userService.CONFIRMATION_REQUIRED));
+        assertTrue(userService.validatePassword("PASS", "PASS").getPasswordValidationErrors().contains(userService.TOO_SHORT));
+        assertTrue(userService.validatePassword("Password", "Password").getPasswordValidationErrors().isEmpty());
     }
 }

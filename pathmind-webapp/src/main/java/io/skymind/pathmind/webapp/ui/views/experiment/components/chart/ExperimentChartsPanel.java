@@ -1,5 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -7,23 +11,15 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
+import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -42,7 +38,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier) {
+    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables) {
 
         this.getUISupplier = getUISupplier;
 
@@ -63,11 +59,13 @@ public class ExperimentChartsPanel extends VerticalLayout {
         setSpacing(false);
         setPadding(false);
         add(LabelFactory.createLabel("Learning Progress", BOLD_LABEL),
-            chartTabs,
-            chartsPanel);
+                chartTabs,
+                chartsPanel);
         addClassName("row-2-of-3");
 
         setAllMetricsChartPanelVisible(true);
+
+        setupCharts(experiment, rewardVariables);
     }
 
     private Tabs createChartTabs() {
@@ -89,9 +87,9 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this,
-                new ExperimentChartsPanelRunUpdateSubscriber(getUISupplier),
-                new ExperimentChartsPanelExperimentChangedViewSubscriber(getUISupplier));
+        EventBus.subscribe(this, getUISupplier,
+                new ExperimentChartsPanelRunUpdateSubscriber(this),
+                new ExperimentChartsPanelExperimentChangedViewSubscriber(this));
     }
 
     @Override
@@ -107,7 +105,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         selectVisibleChart();
     }
 
-    private void selectVisibleChart() {
+    public void selectVisibleChart() {
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
         } else {
@@ -125,16 +123,18 @@ public class ExperimentChartsPanel extends VerticalLayout {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
         allMetricsChartPanel.setVisible(true);
-        if(isRedraw)
+        if (isRedraw) {
             allMetricsChartPanel.redrawChart();
+        }
     }
 
     private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(true);
         allMetricsChartPanel.setVisible(false);
-        if(isRedraw)
-           policyChartPanel.redrawChart();
+        if (isRedraw) {
+            policyChartPanel.redrawChart();
+        }
     }
 
     private void setPlaceholderVisible() {
@@ -143,44 +143,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
         allMetricsChartPanel.setVisible(false);
     }
 
-    private boolean isSameExperiment(Experiment experimentToCompare) {
-        return ExperimentUtils.isSameExperiment(experiment, experimentToCompare);
+    public Experiment getExperiment() {
+        return experiment;
     }
 
-    class ExperimentChartsPanelRunUpdateSubscriber extends RunUpdateSubscriber {
-
-        public ExperimentChartsPanelRunUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(RunUpdateBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> {
-                ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
-                experiment.updateTrainingStatus();
-                selectVisibleChart();
-            });
-        }
-
-        @Override
-        public boolean filterBusEvent(RunUpdateBusEvent event) {
-            return isSameExperiment(event.getExperiment());
-        }
-    }
-
-    class ExperimentChartsPanelExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
-
-        public ExperimentChartsPanelExperimentChangedViewSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-            PushUtils.push(getUiSupplier(), () -> {
-                setExperiment(event.getExperiment());
-                experiment.updateTrainingStatus();
-                selectVisibleChart();
-            });
-        }
+    public List<RewardVariable> getRewardVariables() {
+        return rewardVariables;
     }
 }

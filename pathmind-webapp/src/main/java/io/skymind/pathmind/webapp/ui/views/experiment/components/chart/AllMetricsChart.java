@@ -1,14 +1,19 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
+import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.data.utils.RewardVariablesUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
-
-import java.util.*;
 
 public class AllMetricsChart extends DataChart {
 
@@ -27,8 +32,8 @@ public class AllMetricsChart extends DataChart {
         List<String> colors = ChartUtils.colors();
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
-                String seriesColor = colors.get(rewardVariables[i].getArrayIndex()%10);
-                series.put(""+i, Json.parse("{'color': '"+seriesColor+"'}"));
+                String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
+                series.put("" + i, Json.parse("{'color': '" + seriesColor + "'}"));
             }
         }
         return series;
@@ -37,10 +42,10 @@ public class AllMetricsChart extends DataChart {
     private JsonArray createCols() {
         JsonArray cols = Json.createArray();
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
-        for(RewardVariable rewardVariable: rewardVariables) {
+        for (RewardVariable rewardVariable : rewardVariables) {
             int index = cols.length();
-            cols.set(index, Json.parse("{'label':'reward variable "+index+"', 'type':'number'}"));
-            cols.set(index+1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
+            cols.set(index, Json.parse("{'label':'reward variable " + index + "', 'type':'number'}"));
+            cols.set(index + 1, Json.parse("{'role': 'tooltip', 'type':'string', 'p': {'html': true}}"));
         }
         return cols;
     }
@@ -62,16 +67,16 @@ public class AllMetricsChart extends DataChart {
                 RewardVariable rewardVariable = rewardVariables[i];
                 rowItem.set(index, metricValue);
                 String meanMetricValueFormatted = Math.abs(metricValue) > 1 ? String.format("%.2f", metricValue) : String.format("%.4f", metricValue);
-                String tooltip = "<div><b>"+rewardVariable.getName()+"</b><br>";
+                String tooltip = "<div><b>" + rewardVariable.getName() + "</b><br>";
                 if (rewardVariable.getGoalConditionTypeEnum() != null && rewardVariable.getGoalValue() != null) {
-                    tooltip += "<b>Goal</b> "+rewardVariable.getGoalConditionTypeEnum().toString()+rewardVariable.getGoalValue()+"<br>";
+                    tooltip += "<b>Goal</b> " + rewardVariable.getGoalConditionTypeEnum().toString() + rewardVariable.getGoalValue() + "<br>";
                 }
-                tooltip += "<b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+meanMetricValueFormatted+"</div>";
+                tooltip += "<b>Iteration #</b>" + iteration + "<br><b>Mean Metric</b> " + meanMetricValueFormatted + "</div>";
 
-                rowItem.set(index+1, tooltip);
+                rowItem.set(index + 1, tooltip);
             } else {
                 rowItem.set(index, Json.createNull());
-                rowItem.set(index+1, Json.createNull());
+                rowItem.set(index + 1, Json.createNull());
             }
         }
         return rowItem;
@@ -84,7 +89,7 @@ public class AllMetricsChart extends DataChart {
         // Get first metric's last iteration number
         // all sparklines should have the same number of iterations
         List<Integer> iterationList = new ArrayList<>(firstMetricSparklineData.keySet());
-        int maxIteration = iterationList.get(firstMetricSparklineData.size()-1);
+        int maxIteration = iterationList.get(firstMetricSparklineData.size() - 1);
 
         // save a list of sparkline datum per metric per iteration
         for (int i = 0; i <= maxIteration; i++) {
@@ -94,7 +99,7 @@ public class AllMetricsChart extends DataChart {
                     thisIterationMetricValues.add(sparklineData.get(iterationNumber)));
             allLinesData.put(i, thisIterationMetricValues);
         }
-        
+
         return allLinesData;
     }
 
@@ -145,15 +150,15 @@ public class AllMetricsChart extends DataChart {
         JsonObject viewWindow = null;
 
         setupChart(
-            type,
-            showTooltip,
-            hAxisTitle,
-            vAxisTitle,
-            curveLines,
-            seriesType,
-            series,
-            stacked,
-            viewWindow
+                type,
+                showTooltip,
+                hAxisTitle,
+                vAxisTitle,
+                curveLines,
+                seriesType,
+                series,
+                stacked,
+                viewWindow
         );
 
         if (showEmptyChart) {
@@ -162,5 +167,5 @@ public class AllMetricsChart extends DataChart {
             updateData();
         }
     }
-    
+
 }

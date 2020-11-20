@@ -1,11 +1,17 @@
 package io.skymind.pathmind.webapp.security;
 
-import io.skymind.pathmind.shared.data.PathmindUser;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.UUID;
+
+import javax.naming.AuthenticationException;
+
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.UserUpdateBusEvent;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
@@ -14,16 +20,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.UUID;
-
 @Service
 @Slf4j
-public class UserService
-{
+public class UserService {
     public static final String NOT_MATCHING = "* New Password doesn't match Confirmation password";
     public static final String TOO_SHORT = "* 6 min characters";
     public static final String TOO_BIG = "* 50 max characters";
@@ -35,29 +34,26 @@ public class UserService
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder)
-    {
+    public UserService(UserDAO userDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public PathmindUser getCurrentUser()
-    {
+    public PathmindUser getCurrentUser() {
         SecurityContext context = SecurityContextHolder.getContext();
         Object principal = context.getAuthentication().getPrincipal();
-        if(principal instanceof UserDetails) {
+        if (principal instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
             return userDAO.findByEmailIgnoreCase(userDetails.getUsername());
         }
         return null;
     }
 
-    public long getCurrentUserId()
-    {
+    public long getCurrentUserId() {
         final PathmindUser user = getCurrentUser();
-        if (user == null){
+        if (user == null) {
             throw new RuntimeException(new AuthenticationException("User not authenticated!"));
-        } else{
+        } else {
             return user.getId();
         }
     }
@@ -66,8 +62,7 @@ public class UserService
         return null != getCurrentUser() && (null != getCurrentUser().getEmailVerifiedAt());
     }
 
-    public PathmindUser signup(PathmindUser pathmindUser)
-    {
+    public PathmindUser signup(PathmindUser pathmindUser) {
         pathmindUser.setEmailVerificationToken(UUID.randomUUID());
         long id = userDAO.insertUser(pathmindUser);
         log.info("New user signed up: " + pathmindUser.getEmail());
@@ -99,8 +94,7 @@ public class UserService
 
         if (confirm.isEmpty()) {
             results.setConfirmPasswordValidationError(CONFIRMATION_REQUIRED);
-        }
-        else if (!password.equals(confirm)) {
+        } else if (!password.equals(confirm)) {
             results.getPasswordValidationErrors().add(NOT_MATCHING);
         }
 
@@ -134,8 +128,13 @@ public class UserService
     public PathmindUser findByEmailIgnoreCase(String value) {
         return userDAO.findByEmailIgnoreCase(value);
     }
+
     public PathmindUser findByToken(String value) {
         return userDAO.findByToken(value);
+    }
+
+    public void rotateApiKey(PathmindUser user) {
+        userDAO.rotateApiKey(user.getId());
     }
 
     public static class PasswordValidationResults {

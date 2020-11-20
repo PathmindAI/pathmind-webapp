@@ -1,10 +1,10 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import net.thucydides.core.annotations.Step;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.page.HomePage;
 import io.skymind.pathmind.bddtests.page.LoginPage;
-
-import java.util.List;
+import net.thucydides.core.annotations.Step;
 
 import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
@@ -166,5 +166,15 @@ public class LoginPageSteps {
     @Step
     public void clickSignUpAboutUsButton() {
         loginPage.clickSignUpAboutUsButton();
+    }
+
+    @Step
+    public void checkHeaderUsername(String name) {
+        loginPage.checkHeaderUsername(name);
+    }
+
+    @Step
+    public void checkThatVerificationEmailPageOpened() {
+        loginPage.checkThatVerificationEmailPageOpened();
     }
 }

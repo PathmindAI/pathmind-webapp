@@ -13,17 +13,17 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
  * as expected and be consistent with other components.
  */
 public class RewardFunctionEditor extends JuicyAceEditor {
-    
-	public RewardFunctionEditor() {
-		super();
-		
-		setSizeFull();
-		setTheme(JuicyAceTheme.eclipse);
-		setMode(JuicyAceMode.java);
-		setWrapmode(false);
-	}
-	
-	public void setVariableNames(List<RewardVariable> rewardVariables) {
-	    setAutoComplete(rewardVariables);
+
+    public RewardFunctionEditor() {
+        super();
+
+        setSizeFull();
+        setTheme(JuicyAceTheme.eclipse);
+        setMode(JuicyAceMode.java);
+        setWrapmode(false);
+    }
+
+    public void setVariableNames(List<RewardVariable> rewardVariables) {
+        setAutoComplete(rewardVariables);
     }
 }

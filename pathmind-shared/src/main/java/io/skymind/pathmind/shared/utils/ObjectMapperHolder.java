@@ -9,16 +9,17 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
  * A simple object mapper holder for
  * using one single {@link ObjectMapper}
  * across the whole project.
- *
  */
 public class ObjectMapperHolder {
     private static ObjectMapper objectMapper = getMapper();
 
-    private ObjectMapperHolder() {}
+    private ObjectMapperHolder() {
+    }
 
     /**
      * Get a single object mapper for use
      * with reading and writing json
+     *
      * @return
      */
     public static ObjectMapper getJsonMapper() {

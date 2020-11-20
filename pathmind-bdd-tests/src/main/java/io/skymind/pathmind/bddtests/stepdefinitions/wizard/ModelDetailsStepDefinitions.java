@@ -29,4 +29,9 @@ public class ModelDetailsStepDefinitions {
     public void checkThatModelSuccessfullyUploaded() {
         modelDetailsSteps.checkThatModelSuccessfullyUploaded();
     }
+
+    @Then("^Check observations list contains (.*)$")
+    public void checkObservationsListContains(String commaSeparatedObservations) {
+        modelDetailsSteps.checkObservationsListContains(commaSeparatedObservations.split(","));
+    }
 }

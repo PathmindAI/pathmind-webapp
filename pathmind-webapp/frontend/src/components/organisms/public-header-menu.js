@@ -7,8 +7,8 @@ class PublicHeaderMenu extends PolymerElement {
 
     static get template() {
         return html`
-            <style include="shared-styles">
-                :host {
+            <style>
+                public-header-menu {
                     box-sizing: border-box;
                     display: flex;
                     justify-content: center;
@@ -20,16 +20,16 @@ class PublicHeaderMenu extends PolymerElement {
                     padding: 0 var(--lumo-space-m);
                     border-bottom: 1px solid var(--pm-grey-color-lightest);
                 }
-                vaadin-horizontal-layout {
+                public-header-menu vaadin-horizontal-layout {
                     max-width: 1080px;
                     width: 100%;
                 }
-                .logo {
+                public-header-menu .logo {
                     display: block;
                     width: 160px;
                     margin-right: var(--lumo-space-xl);
                 }
-                ul {
+                public-header-menu ul {
                     display: flex;
                     align-items: stretch;
                     flex: 1 1 auto;
@@ -37,10 +37,10 @@ class PublicHeaderMenu extends PolymerElement {
                     margin: 0;
                     padding: 0;
                 }
-                li {
+                public-header-menu li {
                     margin: 0 var(--lumo-space-m);
                 }
-                a {
+                public-header-menu a {
                     box-sizing: border-box;
                     display: flex;
                     align-items: center;
@@ -53,7 +53,10 @@ class PublicHeaderMenu extends PolymerElement {
                     text-decoration: none;
                     overflow: hidden;
                 }
-                ul a::after {
+                public-header-menu a:hover {
+                    text-decoration: none;
+                }
+                public-header-menu ul a::after {
                     content: '';
                     display: block;
                     position: absolute;
@@ -64,38 +67,41 @@ class PublicHeaderMenu extends PolymerElement {
                     background-color: var(--lumo-primary-color);
                     transition: all 0.2s;
                 }
-                ul a:hover::after {
+                public-header-menu ul a:hover::after {
                     left: 0;
                 }
-                .right-cta {
+                public-header-menu .right-cta {
                     justify-self: flex-end;
                 }
-                .right-cta a {
+                public-header-menu .right-cta a.support {
+                    display: flex;
                     color: var(--lumo-secondary-text-color);
+                    text-decoration: none;
+                    margin: 0;
                 }
-                .right-cta a:hover {
+                public-header-menu .right-cta a.support:hover {
                     color: var(--pm-grey-color-darker);
                 }
-                .right-cta iron-icon {
+                public-header-menu .right-cta iron-icon {
                     --iron-icon-width: var(--lumo-font-size-m);
                     --iron-icon-height: var(--lumo-font-size-m);
                     margin-right: var(--lumo-space-xs);
                 }
                 @media screen and (max-width: 768px) {
-                    .logo {
+                    public-header-menu .logo {
                       width: 120px;
                       margin-right: var(--lumo-space-m);
                     }
-                    .support span {
+                    public-header-menu .support span {
                         display: none;
                     }
-                    li {
+                    public-header-menu li {
                         margin: 0 var(--lumo-space-s);
                     }
                 }
             </style>
             <vaadin-horizontal-layout>
-                <a href="https://pathmind.com/" class="logo-wrapper"><img
+                <a href="{{logoLink}}" class="logo-wrapper"><img
                     class="logo"
                     src="frontend/images/pathmind-logo.svg"
                     alt="Pathmind logo"
@@ -121,10 +127,26 @@ class PublicHeaderMenu extends PolymerElement {
         `;
     }
 
+    _attachDom(dom) {
+      this.appendChild(dom);
+    }
+
+    getLogoLink(isLogoLinkToWebapp) {
+        return isLogoLinkToWebapp ? "/" : "https://pathmind.com/";
+    }
+
     static get properties() {
       return {
           contactlink: {
               type: String,
+          },
+          linktowebapp: {
+              type: Boolean,
+              value: false,
+          },
+          logoLink: {
+              type: String,
+              computed: 'getLogoLink(linktowebapp)',
           },
       };
     }

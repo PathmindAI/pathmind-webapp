@@ -7,8 +7,7 @@ import java.math.BigDecimal;
  * The issue is still outstanding even now in 2020 and it doesn't look like a resolution is coming in the near future
  * therefore we need to implement one of the suggested workarounds.
  */
-public class JooqUtils
-{
+public class JooqUtils {
     public static BigDecimal getSafeBigDecimal(double value) {
         return Double.isNaN(value) ? null : new BigDecimal(value);
     }

@@ -1,11 +1,15 @@
 package io.skymind.pathmind.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.shared.data.Observation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class PolicyServerFilesCreator {
@@ -109,7 +113,7 @@ public class PolicyServerFilesCreator {
 
         private List<String> getRepresentationLines() {
             List<String> result = new ArrayList<>();
-            for(Map.Entry<String, Object> entry: data.entrySet()) {
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
                 result.addAll(getRepresentationLines(entry.getKey(), entry.getValue()));
             }
             return result;
@@ -120,12 +124,10 @@ public class PolicyServerFilesCreator {
             if (value instanceof Collection) {
                 result.add(String.format("%s:", key));
                 result.addAll(((Collection<? extends Object>) value).stream().map(i -> String.format("  - %s", i.toString())).collect(Collectors.toList()));
-            }
-            else if (value instanceof YamlObject) {
+            } else if (value instanceof YamlObject) {
                 result.add(String.format("%s:", key));
-                result.addAll(((YamlObject)value).getRepresentationLines().stream().map(v -> "  " + v).collect(Collectors.toList()));
-            }
-            else {
+                result.addAll(((YamlObject) value).getRepresentationLines().stream().map(v -> "  " + v).collect(Collectors.toList()));
+            } else {
                 result.add(String.format("%s: %s", key, value.toString()));
             }
             return result;

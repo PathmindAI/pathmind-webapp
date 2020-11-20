@@ -9,7 +9,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
@@ -53,15 +52,15 @@ public class SearchResultItem extends VerticalLayout {
         lastActivityDateComponent = new Span("Last Activity");
         notesComponent = createSearchResultsNotesComponent();
         add(
-            createInfoRow(),
-            createNameRow(),
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Notes: "), notesComponent)
+                createInfoRow(),
+                createNameRow(),
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(new Span("Notes: "), notesComponent)
         );
         setSpacing(false);
         setPadding(false);
         setClassName("search-result-item");
     }
-    
+
     private HorizontalLayout createInfoRow() {
         HorizontalLayout infoRow = WrapperUtils.wrapWidthFullBetweenHorizontal();
         HorizontalLayout tags = new HorizontalLayout();
@@ -70,8 +69,7 @@ public class SearchResultItem extends VerticalLayout {
         if (searchResultType.equals(SearchResultItemType.EXPERIMENT)) {
             Experiment experiment = experimentDAO.getExperiment(searchResult.getItemId()).orElse(null);
             if (experiment != null) {
-                boolean isFavorite = ExperimentUtils.isFavorite(experiment);
-                tags.add(new FavoriteStar(isFavorite, newIsFavorite -> 
+                tags.add(new FavoriteStar(experiment.isFavorite(), newIsFavorite ->
                         ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }
@@ -91,20 +89,20 @@ public class SearchResultItem extends VerticalLayout {
         VerticalLayout nameRow = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         String modelName = searchResult.getModelName();
         String experimentName = searchResult.getExperimentName();
-        String modelNameText = "Model #"+searchResult.getModelName();
-        String experimentNameText = "Experiment #"+searchResult.getExperimentName();
+        String modelNameText = "Model #" + searchResult.getModelName();
+        String experimentNameText = "Experiment #" + searchResult.getExperimentName();
         RouterLink projectNameLink = new RouterLink();
         nameRow.add(highlightSearchResult(projectNameLink, searchResult.getProjectName(), null, resultTypeProject));
         setProjectLinkRouterTarget(projectNameLink);
         if (resultTypeModel || resultTypeExperiment) {
             RouterLink modelNameLink = new RouterLink();
-            nameRow.add(highlightSearchResult(modelNameLink, modelNameText, "(?i)Model\\s#?"+modelName,
+            nameRow.add(highlightSearchResult(modelNameLink, modelNameText, "(?i)Model\\s#?" + modelName,
                     resultTypeModel && matchedDecodedKeyword(decodedKeyword, "Model", modelName)));
             setModelLinkRouterTarget(modelNameLink);
         }
         if (resultTypeExperiment) {
             RouterLink experimentNameLink = new RouterLink();
-            nameRow.add(highlightSearchResult(experimentNameLink, experimentNameText, "(?i)Experiment\\s#?"+experimentName,
+            nameRow.add(highlightSearchResult(experimentNameLink, experimentNameText, "(?i)Experiment\\s#?" + experimentName,
                     resultTypeExperiment && matchedDecodedKeyword(decodedKeyword, "Experiment", experimentName)));
             setExperimentLinkRouterTarget(experimentNameLink);
         }
@@ -116,19 +114,19 @@ public class SearchResultItem extends VerticalLayout {
         String searchResultTypeName = searchResult.getItemType().getName();
         Long projectId = (long) 0;
         switch (searchResultTypeName) {
-            case "Project" :
+            case "Project":
                 projectId = searchResult.getItemId();
                 break;
-            case "Model" :
+            case "Model":
                 Model model = modelService.getModel(searchResult.getItemId())
                         .orElseThrow(() -> new InvalidDataException("Attempted to get invalid model: " + searchResult.getItemId()));
                 projectId = model.getProjectId();
                 break;
-            case "Experiment" :
+            case "Experiment":
                 projectId = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get().getProject().getId();
                 break;
         }
-        link.setRoute(ProjectView.class, ""+projectId);
+        link.setRoute(ProjectView.class, "" + projectId);
     }
 
     private void setModelLinkRouterTarget(RouterLink link) {
@@ -137,13 +135,13 @@ public class SearchResultItem extends VerticalLayout {
         Long modelId = (long) 0;
 
         switch (searchResultTypeName) {
-            case "Model" :
+            case "Model":
                 Model model = modelService.getModel(searchResult.getItemId())
                         .orElseThrow(() -> new InvalidDataException("Attempted to get invalid model: " + searchResult.getItemId()));
                 projectId = model.getProjectId();
                 modelId = searchResult.getItemId();
                 break;
-            case "Experiment" :
+            case "Experiment":
                 Experiment experiment = experimentDAO.getExperimentWithRuns(searchResult.getItemId()).get();
                 projectId = experiment.getProject().getId();
                 modelId = experiment.getModelId();
@@ -163,8 +161,8 @@ public class SearchResultItem extends VerticalLayout {
     }
 
     private boolean matchedDecodedKeyword(String keyword, String itemTypePrefix, String name) {
-        return keyword.equals(itemTypePrefix+" "+name) || keyword.equals(itemTypePrefix.toLowerCase()+" "+name) || 
-                keyword.equals(itemTypePrefix+"# "+name) || keyword.equals(itemTypePrefix.toLowerCase()+"# "+name) ||
+        return keyword.equals(itemTypePrefix + " " + name) || keyword.equals(itemTypePrefix.toLowerCase() + " " + name) ||
+                keyword.equals(itemTypePrefix + "# " + name) || keyword.equals(itemTypePrefix.toLowerCase() + "# " + name) ||
                 keyword.equals(name) || keyword.equals(name.toLowerCase());
     }
 
@@ -181,7 +179,7 @@ public class SearchResultItem extends VerticalLayout {
 
     private <ROW extends Component & HasComponents & HasStyle> ROW highlightSearchResult(ROW searchResultColumn, String columnText, String toMatch, boolean isHighlightable) {
         String escapedKeyword = PathmindStringUtils.escapeNonAlphanumericalCharacters(decodedKeyword);
-        String[] parts = columnText.split("(?i)((?<="+escapedKeyword+")|(?=(?i)"+escapedKeyword+"))");
+        String[] parts = columnText.split("(?i)((?<=" + escapedKeyword + ")|(?=(?i)" + escapedKeyword + "))");
 
         if (!isHighlightable) {
             searchResultColumn.add(new Span(columnText));
@@ -191,11 +189,11 @@ public class SearchResultItem extends VerticalLayout {
         for (int i = 0; i < parts.length; i++) {
             if (parts[i].toLowerCase().equals(decodedKeyword.toLowerCase())) {
                 searchResultColumn.add(
-                    LabelFactory.createLabel(parts[i], CssPathmindStyles.HIGHLIGHT_LABEL)
+                        LabelFactory.createLabel(parts[i], CssPathmindStyles.HIGHLIGHT_LABEL)
                 );
             } else if (toMatch != null && escapedKeyword.matches(toMatch)) {
                 searchResultColumn.add(
-                    LabelFactory.createLabel(columnText, CssPathmindStyles.HIGHLIGHT_LABEL)
+                        LabelFactory.createLabel(columnText, CssPathmindStyles.HIGHLIGHT_LABEL)
                 );
             } else {
                 searchResultColumn.add(parts[i]);
@@ -204,12 +202,12 @@ public class SearchResultItem extends VerticalLayout {
         searchResultColumn.addClassName("highlighted-text-wrapper");
         return searchResultColumn;
     }
-	
-	@Override
-	protected void onAttach(AttachEvent evt) {
-		VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
-			createdDateComponent.setText("Created: "+DateAndTimeUtils.formatDateAndTimeShortFormatter(searchResult.getCreateDate(), timeZoneId));
-			lastActivityDateComponent.setText("Last Activity: "+DateAndTimeUtils.formatDateAndTimeShortFormatter(searchResult.getUpdateDate(), timeZoneId));
-		});
-	}
+
+    @Override
+    protected void onAttach(AttachEvent evt) {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(evt.getUI(), timeZoneId -> {
+            createdDateComponent.setText("Created: " + DateAndTimeUtils.formatDateAndTimeShortFormatter(searchResult.getCreateDate(), timeZoneId));
+            lastActivityDateComponent.setText("Last Activity: " + DateAndTimeUtils.formatDateAndTimeShortFormatter(searchResult.getUpdateDate(), timeZoneId));
+        });
+    }
 }

@@ -1,11 +1,11 @@
 package io.skymind.pathmind.shared.data;
 
+import java.io.Serializable;
+
 import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +19,6 @@ public class MetricsRaw implements Serializable, DeepCloneableInterface<MetricsR
 
     @Override
     public MetricsRaw shallowClone() {
-        return new MetricsRaw(agent,iteration, episode, index, value);
+        return new MetricsRaw(agent, iteration, episode, index, value);
     }
 }

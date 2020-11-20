@@ -1,12 +1,12 @@
 package io.skymind.pathmind.webapp.bus.events.main;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class PolicyUpdateBusEvent implements PathmindBusEvent {
 
@@ -18,20 +18,25 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
             throw new IllegalStateException("There is no policy");
         }
         policies.forEach(policy -> {
-            if (policy.getRun() == null)
+            if (policy.getRun() == null) {
                 throw new IllegalStateException("Run is null");
-            if (policy.getExperiment() == null)
+            }
+            if (policy.getExperiment() == null) {
                 throw new IllegalStateException("Experiment is null");
-            if (policy.getModel() == null)
+            }
+            if (policy.getModel() == null) {
                 throw new IllegalStateException("Model is null");
-            if (policy.getProject() == null)
+            }
+            if (policy.getProject() == null) {
                 throw new IllegalStateException("Project is null");
+            }
         });
 
         experiment = policies.get(0).getExperiment();
 
-        if(policies.stream().anyMatch(policy -> policy.getExperiment().getId() != experiment.getId()))
+        if (policies.stream().anyMatch(policy -> policy.getExperiment().getId() != experiment.getId())) {
             throw new IllegalStateException("One of the policies is for a different experiment");
+        }
 
         this.policies = policies;
     }
@@ -52,6 +57,7 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
+
     public PolicyUpdateBusEvent cloneForEventBus() {
         return new PolicyUpdateBusEvent(policies.stream()
                 .map(policy -> policy.deepClone())

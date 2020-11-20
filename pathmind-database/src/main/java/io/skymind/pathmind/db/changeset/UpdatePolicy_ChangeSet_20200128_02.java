@@ -1,5 +1,14 @@
 package io.skymind.pathmind.db.changeset;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
@@ -17,18 +26,9 @@ import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * This is to separate out the RewardScore from the Policy Json String progress into it's own RewardScore table.
- *
+ * <p>
  * IMPORTANT -> This changeset is complete self contained so that any refactoring in the code base does NOT affect this code
  * change. This INCLUDES constants, etc.
  * NOTE -> I'm using JDBC because it's not possible to use JOOQ because of the order in which the changeset and JOOQ files are generated.
@@ -37,11 +37,9 @@ import java.util.stream.Collectors;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200128_02 implements CustomSqlChange, CustomSqlRollback
-{
+public class UpdatePolicy_ChangeSet_20200128_02 implements CustomSqlChange, CustomSqlRollback {
     @Override
-    public SqlStatement[] generateStatements(Database database) throws CustomChangeException
-    {
+    public SqlStatement[] generateStatements(Database database) throws CustomChangeException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         List<Changeset20200110Policy> policies = getPoliciesFromDatabase(connection);
@@ -49,23 +47,23 @@ public class UpdatePolicy_ChangeSet_20200128_02 implements CustomSqlChange, Cust
         policies.parallelStream()
                 .filter(policy -> StringUtils.isNotEmpty(policy.getProgress()))
                 .map(policy -> {
-                        try {
-                            Changeset20200110Policy jsonPolicy = OBJECT_MAPPER.readValue(policy.getProgress(), Changeset20200110Policy.class);
-                            String values = jsonPolicy.getRewardProgression().stream()
-                                    .map(rewardScore ->
-                                            policy.getId() + ", " +
-                                                    getDoubleValue(rewardScore.getMin()) + ", " +
-                                                    getDoubleValue(rewardScore.getMean()) + ", " +
-                                                    getDoubleValue(rewardScore.getMax()) + ", " +
-                                                    rewardScore.getIteration())
-                                    .collect(Collectors.joining(",", "(", ")"));
-                            return new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " + values);
-                        } catch (IOException e) {
-                            log.error(e.getMessage(), e);
-                            // Throwing a RuntimeException to stop all the database processing because if there is an exception then we have a bigger issue.
-                            throw new RuntimeException(e.getMessage(), e);
-                        }
-                        // we need to collect first because each map is a List<RawSqlStatement> that then needs to be combined through addAll.
+                    try {
+                        Changeset20200110Policy jsonPolicy = OBJECT_MAPPER.readValue(policy.getProgress(), Changeset20200110Policy.class);
+                        String values = jsonPolicy.getRewardProgression().stream()
+                                .map(rewardScore ->
+                                        policy.getId() + ", " +
+                                                getDoubleValue(rewardScore.getMin()) + ", " +
+                                                getDoubleValue(rewardScore.getMean()) + ", " +
+                                                getDoubleValue(rewardScore.getMax()) + ", " +
+                                                rewardScore.getIteration())
+                                .collect(Collectors.joining(",", "(", ")"));
+                        return new RawSqlStatement("INSERT INTO REWARD_SCORE (POLICY_ID, MIN, MEAN, MAX, ITERATION) VALUES " + values);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                        // Throwing a RuntimeException to stop all the database processing because if there is an exception then we have a bigger issue.
+                        throw new RuntimeException(e.getMessage(), e);
+                    }
+                    // we need to collect first because each map is a List<RawSqlStatement> that then needs to be combined through addAll.
                 }).toArray(SqlStatement[]::new);
         return new SqlStatement[]{new RawSqlStatement("")};
     }
@@ -77,17 +75,17 @@ public class UpdatePolicy_ChangeSet_20200128_02 implements CustomSqlChange, Cust
     // Rollback is not required as we just delete the new RewardScore table in the liquibase xml but for completeness it's added anyways.
     @Override
     public SqlStatement[] generateRollbackStatements(Database database) throws CustomChangeException, RollbackImpossibleException {
-        return new SqlStatement[] {};
+        return new SqlStatement[]{};
     }
 
     private List<Changeset20200110Policy> getPoliciesFromDatabase(Connection connection) throws CustomChangeException {
         List<Changeset20200110Policy> policies = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, PROGRESS FROM POLICY")) {
             ResultSet result = preparedStatement.executeQuery();
-            while(result.next()) {
+            while (result.next()) {
                 policies.add(new Changeset20200110Policy(
-                            result.getLong("ID"),
-                            result.getString("PROGRESS")));
+                        result.getLong("ID"),
+                        result.getString("PROGRESS")));
             }
             return policies;
         } catch (SQLException e) {

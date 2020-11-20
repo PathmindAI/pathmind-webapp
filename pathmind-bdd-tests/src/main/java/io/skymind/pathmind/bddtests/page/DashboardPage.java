@@ -1,5 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
@@ -11,8 +13,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-
-import java.util.List;
 
 @DefaultUrl("page:home.page")
 public class DashboardPage extends PageObject {
@@ -70,7 +70,7 @@ public class DashboardPage extends PageObject {
 
     private String dashboardLineXPathPrefix(String projectName, String modelName) {
         return String.format("//*[@class='breadcrumb' and text()='%s']/following-sibling::span[text()='%s']/ancestor::*[@class='dashboard-line']",
-            projectName, modelName);
+                projectName, modelName);
     }
 
     public void clickInAutotestProjectStageBreadcrumb(String projectName) {
@@ -92,21 +92,21 @@ public class DashboardPage extends PageObject {
     }
 
     public void checkDashboardBeginScreenElements() {
-        WebElement emptyDashboardShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".welcome-text")).getText(), is("Welcome to"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector(".logo")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("h3")).getText(), is("Using AI may be easier than you think:"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("ul")).getText(), is("Upload a zip file of the simulation model to Pathmind. Download zip file\nWrite a reward function (It's simple, just copy and past this: reward = after.goalReached - 0.1; ).\nOnce training is complete, click on “Export Policy”.\nLoad the trained AI into AnyLogic to see it perform."));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("i")).getText(), is("(For more detailed information, please see our tutorial.)"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("li:nth-child(1) a")).getAttribute("href"), is("https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("i a")).getAttribute("href"), is("http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getText(), is("Create Your First Project Now"));
-        assertThat(emptyDashboardShadow.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getAttribute("href"), containsString("newProject"));
+        WebElement emptyDashboardElement = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector(".welcome-text")).getText(), is("Welcome to"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector(".logo")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("h3")).getText(), is("Using AI may be easier than you think:"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("ul")).getText(), is("Upload a zip file of the simulation model to Pathmind. Download zip file\nWrite a reward function (It's simple, just copy and paste this: reward = after.goalReached - 0.1; ).\nOnce training is complete, click on “Export Policy”.\nLoad the trained AI into AnyLogic to see it perform."));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("i")).getText(), is("(For more detailed information, please see our tutorial.)"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("li:nth-child(1) a")).getAttribute("href"), is("https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("i a")).getAttribute("href"), is("http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getText(), is("Create Your First Project Now"));
+        assertThat(emptyDashboardElement.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getAttribute("href"), containsString("newProject"));
     }
 
     public void clickDashboardCreateYourFirstProjectBtn() {
-        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
         element.findElement(By.cssSelector(".button-link")).click();
     }
 
@@ -121,18 +121,18 @@ public class DashboardPage extends PageObject {
 
     public void checkDashboardPageProjectIsFavoriteTrue(String projectName, String experimentName, Boolean favoriteStatus) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='" + experimentName + "']/preceding-sibling::a[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
-        if (favoriteStatus){
+        if (favoriteStatus) {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star"));
-        }else {
+        } else {
             assertThat(favoriteStarShadow.findElement(By.cssSelector("iron-icon")).getAttribute("icon"), is("vaadin:star-o"));
         }
     }
 
     public void clickDashboardPageFavoriteButton(String projectName, String experimentName) {
         waitABit(3500);
-        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='"+experimentName+"']/preceding-sibling::a[@class='breadcrumb' and text()='"+projectName+"']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
+        WebElement favoriteStarShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='breadcrumb' and text()='" + experimentName + "']/preceding-sibling::a[@class='breadcrumb' and text()='" + projectName + "']/parent::vaadin-horizontal-layout/following-sibling::favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).click();
     }

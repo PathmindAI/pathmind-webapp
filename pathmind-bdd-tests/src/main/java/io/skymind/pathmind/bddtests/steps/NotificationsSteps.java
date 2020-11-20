@@ -16,6 +16,7 @@ public class NotificationsSteps {
     public void checkThatNewVersionNotificationTextIs(String text) {
         notifications.checkThatNewVersionNotificationTextIs(text);
     }
+
     @Step
     public void clickInNotificationSignOutButton() {
         notifications.clickInNotificationSignOutButton();

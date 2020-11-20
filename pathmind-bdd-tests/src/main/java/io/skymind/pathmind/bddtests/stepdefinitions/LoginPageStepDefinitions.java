@@ -1,21 +1,21 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.util.Date;
+import java.util.List;
+
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.EmailApi;
+import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.steps.LoginPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
-import io.skymind.pathmind.bddtests.EmailApi;
-import io.skymind.pathmind.bddtests.Utils;
-
-import java.util.Date;
-import java.util.List;
 
 public class LoginPageStepDefinitions {
 
@@ -258,5 +258,10 @@ public class LoginPageStepDefinitions {
     @When("^Click sign-up about us button$")
     public void clickSignUpAboutUsButton() {
         loginPageSteps.clickSignUpAboutUsButton();
+    }
+
+    @Then("^Check that verification email page opened$")
+    public void checkThatVerificationEmailPageOpened() {
+        loginPageSteps.checkThatVerificationEmailPageOpened();
     }
 }

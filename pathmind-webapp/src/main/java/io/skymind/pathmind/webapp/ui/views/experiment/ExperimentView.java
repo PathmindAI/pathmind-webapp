@@ -1,9 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -15,11 +19,20 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.dao.*;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ObservationDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
+import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -29,39 +42,39 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.simulationMetrics.SimulationMetricsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentCreatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.model.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.views.model.components.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.views.model.components.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
@@ -69,18 +82,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>
-{
+public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
@@ -97,9 +107,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Policy bestPolicy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-
-    private List<Observation> modelObservations = new ArrayList<>();
-    private List<Observation> experimentObservations = new ArrayList<>();
 
     private UserCaps userCaps;
 
@@ -126,8 +133,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
-	@Autowired
-	private ObservationDAO observationDAO;
+    @Autowired
+    private ObservationDAO observationDAO;
     @Autowired
     protected PolicyDAO policyDAO;
     @Autowired
@@ -148,9 +155,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
 
-    // REFACTOR -> Temporary placeholder until I finish the merging
-    private ExperimentViewRunUpdateSubscriber experimentViewRunUpdateSubscriber;
-
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -163,20 +167,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected ExperimentView() {
         super();
         addClassName("experiment-view");
-        experimentViewRunUpdateSubscriber = new ExperimentViewRunUpdateSubscriber(this, () -> getUI());
     }
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getViewSubscribers());
+        EventBus.subscribe(this, () -> getUI(),
+                getViewSubscribers());
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(() -> getUI(), this),
-                experimentViewRunUpdateSubscriber,
-                new ExperimentViewExperimentCreatedSubscriber(() -> getUI()),
-                new ExperimentViewExperimentUpdatedSubscriber(() -> getUI()));
+                new ExperimentViewPolicyUpdateSubscriber(this),
+                new ExperimentViewRunUpdateSubscriber(this),
+                new ExperimentViewExperimentCreatedSubscriber(this),
+                new ExperimentViewExperimentUpdatedSubscriber(this),
+                new ExperimentViewExperimentChangedViewSubscriber(this),
+                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -192,7 +198,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected Component getMainContent() {
-        panelTitle = LabelFactory.createLabel("Experiment #"+experiment.getName(), SECTION_TITLE_LABEL);
+        panelTitle = LabelFactory.createLabel("Experiment #" + experiment.getName(), SECTION_TITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
@@ -220,7 +226,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 WrapperUtils.wrapWidthFullHorizontal(
                         WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                                 panelTitle, archivedLabel, sharedWithSupportLabel),
-                                downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
+                        downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
                 stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,
@@ -242,9 +248,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupExperimentContentPanel() {
-        codeViewer = new CodeViewer();
+        codeViewer = new CodeViewer(() -> getUI(), experiment);
         rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
+                LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
         );
 
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
@@ -252,11 +258,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
 
         rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
 
-        observationsPanel = new ObservationsPanel(true);
-        observationsPanel.setupObservationTable(modelObservations, experimentObservations);
+        observationsPanel = new ObservationsPanel(experiment, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
@@ -267,8 +272,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", click -> {
             synchronized (experimentLock) {
-                if(!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator))
+                if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
                     return;
+                }
                 trainingService.startRun(experiment);
                 segmentIntegrator.restartTraining();
                 initLoadData();
@@ -317,7 +323,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected Component[] getActionButtonList() {
-        return new Button[] {
+        return new Button[]{
                 unarchiveExperimentButton,
                 restartTraining,
                 stopTrainingButton,
@@ -326,7 +332,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private HorizontalLayout getBottomPanel() {
-        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
+        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 experimentChartsPanel,
                 notesField);
@@ -335,23 +341,29 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return bottomPanel;
     }
 
-    private void showStopTrainingConfirmationDialog() {
-        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
-                trainingService.stopRun(experiment);
-                segmentIntegrator.stopTraining();
-                stopTrainingButton.setVisible(false);
-                fireEvents();
-        });
+    private Breadcrumbs createBreadcrumbs() {
+        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
-    private void fireEvents() {
-        // An event for each policy since we only need to update some of the policies in a run.
-        if(experiment.getPolicies() != null && !experiment.getPolicies().isEmpty())
-            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
-        // Send run updated event, meaning that all policies under the run is updated.
-        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+    private ExperimentNotesField createViewNotesField() {
+        return new ExperimentNotesField(
+                () -> getUI(),
+                "Notes",
+                experiment,
+                updatedNotes -> {
+                    experimentDAO.updateUserNotes(experimentId, updatedNotes);
+                    segmentIntegrator.updatedNotesExperimentView();
+                }
+        );
+    }
+
+    private void showStopTrainingConfirmationDialog() {
+        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
+            trainingService.stopRun(experiment);
+            segmentIntegrator.stopTraining();
+            stopTrainingButton.setVisible(false);
+            fireEvents();
+        });
     }
 
     private void unarchiveExperiment() {
@@ -362,20 +374,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         });
     }
 
-    private Breadcrumbs createBreadcrumbs() {
-        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-    }
+    /************************************** UI element creations are above this line **************************************/
 
-    private ExperimentNotesField createViewNotesField() {
-        return new ExperimentNotesField(
-            () -> getUI(),
-            "Notes",
-            experiment,
-            updatedNotes -> {
-                experimentDAO.updateUserNotes(experimentId, updatedNotes);
-                segmentIntegrator.updatedNotesExperimentView();
-            }
-        );
+    private void fireEvents() {
+        // An event for each policy since we only need to update some of the policies in a run.
+        if (experiment.getPolicies() != null && !experiment.getPolicies().isEmpty()) {
+            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
+        }
+        // Send run updated event, meaning that all policies under the run is updated.
+        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
+        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
+        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
     @Override
@@ -383,38 +392,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.experimentId = experimentId;
     }
 
-    private void selectExperiment(Experiment selectedExperiment) {
+    public void setExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        // REFACTOR -> STEPH -> We mix and match between experiment and selectedExperiment all over the place. Here and in the loadExperiment method,.
-        // REFACTOR -> STEPH -> Finish moving this code to ExperimentChangedViewSubscriber (See https://github.com/SkymindIO/pathmind-webapp/issues/2259)
         synchronized (experimentLock) {
-            experiment = experimentDAO.getExperiment(selectedExperiment.getId())
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-            experimentViewRunUpdateSubscriber.setExperiment(selectedExperiment);
-            experimentId = selectedExperiment.getId();
-            loadExperimentData();
-            notesField.setNotesText(experiment.getUserNotes());
-            // Check is needed for the shared experiment view which has no breadcrumb.
-            if(pageBreadcrumbs != null)
-                pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-            if(isShowNavBar())
-                experimentsNavbar.setCurrentExperiment(selectedExperiment);
-
             if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
                 getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
             } else {
+                experiment = getExperimentForUser(selectedExperiment.getId())
+                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+                loadExperimentData();
                 getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+
                 updateScreenComponents();
             }
-        }
-    }
-
-    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
-        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
-            ui.navigate(NewExperimentView.class, targetExperiment.getId());
-        } else {
-            ui.navigate(ExperimentView.class, targetExperiment.getId());
         }
     }
 
@@ -424,13 +415,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // we will no longer have to retrieve the user information when loading this page.
         experiment = getExperimentForUser()
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        experimentViewRunUpdateSubscriber.setExperiment(experiment);
         loadExperimentData();
     }
 
-    // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
     protected Optional<Experiment> getExperimentForUser() {
         return experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId());
+    }
+
+    // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
+    protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
+        return experimentDAO.getExperimentIfAllowed(specificExperimentId, SecurityUtils.getUserId());
     }
 
     private void loadExperimentData() {
@@ -439,13 +433,13 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-		modelObservations = observationDAO.getObservationsForModel(experiment.getModelId());
-		experimentObservations = observationDAO.getObservationsForExperiment(experimentId);
+        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
+        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                                .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
+                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
     }
 
@@ -460,9 +454,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
-        // Part of a bigger refactoring. The goal is to eventually remove the selectExperiment code and use the ExperimentChangedViewSubscriber
+        // Part of a bigger refactoring. The goal is to eventually remove the setExperiment code and use the ExperimentChangedViewSubscriber
         // instead because the logic and code is not the same between loading the initial screen and when updateScreenComponents is called. There's
-        // a mix of logic and code between selectExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
+        // a mix of logic and code between setExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
         // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
         // load and any event updates as well as experiment select.
         updateScreenComponents();
@@ -471,19 +465,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     protected void updateScreenComponents() {
         clearErrorState();
         setSharedWithSupportComponents();
-        if(isShowNavBar())
+        if (isShowNavBar()) {
             experimentsNavbar.setVisible(!experiment.isArchived());
-        panelTitle.setText("Experiment #"+experiment.getName());
-        if (ModelUtils.isValidModel(experiment.getModel())) {
-            codeViewer.setValue(experiment.getRewardFunction());
-        } else {
-            codeViewer.setValue(experiment.getRewardFunction(), rewardVariables);
-            if(isShowNavBar())
-                experimentsNavbar.setAllowNewExperimentCreation(false);
         }
-        observationsPanel.setSelectedObservations(experimentObservations);
+        panelTitle.setText("Experiment #" + experiment.getName());
+        // Check is needed for the shared experiment view which has no breadcrumb.
+        if (pageBreadcrumbs != null) {
+            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+        }
+        if (!ModelUtils.isValidModel(experiment.getModel()) && isShowNavBar()) {
+            experimentsNavbar.setAllowNewExperimentCreation(false);
+        }
         updateDetailsForExperiment();
-        experimentChartsPanel.setupCharts(experiment, rewardVariables);
         trainingStatusDetailsPanel.setExperiment(experiment);
     }
 
@@ -510,8 +503,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                     .ifPresent(pair -> {
                         this.updateUIForError(pair.getLeft(), pair.getRight());
                     });
-        }
-        else {
+        } else {
             ExperimentUtils.getEarlyStopReason(experiment)
                     .ifPresent(reason -> {
                         String label = reason.isSuccess() ? SUCCESS_LABEL : WARNING_LABEL;
@@ -530,26 +522,20 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         restartTraining.setVisible(false);
     }
 
-    public void updateExperimentComponents() {
+    public void updateExperimentComponentsForSubscribers() {
         // REFACTOR -> We will want to adjust this code as it's performing a database call on almost all eventbus events which is both
         // a potential performance issue as well as cause potential multi-threading issues (racing conditions).
         experiments = experimentDAO.getExperimentsForModel(modelId, false);
 
         if (experiments.isEmpty()) {
             Model model = modelService.getModel(modelId)
-					.orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-
-            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
+                    .orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
+            getUI().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
         } else {
             boolean selectedExperimentWasArchived = experiments.stream()
                     .noneMatch(e -> e.getId() == experimentId);
-            if (selectedExperimentWasArchived) {
-                Experiment newSelectedExperiment = experiments.get(0);
-                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
-            }
-            else {
-                PushUtils.push(getUI(), ui -> selectExperiment(experiment));
-            }
+            Experiment targetExperiment = selectedExperimentWasArchived ? experiments.get(0) : experiment;
+            setExperiment(targetExperiment);
         }
     }
 
@@ -570,45 +556,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return experiment;
     }
 
-    protected class ExperimentViewExperimentCreatedSubscriber extends ExperimentCreatedSubscriber {
-
-        public ExperimentViewExperimentCreatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentCreatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentCreatedBusEvent event) {
-            return ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experiments, modelId);
-        }
-
+    public long getModelId() {
+        return modelId;
     }
 
-    class ExperimentViewExperimentUpdatedSubscriber extends ExperimentUpdatedSubscriber {
-
-        public ExperimentViewExperimentUpdatedSubscriber(Supplier<Optional<UI>> getUISupplier) {
-            super(getUISupplier);
-        }
-
-        @Override
-        public void handleBusEvent(ExperimentUpdatedBusEvent event) {
-            updateExperimentComponents();
-        }
-
-        @Override
-        public boolean filterBusEvent(ExperimentUpdatedBusEvent event) {
-            if (experiment == null) {
-                return false;
-            }
-            if (experiment.isArchived()) {
-                return ExperimentUtils.isSameExperiment(event.getExperiment(), experiment);
-            } else {
-                return ExperimentUtils.isSameModel(experiment, event.getModelId());
-            }
-        }
-    }
 }
