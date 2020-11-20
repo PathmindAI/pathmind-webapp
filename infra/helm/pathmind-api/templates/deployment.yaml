@@ -100,6 +100,8 @@ spec:
               value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"
             - name: SNS_UPDATER_SQS_FILTER_ATTR
               value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
+            - name: API_WEBAPP_URL
+              value: "{{ .Values.env.API_WEBAPP_URL }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
