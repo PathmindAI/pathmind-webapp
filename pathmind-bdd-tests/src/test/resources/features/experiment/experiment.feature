@@ -102,3 +102,21 @@ Feature: Experiment page
     Then Check side bar experiments list Experiment #1,Experiment #2,Experiment #3
     When Open tab 0
     Then Check side bar experiments list Experiment #1,Experiment #2
+
+  Scenario: Check notes autosave on experiment page
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Add note Experiment 1 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Wait a bit 3000 ms
+    When Add note Experiment 2 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Click side bar experiment Experiment #1
+    When Wait a bit 3000 ms
+    Then Check experiment notes is Experiment 1 Note
+    When Click side bar experiment Experiment #2
+    When Wait a bit 3000 ms
+    Then Check experiment notes is Experiment 2 Note
