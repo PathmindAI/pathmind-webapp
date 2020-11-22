@@ -1,5 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.account;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import javax.annotation.PostConstruct;
 
 import com.stripe.model.Subscription;
@@ -16,6 +20,7 @@ import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.security.CurrentUser;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -32,6 +37,8 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 
     private final FeatureManager featureManager;
 
+    private final UserService userService;
+
     @Id("editInfoBtn")
     private Button editInfoBtn;
 
@@ -47,15 +54,21 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     @Id("editPaymentBtn")
     private Button editPaymentBtn;
 
+    @Id("rotateApiKeyBtn")
+    private Button rotateApiKeyBtn;
+
     private StripeService stripeService;
 
     private SegmentIntegrator segmentIntegrator;
 
     private PathmindUser user;
 
+    private final Duration keyValidityDuration;
+
     @Autowired
     public AccountViewContent(
-            CurrentUser currentUser,
+            @Value("${pm.api.key-validity-duration}") Duration keyValidityDuration,
+            CurrentUser currentUser, UserService userService,
             @Value("${pathmind.contact-support.address}") String contactLink,
             @Value("${pathmind.privacy-policy.url}") String privacyPolicyLink,
             @Value("${pathmind.terms-of-use.url}") String termsOfUseLink,
@@ -68,6 +81,8 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         getModel().setTermsOfUseLink(termsOfUseLink);
         user = currentUser.getUser();
         this.featureManager = featureManager;
+        this.userService = userService;
+        this.keyValidityDuration = keyValidityDuration;
     }
 
     @PostConstruct
@@ -87,6 +102,29 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 
         upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class)));
         cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription(subscription));
+        rotateApiKeyBtn.addClickListener(evt -> rotateApiKey());
+    }
+
+    private void rotateApiKey() {
+        userService.rotateApiKey(user);
+        user = userService.getCurrentUser();
+        setApiKey(user.getApiKey());
+    }
+
+    private void setApiKey(String apiKey) {
+        getModel().setApiKey(apiKey);
+        String expiresPhrase;
+        long daysToExpire = LocalDateTime.now().until(user.getApiKeyCreatedAt().plus(keyValidityDuration), ChronoUnit.DAYS);
+        if (daysToExpire < 0) {
+            expiresPhrase = "Expired. Please rotate.";
+        } else if (daysToExpire == 0) {
+            expiresPhrase = "Expires today";
+        } else if (daysToExpire == 1) {
+            expiresPhrase = "Expires tomorrow";
+        } else {
+            expiresPhrase = "Expires in " + daysToExpire + " days";
+        }
+        getModel().setApiKeyExpiresPhrase(expiresPhrase);
     }
 
     // This part will probably move to a separate view, but for now implementing it as a confirmation dialog
@@ -106,6 +144,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         getModel().setEmail(user.getEmail());
         getModel().setFirstName(user.getFirstname());
         getModel().setLastName(user.getLastname());
+        setApiKey(user.getApiKey());
         getModel().setSubscription(subscription != null ? "Professional" : "Early Access");
         if (subscription != null && subscription.getCancelAtPeriodEnd()) {
             getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
@@ -122,6 +161,10 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         void setFirstName(String firstName);
 
         void setLastName(String lastName);
+
+        void setApiKey(String apiKey);
+
+        void setApiKeyExpiresPhrase(String apiKeyExpiresPhrase);
 
         void setSubscription(String subscription);
 

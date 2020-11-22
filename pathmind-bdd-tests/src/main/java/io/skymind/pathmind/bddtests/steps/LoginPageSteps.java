@@ -172,4 +172,9 @@ public class LoginPageSteps {
     public void checkHeaderUsername(String name) {
         loginPage.checkHeaderUsername(name);
     }
+
+    @Step
+    public void checkThatVerificationEmailPageOpened() {
+        loginPage.checkThatVerificationEmailPageOpened();
+    }
 }

@@ -101,7 +101,7 @@ public class HomePage extends PageObject {
     }
 
     public void clickGettingStartedGuideButton() {
-        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
         element.findElement(By.cssSelector("i a")).click();
     }
 

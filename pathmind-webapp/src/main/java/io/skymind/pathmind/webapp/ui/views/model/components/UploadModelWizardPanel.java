@@ -27,6 +27,7 @@ import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigation
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
@@ -130,7 +131,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
                     model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
                 } else {
                     MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
-                    model.setFile(UploadUtils.ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
+                    model.setFile(ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
                 }
                 fileCheckerCommand.execute();
                 log.info("Upload completed");

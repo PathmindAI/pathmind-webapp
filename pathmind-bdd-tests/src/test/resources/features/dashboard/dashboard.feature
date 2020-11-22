@@ -23,7 +23,7 @@ Feature: Dashboard page
     When Check that new project page opened
     When Click in 'Projects' button
     When Click Getting Started tutorial button
-    Then Check that learn page https://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic opened
+    Then Check that learn page http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic opened
 
 #   @smoke
 #   Scenario: Check start page with the getting started message user see after login

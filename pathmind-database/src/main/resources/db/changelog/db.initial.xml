@@ -1846,4 +1846,22 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="2193-01" author="alexander.makarov@toptal.com">
+        <comment>Pathmind API</comment>
+        <sql>create extension if not exists "uuid-ossp";</sql>
+        <addColumn tableName="PATHMIND_USER">
+            <column name="API_KEY" type="text" defaultValueComputed="uuid_generate_v4()">
+                <constraints unique="true" nullable="false" uniqueConstraintName="PATHMIND_USER_API_KEY_UNQ"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="PATHMIND_USER">
+            <column name="API_KEY_CREATED_AT" type="datetime" defaultValueComputed="now()">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <createIndex tableName="PATHMIND_USER" indexName="PATHMIND_USER_API_KEY_CREATED_AT_IDX">
+            <column name="API_KEY_CREATED_AT" />
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
