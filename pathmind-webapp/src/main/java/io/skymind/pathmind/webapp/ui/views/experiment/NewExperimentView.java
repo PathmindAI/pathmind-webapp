@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
@@ -34,7 +32,6 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -48,36 +45,33 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.RewardFunctionErrorPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.subscribers.view.ExperimentNotesFieldExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -100,7 +94,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
-    private RewardFunctionErrorPanel rewardFunctionErrorPanel;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private ExperimentsNavBar experimentsNavbar;
@@ -108,7 +101,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Span panelTitleText;
     private Span unsavedChanges;
     private Span notesSavedHint;
-    private Span rewardEditorErrorLabel;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -117,6 +109,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
     private UserCaps userCaps;
+
+    private boolean isNeedsSaving = false;
 
     @Autowired
     private ModelService modelService;
@@ -140,7 +134,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private ModelCheckerService modelCheckerService;
 
     private Breadcrumbs pageBreadcrumbs;
-    private Binder<Experiment> binder;
 
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
@@ -153,13 +146,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, () -> getUI(),
+        EventBus.subscribe(this, getUISupplier(),
                 new NewExperimentViewExperimentCreatedSubscriber(this),
                 new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentStartTrainingSubscriber(this),
+                new NewExperimentViewExperimentSwitchedViewSubscriber(this),
                 new NewExperimentViewExperimentChangedViewSubscriber(this),
-                new ObservationsPanelExperimentChangedViewSubscriber(observationDAO, observationsPanel),
-                new ExperimentNotesFieldExperimentChangedViewSubscriber(notesField));
+                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
@@ -176,13 +169,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected Component getMainContent() {
         HorizontalLayout mainContent = createMainPanel();
-        binder = new Binder<>(Experiment.class);
-        setupBinder();
         return mainContent;
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(() -> getUI(), experimentDAO, policyDAO, experiment, experiments, segmentIntegrator);
+        experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, experiments, segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
@@ -195,7 +186,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
         saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
         }));
-        setButtonsEnablement();
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
@@ -216,12 +206,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
         notesSavedHint.setVisible(false);
 
-        VerticalLayout rewardFnEditorWrapper = getRewardFnEditorPanel();
-        rewardFnEditorWrapper.addClassName("reward-fn-editor-panel");
+        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experiment, rewardVariables, rewardValidationService);
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
-        rewardVariablesTable = new RewardVariablesTable(() -> getUI());
+        rewardVariablesTable = new RewardVariablesTable(getUISupplier());
         VerticalLayout rewardVariablesPanel = WrapperUtils
                 .wrapVerticalWithNoPaddingOrSpacing(
                         LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
@@ -231,18 +220,17 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         observationsPanel = new ObservationsPanel(experiment, false);
         observationsPanel.addValueChangeListener(evt -> {
             if (observationsPanel.getExperiment().equals(experiment)) {
-                setButtonsEnablement();
+                setNeedsSaving();
             }
         });
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
-                rewardFnEditorWrapper,
+                rewardFunctionEditor,
                 rewardVariablesPanel,
                 observationsPanel);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
-        rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
         HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(
-                rewardFunctionErrorPanel,
+                rewardFunctionEditor.getRewardFunctionErrorPanel(),
                 createNotesField());
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
@@ -262,48 +250,25 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return panelsWrapper;
     }
 
-    private VerticalLayout getRewardFnEditorPanel() {
-        rewardFunctionEditor = new RewardFunctionEditor();
-        rewardFunctionEditor.addValueChangeListener(changeEvent -> {
-            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
-            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionEditor.getValue(),
-                    rewardVariables);
-            rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
-
-            setButtonsEnablement();
-        });
-        rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
-        rewardEditorErrorLabel.setVisible(false);
-        VerticalLayout rewardFnEditorPanel = WrapperUtils
-                .wrapVerticalWithNoPaddingOrSpacing(WrapperUtils.wrapWidthFullBetweenHorizontal(
-                        LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
-                        rewardEditorErrorLabel), rewardFunctionEditor);
-        if (experiment.isArchived()) {
-            rewardFnEditorPanel.setEnabled(false);
-        }
-        return rewardFnEditorPanel;
-    }
-
     private Breadcrumbs createBreadcrumbs() {
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
     private ExperimentNotesField createNotesField() {
         notesField = new ExperimentNotesField(
+                getUISupplier(),
                 "Notes",
                 experiment,
-                updatedNotes -> {},
+                updatedNotes -> {
+                    experimentDAO.updateUserNotes(notesField.getExperiment().getId(), updatedNotes);
+                    segmentIntegrator.addedNotesNewExperimentView();
+                },
                 false,
                 true
         );
+
         notesField.setPlaceholder("Add Notes (optional)");
-        notesField.setOnNotesChangeHandler(() -> {
-            if (notesField.getExperiment().equals(experiment)) {
-                setButtonsEnablement();
-                setNotes();
-            }
-        });
+        notesField.setOnNotesChangeHandler(() -> setNeedsSaving());
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
         }
@@ -313,48 +278,33 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     /************************************** UI element creations are above this line **************************************/
 
     private boolean canStartTraining() {
-        if (rewardFunctionEditor == null || observationsPanel == null) {
-            return false;
-        }
+//        if (rewardFunctionEditor == null || observationsPanel == null) {
+//            return false;
+//        }
         return ModelUtils.isValidModel(experiment.getModel())
-                && rewardFunctionEditor.getOptionalValue().isPresent() && !rewardFunctionEditor.getValue().isEmpty()
-                && rewardFunctionErrors.size() == 0
+                && rewardFunctionEditor.isValidForTraining()
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
-                && canSaveDataInDB()
                 && !experiment.isArchived();
     }
 
-    private boolean canSaveDataInDB() {
-        return rewardFunctionEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
-    }
+//    private boolean experimentDetailsHasChanged() {
+//        if (rewardFunctionEditor == null || observationsPanel == null) {
+//            return false;
+//        }
+//        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
+//                !observationsPanel.getSelectedObservations().equals(experiment.getSelectedObservations()) ||
+//                !notesField.getNotesText().equals(notesField.getExperiment().getUserNotes());
+//    }
 
-    private boolean experimentDetailsHasChanged() {
-        if (rewardFunctionEditor == null || observationsPanel == null) {
-            return false;
-        }
-        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
-                !observationsPanel.getSelectedObservations().equals(experiment.getSelectedObservations()) ||
-                !notesField.getNotesText().equals(experiment.getUserNotes());
-    }
-
-    private void setButtonsEnablement() {
-        boolean hasChanged = experimentDetailsHasChanged();
-        if (unsavedChanges != null) {
-            unsavedChanges.setVisible(hasChanged);
-        }
+    public void setNeedsSaving() {
+        isNeedsSaving = true;
+        unsavedChanges.setVisible(true);
+        saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
         startRunButton.setEnabled(canStartTraining());
-        saveDraftButton.setEnabled(hasChanged && canSaveDataInDB());
-    }
-
-    private void setupBinder() {
-        // To allow saving when the reward function editor is empty,
-        // the field is not set to forField(...).asRequired().bind(...)
-        binder.forField(rewardFunctionEditor).bind(Experiment::getRewardFunction,
-                Experiment::setRewardFunction);
     }
 
     private void handleStartRunButtonClicked() {
-        if (!FormUtils.isValidForm(binder, experiment)) {
+        if (!rewardFunctionEditor.validateBinder()) {
             return;
         }
         if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
@@ -375,18 +325,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
         experimentDAO.updateExperiment(experiment);
+        experimentDAO.updateUserNotes(notesField.getExperiment().getId(), notesField.getNotesText());
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
         disabledSaveDraft();
         NotificationUtils.showSuccess("Draft successfully saved");
+        isNeedsSaving = false;
         afterClickedCallback.execute();
-    }
-
-    private void setNotes() {
-        if (notesField.getExperiment().equals(experiment)) {
-            experiment.setUserNotes(notesField.getNotesText());
-            segmentIntegrator.addedNotesNewExperimentView();
-        }
     }
 
     private void unarchiveExperiment() {
@@ -429,7 +374,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void triggerSaveDraft(Command cancelListener) {
-        if (unsavedChanges.isVisible()) {
+        if (isNeedsSaving) {
             if (saveDraftButton.isEnabled()) {
                 handleSaveDraftClicked(cancelListener);
             } else {
@@ -441,10 +386,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void errorPopup(Command cancelAction) {
-        Boolean isRewardFunctionTooLong = rewardFunctionEditor.getValue().length() > REWARD_FUNCTION_MAX_LENGTH;
         String header = "Before you leave....";
         String text = "";
-        if (isRewardFunctionTooLong) {
+        if (rewardFunctionEditor.isRewardFunctionMoreThanMaxLength()) {
             text += "Your changes in the reward function cannot be saved because it has exceeded " + REWARD_FUNCTION_MAX_LENGTH + " characters. ";
         }
         text += "Please check and fix the errors.";
@@ -489,12 +433,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void updateScreenComponents() {
-        binder.setBean(experiment);
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitleText.setText("Experiment #" + experiment.getName());
-        experimentDetailsHasChanged();
-        rewardFunctionEditor.setValue(StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction()));
-        rewardFunctionEditor.setVariableNames(rewardVariables);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         disabledSaveDraft();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
@@ -504,20 +444,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
-    }
-
-    private String generateRewardFunction() {
-        StringBuilder sb = new StringBuilder();
-        if (experiment.isHasGoals()) {
-            for (RewardVariable rv : rewardVariables) {
-                GoalConditionType goal = rv.getGoalConditionTypeEnum();
-                if (goal != null) {
-                    sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
-                    sb.append("\n");
-                }
-            }
-        }
-        return sb.toString();
     }
 
     public Experiment getExperiment() {

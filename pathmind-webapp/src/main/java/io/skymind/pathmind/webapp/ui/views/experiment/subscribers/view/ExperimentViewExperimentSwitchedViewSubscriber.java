@@ -1,26 +1,26 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view;
 
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
-public class ExperimentViewExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
+public class ExperimentViewExperimentSwitchedViewSubscriber extends ExperimentSwitchedViewSubscriber {
 
     private ExperimentView experimentView;
 
-    public ExperimentViewExperimentChangedViewSubscriber(ExperimentView experimentView) {
+    public ExperimentViewExperimentSwitchedViewSubscriber(ExperimentView experimentView) {
         super();
         this.experimentView = experimentView;
     }
 
     @Override
-    public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+    public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         experimentView.setExperiment(event.getExperiment());
     }
 
     @Override
-    public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
+    public boolean filterBusEvent(ExperimentSwitchedViewBusEvent event) {
         if (experimentView.getExperiment() == null) {
             return false;
         }
