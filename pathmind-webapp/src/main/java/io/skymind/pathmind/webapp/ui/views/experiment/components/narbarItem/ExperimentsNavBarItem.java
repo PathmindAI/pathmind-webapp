@@ -18,10 +18,10 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
@@ -29,7 +29,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
-import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 @Tag("experiment-navbar-item")
 @JsModule("./src/experiment/experiment-navbar-item.js")
@@ -100,9 +99,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
                 && experiment.isHasGoals()
                 && experiment.isGoalsReached());
         updateGoalStatus(experiment.isGoalsReached());
-        VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-            getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(experiment.getDateCreated(), timeZoneId));
-        });
+        getElement().appendChild(new DatetimeDisplay(experiment.getDateCreated()).getElement());
     }
 
     @Override
@@ -164,8 +161,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setExperimentStatus(String experimentStatus);
 
         void setExperimentName(String experimentName);
-
-        void setCreatedDate(String createdDate);
 
         void setIsCurrent(boolean isCurrent);
 
