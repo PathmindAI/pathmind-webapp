@@ -330,6 +330,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_1_1:
             case VERSION_1_2_0:
             case VERSION_1_3_0:
+            case VERSION_1_4_0:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -339,6 +340,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         String.format("rm ../%s", filename),
                         "mv nativerl-bin/* .",
                         "mv examples/train.sh .",
+                        "mkdir -p com/pathmind/anylogic",
+                        "mv examples/PathmindLearningAgent.java com/pathmind/anylogic",
                         "cd .."));
                 });
 
@@ -355,6 +358,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_5_2:
             case VERSION_8_6_0:
             case VERSION_8_6_1:
+            case VERSION_8_7_0:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -422,6 +426,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_0_2:
             case VERSION_1_2_0:
             case VERSION_1_3_0:
+            case VERSION_1_4_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -438,7 +443,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         instructions.addAll(Arrays.asList(
                 "cd work",
-                "unzip ../model.zip > /dev/null",
+                "unzip -n ../model.zip > /dev/null",
                 "rm ../model.zip"
         ));
     }
