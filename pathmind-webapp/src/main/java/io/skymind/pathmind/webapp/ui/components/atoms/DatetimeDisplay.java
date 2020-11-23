@@ -19,10 +19,22 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 @NpmPackage(value = "timeago.js", version = "4.0.2")
 @JsModule("/src/components/atoms/datetime-display.js")
 public class DatetimeDisplay extends PolymerTemplate<DatetimeDisplay.Model> implements HasStyle {
+
+    private LocalDateTime datetime;
+
     public DatetimeDisplay(LocalDateTime datetime) {
         super();
+        this.datetime = datetime;
         getModel().setDatetime(datetime.toString());
+        setDate();
+        setTooltip();
+    }
+
+    private void setDate() {
         getModel().setDate(formatDateTimeInUserTimezone(datetime, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER));
+    }
+
+    private void setTooltip() {
         getModel().setTooltip(formatDateTimeInUserTimezone(datetime, DateAndTimeUtils.STANDARD_DATE_AND_TIME_FOMATTER));
     }
 
