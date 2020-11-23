@@ -49,8 +49,6 @@ public class RewardFunctionEditor extends VerticalLayout {
 
     private JuicyAceEditor rewardFunctionJuicyAceEditor;
 
-    private RewardValidationService rewardValidationService;
-
     private Binder<Experiment> binder;
 
     private String rewardFunction = "";
@@ -59,7 +57,6 @@ public class RewardFunctionEditor extends VerticalLayout {
         super();
         this.getUISupplier = getUISupplier;
         this.rewardVariables = rewardVariables;
-        this.rewardValidationService = rewardValidationService;
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 

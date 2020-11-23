@@ -91,7 +91,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private List<RewardVariable> rewardVariables;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-    private List<String> rewardFunctionErrors = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
@@ -218,11 +217,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
         observationsPanel = new ObservationsPanel(experiment, false);
-        observationsPanel.addValueChangeListener(evt -> {
-            if (observationsPanel.getExperiment().equals(experiment)) {
-                setNeedsSaving();
-            }
-        });
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFunctionEditor,
@@ -278,23 +272,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     /************************************** UI element creations are above this line **************************************/
 
     private boolean canStartTraining() {
-//        if (rewardFunctionEditor == null || observationsPanel == null) {
-//            return false;
-//        }
         return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.isValidForTraining()
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
                 && !experiment.isArchived();
     }
-
-//    private boolean experimentDetailsHasChanged() {
-//        if (rewardFunctionEditor == null || observationsPanel == null) {
-//            return false;
-//        }
-//        return !experiment.getRewardFunction().equals(rewardFunctionEditor.getValue()) ||
-//                !observationsPanel.getSelectedObservations().equals(experiment.getSelectedObservations()) ||
-//                !notesField.getNotesText().equals(notesField.getExperiment().getUserNotes());
-//    }
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
