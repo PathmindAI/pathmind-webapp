@@ -340,8 +340,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         String.format("rm ../%s", filename),
                         "mv nativerl-bin/* .",
                         "mv examples/train.sh .",
-                        "mkdir -p com/pathmind/anylogic",
-                        "mv examples/PathmindLearningAgent.java com/pathmind/anylogic",
                         "cd .."));
                 });
 
