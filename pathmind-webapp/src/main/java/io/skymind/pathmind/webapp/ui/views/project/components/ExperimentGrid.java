@@ -17,6 +17,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 
@@ -40,7 +41,9 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
-        Grid.Column<Experiment> createdColumn = addColumn(new ZonedDateTimeRenderer<>(Experiment::getDateCreated, DateAndTimeUtils.STANDARD_DATE_AND_TIME_SHORT_FOMATTER))
+        Grid.Column<Experiment> createdColumn = addComponentColumn(experiment -> 
+                new DatetimeDisplay(experiment.getDateCreated())
+        )
                 .setComparator(Comparator.comparing(Experiment::getDateCreated))
                 .setHeader("Created")
                 .setAutoWidth(true)
