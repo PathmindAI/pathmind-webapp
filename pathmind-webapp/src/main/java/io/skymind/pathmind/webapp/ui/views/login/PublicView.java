@@ -15,7 +15,7 @@ public interface PublicView extends HasDynamicTitle, PageConfigurator {
     default void configurePage(InitialPageSettings settings) {
         PageConfigurationUtils.defaultPageConfiguration(settings);
         settings.addInlineWithContents(InitialPageSettings.Position.PREPEND,
-                        "<script src=\"https://www.googleoptimize.com/optimize.js?id=GTM-T2DSBKT\"></script>", InitialPageSettings.WrapMode.NONE);
+                "<script src=\"https://www.googleoptimize.com/optimize.js?id=GTM-T2DSBKT\"></script>", InitialPageSettings.WrapMode.NONE);
         settings.addInlineWithContents(InitialPageSettings.Position.PREPEND,
                 "<style>.async-hide { opacity: 0 !important} </style><script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;" +
                         "h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};" +
