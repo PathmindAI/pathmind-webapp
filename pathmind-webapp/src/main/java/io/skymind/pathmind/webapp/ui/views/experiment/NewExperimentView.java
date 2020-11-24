@@ -420,6 +420,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardVariablesTable.setRewardVariables(rewardVariables);
         disabledSaveDraft();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
+        startRunButton.setEnabled(canStartTraining());
     }
 
     private void disabledSaveDraft() {
