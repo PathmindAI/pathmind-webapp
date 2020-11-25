@@ -119,4 +119,14 @@ public class ModelStepDefinitions {
     public void checkModelTitleLabelTagIsArchived(String tag) {
         modelPageSteps.checkModelTitleLabelTagIsArchived(tag);
     }
+
+    @Then("^Check side bar models '(.*)' date is '(.*)'$")
+    public void checkSideBarModelsDateIs(String model, String date) {
+        modelPageSteps.checkSideBarModelsDateIs(model, date);
+    }
+
+    @Then("^Check model page model '(.*)' created is '(.*)'$")
+    public void checkModelPageCreatedIs(String model, String date) {
+        modelPageSteps.checkModelPageCreatedIs(model, date);
+    }
 }

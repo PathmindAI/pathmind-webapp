@@ -123,4 +123,14 @@ public class ModelPageSteps {
     public void checkModelTitleLabelTagIsArchived(String tag) {
         modelPage.checkModelTitleLabelTagIsArchived(tag);
     }
+
+    @Step
+    public void checkSideBarModelsDateIs(String model, String date) {
+        modelPage.checkSideBarModelsDateIs(model, date);
+    }
+
+    @Step
+    public void checkModelPageCreatedIs(String model, String date) {
+        modelPage.checkModelPageCreatedIs(model, date);
+    }
 }
