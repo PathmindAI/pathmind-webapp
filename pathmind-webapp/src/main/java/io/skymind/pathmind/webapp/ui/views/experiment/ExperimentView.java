@@ -354,7 +354,9 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 updatedNotes -> {
                     experimentDAO.updateUserNotes(experimentId, updatedNotes);
                     segmentIntegrator.updatedNotesExperimentView();
-                }
+                },
+                true,
+                false
         );
     }
 
