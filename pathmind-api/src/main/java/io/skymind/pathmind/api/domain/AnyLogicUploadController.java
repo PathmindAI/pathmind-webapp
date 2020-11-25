@@ -105,8 +105,8 @@ public class AnyLogicUploadController {
                     });
 
             if (project.getPathmindUserId() != pmUser.getUserId()) {
-                log.error("project {} does not belong ot user {}", project.getId(), pmUser.getUserId());
-                throw new AccessDeniedException("project does not belong ot user");
+                log.error("project {} does not belong to user {}", project.getId(), pmUser.getUserId());
+                throw new AccessDeniedException("project does not belong to user");
             }
 
             Model model = new Model();

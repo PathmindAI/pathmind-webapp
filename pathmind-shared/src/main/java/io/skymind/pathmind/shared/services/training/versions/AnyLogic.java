@@ -8,7 +8,8 @@ public enum AnyLogic implements VersionEnum {
     VERSION_8_5_1,
     VERSION_8_5_2,
     VERSION_8_6_0,
-    VERSION_8_6_1;
+    VERSION_8_6_1,
+    VERSION_8_7_0;
 
     @Override
     public List<String> fileNames() {
