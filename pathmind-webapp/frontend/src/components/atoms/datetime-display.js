@@ -8,19 +8,17 @@ class DatetimeDisplay extends PolymerElement {
 
     static get properties() {
         return {
-            date: {
-                type: String,
-            },
             datetime: {
                 type: String,
+            },
+            date: {
+                type: String,
+                computed: `_computeDate(datetime)`,
+                observer: `_createTooltip`,
             },
             displaytext: {
                 type: String,
                 computed: `_computeDisplayText(datetime)`,
-            },
-            tooltip: {
-                type: String,
-                observer: '_isTooltipChanged',
             },
         }
     }
@@ -53,8 +51,26 @@ class DatetimeDisplay extends PolymerElement {
         register('my-locale', this.localeFunc);
     }
 
-    _isTooltipChanged(newValue) {
-        this.title = newValue;
+    _computeDate(datetime) {
+        return new Date(datetime).toLocaleDateString(window.navigator.language, { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+        });
+    }
+
+    _createTooltip() {
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        this.title = new Date(this.datetime).toLocaleString(window.navigator.language, { 
+            weekday: 'short', 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: userTimezone,
+            timeZoneName: 'short',
+        });
     }
 
     _computeDisplayText(datetime) {
