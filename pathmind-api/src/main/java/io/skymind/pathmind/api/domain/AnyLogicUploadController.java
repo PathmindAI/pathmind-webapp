@@ -114,7 +114,7 @@ public class AnyLogicUploadController {
             StatusUpdaterImpl status = new StatusUpdaterImpl();
             projectFileCheckService.checkFile(status, model).get(); // here we need to wait
             if (StringUtils.isNoneEmpty(status.getError())) {
-                throw new IllegalStateException(status.getError());
+                throw new FileCheckException(status.getError());
             }
             FileCheckResult result = status.getResult();
             if (result == null) {
@@ -147,6 +147,9 @@ public class AnyLogicUploadController {
                     .toUri();
 
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
+        } catch (FileCheckException fce) {
+            log.error("Validation failed on fileCheck call", fce);
+            throw fce;
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
             throw new RuntimeException("failed to process zip file", e);
@@ -173,6 +176,13 @@ public class AnyLogicUploadController {
         @Override
         public void fileSuccessfullyVerified(FileCheckResult result) {
             this.result = result;
+        }
+    }
+
+    // TODO: replace this exception on model upload refactoring
+    public static class FileCheckException extends RuntimeException {
+        public FileCheckException(String message) {
+            super(message);
         }
     }
 

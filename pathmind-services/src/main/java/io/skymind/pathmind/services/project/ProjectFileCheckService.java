@@ -16,8 +16,8 @@ import java.util.concurrent.Future;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model needs to be uploaded again.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model or Pathmind Helper may need to be updated.";
+    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS + " Please read <a target='_blank' href='%s'>this article</a> or contact Pathmind support.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
