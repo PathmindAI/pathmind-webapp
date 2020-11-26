@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.plugins;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -9,18 +7,49 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
 import elemental.json.Json;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.ArchivableData;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.security.PathmindUserDetails;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ACCOUNT_UPGRADE;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ARCHIVED;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CANCEL_SUBSCRIPTION;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHANGE_PW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_FIRST_PROJECT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_DOWNLOAD_MODEL_ALP;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EDIT_INFO;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ERROR_PAGE;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXPORT_POLICY;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_RESTART_TRAINING;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SEARCHED_SITE;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SIGN_UP;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_START_TRAINING;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_STOP_TRAINING;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UNARCHIVED;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENT_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_MODELS_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_USER_RUN_CAP_LIMIT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFICATION_EMAIL;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFY_EMAIL;
 
 /**
  * SegmentIntegrator component is client side counter part of <code>SegmentTrackerService</code>
- * This component runs on user browser, and tracks user event using Segment JS API 
+ * This component runs on user browser, and tracks user event using Segment JS API
  */
 @SpringComponent
 @UIScope
@@ -29,112 +58,102 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> {
 
-	private String sourceKey;
-	private boolean enabled;
-	private PathmindUserDetails user;
+    private String sourceKey;
+    private boolean enabled;
+    private PathmindUserDetails user;
 
-	private static final String EVENT_SIGN_UP = "Sign up";
-	private static final String EVENT_LOGIN = "Login";
-	private static final String EVENT_IMPORT_MODEL = "Import Model";
-	private static final String EVENT_CREATE_PROJECT = "Create Project";
-	private static final String EVENT_CREATE_REWARD_FUNTION = "Create Reward Function";
-    private static final String EVENT_START_TRAINING = "Start Training";
-    private static final String EVENT_STOP_TRAINING = "Stop Training";
-    private static final String EVENT_RESTART_TRAINING = "Restart Training";
-	private static final String EVENT_EXPORT_POLICY = "Export Policy";
-    private static final String EVENT_SAVE_MODEL_DRAFT = "Save Model Draft";
-	private static final String EVENT_DOWNLOAD_MODEL_ALP = "Download Model ALP";
-	private static final String EVENT_SAVE_DRAFT = "Save Draft";
-	private static final String EVENT_CHANGE_PW = "Change Password";
-	private static final String EVENT_EDIT_INFO = "Edit Info";
-	private static final String EVENT_ACCOUNT_UPGRADE = "Account Upgrade";
-	private static final String EVENT_CANCEL_SUBSCRIPTION = "Cancel Subscription";
-	private static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Updated Notes on Models View";
-	private static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Updated Notes on Experiments View";
-	private static final String EVENT_UPDATED_NOTES_EXPERIMENT_VIEW = "Updated Notes on Experiment View";
-	private static final String EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW = "Added Notes on Upload Model View";
-    private static final String EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW = "Added Notes on New Experiment View";
-    private static final String EVENT_SEARCHED_SITE = "Performed a search using search box";
-	private static final String EVENT_USER_RUN_CAP_LIMIT = "User Run Cap Limit";
-	private static final String EVENT_ERROR_PAGE = "Error page displayed";
-	private static final String EVENT_ARCHIVED = "Archived";
-	private static final String EVENT_UNARCHIVED = "Unarchived";
-    private static final String EVENT_NEW_EXPERIMENT = "New Experiment";
+    public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
+                             @Value("${skymind.segment.enabled}") Boolean enabled) {
+        this.sourceKey = key;
+        this.enabled = enabled;
+    }
 
-	public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
-			@Value("${skymind.segment.enabled}") Boolean enabled) {
-		this.sourceKey = key;
-		this.enabled = enabled;
-	}
+    public void userLoggedIn() {
+        track(EVENT_LOGIN);
+    }
 
-	public void userLoggedIn() {
-		track(EVENT_LOGIN);
-	}
+    public void userRegistered(PathmindUser user) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("userId", user.getId());
+        additionalInfo.put("userName", user.getName());
+        additionalInfo.put("userEmail", user.getEmail());
+        track(EVENT_SIGN_UP, additionalInfo);
+    }
 
-	public void userRegistered() {
-		track(EVENT_SIGN_UP);
-	}
+    public void verificationEmailSent() {
+        track(EVENT_VERIFICATION_EMAIL);
+    }
 
-	public void modelImported(boolean result) {
-		JsonObject additionalInfo = Json.createObject();
-		additionalInfo.put("result", result ? "success" : "failed");
-		track(EVENT_IMPORT_MODEL, additionalInfo);
-	}
+    public void emailVerified(PathmindUser user) {
+        JsonObject additionalInfo = Json.createObject();
+        if (user != null) {
+            additionalInfo.put("userId", user.getId());
+            additionalInfo.put("userName", user.getName());
+            additionalInfo.put("userEmail", user.getEmail());
+        }
+        track(EVENT_VERIFY_EMAIL, additionalInfo);
+    }
 
-	public void projectCreated() {
-		track(EVENT_CREATE_PROJECT);
-	}
+    public void modelImported(boolean result) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("result", result ? "success" : "failed");
+        track(EVENT_IMPORT_MODEL, additionalInfo);
+    }
 
-	public void rewardFuntionCreated() {
-		track(EVENT_CREATE_REWARD_FUNTION);
-	}
+    public void createFirstProject() {
+        track(EVENT_CREATE_FIRST_PROJECT);
+    }
 
-	public void policyExported() {
-		track(EVENT_EXPORT_POLICY);
-	}
+    public void projectCreated() {
+        track(EVENT_CREATE_PROJECT);
+    }
 
-	public void draftSaved() {
-		track(EVENT_SAVE_DRAFT);
-	}
+    public void policyExported() {
+        track(EVENT_EXPORT_POLICY);
+    }
 
-	public void modelDraftSaved() {
-		track(EVENT_SAVE_MODEL_DRAFT);
-	}
+    public void draftSaved() {
+        track(EVENT_SAVE_EXPERIMENT_DRAFT);
+    }
 
-	public void passwordChanged() {
-		track(EVENT_CHANGE_PW);
-	}
+    public void modelDraftSaved() {
+        track(EVENT_SAVE_MODEL_DRAFT);
+    }
 
-	public void infoEdited() {
-		track(EVENT_EDIT_INFO);
-	}
+    public void passwordChanged() {
+        track(EVENT_CHANGE_PW);
+    }
 
-	public void accountUpgraded() {
-		track(EVENT_ACCOUNT_UPGRADE);
-	}
-	
-	public void subscriptionCancelled() {
-		track(EVENT_CANCEL_SUBSCRIPTION);
-	}
+    public void infoEdited() {
+        track(EVENT_EDIT_INFO);
+    }
 
-	public void updatedNotesModelsView() {
-		track(EVENT_UPDATED_NOTES_MODELS_VIEW);
-	}
+    public void accountUpgraded() {
+        track(EVENT_ACCOUNT_UPGRADE);
+    }
 
-	public void updatedNotesExperimentsView() {
-		track(EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW);
-	}
+    public void subscriptionCancelled() {
+        track(EVENT_CANCEL_SUBSCRIPTION);
+    }
 
-	public void updatedNotesExperimentView() {
-		track(EVENT_UPDATED_NOTES_EXPERIMENT_VIEW);
-	}
+    public void updatedNotesModelsView() {
+        track(EVENT_UPDATED_NOTES_MODELS_VIEW);
+    }
 
-	public void addedNotesUploadModelView() {
-		track(EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW);
-	}
+    public void updatedNotesExperimentsView() {
+        track(EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW);
+    }
 
-	public void addedNotesNewExperimentView() {
-		track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
+    public void updatedNotesExperimentView() {
+        track(EVENT_UPDATED_NOTES_EXPERIMENT_VIEW);
+    }
+
+    public void addedNotesUploadModelView() {
+        track(EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW);
+    }
+
+    public void addedNotesNewExperimentView() {
+        track(EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW);
     }
 
     public void performedSearch() {
@@ -160,14 +179,14 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     public void downloadedALP() {
         track(EVENT_DOWNLOAD_MODEL_ALP);
     }
-    
+
     public void archived(Class<? extends ArchivableData> objectClass, boolean isArchived) {
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("type", objectClass.getSimpleName().toLowerCase());
-        String event = isArchived ? EVENT_ARCHIVED : EVENT_UNARCHIVED; 
+        String event = isArchived ? EVENT_ARCHIVED : EVENT_UNARCHIVED;
         track(event, additionalInfo);
     }
-    
+
     public void userRunCapLimitReached(PathmindUserDetails user, UserMetrics.UserCapType userCapType, int percentage) {
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("userId", user.getId());
@@ -177,7 +196,7 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         additionalInfo.put("percentage", percentage);
         track(EVENT_USER_RUN_CAP_LIMIT, additionalInfo);
     }
-    
+
     public void errorPageDisplayed(String location, String exceptionMessage) {
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("location", location);
@@ -185,42 +204,44 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_ERROR_PAGE, additionalInfo);
     }
 
-	private void track(String event) {
-		track(event, Json.createObject());
-	}
+    private void track(String event) {
+        track(event, Json.createObject());
+    }
 
-	private void track(String event, JsonObject props) {
-		if (enabled) {
-			getElement().callJsFunction("track", event, props);
-		} else {
-			log.info("Segment integration is disabled, not sending " + event + " track event");
-		}
-	}
-	private void page() {
-		if (enabled) {
-			getElement().callJsFunction("page");
-		} else {
-			log.info("Segment integration is disabled, not sending page visit");
-		}
-	}
+    private void track(String event, JsonObject props) {
+        if (enabled) {
+            getElement().callJsFunction("track", event, props);
+        } else {
+            log.info("Segment integration is disabled, not sending " + event + " track event");
+        }
+    }
 
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		if (enabled) {
-			getModel().setSourceKey(sourceKey);
-			if (user == null && user != SecurityUtils.getUser()) {
-				user = SecurityUtils.getUser();
-				getModel().setUser(new SegmentUser(user));
-			}
-			page();
-		} else {
-			log.info("Segment integration is disabled, not sending page visit");
-		}
-	}
+    private void page() {
+        if (enabled) {
+            getElement().callJsFunction("page");
+        } else {
+            log.info("Segment integration is disabled, not sending page visit");
+        }
+    }
 
-	public interface Model extends TemplateModel {
-		void setSourceKey(String key);
-		void setUser(SegmentUser user);
-	}
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        if (enabled) {
+            getModel().setSourceKey(sourceKey);
+            if (user == null && user != SecurityUtils.getUser()) {
+                user = SecurityUtils.getUser();
+                getModel().setUser(new SegmentUser(user));
+            }
+            page();
+        } else {
+            log.info("Segment integration is disabled, not sending page visit");
+        }
+    }
+
+    public interface Model extends TemplateModel {
+        void setSourceKey(String key);
+
+        void setUser(SegmentUser user);
+    }
 
 }

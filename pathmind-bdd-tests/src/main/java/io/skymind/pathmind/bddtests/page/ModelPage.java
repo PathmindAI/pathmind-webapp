@@ -21,8 +21,6 @@ import static org.hamcrest.Matchers.*;
 @DefaultUrl("page:home.page")
 public class ModelPage extends PageObject {
 
-    @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Archive']")
-    private WebElement archiveBtnShadow;
     @FindBy(xpath = "//vaadin-grid//vaadin-button[@title='Unarchive']")
     private WebElement unarchiveBtnShadow;
     @FindBy(xpath = "//*[@class='breadcrumb']")
@@ -37,15 +35,15 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelTitlePackageNameIs(String packageName) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='page-content-header']/descendant::span[@class='section-title-label']")).getText().split("[()]")[1], is(packageName));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-split-layout/descendant::span[@class='section-title-label project-title-label']")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
         assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Actions']/ancestor::p"))), is(actions));
     }
 
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
-        assertThat(utils.getTextRootElement(getDriver().findElement(By.xpath("//span[text()='Observations']/ancestor::p"))), is(observations));
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='observations-panel-wrapper']//span[@class='observation-label']")).size(), is(observations));
     }
 
     public void checkModelPageModelDetailsRewardVariablesOrder() {
@@ -61,7 +59,7 @@ public class ModelPage extends PageObject {
     public void checkModelPageModelDetailsRewardVariablesIs(String commaSeparatedVariableNames) {
         List<String> items = Arrays.asList(commaSeparatedVariableNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//div[@class='model-reward-variables']/descendant::span[@class]"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//*[@class='reward-variable-name']"))) {
             actual.add(webElement.getText());
         }
 
@@ -86,13 +84,12 @@ public class ModelPage extends PageObject {
 
     public void clickExperimentArchiveButton() {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(archiveBtnShadow);
-        e.findElement(By.cssSelector("button")).click();
+        getDriver().findElement(By.xpath("//*[@class='experiment-name']/following-sibling::vaadin-button")).click();
     }
 
     public void clickModelPageExperimentArchiveBtn(String experiment, String archive) {
         waitABit(2000);
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + "']/following-sibling::vaadin-grid-cell-content/descendant::vaadin-button[@title='" + archive + "']")));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + "']/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button[@title='" + archive + "']")));
         e.findElement(By.cssSelector("button")).click();
     }
 
@@ -104,7 +101,6 @@ public class ModelPage extends PageObject {
 
     public void checkThatModelsPageOpened() {
         assertThat(getDriver().getCurrentUrl(), containsString("/model/"));
-        assertThat(getDriver().getTitle(), is("Pathmind | Model"));
     }
 
     public void clickProjectPageNewExperimentButton() {
@@ -122,17 +118,15 @@ public class ModelPage extends PageObject {
         assertThat(strings, hasItem("Model #1 (coffeeshop)"));
     }
 
-    public void checkExperimentModelStatusIsStarting(String status) {
-        List<String> strings = new ArrayList<>();
-        for (WebElement e : experimentModelsNames) {
-            strings.add(e.getText());
-        }
-        assertThat(strings, hasItem(status));
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status-text"), is(status));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status"), is("loading"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("title"), is(status));
     }
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         waitABit(3000);
-        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[4]")), is(note));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[3]")), is(note));
     }
 
     public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
@@ -173,5 +167,9 @@ public class ModelPage extends PageObject {
             assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getAttribute("hidden"), is("true"));
             resetImplicitTimeout();
         }
+    }
+
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='model-wrapper']/descendant::span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
     }
 }

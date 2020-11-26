@@ -18,7 +18,6 @@ Feature: Check Model Details package name field
     When Open projects page
     When Open project <project name> on projects page
     Then Check project page model '1' package name is <package name>
-    When Click the model name 1
     Then Check model page model title package name is <package name>
     Then Check model page model breadcrumb package name is <package name>
 

@@ -7,6 +7,7 @@ import io.skymind.pathmind.shared.data.Model;
 public class ModelMock extends Model {
     private LocalDateTime dateCreated = Constants.mockDate();
     private LocalDateTime lastActivityDate = Constants.mockDate();
+
     public ModelMock() {
         setId(123);
         setName("1");

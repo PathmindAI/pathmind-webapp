@@ -1,5 +1,9 @@
 package io.skymind.pathmind.db.dao;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
@@ -9,10 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static java.text.MessageFormat.format;
 import static java.util.Objects.nonNull;
@@ -27,22 +27,28 @@ public class PolicyDAO {
     }
 
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
-        Optional<Policy> optionalPolicy  = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+        Optional<Policy> optionalPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
         optionalPolicy
                 .ifPresent(policy -> policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId)));
         return optionalPolicy;
     }
 
-    public List<Policy> getPoliciesForExperiment(long experimentId) {
-        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
-        Map<Long, List<Metrics>> metricsMap = getMetricsForPolicies(DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setMetrics(metricsMap.get(policy.getId())));
-        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(ctx, DataUtils.convertToIds(policies));
-        policies.stream().forEach(policy -> policy.setMetricsRaws(metricsRawMap.get(policy.getId())));
-
+    public List<Policy> getPoliciesForExperiment(DSLContext context, long experimentId) {
+        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(context, experimentId);
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(context, DataUtils.convertToIds(policies));
+        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(context, DataUtils.convertToIds(policies));
+        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(context, DataUtils.convertToIds(policies));
+        policies.forEach(policy -> {
+            long id = policy.getId();
+            policy.setScores(rewardScores.get(id));
+            policy.setMetrics(metricsMap.get(id));
+            policy.setMetricsRaws(metricsRawMap.get(id));
+        });
         return policies;
+    }
+
+    public List<Policy> getPoliciesForExperiment(long experimentId) {
+        return getPoliciesForExperiment(ctx, experimentId);
     }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {

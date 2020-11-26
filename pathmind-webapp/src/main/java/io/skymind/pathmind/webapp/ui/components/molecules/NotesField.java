@@ -20,10 +20,15 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     private Consumer<String> saveConsumer;
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
+        this(title, notesText, saveConsumer, false);
+    }
+
+    public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean compact) {
         this.saveConsumer = saveConsumer;
         setNotesText(notesText);
         getModel().setTitle(title);
         getModel().setMax(MAX_NOTES_SIZE);
+        setCompact(compact);
     }
 
     public void setNotesText(String notesText) {
@@ -39,6 +44,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setReadonly(readonly);
     }
 
+    public void setCompact(Boolean compact) {
+        getModel().setCompact(compact);
+    }
+
     @EventHandler
     private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
@@ -52,13 +61,21 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         return !Objects.equals(updatedNotesText, notesText) && updatedNotesText.length() <= MAX_NOTES_SIZE;
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setTitle(String title);
+
         void setPlaceholder(String placerholder);
+
         void setNotes(String notes);
+
         void setWarning(Boolean warning);
+
         void setUnsaved(Boolean unsaved);
+
         void setMax(Integer max);
+
         void setReadonly(Boolean readonly);
-	}
+
+        void setCompact(Boolean compact);
+    }
 }

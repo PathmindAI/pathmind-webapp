@@ -1,8 +1,5 @@
 package io.skymind.pathmind.services.project;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.tika.Tika;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +11,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
 
 @Slf4j
 public class FileUtils {

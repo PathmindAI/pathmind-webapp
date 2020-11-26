@@ -7,7 +7,7 @@ public class Routes {
 
     public static final String LOGIN_URL = "sign-in";
     public static final String LOGIN_PROCESSING_URL = "sign-in";
-    
+
     public static final String LOGOUT_URL = "sign-out";
     public static final String LOGOUT_SUCCESS_URL = "";
     public static final String SESSION_EXPIRED = "session-expired";
@@ -28,7 +28,7 @@ public class Routes {
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
-    public static final String MODEL_URL = "model";
+    public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT_URL = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";

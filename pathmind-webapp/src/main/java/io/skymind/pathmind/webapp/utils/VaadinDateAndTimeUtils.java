@@ -8,21 +8,21 @@ import com.vaadin.flow.function.SerializableConsumer;
  */
 public class VaadinDateAndTimeUtils {
 
-	/**
-	 * Calls retrieveExtendedClientDetails to read the userTimeZone from client.
-	 * This call is done in an async way, and the value is cached by Page, so for each UI, the call is done only once.
-	 * <br>
-	 * If userTimeZone is available in cache, executes the timeZoneConsumer immediately,
-	 * otherwise, it's executed after userTimeZone is read from client side
-	 */
-	public static void withUserTimeZoneId(UI ui, SerializableConsumer<String> timeZoneConsumer) {
-		ui.getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
-	}
+    /**
+     * Calls retrieveExtendedClientDetails to read the userTimeZone from client.
+     * This call is done in an async way, and the value is cached by Page, so for each UI, the call is done only once.
+     * <br>
+     * If userTimeZone is available in cache, executes the timeZoneConsumer immediately,
+     * otherwise, it's executed after userTimeZone is read from client side
+     */
+    public static void withUserTimeZoneId(UI ui, SerializableConsumer<String> timeZoneConsumer) {
+        ui.getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
+    }
 
-	/**
-	 * Gets the TimeZoneId from client browser
-	 */
-	public static String getUserTimeZoneId() {
-		return UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
-	}
+    /**
+     * Gets the TimeZoneId from client browser
+     */
+    public static String getUserTimeZoneId() {
+        return UI.getCurrent().getInternals().getExtendedClientDetails().getTimeZoneId();
+    }
 }

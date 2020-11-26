@@ -1,41 +1,42 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemExperimentUpdatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.NavBarItemRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
-
-import java.util.Optional;
-import java.util.function.Supplier;
 
 @Tag("experiment-navbar-item")
 @JsModule("./src/experiment/experiment-navbar-item.js")
 public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
 
     @Id("experimentLink")
-    private RouterLink experimentLink;
+    private Anchor experimentLink;
 
     private ExperimentsNavBar experimentsNavbar;
     private Supplier<Optional<UI>> getUISupplier;
@@ -54,9 +55,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.segmentIntegrator = segmentIntegrator;
 
         if (ExperimentUtils.isDraftRunType(experiment)) {
-            experimentLink.setRoute(NewExperimentView.class, experiment.getId());
+            experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
         } else {
-            experimentLink.setRoute(ExperimentView.class, experiment.getId());
+            experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
         }
 
         UI.getCurrent().getUI().ifPresent(ui -> setExperimentDetails(ui, experiment));
@@ -81,7 +82,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        ConfirmationUtils.archive("Experiment #"+experiment.getName(), () -> {
+        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
             ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
             segmentIntegrator.archived(Experiment.class, true);
             ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
@@ -91,6 +92,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void setExperimentDetails(UI ui, Experiment experiment) {
         RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         getModel().setStatus(getIconStatus(overallExperimentStatus));
+        getModel().setStatusText(overallExperimentStatus.toString());
         getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
@@ -105,11 +107,14 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        if(experiment.isArchived())
+        if (experiment.isArchived()) {
             return;
-        EventBus.subscribe(this,
-                new NavBarItemExperimentUpdatedSubscriber(getUISupplier, this),
-                new NavBarItemRunUpdateSubscriber(getUISupplier, this));
+        }
+        EventBus.subscribe(this, getUISupplier,
+                new NavBarItemExperimentFavoriteSubscriber(this),
+                new NavBarItemExperimentUpdatedSubscriber(this),
+                new NavBarItemRunUpdateSubscriber(this),
+                new NavBarItemNotificationExperimentStartTrainingSubscriber(this));
     }
 
     @Override
@@ -118,16 +123,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private String getIconStatus(RunStatus status) {
-        if(ExperimentUtils.isDraftRunType(experiment))
-            return "pencil";
-        if (RunStatus.isRunning(status)) {
-            return "loading";
-        } else if (status == RunStatus.Completed) {
-            return "check";
-        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
-            return "stopped";
-        }
-        return "exclamation";
+        return ExperimentUtils.getIconStatus(experiment, status);
     }
 
     private void updateGoalStatus(Boolean goalStatus) {
@@ -148,6 +144,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     private void updateStatus(RunStatus runStatus) {
         getModel().setStatus(getIconStatus(runStatus));
+        getModel().setStatusText(runStatus.toString());
     }
 
     public void updateExperiment(Experiment experiment) {
@@ -163,15 +160,25 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
-	public interface Model extends TemplateModel {
+    public interface Model extends TemplateModel {
         void setExperimentStatus(String experimentStatus);
+
         void setExperimentName(String experimentName);
+
         void setCreatedDate(String createdDate);
+
         void setIsCurrent(boolean isCurrent);
+
         void setIsDraft(boolean isDraft);
+
         void setIsFavorite(boolean isFavorite);
-        void setStatus(String IconStatus);
+
+        void setStatus(String iconStatus);
+
+        void setStatusText(String statusText);
+
         void setShowGoals(boolean showGoals);
+
         void setGoalsReached(boolean goalsReached);
     }
 }

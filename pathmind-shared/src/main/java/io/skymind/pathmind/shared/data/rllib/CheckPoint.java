@@ -1,5 +1,8 @@
 package io.skymind.pathmind.shared.data.rllib;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
@@ -8,9 +11,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Setter;
-
-import java.io.File;
-import java.io.IOException;
 
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,7 +27,7 @@ public class CheckPoint {
 
     public long getLastUpdateTime() {
         // ray returns time for seconds
-        return ((long)(last_update_time * 1000));
+        return ((long) (last_update_time * 1000));
     }
 
     public String getId() {

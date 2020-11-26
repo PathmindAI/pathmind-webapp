@@ -1,15 +1,17 @@
 package io.skymind.pathmind.bddtests.steps;
 
 import io.skymind.pathmind.bddtests.page.ModelPage;
+import io.skymind.pathmind.bddtests.page.ProjectPage;
 import net.thucydides.core.annotations.Step;
 
 public class ModelPageSteps {
 
     private ModelPage modelPage;
+    private ProjectPage projectPage;
 
     @Step
     public void clickTheModelName(String modelName) {
-        modelPage.clickTheModelName(modelName);
+        projectPage.clickModelFromLeftSidebar(modelName);
     }
 
     @Step
@@ -23,7 +25,7 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void checkModelPageModelDetailsObservationsIs(String observations) {
+    public void checkModelPageModelDetailsObservationsIs(int observations) {
         modelPage.checkModelPageModelDetailsObservationsIs(observations);
     }
 
@@ -78,8 +80,8 @@ public class ModelPageSteps {
     }
 
     @Step
-    public void checkExperimentModelStatusIsStarting(String status) {
-        modelPage.checkExperimentModelStatusIsStarting(status);
+    public void checkExperimentModelStatusIsStarting(String experiment, String status) {
+        modelPage.checkExperimentModelStatusIsStarting(experiment, status);
     }
 
     @Step
@@ -115,5 +117,10 @@ public class ModelPageSteps {
     @Step
     public void checkModelPageModelArchivedTagIsShown(Boolean archived) {
         modelPage.checkModelPageModelArchivedTagIsShown(archived);
+    }
+
+    @Step
+    public void checkModelTitleLabelTagIsArchived(String tag) {
+        modelPage.checkModelTitleLabelTagIsArchived(tag);
     }
 }

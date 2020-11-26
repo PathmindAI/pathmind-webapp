@@ -1,7 +1,7 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import net.thucydides.core.annotations.Step;
 import io.skymind.pathmind.bddtests.page.AccountPage;
+import net.thucydides.core.annotations.Step;
 
 public class AccountPageSteps {
 
@@ -30,5 +30,20 @@ public class AccountPageSteps {
     @Step
     public void checkUserEmailIsCorrect(String email) {
         accountPage.checkUserEmailIsCorrect(email);
+    }
+
+    @Step
+    public void saveAccountPageApiKeyToTheEnvironmentVariable() {
+        accountPage.saveAccountPageApiKeyToTheEnvironmentVariable();
+    }
+
+    @Step
+    public void inputAccountPageFirstName(String firstName) {
+        accountPage.inputAccountPageFirstName(firstName);
+    }
+
+    @Step
+    public void inputAccountPageLastName(String lastName) {
+        accountPage.inputAccountPageLastName(lastName);
     }
 }

@@ -2,6 +2,7 @@ package io.skymind.pathmind.shared.constants;
 
 public enum ViewPermission {
     BASIC_READ("basic:read"),
+    EXTENDED_READ("extended:read"),
     SETTINGS_READ("settings:read");
 
     private final String permission;

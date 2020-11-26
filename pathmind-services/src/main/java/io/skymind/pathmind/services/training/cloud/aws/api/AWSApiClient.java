@@ -1,5 +1,10 @@
 package io.skymind.pathmind.services.training.cloud.aws.api;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
@@ -22,11 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -153,11 +153,12 @@ public class AWSApiClient {
         int retryCount = 3;
 
         SendMessageResult sendMessageResult = sqsClient.sendMessage(send_msg_request);
-        while(!isValidResponse(sendMessageResult) && retryCount-- > 0) {
+        while (!isValidResponse(sendMessageResult) && retryCount-- > 0) {
             log.info("retry submit job for " + jobId);
             try {
                 Thread.sleep(500);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
             sendMessageResult = sqsClient.sendMessage(send_msg_request);
         }
 

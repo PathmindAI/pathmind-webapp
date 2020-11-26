@@ -1,19 +1,17 @@
 package io.skymind.pathmind.webapp.bus.subscribers.main;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 
-import java.util.Optional;
-import java.util.function.Supplier;
 public abstract class RunUpdateSubscriber extends EventBusSubscriber<RunUpdateBusEvent> {
-    public RunUpdateSubscriber(Supplier<Optional<UI>> getUISupplier) {
-        super(getUISupplier);
+
+    public RunUpdateSubscriber() {
+        super();
     }
 
     @Override
-    public  BusEventType getEventType() {
+    public BusEventType getEventType() {
         return BusEventType.RunUpdate;
     }
 }

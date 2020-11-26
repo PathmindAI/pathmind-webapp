@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
@@ -23,8 +22,8 @@ public class SparklineChart extends DataChart {
     private JsonObject createSeries(Boolean showDetails, Integer index) {
         JsonObject series = Json.createObject();
         List<String> colors = ChartUtils.colors();
-        String color = index == null ? "#1a2949" : colors.get(index%10);
-        series.put("0", Json.parse("{'type': 'line','enableInteractivity': "+showDetails+",'color': '"+color+"'}"));
+        String color = index == null ? "#1a2949" : colors.get(index % 10);
+        series.put("0", Json.parse("{'type': 'line','enableInteractivity': " + showDetails + ",'color': '" + color + "'}"));
         series.put("1", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'transparent'}"));
         series.put("2", Json.parse("{'lineWidth': 0,'enableInteractivity': false,'color': 'green'}"));
         return series;
@@ -76,7 +75,7 @@ public class SparklineChart extends DataChart {
         rowItem.set(++i, metricValue);
         String metricValueFormatted = metricRange > 10 ? String.format("%.0f", metricValue) : String.format("%.4f", metricValue);
         if (showDetails) {
-            rowItem.set(++i, "<div><b>Iteration #</b>"+iteration+"<br><b>Mean Metric</b> "+metricValueFormatted+"</div>");
+            rowItem.set(++i, "<div><b>Iteration #</b>" + iteration + "<br><b>Mean Metric</b> " + metricValueFormatted + "</div>");
         }
         if (goalBase != null) {
             rowItem.set(++i, goalBase);
@@ -108,11 +107,11 @@ public class SparklineChart extends DataChart {
 
         double minVal = min.orElse(0);
         double maxVal = max.orElse(0);
-        
+
         Double goalValue = rewardVariable.getGoalValue();
         GoalConditionType goalCondition = rewardVariable.getGoalConditionTypeEnum();
         if (goalValue != null && goalCondition != null) {
-            double valuesRange = maxVal - minVal > 0 ? maxVal - minVal : goalValue*0.1;
+            double valuesRange = maxVal - minVal > 0 ? maxVal - minVal : goalValue * 0.1;
             Boolean isGreaterThan = goalCondition.equals(GoalConditionType.GREATER_THAN_OR_EQUAL);
             if (minVal > goalValue) {
                 if (isGreaterThan) {
@@ -130,7 +129,7 @@ public class SparklineChart extends DataChart {
                 }
             }
         }
-        
+
         String type = "combo";
         Boolean showTooltip = showDetails ? true : null;
         String hAxisTitle = showDetails ? "Iteration" : null;
@@ -143,17 +142,17 @@ public class SparklineChart extends DataChart {
 
         Boolean hasGoal = rewardVariable.getGoalValue() != null && rewardVariable.getGoalConditionTypeEnum() != null;
         setupChart(
-            type,
-            showTooltip,
-            hAxisTitle,
-            vAxisTitle,
-            curveLines,
-            seriesType,
-            series,
-            stacked,
-            viewWindow
+                type,
+                showTooltip,
+                hAxisTitle,
+                vAxisTitle,
+                curveLines,
+                seriesType,
+                series,
+                stacked,
+                viewWindow
         );
         updateData(iterationList, sparklineData, hasGoal, showDetails, rewardVariable, maxVal, minVal);
     }
-    
+
 }

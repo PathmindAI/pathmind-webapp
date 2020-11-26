@@ -1,11 +1,14 @@
+.experiment-view .view-section > vaadin-horizontal-layout:first-child > vaadin-vertical-layout:first-child {
+    flex: 1 0 auto;
+}
+
 .experiment-view .section-title-label {
     flex: 1 0 auto;
     line-height: 1;
 }
 
-.experiment-view .section-title-label + tag-label {
-    align-self: flex-start;
-    margin-left: var(--lumo-space-xs);
+.experiment-view .section-title-label ~ tag-label {
+    margin: var(--lumo-space-xs) 0;
 }
 
 .experiment-view .view-section {
@@ -15,7 +18,6 @@
     background: white;
     border-radius: 0;
     padding: var(--lumo-space-m);
-    overflow: auto; /* For Firefox's clipped wrapper due to Vaadin-chart's unexpected too-wide rendered size */
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout {
@@ -95,6 +97,9 @@
 }
 
 .experiment-view .reward-variable-name {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
     cursor: pointer;
 }
 
@@ -209,7 +214,6 @@
 .experiment-view .buttons-wrapper {
     display: flex;
     justify-content: flex-end;
-    flex-wrap: wrap;
     width: 100%;
 }
 

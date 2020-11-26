@@ -48,12 +48,21 @@ class StatusIcon extends PolymerElement {
             status: {
                 type: String,
                 reflectToAttribute: true,
-            }
+            },
+            statusText: {
+                type: String,
+                reflectToAttribute: true,
+                observer: '_isStatusTextChanged',
+            },
         }
     }
 
     _isEqualTo(status, statusName) {
         return status === statusName;
+    }
+
+    _isStatusTextChanged(newValue) {
+        this.setAttribute("title", newValue);
     }
 }
 

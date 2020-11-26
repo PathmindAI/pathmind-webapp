@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class PathmindNumberUtilsTest {
 
-	@Test
+    @Test
     public void testFormatNumber() {
         Assert.assertEquals("0.000079", PathmindNumberUtils.formatNumber(0.00007858213));
         Assert.assertEquals("0.56", PathmindNumberUtils.formatNumber(0.55823));
@@ -72,7 +72,7 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("0.00", PathmindNumberUtils.setSigFigBasedOnAnotherDouble(0.0, 0.12, 2));
     }
 
-	@Test
+    @Test
     public void testFormatToSigFig() {
         Assert.assertEquals("0", PathmindNumberUtils.formatToSigFig(0.0, 1));
         Assert.assertEquals("145.1", PathmindNumberUtils.formatToSigFig(145.134, 4));
@@ -91,7 +91,7 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("0.0001", PathmindNumberUtils.formatToSigFig(.0001330, 1));
         Assert.assertEquals("5432.1000", PathmindNumberUtils.formatToSigFig(5432.1, 8));
         Assert.assertEquals("0.20", PathmindNumberUtils.formatToSigFig(0.2, 2));
-        
+
         /* Although mathematically this should not happen, the function should still handle it
          * because this function is also used for formatting the number that's passed between double and String
          * which may result in the loss of the end zero in the significant figures.

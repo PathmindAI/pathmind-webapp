@@ -1,12 +1,12 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.io.IOException;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentPageSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.thucydides.core.annotations.Steps;
-
-import java.io.IOException;
 
 public class ExperimentStepDefinitions {
 
@@ -208,5 +208,20 @@ public class ExperimentStepDefinitions {
     @Then("^Check variable '(.*)' is chosen '(.*)'$")
     public void checkVariableGoalReachedIsChosenTrue(String variable, Boolean chosen) {
         experimentPageSteps.checkVariableGoalReachedIsChosenTrue(variable, chosen);
+    }
+
+    @Then("^Check experiment name tag label '(.*)'$")
+    public void checkExperimentNameTagLabel(String label) {
+        experimentPageSteps.checkExperimentNameTagLabel(label);
+    }
+
+    @When("^Save experiment url into the variable '(.*)'$")
+    public void saveExperimentUrlIntoTheVariable(String variable) {
+        experimentPageSteps.saveExperimentUrlIntoTheVariable(variable);
+    }
+
+    @Then("^Check experiment page observation '(.*)' is selected '(.*)'$")
+    public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
+        experimentPageSteps.checkExperimentPageObservationIsSelected(observation, isSelected);
     }
 }

@@ -60,8 +60,8 @@ class ExperimentNavbarItem extends PolymerElement {
                     display: none;
                 }
             </style>
-            <a id="experimentLink">
-                <status-icon status=[[status]]></status-icon>
+            <a id="experimentLink" on-click="handleRowClicked">
+                <status-icon status=[[status]] status-text=[[statusText]]></status-icon>
                 <div class="experiment-name">
                     <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                     <p>Created [[createdDate]]</p>
@@ -105,6 +105,9 @@ class ExperimentNavbarItem extends PolymerElement {
             status: {
                 type: String,
             },
+            statusText: {
+                type: String,
+            },
             showGoals: {
                 type: Boolean,
                 value: false,
@@ -117,8 +120,11 @@ class ExperimentNavbarItem extends PolymerElement {
     
     ready() {
         super.ready();
-        this.addEventListener("click", this.handleRowClicked);
         this.shadowRoot.querySelector("favorite-star").toggleFavorite = this.onFavoriteToggled;
+    }
+
+    handleRowClicked(event) {
+        event.preventDefault();
     }
 
     onArchiveButtonClicked(event) {

@@ -58,6 +58,14 @@ ingress:
       paths: [/:8501:policy-server-product-delivery]
     - host: simple-scheduling.devpathmind.com
       paths: [/:8501:policy-server-simple-scheduling]
+    - host: rail-drl.devpathmind.com
+      paths: [/:8080:policy-server-rail-drl]
+    - host: api.dev.devpathmind.com
+      paths: [/:8081:pathmind-api-dev]
+    - host: api.test.devpathmind.com
+      paths: [/:8081:pathmind-api-test]
+    - host: api.pathmind.com
+      paths: [/:8081:pathmind-api-test]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -77,6 +85,10 @@ ingress:
         - leuphana.devpathmind.com
         - product-delivery.devpathmind.com
         - simple-scheduling.devpathmind.com
+        - rail-drl.devpathmind.com
+        - api.dev.devpathmind.com
+        - api.test.devpathmind.com
+        - api.pathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

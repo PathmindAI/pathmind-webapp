@@ -1,21 +1,21 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.util.Date;
+import java.util.List;
+
 import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.EmailApi;
+import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.steps.LoginPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.thucydides.core.annotations.Steps;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
-import io.skymind.pathmind.bddtests.EmailApi;
-import io.skymind.pathmind.bddtests.Utils;
-
-import java.util.Date;
-import java.util.List;
 
 public class LoginPageStepDefinitions {
 
@@ -74,7 +74,11 @@ public class LoginPageStepDefinitions {
 
     @When("^Open page (.*)$")
     public void openPage(String path) {
-        loginPageSteps.openPage(pathmindUrl + path);
+        if (path.equals("sharedExperimentUrl")) {
+            loginPageSteps.openPage(Serenity.sessionVariableCalled(path).toString().replaceAll("experiment", "sharedExperiment"));
+        } else {
+            loginPageSteps.openPage(pathmindUrl + path);
+        }
     }
 
     @When("^Fill new user form with name (.*), (.*)$")
@@ -102,7 +106,7 @@ public class LoginPageStepDefinitions {
     @When("^Fill temporary email with alias to the new user form$")
     public void fillFormWithEmailAliasFromApi() {
         String email = emailApi.getEmail();
-        String emailAlias = email.substring(0,email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@")+1);
+        String emailAlias = email.substring(0, email.indexOf("@")) + "+" + new Date().getTime() + "@" + email.substring(email.indexOf("@") + 1);
         loginPageSteps.newUserInputEmail(emailAlias);
         Serenity.setSessionVariable("email").to(emailAlias);
     }
@@ -113,17 +117,12 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputEmail(Serenity.sessionVariableCalled("randomNumber") + email);
     }
 
-    @When("^Create new user click sign up button$")
-    public void clickSignUpButton() {
-        loginPageSteps.clickSignUpButton();
-    }
-
-    @When("^Fill new user password (.*)$")
+    @When("^Fill new user password '(.*)'$")
     public void fillNewUserPassword(String password) {
         loginPageSteps.fillNewUserPassword(password);
     }
 
-    @When("^Fill new user confirmation password (.*)$")
+    @When("^Fill new user confirmation password '(.*)'$")
     public void fillNewUserConfirmationPassword(String password) {
         loginPageSteps.fillNewUserConfirmationPassword(password);
     }
@@ -156,11 +155,6 @@ public class LoginPageStepDefinitions {
     @When("^Check create new user page elements$")
     public void checkCreateNewUserPageElements() {
         loginPageSteps.checkCreateNewUserPageElements();
-    }
-
-    @When("^Click create new user cancel btn$")
-    public void clickCreateNewUserCancelBtn() {
-        loginPageSteps.clickCreateNewUserCancelBtn();
     }
 
     @Then("^Check that login page opened$")
@@ -240,7 +234,6 @@ public class LoginPageStepDefinitions {
         loginPageSteps.newUserInputFirstName(firstName);
         loginPageSteps.newUserInputLastName(lastName);
         loginPageSteps.newUserInputEmail(emailApi.getEmail());
-        loginPageSteps.clickSignUpButton();
         loginPageSteps.fillNewUserPassword(password);
         loginPageSteps.fillNewUserConfirmationPassword(password);
         loginPageSteps.createNewUserClickSignInButton();
@@ -255,5 +248,20 @@ public class LoginPageStepDefinitions {
     @And("^Wait for sign-in page anti-flicker script$")
     public void waitForSignInPageAntiFlickerScript() {
         loginPageSteps.waitForSignInPageAntiFlickerScript();
+    }
+
+    @When("^Click sign-up what we offer button$")
+    public void clickSignUpWhatWeOfferButton() {
+        loginPageSteps.clickSignUpWhatWeOfferButton();
+    }
+
+    @When("^Click sign-up about us button$")
+    public void clickSignUpAboutUsButton() {
+        loginPageSteps.clickSignUpAboutUsButton();
+    }
+
+    @Then("^Check that verification email page opened$")
+    public void checkThatVerificationEmailPageOpened() {
+        loginPageSteps.checkThatVerificationEmailPageOpened();
     }
 }

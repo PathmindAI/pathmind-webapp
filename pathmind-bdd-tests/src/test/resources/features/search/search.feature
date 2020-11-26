@@ -86,12 +86,15 @@ Feature: Nav bar search
 
   Scenario: Check search result redirect to project page
     Given Login to the pathmind
-    When Choose search option Project
-    When Input 'AutotestProject' to the notes search field
+    When Input 'Model 1' to the notes search field
+    # Input 'Model 1' to ensure the project has at least one non-draft models
+    # otherwise if the project only has a draft model / no model,
+    # the project page will redirect the user to the upload model page on the server side
     When Click notes search btn
     When Wait for search result page
-    When Click in 'AutotestProject' button
-    When Wait a bit 4000 ms
+    When Wait a bit 3000 ms
+    When Click text contains 'AutotestProject' link
+    When Wait a bit 3000 ms
     Then Check that project page is opened
 
   Scenario: Check search result project name

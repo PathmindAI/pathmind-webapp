@@ -45,3 +45,18 @@
 :host([theme~="goals"][theme~="not-none"]) [part="input-field"] {
     border-radius: var(--lumo-border-radius) 0 0 var(--lumo-border-radius);
 }
+
+:host([theme~="models-nav-bar-select"]) [part="input-field"] {
+    color: var(--lumo-secondary-text-color);
+    background-color: transparent;
+    padding: var(--lumo-space-xxxs) .5rem var(--lumo-space-xxxs) var(--lumo-space-s);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid var(--pm-grey-color-lighter);
+}
+
+:host([theme~="models-nav-bar-select"]:hover) [part="input-field"] {
+    color: var(--lumo-body-text-color);
+    background-color: var(--pm-grey-color-lightest);
+}

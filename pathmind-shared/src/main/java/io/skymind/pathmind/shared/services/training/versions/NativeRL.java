@@ -6,13 +6,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public enum NativeRL implements VersionEnum{
+public enum NativeRL implements VersionEnum {
     @Deprecated
     VERSION_1_0_7,
     VERSION_1_1_0,
     VERSION_1_1_1,
     VERSION_1_2_0,
-    VERSION_1_3_0;
+    VERSION_1_3_0,
+    VERSION_1_4_0;
 
     private static final String baseFileName = "nativerl-%s-SNAPSHOT-bin.zip";
 

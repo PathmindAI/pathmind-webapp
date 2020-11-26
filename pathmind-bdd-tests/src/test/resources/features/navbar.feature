@@ -36,8 +36,6 @@ Feature: Nav bar buttons
     Then Check that projects button highlight is true
     When Open project AutotestProject on projects page
     Then Check that projects button highlight is false
-    Then Click the model name 1
-    Then Check that projects button highlight is false
     Then Click the experiment name 1
     Then Check that projects button highlight is false
     When Click in 'Stop Training' button

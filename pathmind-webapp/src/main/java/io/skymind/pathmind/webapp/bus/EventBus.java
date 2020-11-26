@@ -1,13 +1,22 @@
 package io.skymind.pathmind.webapp.bus;
 
-import com.vaadin.flow.component.Component;
-import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
+
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
+import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import org.springframework.security.concurrent.DelegatingSecurityContextExecutorService;
 
 /**
  * For now I've implemented a custom EventBus for several reasons. Should we need to extend the EventBus then we should
@@ -75,15 +84,20 @@ public class EventBus {
 
     private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
         EXECUTOR_SERVICE.execute(() ->
-                subscriber.handleBusEvent(event.cloneForEventBus()));
+                PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event.cloneForEventBus())));
+    }
+
+    public static void subscribe(Component component, Supplier<Optional<UI>> getUISupplier, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
+        List<EventBusSubscriber> subscribers = new ArrayList<>(Arrays.asList(eventBusSubscribers));
+        subscribers.add(eventBusSubscriber);
+        subscribe(component, getUISupplier, subscribers);
     }
 
     /**
      * The reason for the first single EventBusSubscriber is so that we can get a compile time error in case someone forgets to add one.
      */
-    public static void subscribe(Component component, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {
-        List<EventBusSubscriber> subscribers = new ArrayList<>(Arrays.asList(eventBusSubscribers));
-        subscribers.add(eventBusSubscriber);
+    public static void subscribe(Component component, Supplier<Optional<UI>> getUISupplier, List<EventBusSubscriber> subscribers) {
+        subscribers.stream().forEach(subscriber -> subscriber.setUiSupplier(getUISupplier));
         componentSubscribers.put(component, subscribers);
         subscribers.forEach(subscriber -> subscribe(subscriber));
     }
@@ -95,8 +109,9 @@ public class EventBus {
     public static void unsubscribe(Component component) {
         List<EventBusSubscriber> subscribers = componentSubscribers.get(component);
         componentSubscribers.remove(component);
-        if(subscribers != null)
+        if (subscribers != null) {
             subscribers.forEach(subscriber -> unsubscribe(subscriber));
+        }
     }
 
     private static void unsubscribe(EventBusSubscriber subscriber) {

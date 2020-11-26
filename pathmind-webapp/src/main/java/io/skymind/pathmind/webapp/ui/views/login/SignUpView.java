@@ -1,15 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
-import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import org.springframework.beans.factory.annotation.Value;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
@@ -19,138 +14,106 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
-
+import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.security.UserService;
-import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import org.springframework.beans.factory.annotation.Value;
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
-	@Id("lastName")
-	private TextField lastName;
+    @Id("lastName")
+    private TextField lastName;
 
-	@Id("firstName")
-	private TextField firstName;
+    @Id("firstName")
+    private TextField firstName;
 
-	@Id("email")
-	private TextField email;
+    @Id("email")
+    private TextField email;
 
-	@Id("cancelSignInBtn")
-	private Button cancelSignInBtn;
+    @Id("signIn")
+    private Button signIn;
 
-	@Id("signUp")
-	private Button signUp;
+    @Id("newPassword")
+    private PasswordField newPassword;
 
-	@Id("signIn")
-	private Button signIn;
+    @Id("confirmNewPassword")
+    private PasswordField confirmNewPassword;
 
-	@Id("newPassword")
-	private PasswordField newPassword;
+    @Id("newPassNotes")
+    private VerticalLayout passwordValidationNotes;
 
-	@Id("confirmNewPassword")
-	private PasswordField confirmNewPassword;
+    private final UserService userService;
+    private final EmailNotificationService emailNotificationService;
+    private final SegmentIntegrator segmentIntegrator;
 
-	@Id("newPassNotes")
-	private VerticalLayout passwordValidationNotes;
+    private PathmindUser user;
+    private Binder<PathmindUser> binder;
 
-	@Id("emailPart")
-	private VerticalLayout emailPart;
-
-	@Id("passwordPart")
-	private VerticalLayout passwordPart;
-
-	@Id("policyText")
-	private Div policyText;
-
-	private final UserService userService;
-	private final EmailNotificationService emailNotificationService;
-	private final SegmentIntegrator segmentIntegrator;
-
-	private PathmindUser user;
-	private Binder<PathmindUser> binder;
-
-	public SignUpView(UserService userService, EmailNotificationService emailNotificationService, SegmentIntegrator segmentIntegrator, 
-	        @Value("${pathmind.contact-support.address}") String contactLink) {
-	    this.userService = userService;
-	    this.emailNotificationService = emailNotificationService;
-	    this.segmentIntegrator = segmentIntegrator;
-		getModel().setContactLink(contactLink);
-		user = new PathmindUser();
-		initView();
-		initBinder();
-	}
-	
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		getElement().appendChild(segmentIntegrator.getElement());
+    public SignUpView(UserService userService, EmailNotificationService emailNotificationService, SegmentIntegrator segmentIntegrator,
+                      @Value("${pathmind.contact-support.address}") String contactLink) {
+        this.userService = userService;
+        this.emailNotificationService = emailNotificationService;
+        this.segmentIntegrator = segmentIntegrator;
+        getModel().setContactLink(contactLink);
+        user = new PathmindUser();
+        initView();
+        initBinder();
     }
 
-	private void initView() {
-		emailPart.setSpacing(false);
-		emailPart.setPadding(false);
-		passwordPart.setSpacing(false);
-		passwordPart.setPadding(false);
-		passwordValidationNotes.setSpacing(false);
-		passwordValidationNotes.setPadding(false);
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        getElement().appendChild(segmentIntegrator.getElement());
+    }
 
-		showPassword(false);
+    private void initView() {
+        passwordValidationNotes.setSpacing(false);
+        passwordValidationNotes.setPadding(false);
+        newPassword.setRequired(true);
+        confirmNewPassword.setRequired(true);
 
-		cancelSignInBtn.addClickListener(e -> showPassword(false));
+        signIn.addClickListener(e -> {
+            UserService.PasswordValidationResults validationResults = userService
+                    .validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
 
-		signUp.addClickListener(e -> {
-			if (binder.validate().isOk()) {
-			    showPassword(true);
-			} 
-		});
-
-		signIn.addClickListener(e -> {
-			UserService.PasswordValidationResults validationResults = userService
-					.validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
-
-			if (validationResults.isOk()) {
-				user.setPassword(newPassword.getValue());
-				user = userService.signup(user);
+            if (binder.validate().isOk() && validationResults.isOk()) {
+                user.setPassword(newPassword.getValue());
+                user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
-                segmentIntegrator.userRegistered();
+                segmentIntegrator.userRegistered(user);
                 getUI().ifPresent(ui -> ui.navigate(VerificationEmailSentView.class));
-			} else {
-				newPassword.setInvalid(true);
-				passwordValidationNotes.removeAll();
-				validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
-				confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
-				confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
-			}
+            } else {
+                newPassword.setInvalid(true);
+                passwordValidationNotes.removeAll();
+                validationResults.getPasswordValidationErrors().forEach(message -> passwordValidationNotes.add(new Span(message)));
+                confirmNewPassword.setInvalid(!validationResults.getConfirmPasswordValidationError().isEmpty());
+                confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
+            }
         });
-	}
+    }
 
-	private void showPassword(boolean showPasswordPart) {
-		getModel().setTitle(showPasswordPart ? "Create Password" : "Sign up for a free trial!");
-		emailPart.setVisible(!showPasswordPart);
-		passwordPart.setVisible(showPasswordPart);
-		policyText.setVisible(showPasswordPart);
-	}
+    private void initBinder() {
+        binder = new Binder<>(PathmindUser.class);
+        binder.addStatusChangeListener(evt -> processValidationStatusChange(evt.hasValidationErrors()));
+        PathmindUserBinders.bindEmail(userService, binder, email);
+        PathmindUserBinders.bindFirstName(binder, firstName);
+        PathmindUserBinders.bindLastName(binder, lastName);
 
-	private void initBinder() {
-		binder = new Binder<>(PathmindUser.class);
-		binder.addStatusChangeListener(evt -> processValidationStatusChange(evt.hasValidationErrors()));
-		PathmindUserBinders.bindEmail(userService, binder, email);
-		PathmindUserBinders.bindFirstName(binder, firstName);
-		PathmindUserBinders.bindLastName(binder, lastName);
+        binder.setBean(user);
+    }
 
-		binder.setBean(user);
-	}
-
-	private void processValidationStatusChange(boolean hasValidationErrors) {
-	    getModel().setIsEmailUsed(hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null); 
+    private void processValidationStatusChange(boolean hasValidationErrors) {
+        getModel().setIsEmailUsed(hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null);
     }
 
     public interface Model extends TemplateModel {
-		void setTitle(String title);
-		void setIsEmailUsed(Boolean isEmailUsed);
-		void setContactLink(String contactLink);
-	}
+        void setIsEmailUsed(Boolean isEmailUsed);
+
+        void setContactLink(String contactLink);
+    }
 }

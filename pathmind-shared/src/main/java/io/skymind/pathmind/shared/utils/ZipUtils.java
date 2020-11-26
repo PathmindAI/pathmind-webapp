@@ -1,7 +1,5 @@
 package io.skymind.pathmind.shared.utils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,6 +7,8 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ZipUtils {

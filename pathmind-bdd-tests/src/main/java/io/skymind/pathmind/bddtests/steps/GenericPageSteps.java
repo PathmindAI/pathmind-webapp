@@ -1,10 +1,10 @@
 package io.skymind.pathmind.bddtests.steps;
 
+import java.io.IOException;
+
 import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.thucydides.core.annotations.Step;
-
-import java.io.IOException;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
@@ -21,6 +21,11 @@ public class GenericPageSteps {
     @Step
     public void checkThatButtonDoesntExist(String buttonText) {
         genericPage.checkThatButtonDoesntExist(buttonText);
+    }
+
+    @Step
+    public void clickTextContainsLink(String Text) {
+        genericPage.clickTextContainsLink(Text);
     }
 
     @Step
@@ -142,11 +147,6 @@ public class GenericPageSteps {
     }
 
     @Step
-    public void checkTitleLabelTagIsArchived(String tag) {
-        genericPage.checkTitleLabelTagIsArchived(tag);
-    }
-
-    @Step
     public void compareALPFileWithDownloadedFile(String alpFile) {
         genericPage.compareALPFileWithDownloadedFile(alpFile);
     }
@@ -154,6 +154,11 @@ public class GenericPageSteps {
     @Step
     public void clickPopUpDialogCloseBtn() {
         genericPage.clickPopUpDialogCloseBtn();
+    }
+
+    @Step
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        genericPage.checkThatUnexpectedErrorAlertIsNotShown();
     }
 
     @Step

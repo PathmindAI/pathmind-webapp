@@ -1,5 +1,8 @@
 package io.skymind.pathmind.services.project.rest;
 
+import java.io.File;
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
@@ -7,9 +10,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 

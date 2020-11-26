@@ -35,7 +35,7 @@ public class ProjectPageStepDefinition {
         projectPageSteps.projectPageCheckThatModelsCountIs(modelsCount);
     }
 
-    @When("^Click model '(.*)' archive/unarchive button$")
+    @When("^Click experiment '(.*)' archive/unarchive button$")
     public void clickModelArchiveButton(String model) {
         projectPageSteps.clickModelArchiveButton(model);
     }
@@ -58,5 +58,30 @@ public class ProjectPageStepDefinition {
     @Then("^Check that project page is opened$")
     public void checkThatProjectPageIsOpened() {
         projectPageSteps.checkThatProjectPageIsOpened();
+    }
+
+    @When("^Click archive/unarchive btn model '(.*)' with package name '(.*)' from left sidebar$")
+    public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
+        projectPageSteps.archiveModelWithPackageNameFromLeftSidebar(modelId, packageName);
+    }
+
+    @When("^Change models sidebar list to '(.*)'$")
+    public void changeModelsSidebarListTo(String modelsList) {
+        projectPageSteps.changeModelsSidebarListTo(modelsList);
+    }
+
+    @When("^Check project page model '(.*)' not exist in the sidebar list$")
+    public void checkProjectPageModelNotExistInList(String model) {
+        projectPageSteps.checkProjectPageModelNotExistInList(model);
+    }
+
+    @Then("^Check that models sidebar model '(.*)' contains draft tag '(.*)'$")
+    public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {
+        projectPageSteps.checkThatModelsSidebarModelContainsDraftTagFalse(model, draft);
+    }
+
+    @Then("^Check project title label tag is (.*)$")
+    public void checkProjectTitleLabelTagIsArchived(String tag) {
+        projectPageSteps.checkProjectTitleLabelTagIsArchived(tag);
     }
 }

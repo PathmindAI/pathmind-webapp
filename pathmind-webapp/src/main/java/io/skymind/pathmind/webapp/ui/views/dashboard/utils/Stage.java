@@ -2,33 +2,34 @@ package io.skymind.pathmind.webapp.ui.views.dashboard.utils;
 
 public enum Stage {
 
-	SetUpSimulation(0, "Set up simulation"), 
-	WriteRewardFunction(1, "Write reward function"), 
-	TrainPolicy(2, "Train policy"), 
-	Export(3, "Export"),
-	Completed(4, "Completed");
-	
-	private int id;
-	private String name;
+    SetUpSimulation(0, "Set up simulation"),
+    WriteRewardFunction(1, "Write reward function"),
+    TrainPolicy(2, "Train policy"),
+    Export(3, "Export"),
+    Completed(4, "Completed");
 
-	private Stage(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+    private int id;
+    private String name;
 
-	public String getName() {
-		return name;
-	}
-	public String getNameAfterDone() {
-		if (TrainPolicy.getValue() == id) {
-			return "Training";
-		} else {
-			return getName();
-		}
-	}
+    private Stage(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
-	public int getValue() {
-		return id;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public String getNameAfterDone() {
+        if (TrainPolicy.getValue() == id) {
+            return "Training";
+        } else {
+            return getName();
+        }
+    }
+
+    public int getValue() {
+        return id;
+    }
 
 }

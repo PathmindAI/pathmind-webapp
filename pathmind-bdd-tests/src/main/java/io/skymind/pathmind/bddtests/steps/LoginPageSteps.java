@@ -1,10 +1,10 @@
 package io.skymind.pathmind.bddtests.steps;
 
-import net.thucydides.core.annotations.Step;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.page.HomePage;
 import io.skymind.pathmind.bddtests.page.LoginPage;
-
-import java.util.List;
+import net.thucydides.core.annotations.Step;
 
 import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
@@ -64,11 +64,6 @@ public class LoginPageSteps {
     }
 
     @Step
-    public void clickSignUpButton() {
-        loginPage.clickSignUpButton();
-    }
-
-    @Step
     public void fillNewUserPassword(String password) {
         loginPage.fillNewUserPassword(password);
     }
@@ -96,11 +91,6 @@ public class LoginPageSteps {
     @Step
     public void checkCreateNewUserPageElements() {
         loginPage.checkCreateNewUserPageElements();
-    }
-
-    @Step
-    public void clickCreateNewUserCancelBtn() {
-        loginPage.clickCreateNewUserCancelBtn();
     }
 
     @Step
@@ -166,5 +156,25 @@ public class LoginPageSteps {
     @Step
     public void waitForSignInPageAntiFlickerScript() {
         loginPage.waitForSignInPageAntiFlickerScript();
+    }
+
+    @Step
+    public void clickSignUpWhatWeOfferButton() {
+        loginPage.clickSignUpWhatWeOfferButton();
+    }
+
+    @Step
+    public void clickSignUpAboutUsButton() {
+        loginPage.clickSignUpAboutUsButton();
+    }
+
+    @Step
+    public void checkHeaderUsername(String name) {
+        loginPage.checkHeaderUsername(name);
+    }
+
+    @Step
+    public void checkThatVerificationEmailPageOpened() {
+        loginPage.checkThatVerificationEmailPageOpened();
     }
 }

@@ -1,13 +1,13 @@
 package io.skymind.pathmind.updater;
 
+import java.time.Duration;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-
-import java.time.Duration;
 
 @Component
 @Slf4j
@@ -18,7 +18,7 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
     @Value("${pathmind.updater.interval}")
     private Duration interval;
 
-    public void destroy(){
+    public void destroy() {
         if (runner != null) {
             log.info("Stopping...");
             runner.stop();

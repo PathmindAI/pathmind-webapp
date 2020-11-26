@@ -7,8 +7,9 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 
-import static io.skymind.pathmind.shared.data.user.UserMetrics.*;
-import static io.skymind.pathmind.shared.data.user.UserMetrics.UserCapType.*;
+import static io.skymind.pathmind.shared.data.user.UserMetrics.UserCapType;
+import static io.skymind.pathmind.shared.data.user.UserMetrics.UserCapType.Daily;
+import static io.skymind.pathmind.shared.data.user.UserMetrics.UserCapType.Monthly;
 
 public class ExperimentCapLimitVerifier {
 
@@ -22,10 +23,10 @@ public class ExperimentCapLimitVerifier {
     }
 
     private static boolean capLimitUserNotificationCheck(UserMetrics userMetrics, UserCaps userCaps) {
-        if(userMetrics.getRunsCreatedToday() >= userCaps.getNewRunDailyLimit()) {
+        if (userMetrics.getRunsCreatedToday() >= userCaps.getNewRunDailyLimit()) {
             showUserCapLimitNotification(Daily);
             return false;
-        } else if(userMetrics.getRunsCreatedThisMonth() >= userCaps.getNewRunMonthlyLimit()) {
+        } else if (userMetrics.getRunsCreatedThisMonth() >= userCaps.getNewRunMonthlyLimit()) {
             showUserCapLimitNotification(Monthly);
             return false;
         } else {
@@ -55,12 +56,13 @@ public class ExperimentCapLimitVerifier {
     // PS: I'm casting to integer since it's close enough for what we need here.
     private static void capLimitPathmindNotificationCheckForType(UserCapType userCapType, int runCount, UserCaps userCaps, SegmentIntegrator segmentIntegrator) {
         int percentage = (int) (runCount * 100f / getMaxAllowedRunCountForCapType(userCapType, userCaps));
-        if (percentage >= userCaps.getNewRunNotificationThreshold())
+        if (percentage >= userCaps.getNewRunNotificationThreshold()) {
             segmentIntegrator.userRunCapLimitReached(SecurityUtils.getUser(), userCapType, percentage);
+        }
     }
 
     private static int getMaxAllowedRunCountForCapType(UserCapType userCapType, UserCaps userCaps) {
-        switch(userCapType) {
+        switch (userCapType) {
             case Daily:
                 return userCaps.getNewRunDailyLimit();
             case Monthly:

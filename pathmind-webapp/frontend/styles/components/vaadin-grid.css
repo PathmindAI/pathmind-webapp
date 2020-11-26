@@ -44,7 +44,6 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 
 :host(:not(.dashboard):not(.search-results)) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
     cursor: pointer;
-    overflow: visible;
 }
 
 .grid-notes-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {

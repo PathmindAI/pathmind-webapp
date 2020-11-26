@@ -33,7 +33,7 @@ Feature: Experiment page alerts in multiple views
     When Open tab 0
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'OK' button
-    Then Check that models page opened
+    Then Check that project AutotestProject page is opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
     When Open tab 1
@@ -42,7 +42,9 @@ Feature: Experiment page alerts in multiple views
     When Click in 'Unarchive' button
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
+    When Check that unexpected error alert is Not shown
     When Open tab 0
+    When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'OK' button
     Then Check that 'Experiment #1' exist on the experiment page
@@ -57,11 +59,12 @@ Feature: Experiment page alerts in multiple views
     When Duplicate current tab
     When Click side nav archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
+    When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
     When In confirmation dialog click in 'OK' button
-    Then Check that models page opened
+    Then Check that project page is opened
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
     When Open tab 1
@@ -100,21 +103,22 @@ Feature: Experiment page alerts in multiple views
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
 
-#  @otherView
-#  Scenario: Check experiment side bar when an experiment is created and started in other tab (few experiments)
-#    Given Login to the pathmind
-#    When Create new CoffeeShop project with single reward function
-#    When Click project save draft btn
-#    When Duplicate current tab
-#    When Click in 'New Experiment' button
-#    When Click project start run button
-#    When Open tab 0
-#    Then Check that 'Experiment #2' exist on the experiment page
-#    Then Check that 'Experiment #2' status icon is 'loading-spinner'
-#    When Click in 'Experiment #2' button
-#    When Click in 'Stop Training' button
-#    Then Check that the 'Stop Training' confirmation dialog is shown
-#    When In confirmation dialog click in 'Stop Training' button
+  @otherView
+  Scenario: Check experiment side bar when an experiment is created and started in other tab (few experiments)
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project save draft btn
+    When Duplicate current tab
+    When Click in 'New Experiment' button
+    When Click project start run button
+    When Open tab 0
+    Then Check that 'Experiment #2' exist on the experiment page
+    Then Check that 'Experiment #2' status icon is 'loading-spinner'
+    When Click side bar experiment Experiment #2
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    Then Check that 'Experiment #2' status icon is 'icon-stopped'
 
   @otherView
   Scenario: Check experiment side bar when an experiment is created and stopped in other tab (few experiments)

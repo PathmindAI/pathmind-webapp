@@ -1,5 +1,12 @@
 package io.skymind.pathmind.db.changeset;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.change.custom.CustomSqlRollback;
 import liquibase.database.Database;
@@ -13,15 +20,9 @@ import liquibase.statement.SqlStatement;
 import liquibase.statement.core.RawSqlStatement;
 import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
-
 /**
  * This has to be done this way because of a bug in liquibase: https://stackoverflow.com/questions/59525568/liquibase-sql-command-giving-different-result-than-running-it-directly-in-sql
- *
+ * <p>
  * IMPORTANT -> This changeset is complete self contained so that any refactoring in the code base does NOT affect this code
  * change. This INCLUDES constants, etc.
  * NOTE -> I'm using JDBC because it's not possible to use JOOQ because of the order in which the changeset and JOOQ files are generated.
@@ -30,11 +31,9 @@ import java.util.*;
  * otherwise the CODE CHANGES WILL NOT BE REFLECTED IN THE LIQUIBASE TARGETS in any automatic way!!
  */
 @Slf4j
-public class UpdatePolicy_ChangeSet_20200128_05 implements CustomSqlChange, CustomSqlRollback
-{
+public class UpdatePolicy_ChangeSet_20200128_05 implements CustomSqlChange, CustomSqlRollback {
     @Override
-    public SqlStatement[] generateStatements(Database database) throws CustomChangeException
-    {
+    public SqlStatement[] generateStatements(Database database) throws CustomChangeException {
         // IMPORTANT -> Do NOT close the connection as it's used by liquibase for the rest of the changesets.
         Connection connection = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
         List<Changeset20191229Policy> policies = getPoliciesFromDatabase(connection);
@@ -48,7 +47,7 @@ public class UpdatePolicy_ChangeSet_20200128_05 implements CustomSqlChange, Cust
     // Rollback is not required as we just delete the new notes columns but for completeness it's added anyways.
     @Override
     public SqlStatement[] generateRollbackStatements(Database database) throws CustomChangeException, RollbackImpossibleException {
-        return new SqlStatement[] {
+        return new SqlStatement[]{
                 new RawSqlStatement("UPDATE POLICY SET NOTES=NULL")
         };
     }
@@ -57,12 +56,12 @@ public class UpdatePolicy_ChangeSet_20200128_05 implements CustomSqlChange, Cust
         List<Changeset20191229Policy> policies = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT ID, LEARNING_RATE, GAMMA, BATCH_SIZE FROM POLICY")) {
             ResultSet result = preparedStatement.executeQuery();
-            while(result.next()) {
+            while (result.next()) {
                 policies.add(new Changeset20191229Policy(
-                            result.getLong("ID"),
-                            result.getDouble("LEARNING_RATE"),
-                            result.getDouble("GAMMA"),
-                            result.getInt("BATCH_SIZE")));
+                        result.getLong("ID"),
+                        result.getDouble("LEARNING_RATE"),
+                        result.getDouble("GAMMA"),
+                        result.getInt("BATCH_SIZE")));
             }
             return policies;
         } catch (SQLException e) {

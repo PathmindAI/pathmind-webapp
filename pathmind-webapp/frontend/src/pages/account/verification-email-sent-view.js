@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/public-header-menu.js";
 
 /**
  * `verification-email-sent-view`
@@ -8,17 +9,18 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
  * @customElement
  * @polymer
  */
-class VerificationEmailViewSent extends PolymerElement {
+class VerificationEmailSentView extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles pathmind-dialog-view">
-        .icon {
+      <style>
+        verification-email-sent-view .icon {
           --iron-icon-height: var(--lumo-font-size-xxxl);
           --iron-icon-width: var(--lumo-font-size-xxxl);
           margin: 0 auto var(--lumo-space-xl);
           color: var(--lumo-success-color);
         }
       </style>
+      <public-header-menu contactlink="{{contactLink}}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
             <span class="welcome-text">Welcome to</span>
@@ -39,6 +41,10 @@ class VerificationEmailViewSent extends PolymerElement {
       </vaadin-horizontal-layout>`;
   }
 
+  _attachDom(dom) {
+    this.appendChild(dom);
+  }
+
   static get is() {
     return "verification-email-sent-view";
   }
@@ -50,4 +56,4 @@ class VerificationEmailViewSent extends PolymerElement {
   }
 }
 
-customElements.define(VerificationEmailViewSent.is, VerificationEmailViewSent);
+customElements.define(VerificationEmailSentView.is, VerificationEmailSentView);

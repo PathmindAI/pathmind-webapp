@@ -10,7 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 
 public class ModelUploadPage extends PageObject {
 
@@ -64,7 +65,7 @@ public class ModelUploadPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']")).getText(), is("Project:"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label-regular-font-weight section-subtitle-label']")).getText(), is("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout/*[@class='no-top-margin-label']")).getText(), is("Upload alp file"));
-        assertThat(getDriver().findElement(By.xpath("//tag-label[@outline='false']")).getText(), is("Optional"));
+        assertThat(getDriver().findElement(By.xpath("//tag-label")).getText(), is("Optional"));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(1)")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments."));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(3)")).getText(), is("You will be able to download this ALP file later to retrieve it."));

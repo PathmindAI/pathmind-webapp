@@ -3,11 +3,11 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.DashboardPageSteps;
+import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 import io.skymind.pathmind.bddtests.steps.HomePageSteps;
 import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
-import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 
 public class DashboardPageStepDefinitions {
 

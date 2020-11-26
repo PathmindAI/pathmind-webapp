@@ -1,24 +1,27 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class NewExperimentPage extends PageObject {
 
@@ -160,9 +163,9 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkNewExperimentPageModelALPBtn(String filename) {
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")));
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::a")).getAttribute("href"), containsString(filename));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//a[@class='download-alp-link']/descendant::vaadin-button")));
+        assertThat(getDriver().findElement(By.xpath("//a[@class='download-alp-link']/descendant::vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//a[@class='download-alp-link']")).getAttribute("href"), containsString(filename));
     }
 
     public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
@@ -204,12 +207,15 @@ public class NewExperimentPage extends PageObject {
 
     public void openExperimentFromSidebarInTheNewTab(String experiment) {
         waitABit(2000);
-        Actions actions = new Actions(getDriver());
-        actions.keyDown(Keys.CONTROL).build().perform();
-        actions.moveToElement(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        waitABit(2500);
-        actions.click(utils.getExperimentNavbarItemByExperimentName(experiment, null)).build().perform();
-        actions.keyUp(Keys.CONTROL).build().perform();
+        WebDriver driver = getDriver();
+        WebElement experimentNavItemAnchor = utils.getExperimentNavbarItemByExperimentName(experiment, "a");
+        String linkPath = experimentNavItemAnchor.getAttribute("href");
+        String jsCommand = String.format("window.open('%s', '_blank');", linkPath);
+        ((JavascriptExecutor) driver).executeScript(jsCommand);
         waitABit(3000);
+    }
+
+    public void clickNewExperimentPageObservationCheckbox(String observation) {
+        getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).click();
     }
 }

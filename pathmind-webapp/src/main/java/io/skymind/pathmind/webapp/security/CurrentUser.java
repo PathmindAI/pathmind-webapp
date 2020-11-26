@@ -5,5 +5,5 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 @FunctionalInterface
 public interface CurrentUser {
 
-	PathmindUser getUser();
+    PathmindUser getUser();
 }

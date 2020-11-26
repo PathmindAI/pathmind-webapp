@@ -10,7 +10,6 @@ import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
-
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
@@ -35,49 +34,49 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @CssImport(value = "./styles/components/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
+@CssImport(value = "./styles/views/project-view.css")
 @CssImport(value = "./styles/views/dashboard-view.css")
 @CssImport(value = "./styles/views/search-results-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 // Stripe should be added to every page to be able to use their fraud detection mechanism
 @JavaScript("https://js.stripe.com/v3/")
 @Theme(Lumo.class)
-public class MainLayout extends AppLayout implements PageConfigurator
-{
+public class MainLayout extends AppLayout implements PageConfigurator {
     private AccountHeaderPanel accountHeaderPanel;
-	public MainLayout(CurrentUser user, FeatureManager featureManager)
-	{
-		setId("pathmind-app-layout");
-		boolean hasLoginUser = user != null && user.getUser() != null;
-		addToNavbar(new SectionsHeaderPanel(hasLoginUser));
-		if (hasLoginUser) {
-            accountHeaderPanel = new AccountHeaderPanel(user.getUser(), featureManager);
-			addToNavbar(accountHeaderPanel);
-		}
 
-		// Added a message just in case there's ever a failure.
-		setContent(new Span("Error. Please contact Pathmind for assistance"));
+    public MainLayout(CurrentUser user, FeatureManager featureManager) {
+        setId("pathmind-app-layout");
+        boolean hasLoginUser = user != null && user.getUser() != null;
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser));
+        if (hasLoginUser) {
+            accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
+            addToNavbar(accountHeaderPanel);
+        }
+
+        // Added a message just in case there's ever a failure.
+        setContent(new Span("Error. Please contact Pathmind for assistance"));
     }
 
-	@Override
-	public void configurePage(InitialPageSettings settings) {
-		PageConfigurationUtils.defaultPageConfiguration(settings);
-	}
+    @Override
+    public void configurePage(InitialPageSettings settings) {
+        PageConfigurationUtils.defaultPageConfiguration(settings);
+    }
 
-	public void clearSearchBoxValue() {
-	    if (accountHeaderPanel != null) {
-	        accountHeaderPanel.clearSearchBoxValue();
+    public void clearSearchBoxValue() {
+        if (accountHeaderPanel != null) {
+            accountHeaderPanel.clearSearchBoxValue();
         }
     }
 
     public void setSearchBoxValue(String text) {
-	    if (accountHeaderPanel != null) {
-	        accountHeaderPanel.setSearchBoxValue(text);
+        if (accountHeaderPanel != null) {
+            accountHeaderPanel.setSearchBoxValue(text);
         }
     }
 
     public String getSearchBoxValue() {
-	    if (accountHeaderPanel != null) {
-	        return accountHeaderPanel.getSearchBoxValue();
+        if (accountHeaderPanel != null) {
+            return accountHeaderPanel.getSearchBoxValue();
         }
         return "";
     }

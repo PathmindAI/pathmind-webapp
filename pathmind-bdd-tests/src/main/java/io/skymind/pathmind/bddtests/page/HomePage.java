@@ -48,7 +48,6 @@ public class HomePage extends PageObject {
     public void openProjectsPage() {
         projectsBtn.click();
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label truncated-label' and text()='Projects']")));
     }
 
     public void logoutFromPathmind() {
@@ -102,7 +101,7 @@ public class HomePage extends PageObject {
     }
 
     public void clickGettingStartedGuideButton() {
-        WebElement element = utils.expandRootElement(getDriver().findElement(By.xpath("//empty-dashboard-placeholder")));
+        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
         element.findElement(By.cssSelector("i a")).click();
     }
 

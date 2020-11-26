@@ -22,7 +22,11 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 public class GenericPage extends PageObject {
 
@@ -32,9 +36,9 @@ public class GenericPage extends PageObject {
     private WebElement popupShadow;
     @FindBy(xpath = "//vaadin-grid-cell-content")
     private List<WebElement> experimentModelsNames;
-    @FindBy(xpath = "//vaadin-text-area[@theme='notes']")
+    @FindBy(xpath = "(//vaadin-text-area)[1]")
     private WebElement notesField;
-    @FindBy(xpath = "(//vaadin-text-field)[2]")
+    @FindBy(xpath = "//span[@class='section-title-label' and text()='Rename project']/following-sibling::vaadin-text-field")
     private WebElement editProjectNameInputShadow;
     @FindBy(xpath = "//notes-field")
     private WebElement notesBlock;
@@ -52,6 +56,12 @@ public class GenericPage extends PageObject {
         String xpath = String.format("//vaadin-button[text()='%s']", buttonText);
         waitFor(ExpectedConditions.invisibilityOfAllElements(getDriver().findElements(By.xpath(xpath))));
         resetImplicitTimeout();
+    }
+
+    public void clickTextContainsLink(String text) {
+        String xpath = String.format("//*[contains(text(), '%s')]", text);
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
+        System.out.println("user dir " + System.getProperty("user.dir"));
     }
 
     public void clickInButton(String buttonText) {
@@ -75,6 +85,10 @@ public class GenericPage extends PageObject {
         WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
 
         assertThat(header.getText(), is(confirmationDialogHeader));
+        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[1]")).getText(), is("Are you sure you want to stop training?"));
+        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[2]")).getText(), is("If you stop the training before it completes, you won't be able to download the policy. If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
+        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p/b")).getText(), is("If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
+        assertThat(popupShadowRoot.findElement(By.cssSelector("#confirm")).getCssValue("background-color"), is("rgba(216, 9, 71, 1)"));
         resetImplicitTimeout();
     }
 
@@ -92,15 +106,16 @@ public class GenericPage extends PageObject {
 
         List<WebElement> buttons = popupShadowRoot.findElements(By.cssSelector("vaadin-button"));
         Optional<WebElement> first = buttons.stream()
-            .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
-            .findFirst();
+                .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
+                .findFirst();
         String errorMessage = String.format("Button '%s' doesn't exist. Available buttons: %s.",
-            buttonText,
-            StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
+                buttonText,
+                StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
         );
         assertThat(errorMessage, first.isPresent());
         first.get().click();
         resetImplicitTimeout();
+        waitABit(4000);
     }
 
     public void switchProjectsTab() {
@@ -207,10 +222,6 @@ public class GenericPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void checkTitleLabelTagIsArchived(String tag) {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
-    }
-
     public void compareALPFileWithDownloadedFile(String alpFile) {
         File downloadedFile = new File(System.getProperty("user.dir") + "/models/" + alpFile);
         long downloadedFileSize = downloadedFile.length();
@@ -221,8 +232,9 @@ public class GenericPage extends PageObject {
         if (file.exists() && file.isDirectory()) {
             String[] files = file.list();
             for (String fileName : files) {
-                if (fileName.contains(Serenity.sessionVariableCalled("randomNumber").toString()))
+                if (fileName.contains(Serenity.sessionVariableCalled("randomNumber").toString())) {
                     filesContainingSubstring.add(fileName);
+                }
             }
         }
 
@@ -237,6 +249,12 @@ public class GenericPage extends PageObject {
 
     public void clickPopUpDialogCloseBtn() {
         getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::vaadin-button[last()]")).click();
+    }
+
+    public void checkThatUnexpectedErrorAlertIsNotShown() {
+        setImplicitTimeout(5, SECONDS);
+        assertThat(getDriver().findElements(By.xpath("//vaadin-notification-card[@theme='error' and @role='alert']")).size(), is(0));
+        resetImplicitTimeout();
     }
 
     public void clickInTheNewTabModelButton(String text) {

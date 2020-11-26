@@ -4,9 +4,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-import io.skymind.pathmind.webapp.ui.components.SearchBox;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -23,12 +20,13 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -36,9 +34,10 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value= Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
-public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String>{
+@Route(value = Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
+public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String> {
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
     private ExperimentDAO experimentDAO;
@@ -48,6 +47,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private Span numberOfResults;
 
     @Autowired
+    private ModelService modelService;
+    @Autowired
     private SegmentIntegrator segmentIntegrator;
 
     @Autowired
@@ -55,7 +56,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         dataProvider = searchResultsDataProvider.withConfigurableFilter();
         this.experimentDAO = experimentDAO;
     }
-    
+
     @Override
     protected Component getTitlePanel() {
         return null;
@@ -87,7 +88,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         numberOfResults = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         VerticalLayout headerWrapper = new VerticalLayout(title, numberOfResults);
         headerWrapper.setSpacing(false);
-        
+
         FlexLayout gridWrapper = new ViewSection(headerWrapper, grid);
         gridWrapper.addClassName("page-content");
         return gridWrapper;
@@ -102,8 +103,8 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         grid.addClassName("search-results");
         grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(
-                searchResult -> new SearchResultItem(experimentDAO, searchResult, decodedKeyword)
-            );
+                searchResult -> new SearchResultItem(experimentDAO, modelService, searchResult, decodedKeyword)
+        );
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);
         return grid;
@@ -129,8 +130,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         String[] split = fullKeyword.split(":", 2);
         if (split.length == 2) {
             return split[1];
-        }
-        else {
+        } else {
             return split[0];
         }
     }
