@@ -429,6 +429,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void loadExperimentData() {
         modelId = experiment.getModelId();
+        experimentId = experiment.getId();
         // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
         // and easily missed in other places.
         experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
