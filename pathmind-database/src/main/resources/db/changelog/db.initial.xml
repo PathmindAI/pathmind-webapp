@@ -1864,4 +1864,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="2471-01" author="alexander.makarov@toptal.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Check failed: object_id_refs_.count"/>
+            <column name="DESCRIPTION" value="Training failed due to known issue. Please restart experiment as is."/>
+            <column name="RESTARTABLE" value="true"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
