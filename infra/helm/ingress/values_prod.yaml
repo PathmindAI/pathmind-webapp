@@ -47,6 +47,10 @@ ingress:
       paths: [/:80:pathmind-admin-client]
     - host: admin-server.devpathmind.com
       paths: [/:9091:pathmind-admin-server]
+    - host: api.devpathmind.com
+      paths: [/:8081:pathmind-api]
+    - host: api.pathmind.com
+      paths: [/:8081:pathmind-api]
 
   tls: 
     - secretName: letsencrypt-prod
@@ -60,6 +64,8 @@ ingress:
         - jenkins.devpathmind.com
         - admin.devpathmind.com
         - admin-server.devpathmind.com
+        - api.devpathmind.com
+        - api.pathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
