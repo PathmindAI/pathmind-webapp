@@ -310,7 +310,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentDAO.updateUserNotes(notesField.getExperiment().getId(), notesField.getNotesText());
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
-        disabledSaveDraft();
+        disableSaveDraft();
         NotificationUtils.showSuccess("Draft successfully saved");
         isNeedsSaving = false;
         afterClickedCallback.execute();
@@ -418,12 +418,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         experimentsNavbar.setVisible(!experiment.isArchived());
         panelTitleText.setText("Experiment #" + experiment.getName());
         rewardVariablesTable.setRewardVariables(rewardVariables);
-        disabledSaveDraft();
+        disableSaveDraft();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
     }
 
-    private void disabledSaveDraft() {
+    private void disableSaveDraft() {
         saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
