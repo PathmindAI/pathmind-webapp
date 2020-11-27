@@ -31,7 +31,7 @@ class AppFooter extends PolymerElement {
                     margin: 0;
                 }
                 app-footer li {
-                    margin: 0 var(--lumo-space-m);
+                    margin: 0 var(--lumo-space-s);
                 }
                 app-footer a {
                     box-sizing: border-box;
@@ -63,7 +63,7 @@ class AppFooter extends PolymerElement {
                 }
                 app-footer .copyright {
                     display: inline-flex;
-                    margin-left: calc(var(--lumo-space-xxl) * 4);
+                    margin-left: var(--lumo-space-s);
                 }
                 @media screen and (max-width: 768px) {
                     app-footer .support span {
@@ -77,7 +77,7 @@ class AppFooter extends PolymerElement {
             <vaadin-horizontal-layout>
                 <ul>
                     <li>
-                        <a href="{{privacylink}" target="_blank">
+                        <a href="{{privacylink}}" target="_blank">
                             Privacy Policy
                         </a>
                     </li>

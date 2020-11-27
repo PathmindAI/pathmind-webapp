@@ -98,12 +98,6 @@ class AccountViewContent extends PolymerElement {
     static get is() {
         return "account-view-content";
     }
-
-    static get properties() {
-        return {
-            // Declare your properties here.
-        };
-    }
 }
 
 customElements.define(AccountViewContent.is, AccountViewContent);
