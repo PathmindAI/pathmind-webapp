@@ -10,6 +10,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+import java.util.Calendar;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -54,9 +56,6 @@ public class AccountPage extends PageObject {
 //        assertThat(e.findElement(By.id("upgradeBtn")).getText(), containsString("Upgrade"));
         assertThat(e.findElement(By.id("editPaymentBtn")).isDisplayed(), is(true));
         assertThat(e.findElement(By.id("editPaymentBtn")).getText(), containsString("Edit"));
-        assertThat(e.findElement(By.cssSelector(".support")).isDisplayed(), is(true));
-        assertThat(e.findElement(By.cssSelector(".support")).getText(), containsString("Contact Support"));
-        assertThat(e.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
     }
 
     public void clickAccountEditBtn() {
@@ -105,5 +104,26 @@ public class AccountPage extends PageObject {
     public void saveAccountPageApiKeyToTheEnvironmentVariable() {
         WebElement e = utils.expandRootElement(accountViewShadow);
         Serenity.setSessionVariable("apiKey").to(e.findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(2)")).getText());
+    }
+
+    public void checkAccountPageFooterComponents() {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//segment-integrator/preceding-sibling::*[1]")));
+        assertThat(e.findElement(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li:nth-child(1) > a")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
+        assertThat(e.findElement(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li:nth-child(2) > a")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
+        assertThat(e.findElement(By.cssSelector(".support")).isDisplayed(), is(true));
+        assertThat(e.findElement(By.cssSelector(".support")).getText(), containsString("Support"));
+        assertThat(e.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
+        assertThat(e.findElement(By.cssSelector(".copyright")).getText(), containsString("© " + Calendar.getInstance().get(Calendar.YEAR) + " Pathmind"));
+    }
+
+    public void clickAccountFooterBtn(String btn) {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//segment-integrator/preceding-sibling::*[1]")));
+//        e.findElement(By.xpath("app-footer > vaadin-horizontal-layout > ul > li:nth-child(1) > a")).click();
+        for(WebElement element : e.findElements(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li > a"))){
+            if (element.getText().contains(btn)){
+                element.click();
+                break;
+            }
+        }
     }
 }

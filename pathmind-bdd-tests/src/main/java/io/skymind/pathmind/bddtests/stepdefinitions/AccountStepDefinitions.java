@@ -71,4 +71,14 @@ public class AccountStepDefinitions {
     public void checkThatUserNameChangedTo(String firstName, String lastName) {
         loginPageSteps.checkHeaderUsername(firstName + Serenity.sessionVariableCalled("firstNameRandomNumber") + " " + lastName + Serenity.sessionVariableCalled("lastNameRandomNumber"));
     }
+
+    @Then("^Check account page footer components$")
+    public void checkAccountPageFooterComponents() {
+        accountPageSteps.checkAccountPageFooterComponents();
+    }
+
+    @When("^Click account footer '(.*)' btn$")
+    public void clickAccountFooterBtn(String btn) {
+        accountPageSteps.clickAccountFooterBtn(btn);
+    }
 }

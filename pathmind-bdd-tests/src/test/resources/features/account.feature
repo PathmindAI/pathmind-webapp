@@ -88,14 +88,18 @@ Feature: User accounts tests
   Scenario: Check account edit breadcrumb
     Given Login to the pathmind
     When Open page account/edit
+    Then Check account page footer components
     When Click account breadcrumb btn
     Then Check that user account page opened
+    Then Check account page footer components
 
   Scenario: Check Change Password breadcrumb
     Given Login to the pathmind
     When Open page account/change-password
+    Then Check account page footer components
     When Click account breadcrumb btn
     Then Check that user account page opened
+    Then Check account page footer components
 
   Scenario: Check account name edit
     Given Login to the pathmind
@@ -105,3 +109,15 @@ Feature: User accounts tests
     When Input account page last name 'LastName'
     When Click account edit update btn
     Then Check that user name changed to 'FirstName' 'LastName'
+
+  Scenario: Check account footer components links
+    Given Login to the pathmind
+    When Open page account
+    Then Check account page footer components
+    When Click account footer 'Privacy Policy' btn
+    When Open tab 1
+    When Check page url is https://pathmind.com/privacy-policy/
+    When Open tab 0
+    When Click account footer 'Terms of Use' btn
+    When Open tab 2
+    When Check page url is https://pathmind.com/subscription-agreement/
