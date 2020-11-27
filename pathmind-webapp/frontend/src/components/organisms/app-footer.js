@@ -63,7 +63,7 @@ class AppFooter extends PolymerElement {
                 }
                 app-footer .copyright {
                     display: inline-flex;
-                    margin-left: calc(var(--lumo-space-xxl) * 2);
+                    margin-left: calc(var(--lumo-space-xxl) * 4);
                 }
                 @media screen and (max-width: 768px) {
                     app-footer .support span {
@@ -111,12 +111,15 @@ class AppFooter extends PolymerElement {
       return {
           privacylink: {
               type: String,
+              value: "https://pathmind.com/privacy",
           },
           termslink: {
               type: String,
+              value: "https://pathmind.com/subscription-agreement",
           },
           contactlink: {
               type: String,
+              value: "mailto:support@pathmind.com",
           },
           year: {
               type: String,

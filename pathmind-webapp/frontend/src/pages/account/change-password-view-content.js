@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/app-footer.js";
 
 /**
  * `change-password-view`
@@ -12,8 +13,12 @@ class ChangePasswordViewContent extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles pathmind-dialog-view">
+                :host {
+                    justify-content: space-between;
+                }
                 .panel-wrapper {
-                    overflow: initial;
+                    overflow: visible;
+                    min-height: auto;
                 }
                 .inner-content {
                     text-align: left;
@@ -43,9 +48,11 @@ class ChangePasswordViewContent extends PolymerElement {
                             <vaadin-button id="cancelBtn" theme="tertiary">Cancel</vaadin-button>
                         </vaadin-vertical-layout>
                     </vaadin-vertical-layout>
-                    <a class="support" href="{{contactLink}}">Contact Support</a>
                 </div>
-            </vaadin-horizontal-layout>`;
+            </vaadin-horizontal-layout>
+            <app-footer 
+                contactlink="{{contactLink}}"
+            ></app-footer>`;
     }
 
     static get is() {
