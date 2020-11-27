@@ -103,10 +103,6 @@ class AppFooter extends PolymerElement {
       this.appendChild(dom);
     }
 
-    getLogoLink(isLogoLinkToWebapp) {
-        return isLogoLinkToWebapp ? "/" : "https://pathmind.com/";
-    }
-
     static get properties() {
       return {
           privacylink: {
