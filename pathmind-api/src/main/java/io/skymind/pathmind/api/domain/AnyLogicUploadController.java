@@ -43,7 +43,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @RestController
@@ -114,7 +116,7 @@ public class AnyLogicUploadController {
             StatusUpdaterImpl status = new StatusUpdaterImpl();
             projectFileCheckService.checkFile(status, model).get(); // here we need to wait
             if (StringUtils.isNoneEmpty(status.getError())) {
-                throw new FileCheckException(status.getError());
+                throw new IllegalStateException(status.getError());
             }
             FileCheckResult result = status.getResult();
             if (result == null) {
@@ -147,12 +149,16 @@ public class AnyLogicUploadController {
                     .toUri();
 
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
-        } catch (FileCheckException fce) {
-            log.error("Validation failed on fileCheck call", fce);
-            throw fce;
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            throw new RuntimeException("failed to process zip file", e);
+            ResponseEntity.BodyBuilder response = ResponseEntity.status(INTERNAL_SERVER_ERROR);
+            String errorMessage = StringUtils.trimToEmpty(e.getMessage());
+            response.header("Location", "https://help.pathmind.com");
+            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
+                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+                response.header("Location", projectFileCheckService.getConvertModelsToSupportLatestVersionURL());
+            }
+            return response.body(errorMessage);
         }
 
     }
@@ -176,13 +182,6 @@ public class AnyLogicUploadController {
         @Override
         public void fileSuccessfullyVerified(FileCheckResult result) {
             this.result = result;
-        }
-    }
-
-    // TODO: replace this exception on model upload refactoring
-    public static class FileCheckException extends RuntimeException {
-        public FileCheckException(String message) {
-            super(message);
         }
     }
 
