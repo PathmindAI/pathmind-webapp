@@ -32,5 +32,5 @@ Feature: Broken Models tests
       | Model File                                      | Error Message                                                                            |
 #      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
 #      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
-      | problematic_models/ProblemModel#1480.zip        | Model needs to be updated. You can take a look at this article for upgrade instructions. |
-      | problematic_models/NonTupleModel.zip            | Model needs to be updated. You can take a look at this article for upgrade instructions. |
+      | problematic_models/ProblemModel#1480.zip        | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+      | problematic_models/NonTupleModel.zip            | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |

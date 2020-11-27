@@ -43,7 +43,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @RestController
@@ -149,7 +151,14 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            throw new RuntimeException("failed to process zip file", e);
+            ResponseEntity.BodyBuilder response = ResponseEntity.status(INTERNAL_SERVER_ERROR);
+            String errorMessage = StringUtils.trimToEmpty(e.getMessage());
+            response.header("Location", "https://help.pathmind.com");
+            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
+                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+                response.header("Location", projectFileCheckService.getConvertModelsToSupportLatestVersionURL());
+            }
+            return response.body(errorMessage);
         }
 
     }
