@@ -1,9 +1,17 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/app-footer.js";
 
 class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
             <style include="shared-styles pathmind-dialog-view">
+                :host {
+                    justify-content: space-between;
+                }
+                .panel-wrapper {
+                    min-height: auto;
+                    overflow: visible;
+                }
                 .block {
                     align-items: flex-start;
                 }
@@ -78,13 +86,13 @@ class AccountViewContent extends PolymerElement {
                         </vaadin-button>
                     </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
-                <div class="support-cont">
-                    <a href="{{privacyLink}}" target="_blank">Privacy Policy</a>
-                    <a href="{{termsOfUseLink}}" target="_blank">Terms of Use</a><br>
-                    <a class="support" href="{{contactLink}}">Contact Support</a>
-                </div>
             </div>
-        </vaadin-horizontal-layout>`;
+        </vaadin-horizontal-layout>
+        <app-footer 
+            privacylink="{{privacyLink}}"
+            termslink="{{termsOfUseLink}}"
+            contactlink="{{contactLink}}"
+        ></app-footer>`;
     }
 
     static get is() {
