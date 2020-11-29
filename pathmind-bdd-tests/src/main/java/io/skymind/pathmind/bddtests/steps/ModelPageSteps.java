@@ -123,4 +123,14 @@ public class ModelPageSteps {
     public void checkModelTitleLabelTagIsArchived(String tag) {
         modelPage.checkModelTitleLabelTagIsArchived(tag);
     }
+
+    @Step
+    public void addModelNoteToTheProjectPage(String note) {
+        modelPage.addModelNoteToTheProjectPage(note);
+    }
+
+    @Step
+    public void checkModelNoteOnTheProjectPage(String note) {
+        modelPage.checkModelNoteOnTheProjectPage(note);
+    }
 }

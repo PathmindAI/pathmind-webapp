@@ -58,8 +58,8 @@ public class AnylogicFileChecker implements FileChecker {
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);
                         } else {
-                            log.error("model.jar does not having PathmindHelper class");
-                            statusUpdater.updateError("model.jar does not having PathmindHelper class");
+                            log.error("model.jar does not have PathmindHelper class");
+                            statusUpdater.updateError("model.jar does not have PathmindHelper class");
                         }
                     }
                 } else {
