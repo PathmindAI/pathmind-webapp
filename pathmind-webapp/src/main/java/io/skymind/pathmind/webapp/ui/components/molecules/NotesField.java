@@ -83,6 +83,14 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     @EventHandler
     private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
+        saveNotes(updatedNotesText);
+    }
+
+    protected void saveNotes() {
+        saveNotes(notesText);
+    }
+
+    protected void saveNotes(String updatedNotesText) {
         saveConsumer.accept(updatedNotesText);
     }
 
