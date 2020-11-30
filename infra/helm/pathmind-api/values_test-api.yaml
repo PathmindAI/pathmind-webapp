@@ -40,6 +40,8 @@ env:
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
   API_WEBAPP_URL: https://test.devpathmind.com/
+  API_FILE_SIZE: 500MB
+  API_REQUEST_SIZE: 500MB
 
 readinessprobe: {}
 
