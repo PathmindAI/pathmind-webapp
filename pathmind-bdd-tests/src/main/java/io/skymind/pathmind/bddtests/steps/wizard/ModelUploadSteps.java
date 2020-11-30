@@ -41,4 +41,9 @@ public class ModelUploadSteps {
     public void checkThatModelUploadLinkOpened() {
         modelUploadPage.checkThatModelUploadLinkOpened();
     }
+
+    @Step
+    public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
+        modelUploadPage.checkWizardWarningLabelIsShown(warningLabel, isShown);
+    }
 }

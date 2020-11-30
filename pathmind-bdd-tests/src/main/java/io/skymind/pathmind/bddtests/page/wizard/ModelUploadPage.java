@@ -21,6 +21,8 @@ public class ModelUploadPage extends PageObject {
     private WebElement uploadShadow;
     @FindBy(xpath = "//upload-alp-instructions")
     private WebElement uploadAlpInstructionsShadow;
+    @FindBy(xpath = "//span[@class='warning-label']")
+    private WebElement warningLabelElement;
 
     private final By byInput = By.cssSelector("input");
 
@@ -77,5 +79,16 @@ public class ModelUploadPage extends PageObject {
         getDriver().switchTo().frame(1);
         getDriver().switchTo().frame(1);
         assertThat(getDriver().findElement(By.cssSelector("body > h1:nth-child(2)")).getText(), is("Exporting models to Java application"));
+    }
+
+    public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
+        if (isShown){
+            waitFor(ExpectedConditions.visibilityOf(warningLabelElement));
+            assertThat(warningLabelElement.getText(), is(warningLabel));
+        } else {
+            setImplicitTimeout(3, SECONDS);
+            assertThat(getDriver().findElements(By.xpath("//span[@class='warning-label']")).size(), is(0));
+            resetImplicitTimeout();
+        }
     }
 }
