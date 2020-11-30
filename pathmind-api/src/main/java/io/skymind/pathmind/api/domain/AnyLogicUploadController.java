@@ -167,7 +167,7 @@ public class AnyLogicUploadController {
 //                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 //                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
 //            }
-            return ResponseEntity.status(OK).header(HttpHeaders.LOCATION, location).body(errorMessage);
+            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, location).body(errorMessage);
         }
 
     }
