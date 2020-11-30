@@ -45,7 +45,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
@@ -54,8 +53,13 @@ public class AnyLogicUploadController {
 
     private final String webappDomainUrl;
 
-    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl) {
+    @Getter
+    private final String modelCheckFailedHelpUrl ;
+
+    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
+                                    @Value("${pm.api.model-check-failed-help.url}") String modelCheckFailedHelpUrl) {
         this.webappDomainUrl = webappDomainUrl;
+        this.modelCheckFailedHelpUrl = modelCheckFailedHelpUrl;
     }
 
     @Autowired
@@ -156,8 +160,7 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            ResponseEntity.BodyBuilder response = ResponseEntity.status(OK)
-                    .header("Location", "https://help.pathmind.com/en/articles/3747446-8-confirm-models-are-working-in-anylogic");
+            ResponseEntity.BodyBuilder response = ResponseEntity.status(OK).header("Location", modelCheckFailedHelpUrl);
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
                 errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
