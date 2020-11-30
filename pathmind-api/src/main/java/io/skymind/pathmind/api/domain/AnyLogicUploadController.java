@@ -163,10 +163,10 @@ public class AnyLogicUploadController {
             log.error("failed to get file from AL", e);
             String location = modelCheckFailedHelpUrl;
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
-            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
-                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
-                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
-            }
+//            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
+//                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+//                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
+//            }
             return ResponseEntity.status(OK).header(HttpHeaders.LOCATION, location).body(errorMessage);
         }
 
