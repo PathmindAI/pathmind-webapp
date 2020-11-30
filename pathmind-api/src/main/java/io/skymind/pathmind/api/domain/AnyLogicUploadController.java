@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -160,13 +161,13 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            ResponseEntity.BodyBuilder response = ResponseEntity.status(OK).header("Location", modelCheckFailedHelpUrl);
+            String location = modelCheckFailedHelpUrl;
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
                 errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
-                response.header("Location", projectFileCheckService.getConvertModelsToSupportLatestVersionURL());
+                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
             }
-            return response.body(errorMessage);
+            return ResponseEntity.status(OK).header(HttpHeaders.LOCATION, location).body(errorMessage);
         }
 
     }
