@@ -46,6 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -151,9 +152,9 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            ResponseEntity.BodyBuilder response = ResponseEntity.status(INTERNAL_SERVER_ERROR);
+            ResponseEntity.BodyBuilder response = ResponseEntity.status(OK)
+                    .header("Location", "https://help.pathmind.com/en/articles/3747446-8-confirm-models-are-working-in-anylogic");
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
-            response.header("Location", "https://help.pathmind.com");
             if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
                 errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
                 response.header("Location", projectFileCheckService.getConvertModelsToSupportLatestVersionURL());
