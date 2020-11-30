@@ -306,8 +306,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
+        experiment.setUserNotes(notesField.getNotesText());
         experimentDAO.updateExperiment(experiment);
-        experimentDAO.updateUserNotes(notesField.getExperiment().getId(), notesField.getNotesText());
+        // REFACTOR -> STEPH -> Post 2426 this should be moved to an event (save) which the component saves. Otherwise what's happening
+        // is that the updateExperiment() method above also updates the user notes but the experiment's instance user notes have not been updated since
+        // this instances experiment and the component's experiment are different instances.
+        // experimentDAO.updateUserNotes(notesField.getExperiment().getId(), notesField.getNotesText());
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
         disableSaveDraft();
