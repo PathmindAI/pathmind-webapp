@@ -116,7 +116,7 @@ public class ProjectPage extends PageObject {
             String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
             if (modelNumber.equals(modelId)) {
                 webElement.click();
-                waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label project-title-label' and contains(text(),'Model #" + modelId + "')]")));
+                waitABit(3500);
                 break;
             }
         }
