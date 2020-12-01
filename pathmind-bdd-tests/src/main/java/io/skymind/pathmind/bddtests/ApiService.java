@@ -45,6 +45,7 @@ public class ApiService extends PageObject {
     }
 
     public JsonObject getProjectByProjectName(String projectName) {
+        System.out.println("API Endpoint: " + PATHMIND_API_URL);
         JsonArray jsonArray = SerenityRest.
             given().
             header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
