@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -35,7 +34,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_M
 public class UploadModelWizardPanel extends VerticalLayout {
     private final Model model;
     private final int maxFileSize;
-    private final String anylogicExportGuide = "https://help.anylogic.com/index.jsp?topic=%2Fcom.anylogic.help%2Fhtml%2Frunning%2Fexport-java-application.html";
 
     private VerticalLayout uploadModelPanel;
     private PathmindModelUploader upload;
@@ -58,7 +56,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
         this.maxFileSize = maxFileSize;
 
         setupLayout();
-        setWidthFull();
         setPadding(false);
         setSpacing(false);
     }
@@ -164,40 +161,12 @@ public class UploadModelWizardPanel extends VerticalLayout {
         uploadFailedConsumer = consumer;
     }
 
-    private Div getInstructionsDiv() {
-        Div div = new Div();
-        div.setWidthFull();
+    private UploadModelInstructions getInstructionsDiv() {
+        UploadModelInstructions uploadModelInstructions = new UploadModelInstructions();
         upload.isFolderUploadSupported(isFolderUploadSupported -> {
-            if (mode == UploadMode.FOLDER && isFolderUploadSupported) {
-                setInstructionsForFolderUploadDiv(div);
-            } else {
-                setInstructionsForZipUploadDiv(div);
-            }
+            uploadModelInstructions.setIsZip(!(mode == UploadMode.FOLDER && isFolderUploadSupported));
         });
-        return div;
-    }
-
-    private void setInstructionsForFolderUploadDiv(Div div) {
-        div.getElement().setProperty("innerHTML",
-                "<ol>" +
-                        "<li><a href=\"" + anylogicExportGuide + "\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
-                        "<li>Upload the exported folder.</li>" +
-                        "</ol>");
-    }
-
-    private void setInstructionsForZipUploadDiv(Div div) {
-        div.getElement().setProperty("innerHTML",
-                "<ol>" +
-                        "<li><a href=\"" + anylogicExportGuide + "\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
-                        "<li>*Using the exported folder, Create a zip file that contains:</li>" +
-                        "<ul>" +
-                        "<li>model.jar</li>" +
-                        "<li>the \"database\" and \"cache\" folder if they exist</li>" +
-                        "<li>any excel sheets necessary for your AnyLogic simulation</li>" +
-                        "</ul>" +
-                        "<li>Upload the new zip file below." +
-                        "</ol>" +
-                        "<p>*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>");
+        return uploadModelInstructions;
     }
 
     public void showFileCheckPanel() {
