@@ -29,6 +29,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_DOW
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EDIT_INFO;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ERROR_PAGE;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXPORT_POLICY;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
@@ -124,6 +125,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void draftSaved() {
         track(EVENT_SAVE_EXPERIMENT_DRAFT);
+    }
+
+    public void uploadModelError() {
+        track(EVENT_UPLOAD_MODEL_ERROR);
     }
 
     public void modelDraftSaved() {
