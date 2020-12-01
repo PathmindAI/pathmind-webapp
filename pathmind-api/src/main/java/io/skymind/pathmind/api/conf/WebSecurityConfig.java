@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationFailureHandlerEntryPoint)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, SingupController.SIGNUP_URL).permitAll()
+                .antMatchers(HttpMethod.POST, SingupController.SIGNUP_URL + "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()

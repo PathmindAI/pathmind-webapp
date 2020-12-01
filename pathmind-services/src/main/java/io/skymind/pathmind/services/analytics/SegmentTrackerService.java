@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.skymind.pathmind.shared.data.Run;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.segment.analytics.Analytics;
@@ -45,9 +46,10 @@ public class SegmentTrackerService {
 		track(EVENT_TRAINING_COMPLETED, Long.toString(userId), properties);
 	}
 
-	private void track(String event, String userId, Map<String, String> properties) {
+	@Async
+	public void track(String event, String userId, Map<String, String> properties) {
 		if (enabled) {
-			analytics.enqueue(TrackMessage.builder(EVENT_TRAINING_COMPLETED)
+			analytics.enqueue(TrackMessage.builder(event)
 					.userId(userId)
 					.properties(properties));
 			analytics.flush();

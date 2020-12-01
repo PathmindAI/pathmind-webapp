@@ -24,8 +24,8 @@ public class SignUpRequest {
 
     @NotEmpty(message = "password is required")
     @Size(min = 5, max = 50, message = "password length should be between 5 and 50 characters")
-    @Pattern(regexp = "\\w*[a-z]\\w*", message = "password should contain at least one lowercase character")
-    @Pattern(regexp = "\\w*[A-Z]\\w*", message = "password should contain at least one uppercase character")
+    @Pattern(regexp = "\\w*[a-z]+\\w*", message = "password should contain at least one lowercase character")
+    @Pattern(regexp = "\\w*[A-Z]+\\w*", message = "password should contain at least one uppercase character")
     private String password;
 
 }
