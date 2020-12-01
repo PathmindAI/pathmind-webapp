@@ -13,6 +13,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
 
 public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver {
@@ -50,7 +51,8 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new ExperimentNotesFieldExperimentSwitchedViewSubscriber(this, saveConsumer));
+                new ExperimentNotesFieldExperimentSwitchedViewSubscriber(this, saveConsumer),
+                new ExperimentNotesFieldExperimentSavedViewSubscriber(this, saveConsumer));
     }
 
     @Override

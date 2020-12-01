@@ -41,6 +41,7 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSavedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -293,7 +294,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return;
         }
 
-        experimentDAO.updateExperiment(experiment);
+        experimentDAO.updateRewardFunction(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
         trainingService.startRun(experiment);
@@ -306,12 +307,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        experiment.setUserNotes(notesField.getNotesText());
-        experimentDAO.updateExperiment(experiment);
-        // REFACTOR -> STEPH -> Post 2426 this should be moved to an event (save) which the component saves. Otherwise what's happening
-        // is that the updateExperiment() method above also updates the user notes but the experiment's instance user notes have not been updated since
-        // this instances experiment and the component's experiment are different instances.
-        // experimentDAO.updateUserNotes(notesField.getExperiment().getId(), notesField.getNotesText());
+        EventBus.post(new ExperimentSavedViewBusEvent());
+        experimentDAO.updateRewardFunction(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
         disableSaveDraft();
