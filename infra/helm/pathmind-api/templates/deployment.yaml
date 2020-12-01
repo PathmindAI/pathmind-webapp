@@ -102,6 +102,11 @@ spec:
               value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
             - name: API_WEBAPP_URL
               value: "{{ .Values.env.API_WEBAPP_URL }}"
+            - name: API_FILE_SIZE
+              value: "{{ .Values.env.API_FILE_SIZE }}"
+            - name: API_REQUEST_SIZE
+              value: "{{ .Values.env.API_REQUEST_SIZE }}"
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

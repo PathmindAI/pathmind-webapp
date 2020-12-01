@@ -4,6 +4,7 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
 import io.skymind.pathmind.shared.data.Model;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -16,17 +17,19 @@ import java.util.concurrent.Future;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model needs to be uploaded again.";
+    public static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model or Pathmind Helper may need to be updated.";
+    public static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS + " Please read <a target='_blank' href='%s'>this article</a> or contact Pathmind support.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
-    private final String convertModelsToSupportLastestVersionURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLastestVersionURL) {
+    @Getter
+    private final String convertModelsToSupportLatestVersionURL;
+
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLatestVersionURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
-        this.convertModelsToSupportLastestVersionURL = convertModelsToSupportLastestVersionURL;
+        this.convertModelsToSupportLatestVersionURL = convertModelsToSupportLatestVersionURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -117,10 +120,10 @@ public class ProjectFileCheckService {
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
             case OLD_REWARD_VARIABLES :
-                return convertModelsToSupportLastestVersionURL;
+                return convertModelsToSupportLatestVersionURL;
             default :
                 // Currently only invalid model reason is reward variables 
-                return convertModelsToSupportLastestVersionURL;
+                return convertModelsToSupportLatestVersionURL;
         }
     }
 }
