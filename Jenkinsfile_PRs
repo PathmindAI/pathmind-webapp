@@ -215,6 +215,7 @@ pipeline {
                 script {
                     // Define a unique name for the tests container and helm release
                     RELEASE_ID = "${IMAGE_NAME}-${env.BUILD_NUMBER}"
+                    RELEASE_ID_API = "${IMAGE_NAME}-api-${env.BUILD_NUMBER}"
                     echo "Global pathmind Id set to ${RELEASE_ID}"
                     echo "Merging with dev"
                     sh "cd ${WORKSPACE} && git merge origin/dev"
@@ -318,7 +319,7 @@ pipeline {
                 script {
                     try {
                         echo "Running smoke tests"
-                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID}-api/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=smoke -f pom.xml -P bdd-tests")
+                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID_API}:8081/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=smoke -f pom.xml -P bdd-tests")
                         publishHTML(target: [
                             reportDir: 'pathmind-bdd-tests/target/site/serenity',
                             reportFiles: 'index.html',
@@ -332,7 +333,7 @@ pipeline {
                         if ( TEST_STATUS == 0 && "${env.ghprbPullTitle}".contains("HOTFIX") != true ) {
                             sh "rm -rf pathmind-bdd-tests/target/"
                             echo "Running full tests"
-                            TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID}-api/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -f pom.xml -P bdd-tests")
+                            TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID_API}:8081/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -f pom.xml -P bdd-tests")
                             publishHTML(target: [
                                 reportDir: 'pathmind-bdd-tests/target/site/serenity',
                                 reportFiles: 'index.html',
@@ -351,7 +352,7 @@ pipeline {
 
                             echo "Running E2E tests"
                             sh "rm -rf pathmind-bdd-tests/target/"
-                            TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID}-api/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=e2e -f pom.xml -P bdd-tests")
+                            TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dapi.url=http://${RELEASE_ID_API}:8081/ -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=e2e -f pom.xml -P bdd-tests")
                             publishHTML(target: [
                                 reportDir: 'pathmind-bdd-tests/target/site/serenity',
                                 reportFiles: 'index.html',
