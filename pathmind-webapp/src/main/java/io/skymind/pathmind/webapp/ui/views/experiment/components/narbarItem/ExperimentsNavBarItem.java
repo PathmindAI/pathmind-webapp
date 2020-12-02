@@ -20,7 +20,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -77,7 +77,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
 
-        EventBus.post(new ExperimentChangedViewBusEvent(selectedExperiment));
+        if (experiment.isDraft() == selectedExperiment.isDraft()) {
+            // this is to prevent emission when the view has to be changed
+            // e.g. from Experiment View to New Experiment View
+            EventBus.post(new ExperimentSwitchedViewBusEvent(selectedExperiment));
+        }
     }
 
     @EventHandler

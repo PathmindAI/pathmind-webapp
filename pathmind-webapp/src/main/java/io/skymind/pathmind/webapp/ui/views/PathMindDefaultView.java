@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.page.Page;
@@ -17,6 +18,9 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -116,5 +120,9 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     @Override
     public String getPageTitle() {
         return PathmindUtils.getPageTitle();
+    }
+
+    public Supplier<Optional<UI>> getUISupplier() {
+        return () -> getUI();
     }
 }

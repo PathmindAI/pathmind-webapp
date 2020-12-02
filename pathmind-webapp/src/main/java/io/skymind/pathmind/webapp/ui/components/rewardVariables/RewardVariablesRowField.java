@@ -21,7 +21,7 @@ import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusE
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentSwitchedViewSubscriber;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -108,7 +108,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this, getUISupplier,
-                new RewardVariablesRowFieldExperimentChangedViewSubscriber(this));
+                new RewardVariablesRowFieldExperimentSwitchedViewSubscriber(this));
     }
 
     @Override

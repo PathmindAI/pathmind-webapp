@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
 import java.util.List;
 
