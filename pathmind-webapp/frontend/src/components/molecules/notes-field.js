@@ -64,6 +64,24 @@ class NotesField extends PolymerElement {
                 type: String,
                 observer: "_notesChanged",
             },
+            _notesChangeObserverLock: {
+                type: Boolean,
+                value: false,
+            },
+            _notesChangedObserverTriggered: {
+                type: Boolean,
+                value: false,
+            },
+            allowautosave: {
+                type: Boolean,
+                value: true,
+                observer: "_allowAutoSaveChanged",
+            },
+            hidesavebutton: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+            },
             unsaved: {
                 type: Boolean,
                 value: false,
@@ -156,7 +174,6 @@ class NotesField extends PolymerElement {
                     align-self: center;
                     font-size: var(--lumo-font-size-s);
                     color: var(--lumo-secondary-text-color);
-                    margin-right: var(--lumo-space-s);
                 }
                 .wordcount-label[warning] {
                     color: var(--pm-danger-color);
@@ -170,6 +187,9 @@ class NotesField extends PolymerElement {
                     opacity: 0;
                     transition: opacity 0.5s;
                 }
+                :host([hidesavebutton]) .hint-label {
+                    display: none;
+                }
                 vaadin-button {
                     min-width: 45px;
                     height: 1.4rem;
@@ -178,6 +198,7 @@ class NotesField extends PolymerElement {
                     font-weight: normal;
                     padding: 0 var(--lumo-space-xs);
                     margin: 0;
+                    margin-left: var(--lumo-space-s);
                 }
                 vaadin-text-area {
                     width: 100%;
@@ -194,15 +215,23 @@ class NotesField extends PolymerElement {
                 <span class="hint-label" hidden="[[!unsaved]]">Unsaved Notes!</span>
                 <iron-icon icon="vaadin:check" id="saveIcon"></iron-icon>
                 <span class="wordcount-label" warning$="[[warning]]">[[wordcount]]/[[max]]</span>
-                <vaadin-button id="save" on-click="onSave" disabled=[[readonly]]>Save</vaadin-button>
+                <vaadin-button id="save" on-click="onSave" disabled=[[readonly]] hidden$=[[hidesavebutton]]>Save</vaadin-button>
             </div>
             <vaadin-text-area
                 id="textarea"
                 theme="notes-field"
                 placeholder="[[placeholder]]"
                 readonly$=[[readonly]]
-                compact$=[[compact]]></vaadin-text-area>
+                compact$=[[compact]]
+                on-keyup="onNotesChange"></vaadin-text-area>
         `;
+    }
+
+    _allowAutoSaveChanged(newValue, oldValue) {
+        this.$.textarea.removeEventListener("blur", this.autoSave.bind(this));
+        if (newValue) {
+            this.$.textarea.addEventListener("blur", this.autoSave.bind(this));
+        }
     }
 
     ready() {
@@ -214,9 +243,11 @@ class NotesField extends PolymerElement {
                 this.unsaved = true;
             }
         }, 300));
-        this.$.textarea.addEventListener("blur", event => {
-            this.$.save.click();
-        });
+        this._allowAutoSaveChanged(this.allowautosave);
+    }
+
+    autoSave(event) {
+        this.$.save.click();
     }
 
     canSave(updatedNotesText) {

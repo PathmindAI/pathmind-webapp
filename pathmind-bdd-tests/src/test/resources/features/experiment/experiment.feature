@@ -102,3 +102,36 @@ Feature: Experiment page
     Then Check side bar experiments list Experiment #1,Experiment #2,Experiment #3
     When Open tab 0
     Then Check side bar experiments list Experiment #1,Experiment #2
+
+  Scenario: Check notes autosave on experiment page
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Add note Experiment 1 Note to the experiment page
+    When Click side bar new experiment btn
+    When Add note Experiment 2 Note to the experiment page
+    When Click side bar new experiment btn
+    When Click side bar experiment Experiment #1
+    Then Check experiment notes is Experiment 1 Note
+    When Click side bar experiment Experiment #2
+    Then Check experiment notes is Experiment 2 Note
+    When Click side bar experiment Experiment #3
+    When Click project start run button
+    When Click side bar new experiment btn
+    When Add note Experiment 4 Note to the experiment page
+    When Click side bar experiment Experiment #3
+    When Click side bar experiment Experiment #4
+    Then Check experiment notes is Experiment 4 Note
+    When Click side bar experiment Experiment #1
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button
+    When Click side bar new experiment btn
+    When Add note Experiment 5 Note to the experiment page
+    When Click side bar experiment Experiment #1
+    When Click side bar experiment Experiment #5
+    Then Check experiment notes is Experiment 5 Note
+    When Click side bar experiment Experiment #3
+    When Click in 'Stop Training' button
+    Then Check that the 'Stop Training' confirmation dialog is shown
+    When In confirmation dialog click in 'Stop Training' button

@@ -79,8 +79,8 @@ public class ExperimentDAO {
         ExperimentRepository.shareExperimentWithSupport(ctx, experimentId);
     }
 
-    public void updateExperiment(Experiment experiment) {
-        ExperimentRepository.updateExperiment(ctx, experiment);
+    public void updateRewardFunction(Experiment experiment) {
+        ExperimentRepository.updateRewardFunction(ctx, experiment);
     }
 
     public void updateTrainingStatus(DSLContext transactionCtx, Experiment experiment) {

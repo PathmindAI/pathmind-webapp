@@ -116,6 +116,8 @@ public class ProjectPage extends PageObject {
             String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
             if (modelNumber.equals(modelId)) {
                 webElement.click();
+                waitABit(3500);
+                break;
             }
         }
     }
