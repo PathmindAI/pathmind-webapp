@@ -105,6 +105,7 @@ public class ProjectPage extends PageObject {
                 WebElement shadow = utils.expandRootElement(webElement);
                 WebElement button = utils.expandRootElement(shadow.findElement(By.cssSelector("vaadin-button:not([hidden])")));
                 button.findElement(By.cssSelector("button")).click();
+                waitABit(3000);
                 break;
             }
         }
@@ -123,8 +124,8 @@ public class ProjectPage extends PageObject {
     }
 
     public void changeModelsSidebarListTo(String modelsList) {
-        getDriver().findElement(By.xpath("//vaadin-select[@theme='models-nav-bar-select small']")).click();
-        getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[text()='" + modelsList + "']")).click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-select[@theme='models-nav-bar-select small']"));
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-list-box/vaadin-item[text()='" + modelsList + "']"));
     }
 
     public void checkThatModelsSidebarModelContainsDraftTagFalse(String model, Boolean draft) {

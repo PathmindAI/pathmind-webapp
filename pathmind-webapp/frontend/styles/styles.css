@@ -418,6 +418,10 @@ background-color: var(--pm-grey-color-light);
     margin-top: var(--lumo-space-xl);
 }
 
+.upload-model-view .warning-label {
+    padding: 0 var(--lumo-space-xxs);
+}
+
 account-view {
     background: var(--pm-app-bg-color);
     height: 100%;
