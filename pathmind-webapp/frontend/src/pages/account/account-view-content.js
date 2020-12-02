@@ -13,8 +13,32 @@ class AccountViewContent extends PolymerElement {
                 account-view-content .small:empty {
                     display: none;
                 }
+                .info {
+                    position: relative;
+                }
+                #rotateApiMenu {
+                    margin-right: calc(-1 * var(--lumo-space-xs));
+                }
                 #rotateApiKeyBtn {
                     display: none;
+                }
+                .api-title-wrapper {
+                    justify-content: flex-end;
+                    align-items: center;
+                    width: 100%;
+                }
+                .api-title-wrapper .title {
+                    justify-self: flex-start;
+                    flex: 1;
+                    text-align: left;
+                }
+                #apiExpiryDate {
+                    color: var(--lumo-secondary-text-color);
+                    font-size: var(--lumo-font-size-xs);
+                }
+                #small-menu {
+                    width: auto;
+                    margin: 0;
                 }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
@@ -45,10 +69,9 @@ class AccountViewContent extends PolymerElement {
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
                         <vaadin-vertical-layout class="info" style="width: 100%;">
-                            <div class="title">Access Token</div>
-                            <div class="data">{{apiKey}}</div>
-                            <vaadin-horizontal-layout style="width: 100%;" class="block">
-                                <div class="data small">{{apiKeyExpiresPhrase}}</div>
+                            <vaadin-horizontal-layout class="api-title-wrapper">
+                                <div class="title">Access Token</div>
+                                <div id="apiExpiryDate">{{apiKeyExpiresPhrase}}</div>
                                 <vaadin-context-menu id="rotateApiMenu">
                                     <template>
                                         <vaadin-list-box>
@@ -57,14 +80,13 @@ class AccountViewContent extends PolymerElement {
                                             </vaadin-item>
                                         </vaadin-list-box>
                                     </template>
-                                    <vaadin-button id="rotateApiKeyBtn" theme="small">
-                                        Rotate
-                                    </vaadin-button>
+                                    <vaadin-button id="rotateApiKeyBtn" theme="small"></vaadin-button>
                                     <vaadin-button id="small-menu" theme="tertiary small">
                                         <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
                                     </vaadin-button>
                                 </vaadin-context-menu>
                             </vaadin-horizontal-layout>
+                            <div class="data">{{apiKey}}</div>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
