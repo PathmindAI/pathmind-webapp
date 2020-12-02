@@ -3,18 +3,18 @@ import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
 class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                .block {
+            <style>
+                account-view-content .block {
                     align-items: flex-start;
                 }
-                .small {
+                account-view-content .small {
                     font-size: var(--lumo-font-size-s);
                 }
-                .small:empty {
+                account-view-content .small:empty {
                     display: none;
                 }
-                vaadin-button {
-                    min-width: auto;
+                #rotateApiKeyBtn {
+                    display: none;
                 }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
@@ -45,13 +45,25 @@ class AccountViewContent extends PolymerElement {
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
                         <vaadin-vertical-layout class="info" style="width: 100%;">
-                            <div class="title">API Key</div>
+                            <div class="title">Access Token</div>
                             <div class="data">{{apiKey}}</div>
                             <vaadin-horizontal-layout style="width: 100%;" class="block">
                                 <div class="data small">{{apiKeyExpiresPhrase}}</div>
-                                <vaadin-button id="rotateApiKeyBtn" theme="small">
-                                    Rotate
-                                </vaadin-button>
+                                <vaadin-context-menu id="rotateApiMenu">
+                                    <template>
+                                        <vaadin-list-box>
+                                            <vaadin-item on-click="triggerRotateBtn">
+                                                Rotate
+                                            </vaadin-item>
+                                        </vaadin-list-box>
+                                    </template>
+                                    <vaadin-button id="rotateApiKeyBtn" theme="small">
+                                        Rotate
+                                    </vaadin-button>
+                                    <vaadin-button id="small-menu" theme="tertiary small">
+                                        <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
+                                    </vaadin-button>
+                                </vaadin-context-menu>
                             </vaadin-horizontal-layout>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
@@ -85,6 +97,19 @@ class AccountViewContent extends PolymerElement {
                 </div>
             </div>
         </vaadin-horizontal-layout>`;
+    }
+
+    _attachDom(dom) {
+        this.appendChild(dom);
+    }
+
+    ready() {
+        super.ready();
+        document.getElementById("rotateApiMenu")._setProperty("openOn", "click");
+    }
+
+    triggerRotateBtn() {
+        document.getElementById("rotateApiKeyBtn").click();
     }
 
     static get is() {
