@@ -61,10 +61,10 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
     }
 
     public boolean isSourceSameUI(T event) {
-        if (event.getSourceId() < 0 || uiSupplier.get().isEmpty()) {
+        if (event.getSourceUI() == null || uiSupplier.get().isEmpty()) {
             return false;
         }
-        return event.getSourceId() == uiSupplier.get().get().getUIId();
+        return event.getSourceUI().equals(uiSupplier.get().get());
     }
 
     public Supplier<Optional<UI>> getUiSupplier() {
