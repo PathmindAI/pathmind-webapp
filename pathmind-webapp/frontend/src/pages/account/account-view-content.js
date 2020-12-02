@@ -40,6 +40,28 @@ class AccountViewContent extends PolymerElement {
                     width: auto;
                     margin: 0;
                 }
+                #apiCopyBtn {
+                    position: relative;
+                    align-self: flex-end;
+                }
+                #apiCopyBtn span {
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    left: -.25rem;
+                    text-align: center;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    transform: translateY(-50%);
+                }
+                #apiCopyBtn span iron-icon {
+                    width: 1rem;
+                    height: 1rem;
+                    margin-right: var(--lumo-space-xxs);
+                }
+                #apiCopyBtn span[active] {
+                    opacity: 1;
+                }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
               <div class="content">
@@ -86,7 +108,17 @@ class AccountViewContent extends PolymerElement {
                                     </vaadin-button>
                                 </vaadin-context-menu>
                             </vaadin-horizontal-layout>
-                            <div class="data">{{apiKey}}</div>
+                            <vaadin-vertical-layout class="data" style="width: 100%">
+                                <div id="accessToken">{{apiKey}}</div>
+                                <vaadin-button id="apiCopyBtn" theme="small" on-click="copyApi">
+                                    <span active>
+                                        <iron-icon icon="vaadin:copy-o"></iron-icon>Copy
+                                    </span>
+                                    <span>
+                                        <iron-icon icon="vaadin:check"></iron-icon>Done
+                                    </span>
+                                </vaadin-button>
+                            </vaadin-vertical-layout>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
@@ -132,6 +164,26 @@ class AccountViewContent extends PolymerElement {
 
     triggerRotateBtn() {
         document.getElementById("rotateApiKeyBtn").click();
+    }
+
+    copyApi(event) {
+        const copyButton = document.getElementById("apiCopyBtn");
+        const copyIcon = copyButton.querySelector("span:first-child");
+        const checkmarkIcon = copyButton.querySelector("span:last-child");
+        const range = document.createRange();
+        range.selectNode(document.getElementById("accessToken"));
+        const select = window.getSelection();
+        select.removeAllRanges();
+        select.addRange(range);
+        document.execCommand("copy");
+        select.removeAllRanges();
+
+        copyIcon.removeAttribute("active");
+        checkmarkIcon.setAttribute("active", true);
+        setTimeout(function() {
+            copyIcon.setAttribute("active", true);
+            checkmarkIcon.removeAttribute("active");
+        }, 1200);
     }
 
     static get is() {
