@@ -213,4 +213,8 @@ public class HomePage extends PageObject {
         searchBoxShadow.click();
         searchBoxShadow.sendKeys(Keys.ENTER);
     }
+
+    public void clickUserMenuBtn(String btn) {
+        getDriver().findElement(By.cssSelector(".vaadin-menu-item")).click();
+    }
 }

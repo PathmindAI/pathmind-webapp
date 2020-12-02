@@ -71,4 +71,9 @@ public class AccountStepDefinitions {
     public void checkThatUserNameChangedTo(String firstName, String lastName) {
         loginPageSteps.checkHeaderUsername(firstName + Serenity.sessionVariableCalled("firstNameRandomNumber") + " " + lastName + Serenity.sessionVariableCalled("lastNameRandomNumber"));
     }
+
+    @When("^Click account page api copy btn and paste to the search field$")
+    public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
+        accountPageSteps.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
+    }
 }

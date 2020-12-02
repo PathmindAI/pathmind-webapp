@@ -46,4 +46,9 @@ public class AccountPageSteps {
     public void inputAccountPageLastName(String lastName) {
         accountPage.inputAccountPageLastName(lastName);
     }
+
+    @Step
+    public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
+        accountPage.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
+    }
 }
