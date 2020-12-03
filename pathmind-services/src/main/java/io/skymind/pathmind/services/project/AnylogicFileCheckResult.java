@@ -28,10 +28,10 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     @Override
     public boolean isFileCheckSuccessful() {
         boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
-        if (!isAllSuccessful) {
-            log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}",
-                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique());
-        }
+//        if (!isAllSuccessful) {
+            log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}, Helper: {}",
+                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique(), definedHelpers);
+//        }
         return isAllSuccessful;
     }
 

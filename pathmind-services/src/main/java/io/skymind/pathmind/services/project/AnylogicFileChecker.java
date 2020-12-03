@@ -235,6 +235,7 @@ public class AnylogicFileChecker implements FileChecker {
                 if (file.isDirectory()) {
                     continue;
                 }
+                log.info("kepricondebug : write {}", fileDir.getAbsolutePath());
                 try (InputStream inputStream = jar.getInputStream(file);
                      FileOutputStream fileOutputStream = new FileOutputStream(fileDir)) {
                     while (inputStream.available() > 0) {

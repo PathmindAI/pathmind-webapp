@@ -26,6 +26,7 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     }
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        log.info("kepricondebug100 : {}", name);
         this.qualifiedClassName = name;
     }
 
@@ -47,7 +48,9 @@ public class ByteCodeAnalyzer extends ClassVisitor {
 
     /*To find and add PathmindHelper instance variables in the format of QualifiedClassName#instanceMemberName*/
     public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        log.info("kepricondebug1 : desc : {}, signature : {}, name : {}", desc, signature, name);
         if (desc.contains("PathmindHelper")) {
+            log.info("kepricondebug2 : desc : {}, quialifiedClassName : {}, name : {}", desc, qualifiedClassName, name);
             this.qualifiedClasses.add(this.qualifiedClassName + "##" + name);
         }
         return null;
@@ -59,6 +62,7 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     /*To iterate and read all class files*/
     public List<String> byteParser(List<String> classFiles) throws IOException {
 
+        log.info("kepricondebug00 : {}", classFiles);
         for (String classFile : classFiles) {
 
             try (InputStream inputStream = new FileInputStream(classFile)) {
