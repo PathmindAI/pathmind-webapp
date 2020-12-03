@@ -3,7 +3,7 @@ package io.skymind.pathmind.api.conf;
 import io.skymind.pathmind.api.conf.security.AuthenticationFailureHandlerEntryPoint;
 import io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProcessingFilter;
 import io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProvider;
-import io.skymind.pathmind.api.domain.user.signup.SingupController;
+import io.skymind.pathmind.api.domain.user.signup.SignupController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationFailureHandlerEntryPoint)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, SingupController.SIGNUP_URL + "/**").permitAll()
+                .antMatchers(HttpMethod.POST, SignupController.SIGNUP_URL + "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()

@@ -21,7 +21,6 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -35,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static io.skymind.pathmind.api.domain.user.signup.SingupController.SIGNUP_URL;
+import static io.skymind.pathmind.api.domain.user.signup.SignupController.SIGNUP_URL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SIGN_UP;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFICATION_EMAIL;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -45,7 +44,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(path = SIGNUP_URL, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 @Validated
-public class SingupController {
+public class SignupController {
 
     public static final String SIGNUP_URL = "/signup";
 
@@ -54,7 +53,7 @@ public class SingupController {
     private final SegmentTrackerService segmentTrackerService;
     private final EmailNotificationService emailNotificationService;
 
-    public SingupController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
+    public SignupController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
                             UserDAO userDAO,
                             SegmentTrackerService segmentTrackerService,
                             EmailNotificationService emailNotificationService) {
