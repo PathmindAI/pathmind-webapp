@@ -157,12 +157,13 @@ public class AWSExecutionProvider implements ExecutionProvider {
             boolean isCompletingByReport = experimentReport.isPresent() && experimentReport.get().contains("Success: Training completed successfully");
 
             if (isCompletingByReport) {
-                boolean isCompletingByExperimentState = experimentState != null && experimentState.getCheckpoints() != null
-                    && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault(CheckPoint.TERMINATED, 0L));
-
-                if (!isCompletingByExperimentState) {
-                    experimentState.getCheckpoints().stream().forEach(chk -> chk.setStatus(CheckPoint.TERMINATED));
+                // make sure every trial of experimentStat has "TERMINATED" status
+                if (experimentState != null && experimentState.getCheckpoints() != null) {
+                    experimentState.getCheckpoints().stream()
+                        .filter(chk -> chk.getStatus().equals(CheckPoint.RUNNING))
+                        .forEach(chk -> chk.setStatus(CheckPoint.TERMINATED));
                 }
+
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
                 experimentReport.ifPresent(m -> {
                     String[] lines = m.split("\n");
