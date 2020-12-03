@@ -106,3 +106,19 @@ Feature: Model page
     When Refresh page
     Then Check side bar models 'Model #1' date is 'Created 1 minute ago'
     Then Check model page model '1' created is '1 minute ago'
+
+  Scenario: Check model notes autosave
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Click model breadcrumb btn
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    Then Check that wizard upload alp file page is opened
+    When Add model note Model #2 note to the project page
+    When Click the model name 1
+    When Add model note Model #1 note to the project page
+    When Click the model name 2
+    Then Check model note Model #2 note on the project page
+    When Click the model name 1
+    Then Check model note Model #1 note on the project page

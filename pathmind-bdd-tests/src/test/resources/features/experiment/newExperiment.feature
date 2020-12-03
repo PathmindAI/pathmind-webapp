@@ -105,3 +105,18 @@ Feature: New experiment page
     When Refresh page
     Then Check that new experiment AutotestProject page is opened
     Then Check side bar experiment 'Experiment #1' date is 'Created 1 minute ago'
+
+  Scenario: Check notes autosave on new experiment page
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Add note Experiment 1 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Wait a bit 3000 ms
+    When Add note Experiment 2 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Click side bar experiment Experiment #1
+    Then Check experiment notes is Experiment 1 Note
+    When Click side bar experiment Experiment #2
+    Then Check experiment notes is Experiment 2 Note

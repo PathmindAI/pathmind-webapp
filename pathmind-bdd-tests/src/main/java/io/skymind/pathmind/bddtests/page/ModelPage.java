@@ -182,4 +182,17 @@ public class ModelPage extends PageObject {
         int cellNumber = Integer.parseInt(projectCellNumber) + 1;
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
     }
+
+    public void addModelNoteToTheProjectPage(String note) {
+        WebElement notesShadow = utils.expandRootElement(getDriver().findElement(By.xpath("(//notes-field)[2]")));
+        notesShadow.findElement(By.cssSelector("#textarea")).click();
+        notesShadow.findElement(By.cssSelector("#textarea")).sendKeys(note);
+        waitABit(3000);
+    }
+
+    public void checkModelNoteOnTheProjectPage(String note) {
+        WebElement notesShadow = utils.expandRootElement(getDriver().findElement(By.xpath("(//notes-field)[2]")));
+        assertThat(notesShadow.findElement(By.cssSelector("#textarea")).getAttribute("value"), is(note));
+    }
+
 }

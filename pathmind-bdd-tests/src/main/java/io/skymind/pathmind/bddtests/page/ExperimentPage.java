@@ -53,6 +53,7 @@ public class ExperimentPage extends PageObject {
         WebElement notesShadow = utils.expandRootElement(notesBlock);
         notesShadow.findElement(notesTextarea).click();
         notesShadow.findElement(notesTextarea).sendKeys(note);
+        waitABit(3000);
     }
 
     public void clickCurrentExperimentArchiveButton() {

@@ -133,4 +133,14 @@ public class ModelPageSteps {
     public void checkModelPageCreatedIs(String model, String date) {
         modelPage.checkModelPageCreatedIs(model, date);
     }
+
+    public void addModelNoteToTheProjectPage(String note) {
+        modelPage.addModelNoteToTheProjectPage(note);
+    }
+
+    @Step
+    public void checkModelNoteOnTheProjectPage(String note) {
+        modelPage.checkModelNoteOnTheProjectPage(note);
+    }
+
 }

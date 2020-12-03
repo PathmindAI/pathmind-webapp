@@ -58,8 +58,11 @@ Feature: Wizard page
     When Input name of the new project AutotestProject and click Create project button
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard upload ALP next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard model details next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
     Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
@@ -97,3 +100,22 @@ Feature: Wizard page
     When Click in 'Export your model as a standalone Java application.' button
     When Open tab 1
     Then Check That model upload link 'Export your model as a standalone Java application' opened
+
+  Scenario: Check wizard `This draft model is archived.` label
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Click model breadcrumb btn
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click project/ breadcrumb btn
+    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Change models sidebar list to 'Archived'
+    When Click the model name 2
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard upload ALP next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard model details next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened

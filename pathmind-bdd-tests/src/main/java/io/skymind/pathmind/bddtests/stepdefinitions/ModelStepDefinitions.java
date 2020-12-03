@@ -129,4 +129,15 @@ public class ModelStepDefinitions {
     public void checkModelPageCreatedIs(String model, String date) {
         modelPageSteps.checkModelPageCreatedIs(model, date);
     }
+
+    @When("^Add model note (.*) to the project page$")
+    public void addModelNoteToTheProjectPage(String note) {
+        modelPageSteps.addModelNoteToTheProjectPage(note);
+    }
+
+    @Then("^Check model note (.*) on the project page$")
+    public void checkModelNoteOnTheProjectPage(String note) {
+        modelPageSteps.checkModelNoteOnTheProjectPage(note);
+    }
+
 }
