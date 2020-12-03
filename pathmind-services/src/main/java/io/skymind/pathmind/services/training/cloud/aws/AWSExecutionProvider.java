@@ -259,7 +259,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
         }
 
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     private ExperimentState getExperimentState(String jobHandle) {
