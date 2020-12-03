@@ -16,6 +16,9 @@ class AccountViewContent extends PolymerElement {
                 .info {
                     position: relative;
                 }
+                vaadin-button[theme~="small"] {
+                    height: 1.8rem;
+                }
                 #rotateApiMenu {
                     margin-right: calc(-1 * var(--lumo-space-xs));
                 }
@@ -45,11 +48,13 @@ class AccountViewContent extends PolymerElement {
                     align-self: flex-end;
                 }
                 #apiCopyBtn span {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     position: absolute;
                     width: 100%;
                     top: 50%;
                     left: -.25rem;
-                    text-align: center;
                     opacity: 0;
                     transition: opacity 0.3s;
                     transform: translateY(-50%);
