@@ -51,4 +51,14 @@ public class AccountPageSteps {
     public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
         accountPage.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
     }
+
+    @Step
+    public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
+        accountPage.clickAccessTokenRotateBtnAndCheckThatTokenChanged();
+    }
+
+    @Step
+    public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
+        accountPage.accountPageAccessTokenCheckTokenExpires(expiresDays);
+    }
 }

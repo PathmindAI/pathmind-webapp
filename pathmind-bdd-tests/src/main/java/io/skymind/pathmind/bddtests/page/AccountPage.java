@@ -11,8 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @DefaultUrl("page:home.page")
 public class AccountPage extends PageObject {
@@ -114,5 +113,17 @@ public class AccountPage extends PageObject {
         input.sendKeys(Keys.CONTROL + "V");
         waitABit(2500);
         assertThat(accessToken.getText(), is(input.getAttribute("value")));
+    }
+
+    public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
+        String beforeRefreshToken = accessToken.getText();
+        getDriver().findElement(By.id("small-menu")).click();
+        getDriver().findElement(By.xpath("//vaadin-item[normalize-space(text()='Rotate')]")).click();
+        waitABit(2500);
+        assertThat(beforeRefreshToken, is(not(accessToken.getText())));
+    }
+
+    public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
+        assertThat(getDriver().findElement(By.id("apiExpiryDate")).getText(), is(expiresDays));
     }
 }
