@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
@@ -13,6 +15,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.utils.ObservationUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import org.springframework.util.CollectionUtils;
@@ -24,6 +29,7 @@ public class ObservationsPanel extends VerticalLayout {
     private ObservationsTable observationsTable;
     // Only used for ExperimentView and NewExperimentView and NOT ProjectView - for the changed experiment logic in the subscriber
     private Experiment experiment;
+    private List<Observation> selectedObservations;
 
     // For ProjectView only
     public ObservationsPanel(List<Observation> modelObservations, Boolean hideCheckboxes) {
@@ -32,34 +38,48 @@ public class ObservationsPanel extends VerticalLayout {
 
     public ObservationsPanel(Experiment experiment) {
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), true, false);
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
     }
 
     public ObservationsPanel(Experiment experiment, Boolean isReadOnly) {
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly, false);
-        this.experiment = experiment;
+        this.experiment = experiment.deepClone();
     }
 
-    public ObservationsPanel(List<Observation> modelObservatons, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
+    public ObservationsPanel(List<Observation> modelObservations, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
+
+        this.selectedObservations = selectedObservations;
 
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
         
         if (hideCheckboxes) {
-            add(createObservationsList(modelObservatons));
+            add(createObservationsList(modelObservations));
         } else {
             observationsTable = new ObservationsTable(isReadOnly);
             add(getObservationsPanel(isReadOnly));
-            setupObservationTable(modelObservatons, selectedObservations);
+            setupObservationTable(modelObservations, selectedObservations);
         }
 
         setWidthFull();
         setPadding(false);
         setSpacing(false);
+
+        addValueChangeListener(evt -> {
+            if(experiment == null)
+                return;
+            // This is only for the experiment views. In that case we want to make sure they are different, meaning it's due to a
+            // user initiated action rather than switching experiments within the view.
+            List<Observation> selectedObservationsFromEvent = evt.stream().collect(Collectors.toList());
+            if(!ObservationUtils.areObservationsEqual(this.selectedObservations, selectedObservationsFromEvent)) {
+                experiment.setSelectedObservations(selectedObservationsFromEvent);
+                EventBus.post(new ExperimentChangedViewBusEvent(experiment));
+            }
+        });
     }
 
-    private void setupObservationTable(List<Observation> modelObservations, Collection<Observation> selectedObservations) {
+    private void setupObservationTable(List<Observation> modelObservations, List<Observation> selectedObservations) {
         observationsTable.setItems(new HashSet<>(modelObservations));
         setSelectedObservations(CollectionUtils.isEmpty(selectedObservations) ? modelObservations : selectedObservations);
     }
@@ -76,7 +96,12 @@ public class ObservationsPanel extends VerticalLayout {
         return new ArrayList<>(observationsTable.getValue());
     }
 
-    public void setSelectedObservations(Collection<Observation> observations) {
+    public void setSelectedObservations(List<Observation> observations) {
+        // REFACTOR -> This should really be part of the experiment because we have a lot of code that has to be duplicated all over the place
+        // to have the selectedObservations follow. And really they are the selected observations for the experiment.
+        // IMPORTANT -> This needs to be done before setting the value. If the above refactoring is done then this is no longer needed,
+        // and in fact this whole method may not be needed outside of the project view.
+        this.selectedObservations = observations;
         observationsTable.setValue(new HashSet<>(observations));
     }
 
@@ -96,9 +121,5 @@ public class ObservationsPanel extends VerticalLayout {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
     }
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 
 /**
@@ -14,20 +14,20 @@ import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
  * subscriber's setup in the view itself rather than the component to get the experiment id. In fact we don't need this type of
  * subscriber in the other view.
  */
-public class ObservationsPanelExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
+public class ObservationsPanelExperimentSwitchedViewSubscriber extends ExperimentSwitchedViewSubscriber {
 
     private ObservationsPanel observationsPanel;
     private ObservationDAO observationDAO;
 
     // We use a supplier because this subscriber is used by more than one view.
-    public ObservationsPanelExperimentChangedViewSubscriber(ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
+    public ObservationsPanelExperimentSwitchedViewSubscriber(ObservationDAO observationDAO, ObservationsPanel observationsPanel) {
         super();
         this.observationsPanel = observationsPanel;
         this.observationDAO = observationDAO;
     }
 
     @Override
-    public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+    public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         observationsPanel.setExperiment(event.getExperiment());
         List<Observation> experimentObservations = observationDAO.getObservationsForExperiment(event.getExperiment().getId());
         observationsPanel.setSelectedObservations(experimentObservations);

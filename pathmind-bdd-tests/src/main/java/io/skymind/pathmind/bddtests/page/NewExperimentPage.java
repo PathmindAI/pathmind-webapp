@@ -44,6 +44,7 @@ public class NewExperimentPage extends PageObject {
         actions.moveToElement(newExperimentBtn).build().perform();
         waitABit(2500);
         actions.click(newExperimentBtn).build().perform();
+        waitABit(3000);
     }
 
     public void checkThatExperimentPageOpened(String projectName) {
@@ -148,6 +149,7 @@ public class NewExperimentPage extends PageObject {
     public void clickSideBarExperiment(String experimentName) {
         waitABit(2000);
         utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='" + experimentName + "']")));
     }
 
     public void clickObservationsCheckbox(String checkbox) {
