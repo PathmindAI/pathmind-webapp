@@ -16,6 +16,7 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CheckPoint {
     public static final String TERMINATED = "TERMINATED";
+    public static final String RUNNING = "RUNNING";
     public static final String ERROR = "ERROR";
     private String status;
     private double last_update_time;
