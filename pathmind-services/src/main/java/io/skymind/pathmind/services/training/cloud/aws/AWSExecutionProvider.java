@@ -131,7 +131,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             }
 
             ExperimentState experimentState = getExperimentState(jobHandle);
-            List<String> knownErrsCheck = getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR);
+            List<String> knownErrsCheck = new ArrayList<>(getTrialStatus(jobHandle, TrainingFile.KNOWN_ERROR));
 
             Map<String, Long> trialStatusCount = Collections.emptyMap();
             if (experimentState != null) {
