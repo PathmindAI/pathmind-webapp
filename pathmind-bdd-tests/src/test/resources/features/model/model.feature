@@ -115,6 +115,11 @@ Feature: Model page
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
     Then Check that wizard upload alp file page is opened
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Click model breadcrumb btn
     When Add model note Model #2 note to the project page
     When Click the model name 1
     When Add model note Model #1 note to the project page
