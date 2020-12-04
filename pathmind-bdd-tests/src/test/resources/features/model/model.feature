@@ -87,3 +87,24 @@ Feature: Model page
     When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
     When Change models sidebar list to 'Archived'
     Then Check that models sidebar model '2' contains draft tag 'true'
+
+  Scenario: Check model notes autosave
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Click model breadcrumb btn
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    Then Check that wizard upload alp file page is opened
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Click model breadcrumb btn
+    When Add model note Model #2 note to the project page
+    When Click the model name 1
+    When Add model note Model #1 note to the project page
+    When Click the model name 2
+    Then Check model note Model #2 note on the project page
+    When Click the model name 1
+    Then Check model note Model #1 note on the project page

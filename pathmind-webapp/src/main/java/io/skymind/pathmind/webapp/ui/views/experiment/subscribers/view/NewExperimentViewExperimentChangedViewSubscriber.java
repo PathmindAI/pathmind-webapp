@@ -15,18 +15,11 @@ public class NewExperimentViewExperimentChangedViewSubscriber extends Experiment
 
     @Override
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
-        if (ExperimentUtils.isSameModel(newExperimentView.getExperiment(), event.getExperiment().getModelId())) {
-            newExperimentView.setExperiment(event.getExperiment());
-        }
+        newExperimentView.setNeedsSaving();
     }
 
     @Override
     public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
-        if (newExperimentView.getExperiment() == null) {
-            return false;
-        }
-        return ExperimentUtils.isSameModel(newExperimentView.getExperiment(), event.getExperiment().getModelId()) &&
-                !ExperimentUtils.isSameExperiment(event.getExperiment(), newExperimentView.getExperiment());
-
+        return ExperimentUtils.isSameExperiment(event.getExperiment(), newExperimentView.getExperiment());
     }
 }

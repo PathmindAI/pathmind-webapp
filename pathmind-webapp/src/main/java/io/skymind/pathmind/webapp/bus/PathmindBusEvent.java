@@ -8,10 +8,7 @@ public interface PathmindBusEvent {
 
     BusEventType getEventType();
 
-    default int getSourceId() {
-        if (UI.getCurrent() == null) {
-            return -1;
-        }
-        return UI.getCurrent().getUIId();
+    default UI getSourceUI() {
+        return UI.getCurrent();
     }
 }

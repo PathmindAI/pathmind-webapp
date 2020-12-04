@@ -81,4 +81,20 @@ public class AccountStepDefinitions {
     public void clickAccountFooterBtn(String btn) {
         accountPageSteps.clickAccountFooterBtn(btn);
     }
+
+    @When("^Click account page api copy btn and paste to the search field$")
+    public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
+        accountPageSteps.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
+    }
+
+    @Then("^Click access token rotate btn and check that token changed$")
+    public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
+        accountPageSteps.clickAccessTokenRotateBtnAndCheckThatTokenChanged();
+    }
+
+    @Then("^Account page access token check token expires '(.*)'$")
+    public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
+        accountPageSteps.accountPageAccessTokenCheckTokenExpires(expiresDays);
+    }
+
 }

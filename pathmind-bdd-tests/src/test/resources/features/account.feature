@@ -121,3 +121,14 @@ Feature: User accounts tests
     When Click account footer 'Terms of Use' btn
     When Open tab 2
     When Check page url is https://pathmind.com/subscription-agreement/
+
+  Scenario: Check access token copy btn
+    Given Login to the pathmind
+    When Open page account
+    Then Click account page api copy btn and paste to the search field
+
+  Scenario: Check access token rotate btn
+    Given Login to the pathmind
+    When Open page account
+    Then Click access token rotate btn and check that token changed
+    Then Account page access token check token expires 'Expires in 89 days'

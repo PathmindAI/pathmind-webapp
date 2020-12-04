@@ -119,4 +119,14 @@ public class ModelStepDefinitions {
     public void checkModelTitleLabelTagIsArchived(String tag) {
         modelPageSteps.checkModelTitleLabelTagIsArchived(tag);
     }
+
+    @When("^Add model note (.*) to the project page$")
+    public void addModelNoteToTheProjectPage(String note) {
+        modelPageSteps.addModelNoteToTheProjectPage(note);
+    }
+
+    @Then("^Check model note (.*) on the project page$")
+    public void checkModelNoteOnTheProjectPage(String note) {
+        modelPageSteps.checkModelNoteOnTheProjectPage(note);
+    }
 }
