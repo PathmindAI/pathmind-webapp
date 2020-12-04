@@ -18,20 +18,16 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        if (isSameExperiment(event)) {
-            experimentView.getExperiment().setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
-            ExperimentUtils.addOrUpdateRuns(experimentView.getExperiment(), event.getRuns());
-            ExperimentUtils.updatedRunsForPolicies(experimentView.getExperiment(), event.getRuns());
-            experimentView.updateDetailsForExperiment();
-            experimentView.updateButtonEnablement();
-        } else if (ExperimentUtils.isNewExperimentForModel(event.getExperiment(), experimentView.getExperiments(), experimentView.getExperiment().getModelId())) {
-            experimentView.updateExperimentComponentsForSubscribers();
-        }
+        experimentView.getExperiment().setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
+        ExperimentUtils.addOrUpdateRuns(experimentView.getExperiment(), event.getRuns());
+        ExperimentUtils.updatedRunsForPolicies(experimentView.getExperiment(), event.getRuns());
+        experimentView.updateDetailsForExperiment();
+        experimentView.updateButtonEnablement();
     }
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
-        return isSameExperiment(event) || (!experimentView.getExperiment().isArchived() && ExperimentUtils.isSameModel(experimentView.getExperiment(), event.getModelId()));
+        return isSameExperiment(event) || (!experimentView.getExperiment().isArchived());
     }
 
     private boolean isSameExperiment(RunUpdateBusEvent event) {
