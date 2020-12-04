@@ -6,7 +6,10 @@ class AccountViewContent extends PolymerElement {
         return html`
             <style>
                 account-view-content {
+                    display: flex;
                     justify-content: space-between;
+                    flex-direction: column;
+                    height: 100%;
                 }
                 account-view-content .panel-wrapper {
                     min-height: auto;
