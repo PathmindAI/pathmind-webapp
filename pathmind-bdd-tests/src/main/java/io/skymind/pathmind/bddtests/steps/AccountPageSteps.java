@@ -46,4 +46,19 @@ public class AccountPageSteps {
     public void inputAccountPageLastName(String lastName) {
         accountPage.inputAccountPageLastName(lastName);
     }
+
+    @Step
+    public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
+        accountPage.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
+    }
+
+    @Step
+    public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
+        accountPage.clickAccessTokenRotateBtnAndCheckThatTokenChanged();
+    }
+
+    @Step
+    public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
+        accountPage.accountPageAccessTokenCheckTokenExpires(expiresDays);
+    }
 }

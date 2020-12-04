@@ -105,3 +105,14 @@ Feature: User accounts tests
     When Input account page last name 'LastName'
     When Click account edit update btn
     Then Check that user name changed to 'FirstName' 'LastName'
+
+  Scenario: Check access token copy btn
+    Given Login to the pathmind
+    When Open page account
+    Then Click account page api copy btn and paste to the search field
+
+  Scenario: Check access token rotate btn
+    Given Login to the pathmind
+    When Open page account
+    Then Click access token rotate btn and check that token changed
+    Then Account page access token check token expires 'Expires in 89 days'

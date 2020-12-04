@@ -40,6 +40,7 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -245,7 +246,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             this.model = ModelUtils.generateNewDefaultModel();
             model.setProjectId(projectId);
         }
-        project = projectDAO.getProject(projectId)
+        project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
 

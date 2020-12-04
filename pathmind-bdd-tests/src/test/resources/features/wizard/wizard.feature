@@ -119,3 +119,26 @@ Feature: Wizard page
     When Check wizard warning label 'This draft model is archived.' is shown 'true'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
+
+  Scenario Outline: Check that upload model page is not accessed for different users
+    Given Open page sign-up
+    When Fill new user form with name <First Name>, <Last Name>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
+    When Create new user click sign in button
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <Password>
+    Then Check that user <First Name> <Last Name> successfully logged in
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Save experiment url into the variable 'modelUploadUrl'
+    Then Delete all cookies
+    When Login to the pathmind
+    When Open url from the variable 'modelUploadUrl'
+    When Check that Invalid data error page opened
+
+    Examples:
+      | First Name | Last Name | Password   |
+      | Evgeniy    | Autotest  | Pass123456 |

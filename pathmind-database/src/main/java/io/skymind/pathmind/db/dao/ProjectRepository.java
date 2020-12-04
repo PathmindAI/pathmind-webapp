@@ -18,13 +18,6 @@ class ProjectRepository {
                 .fetchInto(Project.class);
     }
 
-    protected static Project getProject(DSLContext ctx, long projectId) {
-        return ctx
-                .selectFrom(PROJECT)
-                .where(PROJECT.ID.eq(projectId))
-                .fetchOneInto(Project.class);
-    }
-
     protected static void archive(DSLContext ctx, long projectId, boolean isArchive) {
         ctx.update(PROJECT)
                 .set(PROJECT.ARCHIVED, isArchive)

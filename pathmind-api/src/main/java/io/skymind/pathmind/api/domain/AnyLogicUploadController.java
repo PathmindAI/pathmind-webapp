@@ -55,7 +55,7 @@ public class AnyLogicUploadController {
     private final String webappDomainUrl;
 
     @Getter
-    private final String modelCheckFailedHelpUrl ;
+    private final String modelCheckFailedHelpUrl;
 
     public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
                                     @Value("${pm.api.model-check-failed-help.url}") String modelCheckFailedHelpUrl) {
@@ -99,15 +99,14 @@ public class AnyLogicUploadController {
             file.transferTo(tempFile.toFile());
             log.debug("saved file {} to temp location {}", file.getOriginalFilename(), tempFile);
 
-            Optional<Project> projectOpt = Optional.ofNullable(projectId).flatMap(projectDAO::getProject);
-
-            projectOpt.ifPresent(project -> {
-                        if (project.getPathmindUserId() != pmUser.getUserId()) {
-                            log.error("project {} does not belong to user {}", project.getId(), pmUser.getUserId());
+            Project project = null;
+            if (projectId != null) {
+                project = projectDAO.getProjectIfAllowed(projectId, pmUser.getUserId())
+                        .orElseThrow(() -> {
+                            log.error("project {} does not belong to user {}", projectId, pmUser.getUserId());
                             throw new AccessDeniedException("project does not belong to user");
-                        }
-                    }
-            );
+                        });
+            }
 
             Model model = new Model();
             model.setFile(ensureZipFileStructure(Files.readAllBytes(tempFile.toAbsolutePath())));
@@ -132,17 +131,16 @@ public class AnyLogicUploadController {
             model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
             model.setNumberOfAgents(alResult.getNumberOfAgents());
 
-            Project project = projectOpt
-                    .orElseGet(() -> {
-                        final LocalDateTime now = LocalDateTime.now();
-                        Project newProject = new Project();
-                        newProject.setName("AL-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
-                        newProject.setPathmindUserId(pmUser.getUserId());
-                        long newProjectId = projectDAO.createNewProject(newProject);
-                        newProject.setId(newProjectId);
-                        log.info("created project {}", newProjectId);
-                        return newProject;
-                    });
+            if (project == null) {
+                final LocalDateTime now = LocalDateTime.now();
+                Project newProject = new Project();
+                newProject.setName("AL-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
+                newProject.setPathmindUserId(pmUser.getUserId());
+                long newProjectId = projectDAO.createNewProject(newProject);
+                newProject.setId(newProjectId);
+                log.info("created project {}", newProjectId);
+                project = newProject;
+            }
 
             modelService.addDraftModelToProject(model, project.getId(), "");
             log.info("created model {}", model.getId());
