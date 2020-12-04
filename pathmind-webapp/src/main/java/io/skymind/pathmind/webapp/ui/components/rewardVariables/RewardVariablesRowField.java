@@ -51,7 +51,9 @@ public class RewardVariablesRowField extends HorizontalLayout {
         rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
-            rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+            if (rv.getArrayIndex() < 2) {
+                rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+            }
 
             rewardVariableNameSpan.addClickListener(event -> {
                 Element spanElement = event.getSource().getElement();

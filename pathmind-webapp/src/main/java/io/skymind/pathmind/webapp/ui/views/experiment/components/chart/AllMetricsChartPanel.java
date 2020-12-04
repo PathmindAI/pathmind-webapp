@@ -54,8 +54,11 @@ public class AllMetricsChartPanel extends VerticalLayout {
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment.deepClone();
-            rewardVariables.stream().forEach(rewardVariable ->
-                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone()));
+            rewardVariables.stream().forEach(rewardVariable -> {
+                if (rewardVariable.getArrayIndex() < 2) {
+                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
+                }
+            });
             selectBestPolicy();
             updateChart();
         }
