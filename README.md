@@ -79,9 +79,7 @@ The different paths issue shows itself by migrations being run again, even thoug
 is because a migration is identified by the triple `(id, author, filepath)`.
 
 When adding migrations, use the pattern `db.YYYYMMDD.xml`, so a migration added on the September 13th 2019 would have
-the name `db.20190913.xml`. As the author use your work email address and the id should again be the current date in the
-format `YYYYMMDD` and if you need more than one migration on that day, add a `-N` suffix. The id for the second
-migration on September 13th 2019 would therefore be `20190913-2`.
+the name `db.20190913.xml`. As the author use your work email address and the id should be the github issue id and if you need more than one migration on that day, add a `-N` suffix. The id for the second
+migration on for github issue #2501 would therefore be `2501-2`. (**Updated Dec 2020**)
 
-This pattern makes it easy for multiple people to work together and even merging the migrations of a single day should
-typically work out just fine.
+This pattern makes it easy for multiple people to work together.
