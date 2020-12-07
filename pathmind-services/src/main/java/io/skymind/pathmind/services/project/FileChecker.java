@@ -5,6 +5,8 @@ import java.io.IOException;
 
 public interface FileChecker {
 
-    public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) throws IOException;
+    FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) throws IOException;
+
+    void cleanup();
 
 }

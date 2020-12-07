@@ -30,7 +30,7 @@ public class FileUtilsTest {
     public void testListFilesSuccess() {
         List<String> expectedList = new ArrayList<>();
         expectedList.add(FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model/coffeeshop/Simulation.class"));
-        List<String> fileList = fileUtils.listFiles(validPath);
+        List<String> fileList = fileUtils.listFilesWithSuffix(validPath, ".class");
         assertThat(fileList, is(equalTo(expectedList)));
     }
 
@@ -41,7 +41,7 @@ public class FileUtilsTest {
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        List<String> fileList = fileUtils.listFiles(inValidPath);
+        List<String> fileList = fileUtils.listFilesWithSuffix(inValidPath, ".class");
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(logsList.get(0).getLevel(), is(equalTo(Level.ERROR)));
         assertThat(logsList.get(0).getMessage(), is(equalTo("Invalid input file path")));
