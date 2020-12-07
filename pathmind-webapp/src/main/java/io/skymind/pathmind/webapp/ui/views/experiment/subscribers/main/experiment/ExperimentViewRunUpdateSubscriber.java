@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment;
 
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
@@ -22,7 +22,6 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         ExperimentUtils.addOrUpdateRuns(experimentView.getExperiment(), event.getRuns());
         ExperimentUtils.updatedRunsForPolicies(experimentView.getExperiment(), event.getRuns());
         experimentView.updateDetailsForExperiment();
-        experimentView.updateButtonEnablement();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -20,10 +21,12 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentCompareViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
@@ -86,11 +89,20 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
-            segmentIntegrator.archived(Experiment.class, true);
-            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
-        });
+        // TODO -> STEPH -> Fix this code.
+        if(experiment.isDraft()) {
+            NotificationUtils.showError("Cannot compare draft experiment<br>Option shouldn't be available rather than error message");
+        }
+        // TODO -> STEPH -> False if we want to disable compare.
+        // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
+//        boolean isVisible = new Random().nextBoolean();
+//        System.out.println("Visible: " + isVisible);
+        EventBus.post(new ExperimentCompareViewBusEvent(experiment, true));
+//        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
+//            ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
+//            segmentIntegrator.archived(Experiment.class, true);
+//            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
+//        });
     }
 
     private void setExperimentDetails(UI ui, Experiment experiment) {

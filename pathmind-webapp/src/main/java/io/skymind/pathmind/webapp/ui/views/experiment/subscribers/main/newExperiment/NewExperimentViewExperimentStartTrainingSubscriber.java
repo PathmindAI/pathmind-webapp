@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment;
 
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentStartTrainingSubscriber;

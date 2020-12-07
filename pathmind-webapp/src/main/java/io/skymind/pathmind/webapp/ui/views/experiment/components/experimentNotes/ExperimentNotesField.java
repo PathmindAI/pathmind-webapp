@@ -11,9 +11,10 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentStartTrainingViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
 
 public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver {
@@ -23,12 +24,8 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
 
     private Experiment experiment;
 
-    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer) {
-        this(getUISupplier, title, experiment, saveConsumer, false, false);
-    }
-
-    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer, Boolean allowAutoSave, Boolean hideSaveButton) {
-        super(title, experiment.getUserNotes(), saveConsumer, false, allowAutoSave, hideSaveButton);
+    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, Experiment experiment, Consumer<String> saveConsumer, Boolean allowAutoSave, Boolean hideSaveButton) {
+        super("Notes", experiment.getUserNotes(), saveConsumer, false, allowAutoSave, hideSaveButton);
         this.getUISupplier = getUISupplier;
         this.saveConsumer = saveConsumer;
         this.experiment = experiment.shallowClone();
@@ -37,6 +34,7 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        setNotesText(experiment.getUserNotes());
     }
 
     public Experiment getExperiment() {
@@ -51,6 +49,7 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
+                new ExperimentNotesFieldExperimentStartTrainingViewSubscriber(this, saveConsumer),
                 new ExperimentNotesFieldExperimentSwitchedViewSubscriber(this, saveConsumer),
                 new ExperimentNotesFieldExperimentSavedViewSubscriber(this, saveConsumer));
     }

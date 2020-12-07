@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.bus.events.view;
+package io.skymind.pathmind.webapp.bus.events.view.experiment;
 
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;

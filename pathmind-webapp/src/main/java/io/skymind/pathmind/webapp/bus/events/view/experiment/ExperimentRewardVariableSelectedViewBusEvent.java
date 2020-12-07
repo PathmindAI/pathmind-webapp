@@ -1,15 +1,15 @@
-package io.skymind.pathmind.webapp.bus.events.view;
+package io.skymind.pathmind.webapp.bus.events.view.experiment;
 
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 
-public class RewardVariableSelectedViewBusEvent implements PathmindViewBusEvent {
+public class ExperimentRewardVariableSelectedViewBusEvent implements PathmindViewBusEvent {
 
     private RewardVariable rewardVariable;
     private boolean isShow;
 
-    public RewardVariableSelectedViewBusEvent(RewardVariable rewardVariable, boolean isShow) {
+    public ExperimentRewardVariableSelectedViewBusEvent(RewardVariable rewardVariable, boolean isShow) {
         this.rewardVariable = rewardVariable;
         this.isShow = isShow;
     }
@@ -28,7 +28,7 @@ public class RewardVariableSelectedViewBusEvent implements PathmindViewBusEvent 
     }
 
     @Override
-    public RewardVariableSelectedViewBusEvent cloneForEventBus() {
-        return new RewardVariableSelectedViewBusEvent(rewardVariable.deepClone(), isShow);
+    public ExperimentRewardVariableSelectedViewBusEvent cloneForEventBus() {
+        return new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable.deepClone(), isShow);
     }
 }

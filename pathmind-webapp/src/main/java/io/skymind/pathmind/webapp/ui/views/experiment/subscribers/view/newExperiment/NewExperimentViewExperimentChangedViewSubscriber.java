@@ -1,7 +1,7 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment;
 
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 

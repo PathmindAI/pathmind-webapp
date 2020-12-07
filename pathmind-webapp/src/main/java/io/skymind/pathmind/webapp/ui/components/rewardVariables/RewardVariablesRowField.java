@@ -17,7 +17,7 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentRewardVariableSelectedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -58,11 +58,11 @@ public class RewardVariablesRowField extends HorizontalLayout {
                 if (spanElement.hasAttribute(clickedAttribute)) {
                     spanElement.removeAttribute(clickedAttribute);
                     isShow = false;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
+                    EventBus.post(new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable, false));
                 } else {
                     spanElement.setAttribute(clickedAttribute, true);
                     isShow = true;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+                    EventBus.post(new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable, true));
                 }
             });
         }
@@ -156,6 +156,6 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
         getRewardVariableSpan().getElement().setAttribute("chosen", true);
         isShow = true;
-        EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+        EventBus.post(new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable, true));
     }
 }

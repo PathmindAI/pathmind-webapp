@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment;
 
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
@@ -14,6 +14,8 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
         this.experimentView = experimentView;
     }
 
+    // TODO -> STEPH -> Confirm that this is only needed for button enabled and error messaging.
+    // .. For button enablement and error messaging more than anything else
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         synchronized (experimentView.getExperimentLock()) {

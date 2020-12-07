@@ -43,11 +43,10 @@ public class ExperimentsNavBar extends VerticalLayout {
     private PolicyDAO policyDAO;
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, List<Experiment> experiments, SegmentIntegrator segmentIntegrator) {
+    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, SegmentIntegrator segmentIntegrator) {
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
         this.policyDAO = policyDAO;
-        this.experiments = experiments;
         this.selectedExperiment = selectedExperiment;
         this.modelId = selectedExperiment.getModelId();
         this.segmentIntegrator = segmentIntegrator;
@@ -123,6 +122,9 @@ public class ExperimentsNavBar extends VerticalLayout {
     private void addExperimentsToNavBar() {
         rowsWrapper.removeAll();
         experimentsNavBarItems.clear();
+
+        experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+                .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         experiments.stream()
                 .forEach(experiment -> {

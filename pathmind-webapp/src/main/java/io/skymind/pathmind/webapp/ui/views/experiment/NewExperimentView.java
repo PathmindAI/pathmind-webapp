@@ -1,8 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -40,7 +38,7 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentSavedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSavedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -64,9 +62,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment.NewExperimentViewExperimentStartTrainingSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,7 +84,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private long modelId = -1;
     private List<RewardVariable> rewardVariables;
     private Experiment experiment;
-    private List<Experiment> experiments = new ArrayList<>();
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
@@ -166,7 +163,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, experiments, segmentIntegrator);
+        experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
@@ -199,7 +196,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
         notesSavedHint.setVisible(false);
 
-        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experiment, rewardVariables, rewardValidationService);
+        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experimentDAO, experiment, rewardVariables, rewardValidationService);
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
@@ -245,7 +242,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private ExperimentNotesField createNotesField() {
         notesField = new ExperimentNotesField(
                 getUISupplier(),
-                "Notes",
                 experiment,
                 updatedNotes -> {
                     experimentDAO.updateUserNotes(notesField.getExperiment().getId(), updatedNotes);
@@ -287,7 +283,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             return;
         }
 
+        // These two are an exception to the eventbus because we need to save and run rather than just run. Once we recombine things
+        // after finishing all the refactorings this will be cleaner. The notes can be saved normally because the run doesn't
+        // rely on the information in the notes.
+        experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
         experimentDAO.updateRewardFunction(experiment);
+        experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
 
         trainingService.startRun(experiment);
@@ -301,7 +302,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
         EventBus.post(new ExperimentSavedViewBusEvent());
-        experimentDAO.updateRewardFunction(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
         disableSaveDraft();
@@ -395,12 +395,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private void loadExperimentData() {
         modelId = experiment.getModelId();
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
-        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
-        if (!experiment.isArchived()) {
-            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        }
     }
 
     @Override

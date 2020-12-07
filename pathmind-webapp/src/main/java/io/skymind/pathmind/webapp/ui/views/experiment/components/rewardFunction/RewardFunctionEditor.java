@@ -12,12 +12,13 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
@@ -25,7 +26,8 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.RewardFunctionEditorExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSavedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSwitchedViewSubscriber;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -53,9 +55,12 @@ public class RewardFunctionEditor extends VerticalLayout {
 
     private String rewardFunction = "";
 
-    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService) {
+    private ExperimentDAO experimentDAO;
+
+    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService) {
         super();
         this.getUISupplier = getUISupplier;
+        this.experimentDAO = experimentDAO;
         this.rewardVariables = rewardVariables;
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
@@ -150,6 +155,10 @@ public class RewardFunctionEditor extends VerticalLayout {
         rewardFunctionJuicyAceEditor.setValue(rewardFunction);
     }
 
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
     private String generateRewardFunction() {
         StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
@@ -172,6 +181,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new RewardFunctionEditorExperimentSwitchedViewSubscriber(this));
+                new ExperimentRewardFunctionEditorExperimentSwitchedViewSubscriber(this, experimentDAO),
+                new ExperimentRewardFunctionEditorExperimentSavedViewSubscriber(this, experimentDAO));
     }
 }

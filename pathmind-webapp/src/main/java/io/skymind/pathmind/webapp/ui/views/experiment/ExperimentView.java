@@ -1,9 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -29,7 +27,6 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -68,13 +65,12 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentCompareViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -103,26 +99,38 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private List<RewardVariable> rewardVariables;
     private Policy bestPolicy;
     private Experiment experiment;
-    private List<Experiment> experiments = new ArrayList<>();
 
     private UserCaps userCaps;
 
+    // TODO -> STEPH -> Are there class instances we may not need references to here like those I just committed. For example do we really
+    // a reference to middlePanel or is it just a temporary instance that can be passed as a return value in a method?
     private HorizontalLayout middlePanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
     private TagLabel sharedWithSupportLabel;
     private Span panelTitle;
-    private VerticalLayout rewardVariablesGroup;
-    private VerticalLayout rewardFunctionGroup;
+    // TODO -> STEPH -> Same as others, we probably no longer need an instance.
     private CodeViewer codeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
     protected ExperimentNotesField notesField;
 
+    private VerticalLayout compareExperimentVerticalLayout;
+
+    // TODO -> STEPH -> We shouldn't need an instance of this as a class attribute as the subscriber should be in the observation package and not in this class.
     private ObservationsPanel observationsPanel;
 
     private StoppedTrainingNotification stoppedTrainingNotification;
-    private SimulationMetricsPanel simulationMetricsPanel;
+
+    // Experiment Comparison components
+    private ExperimentChartsPanel comparisonChartsPanel;
+    protected ExperimentNotesField comparisonNotesField;
+    // TODO -> STEPH -> Same as above for ObservationsPanel
+    private ObservationsPanel comparisonObservationsPanel;
+    private CodeViewer comparisonCodeViewer;
+    // TODO -> STEPH -> Only needed because I haven't yet pushed the comparison code to a subscriber.
+    private SimulationMetricsPanel comparisonSimulationMetricsPanel;
+
 
     @Autowired
     private ModelService modelService;
@@ -177,7 +185,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 new ExperimentViewPolicyUpdateSubscriber(this),
                 new ExperimentViewRunUpdateSubscriber(this),
                 new ExperimentViewExperimentSwitchedViewSubscriber(this),
-                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
+                new ExperimentViewExperimentCompareViewSubscriber(this),
+                // TODO -> STEPH -> We should only need this once if it is moved to the ObservationsPanel.
+                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel),
+                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, comparisonObservationsPanel));
     }
 
     @Override
@@ -202,7 +213,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 experimentDAO,
                 policyDAO,
                 experiment,
-                experiments,
                 segmentIntegrator);
 
         setupExperimentContentPanel();
@@ -217,6 +227,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
 
+        setupCompareExperimentVerticalLayout();
+
         VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
                 WrapperUtils.wrapWidthFullHorizontal(
                         WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -225,12 +237,18 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 stoppedTrainingNotification,
                 modelNeedToBeUpdatedLabel,
                 middlePanel,
-                getBottomPanel());
+                getBottomPanel(),
+                compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapSizeFullHorizontal(experimentContent);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
+    }
+
+    private void setupCompareExperimentVerticalLayout() {
+        compareExperimentVerticalLayout = WrapperUtils.wrapWidthFullVertical(
+            getComparisonBottomPanel());
     }
 
     /**
@@ -243,25 +261,35 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupExperimentContentPanel() {
+        // TODO -> STEPH -> Can we somehow combine these into one.?
         codeViewer = new CodeViewer(() -> getUI(), experiment);
-        rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
-        );
+        VerticalLayout rewardFunctionGroup = generateRewardFunctionGroup(codeViewer);
 
-        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
-        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
-
-        rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
-        );
+        // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
+        SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
 
         observationsPanel = new ObservationsPanel(experiment, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
+        middlePanel.add(generateSimulationsMetricsPanelGroup(simulationMetricsPanel), observationsPanel, rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
+    }
+
+    private VerticalLayout generateRewardFunctionGroup(CodeViewer codeViewer) {
+        return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel("Reward Function", BOLD_LABEL),
+                codeViewer
+        );
+    }
+
+    private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
+        // TODO -> STEPH -> Can we combine logic somewhere so that it's just one place. The naming isn't clear what is what to me.
+        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
+        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
+        return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
+        );
     }
 
     protected Div getButtonsWrapper() {
@@ -294,7 +322,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
-        notesField = createViewNotesField();
+        notesField = createViewNotesField(experiment);
 
         Div buttonsWrapper = new Div(getActionButtonList());
 
@@ -336,14 +364,36 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return bottomPanel;
     }
 
+    private HorizontalLayout getComparisonBottomPanel() {
+        comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
+        // TODO -> STEPH -> For now use the same experiment since it's invisible anyways. The downside is that all events, etc. are duplicated for nothing.
+        // but it will be a quick solution until I can do all the null checks everywhere, setting up the subscribers, etc. (after everything has been stubbed).
+        comparisonNotesField = createViewNotesField(experiment);
+        comparisonObservationsPanel = new ObservationsPanel(experiment, true);
+        // TODO -> STEPH -> Can we combine these?
+        comparisonCodeViewer = new CodeViewer(() -> getUI(), experiment);
+        VerticalLayout rewardFunctionGroup = generateRewardFunctionGroup(comparisonCodeViewer);
+        // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
+        SimulationMetricsPanel comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
+
+        HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
+                generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                comparisonObservationsPanel,
+                rewardFunctionGroup,
+                comparisonChartsPanel,
+                comparisonNotesField);
+        bottomPanel.addClassName("bottom-panel");
+        bottomPanel.setPadding(false);
+        return bottomPanel;
+    }
+
     private Breadcrumbs createBreadcrumbs() {
         return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
     }
 
-    private ExperimentNotesField createViewNotesField() {
+    private ExperimentNotesField createViewNotesField(Experiment experiment) {
         return new ExperimentNotesField(
                 getUISupplier(),
-                "Notes",
                 experiment,
                 updatedNotes -> {
                     experimentDAO.updateUserNotes(notesField.getExperiment().getId(), updatedNotes);
@@ -427,18 +477,11 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private void loadExperimentData() {
         modelId = experiment.getModelId();
         experimentId = experiment.getId();
-        // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
-        // and easily missed in other places.
-        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
-        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
+        // TODO -> STEPH -> This should be done in the experimentDAO class because we need it on every experiment page load here. And that logic is specific and
+        // otherwise we have to remember to do this everytime we load up the experiment from the database and want the chart to display.
+        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-        experiment.setRuns(runDAO.getRunsForExperiment(experiment));
-        if (!experiment.isArchived()) {
-            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        }
     }
 
     private void setSharedWithSupportComponents() {
@@ -491,6 +534,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     public void updateDetailsForExperiment() {
         updateButtonEnablement();
         archivedLabel.setVisible(experiment.isArchived());
+        // TODO -> STEPH -> Should be part fo the experiment and not reloaded all the time.
         RunStatus status = experiment.getTrainingStatusEnum();
         if (status == RunStatus.Error || status == RunStatus.Killed) {
             ExperimentUtils.getTrainingErrorAndMessage(trainingErrorDAO, experiment)
@@ -506,14 +550,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    public void updateButtonEnablement() {
-        RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-        boolean isCompleted = trainingStatus == RunStatus.Completed;
+    private void updateButtonEnablement() {
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(isCompleted && bestPolicy != null && bestPolicy.hasFile());
-        boolean canBeStopped = RunStatus.isRunning(trainingStatus);
-        stopTrainingButton.setVisible(canBeStopped);
+        exportPolicyButton.setVisible(experiment.isTrainingCompleted() && hasBestPolicy());
+        stopTrainingButton.setVisible(experiment.isTrainingRunning());
         restartTraining.setVisible(false);
+    }
+
+    private boolean hasBestPolicy() {
+        return bestPolicy != null && bestPolicy.hasFile();
     }
 
     public void setBestPolicy(Policy bestPolicy) {
@@ -537,4 +582,27 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return modelId;
     }
 
+
+    public void stopCompareExperiment() {
+        compareExperimentVerticalLayout.setVisible(false);
+    }
+
+    // TODO -> STEPH -> On experiment switch for now we'll just reload the components with the experiment that's being switched and
+    // put it to invisible. We'll set it to null when the null checks for all the components are ready.
+    public void startCompareExperiment(Experiment experiment) {
+        compareExperimentVerticalLayout.setVisible(true);
+        // TODO -> STEPH -> Assumes it will always work. Should not assume that but at this point it's just stubbing.
+        Experiment comparisonExperiment = getExperimentForUser(experiment.getId()).get();
+        // TODO -> STEPH -> All code below should be done in a NotesField CompareView Subscriber but just to quickly test. That or
+        // if we think we're ready we can start looking at bringing back button action listeners into the view. I'm just not sure we're
+        // quite ready yet, I'm still breaking up some of the code, like the bigger cleanup in PR #2525
+        // TODO -> STEPH -> Do we have to update the chart data to see anything? As in is it only completed experiments?
+        comparisonNotesField.setExperiment(comparisonExperiment);
+        // TODO -> STEPH -> Chart ONLY works because we need to do policyDAO.getPoliciesForExperiment()
+        comparisonExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
+        comparisonChartsPanel.setupCharts(comparisonExperiment, rewardVariables);
+        comparisonObservationsPanel.setExperiment(comparisonExperiment);
+        comparisonCodeViewer.setExperiment(experiment);
+        comparisonSimulationMetricsPanel.setExperiment(experiment);
+    }
 }

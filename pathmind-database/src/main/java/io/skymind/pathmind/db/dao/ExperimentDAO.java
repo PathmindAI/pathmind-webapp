@@ -48,11 +48,26 @@ public class ExperimentDAO {
     }
 
     public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
-        return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+        Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
+        if(experiment != null) {
+            loadExperimentData(experiment);
+        }
+        return Optional.ofNullable(experiment);
     }
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
-        return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
+        Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
+        if(experiment != null) {
+            loadExperimentData(experiment);
+        }
+        return Optional.ofNullable(experiment);
+    }
+
+    private void loadExperimentData(Experiment experiment) {
+        experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experiment.getId()));
+        experiment.setModelObservations(ObservationRepository.getObservationsForModel(ctx, experiment.getModelId()));
+        experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
+        experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {

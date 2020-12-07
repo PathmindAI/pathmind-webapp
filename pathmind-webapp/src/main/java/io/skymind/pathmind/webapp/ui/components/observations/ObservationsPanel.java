@@ -1,12 +1,10 @@
 package io.skymind.pathmind.webapp.ui.components.observations;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
@@ -17,7 +15,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.utils.ObservationUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import org.springframework.util.CollectionUtils;

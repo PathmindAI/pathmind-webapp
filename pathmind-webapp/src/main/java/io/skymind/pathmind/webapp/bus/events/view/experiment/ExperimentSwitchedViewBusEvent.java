@@ -1,20 +1,20 @@
-package io.skymind.pathmind.webapp.bus.events.view;
+package io.skymind.pathmind.webapp.bus.events.view.experiment;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 
-public class ExperimentChangedViewBusEvent implements PathmindViewBusEvent {
+public class ExperimentSwitchedViewBusEvent implements PathmindViewBusEvent {
 
     private Experiment experiment;
 
-    public ExperimentChangedViewBusEvent(Experiment experiment) {
+    public ExperimentSwitchedViewBusEvent(Experiment experiment) {
         this.experiment = experiment;
     }
 
     @Override
     public BusEventType getEventType() {
-        return BusEventType.ExperimentChanged;
+        return BusEventType.ExperimentSwitched;
     }
 
     public Experiment getExperiment() {
@@ -22,7 +22,7 @@ public class ExperimentChangedViewBusEvent implements PathmindViewBusEvent {
     }
 
     @Override
-    public ExperimentChangedViewBusEvent cloneForEventBus() {
-        return new ExperimentChangedViewBusEvent(experiment.deepClone());
+    public ExperimentSwitchedViewBusEvent cloneForEventBus() {
+        return new ExperimentSwitchedViewBusEvent(experiment.deepClone());
     }
 }

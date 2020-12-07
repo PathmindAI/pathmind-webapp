@@ -57,6 +57,14 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         this.trainingStatus = trainingStatus.getValue();
     }
 
+    public boolean isTrainingCompleted() {
+        return RunStatus.Completed.getValue() == trainingStatus;
+    }
+
+    public boolean isTrainingRunning() {
+        return RunStatus.isRunning(getTrainingStatusEnum());
+    }
+
     // IMPORTANT -> This is resolves #893. I looked at ThreadLocal as well as adjusting how the code uses the policies but deemed this to offer the best tradeoffs.
     public void setPolicies(List<Policy> policies) {
         this.policies = policies == null ? null : new CopyOnWriteArrayList<>(policies);

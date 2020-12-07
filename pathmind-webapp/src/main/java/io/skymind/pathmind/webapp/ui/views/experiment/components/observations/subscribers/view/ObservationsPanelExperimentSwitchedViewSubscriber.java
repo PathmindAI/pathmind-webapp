@@ -4,8 +4,8 @@ import java.util.List;
 
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 
 /**
