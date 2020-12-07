@@ -25,7 +25,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 public class ExperimentChartsPanel extends VerticalLayout {
 
-    private AllMetricsChartPanel allMetricsChartPanel;
+    private CompareMetricsChartPanel allMetricsChartPanel;
     private PolicyChartPanel policyChartPanel;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
@@ -43,7 +43,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         this.getUISupplier = getUISupplier;
 
         Tabs chartTabs = createChartTabs();
-        allMetricsChartPanel = new AllMetricsChartPanel(getUISupplier);
+        allMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 

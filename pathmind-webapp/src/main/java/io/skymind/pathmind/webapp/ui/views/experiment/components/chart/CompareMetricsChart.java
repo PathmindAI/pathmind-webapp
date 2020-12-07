@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
-public class AllMetricsChart extends DataChart {
+public class CompareMetricsChart extends DataChart {
 
     private Policy metricsPolicy;
     private Map<Integer, List<Double>> allMetricsChartData;
@@ -23,7 +23,7 @@ public class AllMetricsChart extends DataChart {
     // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
     private RewardVariable[] rewardVariables;
 
-    public AllMetricsChart() {
+    public CompareMetricsChart() {
         super();
     }
 

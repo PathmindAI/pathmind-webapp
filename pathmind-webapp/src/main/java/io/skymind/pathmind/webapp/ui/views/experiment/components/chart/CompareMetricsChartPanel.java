@@ -18,15 +18,15 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.AllMetricsChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.AllMetricsChartPanelRewardVariableSelectedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.CompareMetricsChartPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.CompareMetricsChartPanelRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AllMetricsChartPanel extends VerticalLayout {
+public class CompareMetricsChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
 
-    private AllMetricsChart chart = new AllMetricsChart();
+    private CompareMetricsChart chart = new CompareMetricsChart();
 
     private Experiment experiment;
     private Policy bestPolicy;
@@ -34,7 +34,7 @@ public class AllMetricsChartPanel extends VerticalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public AllMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
+    public CompareMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
         rewardVariableFilters = new ConcurrentHashMap<>();
         add(hintMessage(), chart);
@@ -45,7 +45,7 @@ public class AllMetricsChartPanel extends VerticalLayout {
     private Paragraph hintMessage() {
         Paragraph hintMessage = new Paragraph(VaadinIcon.INFO_CIRCLE_O.create());
         hintMessage.add(
-                "You can click on the simulation metric names above to toggle the lines on this chart."
+                "Select any two metrics on the simulation metric names above for comparison."
         );
         hintMessage.addClassName("hint-label");
         return hintMessage;
@@ -97,8 +97,8 @@ public class AllMetricsChartPanel extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new AllMetricsChartPanelPolicyUpdateSubscriber(this),
-                new AllMetricsChartPanelRewardVariableSelectedViewSubscriber(this));
+                new CompareMetricsChartPanelPolicyUpdateSubscriber(this),
+                new CompareMetricsChartPanelRewardVariableSelectedViewSubscriber(this));
     }
 
     public void updateChart() {
