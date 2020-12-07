@@ -65,6 +65,8 @@ class DataChart extends PolymerElement {
                                 curvelines, 
                                 seriestype, 
                                 series,
+                                metric1axistitle,
+                                metric2axistitle,
                                 stacked,
                                 viewwindow)`,
             }
@@ -113,7 +115,7 @@ class DataChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, stacked, viewwindow) {
+    _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, metric1axistitle, metric2axistitle, stacked, viewwindow) {
         return {
             "tooltip": showtooltip ? { "isHtml": true } : { "trigger": "none" },
             "curveType": curvelines ? "function" : null,
@@ -129,7 +131,7 @@ class DataChart extends PolymerElement {
             },
             "vAxes": [
                 {
-                    "title": this.metric1axistitle ? this.metric1axistitle : vaxistitle,
+                    "title": metric1axistitle ? metric1axistitle : vaxistitle,
                     "titleTextStyle": {"italic": false},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
@@ -139,7 +141,7 @@ class DataChart extends PolymerElement {
                     "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
                 },
                 {
-                    "title": this.metric2axistitle,
+                    "title": metric2axistitle,
                     "titleTextStyle": {"italic": false},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
@@ -158,7 +160,7 @@ class DataChart extends PolymerElement {
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
                 "top": !vaxistitle && !haxistitle ? 0 : "5%", 
-                "width": !vaxistitle && !haxistitle ? "100%" : "80%", 
+                "width": !vaxistitle && !haxistitle ? "100%" : metric2axistitle ? "80%" : "88%", 
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }
         };
