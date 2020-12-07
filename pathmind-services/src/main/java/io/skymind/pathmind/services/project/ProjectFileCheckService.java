@@ -44,9 +44,17 @@ public class ProjectFileCheckService {
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO analysisResult = client.analyze(tempFile, "project_" + model.getProjectId());
+                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                        String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
+                        String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
+                        String expTypeName = modelInfo.getExperimentType().toString();
+                        String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
+                        String reqId = "project_" + model.getProjectId();
+
+                        HyperparametersDTO analysisResult =
+                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());

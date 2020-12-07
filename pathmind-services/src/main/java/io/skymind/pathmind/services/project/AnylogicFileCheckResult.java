@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Setter
@@ -24,14 +25,15 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private List<String> observationTypes;
     private String modelType;
     private int numberOfAgents;
+    private List<AnyLogicModelInfo> modelInfos = new ArrayList<>();
 
     @Override
     public boolean isFileCheckSuccessful() {
-        boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique();
-//        if (!isAllSuccessful) {
-            log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}, Helper: {}",
-                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique(), definedHelpers);
-//        }
+        boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique() && getPriorityModelInfo() != null;
+        if (!isAllSuccessful) {
+            log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}, Helper: {}, Models: {}",
+                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique(), definedHelpers, modelInfos);
+        }
         return isAllSuccessful;
     }
 
@@ -53,4 +55,28 @@ public class AnylogicFileCheckResult implements FileCheckResult {
             return false;
         }
     }
+
+    public AnyLogicModelInfo getPriorityModelInfo() {
+        AnyLogicModelInfo priorityModelInfo;
+        if (modelInfos.size() > 2) {
+            // Simulation has a higher priority than RLExperiment when they exist together
+            List<AnyLogicModelInfo> simulations = modelInfos.stream()
+                .filter(m -> m.getExperimentType().equals(AnyLogicModelInfo.ExperimentType.Simulation))
+                .collect(Collectors.toList());
+
+            // if there are more than two simulations, the simulation that has "Simulation" is higher priority
+            if (simulations.size() > 2) {
+                priorityModelInfo = simulations.stream()
+                    .filter(m -> m.getExperimentClass().endsWith("/Simulation"))
+                    .findFirst().orElse(null);
+            } else {
+                priorityModelInfo = simulations.get(0);
+            }
+        } else {
+            return modelInfos.get(0);
+        }
+
+        return priorityModelInfo;
+    }
+
 }

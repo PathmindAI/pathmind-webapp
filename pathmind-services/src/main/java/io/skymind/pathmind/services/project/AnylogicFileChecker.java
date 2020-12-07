@@ -151,20 +151,16 @@ public class AnylogicFileChecker implements FileChecker {
     void checkHelpers(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
 
-        List<String> listOfHelpers = new ArrayList<>();
-
         unZippedJars.stream().forEach(unZippedJar -> {
             try {
                 File unJarred = extractArchive(unZippedJar);
                 List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
                 ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
-                listOfHelpers.addAll(byteCodeAnalyzer.byteParser(listOfFiles));
+                byteCodeAnalyzer.byteParser(listOfFiles, anylogicFileCheckResult);
             } catch (IOException ioe) {
                 log.error("Error unJarred jar file", ioe);
             }
         });
-
-        anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
 
         log.info("{} :- checkHelpers Completed", uuid);
     }
@@ -235,7 +231,6 @@ public class AnylogicFileChecker implements FileChecker {
                 if (file.isDirectory()) {
                     continue;
                 }
-                log.info("kepricondebug : write {}", fileDir.getAbsolutePath());
                 try (InputStream inputStream = jar.getInputStream(file);
                      FileOutputStream fileOutputStream = new FileOutputStream(fileDir)) {
                     while (inputStream.available() > 0) {
