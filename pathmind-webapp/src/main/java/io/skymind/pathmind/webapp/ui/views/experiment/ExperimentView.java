@@ -374,7 +374,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         comparisonCodeViewer = new CodeViewer(() -> getUI(), experiment);
         VerticalLayout rewardFunctionGroup = generateRewardFunctionGroup(comparisonCodeViewer);
         // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
-        SimulationMetricsPanel comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
 
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
