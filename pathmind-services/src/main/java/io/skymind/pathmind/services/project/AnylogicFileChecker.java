@@ -222,10 +222,10 @@ public class AnylogicFileChecker implements FileChecker {
         File destDir = new File(archiveFile.getParent());
 
         try (JarFile jar = new JarFile(archiveFile)) {
-            Enumeration enumEntries = jar.entries();
+            Enumeration<JarEntry> enumEntries = jar.entries();
 
             while (enumEntries.hasMoreElements()) {
-                JarEntry file = (JarEntry) enumEntries.nextElement();
+                JarEntry file = enumEntries.nextElement();
                 File fileDir = new File(destDir + File.separator + file.getName());
 
                 if (!fileDir.exists()) {

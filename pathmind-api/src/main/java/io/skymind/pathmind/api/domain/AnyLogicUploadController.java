@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -17,6 +16,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
@@ -27,6 +27,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,10 +44,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
-import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
-import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -71,6 +68,9 @@ public class AnyLogicUploadController {
 
     @Autowired
     ModelService modelService;
+
+    @Autowired
+    private ModelFileVerifier modelFileVerifier;
 
     @Autowired
     private ProjectFileCheckService projectFileCheckService;
@@ -109,7 +109,9 @@ public class AnyLogicUploadController {
             }
 
             Model model = new Model();
-            model.setFile(ensureZipFileStructure(Files.readAllBytes(tempFile.toAbsolutePath())));
+            ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
+            byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
+            model.setFile(bytes);
             StatusUpdaterImpl status = new StatusUpdaterImpl();
             projectFileCheckService.checkFile(status, model).get(); // here we need to wait
             if (StringUtils.isNoneEmpty(status.getError())) {

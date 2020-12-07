@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.project;
 
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+@Deprecated
 @Slf4j
 public class ProjectFileCheckService {
 
