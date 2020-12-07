@@ -61,4 +61,9 @@ public class ProjectsPageSteps {
     public void checkProjectPageModelALPBtn(String filename) {
         projectsPage.checkProjectPageModelALPBtn(filename);
     }
+
+    @Step
+    public void checkProjectsPageProjectCreatedIs(String projectName, String date) {
+        projectsPage.checkProjectsPageProjectCreatedIs(projectName, date);
+    }
 }
