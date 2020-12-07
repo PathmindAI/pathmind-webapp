@@ -27,6 +27,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     private Span rewardVariableNameSpan;
 
+    private RewardVariablesTable rewardVariablesTable;
     private NumberField goalField;
     private Select<GoalConditionType> conditionType;
     private HorizontalLayout goalFieldsWrapper;
@@ -43,28 +44,35 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
+    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
         this.getUISupplier = getUISupplier;
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
+        this.rewardVariablesTable = rewardVariablesTable;
         setAlignItems(Alignment.BASELINE);
         rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
             if (rv.getArrayIndex() < 2) {
                 rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+                rewardVariablesTable.setNumberOfSelectedRewardVariables(2);
             }
 
             rewardVariableNameSpan.addClickListener(event -> {
                 Element spanElement = event.getSource().getElement();
+                int numberOfSelectedRewardVariables = rewardVariablesTable.getNumberOfSelectedRewardVariables();
                 if (spanElement.hasAttribute(clickedAttribute)) {
                     spanElement.removeAttribute(clickedAttribute);
                     isShow = false;
+                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables-1);
                     EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
                 } else {
-                    spanElement.setAttribute(clickedAttribute, true);
-                    isShow = true;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+                    if (numberOfSelectedRewardVariables < 2) {
+                        spanElement.setAttribute(clickedAttribute, true);
+                        isShow = true;
+                        rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
+                        EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+                    }
                 }
             });
         }
