@@ -22,6 +22,12 @@ class DataChart extends PolymerElement {
             vaxistitle: {
                 type: String,
             },
+            metric1axistitle: {
+                type: String,
+            },
+            metric2axistitle: {
+                type: String,
+            },
             curvelines: {
                 type: Boolean,
             },
@@ -121,16 +127,30 @@ class DataChart extends PolymerElement {
                 "baselineColor": haxistitle ? "black" : "#FFF",
                 "gridlineColor": haxistitle ? "#CCC" : "#FFF"
             },
-            "vAxis": {
-                "title": vaxistitle,
-                "titleTextStyle": {"italic": false},
-                "textPosition": vaxistitle ? "out" : "none",
-                "ticks": vaxistitle ? "auto" : [],
-                "viewWindow": viewwindow,
-                "viewWindowMode": viewwindow ? "pretty" : "maximized",
-                "baselineColor": vaxistitle ? "black" : "#FFF",
-                "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
-            },
+            "vAxes": [
+                {
+                    "title": this.metric1axistitle ? this.metric1axistitle : vaxistitle,
+                    "titleTextStyle": {"italic": false},
+                    "textPosition": vaxistitle ? "out" : "none",
+                    "ticks": vaxistitle ? "auto" : [],
+                    "viewWindow": viewwindow,
+                    "viewWindowMode": viewwindow ? "pretty" : "maximized",
+                    "baselineColor": vaxistitle ? "black" : "#FFF",
+                    "gridlineColor": vaxistitle ? "#CCC" : "#FFF"
+                },
+                {
+                    "title": this.metric2axistitle,
+                    "titleTextStyle": {"italic": false},
+                    "textPosition": vaxistitle ? "out" : "none",
+                    "ticks": vaxistitle ? "auto" : [],
+                    "viewWindow": viewwindow,
+                    "viewWindowMode": viewwindow ? "pretty" : "maximized",
+                    "baselineColor": vaxistitle ? "black" : "#FFF",
+                    "gridlineColor": vaxistitle ? "#CCC" : "#FFF",
+                    "slantedText":true,
+                    "slantedTextAngle":90 
+                }
+            ],
             "interpolateNulls": true,
             "legend": {"position": "none"},  // true for all usages
             "seriesType": seriestype,
@@ -138,7 +158,7 @@ class DataChart extends PolymerElement {
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
                 "top": !vaxistitle && !haxistitle ? 0 : "5%", 
-                "width": !vaxistitle && !haxistitle ? "100%" : "88%", 
+                "width": !vaxistitle && !haxistitle ? "100%" : "80%", 
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }
         };
