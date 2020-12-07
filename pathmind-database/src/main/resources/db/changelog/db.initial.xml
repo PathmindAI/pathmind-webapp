@@ -1864,4 +1864,19 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="2501-01" author="daehyun@pathmind.com">
+        <addColumn tableName="MODEL">
+            <column name="PATHMIND_HELPER" type="VARCHAR(255)"/>
+            <column name="MAIN_AGENT" type="VARCHAR(255)"/>
+            <column name="EXPERIMENT_CLASS" type="VARCHAR(255)"/>
+            <column name="EXPERIMENT_TYPE" type="VARCHAR(255)"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="PATHMIND_HELPER"/>
+            <dropColumn tableName="MODEL" columnName="MAIN_AGENT"/>
+            <dropColumn tableName="MODEL" columnName="EXPERIMENT_CLASS"/>
+            <dropColumn tableName="MODEL" columnName="EXPERIMENT_TYPE"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
