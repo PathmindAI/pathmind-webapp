@@ -2,27 +2,25 @@ package io.skymind.pathmind.services.project;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Slf4j
-@Setter
 @Getter
+@Setter
+@ToString
 public class AnylogicFileCheckResult implements FileCheckResult {
+
     private boolean fileCheckComplete;
     private boolean correctFileType;
     private boolean modelJarFilePresent;
     private List<String> definedHelpers = new ArrayList<>();
-    private int numObservation;
-    private String rewardVariableFunction;
-    private List<String> rewardVariableNames;
-    private List<String> rewardVariableTypes;
-    private List<String> observationNames;
-    private List<String> observationTypes;
-    private String modelType;
-    private int numberOfAgents;
+    private Hyperparams params;
 
     @Override
     public boolean isFileCheckSuccessful() {
@@ -36,11 +34,7 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     @Override
     public boolean isHelperPresent() {
-        if (this.definedHelpers.size() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return !CollectionUtils.isEmpty(definedHelpers);
     }
 
     @Override

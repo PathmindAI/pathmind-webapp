@@ -53,14 +53,15 @@ public class ProjectFileCheckService {
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
                         } else {
-                            setHyperparams(result, analysisResult);
+                            Hyperparams hyperparams = buildHyperparams(analysisResult);
+                            result.setParams(hyperparams);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
                     } else {
                         statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
                     }
                 } finally {
-                    tempFile.delete();
+                    FileUtils.deleteQuietly(tempFile);
                 }
 
             } catch (Exception e) {
@@ -97,16 +98,17 @@ public class ProjectFileCheckService {
         return Optional.empty();
     }
 
-    private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
-    	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
-    	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
-    	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
-    	fileCheckResult.setRewardVariableNames(params.getRewardVariableNames());
-    	fileCheckResult.setRewardVariableTypes(params.getRewardVariableTypes());
-    	fileCheckResult.setObservationNames(params.getObservationNames());
-    	fileCheckResult.setObservationTypes(params.getObservationTypes());
-    	fileCheckResult.setModelType(params.getMode());
-    	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
+    private Hyperparams buildHyperparams(HyperparametersDTO params) {
+    	return Hyperparams.builder()
+                .numObservation(Integer.parseInt(params.getObservations()))
+                .rewardVariableFunction(params.getRewardFunction())
+                .rewardVariableNames(params.getRewardVariableNames())
+                .rewardVariableTypes(params.getRewardVariableTypes())
+                .observationNames(params.getObservationNames())
+                .observationTypes(params.getObservationTypes())
+                .modelType(params.getMode())
+                .numberOfAgents(Integer.parseInt(params.getAgents())).build();
+
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {

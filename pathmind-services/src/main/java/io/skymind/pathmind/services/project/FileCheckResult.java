@@ -25,4 +25,9 @@ public interface FileCheckResult {
     void setDefinedHelpers(List<String> definedHelpers);
 
     void setFileCheckComplete(boolean fileCheckComplete);
+
+    Hyperparams getParams();
+
+    void setParams(Hyperparams params);
+
 }

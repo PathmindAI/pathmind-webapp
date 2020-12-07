@@ -19,6 +19,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.FileCheckResult;
+import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
@@ -125,7 +126,7 @@ public class AnyLogicUploadController {
             List<RewardVariable> rewardVariables = new ArrayList<>();
             List<Observation> observationList = new ArrayList<>();
 
-            AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
+            Hyperparams alResult = result.getParams();
             rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
             observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
             model.setNumberOfObservations(alResult.getNumObservation());

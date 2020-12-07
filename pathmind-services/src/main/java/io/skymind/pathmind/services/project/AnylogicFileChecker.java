@@ -27,7 +27,7 @@ import org.springframework.util.CollectionUtils;
 
 /*To validate the model.jar uploaded by the user*/
 @Slf4j
-public class AnylogicFileChecker implements FileChecker {
+public class AnylogicFileChecker implements FileChecker<Hyperparams> {
 
     private final String uuid = UUID.randomUUID().toString();
     private final File jarTempDir;
@@ -38,7 +38,7 @@ public class AnylogicFileChecker implements FileChecker {
     }
 
     @Override
-    public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) {
+    public FileCheckResult<Hyperparams> performFileCheck(StatusUpdater statusUpdater, File file) {
         log.info("{} :- performFileCheck Started", uuid);
 
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
