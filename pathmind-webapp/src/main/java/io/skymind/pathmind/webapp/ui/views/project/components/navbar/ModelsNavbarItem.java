@@ -11,11 +11,10 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.project.ModelNavigationUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 @Tag("models-navbar-item")
 @JsModule("./src/project/models-navbar-item.js")
@@ -73,9 +72,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
                 "/uploadModel/" + PathmindUtils.getResumeUploadModelPath(projectId, modelId)
                 : PathmindUtils.getProjectModelPath(projectId, modelId);
         getModel().setModelLink(target);
-        VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
-            getModel().setCreatedDate(DateAndTimeUtils.formatDateAndTimeShortFormatter(model.getDateCreated(), timeZoneId));
-        });
+        getElement().appendChild(new DatetimeDisplay(model.getDateCreated()).getElement());
     }
 
     public interface PolymerModel extends TemplateModel {
@@ -84,8 +81,6 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         void setModelPackageName(String modelPackageName);
 
         void setModelLink(String modelLink);
-
-        void setCreatedDate(String createdDate);
 
         void setIsCurrent(boolean isCurrent);
 

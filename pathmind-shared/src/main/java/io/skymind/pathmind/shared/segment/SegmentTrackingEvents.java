@@ -7,6 +7,8 @@ public class SegmentTrackingEvents {
     public static final String EVENT_VERIFY_EMAIL = "Email Verified";
     public static final String EVENT_LOGIN = "Signed in";
     public static final String EVENT_IMPORT_MODEL = "Model Uploaded";
+    public static final String EVENT_ONBOARDING_TUTORIAL = "Onboarding Tutorial Link Clicked";
+    public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
     public static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
     public static final String EVENT_CREATE_PROJECT = "Project Created";
     public static final String EVENT_START_TRAINING = "Training Started";
