@@ -19,15 +19,15 @@ import org.apache.tika.Tika;
 public class FileUtils {
 
     /*To list all the .class file from given file path*/
-    public static List<String> listFiles(String filePath) {
+    public static List<String> listFilesWithSuffix(String filePath, String suffix) {
         Path path = Paths.get(filePath);
         boolean isDir = Files.isDirectory(path);
         List<String> result = new ArrayList<>();
 
         if (isDir) {
             try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
-                result = walk.map(x -> x.toString())
-                        .filter(f -> f.endsWith(".class")).collect(Collectors.toList());
+                result = walk.map(Path::toString)
+                        .filter(f -> f.endsWith(suffix)).collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("error while filter class files", e);
             }

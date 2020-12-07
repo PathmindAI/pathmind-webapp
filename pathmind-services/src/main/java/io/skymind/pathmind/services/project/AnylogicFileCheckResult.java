@@ -14,7 +14,6 @@ public class AnylogicFileCheckResult implements FileCheckResult {
     private boolean fileCheckComplete;
     private boolean correctFileType;
     private boolean modelJarFilePresent;
-    private List<String> zipContentFileNames;
     private List<String> definedHelpers = new ArrayList<>();
     private int numObservation;
     private String rewardVariableFunction;
