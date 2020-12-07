@@ -15,6 +15,8 @@ public class CompareMetricsChartPanelRewardVariableSelectedViewSubscriber extend
 
     @Override
     public void handleBusEvent(RewardVariableSelectedViewBusEvent event) {
+        // TODO: This is triggered upon switching between experiments. 
+        // The compare metric chart is not showing the correct number of lines if user has toggled reward variables selection.
         if (event.isShow()) {
             compareMetricsChartPanel.getRewardVariableFilters().putIfAbsent(event.getRewardVariable().getId(), event.getRewardVariable());
         } else {

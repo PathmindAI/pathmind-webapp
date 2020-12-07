@@ -54,11 +54,14 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment.deepClone();
-            rewardVariables.stream().forEach(rewardVariable -> {
-                if (rewardVariable.getArrayIndex() < 2) {
-                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
-                }
-            });
+            long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
+            if (numberOfSelectedRewardVariables == 0) {
+                rewardVariables.stream().forEach(rewardVariable -> {
+                    if (rewardVariable.getArrayIndex() < 2) {
+                        rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
+                    }
+                });
+            }
             selectBestPolicy();
             updateChart();
         }
@@ -104,7 +107,7 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     public void updateChart() {
         // Update chart data
         List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-        chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
+        chart.setCompareMetricsChart(filteredAndSortedList, bestPolicy);
 
         redrawChart();
     }

@@ -147,7 +147,7 @@ public class CompareMetricsChart extends DataChart {
         compareMetricsChartData = generateCompareMetricsChartData(metricsPolicy.getSparklinesData());
     }
 
-    public void setAllMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+    public void setCompareMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
         Boolean showEmptyChart = selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0;
         JsonObject series;
         if (showEmptyChart) {

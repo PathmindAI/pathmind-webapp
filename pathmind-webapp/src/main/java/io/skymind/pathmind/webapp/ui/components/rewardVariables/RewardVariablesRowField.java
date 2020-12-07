@@ -164,7 +164,6 @@ public class RewardVariablesRowField extends HorizontalLayout {
             return;
         }
 
-        getRewardVariableSpan().getElement().setAttribute("chosen", true);
         isShow = true;
         EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
     }
