@@ -15,12 +15,15 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileSystemUtils;
 
 /*To validate the model.jar uploaded by the user*/
@@ -33,48 +36,51 @@ public class AnylogicFileChecker implements FileChecker {
     @Override
     public FileCheckResult performFileCheck(StatusUpdater statusUpdater, File file) {
         log.info("{} :- performFileCheck Started", uuid);
-        List<File> unZippedJars;
+
         AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
         anylogicFileCheckResult.setFileCheckComplete(false);
 
         try {
             //To check the file exist and does the server have permission to read
-            if (file.exists() && file.isFile() && file.canRead()) {
-                log.info("Uploaded file exists and it is readable");
-                //To check a Zip file and if it is a valid file extract it in to the temporary folder
-                unZippedJars = checkZipFile(file, anylogicFileCheckResult);
-                statusUpdater.updateStatus(0.10);
-
-                if (unZippedJars != null && unZippedJars.size() > 0) {
-                    //Passing unzipped jar to check whether it is valid or not
-                    checkJarFile(unZippedJars, anylogicFileCheckResult);
-                    statusUpdater.updateStatus(0.30);
-
-                    if (anylogicFileCheckResult.isModelJarFilePresent()) {
-                        //Check for PathmindHelper class instance in uploaded model.jar
-                        checkHelpers(unZippedJars, anylogicFileCheckResult);
-                        statusUpdater.updateStatus(0.50);
-
-                        if (anylogicFileCheckResult.isHelperPresent()) {
-                            statusUpdater.updateStatus(0.90);
-                        } else {
-                            log.error("model.jar does not have PathmindHelper class");
-                            statusUpdater.updateError("model.jar does not have PathmindHelper class");
-                        }
-                    }
-                } else {
-                    if (anylogicFileCheckResult.isCorrectFileType()) {
-                        log.error("model.jar does not exist");
-                        statusUpdater.updateError("model.jar does not exist");
-                    } else {
-                        log.error("Uploaded file could not be unzipped.");
-                        statusUpdater.updateError("Uploaded file could not be unzipped.");
-                    }
-                }
-            } else {
+            if (!(file.exists() && file.isFile() && file.canRead())) {
                 log.error("Uploaded file does not exist or no read permission");
                 statusUpdater.updateError("Uploaded file does not exist or no read permission");
+                return anylogicFileCheckResult;
             }
+            log.info("Uploaded file exists and it is readable");
+
+            try (InputStream iStream = new FileInputStream(file)) {
+                boolean isValidZip = FileUtils.detectDocType(iStream);
+                if (!isValidZip) {
+                    log.error("file is not zip");
+                    statusUpdater.updateError("file is not zip");
+                    return anylogicFileCheckResult;
+                }
+                anylogicFileCheckResult.setCorrectFileType(true);
+            }
+
+            List<File> unZippedJars = checkZipFile(file, anylogicFileCheckResult);
+            statusUpdater.updateStatus(0.10);
+
+            if (unZippedJars != null && unZippedJars.size() > 0) {
+                //Passing unzipped jar to check whether it is valid or not
+                checkJarFile(unZippedJars, anylogicFileCheckResult);
+                statusUpdater.updateStatus(0.30);
+
+                if (anylogicFileCheckResult.isModelJarFilePresent()) {
+                    //Check for PathmindHelper class instance in uploaded model.jar
+                    checkHelpers(unZippedJars, anylogicFileCheckResult);
+                    statusUpdater.updateStatus(0.50);
+
+                    if (anylogicFileCheckResult.isHelperPresent()) {
+                        statusUpdater.updateStatus(0.90);
+                    } else {
+                        log.error("model.jar does not have PathmindHelper class");
+                        statusUpdater.updateError("model.jar does not have PathmindHelper class");
+                    }
+                }
+            }
+
         } catch (Exception e) {
             log.error("Exception in checking jar file ", e);
             statusUpdater.updateError("Exception in checking jar file: " + e.getMessage());
