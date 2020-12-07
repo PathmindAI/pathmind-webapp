@@ -491,7 +491,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
-                var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory()))
+                var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),
+                var("MAIN_AGENT", job.getMainAgentName()),
+                var("EXPERIMENT_CLASS", job.getExpClassName()),
+                var("EXPERIMENT_TYPE", job.getExpClassType())
         ));
     }
 

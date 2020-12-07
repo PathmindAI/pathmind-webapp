@@ -60,6 +60,10 @@ public class ProjectFileCheckService {
                             statusUpdater.updateError(optionalError.get());
                         } else {
                             setHyperparams(result, analysisResult);
+                            model.setHelperName(pmHelperName);
+                            model.setMainAgentName(mainAgentName);
+                            model.setExpClassName(expClassName);
+                            model.setExpClassType(expTypeName);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
                     } else {

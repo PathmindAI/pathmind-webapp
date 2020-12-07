@@ -42,7 +42,12 @@ public class JobSpec {
     private final boolean recordMetricsRaw;
     private final boolean namedVariables;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables) {
+    private final String mainAgentName;
+    private final String expClassName;
+    private final String expClassType;
+
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables,
+                   String mainAgentName, String expClassName, String expClassType) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -63,5 +68,8 @@ public class JobSpec {
         this.userLog = userLog;
         this.recordMetricsRaw = recordMetricsRaw;
         this.namedVariables = namedVariables;
+        this.mainAgentName = mainAgentName;
+        this.expClassName = expClassName;
+        this.expClassType = expClassType;
     }
 }
