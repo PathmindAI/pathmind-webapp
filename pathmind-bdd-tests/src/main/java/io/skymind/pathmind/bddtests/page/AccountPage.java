@@ -20,16 +20,6 @@ public class AccountPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//account-view-content")
-    private WebElement accountView;
-    @FindBy(id = "editInfoBtn")
-    private WebElement editInfoBtnShadow;
-    @FindBy(id = "changePasswordBtn")
-    private WebElement changePasswordBtnShadow;
-    @FindBy(id = "upgradeBtn")
-    private WebElement upgradeBtnShadow;
-    @FindBy(id = "editPaymentBtn")
-    private WebElement editPaymentBtnShadow;
     @FindBy(xpath = "//account-edit-view-content")
     private WebElement accountEditView;
     @FindBy(id = "accessToken")
@@ -52,8 +42,6 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.id("editInfoBtn")).getText(), containsString("Edit"));
         assertThat(getDriver().findElement(By.id("changePasswordBtn")).isDisplayed(), is(true));
         assertThat(getDriver().findElement(By.id("changePasswordBtn")).getText(), containsString("Change"));
-//        assertThat(e.findElement(By.id("upgradeBtn")).isDisplayed(), is(true));
-//        assertThat(e.findElement(By.id("upgradeBtn")).getText(), containsString("Upgrade"));
         assertThat(getDriver().findElement(By.id("editPaymentBtn")).isDisplayed(), is(true));
         assertThat(getDriver().findElement(By.id("editPaymentBtn")).getText(), containsString("Edit"));
     }
@@ -76,7 +64,6 @@ public class AccountPage extends PageObject {
     }
 
     public void checkUserEmailIsCorrect(String email) {
-//        WebElement e = utils.expandRootElement(accountViewShadow);
         assertThat(getDriver().findElement(By.cssSelector(".data:nth-of-type(2)")).getText(), is(email));
     }
 
@@ -123,19 +110,16 @@ public class AccountPage extends PageObject {
     }
 
     public void checkAccountPageFooterComponents() {
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//segment-integrator/preceding-sibling::*[1]")));
-        assertThat(e.findElement(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li:nth-child(1) > a")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
-        assertThat(e.findElement(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li:nth-child(2) > a")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
-        assertThat(e.findElement(By.cssSelector(".support")).isDisplayed(), is(true));
-        assertThat(e.findElement(By.cssSelector(".support")).getText(), containsString("Support"));
-        assertThat(e.findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
-        assertThat(e.findElement(By.cssSelector(".copyright")).getText(), containsString("© " + Calendar.getInstance().get(Calendar.YEAR) + " Pathmind"));
+        assertThat(getDriver().findElement(By.xpath("(//app-footer/descendant::ul/li/a)[1]")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
+        assertThat(getDriver().findElement(By.xpath("(//app-footer/descendant::ul/li/a)[2]")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
+        assertThat(getDriver().findElement(By.cssSelector(".support")).isDisplayed(), is(true));
+        assertThat(getDriver().findElement(By.cssSelector(".support")).getText(), containsString("Support"));
+        assertThat(getDriver().findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
+        assertThat(getDriver().findElement(By.cssSelector(".copyright")).getText(), containsString("© " + Calendar.getInstance().get(Calendar.YEAR) + " Pathmind"));
     }
 
     public void clickAccountFooterBtn(String btn) {
-        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//segment-integrator/preceding-sibling::*[1]")));
-//        e.findElement(By.xpath("app-footer > vaadin-horizontal-layout > ul > li:nth-child(1) > a")).click();
-        for(WebElement element : e.findElements(By.cssSelector("app-footer > vaadin-horizontal-layout > ul > li > a"))){
+        for(WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))){
             if (element.getText().contains(btn)){
                 element.click();
                 break;
