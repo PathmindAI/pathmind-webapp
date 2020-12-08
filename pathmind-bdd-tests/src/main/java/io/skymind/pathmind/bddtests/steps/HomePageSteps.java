@@ -168,4 +168,9 @@ public class HomePageSteps {
     public void clickAndSendEnterBtnToTheSearchField() {
         homePage.clickAndSendEnterBtnToTheSearchField();
     }
+
+    @Step
+    public void clickUserMenuBtn(String btn) {
+        homePage.clickUserMenuBtn(btn);
+    }
 }

@@ -71,4 +71,19 @@ public class AccountStepDefinitions {
     public void checkThatUserNameChangedTo(String firstName, String lastName) {
         loginPageSteps.checkHeaderUsername(firstName + Serenity.sessionVariableCalled("firstNameRandomNumber") + " " + lastName + Serenity.sessionVariableCalled("lastNameRandomNumber"));
     }
+
+    @When("^Click account page api copy btn and paste to the search field$")
+    public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
+        accountPageSteps.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
+    }
+
+    @Then("^Click access token rotate btn and check that token changed$")
+    public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
+        accountPageSteps.clickAccessTokenRotateBtnAndCheckThatTokenChanged();
+    }
+
+    @Then("^Account page access token check token expires '(.*)'$")
+    public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
+        accountPageSteps.accountPageAccessTokenCheckTokenExpires(expiresDays);
+    }
 }

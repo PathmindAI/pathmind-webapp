@@ -33,7 +33,6 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
@@ -65,14 +64,10 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -147,8 +142,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier(),
-                new NewExperimentViewExperimentCreatedSubscriber(this),
-                new NewExperimentViewExperimentUpdatedSubscriber(this),
                 new NewExperimentViewExperimentStartTrainingSubscriber(this),
                 new NewExperimentViewExperimentSwitchedViewSubscriber(this),
                 new NewExperimentViewExperimentChangedViewSubscriber(this),
@@ -432,28 +425,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    public void updateExperimentComponents() {
-        experiments = experimentDAO.getExperimentsForModel(modelId, false);
-
-        if (experiments.isEmpty()) {
-            Model model = modelService.getModel(modelId)
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-
-            PushUtils.push(getUI(), ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
-        } else {
-            boolean selectedExperimentWasArchived = experiments.stream()
-                    .noneMatch(e -> e.getId() == experimentId);
-            if (selectedExperimentWasArchived) {
-                Experiment newSelectedExperiment = experiments.get(0);
-                PushUtils.push(getUI(), ui -> navigateToExperiment(ui, newSelectedExperiment));
-            }
-        }
-    }
-
-    public List<Experiment> getExperiments() {
-        return experiments;
     }
 
     public long getModelId() {

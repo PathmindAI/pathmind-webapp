@@ -25,6 +25,11 @@ Feature: Nav bar buttons
     When Open user account page
     Then Check that user account page opened
 
+  Scenario: Click Access Token btn and check that account page opened
+    Given Login to the pathmind
+    When Click user menu 'Access Token' btn
+    Then Check that user account page opened
+
   Scenario: Check nav bar Projects highlighted button
     Given Login to the pathmind
     Then Check that projects button highlight is true

@@ -224,4 +224,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         experimentPageSteps.checkExperimentPageObservationIsSelected(observation, isSelected);
     }
+
+    @Then("^Check side bar experiment '(.*)' date is '(.*)'$")
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        experimentPageSteps.checkSideBarExperimentDateIs(experiment, date);
+    }
 }

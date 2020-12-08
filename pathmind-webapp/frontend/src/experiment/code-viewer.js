@@ -188,7 +188,8 @@ class CodeViewer extends PolymerElement {
             <code></code>
             <vaadin-button>
                 <iron-icon icon="vaadin:copy-o" active></iron-icon>
-                <iron-icon icon="vaadin:check"></vaadin-button>
+                <iron-icon icon="vaadin:check"></iron-icon>
+            </vaadin-button>
             </div>
         `;
     }

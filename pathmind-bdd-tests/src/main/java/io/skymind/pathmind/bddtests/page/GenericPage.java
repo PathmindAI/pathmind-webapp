@@ -276,4 +276,8 @@ public class GenericPage extends PageObject {
             assertThat(entry.getMessage(), not(containsString("\"status\":\"4")));
         }
     }
+
+    public void openUrlFromTheVariable(String url) {
+        getDriver().navigate().to(Serenity.sessionVariableCalled(url).toString());
+    }
 }
