@@ -88,8 +88,22 @@ window.Pathmind.autocomplete = {
         var autocompleteData = localVariables.concat(mathData);
 
         var variablesCompleter = {
-                identifierRegexps: [/[a-zA-Z_0-9\.\$\-\u00A2-\u2000\u2070-\uFFFF]/],
+                getCompletionRegex: () => /[a-zA-Z_0-9\.\$]/,
+                identifierRegexps: [/[a-zA-Z_0-9\.\$]/],
                 getCompletions: function(editor, session, pos, prefix, callback) {
+                    if (autocompleteData) {
+                        autocompleteData.forEach(function(autocompleteSuggestion) {
+                            let captionText = autocompleteSuggestion.caption;
+                            if (captionText.includes("after.") || captionText.includes("before.")) {
+                                const rewardVarName = captionText.split(/after\.|before\./)[1];
+                                if (editor.session.getLine(pos.row).includes(rewardVarName)) {
+                                    autocompleteSuggestion.score = 10;
+                                } else {
+                                    autocompleteSuggestion.score = 0;
+                                }
+                            }
+                        });
+                    }
                     callback(null, autocompleteData);
                 }
             };
