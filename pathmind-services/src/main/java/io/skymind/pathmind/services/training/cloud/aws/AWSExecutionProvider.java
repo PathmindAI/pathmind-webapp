@@ -139,7 +139,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         .collect(Collectors.groupingBy(CheckPoint::getStatus, Collectors.counting()));
             }
 
-            if (trialStatusCount.getOrDefault("ERROR", 0L) > 0 || knownErrsCheck.size() > 0) {
+            if (trialStatusCount.getOrDefault(CheckPoint.ERROR, 0L) > 0 || knownErrsCheck.size() > 0) {
                 log.warn("{} error(s) detected for the AWS jobHandle {}: {}", knownErrsCheck.size(), jobHandle, knownErrsCheck);
             }
 
@@ -153,9 +153,19 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 return new ProviderJobStatus(Error, knownErrsCheck);
             }
 
-            if (experimentState != null && experimentState.getCheckpoints() != null && (experimentState.getCheckpoints().size() == trialStatusCount.getOrDefault("TERMINATED", 0L))) {
+            Optional<String> experimentReport = getExperimentReport(jobHandle);
+            boolean isCompletingByReport = experimentReport.isPresent() && experimentReport.get().contains("Success: Training completed successfully");
+
+            if (isCompletingByReport) {
+                // make sure every trial of experimentStat has "TERMINATED" status
+                if (experimentState != null && experimentState.getCheckpoints() != null) {
+                    experimentState.getCheckpoints().stream()
+                        .filter(chk -> chk.getStatus().equals(CheckPoint.RUNNING))
+                        .forEach(chk -> chk.setStatus(CheckPoint.TERMINATED));
+                }
+
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
-                getExperimentReport(jobHandle).ifPresent(m -> {
+                experimentReport.ifPresent(m -> {
                     String[] lines = m.split("\n");
                     Set<String> reasons = new HashSet<>();
                     Arrays.stream(lines)
@@ -312,7 +322,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
-                    .filter(checkPoint -> checkPoint.getStatus().equals("TERMINATED"))
+                    .filter(checkPoint -> checkPoint.getStatus().equals(CheckPoint.TERMINATED))
                     .collect(
                             Collectors.toMap(
                                     CheckPoint::getId,

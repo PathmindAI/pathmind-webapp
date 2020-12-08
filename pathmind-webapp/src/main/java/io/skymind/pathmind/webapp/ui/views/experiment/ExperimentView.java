@@ -68,8 +68,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentCreatedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
@@ -178,8 +176,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
                 new ExperimentViewRunUpdateSubscriber(this),
-                new ExperimentViewExperimentCreatedSubscriber(this),
-                new ExperimentViewExperimentUpdatedSubscriber(this),
                 new ExperimentViewExperimentSwitchedViewSubscriber(this),
                 new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
     }
@@ -445,10 +441,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         }
     }
 
-    public List<Experiment> getExperiments() {
-        return experiments;
-    }
-
     private void setSharedWithSupportComponents() {
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
         shareButton.setVisible(!experiment.isSharedWithSupport());
@@ -522,23 +514,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         boolean canBeStopped = RunStatus.isRunning(trainingStatus);
         stopTrainingButton.setVisible(canBeStopped);
         restartTraining.setVisible(false);
-    }
-
-    public void updateExperimentComponentsForSubscribers() {
-        // REFACTOR -> We will want to adjust this code as it's performing a database call on almost all eventbus events which is both
-        // a potential performance issue as well as cause potential multi-threading issues (racing conditions).
-        experiments = experimentDAO.getExperimentsForModel(modelId, false);
-
-        if (experiments.isEmpty()) {
-            Model model = modelService.getModel(modelId)
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
-            getUI().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(model.getProjectId(), modelId)));
-        } else {
-            boolean selectedExperimentWasArchived = experiments.stream()
-                    .noneMatch(e -> e.getId() == experimentId);
-            Experiment targetExperiment = selectedExperimentWasArchived ? experiments.get(0) : experiment;
-            setExperiment(targetExperiment);
-        }
     }
 
     public void setBestPolicy(Policy bestPolicy) {

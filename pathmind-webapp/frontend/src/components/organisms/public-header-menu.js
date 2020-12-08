@@ -108,12 +108,12 @@ class PublicHeaderMenu extends PolymerElement {
                 /></a>
                 <ul>
                     <li>
-                        <a href="https://pathmind.com/">
+                        <a href="https://pathmind.com/" target="_blank">
                             What We Offer
                         </a>
                     </li>
                     <li>
-                        <a href="https://pathmind.com/about/">
+                        <a href="https://pathmind.com/about/" target="_blank">
                             About Us
                         </a>
                     </li>

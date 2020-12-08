@@ -170,4 +170,9 @@ public class GenericPageSteps {
     public void checkNetworkErrors() {
         genericPage.checkNetworkErrors();
     }
+
+    @Step
+    public void openUrlFromTheVariable(String url) {
+        genericPage.openUrlFromTheVariable(url);
+    }
 }
