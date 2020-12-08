@@ -21,7 +21,7 @@ public class AccountPage extends PageObject {
     private Utils utils;
 
     @FindBy(xpath = "//account-view-content")
-    private WebElement accountViewShadow;
+    private WebElement accountView;
     @FindBy(id = "editInfoBtn")
     private WebElement editInfoBtnShadow;
     @FindBy(id = "changePasswordBtn")
@@ -31,7 +31,7 @@ public class AccountPage extends PageObject {
     @FindBy(id = "editPaymentBtn")
     private WebElement editPaymentBtnShadow;
     @FindBy(xpath = "//account-edit-view-content")
-    private WebElement accountEditViewShadow;
+    private WebElement accountEditView;
     @FindBy(id = "accessToken")
     private WebElement accessToken;
 
@@ -63,8 +63,7 @@ public class AccountPage extends PageObject {
     }
 
     public void inputNewEmail(String email) {
-        WebElement e = utils.expandRootElement(accountEditViewShadow);
-        WebElement inputShadow = utils.expandRootElement(e.findElement(By.id("email")));
+        WebElement inputShadow = utils.expandRootElement(accountEditView.findElement(By.id("email")));
         WebElement input = inputShadow.findElement(By.cssSelector("input"));
         input.click();
         input.clear();
@@ -72,8 +71,7 @@ public class AccountPage extends PageObject {
     }
 
     public void clickAccountEditUpdateBtn() {
-        WebElement e = utils.expandRootElement(accountEditViewShadow);
-        WebElement updateBtnShadow = utils.expandRootElement(e.findElement(By.id("updateBtn")));
+        WebElement updateBtnShadow = utils.expandRootElement(accountEditView.findElement(By.id("updateBtn")));
         updateBtnShadow.findElement(By.cssSelector("button")).click();
     }
 
@@ -84,8 +82,7 @@ public class AccountPage extends PageObject {
 
     public void inputAccountPageFirstName(String firstName) {
         JavascriptExecutor jse = (JavascriptExecutor) getDriver();
-        WebElement e = utils.expandRootElement(accountEditViewShadow);
-        WebElement inputFieldShadow = e.findElement(By.id("firstName"));
+        WebElement inputFieldShadow = accountEditView.findElement(By.id("firstName"));
         inputFieldShadow.click();
         inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         jse.executeScript("arguments[0].value='" + firstName + "';", inputFieldShadow);
@@ -93,8 +90,7 @@ public class AccountPage extends PageObject {
 
     public void inputAccountPageLastName(String lastName) {
         JavascriptExecutor jse = (JavascriptExecutor) getDriver();
-        WebElement e = utils.expandRootElement(accountEditViewShadow);
-        WebElement inputFieldShadow = e.findElement(By.id("lastName"));
+        WebElement inputFieldShadow = accountEditView.findElement(By.id("lastName"));
         inputFieldShadow.click();
         inputFieldShadow.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
         jse.executeScript("arguments[0].value='" + lastName + "';", inputFieldShadow);
