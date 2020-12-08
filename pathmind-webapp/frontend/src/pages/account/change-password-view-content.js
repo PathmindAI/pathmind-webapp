@@ -12,15 +12,12 @@ import "../../components/organisms/app-footer.js";
 class ChangePasswordViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                :host {
-                    justify-content: space-between;
+            <style>
+                change-password-view-content .notes {
+                    color: var(--lumo-error-text-color);
+                    margin-left: 0;
                 }
-                .panel-wrapper {
-                    overflow: visible;
-                    min-height: auto;
-                }
-                .inner-content {
+                change-password-view-content .inner-content {
                     text-align: left;
                 }
             </style>
@@ -55,14 +52,12 @@ class ChangePasswordViewContent extends PolymerElement {
             ></app-footer>`;
     }
 
-    static get is() {
-        return "change-password-view-content";
+    _attachDom(dom) {
+        this.appendChild(dom);
     }
 
-    static get properties() {
-        return {
-            // Declare your properties here.
-        };
+    static get is() {
+        return "change-password-view-content";
     }
 }
 

@@ -5,16 +5,6 @@ class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
             <style>
-                account-view-content {
-                    display: flex;
-                    justify-content: space-between;
-                    flex-direction: column;
-                    height: 100%;
-                }
-                account-view-content .panel-wrapper {
-                    min-height: auto;
-                    overflow: visible;
-                }
                 account-view-content .block {
                     align-items: flex-start;
                 }
