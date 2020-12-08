@@ -88,6 +88,25 @@ Feature: Model page
     When Change models sidebar list to 'Archived'
     Then Check that models sidebar model '2' contains draft tag 'true'
 
+  Scenario: Check Model date created
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Click model breadcrumb btn
+    Then Check side bar models 'Model #1' date is 'Created just now'
+    Then Check model page model '1' created is 'just now'
+    When Wait a bit 60000 ms
+    When Refresh page
+    Then Check side bar models 'Model #1' date is 'Created 1 minute ago'
+    Then Check model page model '1' created is '1 minute ago'
+
   Scenario: Check model notes autosave
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment

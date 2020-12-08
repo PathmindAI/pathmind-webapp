@@ -45,7 +45,8 @@
     "highlight.js": "^9.13.1",
     "lit-element": "^2.2.1",
     "lodash": "^4.17.20",
-    "to-string-loader": "^1.1.6"
+    "to-string-loader": "^1.1.6",
+    "timeago.js": "4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",
@@ -114,7 +115,8 @@
       "@vaadin/vaadin-tabs": "3.2.0",
       "@vaadin/vaadin-radio-button": "1.5.1",
       "@vaadin/vaadin-lumo-styles": "1.6.0",
-      "@vaadin/vaadin-material-styles": "1.3.2"
+      "@vaadin/vaadin-material-styles": "1.3.2",
+      "timeago.js": "4.0.2"
     },
     "devDependencies": {
       "webpack-babel-multi-target-plugin": "2.3.3",
@@ -127,6 +129,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.11.0"
     },
-    "hash": "d2851130e10925310648370959eab390e390e19ed00b548f184dcba7ee82dc48"
+    "hash": "3a664b35a3b5090e97065be033f99e63242900526b9bc6c147365b1a1bf6a2a0"
   }
 }

@@ -20,9 +20,6 @@ class ModelsNavbarItem extends PolymerElement {
             modelLink: {
                 type: String,
             },
-            createdDate: {
-                type: String,
-            },
             isCurrent: {
                 type: Boolean,
                 value: false,
@@ -110,7 +107,7 @@ class ModelsNavbarItem extends PolymerElement {
                     <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
                 </div>
                 <p>Model #[[modelName]] [[modelPackageNameInBrackets]]</p>
-                <p>Created [[createdDate]]</p>
+                <p>Created <slot></slot></p>
             </div>
             <vaadin-button
                 class="action-button"
