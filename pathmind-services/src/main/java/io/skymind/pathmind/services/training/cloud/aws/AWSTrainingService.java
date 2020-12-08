@@ -69,13 +69,15 @@ public class AWSTrainingService extends TrainingService {
                 false,
                 true,
                 true,
-                model.getMainAgent(),
-                model.getExperimentClass(),
-                model.getExperimentType()
+                safeString(model.getMainAgent()),
+                safeString(model.getExperimentClass()),
+                safeString(model.getExperimentType())
         );
 
         return executionProvider.execute(spec);
     }
 
-
+    private String safeString(String str) {
+        return str == null ? "" : str;
+    }
 }
