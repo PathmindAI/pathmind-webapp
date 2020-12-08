@@ -4,15 +4,6 @@ import "../../components/organisms/app-footer.js";
 class AccountEditViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                :host {
-                    justify-content: space-between;
-                }
-                .panel-wrapper {
-                    overflow: visible;
-                    min-height: auto;
-                }
-            </style>
             <vaadin-horizontal-layout class="panel-wrapper">
                 <div class="content">
                     <span class="section-title-label">Edit Account</span>
@@ -36,14 +27,12 @@ class AccountEditViewContent extends PolymerElement {
             ></app-footer>`;
     }
 
-    static get is() {
-        return "account-edit-view-content";
+    _attachDom(dom) {
+        this.appendChild(dom);
     }
 
-    static get properties() {
-        return {
-            // Declare your properties here.
-        };
+    static get is() {
+        return "account-edit-view-content";
     }
 }
 

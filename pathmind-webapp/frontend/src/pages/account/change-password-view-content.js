@@ -17,9 +17,6 @@ class ChangePasswordViewContent extends PolymerElement {
                     color: var(--lumo-error-text-color);
                     margin-left: 0;
                 }
-                change-password-view-content .inner-content {
-                    text-align: left;
-                }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
                 <div class="content">

@@ -435,6 +435,7 @@ account-view {
 }
 
 account-view-content,
+account-edit-view-content,
 change-password-view-content {
     display: flex;
     justify-content: space-between;
@@ -443,9 +444,15 @@ change-password-view-content {
 }
 
 account-view-content .panel-wrapper,
+account-edit-view-content .panel-wrapper,
 change-password-view-content .panel-wrapper {
     min-height: auto;
     overflow: visible;
+}
+
+account-edit-view-content .inner-content,
+change-password-view-content .inner-content {
+    text-align: left;
 }
 
 /* Title bar */
