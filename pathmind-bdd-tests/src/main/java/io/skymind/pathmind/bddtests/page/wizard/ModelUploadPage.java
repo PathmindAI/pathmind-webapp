@@ -23,13 +23,19 @@ public class ModelUploadPage extends PageObject {
     private WebElement uploadAlpInstructionsShadow;
     @FindBy(xpath = "//span[@class='warning-label']")
     private WebElement warningLabelElement;
+    @FindBy(xpath = "//vaadin-button[text()='Upload as Zip']")
+    private WebElement uploadAsZipBtn;
 
     private final By byInput = By.cssSelector("input");
 
 
     public void uploadModelFile(String model) {
         waitABit(2500);
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Upload as Zip']")).click();
+        setImplicitTimeout(3, SECONDS);
+        if (getDriver().findElements(By.xpath("//vaadin-button[text()='Upload as Zip']")).size() != 0) {
+            uploadAsZipBtn.click();
+        }
+        resetImplicitTimeout();
         waitABit(2500);
         WebElement e = utils.expandRootElement(uploadShadow);
         WebElement projectNameInputField = e.findElement(byInput);
@@ -82,7 +88,7 @@ public class ModelUploadPage extends PageObject {
     }
 
     public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
-        if (isShown){
+        if (isShown) {
             waitFor(ExpectedConditions.visibilityOf(warningLabelElement));
             assertThat(warningLabelElement.getText(), is(warningLabel));
         } else {
