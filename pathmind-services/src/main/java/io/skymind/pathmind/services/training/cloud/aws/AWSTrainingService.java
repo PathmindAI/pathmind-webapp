@@ -69,9 +69,9 @@ public class AWSTrainingService extends TrainingService {
                 false,
                 true,
                 true,
-                model.getMainAgentName(),
-                model.getExpClassName(),
-                model.getExpClassType()
+                model.getMainAgent(),
+                model.getExperimentClass(),
+                model.getExperimentType()
         );
 
         return executionProvider.execute(spec);

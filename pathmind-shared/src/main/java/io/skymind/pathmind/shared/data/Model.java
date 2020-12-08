@@ -36,10 +36,10 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
     private int invalidModel;
     private int modelType;
     private int numberOfAgents;
-    private String helperName;
-    private String mainAgentName;
-    private String expClassName;
-    private String expClassType;
+    private String pathmindHelper;
+    private String mainAgent;
+    private String experimentClass;
+    private String experimentType;
 
     @Override
     public Model shallowClone() {
@@ -58,10 +58,10 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
                 .invalidModel(invalidModel)
                 .modelType(modelType)
                 .numberOfAgents(numberOfAgents)
-                .helperName(helperName)
-                .mainAgentName(mainAgentName)
-                .expClassName(expClassName)
-                .expClassType(expClassType)
+                .pathmindHelper(pathmindHelper)
+                .mainAgent(mainAgent)
+                .experimentClass(experimentClass)
+                .experimentType(experimentType)
                 .build());
     }
 }
