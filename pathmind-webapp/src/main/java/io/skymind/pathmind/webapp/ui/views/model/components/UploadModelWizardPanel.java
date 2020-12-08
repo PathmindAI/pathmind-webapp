@@ -188,7 +188,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
         if (checkingModelComponent != null) {
             checkingModelComponent.setVisible(false);
         }
-        errorMessage.getElement().setProperty("innerHTML", error);
+        errorMessage.getElement().executeJs("this.innerHTML = $0", error);
         upload.setVisible(true);
     }
 
