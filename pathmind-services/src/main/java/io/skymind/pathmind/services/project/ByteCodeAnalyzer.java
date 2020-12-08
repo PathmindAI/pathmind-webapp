@@ -1,12 +1,15 @@
 package io.skymind.pathmind.services.project;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.*;
 
 /*To read and find PathmindHelper qualifiedClassName from class files using ASM*/
@@ -71,6 +74,13 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     /*To iterate and read all class files*/
     public void byteParser(List<String> classFiles, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
         for (String classFile : classFiles) {
+            if (classFile.endsWith("model.properties")) {
+                FileUtils.readLines(new File(classFile), Charset.defaultCharset()).stream()
+                    .filter(line -> line.startsWith("ReinforcementLearningPlatform"))
+                    .findFirst()
+                    .ifPresent(line -> anylogicFileCheckResult.setRlPlatform(line));
+                continue;
+            }
             try (InputStream inputStream = new FileInputStream(classFile)) {
                 ClassReader cr = new ClassReader(inputStream);
                 cr.accept(this, 0);
