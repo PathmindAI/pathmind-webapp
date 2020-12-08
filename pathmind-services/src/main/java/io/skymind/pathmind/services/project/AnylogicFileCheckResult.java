@@ -76,14 +76,14 @@ public class AnylogicFileCheckResult implements FileCheckResult {
 
     public AnyLogicModelInfo getPriorityModelInfo() {
         AnyLogicModelInfo priorityModelInfo;
-        if (modelInfos.size() > 2) {
+        if (modelInfos.size() > 1) {
             // Simulation has a higher priority than RLExperiment when they exist together
             List<AnyLogicModelInfo> simulations = modelInfos.stream()
                 .filter(m -> m.getExperimentType().equals(AnyLogicModelInfo.ExperimentType.Simulation))
                 .collect(Collectors.toList());
 
             // if there are more than two simulations, the simulation that has "Simulation" is higher priority
-            if (simulations.size() > 2) {
+            if (simulations.size() > 1) {
                 priorityModelInfo = simulations.stream()
                     .filter(m -> m.getExperimentClass().endsWith("/Simulation"))
                     .findFirst().orElse(null);
