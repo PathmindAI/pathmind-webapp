@@ -29,7 +29,6 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -70,11 +69,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -176,7 +172,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
                 new ExperimentViewRunUpdateSubscriber(this),
-                new ExperimentViewExperimentSwitchedViewSubscriber(this),
                 new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
     }
 
