@@ -11,6 +11,20 @@
     line-height: 1;
 }
 
+.experiment-view .bold-label {
+    /* same as .panel-title-label but since this panel is reused on Experiment &
+       New Experiment view, we're going to keep it as .bold-label for now */
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
+
 .experiment-view .section-title-label ~ tag-label {
     margin: var(--lumo-space-xs) 0;
 }
@@ -21,7 +35,7 @@
     min-width: auto;
     background: white;
     border-radius: 0;
-    padding: var(--lumo-space-m);
+    padding: 0;
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout {
@@ -41,10 +55,8 @@
     max-height: calc(1.8em * 20);
     font-size: var(--lumo-font-size-xs);
     line-height: 1.8;
-    padding: var(--lumo-space-s);
+    padding: var(--lumo-space-xs);
     padding-top: 0;
-    border: 1px solid var(--pm-grey-color);
-    border-radius: var(--lumo-border-radius);
     overflow: auto;
 }
 
@@ -162,8 +174,15 @@
     align-items: flex-end;
 }
 
+.experiment-view code-viewer {
+    border: none;
+    border-radius: 0;
+}
+
 .experiment-view .observations-panel {
     max-height: 27rem;
+    border: none;
+    border-radius: 0;
 }
 
 .experiment-view .observations-table {
@@ -236,7 +255,6 @@
     display: block;
 }
 
-.experiment-view .bold-label,
 .new-experiment-view .bold-label {
     margin-bottom: var(--lumo-space-xs);
 }
@@ -312,4 +330,8 @@
 .experiment-view .comparison-mode .middle-panel,
 .experiment-view .comparison-mode .bottom-panel {
     flex-direction: column;
+}
+
+.experiment-view .comparison-mode {
+    height: calc(100vh - 5rem) !important;
 }

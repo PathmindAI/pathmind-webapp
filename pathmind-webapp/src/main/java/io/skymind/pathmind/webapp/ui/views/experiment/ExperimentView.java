@@ -231,18 +231,25 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         setupCompareExperimentVerticalLayout();
 
+        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        panelTitle, archivedLabel, sharedWithSupportLabel),
+                downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper());
+        titleBar.setPadding(true);
+
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                            WrapperUtils.wrapWidthFullHorizontal(
-                                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                                            panelTitle, archivedLabel, sharedWithSupportLabel),
-                                    downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
-                            stoppedTrainingNotification,
-                            modelNeedToBeUpdatedLabel,
-                            middlePanel,
-                            getBottomPanel()
-                        ),
-                        compareExperimentVerticalLayout);
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                    titleBar,
+                    stoppedTrainingNotification,
+                    modelNeedToBeUpdatedLabel,
+                    middlePanel,
+                    getBottomPanel()
+                ),
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        titleBar,
+                        stoppedTrainingNotification,
+                        modelNeedToBeUpdatedLabel,
+                        compareExperimentVerticalLayout));
         experimentContent.addClassName("view-section");
         if (isComparisonMode) {
             experimentContent.addClassName("comparison-mode");
@@ -254,8 +261,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void setupCompareExperimentVerticalLayout() {
-        compareExperimentVerticalLayout = WrapperUtils.wrapWidthFullVertical(
-            getComparisonExperimentPanel());
+        compareExperimentVerticalLayout = getComparisonExperimentPanel();
     }
 
     /**
@@ -374,6 +380,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 notesField);
         bottomPanel.addClassName("bottom-panel");
         bottomPanel.setPadding(false);
+        bottomPanel.setSpacing(false);
         return bottomPanel;
     }
 
