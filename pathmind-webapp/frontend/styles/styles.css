@@ -411,11 +411,27 @@ background-color: var(--pm-grey-color-light);
 .upload-model-view .view-section {
     max-width: 540px;
     flex: 0 0 auto;
-    margin-top: var(--lumo-space-xxl);
+    margin: var(--lumo-space-xxl) auto;
+}
+
+.upload-model-view vaadin-upload {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    margin-top: var(--lumo-space-xl);
+}
+
+.upload-model-view .file-check-panel {
+    margin-top: var(--lumo-space-l);
+}
+
+.upload-model-view .error-label:not(:empty) {
+    padding: var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius);
 }
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
-    margin-top: var(--lumo-space-xl);
+    margin: var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l));
 }
 
 .upload-model-view .warning-label {
