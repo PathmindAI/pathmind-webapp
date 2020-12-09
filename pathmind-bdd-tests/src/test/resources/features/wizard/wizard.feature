@@ -58,8 +58,11 @@ Feature: Wizard page
     When Input name of the new project AutotestProject and click Create project button
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard upload ALP next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard model details next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'false'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
     Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
@@ -97,3 +100,45 @@ Feature: Wizard page
     When Click in 'Export your model as a standalone Java application.' button
     When Open tab 1
     Then Check That model upload link 'Export your model as a standalone Java application' opened
+
+  Scenario: Check wizard `This draft model is archived.` label
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Click model breadcrumb btn
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click project/ breadcrumb btn
+    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Change models sidebar list to 'Archived'
+    When Click the model name 2
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard upload ALP next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard model details next btn
+    When Check wizard warning label 'This draft model is archived.' is shown 'true'
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+
+  Scenario Outline: Check that upload model page is not accessed for different users
+    Given Open page sign-up
+    When Fill new user form with name <First Name>, <Last Name>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
+    When Create new user click sign in button
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <Password>
+    Then Check that user <First Name> <Last Name> successfully logged in
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Save experiment url into the variable 'modelUploadUrl'
+    Then Delete all cookies
+    When Login to the pathmind
+    When Open url from the variable 'modelUploadUrl'
+    When Check that Invalid data error page opened
+
+    Examples:
+      | First Name | Last Name | Password   |
+      | Evgeniy    | Autotest  | Pass123456 |

@@ -179,4 +179,9 @@ public class GenericPageStepDefinitions {
     public void checkNetworkErrors() {
         genericPageSteps.checkNetworkErrors();
     }
+
+    @When("^Open url from the variable '(.*)'$")
+    public void openUrlFromTheVariable(String url) {
+        genericPageSteps.openUrlFromTheVariable(url);
+    }
 }

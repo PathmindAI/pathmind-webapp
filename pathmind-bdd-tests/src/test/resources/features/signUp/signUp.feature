@@ -52,18 +52,14 @@ Feature: Sign Up
     Then Check that Email verification was sent to your email. popup is shown
     Then Delete all cookies
 
-  @smoke
-  Scenario: Check create new user page elements
-    Given Open page sign-up
-    When Check create new user page elements
-    # Then Check network errors
-
   Scenario: Check What We Offer btn
     Given Open page sign-up
     When Click sign-up what we offer button
+    When Open tab 1
     Then Check page url is https://pathmind.com/
 
-  Scenario: Check What We Offer btn
+  Scenario: Check About Us btn
     Given Open page sign-up
     When Click sign-up about us button
+    When Open tab 1
     Then Check page url is https://pathmind.com/about/

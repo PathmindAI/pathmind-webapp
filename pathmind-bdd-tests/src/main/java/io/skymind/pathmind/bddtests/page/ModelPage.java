@@ -172,4 +172,27 @@ public class ModelPage extends PageObject {
     public void checkModelTitleLabelTagIsArchived(String tag) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='model-wrapper']/descendant::span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
     }
+
+    public void checkSideBarModelsDateIs(String model, String date) {
+        assertThat(utils.getModelNavbarItemByModelName(model, "a > div > p:nth-child(3)").getText(), is(date));
+    }
+
+    public void checkModelPageCreatedIs(String model, String date) {
+        String projectCellNumber = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + model + " ']")).getAttribute("slot").split("vaadin-grid-cell-content-")[1];
+        int cellNumber = Integer.parseInt(projectCellNumber) + 1;
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
+    }
+
+    public void addModelNoteToTheProjectPage(String note) {
+        WebElement notesShadow = utils.expandRootElement(getDriver().findElement(By.xpath("(//notes-field)[2]")));
+        notesShadow.findElement(By.cssSelector("#textarea")).click();
+        notesShadow.findElement(By.cssSelector("#textarea")).sendKeys(note);
+        waitABit(3000);
+    }
+
+    public void checkModelNoteOnTheProjectPage(String note) {
+        WebElement notesShadow = utils.expandRootElement(getDriver().findElement(By.xpath("(//notes-field)[2]")));
+        assertThat(notesShadow.findElement(By.cssSelector("#textarea")).getAttribute("value"), is(note));
+    }
+
 }

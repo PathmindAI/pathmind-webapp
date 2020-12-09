@@ -186,4 +186,10 @@ public class HomePageStepDefinitions {
     public void clickAndSendEnterBtnToTheSearchField() {
         homePageSteps.clickAndSendEnterBtnToTheSearchField();
     }
+
+    @When("^Click user menu '(.*)' btn$")
+    public void clickUserMenuBtn(String btn) {
+        homePageSteps.openUserDropdown();
+        homePageSteps.clickUserMenuBtn(btn);
+    }
 }

@@ -47,4 +47,9 @@ public class ModelUploadStepDefinitions {
     public void checkThatModelUploadLinkOpened() {
         modelUploadSteps.checkThatModelUploadLinkOpened();
     }
+
+    @When("^Check wizard warning label '(.*)' is shown '(.*)'$")
+    public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
+        modelUploadSteps.checkWizardWarningLabelIsShown(warningLabel, isShown);
+    }
 }

@@ -39,10 +39,6 @@ public class ProjectDAO {
         ProjectRepository.updateProjectName(ctx, projectId, projectName);
     }
 
-    public Optional<Project> getProject(long projectId) {
-        return Optional.ofNullable(ProjectRepository.getProject(ctx, projectId));
-    }
-
     public void updateUserNotes(long projectId, String userNotes) {
         ProjectRepository.updateUserNotes(ctx, projectId, userNotes);
     }

@@ -25,6 +25,7 @@ public class RewardVariablesTable extends VerticalLayout {
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
     private Supplier<Optional<UI>> getUISupplier;
+    private Integer selectedRewardVariables;
 
     public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier) {
         this(getUISupplier, () -> {
@@ -73,7 +74,7 @@ public class RewardVariablesTable extends VerticalLayout {
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(getUISupplier, rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect);
+            RewardVariablesRowField row = new RewardVariablesRowField(getUISupplier, rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
             container.add(row);
             rewardVariableNameFields.add(row);
         });
@@ -81,5 +82,19 @@ public class RewardVariablesTable extends VerticalLayout {
 
     public boolean canSaveChanges() {
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
+    }
+
+    public void setNumberOfSelectedRewardVariables(int num) {
+        String disableSelectionClassName = "disable-selection";
+        selectedRewardVariables = num;
+        if (num >= 2) {
+            container.addClassName(disableSelectionClassName);
+        } else {
+            container.removeClassName(disableSelectionClassName);
+        }
+    }
+
+    public int getNumberOfSelectedRewardVariables() {
+        return selectedRewardVariables;
     }
 }

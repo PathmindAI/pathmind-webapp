@@ -40,6 +40,7 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -69,6 +70,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 @Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -174,6 +176,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
         List<Component> sections = new ArrayList<>();
+        if (isResumeUpload() && model.isArchived()) {
+            sections.add(
+                LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
+            );
+        }
         sections.add(sectionTitleWrapper);
         sections.add(uploadModelWizardPanel);
         if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
@@ -239,7 +246,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             this.model = ModelUtils.generateNewDefaultModel();
             model.setProjectId(projectId);
         }
-        project = projectDAO.getProject(projectId)
+        project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
 

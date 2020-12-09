@@ -17,28 +17,24 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class PaymentViewContent extends PolymerElement {
   static get template() {
     return html`
-    <style include="shared-styles">
-        #card-element {
+    <style>
+        payment-view-content #card-element {
             width: 100%;
             border-radius: var(--lumo-border-radius);
             background: var(--pm-highlight-medium);
         }
-        
-         .content {
-          margin: auto;
-          max-width: 650px;
-          width: 650px;
+        payment-view-content .inner-content {
+            max-width: 460px;
         }
-        .form-cont {
-          width: 75%;
-          margin: 50px auto 0;
+        payment-view-content .form-cont {
+          width: 100%;
+          margin: var(--lumo-space-m) auto 0;
         }
-
-        #errorCont {
+        payment-view-content #errorCont {
           margin: 10px 0;
           width: 100%;
         }
-        #errorCont .error-message {
+        payment-view-content #errorCont .error-message {
           padding-top: 8px;
           margin-left: calc(var(--lumo-border-radius-m) / 4);
           font-size: var(--lumo-font-size-xs);
@@ -48,46 +44,40 @@ class PaymentViewContent extends PolymerElement {
           transition: 0.4s max-height;
           max-height: 5em;
         }
-
-        #city {
+        payment-view-content #city {
           width: 48%;
           margin-right: 2%;
         }
-        #state {
+        payment-view-content #state {
           width: 20%;
           margin-right: 2%;
         }
-        #zip {
+        payment-view-content #zip {
           width: 26%;
           margin-right: 2%;
         }
-        #numberOnCard, 
-        #billingAddress {
+        payment-view-content #numberOnCard, 
+        payment-view-content #billingAddress {
           width: 98%;
           margin-right: 2%;
         }
-
-        .custom-label {
+        payment-view-content .custom-label {
           color: var(--lumo-secondary-text-color);
           font-size: var(--lumo-font-size-s);
           font-weight: 500;
           margin-top: 15px;
         }
-
-        .title {
+        payment-view-content .title {
           font-size: 1.5em;
-          margin-left: 20px;
-          color: #676767;
+          margin: 0 auto;
         }
-        .sub-title {
-          margin-left: 20px;
-          color: #878787;
+        payment-view-content .sub-title {
+            color: var(--lumo-secondary-text-color);
+            margin: 0 auto;
         }
-
-        #buttonsCont {
+        payment-view-content #buttonsCont {
             margin-top: 0;
         }
-        
     </style>
 
     <div class="content">
@@ -97,9 +87,9 @@ class PaymentViewContent extends PolymerElement {
         id="emailPart"
       >
         <div class="title">Upgrade to {{plan}}</div>
-        <div class="sub-title">
+        <p class="sub-title">
           Please fill in the information below. All fields are required.
-        </div>
+        </p>
 
         <vaadin-vertical-layout class="form-cont">
           <vaadin-text-field
@@ -146,7 +136,7 @@ class PaymentViewContent extends PolymerElement {
           </vaadin-horizontal-layout>
 
           <vaadin-horizontal-layout style="width:100%; margin-top: 25px">
-              <div id="card-element"></div>
+            <div id="card-element"></div>
           </vaadin-horizontal-layout>
           <vaadin-horizontal-layout id="errorCont">
             <div class="error-message">{{errorMessage}}</div>
@@ -158,18 +148,15 @@ class PaymentViewContent extends PolymerElement {
             theme="primary"
             disabled="[[!and(isStripeComplete, isFormComplete)]]"
              on-click="submit"
-            >Sign Up</vaadin-button
+            >Upgrade</vaadin-button
           >
           <vaadin-button id="cancelSignUpBtn" theme="tertiary" on-click="cancelButtonClicked"
             >Cancel</vaadin-button
           >
         </vaadin-vertical-layout>
-      </vaadin-vertical-layout>
 
       </vaadin-vertical-layout>
-      <a class="support" href="{{contactLink}}">Contact Support</a>
-    </div>
-`;
+    </div>`;
   }
 
   static get is() {
@@ -188,16 +175,16 @@ class PaymentViewContent extends PolymerElement {
       errorMessage: Object,
       isStripeComplete: {
         type: Boolean,
-        value: false
+        value: false,
       },
       isFormComplete: {
         type: Boolean,
-        value: false
+        value: false,
       },
       showValidationError: {
         type: Boolean,
-        value: false
-      }
+        value: false,
+      },
     };
   }
 

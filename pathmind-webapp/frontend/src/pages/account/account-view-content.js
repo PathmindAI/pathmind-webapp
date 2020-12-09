@@ -1,20 +1,72 @@
 import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/app-footer.js";
 
 class AccountViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                .block {
+            <style>
+                account-view-content .block {
                     align-items: flex-start;
                 }
-                .small {
+                account-view-content .small {
                     font-size: var(--lumo-font-size-s);
                 }
-                .small:empty {
+                account-view-content .small:empty {
                     display: none;
                 }
-                vaadin-button {
-                    min-width: auto;
+                .info {
+                    position: relative;
+                }
+                vaadin-button[theme~="small"] {
+                    height: 1.8rem;
+                }
+                #rotateApiMenu {
+                    margin-right: calc(-1 * var(--lumo-space-xs));
+                }
+                #rotateApiKeyBtn {
+                    display: none;
+                }
+                .api-title-wrapper {
+                    justify-content: flex-end;
+                    align-items: center;
+                    width: 100%;
+                }
+                .api-title-wrapper .title {
+                    justify-self: flex-start;
+                    flex: 1;
+                    text-align: left;
+                }
+                #apiExpiryDate {
+                    color: var(--lumo-secondary-text-color);
+                    font-size: var(--lumo-font-size-xs);
+                }
+                #small-menu {
+                    width: auto;
+                    margin: 0;
+                }
+                #apiCopyBtn {
+                    position: relative;
+                    align-self: flex-end;
+                }
+                #apiCopyBtn span {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    width: 100%;
+                    top: 50%;
+                    left: -.25rem;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    transform: translateY(-50%);
+                }
+                #apiCopyBtn span iron-icon {
+                    width: 1rem;
+                    height: 1rem;
+                    margin-right: var(--lumo-space-xxs);
+                }
+                #apiCopyBtn span[active] {
+                    opacity: 1;
                 }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
@@ -45,14 +97,34 @@ class AccountViewContent extends PolymerElement {
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
                         <vaadin-vertical-layout class="info" style="width: 100%;">
-                            <div class="title">API Key</div>
-                            <div class="data">{{apiKey}}</div>
-                            <vaadin-horizontal-layout style="width: 100%;" class="block">
-                                <div class="data small">{{apiKeyExpiresPhrase}}</div>
-                                <vaadin-button id="rotateApiKeyBtn" theme="small">
-                                    Rotate
-                                </vaadin-button>
+                            <vaadin-horizontal-layout class="api-title-wrapper">
+                                <div class="title">Access Token</div>
+                                <div id="apiExpiryDate">{{apiKeyExpiresPhrase}}</div>
+                                <vaadin-context-menu id="rotateApiMenu">
+                                    <template>
+                                        <vaadin-list-box>
+                                            <vaadin-item on-click="triggerRotateBtn">
+                                                Rotate
+                                            </vaadin-item>
+                                        </vaadin-list-box>
+                                    </template>
+                                    <vaadin-button id="rotateApiKeyBtn" theme="small"></vaadin-button>
+                                    <vaadin-button id="small-menu" theme="tertiary small">
+                                        <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
+                                    </vaadin-button>
+                                </vaadin-context-menu>
                             </vaadin-horizontal-layout>
+                            <vaadin-vertical-layout class="data" style="width: 100%">
+                                <div id="accessToken">{{apiKey}}</div>
+                                <vaadin-button id="apiCopyBtn" theme="small" on-click="copyApi">
+                                    <span active>
+                                        <iron-icon icon="vaadin:copy-o"></iron-icon>Copy
+                                    </span>
+                                    <span>
+                                        <iron-icon icon="vaadin:check"></iron-icon>Done
+                                    </span>
+                                </vaadin-button>
+                            </vaadin-vertical-layout>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
@@ -78,23 +150,50 @@ class AccountViewContent extends PolymerElement {
                         </vaadin-button>
                     </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
-                <div class="support-cont">
-                    <a href="{{privacyLink}}" target="_blank">Privacy Policy</a>
-                    <a href="{{termsOfUseLink}}" target="_blank">Terms of Use</a><br>
-                    <a class="support" href="{{contactLink}}">Contact Support</a>
-                </div>
             </div>
-        </vaadin-horizontal-layout>`;
+        </vaadin-horizontal-layout>
+        <app-footer 
+            privacylink="{{privacyLink}}"
+            termslink="{{termsOfUseLink}}"
+            contactlink="{{contactLink}}"
+        ></app-footer>`;
+    }
+
+    _attachDom(dom) {
+        this.appendChild(dom);
+    }
+
+    ready() {
+        super.ready();
+        document.getElementById("rotateApiMenu")._setProperty("openOn", "click");
+    }
+
+    triggerRotateBtn() {
+        document.getElementById("rotateApiKeyBtn").click();
+    }
+
+    copyApi(event) {
+        const copyButton = document.getElementById("apiCopyBtn");
+        const copyIcon = copyButton.querySelector("span:first-child");
+        const checkmarkIcon = copyButton.querySelector("span:last-child");
+        const range = document.createRange();
+        range.selectNode(document.getElementById("accessToken"));
+        const select = window.getSelection();
+        select.removeAllRanges();
+        select.addRange(range);
+        document.execCommand("copy");
+        select.removeAllRanges();
+
+        copyIcon.removeAttribute("active");
+        checkmarkIcon.setAttribute("active", true);
+        setTimeout(function() {
+            copyIcon.setAttribute("active", true);
+            checkmarkIcon.removeAttribute("active");
+        }, 1200);
     }
 
     static get is() {
         return "account-view-content";
-    }
-
-    static get properties() {
-        return {
-            // Declare your properties here.
-        };
     }
 }
 

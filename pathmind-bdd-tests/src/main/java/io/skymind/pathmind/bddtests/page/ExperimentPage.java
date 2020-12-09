@@ -53,6 +53,7 @@ public class ExperimentPage extends PageObject {
         WebElement notesShadow = utils.expandRootElement(notesBlock);
         notesShadow.findElement(notesTextarea).click();
         notesShadow.findElement(notesTextarea).sendKeys(note);
+        waitABit(3000);
     }
 
     public void clickCurrentExperimentArchiveButton() {
@@ -348,5 +349,9 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).getAttribute("aria-checked"), is(isSelected));
+    }
+
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        assertThat(utils.getExperimentNavbarItemByExperimentName(experiment, "#experimentLink > div > p:nth-child(2)").getText(), is(date));
     }
 }

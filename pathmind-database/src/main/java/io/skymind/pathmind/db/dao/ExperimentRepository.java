@@ -123,10 +123,9 @@ class ExperimentRepository {
                 .execute();
     }
 
-    protected static void updateExperiment(DSLContext ctx, Experiment experiment) {
+    protected static void updateRewardFunction(DSLContext ctx, Experiment experiment) {
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
-                .set(EXPERIMENT.USER_NOTES, experiment.getUserNotes())
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
     }

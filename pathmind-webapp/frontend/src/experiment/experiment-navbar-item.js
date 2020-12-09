@@ -64,7 +64,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 <status-icon status=[[status]] status-text=[[statusText]]></status-icon>
                 <div class="experiment-name">
                     <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
-                    <p>Created [[createdDate]]</p>
+                    <p>Created <slot></slot></p>
                     <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
                 </div>
                 <vaadin-button
@@ -82,9 +82,6 @@ class ExperimentNavbarItem extends PolymerElement {
     static get properties() {
         return {
             experimentName: {
-                type: String,
-            },
-            createdDate: {
                 type: String,
             },
             isCurrent: {

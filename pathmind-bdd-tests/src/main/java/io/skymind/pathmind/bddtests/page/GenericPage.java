@@ -65,8 +65,7 @@ public class GenericPage extends PageObject {
     }
 
     public void clickInButton(String buttonText) {
-        String xpath = String.format("//*[text()='%s']", buttonText);
-//        getDriver().findElement(By.xpath(xpath)).click();
+        String xpath = String.format("//*[normalize-space(text())='%s']", buttonText);
         utils.clickElementRepeatIfStaleException(By.xpath(xpath));
         System.out.println("user dir " + System.getProperty("user.dir"));
     }
@@ -276,5 +275,9 @@ public class GenericPage extends PageObject {
             System.out.println(entry.getMessage());
             assertThat(entry.getMessage(), not(containsString("\"status\":\"4")));
         }
+    }
+
+    public void openUrlFromTheVariable(String url) {
+        getDriver().navigate().to(Serenity.sessionVariableCalled(url).toString());
     }
 }
