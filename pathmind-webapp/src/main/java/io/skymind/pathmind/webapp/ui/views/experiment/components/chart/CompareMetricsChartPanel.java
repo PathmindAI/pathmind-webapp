@@ -18,15 +18,15 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.AllMetricsChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.AllMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.CompareMetricsChartPanelPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AllMetricsChartPanel extends VerticalLayout {
+public class CompareMetricsChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
 
-    private AllMetricsChart chart = new AllMetricsChart();
+    private CompareMetricsChart chart = new CompareMetricsChart();
 
     private Experiment experiment;
     private Policy bestPolicy;
@@ -34,7 +34,7 @@ public class AllMetricsChartPanel extends VerticalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public AllMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
+    public CompareMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
         rewardVariableFilters = new ConcurrentHashMap<>();
         add(hintMessage(), chart);
@@ -45,7 +45,7 @@ public class AllMetricsChartPanel extends VerticalLayout {
     private Paragraph hintMessage() {
         Paragraph hintMessage = new Paragraph(VaadinIcon.INFO_CIRCLE_O.create());
         hintMessage.add(
-                "You can click on the simulation metric names above to toggle the lines on this chart."
+                "Select any two metrics on the simulation metric names above for comparison."
         );
         hintMessage.addClassName("hint-label");
         return hintMessage;
@@ -54,8 +54,14 @@ public class AllMetricsChartPanel extends VerticalLayout {
     public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
         synchronized (experimentLock) {
             this.experiment = experiment.deepClone();
-            rewardVariables.stream().forEach(rewardVariable ->
-                    rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone()));
+            long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
+            if (numberOfSelectedRewardVariables == 0) {
+                rewardVariables.stream().forEach(rewardVariable -> {
+                    if (rewardVariable.getArrayIndex() < 2) {
+                        rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
+                    }
+                });
+            }
             selectBestPolicy();
             updateChart();
         }
@@ -94,14 +100,14 @@ public class AllMetricsChartPanel extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new AllMetricsChartPanelPolicyUpdateSubscriber(this),
-                new AllMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber(this));
+                new CompareMetricsChartPanelPolicyUpdateSubscriber(this),
+                new CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber(this));
     }
 
     public void updateChart() {
         // Update chart data
         List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-        chart.setAllMetricsChart(filteredAndSortedList, bestPolicy);
+        chart.setCompareMetricsChart(filteredAndSortedList, bestPolicy);
 
         redrawChart();
     }
