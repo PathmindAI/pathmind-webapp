@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.components.codeViewer;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -13,11 +13,12 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.components.codeViewer.subscribers.CodeViewerExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.subscribers.CodeViewerExperimentSwitchedViewSubscriber;
 
 @Tag("code-viewer")
 @JsModule("./src/experiment/code-viewer.js")
-public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasStyle {
+public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasStyle, ExperimentComponent {
 
     private Supplier<Optional<UI>> getUISupplier;
 

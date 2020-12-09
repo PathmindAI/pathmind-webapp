@@ -11,14 +11,15 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.EventBusSubscriberComponent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentStartTrainingViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
 
-public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver {
+public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver, EventBusSubscriberComponent, ExperimentComponent {
 
     private Supplier<Optional<UI>> getUISupplier;
     private Consumer<String> saveConsumer;
@@ -60,7 +61,8 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
         saveNotes();
     }
 
-    public void addEventBusSubscribers(EventBusSubscriber subscriber) {
-        EventBus.subscribe(this, getUISupplier, subscriber);
+    @Override
+    public Supplier<Optional<UI>> getUISupplier() {
+        return getUISupplier;
     }
 }
