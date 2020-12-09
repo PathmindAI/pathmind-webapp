@@ -17,9 +17,4 @@ public class NewExperimentViewExperimentChangedViewSubscriber extends Experiment
     public void handleBusEvent(ExperimentChangedViewBusEvent event) {
         newExperimentView.setNeedsSaving();
     }
-
-    @Override
-    public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
-        return ExperimentUtils.isSameExperiment(event.getExperiment(), newExperimentView.getExperiment());
-    }
 }
