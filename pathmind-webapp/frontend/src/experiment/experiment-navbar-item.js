@@ -51,13 +51,24 @@ class ExperimentNavbarItem extends PolymerElement {
                 vaadin-button {
                     margin-left: auto;
                 }
-                vaadin-button[title="Archive"].action-button iron-icon {
+                vaadin-button[title="Archive"],
+                vaadin-button[title="Compare"] {
+                    display: none;
+                }
+                vaadin-button[title="Archive"].action-button iron-icon,
+                vaadin-button[title="Compare"].action-button iron-icon {
                     width: var(--lumo-font-size-xs);
                     height: var(--lumo-font-size-xs);
                     padding: 0;
                 }
                 status-icon[status~="pencil"] ~ div goals-reached-status {
                     display: none;
+                }
+                status-icon[status~="pencil"] ~ vaadin-context-menu {
+                    display: none;
+                }
+                status-icon[status~="pencil"] ~ vaadin-button[title="Archive"] {
+                    display: block;
                 }
             </style>
             <a id="experimentLink" on-click="handleRowClicked">
@@ -67,14 +78,37 @@ class ExperimentNavbarItem extends PolymerElement {
                     <p>Created <slot></slot></p>
                     <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
                 </div>
+                <vaadin-context-menu id="navbarItemMenu">
+                    <template>
+                        <vaadin-list-box>
+                            <vaadin-item on-click="triggerArchiveBtn">
+                                <iron-icon icon="vaadin:archive"></iron-icon>
+                                Archive
+                            </vaadin-item>
+                            <vaadin-item on-click="triggerCompareBtn">
+                                <iron-icon icon="vaadin:split-h"></iron-icon>
+                                Compare
+                            </vaadin-item>
+                        </vaadin-list-box>
+                    </template>
+                    <vaadin-button id="small-menu" theme="tertiary small">
+                        <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
+                    </vaadin-button>
+                </vaadin-context-menu>
                 <vaadin-button
+                    id="archiveButton"
+                    title="Archive"
                     class="action-button"
                     theme="tertiary-inline icon"
-                    title="Archive"
                     on-click="onArchiveButtonClicked"
                 >
-                    <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
+                    <iron-icon icon="vaadin:archive"></iron-icon>
                 </vaadin-button>
+                <vaadin-button
+                    id="compareButton"
+                    title="Compare"
+                    on-click="onCompareButtonClicked"
+                ></vaadin-button>
             </a>
         `;
     }
@@ -117,7 +151,16 @@ class ExperimentNavbarItem extends PolymerElement {
     
     ready() {
         super.ready();
+        this.$.navbarItemMenu._setProperty("openOn", "click");
         this.shadowRoot.querySelector("favorite-star").toggleFavorite = this.onFavoriteToggled;
+    }
+
+    triggerArchiveBtn() {
+        this.$.archiveButton.click();
+    }
+
+    triggerCompareBtn() {
+        this.$.compareButton.click();
     }
 
     handleRowClicked(event) {

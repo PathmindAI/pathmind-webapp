@@ -89,19 +89,23 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void onArchiveButtonClicked() {
         // TODO -> STEPH -> Fix this code.
+        // TODO -> STEPH -> False if we want to disable compare.
+        // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
+       boolean isVisible = new Random().nextBoolean();
+       System.out.println("Visible: " + isVisible);
+       ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
+           ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
+           segmentIntegrator.archived(Experiment.class, true);
+           ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
+       });
+    }
+
+    @EventHandler
+    private void onCompareButtonClicked() {
         if(experiment.isDraft()) {
             NotificationUtils.showError("Cannot compare draft experiment<br>Option shouldn't be available rather than error message");
         }
-        // TODO -> STEPH -> False if we want to disable compare.
-        // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
-//        boolean isVisible = new Random().nextBoolean();
-//        System.out.println("Visible: " + isVisible);
         EventBus.post(new ExperimentCompareViewBusEvent(experiment, true));
-//        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
-//            ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
-//            segmentIntegrator.archived(Experiment.class, true);
-//            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
-//        });
     }
 
     private void setExperimentDetails(UI ui, Experiment experiment) {
