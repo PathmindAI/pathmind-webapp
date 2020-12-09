@@ -299,3 +299,17 @@
 .experiment-view .reason-why-the-training-stopped:empty {
     display: none;
 }
+
+.experiment-view .comparison-panel {
+    width: 100%;
+}
+
+.experiment-view .comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
+.experiment-view .comparison-mode .row-2-of-3 {
+    width: 100% !important;
+}
+
+.experiment-view .comparison-mode .middle-panel,
+.experiment-view .comparison-mode .bottom-panel {
+    flex-direction: column;
+}

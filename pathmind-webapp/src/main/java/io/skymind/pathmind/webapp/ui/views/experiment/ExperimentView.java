@@ -13,6 +13,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -123,6 +124,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private StoppedTrainingNotification stoppedTrainingNotification;
 
     // Experiment Comparison components
+    private Boolean isComparisonMode = true;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
     // TODO -> STEPH -> Same as above for ObservationsPanel
@@ -229,17 +231,22 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         setupCompareExperimentVerticalLayout();
 
-        VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(
+        SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                                panelTitle, archivedLabel, sharedWithSupportLabel),
-                        downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
-                stoppedTrainingNotification,
-                modelNeedToBeUpdatedLabel,
-                middlePanel,
-                getBottomPanel(),
-                compareExperimentVerticalLayout);
+                            WrapperUtils.wrapWidthFullHorizontal(
+                                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                                            panelTitle, archivedLabel, sharedWithSupportLabel),
+                                    downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
+                            stoppedTrainingNotification,
+                            modelNeedToBeUpdatedLabel,
+                            middlePanel,
+                            getBottomPanel()
+                        ),
+                        compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
+        if (isComparisonMode) {
+            experimentContent.addClassName("comparison-mode");
+        }
         HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapSizeFullHorizontal(experimentContent);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
@@ -248,7 +255,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     private void setupCompareExperimentVerticalLayout() {
         compareExperimentVerticalLayout = WrapperUtils.wrapWidthFullVertical(
-            getComparisonBottomPanel());
+            getComparisonExperimentPanel());
     }
 
     /**
@@ -271,9 +278,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         observationsPanel = new ObservationsPanel(experiment, true);
 
         middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(generateSimulationsMetricsPanelGroup(simulationMetricsPanel), observationsPanel, rewardFunctionGroup);
+        middlePanel.add(
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        generateSimulationsMetricsPanelGroup(simulationMetricsPanel),
+                        observationsPanel,
+                        60), 
+                rewardFunctionGroup);
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
+        middlePanel.setSpacing(false);
     }
 
     private VerticalLayout generateRewardFunctionGroup(CodeViewer codeViewer) {
@@ -364,7 +377,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return bottomPanel;
     }
 
-    private HorizontalLayout getComparisonBottomPanel() {
+    private VerticalLayout getComparisonExperimentPanel() {
         comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
         // TODO -> STEPH -> For now use the same experiment since it's invisible anyways. The downside is that all events, etc. are duplicated for nothing.
         // but it will be a quick solution until I can do all the null checks everywhere, setting up the subscribers, etc. (after everything has been stubbed).
@@ -376,15 +389,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
 
-        HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
-                generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                comparisonObservationsPanel,
+        VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                        comparisonObservationsPanel,
+                        60),
                 rewardFunctionGroup,
                 comparisonChartsPanel,
                 comparisonNotesField);
-        bottomPanel.addClassName("bottom-panel");
-        bottomPanel.setPadding(false);
-        return bottomPanel;
+        comparisonPanel.addClassName("comparison-panel");
+        comparisonPanel.setPadding(false);
+        return comparisonPanel;
     }
 
     private Breadcrumbs createBreadcrumbs() {
