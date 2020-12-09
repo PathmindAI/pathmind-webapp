@@ -12,6 +12,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 public class ModelUploadPage extends PageObject {
 
@@ -47,6 +48,14 @@ public class ModelUploadPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span")));
         By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
         assertThat(getDriver().findElement(xpath).getText(), is(errorMessage));
+        resetImplicitTimeout();
+    }
+
+    public void checkErrorMessageStartsWithInModelCheckPanel(String errorMessage) {
+        setImplicitTimeout(240, SECONDS);
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span")));
+        By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
+        assertThat(getDriver().findElement(xpath).getText(), startsWith(errorMessage));
         resetImplicitTimeout();
     }
 

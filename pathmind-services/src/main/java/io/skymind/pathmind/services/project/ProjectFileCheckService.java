@@ -72,7 +72,7 @@ public class ProjectFileCheckService {
                         } else if (!result.isHelperUnique()) {
                             statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
                         } else if (!result.isValidRLPlatform()) {
-                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind");
+                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
                         } else {
                             statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
                         }
