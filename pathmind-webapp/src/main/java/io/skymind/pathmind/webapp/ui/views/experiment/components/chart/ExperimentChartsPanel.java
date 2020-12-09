@@ -18,12 +18,13 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-public class ExperimentChartsPanel extends VerticalLayout {
+public class ExperimentChartsPanel extends VerticalLayout implements ExperimentComponent {
 
     private CompareMetricsChartPanel compareMetricsChartPanel;
     private PolicyChartPanel policyChartPanel;
@@ -40,6 +41,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables) {
 
+        this.rewardVariables = rewardVariables;
         this.getUISupplier = getUISupplier;
 
         Tabs chartTabs = createChartTabs();
@@ -65,7 +67,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
         setCompareMetricsChartPanelVisible(true);
 
-        setupCharts(experiment, rewardVariables);
+        setExperiment(experiment);
     }
 
     private Tabs createChartTabs() {
@@ -96,10 +98,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     protected void onDetach(DetachEvent detachEvent) {
         EventBus.unsubscribe(this);
     }
-
-    public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
-        setExperiment(newExperiment);
-        this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
+    private void setupCharts() {
         policyChartPanel.setExperiment(experiment);
         compareMetricsChartPanel.setupChart(experiment, rewardVariables);
         selectVisibleChart();
@@ -113,10 +112,11 @@ public class ExperimentChartsPanel extends VerticalLayout {
         }
     }
 
-    private void setExperiment(Experiment experiment) {
+    public void setExperiment(Experiment experiment) {
         this.experiment = experiment.deepClone();
         // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
         experiment.updateTrainingStatus();
+        setupCharts();
     }
 
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {

@@ -15,6 +15,6 @@ public class ExperimentChartsPanelExperimentSwitchedViewSubscriber extends Exper
 
     @Override
     public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
-        experimentChartsPanel.setupCharts(event.getExperiment(), experimentChartsPanel.getRewardVariables());
+        experimentChartsPanel.setExperiment(event.getExperiment());
     }
 }

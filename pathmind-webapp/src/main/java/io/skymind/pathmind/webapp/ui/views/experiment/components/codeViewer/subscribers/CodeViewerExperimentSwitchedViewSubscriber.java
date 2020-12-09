@@ -1,8 +1,8 @@
-package io.skymind.pathmind.webapp.ui.components.codeViewer.subscribers;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.subscribers;
 
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentSwitchedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 
 public class CodeViewerExperimentSwitchedViewSubscriber extends ExperimentSwitchedViewSubscriber {
 

@@ -49,7 +49,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
-import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
@@ -59,7 +58,10 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.CompareExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
@@ -162,6 +164,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
 
+    private CompareExperimentAction compareExperimentAction;
+
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -206,6 +210,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     @Override
     protected Component getMainContent() {
+
+        // TODO -> STEPH -> Temporary solution until we have the action buttons ready to be hooked.
+        compareExperimentAction = new CompareExperimentAction(this, experimentDAO, policyDAO);
+
         panelTitle = LabelFactory.createLabel("Experiment #" + experiment.getName(), SECTION_TITLE_LABEL);
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
@@ -323,7 +331,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
                 // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
                 trainingStatusDetailsPanel.setExperiment(experiment);
                 clearErrorState();
-                experimentChartsPanel.setupCharts(experiment, rewardVariables);
+                experimentChartsPanel.setExperiment(experiment);
             }
         });
         restartTraining.setVisible(false);
@@ -389,6 +397,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         // TODO -> STEPH -> For now use the same experiment since it's invisible anyways. The downside is that all events, etc. are duplicated for nothing.
         // but it will be a quick solution until I can do all the null checks everywhere, setting up the subscribers, etc. (after everything has been stubbed).
         comparisonNotesField = createViewNotesField(experiment);
+        // TODO -> STEPH -> Remove once we finalize on the action design.
+//        comparisonNotesField.addEventBusSubscribers(new ExperimentNotesFieldExperimentCompareViewSubscriber(comparisonNotesField));
         comparisonObservationsPanel = new ObservationsPanel(experiment, true);
         // TODO -> STEPH -> Can we combine these?
         comparisonCodeViewer = new CodeViewer(() -> getUI(), experiment);
@@ -609,22 +619,21 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         compareExperimentVerticalLayout.setVisible(false);
     }
 
+    public List<ExperimentComponent> getComparisonComponents() {
+        return List.of(comparisonNotesField,
+                comparisonChartsPanel,
+                comparisonObservationsPanel,
+                comparisonCodeViewer,
+                comparisonSimulationMetricsPanel);
+    }
+
+    public void showCompareExperimentComponents(boolean isCompareVisible) {
+        compareExperimentVerticalLayout.setVisible(isCompareVisible);
+    }
+
     // TODO -> STEPH -> On experiment switch for now we'll just reload the components with the experiment that's being switched and
     // put it to invisible. We'll set it to null when the null checks for all the components are ready.
-    public void startCompareExperiment(Experiment experiment) {
-        compareExperimentVerticalLayout.setVisible(true);
-        // TODO -> STEPH -> Assumes it will always work. Should not assume that but at this point it's just stubbing.
-        Experiment comparisonExperiment = getExperimentForUser(experiment.getId()).get();
-        // TODO -> STEPH -> All code below should be done in a NotesField CompareView Subscriber but just to quickly test. That or
-        // if we think we're ready we can start looking at bringing back button action listeners into the view. I'm just not sure we're
-        // quite ready yet, I'm still breaking up some of the code, like the bigger cleanup in PR #2525
-        // TODO -> STEPH -> Do we have to update the chart data to see anything? As in is it only completed experiments?
-        comparisonNotesField.setExperiment(comparisonExperiment);
-        // TODO -> STEPH -> Chart ONLY works because we need to do policyDAO.getPoliciesForExperiment()
-        comparisonExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
-        comparisonChartsPanel.setupCharts(comparisonExperiment, rewardVariables);
-        comparisonObservationsPanel.setExperiment(comparisonExperiment);
-        comparisonCodeViewer.setExperiment(experiment);
-        comparisonSimulationMetricsPanel.setExperiment(experiment);
+    public void startCompareExperiment(Experiment experimentToCompare) {
+        compareExperimentAction.compare(experimentToCompare);
     }
 }

@@ -27,6 +27,7 @@ import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
@@ -37,7 +38,7 @@ import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesT
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SimulationMetricsPanel extends HorizontalLayout {
+public class SimulationMetricsPanel extends HorizontalLayout implements ExperimentComponent {
 
     private Supplier<Optional<UI>> getUISupplier;
 

@@ -18,11 +18,12 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import org.springframework.util.CollectionUtils;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-public class ObservationsPanel extends VerticalLayout {
+public class ObservationsPanel extends VerticalLayout implements ExperimentComponent {
 
     private ObservationsTable observationsTable;
     // Only used for ExperimentView and NewExperimentView and NOT ProjectView - for the changed experiment logic in the subscriber
