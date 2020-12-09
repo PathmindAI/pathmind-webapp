@@ -30,3 +30,29 @@ Feature: Api tests
     Examples:
       | project name   |
       | ApiTestProject |
+
+  Scenario Outline: /signup create new user verify email and login
+    Given API create new user with '<firstName>', '<lastName>', '<password>' and status code '201'
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <password>
+    Then Check that user <firstName> <lastName> successfully logged in
+
+    Examples:
+      | firstName    | lastName    | password |
+      | ApiFirstName | ApiLastName | Qa1234   |
+
+  Scenario: /signup negative case create new user with 5 chars password
+    Given API create new user with 'ApiFirstName', 'ApiLastName', 'Qa123' and status code '400'
+
+  Scenario: /signup negative case create new user with no lowercase password
+    Given API create new user with 'ApiFirstName', 'ApiLastName', 'QA1234' and status code '400'
+
+  Scenario: /signup negative case create new user with no uppercase password
+    Given API create new user with 'ApiFirstName', 'ApiLastName', 'qa1234' and status code '400'
+
+  Scenario: /signup negative case create new user with 251 chars firstName
+    Given API create new user with 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretiumpp', 'ApiLastName', 'qa1234' and status code '400'
+
+  Scenario: /signup negative case create new user with 251 chars lastName
+    Given API create new user with 'ApiFirstName', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretiumpp', 'qa1234' and status code '400'
