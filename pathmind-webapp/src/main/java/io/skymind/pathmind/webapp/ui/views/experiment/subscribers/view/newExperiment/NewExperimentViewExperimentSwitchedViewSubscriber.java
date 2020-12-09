@@ -19,14 +19,4 @@ public class NewExperimentViewExperimentSwitchedViewSubscriber extends Experimen
             newExperimentView.setExperiment(event.getExperiment());
         }
     }
-
-    @Override
-    public boolean filterBusEvent(ExperimentSwitchedViewBusEvent event) {
-        if (newExperimentView.getExperiment() == null) {
-            return false;
-        }
-        return ExperimentUtils.isSameModel(newExperimentView.getExperiment(), event.getExperiment().getModelId()) &&
-                !ExperimentUtils.isSameExperiment(event.getExperiment(), newExperimentView.getExperiment());
-
-    }
 }

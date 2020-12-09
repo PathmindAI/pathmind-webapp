@@ -11,6 +11,7 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
@@ -57,5 +58,9 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         saveNotes();
+    }
+
+    public void addEventBusSubscribers(EventBusSubscriber subscriber) {
+        EventBus.subscribe(this, getUISupplier, subscriber);
     }
 }

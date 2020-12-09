@@ -18,14 +18,4 @@ public class ExperimentViewExperimentSwitchedViewSubscriber extends ExperimentSw
     public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         experimentView.setExperiment(event.getExperiment());
     }
-
-    @Override
-    public boolean filterBusEvent(ExperimentSwitchedViewBusEvent event) {
-        if (experimentView.getExperiment() == null) {
-            return false;
-        }
-        return ExperimentUtils.isSameModel(experimentView.getExperiment(), event.getExperiment().getModelId()) &&
-                !ExperimentUtils.isSameExperiment(event.getExperiment(), experimentView.getExperiment());
-
-    }
 }
