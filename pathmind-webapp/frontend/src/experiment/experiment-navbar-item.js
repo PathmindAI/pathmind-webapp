@@ -55,6 +55,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 vaadin-button[title="Compare"] {
                     display: none;
                 }
+                vaadin-context-menu vaadin-button iron-icon,
                 vaadin-button[title="Archive"].action-button iron-icon,
                 vaadin-button[title="Compare"].action-button iron-icon {
                     width: var(--lumo-font-size-xs);
@@ -70,6 +71,28 @@ class ExperimentNavbarItem extends PolymerElement {
                 status-icon[status~="pencil"] ~ vaadin-button[title="Archive"] {
                     display: block;
                 }
+                vaadin-context-menu {
+                    margin: 0;
+                    margin-left: auto;
+                }
+                vaadin-context-menu vaadin-button,
+                vaadin-context-menu vaadin-button iron-icon {
+                    color: var(--lumo-secondary-text-color);
+                    padding: 0;
+                    margin: 0;
+                }
+                vaadin-context-menu-item {
+                    min-height: auto;
+                    font-size: var(--lumo-font-size-xs);
+                    padding: var(--lumo-space-xxs) var(--lumo-space-xs);
+                }
+                vaadin-context-menu-item iron-icon {
+                    vertical-align: initial;
+                    width: var(--lumo-font-size-xs);
+                    height: var(--lumo-font-size-xs);
+                    color: var(--lumo-secondary-text-color);
+                    margin-right: var(--lumo-space-xs);
+                }
             </style>
             <a id="experimentLink" on-click="handleRowClicked">
                 <status-icon status=[[status]] status-text=[[statusText]]></status-icon>
@@ -80,16 +103,16 @@ class ExperimentNavbarItem extends PolymerElement {
                 </div>
                 <vaadin-context-menu id="navbarItemMenu">
                     <template>
-                        <vaadin-list-box>
-                            <vaadin-item on-click="triggerArchiveBtn">
+                        <vaadin-context-menu-list-box>
+                            <vaadin-context-menu-item class="vaadin-menu-item" on-click="triggerArchiveBtn">
                                 <iron-icon icon="vaadin:archive"></iron-icon>
-                                Archive
-                            </vaadin-item>
-                            <vaadin-item on-click="triggerCompareBtn">
+                                <span>Archive</span>
+                            </vaadin-context-menu-item>
+                            <vaadin-context-menu-item class="vaadin-menu-item" on-click="triggerCompareBtn">
                                 <iron-icon icon="vaadin:split-h"></iron-icon>
-                                Compare
-                            </vaadin-item>
-                        </vaadin-list-box>
+                                <span>Compare</span>
+                            </vaadin-context-menu-item>
+                        </vaadin-context-menu-list-box>
                     </template>
                     <vaadin-button id="small-menu" theme="tertiary small">
                         <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
