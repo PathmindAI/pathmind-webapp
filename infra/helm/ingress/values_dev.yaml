@@ -66,6 +66,8 @@ ingress:
       paths: [/:8081:pathmind-api-dev]
     - host: api.test.devpathmind.com
       paths: [/:8081:pathmind-api-test]
+    - host: api.pathmind.com
+      paths: [/:8081:pathmind-api-dev]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -88,6 +90,7 @@ ingress:
         - rail-drl.devpathmind.com
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
+        - api.pathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
