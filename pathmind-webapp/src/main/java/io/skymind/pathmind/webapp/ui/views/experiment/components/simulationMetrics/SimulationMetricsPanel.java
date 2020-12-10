@@ -65,7 +65,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
 
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier);
+        rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();

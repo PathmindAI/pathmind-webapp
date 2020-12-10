@@ -1,9 +1,5 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -40,10 +36,8 @@ public class RewardVariablesRowField extends HorizontalLayout {
     // This is really only used to prevent eventbus updates for reward variables that are already set to show.
     private boolean isShow = true;
 
-    private Supplier<Optional<UI>> getUISupplier;
 
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
-        this.getUISupplier = getUISupplier;
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setAlignItems(Alignment.BASELINE);

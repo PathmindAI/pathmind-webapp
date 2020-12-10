@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -26,16 +23,14 @@ public class RewardVariablesTable extends VerticalLayout {
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
-    private Supplier<Optional<UI>> getUISupplier;
     private Integer selectedRewardVariables;
 
-    public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier) {
-        this(getUISupplier, () -> {
+    public RewardVariablesTable() {
+        this(() -> {
         });
     }
 
-    public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier, Command goalFieldValueChangeHandler) {
-        this.getUISupplier = getUISupplier;
+    public RewardVariablesTable(Command goalFieldValueChangeHandler) {
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setPadding(false);
         setSpacing(false);
@@ -76,7 +71,7 @@ public class RewardVariablesTable extends VerticalLayout {
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(getUISupplier, rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
             container.add(row);
             rewardVariableNameFields.add(row);
         });
