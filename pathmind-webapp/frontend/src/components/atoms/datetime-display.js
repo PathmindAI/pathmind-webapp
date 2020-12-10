@@ -11,14 +11,22 @@ class DatetimeDisplay extends PolymerElement {
             datetime: {
                 type: String,
             },
+            datetimeWithTimezone: {
+                type: String,
+                computed: `_computeDatetimeWithTimezone(datetime, serverTimeZoneOffsetFromUTC)`,
+            },
             date: {
                 type: String,
-                computed: `_computeDate(datetime)`,
+                computed: `_computeDate(datetimeWithTimezone)`,
                 observer: `_createTooltip`,
             },
             displaytext: {
                 type: String,
-                computed: `_computeDisplayText(datetime)`,
+                computed: `_computeDisplayText(datetimeWithTimezone)`,
+            },
+            serverTimeZoneOffsetFromUTC: {
+                type: String,
+                value: "",
             },
         }
     }
@@ -51,8 +59,8 @@ class DatetimeDisplay extends PolymerElement {
         register('my-locale', this.localeFunc);
     }
 
-    _computeDate(datetime) {
-        return new Date(datetime).toLocaleDateString(window.navigator.language, { 
+    _computeDate(dateTimeWithTimezone) {
+        return new Date(dateTimeWithTimezone).toLocaleDateString(window.navigator.language, { 
             year: 'numeric', 
             month: 'short', 
             day: 'numeric', 
@@ -61,7 +69,7 @@ class DatetimeDisplay extends PolymerElement {
 
     _createTooltip() {
         const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        this.title = new Date(this.datetime).toLocaleString(window.navigator.language, { 
+        this.title = new Date(this.datetimeWithTimezone).toLocaleString(window.navigator.language, { 
             weekday: 'short', 
             year: 'numeric', 
             month: 'short', 
@@ -73,8 +81,13 @@ class DatetimeDisplay extends PolymerElement {
         });
     }
 
-    _computeDisplayText(datetime) {
-        return new Date(datetime) <= new Date().setDate(new Date().getDate()-30) ? this.date : format(datetime, 'my-locale');
+    _computeDatetimeWithTimezone(datetime, timezone) {
+        return datetime+timezone;
+    }
+
+    _computeDisplayText(dateTimeWithTimezone) {
+        const datetimeAsDate = new Date(dateTimeWithTimezone);
+        return datetimeAsDate <= new Date().setDate(new Date().getDate()-30) ? this.date : format(datetimeAsDate.getTime(), 'my-locale');
     }
 }
 
