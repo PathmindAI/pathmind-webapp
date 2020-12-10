@@ -6,7 +6,6 @@ import net.thucydides.core.annotations.Step;
 
 public class HomePageSteps {
 
-    private LoginPage loginPage;
     private HomePage homePage;
 
     @Step
@@ -62,11 +61,6 @@ public class HomePageSteps {
     @Step
     public void clickBackButton() {
         homePage.getDriver().navigate().back();
-    }
-
-    @Step
-    public void clickGettingStartedGuideButton() {
-        homePage.clickGettingStartedGuideButton();
     }
 
     @Step
