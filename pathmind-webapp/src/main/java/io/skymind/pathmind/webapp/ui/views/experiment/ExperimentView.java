@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -69,6 +70,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
 import lombok.extern.slf4j.Slf4j;
@@ -85,9 +87,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_
 @Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
-    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
-    private Object experimentLock = new Object();
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
@@ -172,6 +171,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
                 new ExperimentViewRunUpdateSubscriber(this),
+                new ExperimentViewExperimentSwitchedViewSubscriber(this),
                 new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
     }
 
@@ -261,18 +261,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     protected Div getButtonsWrapper() {
         restartTraining = new Button("Restart Training", click -> {
-            synchronized (experimentLock) {
-                if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
-                    return;
-                }
-                trainingService.startRun(experiment);
-                segmentIntegrator.restartTraining();
-                initLoadData();
-                // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
-                trainingStatusDetailsPanel.setExperiment(experiment);
-                clearErrorState();
-                experimentChartsPanel.setupCharts(experiment, rewardVariables);
+            if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
+                return;
             }
+            trainingService.startRun(experiment);
+            segmentIntegrator.restartTraining();
+            initLoadData();
+            // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
+            trainingStatusDetailsPanel.setExperiment(experiment);
+            clearErrorState();
+            experimentChartsPanel.setupCharts(experiment, rewardVariables);
         });
         restartTraining.setVisible(false);
         restartTraining.addClassNames("large-image-btn", "run");
@@ -385,20 +383,10 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     public void setExperiment(Experiment selectedExperiment) {
-        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        synchronized (experimentLock) {
-            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
-            } else {
-                experiment = getExperimentForUser(selectedExperiment.getId())
-                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-                loadExperimentData();
-                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
-
-                updateScreenComponents();
-            }
-        }
+        experiment = getExperimentForUser(selectedExperiment.getId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+//        // Do we really need to load the experiment data? Almost none of it used by the view.
+        loadExperimentData();
     }
 
     @Override
@@ -431,6 +419,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
         experiment.setRuns(runDAO.getRunsForExperiment(experiment));
         if (!experiment.isArchived()) {
+            // REFACTOR -> STEPH -> Why is this code not in the SQL and in Java????? Super expensive and calls runs for every experiment
             experiments = experimentDAO.getExperimentsForModel(modelId).stream()
                     .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
         }
@@ -513,10 +502,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     public void setBestPolicy(Policy bestPolicy) {
         this.bestPolicy = bestPolicy;
-    }
-
-    public Object getExperimentLock() {
-        return experimentLock;
     }
 
     // ExperimentID is also added as the experiment can be null whereas the experimentID always has to have a value. Used by the Subscribers for the view.

@@ -66,6 +66,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.su
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.NewExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,7 +144,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         EventBus.subscribe(this, getUISupplier(),
                 new NewExperimentViewExperimentStartTrainingSubscriber(this),
                 new NewExperimentViewExperimentChangedViewSubscriber(this),
-                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
+                new NewExperimentViewExperimentSwitchedViewSubscriber(this),
+        new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
     }
 
     @Override
