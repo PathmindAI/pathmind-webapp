@@ -20,6 +20,8 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
+import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_METRICS_FOR_CHART;
+
 public class RewardVariablesRowField extends HorizontalLayout {
 
     private Span rewardVariableNameSpan;
@@ -48,9 +50,9 @@ public class RewardVariablesRowField extends HorizontalLayout {
         rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
-            if (rv.getArrayIndex() < 2) {
+            if (rv.getArrayIndex() < DEFAULT_SELECTED_METRICS_FOR_CHART) {
                 rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
-                rewardVariablesTable.setNumberOfSelectedRewardVariables(2);
+                rewardVariablesTable.setNumberOfSelectedRewardVariables(DEFAULT_SELECTED_METRICS_FOR_CHART);
             }
 
             rewardVariableNameSpan.addClickListener(event -> {

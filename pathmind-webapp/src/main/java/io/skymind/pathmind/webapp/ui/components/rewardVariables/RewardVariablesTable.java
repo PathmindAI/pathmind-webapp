@@ -17,6 +17,8 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
+import static io.skymind.pathmind.webapp.ui.utils.UIConstants.MAX_SELECTED_METRICS_FOR_CHART;
+
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout {
 
@@ -87,7 +89,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setNumberOfSelectedRewardVariables(int num) {
         String disableSelectionClassName = "disable-selection";
         selectedRewardVariables = num;
-        if (num >= 2) {
+        if (num >= MAX_SELECTED_METRICS_FOR_CHART) {
             container.addClassName(disableSelectionClassName);
         } else {
             container.removeClassName(disableSelectionClassName);
