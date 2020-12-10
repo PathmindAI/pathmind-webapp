@@ -61,4 +61,4 @@ Feature: Broken Models tests
     And Check that error message in model check panel is "Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support."
     When Upload model problematic_models/ABrokenModel.zip
     Then Wait for text "Checking your model" to disappear
-    And Check that error message in model check panel is "The uploaded file is invalid, check it and upload again."
+    And Check that error message in model check panel is "You need to add PathmindHelper in your model."
