@@ -1,7 +1,6 @@
 package io.skymind.pathmind.bddtests.steps;
 
 import io.skymind.pathmind.bddtests.page.HomePage;
-import io.skymind.pathmind.bddtests.page.LoginPage;
 import net.thucydides.core.annotations.Step;
 
 public class HomePageSteps {
