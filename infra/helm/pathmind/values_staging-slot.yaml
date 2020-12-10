@@ -28,7 +28,7 @@ env:
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
   ENVIRONMENT: staging
-  SQS_URL: https://queue.amazonaws.com/839270835622/staging-training-queue.fifo
+  SQS_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-training-queue.fifo
   S3_BUCKET: staging-training-dynamic-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
