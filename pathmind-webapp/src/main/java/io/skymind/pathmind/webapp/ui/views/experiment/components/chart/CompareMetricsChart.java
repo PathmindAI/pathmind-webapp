@@ -25,6 +25,9 @@ public class CompareMetricsChart extends DataChart {
     private RewardVariable[] rewardVariables;
     private String metric1AxisTitle;
     private String metric2AxisTitle;
+    private String metric1Color;
+    private String metric2Color;
+    private List<String> colors = ChartUtils.colors();
 
     public CompareMetricsChart() {
         super();
@@ -32,7 +35,6 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        List<String> colors = ChartUtils.colors();
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
@@ -44,16 +46,18 @@ public class CompareMetricsChart extends DataChart {
         return series;
     }
 
-    private void createAxisTitles() {
+    private void createAxisTitlesAndColors() {
         metric1AxisTitle = null;
         metric2AxisTitle = null;
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
                 if (isFirstNonNullVariable) {
-                    metric1AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                    metric1AxisTitle = rewardVariables[i].getName() + " mean";
+                    metric1Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
                 } else {
-                    metric2AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                    metric2AxisTitle = rewardVariables[i].getName() + " mean";
+                    metric2Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
                 }
             }
         }
@@ -159,7 +163,7 @@ public class CompareMetricsChart extends DataChart {
             selectedRewardVariables = RewardVariablesUtils.deepClone(selectedRewardVariables);
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
-            createAxisTitles();
+            createAxisTitlesAndColors();
         }
         String type = "line";
         Boolean showTooltip = true;
@@ -177,6 +181,8 @@ public class CompareMetricsChart extends DataChart {
                 vAxisTitle,
                 metric1AxisTitle,
                 metric2AxisTitle,
+                metric1Color,
+                metric2Color,
                 curveLines,
                 seriesType,
                 series,

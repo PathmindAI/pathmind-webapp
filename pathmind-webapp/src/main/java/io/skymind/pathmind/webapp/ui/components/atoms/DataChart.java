@@ -26,7 +26,7 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
             Boolean stacked,
             JsonObject viewWindow
     ) {
-        setupChart(type, showTooltip, hAxisTitle, vAxisTitle, null, null, curveLines, seriesType, series, stacked, viewWindow);
+        setupChart(type, showTooltip, hAxisTitle, vAxisTitle, null, null, null, null, curveLines, seriesType, series, stacked, viewWindow);
     }
 
     public void setupChart(
@@ -36,6 +36,8 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
             String vAxisTitle,
             String metric1AxisTitle,
             String metric2AxisTitle,
+            String metric1Color,
+            String metric2Color,
             Boolean curveLines,
             String seriesType,
             JsonObject series,
@@ -48,6 +50,8 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
         getModel().setVaxistitle(vAxisTitle);
         getModel().setMetric1axistitle(metric1AxisTitle);
         getModel().setMetric2axistitle(metric2AxisTitle);
+        getModel().setMetric1color(metric1Color);
+        getModel().setMetric2color(metric2Color);
         getModel().setCurvelines(curveLines);
         getModel().setSeriestype(seriesType);
         getModel().setStacked(stacked);
@@ -86,6 +90,10 @@ public class DataChart extends PolymerTemplate<DataChart.Model> implements HasSt
         void setMetric1axistitle(String metric1AxisTitle);
 
         void setMetric2axistitle(String metric2AxisTitle);
+
+        void setMetric1color(String metric1Color);
+
+        void setMetric2color(String metric2Color);
 
         void setCurvelines(Boolean curveLines);
 
