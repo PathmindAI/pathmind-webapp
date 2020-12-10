@@ -60,7 +60,7 @@ Feature: E2E
     Then Check learning progress block title 'Learning Progress'
     Then Check learning progress block selected tab 'true' name is 'Metrics'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
-    Then Check learning progress block metrics hint 'You can click on the simulation metric names above to toggle the lines on this chart.'
+    Then Check learning progress block metrics hint 'Select any two metrics on the simulation metric names above for comparison.'
     Then Check learning progress block metrics data-chart is shown
     When Click in 'Mean Reward Score' button
     Then Check learning progress block selected tab 'false' name is 'Metrics'

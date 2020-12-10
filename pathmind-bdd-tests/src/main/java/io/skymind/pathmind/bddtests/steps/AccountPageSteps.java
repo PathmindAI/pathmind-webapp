@@ -48,6 +48,16 @@ public class AccountPageSteps {
     }
 
     @Step
+    public void checkAccountPageFooterComponents() {
+        accountPage.checkAccountPageFooterComponents();
+    }
+
+    @Step
+    public void clickAccountFooterBtn(String btn) {
+        accountPage.clickAccountFooterBtn(btn);
+    }
+
+    @Step
     public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
         accountPage.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
     }
@@ -61,4 +71,5 @@ public class AccountPageSteps {
     public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
         accountPage.accountPageAccessTokenCheckTokenExpires(expiresDays);
     }
+
 }

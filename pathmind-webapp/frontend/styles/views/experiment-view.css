@@ -107,6 +107,12 @@
     cursor: pointer;
 }
 
+.experiment-view .reward-variables-table.disable-selection .reward-variable-name:not([chosen]) {
+    background-color: var(--pm-grey-color-lightest);
+    border-color: var(--pm-grey-color-lightest);
+    cursor: default;
+}
+
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
