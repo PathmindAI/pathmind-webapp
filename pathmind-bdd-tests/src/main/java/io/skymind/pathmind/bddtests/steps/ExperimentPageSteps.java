@@ -146,16 +146,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPage.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Step
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPage.checkExperimentPageChartPopUpIsShownForVariable(variable);
-    }
-
-    @Step
     public void checkVariableSimulationMetricValue(String variable, String value) {
         experimentPage.checkVariableSimulationMetricValue(variable, value);
     }

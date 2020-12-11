@@ -155,16 +155,6 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickSimulationMetricsOverviewIcon();
     }
 
-    @When("^Click experiment page show sparkline btn for variable '(.*)'$")
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPageSteps.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Then("^Check experiment page chart pop-up is shown for variable '(.*)'$")
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPageSteps.checkExperimentPageChartPopUpIsShownForVariable(variable);
-    }
-
     @Then("^Check variable '(.*)' simulation metric value '(.*)'$")
     public void checkVariableSimulationMetricValue(String variable, String value) {
         experimentPageSteps.checkVariableSimulationMetricValue(variable, value);
