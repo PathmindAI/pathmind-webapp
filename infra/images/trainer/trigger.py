@@ -81,7 +81,7 @@ def send_mockup_data(s3bucket, s3path, cycle, maxMin):
     """
     global mockup_status
     folder_list=set()
-    src_bucket=ENVIRONMENT+"-training-static-files.pathmind.com"
+    src_bucket=S3_BUCKET_STATIC
     s3 = boto3.resource('s3')
     my_bucket = s3.Bucket(src_bucket)
     for my_bucket_object in my_bucket.objects.filter(Prefix='mockup/', Delimiter=''):
@@ -328,6 +328,7 @@ if __name__ == "__main__":
     SQS_URL=os.environ['SQS_URL']
     NAME=os.environ['NAME']
     ENVIRONMENT=os.environ['ENVIRONMENT']
+    S3_BUCKET_STATIC=os.environ['S3_BUCKET_STATIC']
     if ENVIRONMENT=='prod':
         NAMESPACE='default'
     else:
