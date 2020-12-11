@@ -64,6 +64,10 @@ class ModelRepository {
         mod.setActionTupleSize(-1);
         mod.setModelType(model.getModelType());
         mod.setNumberOfAgents(model.getNumberOfAgents());
+        mod.setPathmindHelper(model.getPathmindHelper());
+        mod.setMainAgent(model.getMainAgent());
+        mod.setExperimentClass(model.getExperimentClass());
+        mod.setExperimentType(model.getExperimentType());
         mod.store();
         return mod.key().get(MODEL.ID);
     }
