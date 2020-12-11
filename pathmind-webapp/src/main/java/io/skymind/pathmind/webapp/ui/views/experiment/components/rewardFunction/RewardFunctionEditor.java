@@ -153,8 +153,9 @@ public class RewardFunctionEditor extends VerticalLayout {
     }
 
     private String generateRewardFunction() {
-        StringBuilder sb = new StringBuilder("// Here's a suggested reward function to get started\n");
+        StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
+            sb.append("// Here's a suggested reward function to get started\n");
             for (RewardVariable rv : rewardVariables) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
