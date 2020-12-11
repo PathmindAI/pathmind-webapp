@@ -38,8 +38,12 @@ public class CompareMetricsChart extends DataChart {
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
-                Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
+                RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get();
+                Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rewardVariables[i]);
                 Integer axisIndex = isFirstNonNullVariable ? 0 : 1;
+                if (!isFirstNonNullVariable && firstNonNullVariable.getArrayIndex() % 10 == rewardVariables[i].getArrayIndex() % 10) {
+                    seriesColor = "black";
+                }
                 series.put("" + i, Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
             }
         }

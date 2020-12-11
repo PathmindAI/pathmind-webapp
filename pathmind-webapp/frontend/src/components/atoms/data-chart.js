@@ -151,8 +151,8 @@ class DataChart extends PolymerElement {
                 },
                 {
                     "title": metric2axistitle,
-                    "titleTextStyle": {"italic": false, "color": metric2axistitle ? metric2color : "black"},
-                    "textStyle": {"color": metric2axistitle ? metric2color : "black"},
+                    "titleTextStyle": {"italic": false, "color": metric2axistitle ? (metric2color == metric1color ? "black" : metric2color) : "black"},
+                    "textStyle": {"color": metric2axistitle ? (metric2color == metric1color ? "black" : metric2color) : "black"},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
                     "viewWindow": viewwindow,
