@@ -15,51 +15,36 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
-import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSavedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment.NewExperimentViewExperimentStartTrainingSubscriber;
@@ -71,7 +56,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
-public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
+public class NewExperimentView extends DefaultExperimentView implements BeforeLeaveObserver {
 
     // We have to use a lock object rather than the experiment because we are
     // changing it's reference which makes it not thread safe. As well we cannot
@@ -80,17 +65,11 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     // subclass (which is also why we can't use synchronize on the method.
     private Object experimentLock = new Object();
 
-    private long experimentId = -1;
-    private long modelId = -1;
     private List<RewardVariable> rewardVariables;
-    private Experiment experiment;
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
-    private ExperimentsNavBar experimentsNavbar;
-    private ExperimentNotesField notesField;
-    private Span panelTitleText;
     private Span unsavedChanges;
     private Span notesSavedHint;
     private Button unarchiveExperimentButton;
@@ -105,27 +84,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private boolean isNeedsSaving = false;
 
     @Autowired
-    private ModelService modelService;
-    @Autowired
-    private ExperimentDAO experimentDAO;
-    @Autowired
-    private RunDAO runDAO;
-    @Autowired
-    private PolicyDAO policyDAO;
-    @Autowired
-    private RewardVariableDAO rewardVariableDAO;
-    @Autowired
-    private ObservationDAO observationDAO;
-    @Autowired
-    private TrainingService trainingService;
-    @Autowired
-    private SegmentIntegrator segmentIntegrator;
-    @Autowired
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
-
-    private Breadcrumbs pageBreadcrumbs;
+    protected ExperimentNotesField notesField;
 
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
@@ -151,19 +113,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    protected Component getTitlePanel() {
-        pageBreadcrumbs = createBreadcrumbs();
-        return new ScreenTitlePanel(pageBreadcrumbs);
-    }
-
-    @Override
     protected Component getMainContent() {
         HorizontalLayout mainContent = createMainPanel();
         return mainContent;
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, segmentIntegrator);
         experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
 
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
@@ -179,10 +134,9 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
-        panelTitleText = LabelFactory.createLabel("Experiment #" + experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 WrapperUtils.wrapWidthFullHorizontal(
-                        panelTitleText,
+                        experimentPanelTitle,
                         downloadModelAlpLink
                 ),
                 LabelFactory.createLabel(
@@ -216,7 +170,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
         HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFunctionEditor.getRewardFunctionErrorPanel(),
-                createNotesField());
+                notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
         VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton,
@@ -235,28 +189,13 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         return panelsWrapper;
     }
 
-    private Breadcrumbs createBreadcrumbs() {
-        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-    }
-
-    private ExperimentNotesField createNotesField() {
-        notesField = new ExperimentNotesField(
-                getUISupplier(),
-                experiment,
-                updatedNotes -> {
-                    experimentDAO.updateUserNotes(notesField.getExperiment().getId(), updatedNotes);
-                    segmentIntegrator.addedNotesNewExperimentView();
-                },
-                false,
-                true
-        );
-
+    private void createAndSetupNotesField() {
+        createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         notesField.setPlaceholder("Add Notes (optional)");
         notesField.setOnNotesChangeHandler(() -> setNeedsSaving());
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
         }
-        return notesField;
     }
 
     /************************************** UI element creations are above this line **************************************/
@@ -330,7 +269,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
             experimentId = selectedExperiment.getId();
             loadExperimentData();
             updateScreenComponents();
-            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
+            experimentBreadcrumbs.setExperiment(experiment);
             getUI().ifPresent(ui -> navigateToExperiment(ui, selectedExperiment));
         }
     }
@@ -381,20 +320,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     }
 
     @Override
-    public void setParameter(BeforeEvent event, Long experimentId) {
-        this.experimentId = experimentId;
-    }
-
-    @Override
-    protected void initLoadData() {
-        experiment = experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId())
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        loadExperimentData();
-    }
-
-    private void loadExperimentData() {
-        modelId = experiment.getModelId();
-        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+    protected void loadExperimentData() {
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
     }
 
     @Override
@@ -404,7 +331,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private void updateScreenComponents() {
         experimentsNavbar.setVisible(!experiment.isArchived());
-        panelTitleText.setText("Experiment #" + experiment.getName());
+        experimentPanelTitle.setExperiment(experiment);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         disableSaveDraft();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
@@ -417,11 +344,19 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         notesSavedHint.setVisible(false);
     }
 
-    public Experiment getExperiment() {
-        return experiment;
+    @Override
+    protected void initializeComponentsWithData() {
+        experimentsNavbar.setVisible(!experiment.isArchived());
+        experimentPanelTitle.setExperiment(experiment);
+        rewardVariablesTable.setRewardVariables(rewardVariables);
+        disableSaveDraft();
+        unarchiveExperimentButton.setVisible(experiment.isArchived());
+        startRunButton.setEnabled(canStartTraining());
     }
 
-    public long getModelId() {
-        return modelId;
+    protected List<ExperimentComponent> createExperimentComponents() {
+        // TODO -> STEPH -> create other components
+        createAndSetupNotesField();
+        return List.of(notesField);
     }
 }

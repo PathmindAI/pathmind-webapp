@@ -29,8 +29,8 @@ public class SharedExperimentView extends ExperimentView {
         super();
     }
 
-    protected Optional<Experiment> getExperimentForUser() {
-        return experimentDAO.getExperimentForSupportIfAllowed(getExperimentId(), SecurityUtils.getUserId());
+    protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
+        return experimentDAO.getExperimentForSupportIfAllowed(specificExperimentId, SecurityUtils.getUserId());
     }
 
     // We don't want breadcrumbs in the shared view.
@@ -56,6 +56,6 @@ public class SharedExperimentView extends ExperimentView {
 
     protected void updateScreenComponents() {
         super.updateScreenComponents();
-        notesField.setReadonly(true);
+        experimentNotesField.setReadonly(true);
     }
 }

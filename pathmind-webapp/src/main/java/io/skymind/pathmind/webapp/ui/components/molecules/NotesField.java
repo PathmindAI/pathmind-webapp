@@ -86,6 +86,14 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         saveNotes(updatedNotesText);
     }
 
+    public void setSaveConsumer(Consumer<String> saveConsumer) {
+        this.saveConsumer = saveConsumer;
+    }
+
+    public Consumer<String> getSaveConsumer() {
+        return saveConsumer;
+    }
+
     protected void saveNotes() {
         saveNotes(notesText);
     }

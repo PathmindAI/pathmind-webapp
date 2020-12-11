@@ -58,11 +58,20 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         }
         initLoadData();
         // If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
+        // Create screenComponents prior to having them added to the screen (mainly used for parent view classes)
+        createScreens();
         addScreens();
         // Update the screen based on the parameters if need be.
         initScreen(event);
         // Segment plugin added
         add(segmentIntegrator);
+    }
+
+    /**
+     * This is mainly used for when a parent view such as DefaultExperimentView needs to create components that the sub (children)
+     * views will need to have instantiated before the addScreens() method is called.
+     **/
+    protected void createScreens() {
     }
 
     public void recalculateGridColumnWidth(Page page, Grid grid) {

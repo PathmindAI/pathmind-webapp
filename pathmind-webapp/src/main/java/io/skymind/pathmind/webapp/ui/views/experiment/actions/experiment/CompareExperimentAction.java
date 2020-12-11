@@ -22,6 +22,6 @@ public class CompareExperimentAction {
         experimentView.showCompareExperimentComponents(true);
         Experiment comparisonExperiment = experimentDAO.getExperimentIfAllowed(experiment.getId(), SecurityUtils.getUserId()).get();
         comparisonExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
-        experimentView.getComparisonComponents().forEach(component -> component.setExperiment(comparisonExperiment));
+        experimentView.setComparisonExperiment(comparisonExperiment);
     }
 }
