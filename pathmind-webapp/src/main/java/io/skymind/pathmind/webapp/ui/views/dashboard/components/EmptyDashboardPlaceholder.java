@@ -11,10 +11,23 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 @Tag("empty-dashboard-placeholder")
 @JsModule("./src/dashboard/empty-dashboard-placeholder.js")
 public class EmptyDashboardPlaceholder extends PolymerTemplate<TemplateModel> {
+
+    @Id("zipLink")
+    private Anchor zipLink;
+
+    @Id("tutorialLink")
+    private Anchor tutorialLink;
+
     @Id("newProjectButton")
     private Anchor newProjectButton;
 
     public EmptyDashboardPlaceholder(SegmentIntegrator segmentIntegrator) {
+        zipLink.getElement().addEventListener("click", click -> {
+            segmentIntegrator.onboardingZipDownloaded();
+        });
+        tutorialLink.getElement().addEventListener("click", click -> {
+            segmentIntegrator.onboardingTutorialClicked();
+        });
         newProjectButton.getElement().addEventListener("click", click -> {
             segmentIntegrator.createFirstProject();
         });

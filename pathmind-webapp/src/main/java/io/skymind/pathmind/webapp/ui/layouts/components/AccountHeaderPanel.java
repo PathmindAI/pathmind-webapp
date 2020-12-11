@@ -49,6 +49,7 @@ public class AccountHeaderPanel extends HorizontalLayout {
 
         MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER)));
         account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
+        account.getSubMenu().addItem("Access Token", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
         if (VaadinSecurityUtils.isAuthorityGranted(SettingsView.class)) {
             account.getSubMenu().addItem("Settings", e -> getUI().ifPresent(ui -> ui.navigate(SettingsView.class)));
         }

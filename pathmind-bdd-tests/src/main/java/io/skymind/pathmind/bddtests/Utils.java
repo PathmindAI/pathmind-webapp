@@ -169,4 +169,17 @@ public class Utils extends PageObject {
         }
         return null;
     }
+
+    public WebElement getModelNavbarItemByModelName(String experimentName, String cssSelector) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//models-navbar-item"))) {
+            WebElement experimentNavbarItemShadow = expandRootElement(webElement);
+            if (experimentNavbarItemShadow.findElement(By.cssSelector(".model-name p:nth-child(2)")).getText().contains(experimentName)) {
+                if (cssSelector == null) {
+                    return webElement;
+                }
+                return experimentNavbarItemShadow.findElement(By.cssSelector(cssSelector));
+            }
+        }
+        return null;
+    }
 }

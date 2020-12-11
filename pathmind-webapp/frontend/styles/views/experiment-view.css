@@ -1,3 +1,7 @@
+.experiment-view .page-content {
+    flex: 1;
+}
+
 .experiment-view .view-section > vaadin-horizontal-layout:first-child > vaadin-vertical-layout:first-child {
     flex: 1 0 auto;
 }
@@ -101,6 +105,12 @@
     -moz-user-select: none;
     user-select: none;
     cursor: pointer;
+}
+
+.experiment-view .reward-variables-table.disable-selection .reward-variable-name:not([chosen]) {
+    background-color: var(--pm-grey-color-lightest);
+    border-color: var(--pm-grey-color-lightest);
+    cursor: default;
 }
 
 .experiment-view .metrics-wrapper span {

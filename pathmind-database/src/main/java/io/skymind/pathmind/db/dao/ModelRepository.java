@@ -42,7 +42,7 @@ class ModelRepository {
      * @return Model - beware, not all fields are initialized
      */
     protected static Model getModel(DSLContext ctx, long modelId) {
-        return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS,
+        return ctx.select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.PACKAGE_NAME, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED,
                 MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.REWARD_VARIABLES_COUNT, MODEL.ACTION_TUPLE_SIZE, MODEL.INVALID_MODEL, MODEL.MODEL_TYPE)
                 .from(MODEL)
                 .where(MODEL.ID.eq(modelId))
@@ -64,6 +64,10 @@ class ModelRepository {
         mod.setActionTupleSize(-1);
         mod.setModelType(model.getModelType());
         mod.setNumberOfAgents(model.getNumberOfAgents());
+        mod.setPathmindHelper(model.getPathmindHelper());
+        mod.setMainAgent(model.getMainAgent());
+        mod.setExperimentClass(model.getExperimentClass());
+        mod.setExperimentType(model.getExperimentType());
         mod.store();
         return mod.key().get(MODEL.ID);
     }

@@ -4,6 +4,7 @@ import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
 import io.skymind.pathmind.shared.data.Model;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -16,17 +17,19 @@ import java.util.concurrent.Future;
 @Slf4j
 public class ProjectFileCheckService {
 
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = "Model needs to be updated. You can take a look at <a target='_blank' href='%s'>this article</a> for upgrade instructions.";
-    private static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model needs to be uploaded again.";
+    public static final String INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS = "Model or Pathmind Helper may need to be updated.";
+    public static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS + " Please read <a target='_blank' href='%s'>this article</a> or contact Pathmind support.";
 
     private final ExecutorService checkerExecutorService;
     private final ModelAnalyzerApiClient client;
-    private final String convertModelsToSupportLastestVersionURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLastestVersionURL) {
+    @Getter
+    private final String convertModelsToSupportLatestVersionURL;
+
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLatestVersionURL) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
-        this.convertModelsToSupportLastestVersionURL = convertModelsToSupportLastestVersionURL;
+        this.convertModelsToSupportLatestVersionURL = convertModelsToSupportLatestVersionURL;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
@@ -41,18 +44,38 @@ public class ProjectFileCheckService {
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
                     final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO analysisResult = client.analyze(tempFile, "project_" + model.getProjectId());
+                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                        String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
+                        String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
+                        String expTypeName = modelInfo.getExperimentType().toString();
+                        String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
+                        String reqId = "project_" + model.getProjectId();
+
+                        HyperparametersDTO analysisResult =
+                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
                         } else {
                             setHyperparams(result, analysisResult);
+                            model.setPathmindHelper(pmHelperName);
+                            model.setMainAgent(mainAgentName);
+                            model.setExperimentClass(expClassName);
+                            model.setExperimentType(expTypeName);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
                     } else {
-                        statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        if (!result.isHelperPresent()) {
+                            statusUpdater.updateError("You need to add PathmindHelper in your model.");
+                        } else if (!result.isHelperUnique()) {
+                            statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
+                        } else if (!result.isValidRLPlatform()) {
+                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
+                        } else {
+                            statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        }
                     }
                 } finally {
                     tempFile.delete();
@@ -117,10 +140,10 @@ public class ProjectFileCheckService {
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
             case OLD_REWARD_VARIABLES :
-                return convertModelsToSupportLastestVersionURL;
+                return convertModelsToSupportLatestVersionURL;
             default :
                 // Currently only invalid model reason is reward variables 
-                return convertModelsToSupportLastestVersionURL;
+                return convertModelsToSupportLatestVersionURL;
         }
     }
 }

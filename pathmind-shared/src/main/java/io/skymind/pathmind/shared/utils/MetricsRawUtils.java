@@ -24,7 +24,7 @@ public class MetricsRawUtils {
                 Arrays.asList(rawDataString
                         .replace("[", "").replace("]", "")
                         .split(",", numAgents * episodesThisIter * numReward + 1)).subList(0, numAgents * episodesThisIter * numReward).stream()
-                        .map(Double::valueOf)
+                        .map(PathmindNumberUtils::convertValidDouble)
                         .collect(Collectors.toList());
 
         List<MetricsRaw> result = new ArrayList<>();

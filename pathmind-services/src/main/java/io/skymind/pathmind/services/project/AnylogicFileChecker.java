@@ -58,8 +58,8 @@ public class AnylogicFileChecker implements FileChecker {
                         if (anylogicFileCheckResult.isHelperPresent()) {
                             statusUpdater.updateStatus(0.90);
                         } else {
-                            log.error("model.jar does not having PathmindHelper class");
-                            statusUpdater.updateError("model.jar does not having PathmindHelper class");
+                            log.error("model.jar does not have PathmindHelper class");
+                            statusUpdater.updateError("model.jar does not have PathmindHelper class");
                         }
                     }
                 } else {
@@ -151,20 +151,16 @@ public class AnylogicFileChecker implements FileChecker {
     void checkHelpers(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
 
-        List<String> listOfHelpers = new ArrayList<>();
-
         unZippedJars.stream().forEach(unZippedJar -> {
             try {
                 File unJarred = extractArchive(unZippedJar);
                 List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
                 ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
-                listOfHelpers.addAll(byteCodeAnalyzer.byteParser(listOfFiles));
+                byteCodeAnalyzer.byteParser(listOfFiles, anylogicFileCheckResult);
             } catch (IOException ioe) {
                 log.error("Error unJarred jar file", ioe);
             }
         });
-
-        anylogicFileCheckResult.setDefinedHelpers(listOfHelpers);
 
         log.info("{} :- checkHelpers Completed", uuid);
     }

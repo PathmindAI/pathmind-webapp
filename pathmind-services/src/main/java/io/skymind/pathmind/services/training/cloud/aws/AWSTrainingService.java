@@ -19,6 +19,7 @@ import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
 
@@ -68,11 +69,12 @@ public class AWSTrainingService extends TrainingService {
                 25,
                 false,
                 true,
-                true
+                true,
+                StringUtils.defaultString(model.getMainAgent()),
+                StringUtils.defaultString(model.getExperimentClass()),
+                StringUtils.defaultString(model.getExperimentType())
         );
 
         return executionProvider.execute(spec);
     }
-
-
 }

@@ -5,6 +5,7 @@ Feature: New experiment page
     Given Login to the pathmind
     When Open projects page
     When Create new CoffeeShop project with draft experiment
+    Then Check side bar experiment 'Experiment #1' date is 'Created just now'
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the experiment name 1
@@ -95,3 +96,27 @@ Feature: New experiment page
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Create new project and open project experiment
+    Given Login to the pathmind
+    When Open projects page
+    When Create new CoffeeShop project with single reward function
+    When Wait a bit 60000 ms
+    When Refresh page
+    Then Check that new experiment AutotestProject page is opened
+    Then Check side bar experiment 'Experiment #1' date is 'Created 1 minute ago'
+
+  Scenario: Check notes autosave on new experiment page
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Add note Experiment 1 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Wait a bit 3000 ms
+    When Add note Experiment 2 Note to the experiment page
+    When Wait a bit 3000 ms
+    When Click side bar new experiment btn
+    When Click side bar experiment Experiment #1
+    Then Check experiment notes is Experiment 1 Note
+    When Click side bar experiment Experiment #2
+    Then Check experiment notes is Experiment 2 Note

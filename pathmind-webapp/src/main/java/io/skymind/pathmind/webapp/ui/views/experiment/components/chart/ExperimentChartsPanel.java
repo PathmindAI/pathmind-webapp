@@ -18,14 +18,14 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class ExperimentChartsPanel extends VerticalLayout {
 
-    private AllMetricsChartPanel allMetricsChartPanel;
+    private CompareMetricsChartPanel compareMetricsChartPanel;
     private PolicyChartPanel policyChartPanel;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
@@ -43,12 +43,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
         this.getUISupplier = getUISupplier;
 
         Tabs chartTabs = createChartTabs();
-        allMetricsChartPanel = new AllMetricsChartPanel(getUISupplier);
+        compareMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                allMetricsChartPanel,
+                compareMetricsChartPanel,
                 policyChartPanel);
 
         VerticalLayout chartsPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -63,7 +63,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
                 chartsPanel);
         addClassName("row-2-of-3");
 
-        setAllMetricsChartPanelVisible(true);
+        setCompareMetricsChartPanelVisible(true);
 
         setupCharts(experiment, rewardVariables);
     }
@@ -79,7 +79,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     private void setVisiblePanel(boolean isRedraw) {
         if (chartTabs.getSelectedIndex() == 0) {
-            setAllMetricsChartPanelVisible(isRedraw);
+            setCompareMetricsChartPanelVisible(isRedraw);
         } else {
             setPolicyChartPanelVisible(isRedraw);
         }
@@ -89,7 +89,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this, getUISupplier,
                 new ExperimentChartsPanelRunUpdateSubscriber(this),
-                new ExperimentChartsPanelExperimentChangedViewSubscriber(this));
+                new ExperimentChartsPanelExperimentSwitchedViewSubscriber(this));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
         setExperiment(newExperiment);
         this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
         policyChartPanel.setExperiment(experiment);
-        allMetricsChartPanel.setupChart(experiment, rewardVariables);
+        compareMetricsChartPanel.setupChart(experiment, rewardVariables);
         selectVisibleChart();
     }
 
@@ -119,19 +119,19 @@ public class ExperimentChartsPanel extends VerticalLayout {
         experiment.updateTrainingStatus();
     }
 
-    private void setAllMetricsChartPanelVisible(boolean isRedraw) {
+    private void setCompareMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
-        allMetricsChartPanel.setVisible(true);
+        compareMetricsChartPanel.setVisible(true);
         if (isRedraw) {
-            allMetricsChartPanel.redrawChart();
+            compareMetricsChartPanel.redrawChart();
         }
     }
 
     private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(true);
-        allMetricsChartPanel.setVisible(false);
+        compareMetricsChartPanel.setVisible(false);
         if (isRedraw) {
             policyChartPanel.redrawChart();
         }
@@ -140,7 +140,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     private void setPlaceholderVisible() {
         trainingStartingPlaceholder.setVisible(true);
         policyChartPanel.setVisible(false);
-        allMetricsChartPanel.setVisible(false);
+        compareMetricsChartPanel.setVisible(false);
     }
 
     public Experiment getExperiment() {

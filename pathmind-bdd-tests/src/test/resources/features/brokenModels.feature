@@ -1,13 +1,29 @@
 @brokenModels
 Feature: Broken Models tests
 
-  Scenario: Upload broken model file
+  Scenario: Upload broken model file(No helper)
     Given Login to the pathmind
     When Open projects page
     When Click create new project button
     When Input name of the new project AutotestProject and click Create project button
     When Upload model problematic_models/ABrokenModel.zip
-    Then Check that error message in model check panel is "The uploaded file is invalid, check it and upload again."
+    Then Check that error message in model check panel is "You need to add PathmindHelper in your model."
+
+  Scenario: Upload broken model file(Multiple Helpers)
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model problematic_models/5.simple_two_helpers.zip
+    Then Check that error message in model check panel starts with "Only one PathmindHelper per model is currently supported."
+
+  Scenario: Upload broken model file(Bonsai model)
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model problematic_models/9.simple_RLExperiment_exported_RLExperiment_bonsai.zip
+    Then Check that error message in model check panel is "Invalid model. Please use the exported model for Pathmind."
 
   Scenario: Upload broken model file 220Mb
     Given Login to the pathmind
@@ -32,5 +48,17 @@ Feature: Broken Models tests
       | Model File                                      | Error Message                                                                            |
 #      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
 #      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
-      | problematic_models/ProblemModel#1480.zip        | Model needs to be updated. You can take a look at this article for upgrade instructions. |
-      | problematic_models/NonTupleModel.zip            | Model needs to be updated. You can take a look at this article for upgrade instructions. |
+      | problematic_models/ProblemModel#1480.zip        | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+      | problematic_models/NonTupleModel.zip            | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+
+  Scenario: Upload broken model few times
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model problematic_models/NonTupleModel.zip
+    Then Wait for text "Checking your model" to disappear
+    And Check that error message in model check panel is "Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support."
+    When Upload model problematic_models/ABrokenModel.zip
+    Then Wait for text "Checking your model" to disappear
+    And Check that error message in model check panel is "You need to add PathmindHelper in your model."

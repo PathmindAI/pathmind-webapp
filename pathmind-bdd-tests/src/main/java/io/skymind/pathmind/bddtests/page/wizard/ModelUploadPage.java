@@ -12,6 +12,7 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 public class ModelUploadPage extends PageObject {
 
@@ -21,13 +22,21 @@ public class ModelUploadPage extends PageObject {
     private WebElement uploadShadow;
     @FindBy(xpath = "//upload-alp-instructions")
     private WebElement uploadAlpInstructionsShadow;
+    @FindBy(xpath = "//span[@class='warning-label']")
+    private WebElement warningLabelElement;
+    @FindBy(xpath = "//vaadin-button[text()='Upload as Zip']")
+    private WebElement uploadAsZipBtn;
 
     private final By byInput = By.cssSelector("input");
 
 
     public void uploadModelFile(String model) {
         waitABit(2500);
-        getDriver().findElement(By.xpath("//vaadin-button[text()='Upload as Zip']")).click();
+        setImplicitTimeout(3, SECONDS);
+        if (getDriver().findElements(By.xpath("//vaadin-button[text()='Upload as Zip']")).size() != 0) {
+            uploadAsZipBtn.click();
+        }
+        resetImplicitTimeout();
         waitABit(2500);
         WebElement e = utils.expandRootElement(uploadShadow);
         WebElement projectNameInputField = e.findElement(byInput);
@@ -45,6 +54,14 @@ public class ModelUploadPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span")));
         By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
         assertThat(getDriver().findElement(xpath).getText(), is(errorMessage));
+        resetImplicitTimeout();
+    }
+
+    public void checkErrorMessageStartsWithInModelCheckPanel(String errorMessage) {
+        setImplicitTimeout(240, SECONDS);
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span")));
+        By xpath = By.xpath("//vaadin-progress-bar[@theme='error']/following-sibling::span");
+        assertThat(getDriver().findElement(xpath).getText(), startsWith(errorMessage));
         resetImplicitTimeout();
     }
 
@@ -77,5 +94,16 @@ public class ModelUploadPage extends PageObject {
         getDriver().switchTo().frame(1);
         getDriver().switchTo().frame(1);
         assertThat(getDriver().findElement(By.cssSelector("body > h1:nth-child(2)")).getText(), is("Exporting models to Java application"));
+    }
+
+    public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
+        if (isShown) {
+            waitFor(ExpectedConditions.visibilityOf(warningLabelElement));
+            assertThat(warningLabelElement.getText(), is(warningLabel));
+        } else {
+            setImplicitTimeout(3, SECONDS);
+            assertThat(getDriver().findElements(By.xpath("//span[@class='warning-label']")).size(), is(0));
+            resetImplicitTimeout();
+        }
     }
 }

@@ -3,8 +3,6 @@ package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -21,7 +19,6 @@ import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusE
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentChangedViewSubscriber;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -43,7 +40,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
+    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
         this.getUISupplier = getUISupplier;
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
@@ -51,18 +48,26 @@ public class RewardVariablesRowField extends HorizontalLayout {
         rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
-            rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+            if (rv.getArrayIndex() < 2) {
+                rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+                rewardVariablesTable.setNumberOfSelectedRewardVariables(2);
+            }
 
             rewardVariableNameSpan.addClickListener(event -> {
                 Element spanElement = event.getSource().getElement();
+                int numberOfSelectedRewardVariables = rewardVariablesTable.getNumberOfSelectedRewardVariables();
                 if (spanElement.hasAttribute(clickedAttribute)) {
                     spanElement.removeAttribute(clickedAttribute);
                     isShow = false;
+                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables-1);
                     EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
                 } else {
-                    spanElement.setAttribute(clickedAttribute, true);
-                    isShow = true;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+                    if (numberOfSelectedRewardVariables < 2) {
+                        spanElement.setAttribute(clickedAttribute, true);
+                        isShow = true;
+                        rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
+                        EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
+                    }
                 }
             });
         }
@@ -105,17 +110,6 @@ public class RewardVariablesRowField extends HorizontalLayout {
         binder.setBean(rv);
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new RewardVariablesRowFieldExperimentChangedViewSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
     private void setGoalFieldVisibility() {
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
@@ -147,15 +141,5 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     public boolean isShow() {
         return isShow;
-    }
-
-    public void reset() {
-        if (isShow) {
-            return;
-        }
-
-        getRewardVariableSpan().getElement().setAttribute("chosen", true);
-        isShow = true;
-        EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
     }
 }

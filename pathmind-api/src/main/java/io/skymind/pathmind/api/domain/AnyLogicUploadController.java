@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,7 +44,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.skymind.pathmind.services.project.ProjectFileCheckService.INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
 import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -51,8 +54,13 @@ public class AnyLogicUploadController {
 
     private final String webappDomainUrl;
 
-    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl) {
+    @Getter
+    private final String modelCheckFailedHelpUrl;
+
+    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
+                                    @Value("${pm.api.model-check-failed-help.url}") String modelCheckFailedHelpUrl) {
         this.webappDomainUrl = webappDomainUrl;
+        this.modelCheckFailedHelpUrl = modelCheckFailedHelpUrl;
     }
 
     @Autowired
@@ -91,22 +99,13 @@ public class AnyLogicUploadController {
             file.transferTo(tempFile.toFile());
             log.debug("saved file {} to temp location {}", file.getOriginalFilename(), tempFile);
 
-            Project project = Optional.ofNullable(projectId)
-                    .flatMap(projectDAO::getProject)
-                    .orElseGet(() -> {
-                        final LocalDateTime now = LocalDateTime.now();
-                        Project newProject = new Project();
-                        newProject.setName("AL-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
-                        newProject.setPathmindUserId(pmUser.getUserId());
-                        long newProjectId = projectDAO.createNewProject(newProject);
-                        newProject.setId(newProjectId);
-                        log.info("created project {}", newProjectId);
-                        return newProject;
-                    });
-
-            if (project.getPathmindUserId() != pmUser.getUserId()) {
-                log.error("project {} does not belong ot user {}", project.getId(), pmUser.getUserId());
-                throw new AccessDeniedException("project does not belong ot user");
+            Project project = null;
+            if (projectId != null) {
+                project = projectDAO.getProjectIfAllowed(projectId, pmUser.getUserId())
+                        .orElseThrow(() -> {
+                            log.error("project {} does not belong to user {}", projectId, pmUser.getUserId());
+                            throw new AccessDeniedException("project does not belong to user");
+                        });
             }
 
             Model model = new Model();
@@ -132,6 +131,17 @@ public class AnyLogicUploadController {
             model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
             model.setNumberOfAgents(alResult.getNumberOfAgents());
 
+            if (project == null) {
+                final LocalDateTime now = LocalDateTime.now();
+                Project newProject = new Project();
+                newProject.setName("AL-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
+                newProject.setPathmindUserId(pmUser.getUserId());
+                long newProjectId = projectDAO.createNewProject(newProject);
+                newProject.setId(newProjectId);
+                log.info("created project {}", newProjectId);
+                project = newProject;
+            }
+
             modelService.addDraftModelToProject(model, project.getId(), "");
             log.info("created model {}", model.getId());
             RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
@@ -149,7 +159,13 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            throw new RuntimeException("failed to process zip file", e);
+            String location = modelCheckFailedHelpUrl;
+            String errorMessage = StringUtils.trimToEmpty(e.getMessage());
+//            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
+//                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
+//                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
+//            }
+            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, location).body(errorMessage);
         }
 
     }

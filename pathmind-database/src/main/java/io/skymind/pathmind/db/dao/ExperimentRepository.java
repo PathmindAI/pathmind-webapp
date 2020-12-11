@@ -95,7 +95,7 @@ class ExperimentRepository {
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME)
+                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
@@ -123,10 +123,9 @@ class ExperimentRepository {
                 .execute();
     }
 
-    protected static void updateExperiment(DSLContext ctx, Experiment experiment) {
+    protected static void updateRewardFunction(DSLContext ctx, Experiment experiment) {
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.REWARD_FUNCTION, experiment.getRewardFunction())
-                .set(EXPERIMENT.USER_NOTES, experiment.getUserNotes())
                 .where(EXPERIMENT.ID.eq(experiment.getId()))
                 .execute();
     }

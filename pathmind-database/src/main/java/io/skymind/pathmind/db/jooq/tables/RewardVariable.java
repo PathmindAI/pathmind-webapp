@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardVariable extends TableImpl<RewardVariableRecord> {
 
-    private static final long serialVersionUID = 1528697566;
+    private static final long serialVersionUID = -729669334;
 
     /**
      * The reference instance of <code>public.reward_variable</code>
@@ -69,7 +69,7 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     /**
      * The column <code>public.reward_variable.name</code>.
      */
-    public final TableField<RewardVariableRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<RewardVariableRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
 
     /**
      * The column <code>public.reward_variable.array_index</code>.

@@ -22,16 +22,15 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
+import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.renderer.ZonedDateTimeRenderer;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
@@ -115,14 +114,18 @@ public class ProjectsView extends PathMindDefaultView {
                 .setResizable(true)
                 .setSortable(true);
 
-        projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getDateCreated, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+        projectGrid.addComponentColumn(project -> 
+                new DatetimeDisplay(project.getDateCreated())
+        )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
                 .setHeader("Created")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
 
-        Grid.Column<Project> lastActivityColumn = projectGrid.addColumn(new ZonedDateTimeRenderer<>(Project::getLastActivityDate, DateAndTimeUtils.STANDARD_DATE_ONLY_FOMATTER))
+        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project -> 
+                new DatetimeDisplay(project.getLastActivityDate())
+        )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))
                 .setHeader("Last Activity")
                 .setAutoWidth(true)

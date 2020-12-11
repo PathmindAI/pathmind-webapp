@@ -1,11 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.view;
 
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
-public class NavBarExperimentSelectedViewSubscriber extends ExperimentChangedViewSubscriber {
+public class NavBarExperimentSelectedViewSubscriber extends ExperimentSwitchedViewSubscriber {
 
     private ExperimentsNavBar experimentsNavBar;
 
@@ -15,12 +15,12 @@ public class NavBarExperimentSelectedViewSubscriber extends ExperimentChangedVie
     }
 
     @Override
-    public void handleBusEvent(ExperimentChangedViewBusEvent event) {
+    public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         experimentsNavBar.setCurrentExperiment(event.getExperiment());
     }
 
     @Override
-    public boolean filterBusEvent(ExperimentChangedViewBusEvent event) {
+    public boolean filterBusEvent(ExperimentSwitchedViewBusEvent event) {
         return ExperimentUtils.isSameModel(event.getExperiment(), experimentsNavBar.getModelId());
     }
 }
