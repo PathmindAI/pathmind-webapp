@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -25,6 +26,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
@@ -43,7 +45,6 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
@@ -119,8 +120,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     private HorizontalLayout createMainPanel() {
-        experimentsNavbar.setAllowNewExperimentCreation(ModelUtils.isValidModel(experiment.getModel()));
-
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
 
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -257,50 +256,25 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         });
     }
 
-    public void setExperiment(Experiment selectedExperiment) {
-        triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        ContinueNavigationAction action = event.postpone();
+        saveDraftExperiment(() -> action.proceed());
     }
 
-    private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
-        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        synchronized (experimentLock) {
-            experiment = selectedExperiment;
-            experimentId = selectedExperiment.getId();
-            loadExperimentData();
-            updateScreenComponents();
-            experimentBreadcrumbs.setExperiment(experiment);
-            getUI().ifPresent(ui -> navigateToExperiment(ui, selectedExperiment));
-        }
-    }
-
-    private void navigateToExperiment(UI ui, Experiment targetExperiment) {
-        if (ExperimentUtils.isDraftRunType(targetExperiment)) {
-            ui.getPage().getHistory().pushState(null, "newExperiment/" + targetExperiment.getId());
-        } else {
-            navigateToExperimentView(targetExperiment);
-        }
-    }
-
-    private void navigateToExperimentView(Experiment experiment) {
-        PushUtils.push(getUI(), ui -> {
-            ui.navigate(ExperimentView.class, experiment.getId());
-        });
-    }
-
-    private void triggerSaveDraft(Command cancelListener) {
+    public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
             if (saveDraftButton.isEnabled()) {
-                handleSaveDraftClicked(cancelListener);
+                handleSaveDraftClicked(afterClickedCallback);
             } else {
-                errorPopup(cancelListener);
+                errorPopup(afterClickedCallback);
             }
         } else {
-            cancelListener.execute();
+            afterClickedCallback.execute();
         }
     }
 
-    private void errorPopup(Command cancelAction) {
+    private void errorPopup(Command afterClickedCallback) {
         String header = "Before you leave....";
         String text = "";
         if (rewardFunctionEditor.isRewardFunctionMoreThanMaxLength()) {
@@ -309,14 +283,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         text += "Please check and fix the errors.";
         ConfirmPopup popup = new ConfirmPopup(header, text);
         popup.setConfirmButtonText("Stay");
-        popup.setCancelButton("Leave", cancelAction);
+        popup.setCancelButton("Leave", afterClickedCallback);
         popup.open();
-    }
-
-    @Override
-    public void beforeLeave(BeforeLeaveEvent event) {
-        ContinueNavigationAction action = event.postpone();
-        triggerSaveDraft(() -> action.proceed());
     }
 
     @Override
@@ -346,17 +314,16 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     protected void initializeComponentsWithData() {
-        experimentsNavbar.setVisible(!experiment.isArchived());
-        experimentPanelTitle.setExperiment(experiment);
         rewardVariablesTable.setRewardVariables(rewardVariables);
         disableSaveDraft();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
     }
 
-    protected List<ExperimentComponent> createExperimentComponents() {
+    protected void createExperimentComponents() {
         // TODO -> STEPH -> create other components
         createAndSetupNotesField();
-        return List.of(notesField);
+
+        experimentComponentList.addAll(List.of(notesField));
     }
 }

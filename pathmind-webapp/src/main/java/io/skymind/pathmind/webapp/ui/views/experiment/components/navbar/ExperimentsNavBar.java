@@ -15,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
@@ -142,13 +143,22 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
+        selectedExperiment = newCurrentExperiment;
+        setVisible(!newCurrentExperiment.isArchived());
+
+        // There's no need processing any further if archived as the navbar is not visible.
+        if(newCurrentExperiment.isArchived()) {
+            return;
+        }
+
+        setAllowNewExperimentCreation(ModelUtils.isValidModel(newCurrentExperiment.getModel()));
+
         experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
             experimentsNavBarItem.removeAsCurrent();
             if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
                 experimentsNavBarItem.setAsCurrent();
             }
         });
-        selectedExperiment = newCurrentExperiment;
     }
 
     public void setAllowNewExperimentCreation(boolean allowNewExperimentCreation) {

@@ -17,7 +17,6 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
@@ -28,7 +27,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class ExperimentUtils {
     private ExperimentUtils() {
@@ -274,57 +272,30 @@ public class ExperimentUtils {
         }
     }
 
-    public static Optional<Pair<TrainingError, String>> getTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
-        return experiment.getRuns().stream()
+    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
+        experiment.getRuns().stream()
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()
-                .flatMap(run -> trainingErrorDAO.getErrorById(run.getTrainingErrorId())
-                        .map(trainingError -> {
-                            if (run.getRllibError() != null) {
-                                return Pair.of(trainingError, run.getRllibError());
-                            } else {
-                                return Pair.of(trainingError, trainingError.getDescription());
-                            }
+                .ifPresent(run ->
+                        trainingErrorDAO.getErrorById(run.getTrainingErrorId()).ifPresent(trainingError -> {
+                            experiment.setAllowRestartTraining(trainingError.isRestartable());
+                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
                         }));
     }
 
-    public static Optional<EarlyStopReason> getEarlyStopReason(Experiment experiment) {
-        return experiment.getRuns().stream()
-                .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
+    public static void updateEarlyStopReason(Experiment experiment) {
+        experiment.getRuns().stream()
+                .filter(run -> StringUtils.isNotBlank(run.getSuccessMessage()) || StringUtils.isNotBlank(run.getWarningMessage()))
                 .findAny()
-                .flatMap(r -> {
-                    if (StringUtils.isNotBlank(r.getSuccessMessage())) {
-                        return Optional.of(new EarlyStopReason(true, firstLine(r.getSuccessMessage())));
-                    } else {
-                        return Optional.of(new EarlyStopReason(true, firstLine(r.getWarningMessage())));
+                .ifPresent(run -> {
+                    if(StringUtils.isNotBlank(run.getSuccessMessage())) {
+                        experiment.setTrainingStoppedEarly(true);
+                        experiment.setTrainingStoppedEarlyMessage(StringUtils.isNotBlank(run.getSuccessMessage()) ? firstLine(run.getSuccessMessage()) : firstLine(run.getWarningMessage()));
                     }
                 });
     }
 
     private static String firstLine(String message) {
         return message.split("\\n", 2)[0];
-    }
-
-
-    public static class EarlyStopReason {
-        private final boolean success;
-        private final String message;
-
-        public EarlyStopReason(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public boolean isWarning() {
-            return !success;
-        }
-
-        public String getMessage() {
-            return message;
-        }
     }
 }

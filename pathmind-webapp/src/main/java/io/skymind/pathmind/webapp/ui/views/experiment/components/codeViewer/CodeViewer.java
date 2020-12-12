@@ -22,10 +22,9 @@ public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasSty
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public CodeViewer(Supplier<Optional<UI>> getUISupplier, Experiment experiment) {
+    public CodeViewer(Supplier<Optional<UI>> getUISupplier) {
         super();
         this.getUISupplier = getUISupplier;
-        setExperiment(experiment);
     }
 
     public void setExperiment(Experiment experiment) {

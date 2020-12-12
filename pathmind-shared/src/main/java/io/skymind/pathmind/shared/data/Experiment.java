@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
@@ -48,6 +49,12 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private transient List<Run> runs;
     private List<Observation> modelObservations;
     private List<Observation> selectedObservations;
+
+    // Helper attributes for error handling to prevent extra processing with training
+    private String trainingError;
+    private boolean allowRestartTraining = true;
+    private boolean trainingStoppedEarly = false;
+    private String trainingStoppedEarlyMessage;
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
@@ -159,6 +166,41 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
             }
         }
         setTrainingStatusEnum(status);
+    }
 
+    public String getTrainingError() {
+        return trainingError;
+    }
+
+    public void setTrainingError(String trainingError) {
+        this.trainingError = trainingError;
+    }
+
+    public boolean isAllowRestartTraining() {
+        return allowRestartTraining;
+    }
+
+    public void setAllowRestartTraining(boolean allowRestartTraining) {
+        this.allowRestartTraining = allowRestartTraining;
+    }
+
+    public boolean isTrainingStoppedEarly() {
+        return trainingStoppedEarly;
+    }
+
+    public void setTrainingStoppedEarly(boolean trainingStoppedEarly) {
+        this.trainingStoppedEarly = trainingStoppedEarly;
+    }
+
+    public String getTrainingStoppedEarlyMessage() {
+        return trainingStoppedEarlyMessage;
+    }
+
+    public void setTrainingStoppedEarlyMessage(String trainingStoppedEarlyMessage) {
+        this.trainingStoppedEarlyMessage = trainingStoppedEarlyMessage;
+    }
+
+    public boolean isTrainingError() {
+        return StringUtils.isNotEmpty(trainingError);
     }
 }

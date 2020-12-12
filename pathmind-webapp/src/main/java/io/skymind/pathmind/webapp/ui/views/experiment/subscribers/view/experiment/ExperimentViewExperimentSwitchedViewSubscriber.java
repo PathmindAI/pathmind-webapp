@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment;
 
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -23,6 +24,7 @@ public class ExperimentViewExperimentSwitchedViewSubscriber extends ExperimentSw
             return;
         }
 
+        getUiSupplier().get().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + event.getExperiment().getId()));
         experimentView.setExperiment(event.getExperiment());
     }
 }

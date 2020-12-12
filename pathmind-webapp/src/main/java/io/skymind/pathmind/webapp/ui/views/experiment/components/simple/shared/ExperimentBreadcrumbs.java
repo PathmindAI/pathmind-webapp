@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components.simple;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;

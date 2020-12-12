@@ -39,7 +39,7 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables) {
+    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, List<RewardVariable> rewardVariables) {
 
         this.rewardVariables = rewardVariables;
         this.getUISupplier = getUISupplier;
@@ -66,8 +66,6 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
         addClassName("row-2-of-3");
 
         setCompareMetricsChartPanelVisible(true);
-
-        setExperiment(experiment);
     }
 
     private Tabs createChartTabs() {

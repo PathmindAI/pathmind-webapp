@@ -19,6 +19,7 @@ import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelRunUpdateSubscriber;
@@ -28,7 +29,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
 import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.isRunning;
 
-public class TrainingStatusDetailsPanel extends HorizontalLayout {
+public class TrainingStatusDetailsPanel extends HorizontalLayout implements ExperimentComponent {
 
     private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
     /**

@@ -29,6 +29,7 @@ public class SharedExperimentView extends ExperimentView {
         super();
     }
 
+    @Override
     protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
         return experimentDAO.getExperimentForSupportIfAllowed(specificExperimentId, SecurityUtils.getUserId());
     }

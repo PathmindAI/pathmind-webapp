@@ -16,12 +16,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.TrainingError;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -46,7 +43,6 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.CompareExperimentAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
@@ -65,9 +61,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
@@ -90,23 +83,22 @@ public class ExperimentView extends DefaultExperimentView {
     // TODO -> STEPH -> Are there class instances we may not need references to here like those I just committed. For example do we really
     // a reference to middlePanel or is it just a temporary instance that can be passed as a return value in a method?
     private HorizontalLayout middlePanel;
-    private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
     private TagLabel sharedWithSupportLabel;
-    // TODO -> STEPH -> Same as others, we probably no longer need an instance.
-    private CodeViewer codeViewer;
-    private ExperimentChartsPanel experimentChartsPanel;
 
     private VerticalLayout compareExperimentVerticalLayout;
 
-    // TODO -> STEPH -> We shouldn't need an instance of this as a class attribute as the subscriber should be in the observation package and not in this class.
-    private ObservationsPanel observationsPanel;
-
     private StoppedTrainingNotification stoppedTrainingNotification;
 
-    protected ExperimentNotesField experimentNotesField;
 
-    // Experiment Comparison components
+    // Experiment Components
+    protected ExperimentNotesField experimentNotesField;
+    private CodeViewer experimentCodeViewer;
+    private ExperimentChartsPanel experimentChartsPanel;
+    private ObservationsPanel observationsPanel;
+    private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+
+    // Experiment Comparison Components
     private Boolean isComparisonMode = true;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
@@ -116,10 +108,6 @@ public class ExperimentView extends DefaultExperimentView {
     // TODO -> STEPH -> Only needed because I haven't yet pushed the comparison code to a subscriber.
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
 
-    protected List<ExperimentComponent> comparisonExperimentComponents;
-
-    @Autowired
-    private TrainingErrorDAO trainingErrorDAO;
     @Autowired
     private FeatureManager featureManager;
     @Autowired
@@ -127,7 +115,7 @@ public class ExperimentView extends DefaultExperimentView {
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
-    private Button restartTraining;
+    private Button restartTrainingButton;
 
     private CompareExperimentAction compareExperimentAction;
 
@@ -174,7 +162,6 @@ public class ExperimentView extends DefaultExperimentView {
 
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
-        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
 
         setupExperimentContentPanel();
 
@@ -245,9 +232,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private void setupExperimentContentPanel() {
-        // TODO -> STEPH -> Can we somehow combine these into one.?
-        codeViewer = new CodeViewer(() -> getUI(), experiment);
-        VerticalLayout rewardFunctionGroup = generateRewardFunctionGroup(codeViewer);
+        VerticalLayout rewardFunctionGroup = generateRewardFunctionGroup(experimentCodeViewer);
 
         // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
         SimulationMetricsPanel simulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
@@ -283,7 +268,10 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     protected Div getButtonsWrapper() {
-        restartTraining = new Button("Restart Training", click -> {
+        // TODO -> STEPH -> Do we need this button or can it just call setExperiment() with some small adjustments?
+        // TODO -> STEPH -> Let's also pull the action outside of the view for the button.
+        restartTrainingButton = new Button("Restart Training", click -> {
+            // TODO -> STEPH -> Why are we reloading everything? Can we not simplify this process?
             synchronized (experimentLock) {
                 if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
                     return;
@@ -293,12 +281,12 @@ public class ExperimentView extends DefaultExperimentView {
                 initLoadData();
                 // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
                 trainingStatusDetailsPanel.setExperiment(experiment);
-                clearErrorState();
+                updateButtonEnablement();
                 experimentChartsPanel.setExperiment(experiment);
             }
         });
-        restartTraining.setVisible(false);
-        restartTraining.addClassNames("large-image-btn", "run");
+        restartTrainingButton.setVisible(false);
+        restartTrainingButton.addClassNames("large-image-btn", "run");
 
         exportPolicyButton = GuiUtils.getPrimaryButton(
                 "Export Policy",
@@ -336,14 +324,13 @@ public class ExperimentView extends DefaultExperimentView {
     protected Component[] getActionButtonList() {
         return new Button[]{
                 unarchiveExperimentButton,
-                restartTraining,
+                restartTrainingButton,
                 stopTrainingButton,
                 shareButton,
                 exportPolicyButton};
     }
 
     private HorizontalLayout getBottomPanel() {
-        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 experimentChartsPanel,
                 experimentNotesField);
@@ -351,30 +338,6 @@ public class ExperimentView extends DefaultExperimentView {
         bottomPanel.setPadding(false);
         bottomPanel.setSpacing(false);
         return bottomPanel;
-    }
-
-    private void createComparisonComponents() {
-        // TODO -> STEPH -> In dev if you do url/experiment/newExperimentID it loads but doesn't change the URL.
-        // TODO -> STEPH -> Not all events needs to clone all data such as the experiment chart data.
-        // TODO -> STEPH -> Should we even clone event data like experiments when in most cases we want to replace them. Especially
-        // if we do the processing before the event is fired so it's done only once. Yes each component can alter the instance
-        // but if it's done before the event is fired then it saves every component from having to update each instance separately, not
-        // to mention all the instance creations and destructions.
-        comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
-        // TODO -> STEPH -> For now use the same experiment since it's invisible anyways. The downside is that all events, etc. are duplicated for nothing.
-        // but it will be a quick solution until I can do all the null checks everywhere, setting up the subscribers, etc. (after everything has been stubbed).
-        comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
-        // TODO -> STEPH -> Remove once we finalize on the action design.
-//        comparisonNotesField.addEventBusSubscribers(new ExperimentNotesFieldExperimentCompareViewSubscriber(comparisonNotesField));
-        comparisonObservationsPanel = new ObservationsPanel(experiment, true);
-        // TODO -> STEPH -> Can we combine these?
-        comparisonCodeViewer = new CodeViewer(() -> getUI(), experiment);
-        // TODO -> STEPH -> Shouldn't be needed but until I move SimulationMetricsPanel comparison code is moved to a subscriber.
-        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
-    }
-
-    private void createMainExperimentComponents() {
-        experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
     }
 
     private void showStopTrainingConfirmationDialog() {
@@ -407,29 +370,9 @@ public class ExperimentView extends DefaultExperimentView {
         EventBus.post(new ExperimentUpdatedBusEvent(experiment));
     }
 
-    public void setExperiment(Experiment selectedExperiment) {
+    // TODO -> STEPH -> On page load we should automatically forward to the right view if draft. This is currently not fully working. This code should
+    // be in both NewExperimentView and ExperimentView when loading, before even loading any relational data from the database or any components.
 
-
-        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        synchronized (experimentLock) {
-            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
-            } else {
-                experiment = getExperimentForUser(selectedExperiment.getId())
-                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-                loadExperimentData();
-                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
-
-                updateScreenComponents();
-            }
-        }
-    }
-
-    // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
-    protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
-        return experimentDAO.getExperimentIfAllowed(specificExperimentId, SecurityUtils.getUserId());
-    }
 
     @Override
     protected void loadExperimentData() {
@@ -454,65 +397,36 @@ public class ExperimentView extends DefaultExperimentView {
         // a mix of logic and code between setExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
         // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
         // load and any event updates as well as experiment select.
+
+        // HERE HERE HERE -> Starting point after commit. Quick hack because after setExperiment this still needs to be loaded for now.
         updateScreenComponents();
     }
 
     protected void updateScreenComponents() {
-        clearErrorState();
-        setSharedWithSupportComponents();
-        if (isShowNavBar()) {
-            experimentsNavbar.setVisible(!experiment.isArchived());
-        }
-        experimentPanelTitle.setExperiment(experiment);
-        // Check is needed for the shared experiment view which has no breadcrumb.
-        if (experimentBreadcrumbs != null) {
-            experimentBreadcrumbs.setExperiment(experiment);
-        }
-        if (!ModelUtils.isValidModel(experiment.getModel()) && isShowNavBar()) {
-            experimentsNavbar.setAllowNewExperimentCreation(false);
-        }
-        updateDetailsForExperiment();
-        trainingStatusDetailsPanel.setExperiment(experiment);
-    }
-
-    private void updateUIForError(TrainingError error, String errorText) {
-        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
-
-        // Not used in the shared view but this code can be left as the buttons are not included in the shared view.
-        boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
-        restartTraining.setVisible(allowRestart);
-        restartTraining.setEnabled(allowRestart);
-    }
-
-    private void clearErrorState() {
-        stoppedTrainingNotification.clearErrorState();
         updateButtonEnablement();
+        setSharedWithSupportComponents();
+        updateDetailsForExperiment();
+    }
+
+    private void updateUIForError(boolean isAllowRestartTraining) {
+        // Not used in the shared view but this code can be left as the buttons are not included in the shared view.
+        boolean allowRestart = isAllowRestartTraining && ModelUtils.isValidModel(experiment.getModel());
+        restartTrainingButton.setVisible(allowRestart);
+        restartTrainingButton.setEnabled(allowRestart);
     }
 
     public void updateDetailsForExperiment() {
         updateButtonEnablement();
         archivedLabel.setVisible(experiment.isArchived());
-        // TODO -> STEPH -> Should be part fo the experiment and not reloaded all the time.
-        RunStatus status = experiment.getTrainingStatusEnum();
-        if (status == RunStatus.Error || status == RunStatus.Killed) {
-            ExperimentUtils.getTrainingErrorAndMessage(trainingErrorDAO, experiment)
-                    .ifPresent(pair -> {
-                        this.updateUIForError(pair.getLeft(), pair.getRight());
-                    });
-        } else {
-            ExperimentUtils.getEarlyStopReason(experiment)
-                    .ifPresent(reason -> {
-                        String label = reason.isSuccess() ? SUCCESS_LABEL : WARNING_LABEL;
-                        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(reason.getMessage(), label, true);
-                    });
-        }
+        stoppedTrainingNotification.setExperiment(experiment);
+        updateUIForError(experiment.isAllowRestartTraining());
     }
 
     private void updateButtonEnablement() {
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && hasBestPolicy());
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
-        restartTraining.setVisible(false);
+        restartTrainingButton.setVisible(false);
     }
 
     private boolean hasBestPolicy() {
@@ -542,31 +456,39 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     @Override
-    protected void initializeComponentsWithData() {
-        experimentNotesField.setExperiment(experiment);
-        comparisonNotesField.setExperiment(experiment);
-    }
+    protected void createExperimentComponents() {
+        // TODO -> STEPH -> create other components
+        experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
+        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI(), rewardVariables);
+        experimentCodeViewer = new CodeViewer(() -> getUI());
 
-    public void setComparisonExperiment(Experiment comparisonExperiment) {
-        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(comparisonExperiment));
+        experimentComponentList.addAll(List.of(
+                experimentNotesField,
+                trainingStatusDetailsPanel,
+                experimentChartsPanel,
+                experimentCodeViewer));
     }
 
     @Override
-    protected void createScreens() {
-        super.createScreens();
-        // TODO -> STEPH -> create other components
-        createComparisonComponents();
-        comparisonExperimentComponents = List.of(
+    protected void createComparisonComponents() {
+        // TODO -> STEPH -> Possibly found bug? -> In dev if you do url/experiment/newExperimentID it loads but doesn't change the URL.
+        // TODO -> STEPH -> Not all events needs to clone all data such as the experiment chart data.
+        // TODO -> STEPH -> Should we even clone event data like experiments when in most cases we want to replace them. Especially
+        // if we do the processing before the event is fired so it's done only once. Yes each component can alter the instance
+        // but if it's done before the event is fired then it saves every component from having to update each instance separately, not
+        // to mention all the instance creations and destructions.
+        comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI(), rewardVariables);
+        comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        comparisonObservationsPanel = new ObservationsPanel(experiment, true);
+        comparisonCodeViewer = new CodeViewer(() -> getUI());
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(experiment, featureManager.isEnabled(Feature.SIMULATION_METRICS), rewardVariables, () -> getUI());
+
+        comparisonExperimentComponents.addAll(List.of(
                 comparisonNotesField,
                 comparisonChartsPanel,
                 comparisonObservationsPanel,
                 comparisonCodeViewer,
-                comparisonSimulationMetricsPanel);
-    }
-
-    protected List<ExperimentComponent> createExperimentComponents() {
-        // TODO -> STEPH -> create other components
-        createMainExperimentComponents();
-        return List.of(experimentNotesField);
+                comparisonSimulationMetricsPanel));
     }
 }
