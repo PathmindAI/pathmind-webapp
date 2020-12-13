@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -272,6 +273,11 @@ public class ExperimentUtils {
         }
     }
 
+    // TODO -> STEPH -> Temporary location to be consistent with the other methods to update the experiments internal values.
+    public static void updateBestPolicy(Experiment experiment) {
+        experiment.setBestPolicy(PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null));
+    }
+
     public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
         experiment.getRuns().stream()
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
@@ -297,5 +303,18 @@ public class ExperimentUtils {
 
     private static String firstLine(String message) {
         return message.split("\\n", 2)[0];
+    }
+
+    // TODO -> STEPH -> This should really at the database DAO layer. That is when we load a full experiment we should just have everything and not have to remember to load extra data...
+    public static void updateExperimentInternalValues(Experiment experiment, TrainingErrorDAO trainingErrorDAO) {
+        // TODO -> STEPH -> Not sure if updateTrainingStatus() should be in the experiment class since as it needs to be done all over the code after loading the Experiment data. So many references
+        // to updateTrainingStatus() in the code.
+        experiment.updateTrainingStatus();
+        updateBestPolicy(experiment);
+        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a but more obvious or setup somewhere else. Not sure if switching experiment, update, etc. will work without it.
+        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+        // There are no extra costs if the experiment is in draft because all the values will be empty.
+        updateTrainingErrorAndMessage(trainingErrorDAO, experiment);
+        updateEarlyStopReason(experiment);
     }
 }

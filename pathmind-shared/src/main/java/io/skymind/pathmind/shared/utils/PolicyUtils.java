@@ -113,6 +113,8 @@ public class PolicyUtils {
                 .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration));
     }
 
+    // TODO -> STEPH -> We call this multiple times when loading the page which is expensive. If we don't clone the objects in the eventbus any more then
+    // we only need to do this once at load time or when there are updates. And even then only once rather than at least 3+ times right now.
     public static void updateSimulationMetricsData(Policy policy) {
         if (policy == null) {
             return;

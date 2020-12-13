@@ -55,8 +55,8 @@ public class SharedExperimentView extends ExperimentView {
         };
     }
 
-    protected void updateScreenComponents() {
-        super.updateScreenComponents();
+    @Override
+    protected void updateComponentEnablements() {
         experimentNotesField.setReadonly(true);
     }
 }

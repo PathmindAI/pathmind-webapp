@@ -52,9 +52,13 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     // Helper attributes for error handling to prevent extra processing with training
     private String trainingError;
-    private boolean allowRestartTraining = true;
+    private boolean allowRestartTraining = false;
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
+
+    // TODO -> STEPH -> Helper attributes that maybe should be part of the experiment and I'm not 100% decided on the final details.
+    private List<RewardVariable> rewardVariables;
+    private Policy bestPolicy;
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
@@ -117,28 +121,36 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     @Override
     public Experiment shallowClone() {
-        return super.shallowClone(Experiment.builder()
-                .modelId(modelId)
-                .rewardFunction(rewardFunction)
-                .dateCreated(dateCreated)
-                .lastActivityDate(lastActivityDate)
-                .userNotes(userNotes)
-                .isFavorite(isFavorite)
-                .trainingStatus(trainingStatus)
-                .hasGoals(hasGoals)
-                .goalsReached(goalsReached)
-                .totalGoals(totalGoals)
-                .build());
+//        return super.shallowClone(Experiment.builder()
+//                .modelId(modelId)
+//                .rewardFunction(rewardFunction)
+//                .dateCreated(dateCreated)
+//                .lastActivityDate(lastActivityDate)
+//                .userNotes(userNotes)
+//                .isFavorite(isFavorite)
+//                .trainingStatus(trainingStatus)
+//                .hasGoals(hasGoals)
+//                .goalsReached(goalsReached)
+//                .totalGoals(totalGoals)
+//                .build());
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 
     @Override
     public Experiment deepClone() {
-        Experiment experiment = shallowClone();
-        experiment.setProject(CloneUtils.shallowClone(project));
-        experiment.setModel(CloneUtils.shallowClone(model));
-        experiment.setPolicies(CloneUtils.shallowCloneList(policies));
-        experiment.setRuns(CloneUtils.shallowCloneList(runs));
-        return experiment;
+//        Experiment experiment = shallowClone();
+//        experiment.setProject(CloneUtils.shallowClone(project));
+//        experiment.setModel(CloneUtils.shallowClone(model));
+//        experiment.setPolicies(CloneUtils.shallowCloneList(policies));
+//        experiment.setRuns(CloneUtils.shallowCloneList(runs));
+//        experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
+//        if(experiment.getBestPolicy() != null) {
+//            experiment.setBestPolicy(experiment.getBestPolicy().deepClone());
+//        }
+//        return experiment;
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 
     public void updateTrainingStatus() {
@@ -202,5 +214,21 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     public boolean isTrainingError() {
         return StringUtils.isNotEmpty(trainingError);
+    }
+
+    public List<RewardVariable> getRewardVariables() {
+        return rewardVariables;
+    }
+
+    public void setRewardVariables(List<RewardVariable> rewardVariables) {
+        this.rewardVariables = rewardVariables;
+    }
+
+    public Policy getBestPolicy() {
+        return bestPolicy;
+    }
+
+    public void setBestPolicy(Policy bestPolicy) {
+        this.bestPolicy = bestPolicy;
     }
 }

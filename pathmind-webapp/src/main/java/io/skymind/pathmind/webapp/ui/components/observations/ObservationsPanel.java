@@ -31,17 +31,14 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     private List<Observation> selectedObservations;
 
     // For ProjectView only
-    public ObservationsPanel(List<Observation> modelObservations, Boolean hideCheckboxes) {
+    public ObservationsPanel(List<Observation> modelObservations) {
         this(modelObservations, modelObservations, true, true);
-    }
-
-    public ObservationsPanel(Experiment experiment) {
-        this(experiment.getModelObservations(), experiment.getSelectedObservations(), true, false);
-        this.experiment = experiment.deepClone();
     }
 
     public ObservationsPanel(Experiment experiment, Boolean isReadOnly) {
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly, false);
+        // TODO -> STEPH -> So much cloning. If we adjust the eventbus to no longer need cloning which was implemented to help Bruno resolve some issues
+        // then we can remove all that code including all the potential performance issues.
         this.experiment = experiment.deepClone();
     }
 

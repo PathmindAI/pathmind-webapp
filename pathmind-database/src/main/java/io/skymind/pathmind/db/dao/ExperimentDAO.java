@@ -68,6 +68,8 @@ public class ExperimentDAO {
         experiment.setModelObservations(ObservationRepository.getObservationsForModel(ctx, experiment.getModelId()));
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
+        experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
+
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {

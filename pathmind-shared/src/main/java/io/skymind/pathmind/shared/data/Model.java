@@ -39,21 +39,23 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
 
     @Override
     public Model shallowClone() {
-        return super.shallowClone(Model.builder()
-                .dateCreated(dateCreated)
-                .lastActivityDate(lastActivityDate)
-                .numberOfObservations(numberOfObservations)
-                .file(file == null ? null : Arrays.copyOf(file, file.length))
-                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
-                .projectId(projectId)
-                .userNotes(userNotes)
-                .draft(draft)
-                .hasGoals(hasGoals)
-                .rewardVariablesCount(rewardVariablesCount)
-                .packageName(packageName)
-                .invalidModel(invalidModel)
-                .modelType(modelType)
-                .numberOfAgents(numberOfAgents)
-                .build());
+//        return super.shallowClone(Model.builder()
+//                .dateCreated(dateCreated)
+//                .lastActivityDate(lastActivityDate)
+//                .numberOfObservations(numberOfObservations)
+//                .file(file == null ? null : Arrays.copyOf(file, file.length))
+//                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
+//                .projectId(projectId)
+//                .userNotes(userNotes)
+//                .draft(draft)
+//                .hasGoals(hasGoals)
+//                .rewardVariablesCount(rewardVariablesCount)
+//                .packageName(packageName)
+//                .invalidModel(invalidModel)
+//                .modelType(modelType)
+//                .numberOfAgents(numberOfAgents)
+//                .build());
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 }

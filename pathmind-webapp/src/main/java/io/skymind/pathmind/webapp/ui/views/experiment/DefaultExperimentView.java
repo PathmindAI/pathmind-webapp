@@ -17,6 +17,7 @@ import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -32,8 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class DefaultExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
-    protected abstract void loadExperimentData();
     protected abstract void createExperimentComponents();
+    protected abstract void updateComponentEnablements();
 
     @Autowired
     protected ModelService modelService;
@@ -66,9 +67,10 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected long experimentId;
     protected Experiment experiment;
 
+    private UserCaps userCaps;
+
     @Override
     protected Component getTitlePanel() {
-        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         return new ScreenTitlePanel(experimentBreadcrumbs);
     }
 
@@ -84,9 +86,12 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     private void createSharedComponents() {
+        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
+
         experimentComponentList.add(experimentPanelTitle);
         experimentComponentList.add(experimentBreadcrumbs);
+
         // TODO -> STEPH -> ExperimentsNavBar is special since it's not a specific experiment nor can one be set but we may still
         // need to do something so for now I'm leaving it here as a reminder to deal with later.
         experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, segmentIntegrator);
@@ -96,9 +101,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected void initLoadData() {
         // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
         // we will no longer have to retrieve the user information when loading this page.
-        experiment = getExperimentForUser(experimentId)
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        loadExperimentData();
+        // TODO -> REFACTOR -> This will probably be need to be adjusted when I'm done.
+        loadFullExperimentData();
     }
 
     @Override
@@ -118,23 +122,35 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     // because it will depend on who calls it. For example should this be done in the subscriber, etc. Keep in mind we'll also need the same code for initLoadData(). Right now
     // loadExperimentData() is still loading everything, I haven't had the time to fully refactor everything.
     public void setExperiment(Experiment experiment) {
+        // Update experiment instances and load full experiment data.
+        // TODO -> STEPH -> this.experiment = experiment doesn't really do much right now but if we change the eventbus not to clone then this line could change. If not then remove the line.
         this.experiment = experiment;
         this.experimentId = experiment.getId();
-        loadFullExperimentData(experiment);
-        experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
+        loadFullExperimentData();
+        updateComponents();
     }
 
-    private void loadFullExperimentData(Experiment experiment) {
-        experiment = experimentDAO.getExperimentIfAllowed(experiment.getId(), SecurityUtils.getUserId())
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        loadExperimentData();
+    private void updateComponents() {
+        experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
+        updateComponentEnablements();
+        experimentsNavbar.setVisible(!experiment.isArchived());
+    }
 
-        // TODO -> STEPH -> For now all code to update the experiment on anything should go here. I'll adjust as needed.
-        // For new experiments there won't be any runs so it will have no costs running through this method. All the database calls should go here.
-        // TODO -> STEPH -> Should be part of the experiment and not reloaded all the time. I think this will satisfy this need enough for this PR...
-        // TODO -> STEPH -> This should be done as part of loadExperimentData()?
-        ExperimentUtils.updateTrainingErrorAndMessage(trainingErrorDAO, experiment);
-        ExperimentUtils.updateEarlyStopReason(experiment);
+    // TODO -> STEPH -> Not sure if this really belongs here or in the view but for now I'm putting it here. It will really depend on if we're
+    // using cloned instances of objects in the eventbus or not. If we don't this code becomes way faster.
+    // The reason updateComponents() and updateDetailsForExperiment() are separated is because updateDetailsForExperiment() may change and so for now it's more of a placeholder.
+    public void updateDetailsForExperiment() {
+        updateComponents();
+    }
+
+    private void loadFullExperimentData() {
+        experiment = getExperimentForUser(experimentId)
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        // TODO -> STEPH -> reload has to happen on switch experiment also. As well as on compare.
+        // TODO -> STEPH -> This has to be done outside of ExperimentDAO for now because the policy also loads additional data that the experiment later requires.
+        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
+        // There are no extra costs if the experiment is in draft because all the values will be empty.
+        ExperimentUtils.updateExperimentInternalValues(experiment, trainingErrorDAO);
     }
 
     public void setComparisonExperiment(Experiment comparisonExperiment) {
@@ -154,12 +170,25 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     // TODO -> STEPH -> For now the comparison experiment components are set with the experiment when it should be null for performance reasons but
     // until the code is ready for that I'm just setting it to the current experiment.
     protected void initializeComponentsWithData() {
-        setExperiment(experiment);
+        updateComponents();
         setComparisonExperiment(experiment);
     }
 
     // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
     protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
         return experimentDAO.getExperimentIfAllowed(specificExperimentId, SecurityUtils.getUserId());
+    }
+
+    public UserCaps getUserCaps() {
+        return userCaps;
+    }
+
+    public void setUserCaps(int newRunDailyLimit, int newRunMonthlyLimit, int newRunNotificationThreshold) {
+        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
+    }
+
+    // ************************************ Methods below are needed for actions ******************************************* //
+    public SegmentIntegrator getSegmentIntegrator() {
+        return segmentIntegrator;
     }
 }

@@ -13,12 +13,14 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.server.Command;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
-public class RewardVariablesTable extends VerticalLayout {
+public class RewardVariablesTable extends VerticalLayout implements ExperimentComponent {
 
     private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
@@ -96,5 +98,11 @@ public class RewardVariablesTable extends VerticalLayout {
 
     public int getNumberOfSelectedRewardVariables() {
         return selectedRewardVariables;
+    }
+
+
+    @Override
+    public void setExperiment(Experiment experiment) {
+        setRewardVariables(experiment.getRewardVariables());
     }
 }

@@ -26,6 +26,7 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSwitchedViewSubscriber;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
  * with minimal code impact. I extended it so that binding code etc, would work
  * as expected and be consistent with other components.
  */
-public class RewardFunctionEditor extends VerticalLayout {
+public class RewardFunctionEditor extends VerticalLayout implements ExperimentComponent {
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
@@ -43,7 +44,6 @@ public class RewardFunctionEditor extends VerticalLayout {
 
     private Experiment experiment;
 
-    private List<RewardVariable> rewardVariables;
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
@@ -57,11 +57,11 @@ public class RewardFunctionEditor extends VerticalLayout {
 
     private ExperimentDAO experimentDAO;
 
-    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService) {
+    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, RewardValidationService rewardValidationService) {
         super();
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
-        this.rewardVariables = rewardVariables;
+        this.experiment = experiment;
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 
@@ -77,14 +77,9 @@ public class RewardFunctionEditor extends VerticalLayout {
                 rewardEditorErrorLabel));
         add(rewardFunctionJuicyAceEditor);
 
-        if (experiment.isArchived()) {
-            setEnabled(false);
-        }
-
         addClassName("reward-fn-editor-panel");
 
         setupBinder();
-        setExperiment(experiment);
     }
 
     private void setupRewardFunctionJuicyAceEditor() {
@@ -93,7 +88,7 @@ public class RewardFunctionEditor extends VerticalLayout {
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
-        setVariableNames(rewardVariables);
+        setVariableNames(experiment.getRewardVariables());
     }
 
     private void setupEditorErrorLabel() {
@@ -105,7 +100,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     private void setupValueChangeListener(RewardValidationService rewardValidationService) {
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
-            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), rewardVariables);
+            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), experiment.getRewardVariables());
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
             if(!rewardFunction.equals(changeEvent.getValue())) {
                 rewardFunction = changeEvent.getValue();
@@ -150,6 +145,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     }
 
     public void setExperiment(Experiment experiment) {
+        setEnabled(!experiment.isArchived());
         this.experiment = experiment;
         rewardFunction = StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction());
         binder.setBean(experiment);
@@ -163,7 +159,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     private String generateRewardFunction() {
         StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
-            for (RewardVariable rv : rewardVariables) {
+            for (RewardVariable rv : experiment.getRewardVariables()) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
                     sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));

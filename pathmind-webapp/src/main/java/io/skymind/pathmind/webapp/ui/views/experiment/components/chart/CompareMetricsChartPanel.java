@@ -29,7 +29,6 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     private CompareMetricsChart chart = new CompareMetricsChart();
 
     private Experiment experiment;
-    private Policy bestPolicy;
     private Map<Long, RewardVariable> rewardVariableFilters;
 
     private Supplier<Optional<UI>> getUISupplier;
@@ -51,12 +50,12 @@ public class CompareMetricsChartPanel extends VerticalLayout {
         return hintMessage;
     }
 
-    public void setupChart(Experiment experiment, List<RewardVariable> rewardVariables) {
+    public void setupChart(Experiment experiment) {
         synchronized (experimentLock) {
             this.experiment = experiment.deepClone();
             long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
             if (numberOfSelectedRewardVariables == 0) {
-                rewardVariables.stream().forEach(rewardVariable -> {
+                experiment.getRewardVariables().stream().forEach(rewardVariable -> {
                     if (rewardVariable.getArrayIndex() < 2) {
                         rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
                     }
@@ -67,9 +66,11 @@ public class CompareMetricsChartPanel extends VerticalLayout {
         }
     }
 
+    // TODO -> STEPH -> Why is this method called in different locations. Perhaps this should be done as part of loading the experiment. That being said
+    // if we clone the objects in the eventbus then this will be very problematic performance wise, and vice versa if we don't clone the objects
+    // then this will be a very big performance gain.
     public void selectBestPolicy() {
-        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
     }
 
     public void redrawChart() {
@@ -107,7 +108,7 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     public void updateChart() {
         // Update chart data
         List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-        chart.setCompareMetricsChart(filteredAndSortedList, bestPolicy);
+        chart.setCompareMetricsChart(filteredAndSortedList, experiment.getBestPolicy());
 
         redrawChart();
     }

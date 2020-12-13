@@ -63,23 +63,25 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
 
     @Override
     public Policy shallowClone() {
-        return super.shallowClone(Policy.builder()
-                .runId(runId)
-                .externalId(externalId)
-                .startedAt(startedAt)
-                .stoppedAt(stoppedAt)
-                .scores(CloneUtils.shallowCloneList(scores))
-                .hasFile(hasFile)
-                .checkPointFileKey(checkPointFileKey)
-                .project(CloneUtils.shallowClone(project))
-                .model(CloneUtils.shallowClone(model))
-                .experiment(CloneUtils.shallowClone(experiment))
-                .run(CloneUtils.shallowClone(run))
-                .metrics(CloneUtils.shallowCloneList(metrics))
-                .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
-                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
-                .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
-                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
-                .build());
+//        return super.shallowClone(Policy.builder()
+//                .runId(runId)
+//                .externalId(externalId)
+//                .startedAt(startedAt)
+//                .stoppedAt(stoppedAt)
+//                .scores(CloneUtils.shallowCloneList(scores))
+//                .hasFile(hasFile)
+//                .checkPointFileKey(checkPointFileKey)
+//                .project(CloneUtils.shallowClone(project))
+//                .model(CloneUtils.shallowClone(model))
+//                .experiment(CloneUtils.shallowClone(experiment))
+//                .run(CloneUtils.shallowClone(run))
+//                .metrics(CloneUtils.shallowCloneList(metrics))
+//                .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
+//                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
+//                .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
+//                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
+//                .build());
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 }

@@ -19,22 +19,21 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.shared.Registration;
-import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.SimulationMetricsPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentSwitchedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,10 +48,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
     private RewardVariablesTable rewardVariablesTable;
 
-    private boolean showSimulationMetrics;
-
     private Experiment experiment;
-    private List<RewardVariable> rewardVariables;
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
     private List<Button> sparklineShowButtons = new ArrayList<>();
@@ -61,12 +57,13 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     // REFACTOR -> A quick somewhat hacky solution until we have time to refactor the code
     private int indexClicked;
 
-    public SimulationMetricsPanel(Experiment experiment, boolean showSimulationMetrics, List<RewardVariable> rewardVariables, Supplier<Optional<UI>> getUISupplier) {
+    // TODO -> STEPH -> Can we somehow push the experiment away from the constructor? I'm sure we can do it by modifying the parent view
+    // classes with a setup() method or something along those lines so that it's only called once in the constructors rather than every setExperiment(), but
+    // I'm pushing that off for now.
+    public SimulationMetricsPanel(boolean showSimulationMetrics, Experiment experiment, Supplier<Optional<UI>> getUISupplier) {
 
         super();
-        this.experiment = experiment.deepClone();
-        this.rewardVariables = RewardVariablesUtils.deepClone(rewardVariables);
-        this.showSimulationMetrics = showSimulationMetrics;
+        this.experiment = experiment;
         this.getUISupplier = getUISupplier;
 
         setSpacing(false);
@@ -74,12 +71,12 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
         createEnlargedChartDialog();
 
+        // TODO -> STEPH -> Why do we have a RewardVariablesTable here in addition to the view?
         rewardVariablesTable = new RewardVariablesTable(getUISupplier);
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();
         rewardVariablesTable.setSizeFull();
-        rewardVariablesTable.setRewardVariables(rewardVariables);
 
         add(rewardVariablesTable);
 
@@ -105,12 +102,10 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         sparklineHeader.addClassName("header");
         sparklinesWrapper.add(sparklineHeader);
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-
         // Needed to convert the raw metrics to a format the UI can use.
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
 
-        IntStream.range(0, rewardVariables.size())
+        IntStream.range(0, experiment.getRewardVariables().size())
                 .forEach(index -> {
                     Span metricSpan = new Span();
                     SparklineChart sparkline = new SparklineChart();
@@ -161,16 +156,14 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment.deepClone();
+        // TODO -> REFACTOR -> Why are we resetting the reward variables here? Why are there are two RewardVariableTables?
+        rewardVariablesTable.setExperiment(experiment);
         updateSimulationMetrics();
-    }
-
-    public boolean isShowSimulationMetrics() {
-        return showSimulationMetrics;
     }
 
     public void updateSimulationMetrics() {
 
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
+        Policy bestPolicy = experiment.getBestPolicy();
 
         // Needed to convert the raw metrics to a format the UI can use.
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
@@ -183,7 +176,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         IntStream.range(0, bestPolicy.getSimulationMetrics().size())
                 .forEach(index -> {
                     Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
-                    RewardVariable rewardVariable = rewardVariables.get(index);
+                    RewardVariable rewardVariable = experiment.getRewardVariables().get(index);
 
                     // First conditional value is with uncertainty, second value is without uncertainty
                     String metricValue = bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()

@@ -1,12 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
@@ -24,14 +22,10 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSavedViewBusEvent;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -40,18 +34,17 @@ import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentSwitchedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -64,9 +57,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     // lock
     // on this because part of the synchronization is in the eventbus listener in a
     // subclass (which is also why we can't use synchronize on the method.
+    // TODO -> STEPH -> We'll have to bring this back for the same reasons as in the experiment view - see those notes for more details.
     private Object experimentLock = new Object();
-
-    private List<RewardVariable> rewardVariables;
 
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
@@ -79,8 +71,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     private Anchor downloadModelAlpLink;
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
-
-    private UserCaps userCaps;
 
     private boolean isNeedsSaving = false;
 
@@ -95,7 +85,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
-        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
+        setUserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("new-experiment-view");
     }
 
@@ -120,16 +110,13 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     private HorizontalLayout createMainPanel() {
-        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
+
+        createButtons();
 
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
-
-        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> handleStartRunButtonClicked());
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
-        }));
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
@@ -149,18 +136,13 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
         notesSavedHint.setVisible(false);
 
-        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experimentDAO, experiment, rewardVariables, rewardValidationService);
-
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier());
         VerticalLayout rewardVariablesPanel = WrapperUtils
                 .wrapVerticalWithNoPaddingOrSpacing(
                         LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
-
-        observationsPanel = new ObservationsPanel(experiment, false);
 
         HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFunctionEditor,
@@ -188,6 +170,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         return panelsWrapper;
     }
 
+    // TODO -> STEPH -> Should use the same as the experimentView, that is the DEfaultExperimentView createsNotes method.
     private void createAndSetupNotesField() {
         createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         notesField.setPlaceholder("Add Notes (optional)");
@@ -195,6 +178,12 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         if (experiment.isArchived()) {
             notesField.setReadonly(true);
         }
+    }
+
+    private void createButtons() {
+        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchiveExperiment(experimentDAO, experiment, segmentIntegrator, getUI()));
+        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> StartRunAction.startRun(this, rewardFunctionEditor, trainingService, runDAO, experimentDAO, observationDAO));
+        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> { }));
     }
 
     /************************************** UI element creations are above this line **************************************/
@@ -213,32 +202,18 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         startRunButton.setEnabled(canStartTraining());
     }
 
-    private void handleStartRunButtonClicked() {
-        if (!rewardFunctionEditor.validateBinder()) {
-            return;
-        }
-        if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
-            return;
-        }
+    public void setUnsavedChangesLabel(boolean isVisible) {
+        unsavedChanges.setVisible(isVisible);
+    }
 
-        // These two are an exception to the eventbus because we need to save and run rather than just run. Once we recombine things
-        // after finishing all the refactorings this will be cleaner. The notes can be saved normally because the run doesn't
-        // rely on the information in the notes.
+    public Experiment getUpdatedExperiment() {
         experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
-        experimentDAO.updateRewardFunction(experiment);
         experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
-        observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
-
-        trainingService.startRun(experiment);
-        EventBus.post(new ExperimentStartTrainingBusEvent(experiment));
-        segmentIntegrator.startTraining();
-
-        unsavedChanges.setVisible(false);
-
-        getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experimentId));
+        return experiment;
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
+        // TODO -> STEPH -> How do we do this in a nice and consistent manner?
         EventBus.post(new ExperimentSavedViewBusEvent());
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
@@ -246,14 +221,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         NotificationUtils.showSuccess("Draft successfully saved");
         isNeedsSaving = false;
         afterClickedCallback.execute();
-    }
-
-    private void unarchiveExperiment() {
-        ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
-            segmentIntegrator.archived(Experiment.class, false);
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-        });
     }
 
     @Override
@@ -288,20 +255,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     @Override
-    protected void loadExperimentData() {
-        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(experiment.getModelId());
-    }
-
-    @Override
-    protected void initScreen(BeforeEnterEvent event) {
-        updateScreenComponents();
-    }
-
-    private void updateScreenComponents() {
-        experimentsNavbar.setVisible(!experiment.isArchived());
-        experimentPanelTitle.setExperiment(experiment);
-        rewardVariablesTable.setRewardVariables(rewardVariables);
-        disableSaveDraft();
+    protected void updateComponentEnablements() {
+        // TODO -> STEPH -> Move all button enablement and visibility code here when an experiment is set and/or updated.
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
     }
@@ -314,16 +269,20 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     protected void initializeComponentsWithData() {
-        rewardVariablesTable.setRewardVariables(rewardVariables);
         disableSaveDraft();
-        unarchiveExperimentButton.setVisible(experiment.isArchived());
-        startRunButton.setEnabled(canStartTraining());
     }
 
     protected void createExperimentComponents() {
         // TODO -> STEPH -> create other components
         createAndSetupNotesField();
+        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experimentDAO, experiment, rewardValidationService);
+        // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
+        observationsPanel = new ObservationsPanel(experiment, false);
+        rewardVariablesTable = new RewardVariablesTable(getUISupplier());
 
-        experimentComponentList.addAll(List.of(notesField));
+        experimentComponentList.addAll(List.of(
+                notesField,
+                rewardFunctionEditor,
+                rewardVariablesTable));
     }
 }

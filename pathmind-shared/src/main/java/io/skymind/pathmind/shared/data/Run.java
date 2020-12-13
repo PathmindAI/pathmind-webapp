@@ -59,30 +59,34 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
 
     @Override
     public Run shallowClone() {
-        return super.shallowClone(Run.builder()
-                .runType(runType)
-                .experimentId(experimentId)
-                .status(status)
-                .startedAt(startedAt)
-                .stoppedAt(stoppedAt)
-                .notificationSentAt(notificationSentAt)
-                .exportedAt(exportedAt)
-                .ec2CreatedAt(ec2CreatedAt)
-                .trainingErrorId(trainingErrorId)
-                .jobId(jobId)
-                .rllibError(rllibError)
-                .successMessage(successMessage)
-                .warningMessage(warningMessage)
-                .completingUpdatesAttempts(completingUpdatesAttempts)
-                .build());
+//        return super.shallowClone(Run.builder()
+//                .runType(runType)
+//                .experimentId(experimentId)
+//                .status(status)
+//                .startedAt(startedAt)
+//                .stoppedAt(stoppedAt)
+//                .notificationSentAt(notificationSentAt)
+//                .exportedAt(exportedAt)
+//                .ec2CreatedAt(ec2CreatedAt)
+//                .trainingErrorId(trainingErrorId)
+//                .jobId(jobId)
+//                .rllibError(rllibError)
+//                .successMessage(successMessage)
+//                .warningMessage(warningMessage)
+//                .completingUpdatesAttempts(completingUpdatesAttempts)
+//                .build());
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 
     @Override
     public Run deepClone() {
-        Run run = shallowClone();
-        run.setExperiment(CloneUtils.shallowClone(experiment));
-        run.setModel(CloneUtils.shallowClone(model));
-        run.setProject(CloneUtils.shallowClone(project));
-        return run;
+//        Run run = shallowClone();
+//        run.setExperiment(CloneUtils.shallowClone(experiment));
+//        run.setModel(CloneUtils.shallowClone(model));
+//        run.setProject(CloneUtils.shallowClone(project));
+//        return run;
+        // TODO -> STEPH -> Removing cloning saves a ton of issues.
+        return this;
     }
 }
