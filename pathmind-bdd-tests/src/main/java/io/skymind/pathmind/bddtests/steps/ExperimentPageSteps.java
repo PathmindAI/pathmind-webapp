@@ -214,4 +214,9 @@ public class ExperimentPageSteps {
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         experimentPage.checkExperimentPageObservationIsSelected(observation, isSelected);
     }
+
+    @Step
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        experimentPage.checkSideBarExperimentDateIs(experiment, date);
+    }
 }

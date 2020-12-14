@@ -32,6 +32,8 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXP
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_RESTART_TRAINING;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
@@ -98,6 +100,14 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("result", result ? "success" : "failed");
         track(EVENT_IMPORT_MODEL, additionalInfo);
+    }
+
+    public void onboardingTutorialClicked() {
+        track(EVENT_ONBOARDING_TUTORIAL);
+    }
+
+    public void onboardingZipDownloaded() {
+        track(EVENT_ONBOARDING_ZIP);
     }
 
     public void createFirstProject() {

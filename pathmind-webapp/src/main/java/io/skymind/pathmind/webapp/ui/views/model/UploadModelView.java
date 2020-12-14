@@ -77,7 +77,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_
 
 @Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver {
 
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int UPLOAD_MODE_SEGMENT = 1;
@@ -333,7 +333,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     }
 
     @Override
-    public void fileSuccessfullyVerified(FileCheckResult result) {
+    public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
         getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
             uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
             setVisibleWizardPanel(uploadALPWizardPanel);

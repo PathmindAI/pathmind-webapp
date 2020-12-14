@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -15,15 +16,17 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
-public class AllMetricsChart extends DataChart {
+public class CompareMetricsChart extends DataChart {
 
     private Policy metricsPolicy;
-    private Map<Integer, List<Double>> allMetricsChartData;
+    private Map<Integer, List<Double>> compareMetricsChartData;
     // This must be an array due to a number of issues. For example a list containing a null item at the end will result in the list being decreased in size. This guarantees
     // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
     private RewardVariable[] rewardVariables;
+    private String metric1AxisTitle;
+    private String metric2AxisTitle;
 
-    public AllMetricsChart() {
+    public CompareMetricsChart() {
         super();
     }
 
@@ -33,10 +36,27 @@ public class AllMetricsChart extends DataChart {
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
-                series.put("" + i, Json.parse("{'color': '" + seriesColor + "'}"));
+                Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
+                Integer axisIndex = isFirstNonNullVariable ? 0 : 1;
+                series.put("" + i, Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
             }
         }
         return series;
+    }
+
+    private void createAxisTitles() {
+        metric1AxisTitle = null;
+        metric2AxisTitle = null;
+        for (int i = 0; i < rewardVariables.length; i++) {
+            if (rewardVariables[i] != null) {
+                Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
+                if (isFirstNonNullVariable) {
+                    metric1AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                } else {
+                    metric2AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                }
+            }
+        }
     }
 
     private JsonArray createCols() {
@@ -52,7 +72,7 @@ public class AllMetricsChart extends DataChart {
 
     private JsonArray createRows() {
         JsonArray rows = Json.createArray();
-        allMetricsChartData.forEach((iteration, metricList) ->
+        compareMetricsChartData.forEach((iteration, metricList) ->
                 rows.set(rows.length(), createRowItem(iteration, metricList)));
         return rows;
     }
@@ -82,7 +102,7 @@ public class AllMetricsChart extends DataChart {
         return rowItem;
     }
 
-    public Map<Integer, List<Double>> generateAllMetricsChartData(Map<Integer, Map<Integer, Double>> sparklinesData) {
+    public Map<Integer, List<Double>> generateCompareMetricsChartData(Map<Integer, Map<Integer, Double>> sparklinesData) {
         Map<Integer, List<Double>> allLinesData = new LinkedHashMap<>();
         // Get first metric's sparkline data
         Map<Integer, Double> firstMetricSparklineData = sparklinesData.get(0);
@@ -124,10 +144,10 @@ public class AllMetricsChart extends DataChart {
 
     private void updateBestPolicy(Policy bestPolicy) {
         metricsPolicy = bestPolicy.deepClone();
-        allMetricsChartData = generateAllMetricsChartData(metricsPolicy.getSparklinesData());
+        compareMetricsChartData = generateCompareMetricsChartData(metricsPolicy.getSparklinesData());
     }
 
-    public void setAllMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+    public void setCompareMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
         Boolean showEmptyChart = selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0;
         JsonObject series;
         if (showEmptyChart) {
@@ -139,6 +159,7 @@ public class AllMetricsChart extends DataChart {
             selectedRewardVariables = RewardVariablesUtils.deepClone(selectedRewardVariables);
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
+            createAxisTitles();
         }
         String type = "line";
         Boolean showTooltip = true;
@@ -154,6 +175,8 @@ public class AllMetricsChart extends DataChart {
                 showTooltip,
                 hAxisTitle,
                 vAxisTitle,
+                metric1AxisTitle,
+                metric2AxisTitle,
                 curveLines,
                 seriesType,
                 series,

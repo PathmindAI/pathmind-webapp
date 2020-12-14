@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -82,8 +80,8 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
             statusUpdater.updateStatus(0.30);
 
             // 5. Check for PathmindHelper class instance in uploaded model.jar
-            List<String> helpers = extractPathmindHelpers(unZippedJars);
-            anylogicFileCheckResult.setDefinedHelpers(helpers);
+            this.checkHelpers(unZippedJars, anylogicFileCheckResult); // TODO: get rid anylogicFileCheckResult as an parameter
+//            anylogicFileCheckResult.setDefinedHelpers(helpers);
             statusUpdater.updateStatus(0.50);
 
             if (!anylogicFileCheckResult.isHelperPresent()) {
@@ -162,19 +160,21 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
     }
 
     // To check the existence of pathmind helpers check
-    List<String> extractPathmindHelpers(List<File> unZippedJars) {
+    void checkHelpers(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
-        return unZippedJars.stream().flatMap(unZippedJar -> {
+
+        unZippedJars.forEach(unZippedJar -> {
             try {
                 File unJarred = unpackJar(unZippedJar);
-                List<String> listOfFiles = FileUtils.listFilesWithSuffix(unJarred.toString(), ".class");
+                List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
                 ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
-                return byteCodeAnalyzer.byteParser(listOfFiles).stream();
+                byteCodeAnalyzer.byteParser(listOfFiles, anylogicFileCheckResult);
             } catch (IOException ioe) {
                 log.error("Error unJarred jar file", ioe);
-                return Stream.empty();
             }
-        }).collect(Collectors.toList());
+        });
+
+        log.info("{} :- checkHelpers Completed", uuid);
     }
 
     /*To extract the archive file (mode.jar) contents inside unzipped temp directory*/

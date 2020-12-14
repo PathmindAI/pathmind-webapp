@@ -2,7 +2,7 @@ package io.skymind.pathmind.services.project;
 
 import java.util.List;
 
-public interface FileCheckResult {
+public interface FileCheckResult<T> {
 
     boolean isFileCheckComplete();
 
@@ -26,8 +26,9 @@ public interface FileCheckResult {
 
     void setFileCheckComplete(boolean fileCheckComplete);
 
-    Hyperparams getParams();
+    boolean isValidRLPlatform();
 
-    void setParams(Hyperparams params);
+    T getParams();
 
+    void setParams(T params);
 }

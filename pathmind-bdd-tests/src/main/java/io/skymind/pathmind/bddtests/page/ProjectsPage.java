@@ -29,7 +29,7 @@ public class ProjectsPage extends PageObject {
         waitABit(3500);
         setImplicitTimeout(3, SECONDS);
         waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.cssSelector(".account-menu"))));
-        if (getDriver().findElements(By.xpath("//vaadin-button[text()='New Project']")).size() == 1){
+        if (getDriver().findElements(By.xpath("//vaadin-button[text()='New Project']")).size() == 1) {
             getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
         } else {
             WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
@@ -94,5 +94,11 @@ public class ProjectsPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a/descendant::vaadin-button")));
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a/descendant::vaadin-button")).getText(), is("Model ALP"));
         assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']/ancestor::vaadin-horizontal-layout/following-sibling::a")).getAttribute("href"), containsString(filename));
+    }
+
+    public void checkProjectsPageProjectCreatedIs(String projectName, String date) {
+        String projectCellNumber = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content")).getAttribute("slot").split("vaadin-grid-cell-content-")[1];
+        int cellNumber = Integer.parseInt(projectCellNumber) + 1;
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
     }
 }

@@ -411,16 +411,34 @@ background-color: var(--pm-grey-color-light);
 .upload-model-view .view-section {
     max-width: 540px;
     flex: 0 0 auto;
-    margin-top: var(--lumo-space-xxl);
+    margin: var(--lumo-space-xxl) auto;
+}
+
+.upload-model-view vaadin-upload {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    margin-top: var(--lumo-space-xl);
+}
+
+.upload-model-view .file-check-panel {
+    margin-top: var(--lumo-space-l);
+}
+
+.upload-model-view .error-label:not(:empty) {
+    padding: var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius);
 }
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
-    margin-top: var(--lumo-space-xl);
+    margin: var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l));
 }
 
 .upload-model-view .warning-label {
     padding: 0 var(--lumo-space-xxs);
 }
+
+/* Account Views */
 
 account-view {
     background: var(--pm-app-bg-color);
@@ -430,6 +448,27 @@ account-view {
     flex-direction: column;
     box-sizing: border-box;
     align-items: center;
+}
+
+account-view-content,
+account-edit-view-content,
+change-password-view-content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+}
+
+account-view-content .panel-wrapper,
+account-edit-view-content .panel-wrapper,
+change-password-view-content .panel-wrapper {
+    min-height: auto;
+    overflow: visible;
+}
+
+account-edit-view-content .inner-content,
+change-password-view-content .inner-content {
+    text-align: left;
 }
 
 /* Title bar */
