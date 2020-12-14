@@ -100,11 +100,6 @@ public class HomePage extends PageObject {
         accountBtn.click();
     }
 
-    public void clickGettingStartedGuideButton() {
-        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
-        element.findElement(By.cssSelector("i a")).click();
-    }
-
     public void checkThatProjectsButtonHighlightIs(Boolean status) {
         if (status){
             assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(""));

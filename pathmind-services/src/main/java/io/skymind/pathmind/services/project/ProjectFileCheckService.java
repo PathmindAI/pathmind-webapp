@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services.project;
 
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
@@ -45,20 +44,40 @@ public class ProjectFileCheckService {
                     FileUtils.writeByteArrayToFile(tempFile, model.getFile());
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
-                    final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-
+                    final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO analysisResult = client.analyze(tempFile, "project_" + model.getProjectId());
+                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                        String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
+                        String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
+                        String expTypeName = modelInfo.getExperimentType().toString();
+                        String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
+                        String reqId = "project_" + model.getProjectId();
+
+                        HyperparametersDTO analysisResult =
+                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
                         } else {
                             Hyperparams hyperparams = buildHyperparams(analysisResult);
                             result.setParams(hyperparams);
+                            model.setPathmindHelper(pmHelperName);
+                            model.setMainAgent(mainAgentName);
+                            model.setExperimentClass(expClassName);
+                            model.setExperimentType(expTypeName);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
                     } else {
-                        statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        if (!result.isHelperPresent()) {
+                            statusUpdater.updateError("You need to add PathmindHelper in your model.");
+                        } else if (!result.isHelperUnique()) {
+                            statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
+                        } else if (!result.isValidRLPlatform()) {
+                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
+                        } else {
+                            statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        }
                     }
                 } finally {
                     FileUtils.deleteQuietly(tempFile);

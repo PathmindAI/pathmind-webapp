@@ -118,7 +118,7 @@ public class AnyLogicUploadController {
             if (StringUtils.isNoneEmpty(status.getError())) {
                 throw new IllegalStateException(status.getError());
             }
-            FileCheckResult result = status.getResult();
+            AnylogicFileCheckResult result = status.getResult();
             if (result == null) {
                 throw new IllegalStateException("no validation result");
             }
@@ -174,10 +174,10 @@ public class AnyLogicUploadController {
     }
 
     @Getter
-    public static class StatusUpdaterImpl implements StatusUpdater {
+    public static class StatusUpdaterImpl implements StatusUpdater<AnylogicFileCheckResult> {
 
         private String error;
-        private FileCheckResult result;
+        private AnylogicFileCheckResult result;
 
         @Override
         public void updateStatus(double percentage) {
@@ -190,7 +190,7 @@ public class AnyLogicUploadController {
         }
 
         @Override
-        public void fileSuccessfullyVerified(FileCheckResult result) {
+        public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
             this.result = result;
         }
     }

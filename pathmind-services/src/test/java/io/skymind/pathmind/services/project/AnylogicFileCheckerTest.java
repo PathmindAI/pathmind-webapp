@@ -129,7 +129,8 @@ public class AnylogicFileCheckerTest {
         definedHelpers.add("coffeeshop/Main##pathmindHelper");
         testFileCheckResult.setDefinedHelpers(definedHelpers);
 
-        List<String> actualHelpers = anylogicFileChecker.extractPathmindHelpers(List.of(jarFile.get()));
+        anylogicFileChecker.checkHelpers(List.of(jarFile.get()), anylogicFileCheckResult);
+        List<String> actualHelpers = anylogicFileCheckResult.getDefinedHelpers();
         assertThat(actualHelpers, is(equalTo(testFileCheckResult.getDefinedHelpers())));
     }
 
@@ -140,7 +141,8 @@ public class AnylogicFileCheckerTest {
         List<String> definedHelpers = new ArrayList<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        List<String> actualHelpers = anylogicFileChecker.extractPathmindHelpers(List.of(invalidFormat));
+        anylogicFileChecker.checkHelpers(List.of(invalidFormat), anylogicFileCheckResult);
+        List<String> actualHelpers = anylogicFileCheckResult.getDefinedHelpers();
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(actualHelpers, is(equalTo(definedHelpers)));
         assertThat(logsList.get(2).getLevel(), is(equalTo(Level.ERROR)));

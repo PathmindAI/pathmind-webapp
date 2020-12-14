@@ -88,6 +88,7 @@ public class RewardFunctionEditor extends VerticalLayout {
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
+        setVariableNames(rewardVariables);
     }
 
     private void setupEditorErrorLabel() {

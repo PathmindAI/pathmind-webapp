@@ -20,17 +20,14 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class FileUtilsTest {
 
-    private String validPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model");
-    private String inValidPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/model");
-
-    @InjectMocks
-    FileUtils fileUtils;
+    private final String validPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model");
+    private final String inValidPath = FileUtils.getSystemIndependentFilePath("./src/test/resources/static/model");
 
     @Test
     public void testListFilesSuccess() {
         List<String> expectedList = new ArrayList<>();
         expectedList.add(FileUtils.getSystemIndependentFilePath("./src/test/resources/static/Test_Class_Files/model/coffeeshop/Simulation.class"));
-        List<String> fileList = fileUtils.listFilesWithSuffix(validPath, ".class");
+        List<String> fileList = FileUtils.listFiles(validPath);
         assertThat(fileList, is(equalTo(expectedList)));
     }
 
@@ -41,7 +38,7 @@ public class FileUtilsTest {
         ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
         listAppender.start();
         fileLogger.addAppender(listAppender);
-        List<String> fileList = fileUtils.listFilesWithSuffix(inValidPath, ".class");
+        List<String> fileList = FileUtils.listFiles(inValidPath);
         List<ILoggingEvent> logsList = listAppender.list;
         assertThat(logsList.get(0).getLevel(), is(equalTo(Level.ERROR)));
         assertThat(logsList.get(0).getMessage(), is(equalTo("Invalid input file path")));

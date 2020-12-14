@@ -120,6 +120,16 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelTitleLabelTagIsArchived(tag);
     }
 
+    @Then("^Check side bar models '(.*)' date is '(.*)'$")
+    public void checkSideBarModelsDateIs(String model, String date) {
+        modelPageSteps.checkSideBarModelsDateIs(model, date);
+    }
+
+    @Then("^Check model page model '(.*)' created is '(.*)'$")
+    public void checkModelPageCreatedIs(String model, String date) {
+        modelPageSteps.checkModelPageCreatedIs(model, date);
+    }
+
     @When("^Add model note (.*) to the project page$")
     public void addModelNoteToTheProjectPage(String note) {
         modelPageSteps.addModelNoteToTheProjectPage(note);
@@ -129,4 +139,5 @@ public class ModelStepDefinitions {
     public void checkModelNoteOnTheProjectPage(String note) {
         modelPageSteps.checkModelNoteOnTheProjectPage(note);
     }
+
 }
