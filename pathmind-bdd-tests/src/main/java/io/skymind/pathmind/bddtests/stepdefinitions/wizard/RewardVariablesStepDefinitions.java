@@ -30,8 +30,8 @@ public class RewardVariablesStepDefinitions {
     }
 
     @When("^Input reward variable '(.*)' goal '(.*)' value '(.*)'$")
-    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
-        rewardVariablesSteps.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign) {
+        rewardVariablesSteps.inputRewardVariableGoalValue(rewardVariable, goalSign);
     }
 
     @Then("^Check wizard reward variable '(.*)' error is shown '(.*)'$")
