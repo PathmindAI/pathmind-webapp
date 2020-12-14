@@ -17,11 +17,10 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 1818829267;
+    private static final long serialVersionUID = -142575343;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -61,7 +60,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.id</code>.
      */
-    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('model_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.model.project_id</code>.
@@ -91,12 +90,12 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.archived</code>.
      */
-    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.model.user_notes</code>.
      */
-    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.model.reward_variables_count</code>.
@@ -139,6 +138,26 @@ public class Model extends TableImpl<ModelRecord> {
     public final TableField<ModelRecord, Integer> NUMBER_OF_AGENTS = createField(DSL.name("number_of_agents"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
+     * The column <code>public.model.pathmind_helper</code>.
+     */
+    public final TableField<ModelRecord, String> PATHMIND_HELPER = createField(DSL.name("pathmind_helper"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.model.main_agent</code>.
+     */
+    public final TableField<ModelRecord, String> MAIN_AGENT = createField(DSL.name("main_agent"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.model.experiment_class</code>.
+     */
+    public final TableField<ModelRecord, String> EXPERIMENT_CLASS = createField(DSL.name("experiment_class"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.model.experiment_type</code>.
+     */
+    public final TableField<ModelRecord, String> EXPERIMENT_TYPE = createField(DSL.name("experiment_type"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
      * Create a <code>public.model</code> table reference
      */
     public Model() {
@@ -179,11 +198,6 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PKEY, Indexes.MODEL_PROJECT_FK_INDEX);
-    }
-
-    @Override
-    public Identity<ModelRecord, Long> getIdentity() {
-        return Keys.IDENTITY_MODEL;
     }
 
     @Override
@@ -232,11 +246,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row20<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

@@ -29,4 +29,6 @@ public interface FileCheckResult {
     public void setDefinedHelpers(List<String> definedHelpers);
 
     public void setFileCheckComplete(boolean fileCheckComplete);
+
+    boolean isValidRLPlatform();
 }

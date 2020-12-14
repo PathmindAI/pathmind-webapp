@@ -74,14 +74,14 @@ public class ModelAnalyzerApiClient {
     }
 
     public HyperparametersDTO analyze(File file) {
-        return analyze(file, "");
+        return analyze(file);
     }
 
-    public HyperparametersDTO analyze(File file, String message) {
+    public HyperparametersDTO analyze(File file, String message, String mainAgentName, String experimentClass, String experimentType, String pmHelperName) {
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
 
         String messageId = message + "_" + UUID.randomUUID().toString();
-        AnalyzeRequestDTO req = new AnalyzeRequestDTO(messageId);
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(messageId, mainAgentName, experimentClass, experimentType, pmHelperName);
         StringBody requestBody = null;
         try {
             requestBody = new StringBody(ObjectMapperHolder.getJsonMapper().writeValueAsString(req), ContentType.MULTIPART_FORM_DATA);
