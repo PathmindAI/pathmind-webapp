@@ -66,22 +66,6 @@ public class DashboardPageStepDefinitions {
         dashboardPageSteps.clickArchiveBtnFromDashboard("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
-    @When("^Check pathmind begin screen elements$")
-    public void checkDashboardBeginScreenElements() {
-        dashboardPageSteps.checkDashboardBeginScreenElements();
-    }
-
-    @When("^Click pathmind create your first project btn$")
-    public void clickDashboardCreateYourFirstProjectBtn() {
-        dashboardPageSteps.clickDashboardCreateYourFirstProjectBtn();
-    }
-
-    @Then("^Check that dashboard page opened with the getting started message$")
-    public void checkThatDashboardPageOpenedWithTheGettingStartedMessage() {
-        homePageSteps.checkThatDashboardPageOpened();
-        dashboardPageSteps.checkDashboardBeginScreenElements();
-    }
-
     @When("^Click stage write reward function (.*) from dashboard$")
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
         dashboardPageSteps.clickStageWriteRewardFunctionFromDashboard(projectName + Serenity.sessionVariableCalled("randomNumber"));
