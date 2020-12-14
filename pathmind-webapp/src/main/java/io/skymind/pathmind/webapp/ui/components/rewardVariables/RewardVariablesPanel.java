@@ -62,7 +62,7 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     public void setupRewardVariables(List<RewardVariable> rewardVariables) {
         rewardVariablesTable.setRewardVariables(rewardVariables);
-        // rewardVariablesTable.makeEditable();
+        rewardVariablesTable.makeEditable();
     }
 
     public boolean canSaveChanges() {

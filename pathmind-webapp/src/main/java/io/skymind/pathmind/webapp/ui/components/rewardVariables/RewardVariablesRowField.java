@@ -74,21 +74,23 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
         conditionType = new Select<>();
         conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
-        conditionType.setItemLabelGenerator(type -> type != null ? type.toString() : "None");
+        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "None");
         // The item label generator did not add "None" to the dropdown
         // It only shows if the empty item is selected
         conditionType.setEmptySelectionAllowed(true);
         // This is for the item label on the dropdown
         conditionType.setEmptySelectionCaption("None");
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-        conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
+        // conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
 
         goalField = new NumberField();
         goalField.addClassName("goal-field");
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
         goalField.addValueChangeListener(event -> goalFieldValueChangeHandler.execute());
+        goalField.setVisible(false); // #2541: bring back goal but hide value field
+        goalField.setEnabled(false); // #2541: bring back goal but hide value field
 
-        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().toString() + rv.getGoalValue());
+        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().getRewardFunctionComponent().getComment());
         goalSpan = LabelFactory.createLabel(goalDisplayText, "goal-display-span");
 
         goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, goalField, goalSpan);
@@ -100,16 +102,17 @@ public class RewardVariablesRowField extends HorizontalLayout {
         setWidthFull();
         GuiUtils.removeMarginsPaddingAndSpacing(this);
         initBinder(rv);
-        setGoalFieldVisibility();
+        // setGoalFieldVisibility();
     }
 
     private void initBinder(RewardVariable rv) {
         binder = new Binder<>();
         binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
-        goalValueBinding = binder.forField(goalField).asRequired("Enter a goal value").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
+        // goalValueBinding = binder.forField(goalField).asRequired("Enter a goal value").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
         binder.setBean(rv);
     }
 
+    // For #2541, the value field is not needed, but it may be brought back later on
     private void setGoalFieldVisibility() {
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
