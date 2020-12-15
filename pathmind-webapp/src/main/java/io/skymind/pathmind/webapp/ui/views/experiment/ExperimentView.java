@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -148,6 +149,8 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
+    @Value("${pathmind.al-engine-error-article.url}")
+    private String alEngineErrorArticleUrl;
 
     private Breadcrumbs pageBreadcrumbs;
     private Button restartTraining;
@@ -475,6 +478,15 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     private void updateUIForError(TrainingError error, String errorText) {
+
+        if (ExperimentUtils.isAnyLogicEngineError(errorText)) {
+            errorText =
+                    "AnyLogic engine has returned ERROR. Please download policy and follow " +
+                            "<a target=\"_blank\" href=\"{0}\">these instructions</a> " +
+                            "to reproduce the error back in AnyLogic";
+            errorText = MessageFormat.format(errorText, alEngineErrorArticleUrl);
+        }
+
         stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
 
         // Not used in the shared view but this code can be left as the buttons are not included in the shared view.
