@@ -100,7 +100,7 @@ hub:
   screenWidth: 1920
   screenHeight: 1080
   timeZone: "UTC"
-  seleniumImageName: "elgalu/selenium"
+  seleniumImageName: "3.141.59-p44"
   maxTestSessions: 100
   newSessionsWaitTimeout: 600000
   debugEnabled: false
