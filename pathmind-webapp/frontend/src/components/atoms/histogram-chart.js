@@ -27,9 +27,6 @@ class HistogramChart extends PolymerElement {
             bucketsize: {
                 type: Number,
             },
-            viewwindow: {
-                type: Object,
-            },
             chartready: {
                 type: Boolean,
                 reflectToAttribute: true,
@@ -40,7 +37,6 @@ class HistogramChart extends PolymerElement {
                                 haxistitle, 
                                 vaxistitle, 
                                 colors,
-                                viewwindow,
                                 bucketsize)`,
             },
         }
@@ -79,7 +75,7 @@ class HistogramChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(haxistitle, vaxistitle, colors, viewwindow, bucketsize) {
+    _computeOptions(haxistitle, vaxistitle, colors, bucketsize) {
         return {
             "hAxis": {
                 "title": haxistitle,
@@ -96,8 +92,6 @@ class HistogramChart extends PolymerElement {
                     "titleTextStyle": {"italic": false},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
-                    "viewWindow": viewwindow,
-                    "viewWindowMode": viewwindow ? "pretty" : "maximized",
                     "baselineColor": vaxistitle ? "black" : "#FFF",
                     "gridlineColor": vaxistitle ? "#CCC" : "#FFF",
                 }
@@ -137,14 +131,6 @@ class HistogramChart extends PolymerElement {
         }
         this.rows = [];
         this.redraw();
-    }
-
-    setSeries(series) {
-        this.series = series;
-    }
-
-    setViewWindow(viewWindow) {
-        this.viewwindow = viewWindow;
     }
 
     static get template() {
