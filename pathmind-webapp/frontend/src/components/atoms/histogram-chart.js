@@ -101,12 +101,10 @@ class HistogramChart extends PolymerElement {
                 "bucketSize": bucketsize || "auto",
             },
             "interpolateNulls": false,
-            "legend": {"position": "none"},  // true for all usages
             "colors": colors,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
                 "top": !vaxistitle && !haxistitle ? 0 : "5%", 
-                "width": !vaxistitle && !haxistitle ? "100%" : "88%", 
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }
         };
