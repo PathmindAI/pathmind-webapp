@@ -95,8 +95,8 @@ hub:
   # the limits/requests below are for Selenium pods (containers)
   cpuRequest: 1
   cpuLimit: 2
-  memRequest: 1Gi
-  memLimit: 2Gi
+  memRequest: 2Gi
+  memLimit: 3Gi
   screenWidth: 1920
   screenHeight: 1080
   timeZone: "UTC"
