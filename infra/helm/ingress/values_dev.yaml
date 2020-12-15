@@ -68,6 +68,8 @@ ingress:
       paths: [/:8081:pathmind-api-test]
     - host: api.pathmind.com
       paths: [/:8081:pathmind-api-dev]
+    - host: selenium.dev.devpathmind.com
+      paths: [/:4444:selenium-hub]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -91,6 +93,7 @@ ingress:
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
         - api.pathmind.com
+        - selenium.dev.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
