@@ -43,9 +43,4 @@ public class ModelUpdatedBusEvent implements PathmindBusEvent {
     public ModelUpdateType getModelUpdateType() {
         return modelUpdateType;
     }
-
-    @Override
-    public ModelUpdatedBusEvent cloneForEventBus() {
-        return new ModelUpdatedBusEvent(model.deepClone(), modelUpdateType);
-    }
 }

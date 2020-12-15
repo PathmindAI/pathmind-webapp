@@ -108,9 +108,10 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     public void setExperiment(Experiment experiment) {
         // TODO -> STEPH -> We should consider removing the cloning as it's no longer really needed as we transition, and in fact could make things worse performance wise.
-        this.experiment = experiment.deepClone();
+        this.experiment = experiment;
         // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
-        experiment.updateTrainingStatus();
+        // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+        // experiment.updateTrainingStatus();
         setupCharts();
     }
 

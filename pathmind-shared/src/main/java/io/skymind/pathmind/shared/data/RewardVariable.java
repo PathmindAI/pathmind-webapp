@@ -1,7 +1,6 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RewardVariable extends Data implements DeepCloneableInterface<RewardVariable> {
+public class RewardVariable extends Data {
 
     private static final long serialVersionUID = 1963529929934242024L;
     private long modelId;
@@ -44,14 +43,5 @@ public class RewardVariable extends Data implements DeepCloneableInterface<Rewar
 
     public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
         goalConditionType = conditionType != null ? conditionType.getCode() : null;
-    }
-
-    public RewardVariable shallowClone() {
-        return super.shallowClone(new RewardVariable(
-                modelId,
-                arrayIndex,
-                dataType,
-                goalConditionType,
-                goalValue));
     }
 }

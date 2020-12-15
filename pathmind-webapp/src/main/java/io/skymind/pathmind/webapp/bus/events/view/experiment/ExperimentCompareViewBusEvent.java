@@ -26,9 +26,4 @@ public class ExperimentCompareViewBusEvent implements PathmindViewBusEvent {
     public boolean isCompare() {
         return isCompare;
     }
-
-    @Override
-    public ExperimentCompareViewBusEvent cloneForEventBus() {
-        return new ExperimentCompareViewBusEvent(experiment.deepClone(), isCompare);
-    }
 }

@@ -42,7 +42,7 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment.shallowClone();
+        this.experiment = experiment;
         setNotesText(experiment.getUserNotes());
     }
 

@@ -1,25 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
-import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class CompareMetricsChart extends DataChart {
 
-    private Policy metricsPolicy;
-    private Map<Integer, List<Double>> compareMetricsChartData;
+    private Policy bestPolicy;
     // This must be an array due to a number of issues. For example a list containing a null item at the end will result in the list being decreased in size. This guarantees
     // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
     private RewardVariable[] rewardVariables;
@@ -62,6 +58,8 @@ public class CompareMetricsChart extends DataChart {
     private JsonArray createCols() {
         JsonArray cols = Json.createArray();
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
+        // TODO -> STEPH -> Is rewardVariables.length the same as cols.length? If so then we can just do IntStream.range(0, rewardVariables.length) because
+        // right now I keep thinking we need the rewardVariable but it's highlighted in my IDE as red meaning it's not used...
         for (RewardVariable rewardVariable : rewardVariables) {
             int index = cols.length();
             cols.set(index, Json.parse("{'label':'reward variable " + index + "', 'type':'number'}"));
@@ -72,7 +70,7 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonArray createRows() {
         JsonArray rows = Json.createArray();
-        compareMetricsChartData.forEach((iteration, metricList) ->
+        bestPolicy.getMetricsLinesData().forEach((iteration, metricList) ->
                 rows.set(rows.length(), createRowItem(iteration, metricList)));
         return rows;
     }
@@ -102,29 +100,8 @@ public class CompareMetricsChart extends DataChart {
         return rowItem;
     }
 
-    public Map<Integer, List<Double>> generateCompareMetricsChartData(Map<Integer, Map<Integer, Double>> sparklinesData) {
-        Map<Integer, List<Double>> allLinesData = new LinkedHashMap<>();
-        // Get first metric's sparkline data
-        Map<Integer, Double> firstMetricSparklineData = sparklinesData.get(0);
-        // Get first metric's last iteration number
-        // all sparklines should have the same number of iterations
-        List<Integer> iterationList = new ArrayList<>(firstMetricSparklineData.keySet());
-        int maxIteration = iterationList.get(firstMetricSparklineData.size() - 1);
-
-        // save a list of sparkline datum per metric per iteration
-        for (int i = 0; i <= maxIteration; i++) {
-            final int iterationNumber = i;
-            List<Double> thisIterationMetricValues = new ArrayList<>();
-            sparklinesData.forEach((metricIndex, sparklineData) ->
-                    thisIterationMetricValues.add(sparklineData.get(iterationNumber)));
-            allLinesData.put(i, thisIterationMetricValues);
-        }
-
-        return allLinesData;
-    }
-
     public void updateData() {
-        if (metricsPolicy == null) {
+        if (bestPolicy == null) {
             setChartEmpty();
             return;
         }
@@ -137,26 +114,22 @@ public class CompareMetricsChart extends DataChart {
         // Make sure the list is sorted by arrayIndex as there are no guarantees it will be.
         Collections.sort(selectedRewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         // Using the selectedRewardVariables create a new List with null's for all empty arrayIndex values so that the chart colors remain the same.
-        rewardVariables = new RewardVariable[metricsPolicy.getSparklinesData().size()];
+        rewardVariables = new RewardVariable[bestPolicy.getSparklinesData().size()];
         // Insert the RewardVariables at their appropriate index values.
         selectedRewardVariables.stream().forEach(selectedRewardVariable -> rewardVariables[selectedRewardVariable.getArrayIndex()] = selectedRewardVariable);
     }
 
-    private void updateBestPolicy(Policy bestPolicy) {
-        metricsPolicy = bestPolicy.deepClone();
-        compareMetricsChartData = generateCompareMetricsChartData(metricsPolicy.getSparklinesData());
-    }
-
     public void setCompareMetricsChart(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+        this.bestPolicy = bestPolicy;
         Boolean showEmptyChart = selectedRewardVariables == null || bestPolicy == null || bestPolicy.getSparklinesData().size() == 0;
         JsonObject series;
         if (showEmptyChart) {
             series = Json.createObject();
         } else {
             // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
-            updateBestPolicy(bestPolicy);
+            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//            updateBestPolicy(bestPolicy);
             // HOTFIX
-            selectedRewardVariables = RewardVariablesUtils.deepClone(selectedRewardVariables);
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
             createAxisTitles();

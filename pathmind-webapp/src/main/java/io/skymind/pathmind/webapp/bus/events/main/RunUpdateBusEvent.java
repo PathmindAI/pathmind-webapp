@@ -69,11 +69,4 @@ public class RunUpdateBusEvent implements PathmindBusEvent {
     public long getModelId() {
         return runs.get(0).getModel().getId();
     }
-
-    @Override
-    public RunUpdateBusEvent cloneForEventBus() {
-        return new RunUpdateBusEvent(runs.stream()
-                .map(run -> run.deepClone())
-                .collect(Collectors.toList()));
-    }
 }

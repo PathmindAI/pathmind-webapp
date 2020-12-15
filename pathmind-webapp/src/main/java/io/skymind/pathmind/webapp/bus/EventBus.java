@@ -84,7 +84,7 @@ public class EventBus {
 
     private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
         EXECUTOR_SERVICE.execute(() ->
-                PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event.cloneForEventBus())));
+                PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event)));
     }
 
     public static void subscribe(Component component, Supplier<Optional<UI>> getUISupplier, EventBusSubscriber eventBusSubscriber, EventBusSubscriber... eventBusSubscribers) {

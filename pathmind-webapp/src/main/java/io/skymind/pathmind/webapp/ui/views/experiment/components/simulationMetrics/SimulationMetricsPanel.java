@@ -103,7 +103,8 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         sparklinesWrapper.add(sparklineHeader);
 
         // Needed to convert the raw metrics to a format the UI can use.
-        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+        // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+        // PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
 
         IntStream.range(0, experiment.getRewardVariables().size())
                 .forEach(index -> {
@@ -155,7 +156,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     }
 
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment.deepClone();
+        this.experiment = experiment;
         // TODO -> REFACTOR -> Why are we resetting the reward variables here? Why are there are two RewardVariableTables?
         rewardVariablesTable.setExperiment(experiment);
         updateSimulationMetrics();
@@ -166,7 +167,8 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         Policy bestPolicy = experiment.getBestPolicy();
 
         // Needed to convert the raw metrics to a format the UI can use.
-        PolicyUtils.updateSimulationMetricsData(bestPolicy);
+        // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+        // PolicyUtils.updateSimulationMetricsData(bestPolicy);
 
         if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
             showMetricValuesAndSparklines(false);

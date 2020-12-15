@@ -52,25 +52,17 @@ public class CompareMetricsChartPanel extends VerticalLayout {
 
     public void setupChart(Experiment experiment) {
         synchronized (experimentLock) {
-            this.experiment = experiment.deepClone();
+            this.experiment = experiment;
             long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
             if (numberOfSelectedRewardVariables == 0) {
                 experiment.getRewardVariables().stream().forEach(rewardVariable -> {
                     if (rewardVariable.getArrayIndex() < 2) {
-                        rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
+                        rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable);
                     }
                 });
             }
-            selectBestPolicy();
             updateChart();
         }
-    }
-
-    // TODO -> STEPH -> Why is this method called in different locations. Perhaps this should be done as part of loading the experiment. That being said
-    // if we clone the objects in the eventbus then this will be very problematic performance wise, and vice versa if we don't clone the objects
-    // then this will be a very big performance gain.
-    public void selectBestPolicy() {
-        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
     }
 
     public void redrawChart() {

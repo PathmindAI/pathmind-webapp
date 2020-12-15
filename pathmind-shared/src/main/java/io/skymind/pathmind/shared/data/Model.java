@@ -1,9 +1,7 @@
 package io.skymind.pathmind.shared.data;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +13,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Model extends ArchivableData implements DeepCloneableInterface<Model> {
+public class Model extends ArchivableData  {
+
     private static final long serialVersionUID = 3143001029296125340L;
 
     public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
@@ -36,26 +35,4 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
     private int invalidModel;
     private int modelType;
     private int numberOfAgents;
-
-    @Override
-    public Model shallowClone() {
-//        return super.shallowClone(Model.builder()
-//                .dateCreated(dateCreated)
-//                .lastActivityDate(lastActivityDate)
-//                .numberOfObservations(numberOfObservations)
-//                .file(file == null ? null : Arrays.copyOf(file, file.length))
-//                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
-//                .projectId(projectId)
-//                .userNotes(userNotes)
-//                .draft(draft)
-//                .hasGoals(hasGoals)
-//                .rewardVariablesCount(rewardVariablesCount)
-//                .packageName(packageName)
-//                .invalidModel(invalidModel)
-//                .modelType(modelType)
-//                .numberOfAgents(numberOfAgents)
-//                .build());
-        // TODO -> STEPH -> Removing cloning saves a ton of issues.
-        return this;
-    }
 }

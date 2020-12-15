@@ -79,7 +79,6 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
     }
 
     public void update() {
-        experiment.updateTrainingStatus();
         statusLabel.setText(experiment.getTrainingStatusEnum().toString());
         updateElapsedTimer();
         updateProgressRow();

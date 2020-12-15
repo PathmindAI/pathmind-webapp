@@ -30,16 +30,4 @@ public abstract class Data implements Serializable {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-    protected <T extends ArchivableData> T shallowClone(T data) {
-        data.setId(id);
-        data.setName(name);
-        return data;
-    }
-
-    protected <T extends Data> T shallowClone(T data) {
-        data.setId(id);
-        data.setName(name);
-        return data;
-    }
 }

@@ -57,10 +57,4 @@ public class PolicyUpdateBusEvent implements PathmindBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
-
-    public PolicyUpdateBusEvent cloneForEventBus() {
-        return new PolicyUpdateBusEvent(policies.stream()
-                .map(policy -> policy.deepClone())
-                .collect(Collectors.toList()));
-    }
 }

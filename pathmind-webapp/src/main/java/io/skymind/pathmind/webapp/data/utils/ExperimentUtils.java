@@ -313,6 +313,7 @@ public class ExperimentUtils {
         updateBestPolicy(experiment);
         // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a but more obvious or setup somewhere else. Not sure if switching experiment, update, etc. will work without it.
         PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+        PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
         // There are no extra costs if the experiment is in draft because all the values will be empty.
         updateTrainingErrorAndMessage(trainingErrorDAO, experiment);
         updateEarlyStopReason(experiment);

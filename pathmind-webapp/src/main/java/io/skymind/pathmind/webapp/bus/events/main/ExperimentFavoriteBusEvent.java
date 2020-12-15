@@ -20,9 +20,4 @@ public class ExperimentFavoriteBusEvent implements PathmindBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
-
-    @Override
-    public ExperimentFavoriteBusEvent cloneForEventBus() {
-        return new ExperimentFavoriteBusEvent(experiment.deepClone());
-    }
 }

@@ -29,7 +29,7 @@ public class PolicyChartPanel extends VerticalLayout {
 
     public void setExperiment(Experiment newExperiment) {
         synchronized (experimentLock) {
-            this.experiment = newExperiment.deepClone();
+            this.experiment = newExperiment;
             updateChart();
         }
     }

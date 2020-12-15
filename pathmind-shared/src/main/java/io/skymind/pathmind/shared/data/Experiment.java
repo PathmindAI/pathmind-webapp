@@ -9,8 +9,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
-import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +26,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Experiment extends ArchivableData implements DeepCloneableInterface<Experiment> {
+public class Experiment extends ArchivableData {
     private static final long serialVersionUID = -5041305878245823921L;
     private long modelId;
     private String rewardFunction;
@@ -96,61 +94,28 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         runs.add(run);
     }
 
-    public void updateRuns(List<Run> runs) {
-        runs.forEach(this::updateRun);
-    }
-
-    public void updateRun(Run run) {
-        if (runs == null) {
-            runs = new ArrayList<>();
-            runs.add(run);
-        } else {
-            IntStream.range(0, runs.size())
-                    .filter(index -> runs.get(index).getId() == run.getId())
-                    .findFirst()
-                    .ifPresentOrElse(
-                            index -> runs.set(index, run),
-                            () -> runs.add(run));
-        }
-        updateTrainingStatus();
-    }
+    // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//    public void updateRuns(List<Run> runs) {
+//        runs.forEach(this::updateRun);
+//    }
+//
+//    public void updateRun(Run run) {
+//        if (runs == null) {
+//            runs = new ArrayList<>();
+//            runs.add(run);
+//        } else {
+//            IntStream.range(0, runs.size())
+//                    .filter(index -> runs.get(index).getId() == run.getId())
+//                    .findFirst()
+//                    .ifPresentOrElse(
+//                            index -> runs.set(index, run),
+//                            () -> runs.add(run));
+//        }
+//        updateTrainingStatus();
+//    }
 
     public boolean isGoalsReached() {
         return hasGoals && Objects.equals(goalsReached, totalGoals);
-    }
-
-    @Override
-    public Experiment shallowClone() {
-//        return super.shallowClone(Experiment.builder()
-//                .modelId(modelId)
-//                .rewardFunction(rewardFunction)
-//                .dateCreated(dateCreated)
-//                .lastActivityDate(lastActivityDate)
-//                .userNotes(userNotes)
-//                .isFavorite(isFavorite)
-//                .trainingStatus(trainingStatus)
-//                .hasGoals(hasGoals)
-//                .goalsReached(goalsReached)
-//                .totalGoals(totalGoals)
-//                .build());
-        // TODO -> STEPH -> Removing cloning saves a ton of issues.
-        return this;
-    }
-
-    @Override
-    public Experiment deepClone() {
-//        Experiment experiment = shallowClone();
-//        experiment.setProject(CloneUtils.shallowClone(project));
-//        experiment.setModel(CloneUtils.shallowClone(model));
-//        experiment.setPolicies(CloneUtils.shallowCloneList(policies));
-//        experiment.setRuns(CloneUtils.shallowCloneList(runs));
-//        experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
-//        if(experiment.getBestPolicy() != null) {
-//            experiment.setBestPolicy(experiment.getBestPolicy().deepClone());
-//        }
-//        return experiment;
-        // TODO -> STEPH -> Removing cloning saves a ton of issues.
-        return this;
     }
 
     public void updateTrainingStatus() {

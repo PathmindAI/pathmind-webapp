@@ -25,9 +25,4 @@ public class SetQueryParameterViewBusEvent implements PathmindViewBusEvent {
     public String getValue() {
         return value;
     }
-
-    @Override
-    public SetQueryParameterViewBusEvent cloneForEventBus() {
-        return new SetQueryParameterViewBusEvent(name, value);
-    }
 }

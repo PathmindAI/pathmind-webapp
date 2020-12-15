@@ -39,7 +39,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly, false);
         // TODO -> STEPH -> So much cloning. If we adjust the eventbus to no longer need cloning which was implemented to help Bruno resolve some issues
         // then we can remove all that code including all the potential performance issues.
-        this.experiment = experiment.deepClone();
+        this.experiment = experiment;
     }
 
     public ObservationsPanel(List<Observation> modelObservations, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {

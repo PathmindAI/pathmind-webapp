@@ -20,9 +20,4 @@ public class ExperimentSwitchedViewBusEvent implements PathmindViewBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
-
-    @Override
-    public ExperimentSwitchedViewBusEvent cloneForEventBus() {
-        return new ExperimentSwitchedViewBusEvent(experiment.deepClone());
-    }
 }

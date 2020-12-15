@@ -26,9 +26,4 @@ public class ExperimentRewardVariableSelectedViewBusEvent implements PathmindVie
     public boolean isShow() {
         return isShow;
     }
-
-    @Override
-    public ExperimentRewardVariableSelectedViewBusEvent cloneForEventBus() {
-        return new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable.deepClone(), isShow);
-    }
 }

@@ -1,6 +1,7 @@
 package io.skymind.pathmind.shared.utils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -103,6 +104,10 @@ public class PolicyUtils {
         return selectBestPolicy(experiment.getPolicies());
     }
 
+    public static void updateBestPolicy(Experiment experiment) {
+        experiment.setBestPolicy(selectBestPolicy(experiment.getPolicies()).orElse(null));
+    }
+
     public static Optional<Policy> selectBestPolicy(List<Policy> policies) {
         if (policies == null) {
             return Optional.empty();
@@ -195,5 +200,26 @@ public class PolicyUtils {
     private static Double[] parseMetricAndUncertainity(String metricValueWithUncertainty) {
         String[] actualMetricBreakdown = metricValueWithUncertainty.split("\u2800\u00B1\u2800");
         return new Double[]{Double.parseDouble(actualMetricBreakdown[0]), Double.parseDouble(actualMetricBreakdown[1])};
+    }
+
+    public static void updateCompareMetricsChartData(Policy bestPolicy) {
+        Map<Integer, List<Double>> allLinesData = new LinkedHashMap<>();
+        // Get first metric's sparkline data
+        Map<Integer, Double> firstMetricSparklineData = bestPolicy.getSparklinesData().get(0);
+        // Get first metric's last iteration number
+        // all sparklines should have the same number of iterations
+        List<Integer> iterationList = new ArrayList<>(firstMetricSparklineData.keySet());
+        int maxIteration = iterationList.get(firstMetricSparklineData.size() - 1);
+
+        // save a list of sparkline datum per metric per iteration
+        for (int i = 0; i <= maxIteration; i++) {
+            final int iterationNumber = i;
+            List<Double> thisIterationMetricValues = new ArrayList<>();
+            bestPolicy.getSparklinesData().forEach((metricIndex, sparklineData) ->
+                    thisIterationMetricValues.add(sparklineData.get(iterationNumber)));
+            allLinesData.put(i, thisIterationMetricValues);
+        }
+
+        bestPolicy.setMetricsLinesData(allLinesData);
     }
 }

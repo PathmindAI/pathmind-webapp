@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main;
 
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
@@ -23,7 +24,7 @@ public class CompareMetricsChartPanelPolicyUpdateSubscriber extends PolicyUpdate
             }
 
             ExperimentUtils.addOrUpdatePolicies(compareMetricsChartPanel.getExperiment(), event.getPolicies());
-            compareMetricsChartPanel.selectBestPolicy();
+            PolicyUtils.updateBestPolicy(compareMetricsChartPanel.getExperiment());
             compareMetricsChartPanel.updateChart();
         }
     }
