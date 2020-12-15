@@ -73,10 +73,10 @@ Feature: Wizard page
      When Create new CoffeeShop project with draft model
      When Click wizard upload ALP next btn
      When Click wizard model details next btn
-     When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize' value ' '
-     When Input reward variable 'successfulCustomers' goal 'maximize' value ' '
-     When Input reward variable 'balkedCustomers' goal 'maximize' value ' '
-     When Input reward variable 'avgServiceTime' goal 'minimize' value ' '
+     When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize'
+     When Input reward variable 'successfulCustomers' goal 'maximize'
+     When Input reward variable 'balkedCustomers' goal 'maximize'
+     When Input reward variable 'avgServiceTime' goal 'minimize'
      When Click wizard reward variables next btn
      Then Check that new experiment AutotestProject page is opened
      Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'minimize'
