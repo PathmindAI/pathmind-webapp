@@ -62,11 +62,6 @@ public class HomePageStepDefinitions {
         homePageSteps.clickBackButton();
     }
 
-    @When("^Click Getting Started tutorial button$")
-    public void clickGettingStartedGuideButton() {
-        homePageSteps.clickGettingStartedGuideButton();
-    }
-
     @When("^Input '(.*)' to the notes search field$")
     public void inputToTheNotesSearchField(String text) {
         homePageSteps.inputToTheNotesSearchField(text);

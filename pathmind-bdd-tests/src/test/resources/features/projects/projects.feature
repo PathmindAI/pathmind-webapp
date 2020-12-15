@@ -60,3 +60,10 @@ Feature: Projects page
     When Check that project exist in project list AutotestEditName
     When Open project AutotestEditName on projects page
     Then Check that project name is AutotestEditName on project page
+
+  @tempEmail
+  Scenario: Check pathmind begin screen is projects page
+    Given Create new user Autotest, User with password Pass123456
+    When Open pathmind page
+    Then Login with new user email and Pass123456
+    When Check that projects page opened

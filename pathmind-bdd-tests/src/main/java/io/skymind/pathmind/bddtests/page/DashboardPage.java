@@ -91,25 +91,6 @@ public class DashboardPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-context-menu-item[text()='Archive']")).click();
     }
 
-    public void checkDashboardBeginScreenElements() {
-        WebElement emptyDashboardElement = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector(".welcome-text")).getText(), is("Welcome to"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector(".logo")).isDisplayed(), is(true));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector(".logo")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("h3")).getText(), is("Using AI may be easier than you think:"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("ul")).getText(), is("Upload a zip file of the simulation model to Pathmind. Download zip file\nWrite a reward function (It's simple, just copy and paste this: reward = after.goalReached - 0.1; ).\nOnce training is complete, click on “Export Policy”.\nLoad the trained AI into AnyLogic to see it perform."));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("i")).getText(), is("(For more detailed information, please see our tutorial.)"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("li:nth-child(1) a")).getAttribute("href"), is("https://s3.amazonaws.com/public-pathmind.com/SimpleStochasticPathmindDemo.zip"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("i a")).getAttribute("href"), is("http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getText(), is("Create Your First Project Now"));
-        assertThat(emptyDashboardElement.findElement(By.cssSelector("vaadin-horizontal-layout:nth-of-type(1) a")).getAttribute("href"), containsString("newProject"));
-    }
-
-    public void clickDashboardCreateYourFirstProjectBtn() {
-        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
-        element.findElement(By.cssSelector(".button-link")).click();
-    }
-
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
         waitABit(5000);
         utils.clickElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/following-sibling::*[@class='stages-container']/descendant::span[text()='Write reward function']"));
