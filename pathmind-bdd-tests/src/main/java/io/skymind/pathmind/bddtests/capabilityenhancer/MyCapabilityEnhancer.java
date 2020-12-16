@@ -13,11 +13,11 @@ public class MyCapabilityEnhancer implements BeforeAWebdriverScenario {
                                      SupportedWebDriver driver,
                                      TestOutcome testOutcome,
                                      DesiredCapabilities capabilities) {
-        capabilities.setCapability("name", testOutcome.getStoryTitle()
-//				+ " - "
-//				+ testOutcome.getTitle()
-        );
-        capabilities.setCapability("idleTimeout", 400);
+//        capabilities.setCapability("name", testOutcome.getStoryTitle()
+////				+ " - "
+////				+ testOutcome.getTitle()
+//        );
+//        capabilities.setCapability("idleTimeout", 400);
         return capabilities;
     }
 }
