@@ -1,0 +1,139 @@
+Failure # 1 (occurred at 2020-12-03_01-01-11)
+Traceback (most recent call last):
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trial_runner.py", line 515, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/ray_trial_executor.py", line 488, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/app/conda/lib/python3.7/site-packages/ray/worker.py", line 1428, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RuntimeError): [36mray::PPO.train()[39m (pid=558, ip=10.10.12.68)
+  File "python/ray/_raylet.pyx", line 484, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 438, in ray._raylet.execute_task.function_executor
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 516, in train
+    raise e
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 505, in train
+    result = Trainable.train(self)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trainable.py", line 336, in train
+    result = self.step()
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer_template.py", line 134, in step
+    res = next(self.train_exec_impl)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 756, in __next__
+    return next(self.built_iterator)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 876, in apply_flatten
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 828, in add_wait_hooks
+    item = next(it)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 471, in base_iterator
+    yield ray.get(futures, timeout=timeout)
+ray.exceptions.RayTaskError(RuntimeError): [36mray::RolloutWorker.par_iter_next()[39m (pid=552, ip=10.10.12.68)
+  File "python/ray/_raylet.pyx", line 484, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 438, in ray._raylet.execute_task.function_executor
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 1152, in par_iter_next
+    return next(self.local_it)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/rollout_worker.py", line 288, in gen_rollouts
+    yield self.sample()
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/rollout_worker.py", line 579, in sample
+    batches = [self.input_reader.next()]
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 93, in next
+    batches = [self.get_data()]
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 209, in get_data
+    item = next(self.rollout_provider)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 648, in _env_runner
+    base_env.send_actions(actions_to_send)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/env/base_env.py", line 398, in send_actions
+    obs, rewards, dones, infos = env.step(agent_dict)
+  File "rllibtrain.py", line 88, in step
+    self.nativeEnv.step()
+RuntimeError: java.lang.RuntimeException: Engine error at time 419.1061621038789
+
+Failure # 2 (occurred at 2020-12-03_01-11-24)
+Traceback (most recent call last):
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trial_runner.py", line 515, in _process_trial
+    result = self.trial_executor.fetch_result(trial)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/ray_trial_executor.py", line 488, in fetch_result
+    result = ray.get(trial_future[0], timeout=DEFAULT_GET_TIMEOUT)
+  File "/app/conda/lib/python3.7/site-packages/ray/worker.py", line 1428, in get
+    raise value.as_instanceof_cause()
+ray.exceptions.RayTaskError(RuntimeError): [36mray::PPO.train()[39m (pid=4585, ip=10.10.12.68)
+  File "python/ray/_raylet.pyx", line 484, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 438, in ray._raylet.execute_task.function_executor
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 516, in train
+    raise e
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer.py", line 505, in train
+    result = Trainable.train(self)
+  File "/app/conda/lib/python3.7/site-packages/ray/tune/trainable.py", line 336, in train
+    result = self.step()
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/agents/trainer_template.py", line 134, in step
+    res = next(self.train_exec_impl)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 756, in __next__
+    return next(self.built_iterator)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 843, in apply_filter
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 876, in apply_flatten
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 828, in add_wait_hooks
+    item = next(it)
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 783, in apply_foreach
+    for item in it:
+  [Previous line repeated 1 more time]
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 471, in base_iterator
+    yield ray.get(futures, timeout=timeout)
+ray.exceptions.RayTaskError(RuntimeError): [36mray::RolloutWorker.par_iter_next()[39m (pid=4824, ip=10.10.12.68)
+  File "python/ray/_raylet.pyx", line 484, in ray._raylet.execute_task
+  File "python/ray/_raylet.pyx", line 438, in ray._raylet.execute_task.function_executor
+  File "/app/conda/lib/python3.7/site-packages/ray/util/iter.py", line 1152, in par_iter_next
+    return next(self.local_it)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/rollout_worker.py", line 288, in gen_rollouts
+    yield self.sample()
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/rollout_worker.py", line 579, in sample
+    batches = [self.input_reader.next()]
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 93, in next
+    batches = [self.get_data()]
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 209, in get_data
+    item = next(self.rollout_provider)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/evaluation/sampler.py", line 648, in _env_runner
+    base_env.send_actions(actions_to_send)
+  File "/app/conda/lib/python3.7/site-packages/ray/rllib/env/base_env.py", line 398, in send_actions
+    obs, rewards, dones, infos = env.step(agent_dict)
+  File "rllibtrain.py", line 88, in step
+    self.nativeEnv.step()
+RuntimeError: java.lang.RuntimeException: Engine error at time 344.2068350875446
