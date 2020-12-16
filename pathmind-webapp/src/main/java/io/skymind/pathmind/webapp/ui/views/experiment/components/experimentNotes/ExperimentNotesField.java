@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -18,7 +17,6 @@ import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentStartTrainingViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
 
 public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver, EventBusSubscriberComponent, ExperimentComponent {
 
@@ -63,7 +61,6 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
                 new ExperimentNotesFieldExperimentStartTrainingViewSubscriber(this),
-                new ExperimentNotesFieldExperimentSwitchedViewSubscriber(this),
                 new ExperimentNotesFieldExperimentSavedViewSubscriber(this));
     }
 

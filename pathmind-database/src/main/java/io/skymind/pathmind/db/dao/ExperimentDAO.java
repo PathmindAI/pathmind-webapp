@@ -175,8 +175,10 @@ public class ExperimentDAO {
         experiment.updateTrainingStatus();
         ExperimentUtils.updateBestPolicy(experiment);
         // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
-        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
-        PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
+        if(experiment.getBestPolicy() != null) {
+            PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+            PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
+        }
         // There are no extra costs if the experiment is in draft because all the values will be empty.
         // TODO -> STEPH -> This cannot be trainingErrorDAO (DAO), needs to be at the Repository level however this code also seems to contain logic.
         updateTrainingErrorAndMessage(ctx, experiment);

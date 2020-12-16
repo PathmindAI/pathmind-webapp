@@ -74,11 +74,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void handleRowClicked() {
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
-        if (experiment.isDraft() == selectedExperiment.isDraft()) {
-            // this is to prevent emission when the view has to be changed
-            // e.g. from Experiment View to New Experiment View
-            EventBus.post(new ExperimentSwitchedViewBusEvent(selectedExperiment));
-        }
+        EventBus.post(new ExperimentSwitchedViewBusEvent(selectedExperiment));
     }
 
     @EventHandler

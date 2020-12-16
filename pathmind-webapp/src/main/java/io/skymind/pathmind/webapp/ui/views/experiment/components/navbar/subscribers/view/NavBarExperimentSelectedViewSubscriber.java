@@ -5,6 +5,7 @@ import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedV
 import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
+// TODO -> STEPH -> This needs to be removed and done as part of the view.setExperiment() code.
 public class NavBarExperimentSelectedViewSubscriber extends ExperimentSwitchedViewSubscriber {
 
     private ExperimentsNavBar experimentsNavBar;

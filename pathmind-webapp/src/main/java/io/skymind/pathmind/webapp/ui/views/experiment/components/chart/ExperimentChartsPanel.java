@@ -17,7 +17,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -83,8 +82,7 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this, getUISupplier,
-                new ExperimentChartsPanelRunUpdateSubscriber(this),
-                new ExperimentChartsPanelExperimentSwitchedViewSubscriber(this));
+                new ExperimentChartsPanelRunUpdateSubscriber(this));
     }
 
     @Override

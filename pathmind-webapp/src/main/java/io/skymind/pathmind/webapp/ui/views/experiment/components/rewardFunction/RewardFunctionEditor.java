@@ -28,7 +28,6 @@ import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSavedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSwitchedViewSubscriber;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -178,7 +177,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new ExperimentRewardFunctionEditorExperimentSwitchedViewSubscriber(this, experimentDAO),
                 new ExperimentRewardFunctionEditorExperimentSavedViewSubscriber(this, experimentDAO));
     }
 }

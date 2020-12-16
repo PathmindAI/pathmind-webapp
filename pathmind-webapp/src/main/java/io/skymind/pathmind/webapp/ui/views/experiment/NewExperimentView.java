@@ -38,7 +38,6 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentChangedViewSubscriber;
@@ -92,8 +91,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         EventBus.subscribe(this, getUISupplier(),
                 new NewExperimentViewExperimentStartTrainingSubscriber(this),
                 new NewExperimentViewExperimentSwitchedViewSubscriber(this),
-                new NewExperimentViewExperimentChangedViewSubscriber(this),
-                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
+                new NewExperimentViewExperimentChangedViewSubscriber(this));
     }
 
     @Override
@@ -170,7 +168,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     // TODO -> STEPH -> Should use the same as the experimentView, that is the DEfaultExperimentView createsNotes method.
     private void createAndSetupNotesField() {
-        createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         notesField.setPlaceholder("Add Notes (optional)");
         notesField.setOnNotesChangeHandler(() -> setNeedsSaving());
         if (experiment.isArchived()) {
@@ -272,6 +270,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     protected void createExperimentComponents() {
         // TODO -> STEPH -> create other components
+        // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
         rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experimentDAO, experiment, rewardValidationService);
         // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
@@ -281,6 +280,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         experimentComponentList.addAll(List.of(
                 notesField,
                 rewardFunctionEditor,
+                observationsPanel,
                 rewardVariablesTable));
     }
 }

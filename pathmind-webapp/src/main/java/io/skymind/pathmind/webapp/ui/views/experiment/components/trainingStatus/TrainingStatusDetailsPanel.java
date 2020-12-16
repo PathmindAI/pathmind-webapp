@@ -22,7 +22,6 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
@@ -58,8 +57,7 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
     protected void onAttach(AttachEvent attachEvent) {
         EventBus.subscribe(this, getUISupplier,
                 new TrainingStatusDetailsPanelRunUpdateSubscriber(this),
-                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(this),
-                new TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber(this));
+                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(this));
 
         // This is required because ui.navigate() has a different lifecycle and so calls onAttach() before the
         // experiment has loaded unlike a page refresh

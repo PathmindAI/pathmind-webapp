@@ -13,6 +13,8 @@ public class ExperimentNotesFieldExperimentSavedViewSubscriber extends Experimen
         this.experimentNotesField = experimentNotesField;
     }
 
+    // TODO -> STEPH -> This needs to be done as part of the experimentView.setExperiment() code but it's special because it's also a save and has a popup
+    // confirmation dialog window with a callback listener so I'm pushing this off until later.
     @Override
     public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         experimentNotesField.saveNotesToExperiment();

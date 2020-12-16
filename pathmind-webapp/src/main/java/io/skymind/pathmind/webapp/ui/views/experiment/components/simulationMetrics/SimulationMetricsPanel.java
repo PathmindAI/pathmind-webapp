@@ -33,7 +33,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.SimulationMetricsPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentSwitchedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -142,7 +141,6 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         }
         EventBus.subscribe(this, getUISupplier,
                 new SimulationMetricsPolicyUpdateSubscriber(this),
-                new SimulationMetricsPanelExperimentSwitchedViewSubscriber(this),
                 new PopupSimulationMetricChartPanelPolicyUpdateSubscriber(this, metricChartPanel));
     }
 

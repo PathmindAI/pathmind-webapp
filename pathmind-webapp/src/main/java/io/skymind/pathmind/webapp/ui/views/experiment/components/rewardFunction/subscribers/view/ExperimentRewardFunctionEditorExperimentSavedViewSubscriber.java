@@ -16,6 +16,7 @@ public class ExperimentRewardFunctionEditorExperimentSavedViewSubscriber extends
         this.experimentDAO = experimentDAO;
     }
 
+    // TODO -> STEPH -> Need to be done as part of the view.setExperiment() or whatever it is that NewExperiment will use for save.
     @Override
     public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
         experimentDAO.updateRewardFunction(rewardFunctionEditor.getExperiment());
