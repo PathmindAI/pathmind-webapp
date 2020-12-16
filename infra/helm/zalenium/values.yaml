@@ -1,11 +1,11 @@
 hub:
   ## The repository and image
   ## ref: https://hub.docker.com/r/dosel/zalenium
-  image: "dosel/zalenium"
+        image: "dosel/zalenium"
 
   ## The tag for the image
   ## ref: https://hub.docker.com/r/dosel/zalenium/tags
-  tag: "latest"
+  tag: "3.14.0g"
 
   ## Specify a imagePullPolicy
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -100,7 +100,7 @@ hub:
   screenWidth: 1920
   screenHeight: 1080
   timeZone: "UTC"
-  seleniumImageName: "elgalu/selenium:3.141.59-p44"
+  seleniumImageName: "elgalu/selenium"
   maxTestSessions: 100
   newSessionsWaitTimeout: 600000
   debugEnabled: false
