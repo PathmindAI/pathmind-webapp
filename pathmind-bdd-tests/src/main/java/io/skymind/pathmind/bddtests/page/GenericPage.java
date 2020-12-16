@@ -118,7 +118,7 @@ public class GenericPage extends PageObject {
     }
 
     public void switchProjectsTab() {
-        getDriver().findElement(By.xpath("//vaadin-tab[@aria-selected='false']")).click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-tab[@aria-selected='false']"));
     }
 
     public void checkThatModelExistInArchivedTab(String modelName) {
