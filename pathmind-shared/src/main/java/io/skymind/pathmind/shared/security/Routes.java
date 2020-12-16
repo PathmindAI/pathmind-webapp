@@ -26,6 +26,7 @@ public class Routes {
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
+    public static final String CHOOSE_PROJECT_FOR_MODEL = "choose-project-for-model";
     public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";

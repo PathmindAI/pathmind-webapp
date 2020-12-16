@@ -414,11 +414,14 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .upload-model-view .view-section,
-.edit-goals-view .view-section {
+.edit-goals-view .view-section,
+.choose-project-view .view-section {
     max-width: 500px;
     flex: 0 0 auto;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
     margin: var(--lumo-space-xxl) auto;
+    border-radius: var(--lumo-border-radius);
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
 }
 
 .edit-goals-view h2 {
@@ -447,6 +450,35 @@ vaadin-dialog-overlay .demo-view-content {
 
 .upload-model-view .warning-label {
     padding: 0 var(--lumo-space-xxs);
+}
+
+/* Choose Project For Model View */
+
+.choose-project-view .view-section {
+    max-width: 480px !important;
+    min-width: auto;
+}
+
+.choose-project-view .view-section > vaadin-vertical-layout {
+    align-items: stretch;
+    margin-bottom: var(--lumo-space-m);
+}
+
+.choose-project-view .view-section > vaadin-vertical-layout p {
+    /* display: none; */
+}
+
+.choose-project-view .section-title-label {
+    margin-bottom: var(--lumo-space-m);
+}
+
+.choose-project-view vaadin-select {
+    margin-bottom: var(--lumo-space-xxl);
+}
+
+.choose-project-view vaadin-text-field {
+    padding-top: 0;
+    margin-bottom: var(--lumo-space-xxl);
 }
 
 /* Account Views */
