@@ -1,7 +1,7 @@
 hub:
   ## The repository and image
   ## ref: https://hub.docker.com/r/dosel/zalenium
-        image: "dosel/zalenium"
+  image: "dosel/zalenium"
 
   ## The tag for the image
   ## ref: https://hub.docker.com/r/dosel/zalenium/tags
