@@ -35,16 +35,16 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        for (int i = 0; i < rewardVariables.length; i++) {
-            if (rewardVariables[i] != null) {
-                String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
-                RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get();
-                Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rewardVariables[i]);
+        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rvar -> rvar != null).findFirst().get();
+        for (RewardVariable rv: rewardVariables) {
+            if (rv != null) {
+                String seriesColor = colors.get(rv.getArrayIndex() % 10);
+                Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rv);
                 Integer axisIndex = isFirstNonNullVariable ? 0 : 1;
-                if (!isFirstNonNullVariable && firstNonNullVariable.getArrayIndex() % 10 == rewardVariables[i].getArrayIndex() % 10) {
+                if (!isFirstNonNullVariable && firstNonNullVariable.getArrayIndex() % 10 == rv.getArrayIndex() % 10) {
                     seriesColor = "black";
                 }
-                series.put("" + i, Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
+                series.put("" + rv.getArrayIndex(), Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
             }
         }
         return series;
