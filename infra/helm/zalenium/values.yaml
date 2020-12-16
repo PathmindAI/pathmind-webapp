@@ -126,6 +126,7 @@ hub:
 
   ## Arbitrary environment variables
   env:
+    ZALENIUM_EXTRA_JVM_PARAMS: "-Dwebdriver.http.factory=apache"
     # FOO: BAR
 
   ## Use Openshift DeploymentConfig instead of Kubernetes Deployment
