@@ -51,9 +51,10 @@ public class ExperimentGoalsUpdateAsyncBatchService {
                 try {
                     ctx.transaction(conf -> {
                         DSLContext transactionCtx = DSL.using(conf);
-                        experimentDAO.getExperiment(experimentId).ifPresent(experiment -> {
-                            List<Policy> policies = policyDAO.getPoliciesForExperiment(transactionCtx, experiment.getId());
-                            runDAO.calculateGoals(transactionCtx, experiment, policies);
+                        experimentDAO.getFullExperiment(experimentId).ifPresent(experiment -> {
+                            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//                            List<Policy> policies = policyDAO.getPoliciesForExperiment(transactionCtx, experiment.getId());
+                            runDAO.calculateGoals(transactionCtx, experiment);
                         });
                     });
                 } catch (Throwable err) {

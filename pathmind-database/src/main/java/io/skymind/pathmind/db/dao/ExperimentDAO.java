@@ -9,10 +9,17 @@ import java.util.Optional;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -64,12 +71,11 @@ public class ExperimentDAO {
     }
 
     private void loadExperimentData(Experiment experiment) {
-        experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experiment.getId()));
         experiment.setModelObservations(ObservationRepository.getObservationsForModel(ctx, experiment.getModelId()));
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
-
+        updateExperimentInternalValues(experiment);
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {
@@ -156,11 +162,49 @@ public class ExperimentDAO {
     public Optional<Experiment> getFullExperiment(long experimentId) {
         Optional<Experiment> optionalExperiment = getExperiment(experimentId);
         optionalExperiment.ifPresent(experiment -> {
-            // REFACTOR -> STEPH -> Not good enough as there is a bunch of logic to parse the data in PolicyDAO therefore
-            // for now some code is outside of this method.
-            experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experimentId));
-            experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experimentId));
+            updateExperimentInternalValues(experiment);
         });
         return optionalExperiment;
+    }
+
+    private void updateExperimentInternalValues(Experiment experiment) {
+        experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
+        experiment.setPolicies(loadPoliciesForExperiment(ctx, experiment.getId()));
+        // TODO -> STEPH -> Not sure if updateTrainingStatus() should be in the experiment class since as it needs to be done all over the code after loading the Experiment data. So many references
+        // to updateTrainingStatus() in the code.
+        experiment.updateTrainingStatus();
+        ExperimentUtils.updateBestPolicy(experiment);
+        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
+        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+        PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
+        // There are no extra costs if the experiment is in draft because all the values will be empty.
+        // TODO -> STEPH -> This cannot be trainingErrorDAO (DAO), needs to be at the Repository level however this code also seems to contain logic.
+        updateTrainingErrorAndMessage(ctx, experiment);
+        ExperimentUtils.updateEarlyStopReason(experiment);
+    }
+
+    private List<Policy> loadPoliciesForExperiment(DSLContext ctx, long experimentId) {
+        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
+        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(ctx, DataUtils.convertToIds(policies));
+        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(ctx, DataUtils.convertToIds(policies));
+        policies.forEach(policy -> {
+            long id = policy.getId();
+            policy.setScores(rewardScores.get(id));
+            policy.setMetrics(metricsMap.get(id));
+            policy.setMetricsRaws(metricsRawMap.get(id));
+        });
+        return policies;
+    }
+
+    public static void updateTrainingErrorAndMessage(DSLContext ctx, Experiment experiment) {
+        experiment.getRuns().stream()
+                .filter(r -> RunStatus.isError(r.getStatusEnum()))
+                .findAny()
+                .ifPresent(run ->
+                        Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
+                            experiment.setAllowRestartTraining(trainingError.isRestartable());
+                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
+                        }));
     }
 }

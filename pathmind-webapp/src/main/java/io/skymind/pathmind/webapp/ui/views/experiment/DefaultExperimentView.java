@@ -19,7 +19,6 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -146,11 +145,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     private void loadFullExperimentData() {
         experiment = getExperimentForUser(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        // TODO -> STEPH -> reload has to happen on switch experiment also. As well as on compare.
-        // TODO -> STEPH -> This has to be done outside of ExperimentDAO for now because the policy also loads additional data that the experiment later requires.
-        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-        // There are no extra costs if the experiment is in draft because all the values will be empty.
-        ExperimentUtils.updateExperimentInternalValues(experiment, trainingErrorDAO);
     }
 
     public void setComparisonExperiment(Experiment comparisonExperiment) {

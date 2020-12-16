@@ -22,6 +22,7 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -280,7 +281,14 @@ public class RunDAO {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }
 
+    // TODO -> STEPH -> Confirm this solution works as expected in all cases.
     public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
+        experiment.setPolicies(policies);
+        ExperimentUtils.updateBestPolicy(experiment);
+        calculateGoals(transactionCtx, experiment);
+    }
+
+    public void calculateGoals(DSLContext transactionCtx, Experiment experiment) {
         final List<RewardVariable> rewardVariablesWithGoals = new ArrayList<>();
         if (experiment.isHasGoals()) {
             List<RewardVariable> rewardVariablesForModel =
@@ -295,19 +303,20 @@ public class RunDAO {
             ExperimentRepository.updateGoalsTotal(transactionCtx, experiment.getId(), goalsTotalNum);
         }
 
-        PolicyUtils.selectBestPolicy(policies).ifPresent(bestPolicy -> {
-            PolicyUtils.updateSimulationMetricsData(bestPolicy);
+        if(experiment.getBestPolicy() != null) {
+            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//            PolicyUtils.updateSimulationMetricsData(bestPolicy);
             if (experiment.isHasGoals()) {
                 int goalsReached = 0;
                 for (RewardVariable rv : rewardVariablesWithGoals) {
-                    if (PolicyUtils.isGoalReached(rv, bestPolicy)) {
+                    if (PolicyUtils.isGoalReached(rv, experiment.getBestPolicy())) {
                         goalsReached += 1;
                     }
                 }
                 experiment.setGoalsReached(goalsReached);
                 ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
             }
-        });
+        }
     }
 
     public void updatePolicyData(Run run, List<Policy> policies) {

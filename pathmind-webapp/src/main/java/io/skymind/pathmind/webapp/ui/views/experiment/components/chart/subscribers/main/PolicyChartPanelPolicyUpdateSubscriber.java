@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main;
 
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.PolicyChartPanel;
 
 public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
@@ -22,6 +22,8 @@ public class PolicyChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscrib
                 return;
             }
 
+            // TODO -> STEPH -> This should all be done in one place with the main susbcriber on the view and it updates all the components through the view
+            // with view.setExperiment() which propogates.
             ExperimentUtils.addOrUpdatePolicies(policyChartPanel.getExperiment(), event.getPolicies());
             policyChartPanel.updateChart();
         }

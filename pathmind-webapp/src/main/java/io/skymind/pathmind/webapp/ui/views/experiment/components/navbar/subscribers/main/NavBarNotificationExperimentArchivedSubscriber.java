@@ -1,9 +1,10 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main;
 
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
@@ -19,6 +20,8 @@ public class NavBarNotificationExperimentArchivedSubscriber extends ExperimentAr
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
     public void handleBusEvent(ExperimentArchivedBusEvent event) {
+        // TODO -> STEPH -> This should all be done in one place with the main susbcriber on the view and it updates all the components through the view
+        // with view.setExperiment() which propogates.
         ExperimentUtils.updateExperimentInExperimentsList(experimentsNavBar.getExperiments(), event.getExperiment());
         alertThenNotifyArchive(event);
     }
@@ -33,9 +36,9 @@ public class NavBarNotificationExperimentArchivedSubscriber extends ExperimentAr
 
     private void navigateToView(Experiment experiment) {
         if (experiment.isArchived()) {
-            ExperimentUtils.navigateToFirstUnarchivedOrModel(getUiSupplier(), experimentsNavBar.getExperiments());
+            ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(getUiSupplier(), experimentsNavBar.getExperiments());
         } else {
-            ExperimentUtils.navigateToExperiment(getUiSupplier().get(), experiment);
+            ExperimentGuiUtils.navigateToExperiment(getUiSupplier().get(), experiment);
         }
     }
 

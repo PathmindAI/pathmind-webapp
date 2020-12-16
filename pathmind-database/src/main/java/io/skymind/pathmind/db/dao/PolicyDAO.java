@@ -33,23 +33,25 @@ public class PolicyDAO {
         return optionalPolicy;
     }
 
-    public List<Policy> getPoliciesForExperiment(DSLContext context, long experimentId) {
-        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(context, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(context, DataUtils.convertToIds(policies));
-        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(context, DataUtils.convertToIds(policies));
-        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(context, DataUtils.convertToIds(policies));
-        policies.forEach(policy -> {
-            long id = policy.getId();
-            policy.setScores(rewardScores.get(id));
-            policy.setMetrics(metricsMap.get(id));
-            policy.setMetricsRaws(metricsRawMap.get(id));
-        });
-        return policies;
-    }
+//            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//    public List<Policy> getPoliciesForExperiment(DSLContext context, long experimentId) {
+//        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(context, experimentId);
+//        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(context, DataUtils.convertToIds(policies));
+//        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(context, DataUtils.convertToIds(policies));
+//        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(context, DataUtils.convertToIds(policies));
+//        policies.forEach(policy -> {
+//            long id = policy.getId();
+//            policy.setScores(rewardScores.get(id));
+//            policy.setMetrics(metricsMap.get(id));
+//            policy.setMetricsRaws(metricsRawMap.get(id));
+//        });
+//        return policies;
+//    }
 
-    public List<Policy> getPoliciesForExperiment(long experimentId) {
-        return getPoliciesForExperiment(ctx, experimentId);
-    }
+//            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
+//    public List<Policy> getPoliciesForExperiment(long experimentId) {
+//        return getPoliciesForExperiment(ctx, experimentId);
+//    }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {
         return MetricsRepository.getMetricsForPolicies(ctx, policyIds);

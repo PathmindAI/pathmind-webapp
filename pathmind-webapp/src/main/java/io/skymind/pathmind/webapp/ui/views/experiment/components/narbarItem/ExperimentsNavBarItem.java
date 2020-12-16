@@ -19,10 +19,11 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentCompareViewBusEvent;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -56,7 +57,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.experiment = experiment;
         this.segmentIntegrator = segmentIntegrator;
 
-        if (ExperimentUtils.isDraftRunType(experiment)) {
+        if (experiment.isDraft()) {
             experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
         } else {
             experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
@@ -67,18 +68,12 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onFavoriteToggled() {
-        ExperimentUtils.favoriteExperiment(experimentDAO, experiment, !experiment.isFavorite());
+        ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, !experiment.isFavorite());
     }
 
     @EventHandler
     private void handleRowClicked() {
-        // REFACTOR -> STEPH -> load policies and other data for experiment. Should be a fully loaded experiment. This is a big part of the reason
-        // why the data model objects need to be more complete and that the policies, reward variables, etc. all need to be loaded as part of the experiment.
-        // REFACTOR -> STEPH -> Need some way to load everything for now because we can't just do it with experimentDAO. PolicyDAO also has multiple
-        // repository calls as well as some logic.
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
-        selectedExperiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
-
         if (experiment.isDraft() == selectedExperiment.isDraft()) {
             // this is to prevent emission when the view has to be changed
             // e.g. from Experiment View to New Experiment View
@@ -94,9 +89,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
        boolean isVisible = new Random().nextBoolean();
        System.out.println("Visible: " + isVisible);
        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
-           ExperimentUtils.archiveExperiment(experimentDAO, experiment, true);
+           ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);
            segmentIntegrator.archived(Experiment.class, true);
-           ExperimentUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
+           ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
        });
     }
 
@@ -112,10 +107,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         getModel().setStatus(getIconStatus(overallExperimentStatus));
         getModel().setStatusText(overallExperimentStatus.toString());
-        getModel().setIsDraft(ExperimentUtils.isDraftRunType(experiment));
+        getModel().setIsDraft(experiment.isDraft());
         getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
-        getModel().setShowGoals(!ExperimentUtils.isDraftRunType(experiment)
+        getModel().setShowGoals(!experiment.isDraft()
                 && experiment.isHasGoals()
                 && experiment.isGoalsReached());
         updateGoalStatus(experiment.isGoalsReached());
@@ -140,7 +135,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private String getIconStatus(RunStatus status) {
-        return ExperimentUtils.getIconStatus(experiment, status);
+        return ExperimentGuiUtils.getIconStatus(experiment, status);
     }
 
     private void updateGoalStatus(Boolean goalStatus) {

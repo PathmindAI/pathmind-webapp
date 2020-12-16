@@ -143,7 +143,7 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected Component getMainContent() {
         // TODO -> STEPH -> Temporary solution until we have the action buttons ready to be hooked.
-        compareExperimentAction = new CompareExperimentAction(this, experimentDAO, policyDAO);
+        compareExperimentAction = new CompareExperimentAction(this, experimentDAO);
 
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");

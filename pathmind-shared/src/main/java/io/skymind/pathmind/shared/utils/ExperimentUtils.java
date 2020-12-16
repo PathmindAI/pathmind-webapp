@@ -1,4 +1,11 @@
-package io.skymind.pathmind.webapp.data.utils;
+package io.skymind.pathmind.shared.utils;
+
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -6,30 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.vaadin.flow.component.UI;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.training.constant.RunConstants;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentFavoriteBusEvent;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
-import org.apache.commons.lang3.StringUtils;
-
 public class ExperimentUtils {
+
     private ExperimentUtils() {
     }
 
@@ -40,10 +28,6 @@ public class ExperimentUtils {
         newExperiment.setName(name);
         newExperiment.setRewardFunction(rewardFunction);
         return newExperiment;
-    }
-
-    public static boolean isDraftRunType(Experiment experiment) {
-        return experiment.isDraft();
     }
 
     public static String getProjectName(Experiment experiment) {
@@ -98,6 +82,7 @@ public class ExperimentUtils {
                 .reduce(0, Integer::sum);
     }
 
+    // TODO -> STEPH -> This should be moved to the experiment load code because it's called in multiple places.
     public static double getEstimatedTrainingTime(Experiment experiment, double progress) {
         long totalSeconds = experiment.getRuns().stream()
                 .map(r -> {
@@ -123,28 +108,11 @@ public class ExperimentUtils {
         return calculateProgressByIterationsProcessed(iterationsProcessed);
     }
 
+    // TODO -> STEPH -> This should be moved to the experiment load code because it's called in multiple places.
     public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed) {
         double totalIterations = RunConstants.PBT_RUN_ITERATIONS * RunConstants.PBT_NUM_SAMPLES;
         double progress = (iterationsProcessed / totalIterations) * 100;
         return Math.max(Math.min(100d, progress), 0);
-    }
-
-    public static void createAndNavigateToNewExperiment(UI ui, ExperimentDAO experimentDAO, long modelId) {
-        Experiment experiment = experimentDAO.createNewExperiment(modelId);
-        EventBus.post(new ExperimentCreatedBusEvent(experiment));
-        ui.navigate(NewExperimentView.class, experiment.getId());
-    }
-
-    public static void archiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean isArchive) {
-        experimentDAO.archive(experiment.getId(), isArchive);
-        experiment.setArchived(isArchive);
-        EventBus.post(new ExperimentArchivedBusEvent(experiment));
-    }
-
-    public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
-        experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
-        experiment.setFavorite(newIsFavorite);
-        EventBus.post(new ExperimentFavoriteBusEvent(experiment));
     }
 
     public static boolean isNewExperimentForModel(Experiment experiment, List<Experiment> experiments, long modelId) {
@@ -217,47 +185,14 @@ public class ExperimentUtils {
                 .anyMatch(run -> RunStatus.isRunning(run.getStatusEnum()));
     }
 
-    public static String getIconStatus(Experiment experiment, RunStatus status) {
-        if (ExperimentUtils.isDraftRunType(experiment)) {
-            return "pencil";
-        }
-        if (RunStatus.isRunning(status)) {
-            return "loading";
-        } else if (status == RunStatus.Completed) {
-            return "check";
-        } else if (status == RunStatus.Killed || status == RunStatus.Stopping) {
-            return "stopped";
-        }
-        return "exclamation";
-    }
-
     public static boolean trainingEnded(Experiment experiment) {
         return experiment.getTrainingStatusEnum().getValue() >= RunStatus.Completed.getValue();
-    }
-
-    // REFACTOR -> These two methods should not be in ExperimentalUtils since it has no GUI/UI code at all but I've just temporarily put them for now and will refactor
-    // them as part of my bigger refactoring.
-    public static void navigateToExperiment(Optional<UI> optionalUI, Experiment experiment) {
-        optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment));
-    }
-
-    public static void navigateToExperiment(UI ui, Experiment experiment) {
-        ui.navigate(ExperimentUtils.isDraftRunType(experiment) ? NewExperimentView.class : ExperimentView.class, experiment.getId());
     }
 
     public static Optional<Experiment> getFirstUnarchivedExperiment(List<Experiment> experiments) {
         return experiments.stream()
                 .filter(experiment -> !experiment.isArchived())
                 .findFirst();
-    }
-
-    public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {
-        Optional<Experiment> firstUnarchivedExperiment = ExperimentUtils.getFirstUnarchivedExperiment(experiments);
-        if (firstUnarchivedExperiment.isEmpty()) {
-            getUISupplier.get().ifPresent(ui -> ui.navigate(ProjectView.class, PathmindUtils.getProjectModelParameter(experiments.get(0).getProject().getId(), experiments.get(0).getModelId())));
-        } else {
-            getUISupplier.get().ifPresent(ui -> ExperimentUtils.navigateToExperiment(ui, firstUnarchivedExperiment.get()));
-        }
     }
 
     /**
@@ -278,16 +213,16 @@ public class ExperimentUtils {
         experiment.setBestPolicy(PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null));
     }
 
-    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
-        experiment.getRuns().stream()
-                .filter(r -> RunStatus.isError(r.getStatusEnum()))
-                .findAny()
-                .ifPresent(run ->
-                        trainingErrorDAO.getErrorById(run.getTrainingErrorId()).ifPresent(trainingError -> {
-                            experiment.setAllowRestartTraining(trainingError.isRestartable());
-                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-                        }));
-    }
+//    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
+//        experiment.getRuns().stream()
+//                .filter(r -> RunStatus.isError(r.getStatusEnum()))
+//                .findAny()
+//                .ifPresent(run ->
+//                        trainingErrorDAO.getErrorById(run.getTrainingErrorId()).ifPresent(trainingError -> {
+//                            experiment.setAllowRestartTraining(trainingError.isRestartable());
+//                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
+//                        }));
+//    }
 
     public static void updateEarlyStopReason(Experiment experiment) {
         experiment.getRuns().stream()
@@ -305,17 +240,4 @@ public class ExperimentUtils {
         return message.split("\\n", 2)[0];
     }
 
-    // TODO -> STEPH -> This should really at the database DAO layer. That is when we load a full experiment we should just have everything and not have to remember to load extra data...
-    public static void updateExperimentInternalValues(Experiment experiment, TrainingErrorDAO trainingErrorDAO) {
-        // TODO -> STEPH -> Not sure if updateTrainingStatus() should be in the experiment class since as it needs to be done all over the code after loading the Experiment data. So many references
-        // to updateTrainingStatus() in the code.
-        experiment.updateTrainingStatus();
-        updateBestPolicy(experiment);
-        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a but more obvious or setup somewhere else. Not sure if switching experiment, update, etc. will work without it.
-        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
-        PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
-        // There are no extra costs if the experiment is in draft because all the values will be empty.
-        updateTrainingErrorAndMessage(trainingErrorDAO, experiment);
-        updateEarlyStopReason(experiment);
-    }
 }

@@ -25,7 +25,7 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
@@ -133,7 +133,7 @@ public class DashboardView extends PathMindDefaultView {
 
     private void archiveExperiment(DashboardItem item) {
         ConfirmationUtils.archive("this experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
+            ExperimentGuiUtils.archiveExperiment(experimentDAO, item.getExperiment(), true);
             segmentIntegrator.archived(Experiment.class, true);
             dataProvider.refreshAll();
         });

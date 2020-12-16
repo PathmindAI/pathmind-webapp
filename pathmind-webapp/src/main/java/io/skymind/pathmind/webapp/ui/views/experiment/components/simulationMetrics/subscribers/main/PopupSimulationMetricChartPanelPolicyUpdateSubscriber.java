@@ -1,14 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main;
 
+import java.util.Map;
+
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
-
-import java.util.Map;
 
 public class PopupSimulationMetricChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
@@ -25,6 +25,8 @@ public class PopupSimulationMetricChartPanelPolicyUpdateSubscriber extends Polic
     // I'm concerned the refactoring could increase in scope so I've pushed it until after the feature is completed.
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
+        // TODO -> STEPH -> This should all be done in one place with the main susbcriber on the view and it updates all the components through the view
+        // with view.setExperiment() which propogates.
         ExperimentUtils.addOrUpdatePolicies(simulationMetricsPanel.getExperiment(), event.getPolicies());
         Policy bestPolicy = PolicyUtils.selectBestPolicy(simulationMetricsPanel.getExperiment().getPolicies()).orElse(null);
         if(bestPolicy == null)
