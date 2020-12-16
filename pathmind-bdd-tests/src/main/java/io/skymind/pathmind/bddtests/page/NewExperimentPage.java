@@ -48,7 +48,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageOpened(String projectName) {
-        assertThat(getDriver().findElement(By.xpath("//a[contains(@href, 'project/')]")).getText(), containsString(projectName));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//a[contains(@href, 'project/')]")), containsString(projectName));
     }
 
     public void inputRewardFunctionFile(String rewardFile) {
