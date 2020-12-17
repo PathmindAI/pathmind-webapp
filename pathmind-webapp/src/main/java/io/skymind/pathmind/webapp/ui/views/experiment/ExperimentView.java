@@ -481,7 +481,7 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
         if (ExperimentUtils.isAnyLogicEngineError(errorText)) {
             errorText =
-                    "AnyLogic engine has returned ERROR. Please download policy and follow " +
+                    "AnyLogic engine has returned ERROR. Please follow " +
                             "<a target=\"_blank\" href=\"{0}\">these instructions</a> " +
                             "to reproduce the error back in AnyLogic";
             errorText = MessageFormat.format(errorText, alEngineErrorArticleUrl);
