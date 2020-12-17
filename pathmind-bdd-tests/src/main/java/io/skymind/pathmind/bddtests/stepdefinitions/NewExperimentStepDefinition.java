@@ -90,9 +90,9 @@ public class NewExperimentStepDefinition {
         newExperimentSteps.clickSideBarExperiment(experimentName);
     }
 
-    @Then("^Check that new experiment reward variable '(.*)' goal is '(.*)' and value '(.*)'$")
-    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
-        newExperimentSteps.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
+    @Then("^Check that new experiment reward variable '(.*)' goal is '(.*)'$")
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign) {
+        newExperimentSteps.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign);
     }
 
     @Then("^Check that experiment page title is '(.*)'$")

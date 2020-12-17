@@ -17,7 +17,9 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
 
 public class RewardVariablesPanel extends VerticalLayout {
     private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
@@ -39,7 +41,8 @@ public class RewardVariablesPanel extends VerticalLayout {
         add(rewardVariablesNameLine,
                 GuiUtils.getFullWidthHr(),
                 new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation."),
-                // new Paragraph("The reward variables will be used as simulation metrics to track experiment results. You can add a goal for each metric to define what success will look like for this model."),
+                LabelFactory.createLabel("Reward Variable Names → Goals", SECTION_SUBTITLE_LABEL, BOLD_LABEL),
+                new Paragraph("Set the goals for the training by choosing which metrics you want to minimize or maximize."),
                 formPanel,
                 WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
@@ -54,7 +57,6 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable(
-                getUISupplier,
                 () -> nextStepButton.setEnabled(canSaveChanges()));
         formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
@@ -62,7 +64,7 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     public void setupRewardVariables(List<RewardVariable> rewardVariables) {
         rewardVariablesTable.setRewardVariables(rewardVariables);
-        // rewardVariablesTable.makeEditable();
+        rewardVariablesTable.makeEditable();
     }
 
     public boolean canSaveChanges() {
