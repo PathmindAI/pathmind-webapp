@@ -452,35 +452,6 @@ vaadin-dialog-overlay .demo-view-content {
     padding: 0 var(--lumo-space-xxs);
 }
 
-/* Choose Project For Model View */
-
-.choose-project-view .view-section {
-    max-width: 480px !important;
-    min-width: auto;
-}
-
-.choose-project-view .view-section > vaadin-vertical-layout {
-    align-items: stretch;
-    margin-bottom: var(--lumo-space-m);
-}
-
-.choose-project-view .view-section > vaadin-vertical-layout p {
-    /* display: none; */
-}
-
-.choose-project-view .section-title-label {
-    margin-bottom: var(--lumo-space-m);
-}
-
-.choose-project-view vaadin-select {
-    margin-bottom: var(--lumo-space-xxl);
-}
-
-.choose-project-view vaadin-text-field {
-    padding-top: 0;
-    margin-bottom: var(--lumo-space-xxl);
-}
-
 /* Account Views */
 
 account-view {
