@@ -10,15 +10,11 @@ import java.util.stream.IntStream;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.shared.Registration;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -54,8 +50,6 @@ public class SimulationMetricsPanel extends HorizontalLayout {
     private List<RewardVariable> rewardVariables;
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
-    private List<Button> sparklineShowButtons = new ArrayList<>();
-    private List<Registration> showButtonClickListenerRegistrations = new ArrayList<>();
 
     // REFACTOR -> A quick somewhat hacky solution until we have time to refactor the code
     private int indexClicked;
@@ -71,9 +65,7 @@ public class SimulationMetricsPanel extends HorizontalLayout {
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
 
-        createEnlargedChartDialog();
-
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier);
+        rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();
@@ -116,18 +108,13 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                     metricSpans.add(metricSpan);
                     sparklineCharts.add(sparkline);
 
-                    Button enlargeButton = new Button("Show");
-                    enlargeButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
-
                     VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                            sparkline,
-                            enlargeButton
+                            sparkline
                     );
                     sparkLineWrapper.addClassName("sparkline");
 
                     metricsWrapper.add(metricSpan);
                     sparklinesWrapper.add(sparkLineWrapper);
-                    sparklineShowButtons.add(enlargeButton);
                 });
 
         showMetricValuesAndSparklines(false);
@@ -194,35 +181,11 @@ public class SimulationMetricsPanel extends HorizontalLayout {
                         String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
                         metricSpans.get(index).addClassName(metricSpanColorClass);
                     }
-                    if (showButtonClickListenerRegistrations.size() > index) {
-                        showButtonClickListenerRegistrations.get(index).remove();
-                    }
-                    Registration showButtonRegistration = sparklineShowButtons.get(index).addClickListener(event -> {
-                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
-                        indexClicked = index;
-                        metricChartPanel.setGoals(rewardVariable, reachedGoal);
-                        metricChartPanel.setupChart(sparklineData, rewardVariable);
-                        metricChartDialog.open();
-                    });
-                    if (showButtonClickListenerRegistrations.size() > index) {
-                        showButtonClickListenerRegistrations.set(index, showButtonRegistration);
-                    } else {
-                        showButtonClickListenerRegistrations.add(index, showButtonRegistration);
-                    }
                     sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false, index);
                     metricSpans.get(index).setText(metricValue);
                 });
 
         showMetricValuesAndSparklines(true);
-    }
-
-    private void createEnlargedChartDialog() {
-        metricChartPanel = new MetricChartPanel();
-        Button metricChartDialogCloseButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-        metricChartDialogCloseButton.addClickListener(event -> metricChartDialog.close());
-        metricChartDialog = new Dialog();
-        metricChartDialog.setWidth("60vw");
-        metricChartDialog.add(metricChartPanel, metricChartDialogCloseButton);
     }
 
     public boolean isMetricChartPopupOpen() {
