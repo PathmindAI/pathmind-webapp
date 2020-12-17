@@ -22,7 +22,7 @@ class ChooseProjectForModelViewContent extends PolymerElement {
         .inner-content > vaadin-vertical-layout {
             margin-bottom: var(--lumo-space-xl);
         }
-        vaadin-select,
+        vaadin-combo-box,
         vaadin-text-field {
             margin-bottom: var(--lumo-space-xl);
         }
