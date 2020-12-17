@@ -18,8 +18,8 @@ public class RewardVariablesSteps {
     }
 
     @Step
-    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
-        rewardVariablesPage.inputRewardVariableGoalValue(rewardVariable, goalSign, goal);
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign) {
+        rewardVariablesPage.inputRewardVariableGoalValue(rewardVariable, goalSign);
     }
 
     @Step
