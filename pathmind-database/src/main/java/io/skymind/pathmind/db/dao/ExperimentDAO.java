@@ -82,6 +82,12 @@ public class ExperimentDAO {
         return getExperimentsForModel(modelId, true);
     }
 
+    // TODO -> STEPH -> Should be done as a quick check before a full experiment load but I'll confirm if it's worth it performance wise after because
+    // the quick check is complicated code wise when you take into consideration security.
+//    public boolean isDraftExperiment(long experimentId) {
+//        return RunRepository.getNumberOfRunsForExperiment(ctx, experimentId) == 0;
+//    }
+
     public List<Experiment> getExperimentsForModel(long modelId, boolean isIncludeArchived) {
         List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId, isIncludeArchived);
         addRunsToExperiments(experiments);

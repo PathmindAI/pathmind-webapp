@@ -68,6 +68,15 @@ class RunRepository {
                 .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
 
+    // TODO -> STEPH -> Should be done as a quick check before a full experiment load but I'll confirm if it's worth it performance wise after because
+    // the quick check is complicated code wise when you take into consideration security.
+//    protected static int getNumberOfRunsForExperiment(DSLContext ctx, Long experimentId) {
+//        return ctx.select(count().as("numberOfRuns"))
+//                .from(RUN)
+//                .where(RUN.EXPERIMENT_ID.equal(experimentId))
+//                .fetchOne(0, int.class);
+//    }
+
     protected static List<Run> getRunsForExperiment(DSLContext ctx, Long experimentId) {
         return ctx.select(Tables.RUN.asterisk())
                 .from(RUN)

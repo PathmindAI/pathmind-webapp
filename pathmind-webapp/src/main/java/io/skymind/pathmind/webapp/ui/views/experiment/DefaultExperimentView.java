@@ -13,7 +13,6 @@ import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -34,6 +33,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     protected abstract void createExperimentComponents();
     protected abstract void updateComponentEnablements();
+    protected abstract void validateCorrectViewForExperiment();
 
     @Autowired
     protected ModelService modelService;
@@ -51,8 +51,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected TrainingService trainingService;
     @Autowired
     protected SegmentIntegrator segmentIntegrator;
-    @Autowired
-    private TrainingErrorDAO trainingErrorDAO;
 
     protected ExperimentBreadcrumbs experimentBreadcrumbs;
     protected ExperimentPanelTitle experimentPanelTitle;
@@ -102,6 +100,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         // we will no longer have to retrieve the user information when loading this page.
         // TODO -> REFACTOR -> This will probably be need to be adjusted when I'm done.
         loadFullExperimentData();
+        validateCorrectViewForExperiment();
     }
 
     @Override
@@ -143,6 +142,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     private void loadFullExperimentData() {
+        // TODO -> STEPH -> If not correct it needs to load the correct experiment/newExperiment view and re-route here. As in ifDraft, etc.
+        // Quick database call before loading the full experiment to see if we need to re-route between newExperimentView and ExperimentView and vice versa.
         experiment = getExperimentForUser(experimentId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
     }

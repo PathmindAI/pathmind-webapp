@@ -5,6 +5,7 @@ import java.util.List;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -45,6 +46,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experimen
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentCompareViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -298,6 +301,15 @@ public class ExperimentView extends DefaultExperimentView {
         // Update components with SharedExperimentView (share through support).
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
         shareButton.setVisible(!experiment.isSharedWithSupport());
+    }
+
+    @Override
+    protected void validateCorrectViewForExperiment() {
+        if(experiment.isDraft()) {
+            // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
+            // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
+            UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+        }
     }
 
     public Object getExperimentLock() {

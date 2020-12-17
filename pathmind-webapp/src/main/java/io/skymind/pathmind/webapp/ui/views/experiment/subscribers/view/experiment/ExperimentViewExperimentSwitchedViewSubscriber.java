@@ -20,10 +20,9 @@ public class ExperimentViewExperimentSwitchedViewSubscriber extends ExperimentSw
         // If it's a new draft experiment then we just want to go to the draft view and ignore this.
         if (event.getExperiment().isDraft()) {
             getUiSupplier().get().ifPresent(ui -> ui.navigate(NewExperimentView.class, event.getExperiment().getId()));
-            return;
+        } else {
+            getUiSupplier().get().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + event.getExperiment().getId()));
+            experimentView.setExperiment(event.getExperiment());
         }
-
-        getUiSupplier().get().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + event.getExperiment().getId()));
-        experimentView.setExperiment(event.getExperiment());
     }
 }

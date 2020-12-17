@@ -54,13 +54,14 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private String rewardFunction = "";
 
+    // TODO -> STEPH -> The save should be in a single subscriber and not here.
     private ExperimentDAO experimentDAO;
 
-    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, Experiment experiment, RewardValidationService rewardValidationService) {
+    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, RewardValidationService rewardValidationService) {
         super();
         this.getUISupplier = getUISupplier;
         this.experimentDAO = experimentDAO;
-        this.experiment = experiment;
+        // TODO -> STEPH -> DELETE -> We don't need this as part of the constructor.
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 
@@ -87,7 +88,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
-        setVariableNames(experiment.getRewardVariables());
     }
 
     private void setupEditorErrorLabel() {
@@ -148,6 +148,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         this.experiment = experiment;
         rewardFunction = StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction());
         binder.setBean(experiment);
+        setVariableNames(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(rewardFunction);
     }
 

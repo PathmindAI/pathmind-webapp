@@ -54,7 +54,7 @@ public class ExperimentGuiUtils {
         optionalUI.ifPresent(ui -> navigateToExperiment(ui, experiment));
     }
 
-    public static void navigateToExperiment(UI ui, Experiment experiment) {
+    private static void navigateToExperiment(UI ui, Experiment experiment) {
         ui.navigate(experiment.isDraft() ? NewExperimentView.class : ExperimentView.class, experiment.getId());
     }
 
