@@ -1,9 +1,5 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -19,6 +15,8 @@ import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusE
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+
+import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_METRICS_FOR_CHART;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -38,19 +36,17 @@ public class RewardVariablesRowField extends HorizontalLayout {
     // This is really only used to prevent eventbus updates for reward variables that are already set to show.
     private boolean isShow = true;
 
-    private Supplier<Optional<UI>> getUISupplier;
 
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
-        this.getUISupplier = getUISupplier;
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setAlignItems(Alignment.BASELINE);
         rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
-            if (rv.getArrayIndex() < 2) {
+            if (rv.getArrayIndex() < DEFAULT_SELECTED_METRICS_FOR_CHART) {
                 rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
-                rewardVariablesTable.setNumberOfSelectedRewardVariables(2);
+                rewardVariablesTable.setNumberOfSelectedRewardVariables(DEFAULT_SELECTED_METRICS_FOR_CHART);
             }
 
             rewardVariableNameSpan.addClickListener(event -> {

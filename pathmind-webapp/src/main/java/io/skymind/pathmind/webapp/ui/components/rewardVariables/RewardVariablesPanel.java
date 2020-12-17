@@ -57,7 +57,6 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable(
-                getUISupplier,
                 () -> nextStepButton.setEnabled(canSaveChanges()));
         formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
