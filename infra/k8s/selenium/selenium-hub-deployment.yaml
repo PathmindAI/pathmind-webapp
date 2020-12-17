@@ -19,10 +19,13 @@ spec:
         image: selenium/hub:3.141
         ports:
           - containerPort: 4444
+        env:
+          - name: JAVA_OPTS
+            value: "-Xmx2500m"
         resources:
-          limits:
-            memory: "1000Mi"
-            cpu: ".5"
+          requests:
+            memory: "3000Mi"
+            cpu: "1"
         livenessProbe:
           httpGet:
             path: /wd/hub/status

@@ -31,7 +31,9 @@ spec:
             value: "selenium-hub"
           - name: HUB_PORT
             value: "4444"
+          - name: JAVA_OPTS
+            value: "-Xmx2500m"
         resources:
-          limits:
-            memory: "1000Mi"
-            cpu: ".5"
+          requests:
+            memory: "3000Mi"
+            cpu: "1"
