@@ -36,15 +36,13 @@ class ChooseProjectForModelViewContent extends PolymerElement {
           <h3>Choose the Project for Your Model</h3>
           <p>Model uploaded. Now let's assign it to a project.</p>
           <vaadin-vertical-layout hidden="{{showCreateNewProjectSection}}">
-            <vaadin-select id="projectDropdown" placeholder="Choose an existing project">
-                <template>
-                    <vaadin-list-box>
-                        <template is="dom-repeat" items="{{projects}}">
-                                <vaadin-item>{{item.name}}</vaadin-item>
-                        </template>
-                    </vaadin-list-box>
-                </template>
-            </vaadin-select>
+            <vaadin-combo-box
+                id="projectDropdown"
+                placeholder="Choose an existing project"
+                error-message="Please choose a project"
+                required
+                on-change="selectOnChange"
+            ></vaadin-combo-box>
             <p>Alternatively, you may choose to create a new project for this model.</p>
             <vaadin-button id="switchToCreateProjectButton" theme="tertiary-inline" on-click="switchToCreateProjectButtonClicked">
               Add to New Project

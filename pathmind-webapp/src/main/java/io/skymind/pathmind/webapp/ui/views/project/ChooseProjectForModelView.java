@@ -10,10 +10,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -29,9 +26,6 @@ public class ChooseProjectForModelView extends PathMindDefaultView {
 
     private final ChooseProjectForModelViewContent chooseProjectForModelViewContent;
 
-    private List<Project> projects;
-    private Boolean addToNewProject = false;
-
     @Autowired
     public ChooseProjectForModelView(ChooseProjectForModelViewContent chooseProjectForModelViewContent) {
         this.chooseProjectForModelViewContent = chooseProjectForModelViewContent;
@@ -44,11 +38,6 @@ public class ChooseProjectForModelView extends PathMindDefaultView {
     @Override
     protected Component getTitlePanel() {
         return null;
-    }
-
-    @Override
-    protected void initLoadData() throws InvalidDataException {
-        projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId()).stream().filter(project -> !project.isArchived()).collect(Collectors.toList());
     }
 
     @Override
