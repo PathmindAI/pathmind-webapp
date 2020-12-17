@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,7 +25,6 @@ import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.ExperimentRewardFunctionEditorExperimentSavedViewSubscriber;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -171,13 +168,8 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     }
 
     @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentRewardFunctionEditorExperimentSavedViewSubscriber(this, experimentDAO));
+    public void updateExperiment() {
+        // TODO -> STEPH -> Confirm if this is needed because the binder should automatically do it. And if not then delete this method.
+        experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
     }
 }

@@ -5,6 +5,8 @@ import org.jooq.DSLContext;
 import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT_OBSERVATION;
 
 
+// TODO -> STEPH -> It's not clear which is why with the Observation and experiment observation table because there is code in the observationRepository that seems to only
+// do SELECT on EXPERIMENT_OBSERVATION. This definitely needs to be cleaned up.
 class ExperimentObservationRepository {
     private ExperimentObservationRepository() {
     }

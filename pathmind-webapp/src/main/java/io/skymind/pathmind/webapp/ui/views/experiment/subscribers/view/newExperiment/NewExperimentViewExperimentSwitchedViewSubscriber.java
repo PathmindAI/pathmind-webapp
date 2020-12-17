@@ -16,7 +16,7 @@ public class NewExperimentViewExperimentSwitchedViewSubscriber extends Experimen
 
     @Override
     public void handleBusEvent(ExperimentSwitchedViewBusEvent event) {
-
+        // TODO -> STEPH -> Before switching we need to save.
         // First save draft before switching as part of the auto-save functionality.
         newExperimentView.saveDraftExperiment(() -> {
             // If it's a not a new draft experiment then we just want to go to the experiment view and ignore this.

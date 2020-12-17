@@ -24,7 +24,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSavedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -34,8 +33,8 @@ import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesT
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.SaveDraftAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
@@ -180,7 +179,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     private void createButtons() {
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchiveExperiment(experimentDAO, experiment, segmentIntegrator, getUI()));
         startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> StartRunAction.startRun(this, rewardFunctionEditor, trainingService, runDAO, experimentDAO, observationDAO));
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> { }));
+        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
     }
 
     /************************************** UI element creations are above this line **************************************/
@@ -210,13 +209,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        // TODO -> STEPH -> How do we do this in a nice and consistent manner?
-        EventBus.post(new ExperimentSavedViewBusEvent());
-        observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
-        segmentIntegrator.draftSaved();
-        disableSaveDraft();
-        NotificationUtils.showSuccess("Draft successfully saved");
-        isNeedsSaving = false;
+        SaveDraftAction.saveDraft(this, experimentDAO, observationDAO, experiment, segmentIntegrator);
         afterClickedCallback.execute();
     }
 
@@ -226,6 +219,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         saveDraftExperiment(() -> action.proceed());
     }
 
+    // STEPH -> TODO -> Clean this up so that it's consistent with the rest.
     public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
             if (saveDraftButton.isEnabled()) {
@@ -258,11 +252,13 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         startRunButton.setEnabled(canStartTraining());
     }
 
-    // TODO -> STEPH -> Re-add at the correct location.
-    private void disableSaveDraft() {
+    public void disableSaveNeeded() {
         saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
+        // TODO -> STEPH -> We may not need isNeedsSaving after this refactoring is done. It depends on how the auto-save works.
+        // TODO -> When a value is changed we need to be able to automatically set these values back on.
+        isNeedsSaving = false;
     }
 
     @Override

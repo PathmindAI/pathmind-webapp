@@ -128,6 +128,14 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         updateComponents();
     }
 
+    // TODO -> STEPH -> Need to the same for comparisonExperimentComponents for the notes field save.
+    /**
+     * Updates the internal values of the experiment from the components.
+     */
+    public void updateExperimentFromComponents() {
+        experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());
+    }
+
     private void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         updateComponentEnablements();

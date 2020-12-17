@@ -199,7 +199,6 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonPanel.addClassName("comparison-panel");
         comparisonPanel.setPadding(false);
         return comparisonPanel;
-
     }
 
     /**
@@ -218,7 +217,7 @@ public class ExperimentView extends DefaultExperimentView {
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                         experimentObservationsPanel,
                         60),
-                generateRewardFunctionGroup(comparisonCodeViewer));
+                generateRewardFunctionGroup(experimentCodeViewer));
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
         middlePanel.setSpacing(false);

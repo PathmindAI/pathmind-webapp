@@ -15,10 +15,10 @@ import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedVi
 import io.skymind.pathmind.webapp.bus.subscribers.EventBusSubscriberComponent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentStartTrainingViewSubscriber;
 
-public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver, EventBusSubscriberComponent, ExperimentComponent {
+// TODO -> STEPH -> Delete view/main subscriber folders that are no longer needed.
+public class ExperimentNotesField extends NotesField implements BeforeLeaveObserver, EventBusSubscriberComponent, ExperimentComponent {
 
     private Supplier<Optional<UI>> getUISupplier;
 
@@ -44,6 +44,7 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
         setNotesText(experiment.getUserNotes());
     }
 
+    // TODO -> STEPH -> This should be removed as it's now on the view in a single call.
     public void saveNotesToExperiment() {
         getSaveConsumer().accept(getNotesText());
     }
@@ -59,18 +60,24 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
 
     @Override
     protected void onAttach(AttachEvent event) {
+        // TODO -> STEPH -> THere should be no subscribers here.
         EventBus.subscribe(this, getUISupplier,
-                new ExperimentNotesFieldExperimentStartTrainingViewSubscriber(this),
-                new ExperimentNotesFieldExperimentSavedViewSubscriber(this));
+                new ExperimentNotesFieldExperimentStartTrainingViewSubscriber(this));
     }
 
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
+        // TODO -> STEPH -> Push to the view as this is really for the whole experiment.
         saveNotes();
     }
 
     @Override
     public Supplier<Optional<UI>> getUISupplier() {
         return getUISupplier;
+    }
+
+    @Override
+    public void updateExperiment() {
+        experiment.setUserNotes(getNotesText());
     }
 }
