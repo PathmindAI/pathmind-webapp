@@ -21,6 +21,8 @@ public class ProjectsPage extends PageObject {
 
     @FindBy(xpath = "//vaadin-text-area[1]")
     private WebElement experimentNotesField;
+    @FindBy(xpath = "//vaadin-button[text()='New Project']")
+    private WebElement newProjectBtn;
 
     private final By byInput = By.cssSelector("input");
     private final By byTextarea = By.cssSelector("textarea");
@@ -29,6 +31,7 @@ public class ProjectsPage extends PageObject {
         waitABit(3500);
         setImplicitTimeout(3, SECONDS);
         waitFor(ExpectedConditions.elementToBeClickable(getDriver().findElement(By.cssSelector(".account-menu"))));
+        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
         if (getDriver().findElements(By.xpath("//vaadin-button[text()='New Project']")).size() == 1) {
             getDriver().findElement(By.xpath("//vaadin-button[text()='New Project']")).click();
         } else {
