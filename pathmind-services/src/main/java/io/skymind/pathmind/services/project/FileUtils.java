@@ -25,9 +25,10 @@ public class FileUtils {
         List<String> result = new ArrayList<>();
 
         if (isDir) {
+            String modelProperty = String.join(File.separator, "com", "anylogic", "engine", "model.properties");
             try (Stream<Path> walk = Files.walk(Paths.get(filePath))) {
-                result = walk.map(Path::toString)
-                        .filter(f -> f.endsWith(".class") || f.endsWith("com/anylogic/engine/model.properties"))
+                result = walk.map(x -> x.toString())
+                        .filter(f -> f.endsWith(".class") || f.endsWith(modelProperty))
                         .collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("error while filter class files", e);

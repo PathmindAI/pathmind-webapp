@@ -9,16 +9,23 @@ import lombok.Getter;
 
 @Getter
 public enum GoalConditionType {
-    GREATER_THAN_OR_EQUAL("GTE", "≥", "+"), LESS_THAN_OR_EQUAL("LTE", "≤", "-");
+    GREATER_THAN_OR_EQUAL(
+            "GTE", "≥",
+            new RewardFunctionComponent("+", "maximize")
+    ),
+    LESS_THAN_OR_EQUAL("LTE", "≤",
+            new RewardFunctionComponent("-", "minimize")
+    ),
+    ;
 
     private final String code;
     private final String name;
-    private final String mathOperation;
+    private final RewardFunctionComponent rewardFunctionComponent;
 
-    GoalConditionType(String code, String name, String math) {
+    GoalConditionType(String code, String name, RewardFunctionComponent rewardFunctionComponent) {
         this.code = code;
         this.name = name;
-        this.mathOperation = math;
+        this.rewardFunctionComponent = rewardFunctionComponent;
     }
 
     public String toString() {

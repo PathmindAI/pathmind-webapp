@@ -48,7 +48,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageOpened(String projectName) {
-        assertThat(getDriver().findElement(By.xpath("//a[contains(@href, 'project/')]")).getText(), containsString(projectName));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//a[contains(@href, 'project/')]")), containsString(projectName));
     }
 
     public void inputRewardFunctionFile(String rewardFile) {
@@ -156,8 +156,8 @@ public class NewExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + checkbox + "']")).click();
     }
 
-    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
-        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign + goal));
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign));
     }
 
     public void checkThatExperimentPageTitleIs(String experiment) {

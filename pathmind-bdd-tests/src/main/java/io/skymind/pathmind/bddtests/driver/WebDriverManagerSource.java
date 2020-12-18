@@ -32,7 +32,7 @@ public class WebDriverManagerSource implements DriverSource {
             case CHROME:
                 WebDriverManager.chromedriver().version(chromeVersion).setup();
                 ChromeOptions options = new ChromeOptions();
-                Map<String, Object> prefs = new HashMap<>();
+//                Map<String, Object> prefs = new HashMap<>();
                 // LoggingPreferences logPrefs = new LoggingPreferences();
                 // logPrefs.enable( LogType.PERFORMANCE, Level.ALL );
                 // options.setCapability( "goog:loggingPrefs", logPrefs );
@@ -44,14 +44,12 @@ public class WebDriverManagerSource implements DriverSource {
                 options.addArguments("--disable-dev-shm-usage");
                 options.addArguments("--verbose");
                 options.addArguments("--disable-popup-blocking");
-                options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
-                options.setExperimentalOption("useAutomationExtension", false);
-                prefs.put("credentials_enable_service", false);
-                prefs.put("profile.password_manager_enabled", false);
-                prefs.put("download.default_directory", variables.getProperty("user.dir"));
-                options.setExperimentalOption("prefs", prefs);
-                options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
-                options.setExperimentalOption("useAutomationExtension", false);
+//                options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+//                options.setExperimentalOption("useAutomationExtension", false);
+//                prefs.put("credentials_enable_service", false);
+//                prefs.put("profile.password_manager_enabled", false);
+//                prefs.put("download.default_directory", variables.getProperty("user.dir"));
+//                options.setExperimentalOption("prefs", prefs);
 
                 _driver = new ChromeDriver(options);
                 break;

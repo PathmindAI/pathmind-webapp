@@ -47,11 +47,6 @@ Feature: E2E
     #    ------------------------
     #Check reward function block
     Then Check experiment page reward function <reward function file>
-    #Check sparkline btn
-    When Click experiment page show sparkline btn for variable '<variable>'
-    Then Check experiment page chart pop-up is shown for variable '<variable>'
-    When Click pop-up dialog close btn
-    Then Check that no confirmation dialog is shown
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp

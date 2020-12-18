@@ -266,20 +266,6 @@ public class ExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).click();
     }
 
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(showBtn);
-        actions.perform();
-        getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
-    }
-
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
-        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
-    }
-
     public void checkVariableSimulationMetricValue(String variable, String value) {
         assertThat(getDriver().findElement(By.xpath("//span[text()='" + variable + "']/ancestor::*[@class='simulation-metrics-table-wrapper']/descendant::*[@class='metrics-wrapper']/span")).getText(), is(value));
     }

@@ -30,11 +30,10 @@ public class RewardVariablesPage extends PageObject {
         assertThat(variables, hasItem(variableName));
     }
 
-    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign) {
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-select")).click();
         getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']")).click();
-        getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(goal);
-        getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(Keys.ENTER);
+        getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']"));
     }
 
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
