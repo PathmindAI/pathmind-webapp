@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -17,6 +18,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
@@ -26,6 +29,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
+import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -40,6 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private ProjectDAO projectDAO;
+    @Autowired
+    private ModelDAO modelDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -91,9 +97,15 @@ public class ProjectsView extends PathMindDefaultView {
         projectGrid.addComponentColumn(project -> {
             String projectName = project.getName();
             Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
+            Integer modelCount = project.getModelCount();
+            String modelCountText = ""+modelCount+" model";
+            if (modelCount > 1) {
+                modelCountText += "s";
+            }
             renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             renameProjectButton.addClassName("action-button");
-            HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(new Span(projectName), renameProjectButton);
+            HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                new Span(projectName), renameProjectButton, new TagLabel(modelCountText, false, "small"));
             projectNameColumn.addClassName("project-name-column");
             return projectNameColumn;
         })
@@ -158,6 +170,13 @@ public class ProjectsView extends PathMindDefaultView {
     @Override
     protected void initLoadData() throws InvalidDataException {
         projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
+        projects.stream().map(project -> {
+            // We don't need the model count on any other pages of the site for now.
+            // If we do need it at some point, this should not be dynamically mapped to the data object.
+            Integer projectModelCount = modelDAO.getModelCountForProject(project.getId());
+            project.setModelCount(projectModelCount);
+            return project;
+        }).collect(Collectors.toList());
     }
 
     @Override

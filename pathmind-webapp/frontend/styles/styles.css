@@ -363,6 +363,10 @@ background-color: var(--pm-grey-color-light);
     visibility: visible;
 }
 
+.projects-view .project-name-column tag-label {
+    margin-left: auto;
+}
+
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,
