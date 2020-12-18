@@ -3,29 +3,25 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentCreatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarNotificationExperimentStartTrainingSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.view.NavBarExperimentSelectedViewSubscriber;
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout {
@@ -36,28 +32,26 @@ public class ExperimentsNavBar extends VerticalLayout {
     private VerticalLayout rowsWrapper;
     private NewExperimentButton newExperimentButton;
 
-    private SegmentIntegrator segmentIntegrator;
-
     public long modelId;
 
     private ExperimentDAO experimentDAO;
-    private PolicyDAO policyDAO;
-    private Supplier<Optional<UI>> getUISupplier;
 
-    public ExperimentsNavBar(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment selectedExperiment, SegmentIntegrator segmentIntegrator) {
-        this.getUISupplier = getUISupplier;
+    private BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction;
+    private DefaultExperimentView defaultExperimentView;
+
+    public ExperimentsNavBar(DefaultExperimentView defaultExperimentView, BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction, ExperimentDAO experimentDAO) {
+        this.defaultExperimentView = defaultExperimentView;
+        this.selectExperimentAction = selectExperimentAction;
         this.experimentDAO = experimentDAO;
-        this.policyDAO = policyDAO;
-        this.selectedExperiment = selectedExperiment;
+        this.selectedExperiment = defaultExperimentView.getExperiment();
         this.modelId = selectedExperiment.getModelId();
-        this.segmentIntegrator = segmentIntegrator;
 
         rowsWrapper = new VerticalLayout();
         rowsWrapper.addClassName("experiments-navbar-items");
         rowsWrapper.setPadding(false);
         rowsWrapper.setSpacing(false);
 
-        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, segmentIntegrator);
+        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, defaultExperimentView.getSegmentIntegrator());
 
         setPadding(false);
         setSpacing(false);
@@ -70,12 +64,11 @@ public class ExperimentsNavBar extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         if (selectedExperiment.isArchived()) {
-            EventBus.subscribe(this, getUISupplier,
+            EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
                     new NavBarNotificationExperimentStartTrainingSubscriber(this),
                     new NavBarNotificationExperimentArchivedSubscriber(this));
         } else {
-            EventBus.subscribe(this, getUISupplier,
-                    new NavBarExperimentSelectedViewSubscriber(this),
+            EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
                     new NavBarExperimentArchivedSubscriber(this),
                     new NavBarExperimentCreatedSubscriber(this),
                     new NavBarNotificationExperimentStartTrainingSubscriber(this),
@@ -139,7 +132,7 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, getUISupplier, experimentDAO, policyDAO, experiment, segmentIntegrator);
+        return new ExperimentsNavBarItem(this, selectExperimentAction, defaultExperimentView, experimentDAO, experiment);
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {

@@ -16,12 +16,6 @@ public class NavBarNotificationExperimentStartTrainingSubscriber extends Experim
         this.experimentsNavBar = experimentsNavBar;
     }
 
-    // TODO -> STEPH -> Can we remove this safely?
-    public NavBarNotificationExperimentStartTrainingSubscriber(boolean isListenForEventOnSameUI, ExperimentsNavBar experimentsNavBar) {
-        super(isListenForEventOnSameUI);
-        this.experimentsNavBar = experimentsNavBar;
-    }
-
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
     public void handleBusEvent(ExperimentStartTrainingBusEvent event) {

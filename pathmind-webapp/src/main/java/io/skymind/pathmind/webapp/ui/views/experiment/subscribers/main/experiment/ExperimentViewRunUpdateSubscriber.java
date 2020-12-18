@@ -23,6 +23,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         // should already be fully loaded sow e can just update as needed. That's of course assuming that the policy has the full data required (confirm with ExperimentDAO).
         ExperimentUtils.addOrUpdateRuns(experimentView.getExperiment(), event.getRuns());
         ExperimentUtils.updatedRunsForPolicies(experimentView.getExperiment(), event.getRuns());
+        experimentView.getExperiment().updateTrainingStatus();
         experimentView.updateDetailsForExperiment();
     }
 

@@ -7,7 +7,6 @@ public enum BusEventType {
     ExperimentCreated,
     ExperimentUpdate,
     ExperimentCompare,
-    ExperimentSwitched,
     ExperimentStartTraining,
     ExperimentArchived,
     ExperimentFavorite,

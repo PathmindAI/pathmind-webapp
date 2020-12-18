@@ -7,8 +7,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -24,15 +22,12 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.SimulationMetricsPolicyUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -132,21 +127,6 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     private void showMetricValuesAndSparklines(Boolean show) {
         metricsWrapper.setVisible(show);
         sparklinesWrapper.setVisible(show);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        if (experiment.isArchived()) {
-            return;
-        }
-        EventBus.subscribe(this, getUISupplier,
-                new SimulationMetricsPolicyUpdateSubscriber(this),
-                new PopupSimulationMetricChartPanelPolicyUpdateSubscriber(this, metricChartPanel));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
     }
 
     public Experiment getExperiment() {

@@ -1,8 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
-import java.util.Optional;
 import java.util.Random;
-import java.util.function.Supplier;
+import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
@@ -15,19 +14,16 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentCompareViewBusEvent;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
@@ -42,20 +38,18 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private Anchor experimentLink;
 
     private ExperimentsNavBar experimentsNavbar;
-    private Supplier<Optional<UI>> getUISupplier;
     private ExperimentDAO experimentDAO;
-    private PolicyDAO policyDAO;
 
     private Experiment experiment;
-    private SegmentIntegrator segmentIntegrator;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, PolicyDAO policyDAO, Experiment experiment, SegmentIntegrator segmentIntegrator) {
-        this.getUISupplier = getUISupplier;
+    private BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction;
+    private DefaultExperimentView defaultExperimentView;
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction, DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO, Experiment experiment) {
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
-        this.policyDAO = policyDAO;
         this.experiment = experiment;
-        this.segmentIntegrator = segmentIntegrator;
+        this.selectExperimentAction = selectExperimentAction;
+        this.defaultExperimentView = defaultExperimentView;
 
         if (experiment.isDraft()) {
             experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
@@ -74,7 +68,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void handleRowClicked() {
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
-        EventBus.post(new ExperimentSwitchedViewBusEvent(selectedExperiment));
+        experimentsNavbar.setCurrentExperiment(selectedExperiment);
+        selectExperimentAction.accept(selectedExperiment, defaultExperimentView);
     }
 
     @EventHandler
@@ -82,13 +77,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         // TODO -> STEPH -> Fix this code.
         // TODO -> STEPH -> False if we want to disable compare.
         // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
-       boolean isVisible = new Random().nextBoolean();
-       System.out.println("Visible: " + isVisible);
-       ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
-           ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);
-           segmentIntegrator.archived(Experiment.class, true);
-           ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(getUISupplier, experimentsNavbar.getExperiments());
-       });
+        boolean isVisible = new Random().nextBoolean();
+        System.out.println("Visible: " + isVisible);
+        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
+            ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);
+            defaultExperimentView.getSegmentIntegrator().archived(Experiment.class, true);
+            ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(defaultExperimentView.getUISupplier(), experimentsNavbar.getExperiments());
+        });
     }
 
     @EventHandler
@@ -100,17 +95,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private void setExperimentDetails(UI ui, Experiment experiment) {
-        RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
-        getModel().setStatus(getIconStatus(overallExperimentStatus));
-        getModel().setStatusText(overallExperimentStatus.toString());
         getModel().setIsDraft(experiment.isDraft());
-        getModel().setIsFavorite(experiment.isFavorite());
         getModel().setExperimentName(experiment.getName());
         getModel().setShowGoals(!experiment.isDraft()
                 && experiment.isHasGoals()
                 && experiment.isGoalsReached());
-        updateGoalStatus(experiment.isGoalsReached());
         getElement().appendChild(new DatetimeDisplay(experiment.getDateCreated()).getElement());
+        updateVariableComponentValues();
     }
 
     @Override
@@ -118,7 +109,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         if (experiment.isArchived()) {
             return;
         }
-        EventBus.subscribe(this, getUISupplier,
+        EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
                 new NavBarItemExperimentFavoriteSubscriber(this),
                 new NavBarItemExperimentUpdatedSubscriber(this),
                 new NavBarItemRunUpdateSubscriber(this),
@@ -134,10 +125,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         return ExperimentGuiUtils.getIconStatus(experiment, status);
     }
 
-    private void updateGoalStatus(Boolean goalStatus) {
-        getModel().setGoalsReached(goalStatus);
-    }
-
     public void setAsCurrent() {
         getModel().setIsCurrent(true);
     }
@@ -150,20 +137,16 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         return experiment;
     }
 
-    private void updateStatus(RunStatus runStatus) {
-        getModel().setStatus(getIconStatus(runStatus));
-        getModel().setStatusText(runStatus.toString());
-    }
-
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
-        update();
+        updateVariableComponentValues();
     }
 
-    public void update() {
-        updateStatus(experiment.getTrainingStatusEnum());
+    public void updateVariableComponentValues() {
+        getModel().setStatus(getIconStatus(experiment.getTrainingStatusEnum()));
+        getModel().setStatusText(experiment.getTrainingStatusEnum().toString());
         // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
-        updateGoalStatus(experiment.isGoalsReached());
+        getModel().setGoalsReached(experiment.isGoalsReached());
         getModel().setIsFavorite(experiment.isFavorite());
     }
 

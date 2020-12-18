@@ -3,14 +3,10 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -36,8 +32,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
     private Experiment experiment;
 
     private List<String> rewardFunctionErrors = new ArrayList<>();
@@ -51,14 +45,8 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private String rewardFunction = "";
 
-    // TODO -> STEPH -> The save should be in a single subscriber and not here.
-    private ExperimentDAO experimentDAO;
-
-    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, ExperimentDAO experimentDAO, RewardValidationService rewardValidationService) {
+    public RewardFunctionEditor(RewardValidationService rewardValidationService) {
         super();
-        this.getUISupplier = getUISupplier;
-        this.experimentDAO = experimentDAO;
-        // TODO -> STEPH -> DELETE -> We don't need this as part of the constructor.
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 

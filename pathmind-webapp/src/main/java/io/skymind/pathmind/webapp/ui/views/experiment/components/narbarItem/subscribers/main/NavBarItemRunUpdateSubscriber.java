@@ -16,18 +16,14 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        // TODO -> STEPH -> Are we going to be reloading everything? Replace the existing experiment? Etc... Who calls this event. My thinking is that the experiment
-        // should already be fully loaded sow e can just update as needed. That's of course assuming that the policy has the full data required (confirm with ExperimentDAO).
+        // We have to do it manually here because we could be in another tabbed browser and we don't have a full reload, just the run.
         ExperimentUtils.addOrUpdateRuns(experimentsNavBarItem.getExperiment(), event.getRuns());
-        experimentsNavBarItem.update();
+        experimentsNavBarItem.getExperiment().updateTrainingStatus();
+        experimentsNavBarItem.updateVariableComponentValues();
     }
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
-        // If it's archived then we don't need to update anything since there is no NavBar.
-        if (event.getExperiment().isArchived()) {
-            return false;
-        }
-        return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
+        return !!event.getExperiment().isArchived() && ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
     }
 }

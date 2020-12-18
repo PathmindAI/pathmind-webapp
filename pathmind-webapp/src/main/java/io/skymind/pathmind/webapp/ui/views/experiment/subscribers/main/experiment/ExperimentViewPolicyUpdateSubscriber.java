@@ -18,6 +18,7 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
     // .. For button enablement and error messaging more than anything else
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
+        // TODO -> STEPH -> do we need experimentLock here?
         synchronized (experimentView.getExperimentLock()) {
             // Need a check in case the experiment was on hold waiting for the change of experiment to load
             if (event.getExperimentId() != event.getExperimentId()) {

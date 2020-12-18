@@ -38,6 +38,5 @@ public class StartRunAction {
         newExperimentView.setUnsavedChangesLabel(false);
 
         newExperimentView.getUISupplier().get().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
-
     }
 }

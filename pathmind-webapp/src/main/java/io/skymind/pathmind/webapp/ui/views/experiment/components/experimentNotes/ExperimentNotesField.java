@@ -3,8 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNote
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveObserver;
@@ -15,7 +13,6 @@ import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedVi
 import io.skymind.pathmind.webapp.bus.subscribers.EventBusSubscriberComponent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentStartTrainingViewSubscriber;
 
 // TODO -> STEPH -> Delete view/main subscriber folders that are no longer needed.
 public class ExperimentNotesField extends NotesField implements BeforeLeaveObserver, EventBusSubscriberComponent, ExperimentComponent {
@@ -44,25 +41,8 @@ public class ExperimentNotesField extends NotesField implements BeforeLeaveObser
         setNotesText(experiment.getUserNotes());
     }
 
-    // TODO -> STEPH -> This should be removed as it's now on the view in a single call.
-    public void saveNotesToExperiment() {
-        getSaveConsumer().accept(getNotesText());
-    }
-
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        // TODO -> STEPH -> THere should be no subscribers here.
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentNotesFieldExperimentStartTrainingViewSubscriber(this));
     }
 
     @Override

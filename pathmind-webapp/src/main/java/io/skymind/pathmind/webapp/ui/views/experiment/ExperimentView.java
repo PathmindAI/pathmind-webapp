@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -39,15 +40,13 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveEx
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.ExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentCompareViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentSwitchedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -119,6 +118,8 @@ public class ExperimentView extends DefaultExperimentView {
         addClassName("experiment-view");
     }
 
+    // TODO -> STEPH -> Confirm that all subscribers in the experiment view are actually still required.
+    // TODO -> STEPH -> Look at all onAttach and onDetach to remove any that are no longer needed.
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, () -> getUI(),
@@ -129,13 +130,17 @@ public class ExperimentView extends DefaultExperimentView {
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
                 new ExperimentViewRunUpdateSubscriber(this),
-                new ExperimentViewExperimentSwitchedViewSubscriber(this),
                 new ExperimentViewExperimentCompareViewSubscriber(this));
     }
 
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction() {
+        return (experiment, defaultExperimentView) -> ExperimentSelectAction.selectExperiment(experiment, defaultExperimentView);
     }
 
     @Override

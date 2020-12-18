@@ -16,7 +16,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.CompareMetricsChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
@@ -91,7 +90,6 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-                new CompareMetricsChartPanelPolicyUpdateSubscriber(this),
                 new CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber(this));
     }
 

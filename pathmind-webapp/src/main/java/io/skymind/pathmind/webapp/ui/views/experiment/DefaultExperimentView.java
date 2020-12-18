@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -34,6 +35,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected abstract void createExperimentComponents();
     protected abstract void updateComponentEnablements();
     protected abstract void validateCorrectViewForExperiment();
+    protected abstract BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction();
 
     @Autowired
     protected ModelService modelService;
@@ -91,7 +93,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
         // TODO -> STEPH -> ExperimentsNavBar is special since it's not a specific experiment nor can one be set but we may still
         // need to do something so for now I'm leaving it here as a reminder to deal with later.
-        experimentsNavbar = new ExperimentsNavBar(getUISupplier(), experimentDAO, policyDAO, experiment, segmentIntegrator);
+        experimentsNavbar = new ExperimentsNavBar(this, getNavBarSelectedExperimentAction(), experimentDAO);
     }
 
     @Override

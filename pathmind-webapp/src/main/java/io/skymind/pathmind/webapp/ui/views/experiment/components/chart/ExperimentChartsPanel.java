@@ -3,8 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -12,11 +10,9 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -77,17 +73,6 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
         } else {
             setPolicyChartPanelVisible(isRedraw);
         }
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentChartsPanelRunUpdateSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
     }
 
     private void setupCharts() {

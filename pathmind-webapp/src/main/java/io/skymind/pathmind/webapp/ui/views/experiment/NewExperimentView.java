@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -38,10 +39,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Save
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NewExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.newExperiment.NewExperimentViewExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentChangedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentSwitchedViewSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -89,14 +89,17 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier(),
-                new NewExperimentViewExperimentStartTrainingSubscriber(this),
-                new NewExperimentViewExperimentSwitchedViewSubscriber(this),
                 new NewExperimentViewExperimentChangedViewSubscriber(this));
     }
 
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
+    }
+
+    @Override
+    protected BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction() {
+        return (experiment, defaultExperimentView) -> NewExperimentSelectAction.selectExperiment(experiment, defaultExperimentView);
     }
 
     @Override
@@ -274,7 +277,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         // TODO -> STEPH -> create other components
         // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
-        rewardFunctionEditor = new RewardFunctionEditor(getUISupplier(), experimentDAO, rewardValidationService);
+        rewardFunctionEditor = new RewardFunctionEditor(rewardValidationService);
         // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
         observationsPanel = new ObservationsPanel(experiment, false);
         rewardVariablesTable = new RewardVariablesTable(getUISupplier());
