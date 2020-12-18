@@ -27,7 +27,7 @@ class UploadModelErrorView extends PolymerElement {
                 <span class="section-title-label">There's an issue with your model</span>
                 <span class="error-label">{{error}}</span>
                 <p>
-                    The model you uploaded from AnyLogic PLE has issues that prevent it from running in Pathmind.<br>
+                    The model you uploaded from AnyLogic has issues that prevent it from running in Pathmind.<br>
                     Use this <a href="https://help.pathmind.com/en/articles/3747446-8-confirm-models-are-working-in-anylogic">troubleshooting guide</a>
                     to fix the issues and try exporting to Pathmind again or <a href="{{contactLink}}">contact Pathmind for support</a>.
                 </p>
