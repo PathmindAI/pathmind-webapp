@@ -29,4 +29,12 @@ public class AWSExecutionProviderTest {
         assertThat(line).startsWith("RuntimeError: java.lang.ClassNotFoundException: carbon_emissions.PathmindEnvironment");
     }
 
+    @Test
+    public void engine_error() throws IOException {
+        File file = ResourceUtils.getFile("classpath:rl-lib-errors/engine-error.txt");
+        List<String> lines = IOUtils.readLines(new FileInputStream(file));
+        String line = AWSExecutionProvider.findLineWithException(lines);
+        assertThat(line).startsWith("RuntimeError: java.lang.RuntimeException: Engine error at time 344.2068350875446");
+    }
+
 }
