@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.Getter;
@@ -15,17 +16,22 @@ import org.objectweb.asm.*;
 
 /*To read and find PathmindHelper qualifiedClassName from class files using ASM*/
 @Slf4j
+@Getter
 public class ByteCodeAnalyzer extends ClassVisitor {
-    public String qualifiedClassName;
-    List<String> pathmindHelperClasses = new ArrayList<>();
-    List<AnyLogicModelInfo> models = new ArrayList<>();
-    List<String> observationClasses = new ArrayList<>();
-    List<String> actionClasses = new ArrayList<>();
-    List<String> rewardClasses = new ArrayList<>();
-    List<String> configurationClasses = new ArrayList<>();
+    private final List<String> classFiles;
+    private String qualifiedClassName;
+    private List<String> pathmindHelperClasses = new ArrayList<>();
+    private List<AnyLogicModelInfo> models = new ArrayList<>();
+    private List<String> observationClasses = new ArrayList<>();
+    private List<String> actionClasses = new ArrayList<>();
+    private List<String> rewardClasses = new ArrayList<>();
+    private List<String> configurationClasses = new ArrayList<>();
+    private String rlPlatform;
 
-    public ByteCodeAnalyzer() {
+
+    public ByteCodeAnalyzer(List<String> classFiles) {
         super(Opcodes.ASM7);
+        this.classFiles = Collections.unmodifiableList(classFiles);
     }
 
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -72,14 +78,13 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     public void visitEnd() {
     }
 
-    /*To iterate and read all class files*/
-    public void byteParser(List<String> classFiles, AnylogicFileCheckResult anylogicFileCheckResult) throws IOException {
+    public void byteParser() throws IOException {
         for (String classFile : classFiles) {
             if (classFile.endsWith("model.properties")) {
                 FileUtils.readLines(new File(classFile), Charset.defaultCharset()).stream()
                     .filter(line -> line.startsWith("ReinforcementLearningPlatform"))
                     .findFirst()
-                    .ifPresent(line -> anylogicFileCheckResult.setRlPlatform(line));
+                    .ifPresent(line -> rlPlatform = line);
                 continue;
             }
             try (InputStream inputStream = new FileInputStream(classFile)) {
@@ -90,9 +95,6 @@ public class ByteCodeAnalyzer extends ClassVisitor {
 
             }
         }
-
-        anylogicFileCheckResult.getDefinedHelpers().addAll(pathmindHelperClasses);
-        anylogicFileCheckResult.getModelInfos().addAll(models);
     }
 
 }

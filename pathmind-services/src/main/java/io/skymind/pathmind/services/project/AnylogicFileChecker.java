@@ -80,7 +80,7 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
             statusUpdater.updateStatus(0.30);
 
             // 5. Check for PathmindHelper class instance in uploaded model.jar
-            this.checkHelpers(unZippedJars, anylogicFileCheckResult); // TODO: get rid anylogicFileCheckResult as an parameter
+            this.populateHelpersToResult(unZippedJars, anylogicFileCheckResult); // TODO: get rid anylogicFileCheckResult as an parameter
 //            anylogicFileCheckResult.setDefinedHelpers(helpers);
             statusUpdater.updateStatus(0.50);
 
@@ -160,15 +160,18 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
     }
 
     // To check the existence of pathmind helpers check
-    void checkHelpers(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
+    void populateHelpersToResult(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
 
         unZippedJars.forEach(unZippedJar -> {
             try {
                 File unJarred = unpackJar(unZippedJar);
                 List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
-                ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer();
-                byteCodeAnalyzer.byteParser(listOfFiles, anylogicFileCheckResult);
+                ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer(listOfFiles);
+                byteCodeAnalyzer.byteParser();
+                anylogicFileCheckResult.getDefinedHelpers().addAll(byteCodeAnalyzer.getPathmindHelperClasses());
+                anylogicFileCheckResult.getModelInfos().addAll(byteCodeAnalyzer.getModels());
+                anylogicFileCheckResult.setRlPlatform(byteCodeAnalyzer.getRlPlatform());
             } catch (IOException ioe) {
                 log.error("Error unJarred jar file", ioe);
             }
