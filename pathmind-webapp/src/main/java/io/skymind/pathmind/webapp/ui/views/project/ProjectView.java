@@ -141,7 +141,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             setupArchivesTabPanel();
             newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
             modelNotesField = createModelNotesField();
-            rewardVariablesTable = new RewardVariablesTable(() -> getUI());
+            rewardVariablesTable = new RewardVariablesTable();
             rewardVariablesTable.setRewardVariables(rewardVariables);
             observationsPanel = new ObservationsPanel(modelObservations, true);
             observationsPanel.addClassName("observations-panel-wrapper");

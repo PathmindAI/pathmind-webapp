@@ -203,7 +203,7 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier());
+        rewardVariablesTable = new RewardVariablesTable();
         VerticalLayout rewardVariablesPanel = WrapperUtils
                 .wrapVerticalWithNoPaddingOrSpacing(
                         LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
