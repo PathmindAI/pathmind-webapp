@@ -100,7 +100,7 @@ public class UploadALPWizardPanel extends VerticalLayout {
         addUploadsFinishedListener();
         addUploadRemoveFileListener();
 
-        uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
+        uploadModelPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(upload);
     }
 
     public void addButtonClickListener(ComponentEventListener<ClickEvent<Button>> listener) {
