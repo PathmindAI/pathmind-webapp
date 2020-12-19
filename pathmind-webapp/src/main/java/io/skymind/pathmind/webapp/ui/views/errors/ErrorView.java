@@ -6,7 +6,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * TODO -> Implement correctly, this is just a quick stub.
  */
-@CssImport("./styles/styles.css")
 @ParentLayout(MainLayout.class)
 @Slf4j
 public class ErrorView extends PathMindDefaultView implements HasErrorParameter<Exception> {
