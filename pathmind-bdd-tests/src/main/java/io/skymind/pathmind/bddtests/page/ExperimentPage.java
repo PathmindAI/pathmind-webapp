@@ -280,24 +280,25 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExportPolicyPage(String model) {
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='view-section']/img"))));
-        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/img")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::span")).getText(), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/h3")).getText(), is("To use your policy:"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/ol")).getText(), is("Download this file.\n" +
+        WebElement exportViewPolicy = utils.expandRootElement(getDriver().findElement(By.xpath("//export-policy-view-content")));
+        waitFor(ExpectedConditions.visibilityOf(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon"))));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".filename")).getText(), containsString(model));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("h4")).getText(), is("To use your policy:"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > ol")).getText(), is("Download this file.\n" +
                 "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
                 "Change the 'Mode' to 'Use Policy'.\n" +
                 "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
                 "Run the simulation to see the policy in action."));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getText(), is("Learn how to validate your policy"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]"))));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]/vaadin-button")).getText(), is("Export Policy"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getText(), is("Learn how to validate your policy"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]"))));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]/vaadin-button")).getText(), is("Export Policy"));
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(".download-alp-link"))));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]/vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]/vaadin-button")).getText(), is("Model ALP"));
     }
 
     public void checkLearningProgressTitle(String title) {

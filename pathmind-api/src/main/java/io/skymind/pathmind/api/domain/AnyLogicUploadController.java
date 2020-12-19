@@ -16,9 +16,9 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
-import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
@@ -28,7 +28,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,15 +49,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 public class AnyLogicUploadController {
 
-    private final String webappDomainUrl;
+    private final UriComponentsBuilder experimentUriBuilder;
 
-    @Getter
-    private final String modelCheckFailedHelpUrl;
-
-    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl,
-                                    @Value("${pm.api.model-check-failed-help.url}") String modelCheckFailedHelpUrl) {
-        this.webappDomainUrl = webappDomainUrl;
-        this.modelCheckFailedHelpUrl = modelCheckFailedHelpUrl;
+    public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl) {
+        experimentUriBuilder = UriComponentsBuilder.fromHttpUrl(webappDomainUrl);
     }
 
     @Autowired
@@ -94,6 +88,7 @@ public class AnyLogicUploadController {
                                               @RequestParam(value = "projectId", required = false) Long projectId,
                                               @AuthenticationPrincipal PathmindApiUser pmUser) {
 
+        UriComponentsBuilder builder = experimentUriBuilder.cloneBuilder();
         log.debug("saving file {}", file.getOriginalFilename());
         try {
             Path tempFile = Files.createTempFile("pm-al-upload", file.getOriginalFilename());
@@ -116,11 +111,11 @@ public class AnyLogicUploadController {
             StatusUpdaterImpl status = new StatusUpdaterImpl();
             projectFileCheckService.checkFile(status, model).get(); // here we need to wait
             if (StringUtils.isNoneEmpty(status.getError())) {
-                throw new IllegalStateException(status.getError());
+                throw new ModelCheckException(status.getError());
             }
             AnylogicFileCheckResult result = status.getResult();
             if (result == null) {
-                throw new IllegalStateException("no validation result");
+                throw new ModelCheckException("No validation result");
             }
 
             List<RewardVariable> rewardVariables = new ArrayList<>();
@@ -154,7 +149,7 @@ public class AnyLogicUploadController {
             Experiment experiment = modelService.resumeModelCreation(model, "");
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
-            URI experimentUri = UriComponentsBuilder.fromHttpUrl(webappDomainUrl)
+            URI experimentUri = builder
                     .path("newExperiment").path("/{experimentId}")
                     .buildAndExpand(Map.of("experimentId", experimentId))
                     .toUri();
@@ -162,15 +157,20 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
             log.error("failed to get file from AL", e);
-            String location = modelCheckFailedHelpUrl;
+            builder.path("uploadModelError");
+            if (e instanceof ModelCheckException) {
+                builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
+            }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
-//            if (errorMessage.startsWith(INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS)) {
-//                errorMessage = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
-//                location = projectFileCheckService.getConvertModelsToSupportLatestVersionURL();
-//            }
-            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, location).body(errorMessage);
+            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
         }
 
+    }
+
+    public static class ModelCheckException extends Exception {
+        public ModelCheckException(String message) {
+            super(message);
+        }
     }
 
     @Getter
