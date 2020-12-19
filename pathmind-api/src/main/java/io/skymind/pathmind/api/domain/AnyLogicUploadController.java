@@ -16,8 +16,10 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
+import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
-import io.skymind.pathmind.services.project.FileCheckResult;
+import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
@@ -41,10 +43,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
 
 @Slf4j
 @RestController
@@ -64,6 +63,9 @@ public class AnyLogicUploadController {
 
     @Autowired
     ModelService modelService;
+
+    @Autowired
+    private ModelFileVerifier modelFileVerifier;
 
     @Autowired
     private ProjectFileCheckService projectFileCheckService;
@@ -103,13 +105,15 @@ public class AnyLogicUploadController {
             }
 
             Model model = new Model();
-            model.setFile(ensureZipFileStructure(Files.readAllBytes(tempFile.toAbsolutePath())));
+            ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
+            byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
+            model.setFile(bytes);
             StatusUpdaterImpl status = new StatusUpdaterImpl();
             projectFileCheckService.checkFile(status, model).get(); // here we need to wait
             if (StringUtils.isNoneEmpty(status.getError())) {
                 throw new ModelCheckException(status.getError());
             }
-            FileCheckResult result = status.getResult();
+            AnylogicFileCheckResult result = status.getResult();
             if (result == null) {
                 throw new ModelCheckException("No validation result");
             }
@@ -117,7 +121,7 @@ public class AnyLogicUploadController {
             List<RewardVariable> rewardVariables = new ArrayList<>();
             List<Observation> observationList = new ArrayList<>();
 
-            AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
+            Hyperparams alResult = result.getParams();
             rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
             observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
             model.setNumberOfObservations(alResult.getNumObservation());
@@ -170,10 +174,10 @@ public class AnyLogicUploadController {
     }
 
     @Getter
-    public static class StatusUpdaterImpl implements StatusUpdater {
+    public static class StatusUpdaterImpl implements StatusUpdater<AnylogicFileCheckResult> {
 
         private String error;
-        private FileCheckResult result;
+        private AnylogicFileCheckResult result;
 
         @Override
         public void updateStatus(double percentage) {
@@ -186,7 +190,7 @@ public class AnyLogicUploadController {
         }
 
         @Override
-        public void fileSuccessfullyVerified(FileCheckResult result) {
+        public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
             this.result = result;
         }
     }

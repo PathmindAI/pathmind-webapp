@@ -8,6 +8,7 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,10 @@ public class ProjectControllerTest {
         @Bean
         public ModelAnalyzerApiClient maClient() {
             return mock(ModelAnalyzerApiClient.class);
+        }
+        @Bean
+        public ModelFileVerifier modelFileVerifier() {
+            return mock(ModelFileVerifier.class);
         }
     }
 
