@@ -10,9 +10,6 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
@@ -42,13 +39,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     @Autowired
     protected ExperimentDAO experimentDAO;
     @Autowired
-    protected RewardVariableDAO rewardVariableDAO;
-    @Autowired
-    protected PolicyDAO policyDAO;
-    @Autowired
     protected RunDAO runDAO;
-    @Autowired
-    protected ObservationDAO observationDAO;
     @Autowired
     protected TrainingService trainingService;
     @Autowired

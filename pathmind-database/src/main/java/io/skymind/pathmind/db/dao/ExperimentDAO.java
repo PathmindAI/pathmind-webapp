@@ -66,6 +66,7 @@ public class ExperimentDAO {
         Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
         if(experiment != null) {
             loadExperimentData(experiment);
+            updateExperimentInternalValues(experiment);
         }
         return Optional.ofNullable(experiment);
     }
@@ -75,7 +76,6 @@ public class ExperimentDAO {
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
-        updateExperimentInternalValues(experiment);
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {

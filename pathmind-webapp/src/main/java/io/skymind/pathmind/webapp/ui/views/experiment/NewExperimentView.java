@@ -20,6 +20,7 @@ import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
+import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
@@ -75,6 +76,9 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
+    @Autowired
+    private ObservationDAO observationDAO;
+
     protected ExperimentNotesField notesField;
 
     public NewExperimentView(

@@ -54,7 +54,6 @@ public class Experiment extends ArchivableData {
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
 
-    // TODO -> STEPH -> Helper attributes that maybe should be part of the experiment and I'm not 100% decided on the final details.
     private List<RewardVariable> rewardVariables;
     private Policy bestPolicy;
 

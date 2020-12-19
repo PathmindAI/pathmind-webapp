@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.constants.ViewPermission;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -22,8 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 @Permission(permissions = ViewPermission.EXTENDED_READ)
 public class SharedExperimentView extends ExperimentView {
+
     @Autowired
     private PolicyFileService policyFileService;
+    @Autowired
+    private PolicyDAO policyDAO;
 
     public SharedExperimentView() {
         super();
