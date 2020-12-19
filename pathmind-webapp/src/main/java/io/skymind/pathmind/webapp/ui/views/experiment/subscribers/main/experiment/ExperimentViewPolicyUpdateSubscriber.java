@@ -40,10 +40,7 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
             // This is needed for other subscriber updates that rely on the best policy being updated.
             ExperimentUtils.updateBestPolicy(experimentView.getExperiment());
 
-            // TODO -> STEPH -> Added because I'm not sure what is the different between policy and run updates in terms of what parts of the internal data
-            // needs to be updated and refreshed on the screen.
-            ExperimentUtils.updateBestPolicy(experiment);
-            // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
+            // TODO -> STEPH -> I'm not sure which is needed and which isn't needed for the run and policy updaters...
             if(experiment.getBestPolicy() != null) {
                 PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
                 PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());

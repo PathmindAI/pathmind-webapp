@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,11 +83,12 @@ public class ExperimentDAO {
         return getExperimentsForModel(modelId, true);
     }
 
-    // TODO -> STEPH -> Should be done as a quick check before a full experiment load but I'll confirm if it's worth it performance wise after because
-    // the quick check is complicated code wise when you take into consideration security.
-//    public boolean isDraftExperiment(long experimentId) {
-//        return RunRepository.getNumberOfRunsForExperiment(ctx, experimentId) == 0;
-//    }
+    /**
+     * Used as a quick check before a full experiment load to see if we're on the right view between ExperimentView and NewExperimentView.
+     */
+    public boolean isDraftExperiment(long experimentId) {
+        return RunRepository.getNumberOfRunsForExperiment(ctx, experimentId) == 0;
+    }
 
     public List<Experiment> getExperimentsForModel(long modelId, boolean isIncludeArchived) {
         List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId, isIncludeArchived);

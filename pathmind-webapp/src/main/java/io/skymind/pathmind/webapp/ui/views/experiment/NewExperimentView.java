@@ -270,7 +270,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     protected void validateCorrectViewForExperiment() {
-        if(!experiment.isDraft()) {
+        if(!experimentDAO.isDraftExperiment(experimentId)) {
             // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
             // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
             UI.getCurrent().navigate(ExperimentView.class, experimentId);

@@ -29,6 +29,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
         ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
 
+        // TODO -> STEPH -> I'm not sure which is needed and which isn't needed for the run and policy updaters...
         ExperimentUtils.updateBestPolicy(experiment);
         // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
         if(experiment.getBestPolicy() != null) {

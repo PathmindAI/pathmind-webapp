@@ -92,8 +92,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
         // we will no longer have to retrieve the user information when loading this page.
         // TODO -> REFACTOR -> This will probably be need to be adjusted when I'm done.
-        loadFullExperimentData();
         validateCorrectViewForExperiment();
+        loadFullExperimentData();
     }
 
     @Override
