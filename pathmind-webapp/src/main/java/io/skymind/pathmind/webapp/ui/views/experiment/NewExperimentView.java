@@ -42,7 +42,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveEx
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NewExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentChangedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentNeedsSavingViewSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -93,7 +93,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier(),
-                new NewExperimentViewExperimentChangedViewSubscriber(this));
+                new NewExperimentViewExperimentNeedsSavingViewSubscriber(this));
     }
 
     @Override

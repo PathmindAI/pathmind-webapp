@@ -31,7 +31,6 @@ import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.CompareExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.RestartTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
@@ -46,7 +45,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.experiment.ExperimentViewExperimentCompareViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,8 +96,6 @@ public class ExperimentView extends DefaultExperimentView {
 
     private Button restartTrainingButton;
 
-    private CompareExperimentAction compareExperimentAction;
-
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -124,8 +120,7 @@ public class ExperimentView extends DefaultExperimentView {
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this),
-                new ExperimentViewRunUpdateSubscriber(this),
-                new ExperimentViewExperimentCompareViewSubscriber(this));
+                new ExperimentViewRunUpdateSubscriber(this));
     }
 
     @Override
@@ -140,9 +135,6 @@ public class ExperimentView extends DefaultExperimentView {
 
     @Override
     protected Component getMainContent() {
-        // TODO -> STEPH -> Temporary solution until we have the action buttons ready to be hooked.
-        compareExperimentAction = new CompareExperimentAction(this, experimentDAO);
-
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
 
@@ -314,18 +306,8 @@ public class ExperimentView extends DefaultExperimentView {
         return experimentLock;
     }
 
-    public void stopCompareExperiment() {
-        compareExperimentVerticalLayout.setVisible(false);
-    }
-
     public void showCompareExperimentComponents(boolean isCompareVisible) {
         compareExperimentVerticalLayout.setVisible(isCompareVisible);
-    }
-
-    // TODO -> STEPH -> On experiment switch for now we'll just reload the components with the experiment that's being switched and
-    // put it to invisible. We'll set it to null when the null checks for all the components are ready.
-    public void startCompareExperiment(Experiment experimentToCompare) {
-        compareExperimentAction.compare(experimentToCompare);
     }
 
     @Override

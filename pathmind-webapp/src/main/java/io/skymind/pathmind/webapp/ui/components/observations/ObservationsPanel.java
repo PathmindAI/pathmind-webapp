@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.utils.ObservationUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentNeedsSavingViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
@@ -68,7 +68,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
             List<Observation> selectedObservationsFromEvent = evt.stream().collect(Collectors.toList());
             if(!ObservationUtils.areObservationsEqual(this.selectedObservations, selectedObservationsFromEvent)) {
                 experiment.setSelectedObservations(selectedObservationsFromEvent);
-                EventBus.post(new ExperimentChangedViewBusEvent(experiment));
+                EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
             }
         });
     }

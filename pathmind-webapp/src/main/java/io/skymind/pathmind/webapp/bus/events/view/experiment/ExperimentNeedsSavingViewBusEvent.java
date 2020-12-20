@@ -4,27 +4,20 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 
-// TODO -> STEPH -> Needs to be moved to an action.
-public class ExperimentCompareViewBusEvent implements PathmindViewBusEvent {
+public class ExperimentNeedsSavingViewBusEvent implements PathmindViewBusEvent {
 
     private Experiment experiment;
-    private boolean isCompare;
 
-    public ExperimentCompareViewBusEvent(Experiment experiment, boolean isCompare) {
+    public ExperimentNeedsSavingViewBusEvent(Experiment experiment) {
         this.experiment = experiment;
-        this.isCompare = isCompare;
     }
 
     @Override
     public BusEventType getEventType() {
-        return BusEventType.ExperimentCompare;
+        return BusEventType.ExperimentNeedsSaving;
     }
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    public boolean isCompare() {
-        return isCompare;
     }
 }

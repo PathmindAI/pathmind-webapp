@@ -10,7 +10,6 @@ public class NewExperimentSelectAction {
 
     public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
         NewExperimentView newExperimentView = (NewExperimentView)defaultExperimentView;
-        // TODO -> STEPH -> Before switching we need to save.
         // First save draft before switching as part of the auto-save functionality.
         newExperimentView.saveDraftExperiment(() -> {
             // If it's a not a new draft experiment then we just want to go to the experiment view and ignore this.

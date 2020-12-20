@@ -9,6 +9,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * IMPORTANT -> Although not used at the moment it is extremely useful (and was used in the past) where
+ * a component needed to subscriber to an event directly.
+ */
 public interface EventBusSubscriberComponent extends HasElement {
 
     public Supplier<Optional<UI>> getUISupplier();

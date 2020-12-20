@@ -160,7 +160,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     // Special case because in the new experiment view we add a lot of extra code therefore it's only considered a helper method.
     protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable) {
-        return new ExperimentNotesField(getUISupplier(), experimentDAO, segmentIntegratorRunnable,false,true);
+        return new ExperimentNotesField(experimentDAO, segmentIntegratorRunnable,false,true);
     }
 
     // TODO -> STEPH -> For now the comparison experiment components are set with the experiment when it should be null for performance reasons but

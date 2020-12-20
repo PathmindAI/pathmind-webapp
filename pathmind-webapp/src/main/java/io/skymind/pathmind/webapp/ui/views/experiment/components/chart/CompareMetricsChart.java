@@ -57,8 +57,6 @@ public class CompareMetricsChart extends DataChart {
     private JsonArray createCols() {
         JsonArray cols = Json.createArray();
         cols.set(0, Json.parse("{'label':'Iteration', 'type':'number'}"));
-        // TODO -> STEPH -> Is rewardVariables.length the same as cols.length? If so then we can just do IntStream.range(0, rewardVariables.length) because
-        // right now I keep thinking we need the rewardVariable but it's highlighted in my IDE as red meaning it's not used...
         for (RewardVariable rewardVariable : rewardVariables) {
             int index = cols.length();
             cols.set(index, Json.parse("{'label':'reward variable " + index + "', 'type':'number'}"));

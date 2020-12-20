@@ -12,7 +12,7 @@ import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentNeedsSavingViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
@@ -88,7 +88,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
             if(!rewardFunction.equals(changeEvent.getValue())) {
                 rewardFunction = changeEvent.getValue();
-                EventBus.post(new ExperimentChangedViewBusEvent(experiment));
+                EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
             }
         });
     }

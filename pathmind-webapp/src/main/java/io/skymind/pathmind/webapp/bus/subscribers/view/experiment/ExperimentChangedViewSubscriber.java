@@ -2,9 +2,9 @@ package io.skymind.pathmind.webapp.bus.subscribers.view.experiment;
 
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedViewBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentNeedsSavingViewBusEvent;
 
-public abstract class ExperimentChangedViewSubscriber extends EventBusSubscriber<ExperimentChangedViewBusEvent> {
+public abstract class ExperimentChangedViewSubscriber extends EventBusSubscriber<ExperimentNeedsSavingViewBusEvent> {
 
     public ExperimentChangedViewSubscriber() {
         super();
@@ -12,6 +12,6 @@ public abstract class ExperimentChangedViewSubscriber extends EventBusSubscriber
 
     @Override
     public BusEventType getEventType() {
-        return BusEventType.ExperimentChanged;
+        return BusEventType.ExperimentNeedsSaving;
     }
 }
