@@ -25,10 +25,7 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private Button nextStepButton;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
-    public RewardVariablesPanel(Supplier<Optional<UI>> getUISupplier) {
-        this.getUISupplier = getUISupplier;
+    public RewardVariablesPanel() {
         setupForm();
         nextStepButton = UploadModelView.createNextStepButton();
 
@@ -54,7 +51,6 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable(
-                getUISupplier,
                 () -> nextStepButton.setEnabled(canSaveChanges()));
         formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);

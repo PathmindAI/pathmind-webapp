@@ -93,55 +93,8 @@ public class Experiment extends ArchivableData {
         runs.add(run);
     }
 
-    // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-//    public void updateRuns(List<Run> runs) {
-//        runs.forEach(this::updateRun);
-//    }
-//
-//    public void updateRun(Run run) {
-//        if (runs == null) {
-//            runs = new ArrayList<>();
-//            runs.add(run);
-//        } else {
-//            IntStream.range(0, runs.size())
-//                    .filter(index -> runs.get(index).getId() == run.getId())
-//                    .findFirst()
-//                    .ifPresentOrElse(
-//                            index -> runs.set(index, run),
-//                            () -> runs.add(run));
-//        }
-//        updateTrainingStatus();
-//    }
-
     public boolean isGoalsReached() {
         return hasGoals && Objects.equals(goalsReached, totalGoals);
-    }
-
-    public void updateTrainingStatus() {
-        RunStatus status = getRuns().stream()
-                .map(Run::getStatusEnum)
-                .min(Comparator.comparingInt(RunStatus::getValue))
-                .orElse(NotStarted);
-
-        // In Running status, there can be some runs completed while others are yet to be started
-        // So checking that to make sure
-        if (status == NotStarted || status == Starting) {
-            if (getRuns().stream()
-                    .map(Run::getStatusEnum)
-                    .map(RunStatus::getValue)
-                    .anyMatch(statusVal -> statusVal > Starting.getValue())) {
-                status = Running;
-            }
-        }
-
-        if (status == RunStatus.Killed) {
-            if (getRuns().stream()
-                    .map(Run::getTrainingErrorId)
-                    .anyMatch(errorId -> errorId > 0)) {
-                status = Error;
-            }
-        }
-        setTrainingStatusEnum(status);
     }
 
     public String getTrainingError() {

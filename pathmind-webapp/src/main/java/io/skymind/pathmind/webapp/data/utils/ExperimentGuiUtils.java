@@ -66,32 +66,4 @@ public class ExperimentGuiUtils {
             getUISupplier.get().ifPresent(ui -> navigateToExperiment(ui, firstUnarchivedExperiment.get()));
         }
     }
-
-//    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
-//        experiment.getRuns().stream()
-//                .filter(r -> RunStatus.isError(r.getStatusEnum()))
-//                .findAny()
-//                .ifPresent(run ->
-//                        trainingErrorDAO.getErrorById(run.getTrainingErrorId()).ifPresent(trainingError -> {
-//                            experiment.setAllowRestartTraining(trainingError.isRestartable());
-//                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-//                        }));
-//    }
-
-    // TODO -> STEPH -> This should really at the database DAO layer. That is when we load a full experiment we should just have everything and not have to remember
-    //  to load extra data. However for now I'm loading it all here so that at least it's one location and we can then just move this code to the experiment
-    // DAO layer.
-//    public static void updateExperimentInternalValues(Experiment experiment, PolicyDAO policyDAO, TrainingErrorDAO trainingErrorDAO) {
-//        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experiment.getId()));
-//        // TODO -> STEPH -> Not sure if updateTrainingStatus() should be in the experiment class since as it needs to be done all over the code after loading the Experiment data. So many references
-//        // to updateTrainingStatus() in the code.
-//        experiment.updateTrainingStatus();
-//        updateBestPolicy(experiment);
-//        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a but more obvious or setup somewhere else. Not sure if switching experiment, update, etc. will work without it.
-//        PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
-//        PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
-//        // There are no extra costs if the experiment is in draft because all the values will be empty.
-//        updateTrainingErrorAndMessage(trainingErrorDAO, experiment);
-//        updateEarlyStopReason(experiment);
-//    }
 }

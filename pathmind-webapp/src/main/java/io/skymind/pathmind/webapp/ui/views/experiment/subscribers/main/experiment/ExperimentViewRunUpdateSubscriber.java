@@ -21,23 +21,13 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
 
+        // TODO -> STEPH -> do we need experimentLock here?
         Experiment experiment = experimentView.getExperiment();
 
         experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
-        // TODO -> STEPH -> Are we going to be reloading everything? Replace the existing experiment? Etc... Who calls this event. My thinking is that the experiment
-        // should already be fully loaded sow e can just update as needed. That's of course assuming that the policy has the full data required (confirm with ExperimentDAO).
         ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
         ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
-
-        // TODO -> STEPH -> I'm not sure which is needed and which isn't needed for the run and policy updaters...
-        ExperimentUtils.updateBestPolicy(experiment);
-        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
-        if(experiment.getBestPolicy() != null) {
-            PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
-            PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
-        }
-
-        experiment.updateTrainingStatus();
+        ExperimentUtils.updateExperimentInternals(experiment);
 
         // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
 //        updateTrainingErrorAndMessage(ctx, experiment);

@@ -74,8 +74,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        // TODO -> STEPH -> Fix this code.
-        // TODO -> STEPH -> False if we want to disable compare.
         // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
         ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
             ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);

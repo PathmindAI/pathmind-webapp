@@ -1,7 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +19,6 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -178,15 +176,8 @@ public class ExperimentDAO {
     private void updateExperimentInternalValues(Experiment experiment) {
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setPolicies(loadPoliciesForExperiment(ctx, experiment.getId()));
-        // TODO -> STEPH -> Not sure if updateTrainingStatus() should be in the experiment class since as it needs to be done all over the code after loading the Experiment data. So many references
-        // to updateTrainingStatus() in the code.
-        experiment.updateTrainingStatus();
-        ExperimentUtils.updateBestPolicy(experiment);
-        // TODO -> STEPH -> This one just tricked me up a lot tonight and so needs to be a bit more obvious or setup somewhere else. Switching experiment, update, etc. will NOT work without it.
-        if(experiment.getBestPolicy() != null) {
-            PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
-            PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
-        }
+
+        ExperimentUtils.updateExperimentInternals(experiment);
         // There are no extra costs if the experiment is in draft because all the values will be empty.
         // TODO -> STEPH -> This cannot be trainingErrorDAO (DAO), needs to be at the Repository level however this code also seems to contain logic.
         updateTrainingErrorAndMessage(ctx, experiment);

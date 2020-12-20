@@ -24,14 +24,13 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     private ModelsNavbar modelsNavbar;
     private SegmentIntegrator segmentIntegrator;
 
-    // TODO -> STEPH -> Create x time ago seems to be way off.
     public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.model = model;
         this.modelsNavbar = modelsNavbar;
         this.segmentIntegrator = segmentIntegrator;
 
-        UI.getCurrent().getUI().ifPresent(ui -> setModelDetails(ui, model));
+        getUISupplier.get().ifPresent(ui -> setModelDetails(ui, model));
     }
 
     @EventHandler

@@ -33,8 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SimulationMetricsPanel extends HorizontalLayout implements ExperimentComponent {
 
-    private Supplier<Optional<UI>> getUISupplier;
-
     private MetricChartPanel metricChartPanel;
     private Dialog metricChartDialog;
     private VerticalLayout metricsWrapper;
@@ -48,17 +46,16 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     private List<Button> sparklineShowButtons = new ArrayList<>();
     private List<Registration> showButtonClickListenerRegistrations = new ArrayList<>();
 
+    private boolean showSimulationMetrics;
+
     // REFACTOR -> A quick somewhat hacky solution until we have time to refactor the code
     private int indexClicked;
 
-    // TODO -> STEPH -> Can we somehow push the experiment away from the constructor? I'm sure we can do it by modifying the parent view
-    // classes with a setup() method or something along those lines so that it's only called once in the constructors rather than every setExperiment(), but
-    // I'm pushing that off for now.
-    public SimulationMetricsPanel(boolean showSimulationMetrics, Experiment experiment, Supplier<Optional<UI>> getUISupplier) {
+    public SimulationMetricsPanel(boolean showSimulationMetrics, Supplier<Optional<UI>> getUISupplier) {
 
         super();
-        this.experiment = experiment;
-        this.getUISupplier = getUISupplier;
+
+        this.showSimulationMetrics = showSimulationMetrics;
 
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
@@ -66,21 +63,13 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         createEnlargedChartDialog();
 
         // TODO -> STEPH -> Why do we have a RewardVariablesTable here in addition to the view?
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier);
+        rewardVariablesTable = new RewardVariablesTable();
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();
         rewardVariablesTable.setSizeFull();
 
         add(rewardVariablesTable);
-
-        if (showSimulationMetrics) {
-            createSimulationMetricsSpansAndSparklines();
-
-            updateSimulationMetrics();
-
-            add(metricsWrapper, sparklinesWrapper);
-        }
     }
 
     private void createSimulationMetricsSpansAndSparklines() {
@@ -95,10 +84,6 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
         sparklineHeader.addClassName("header");
         sparklinesWrapper.add(sparklineHeader);
-
-        // Needed to convert the raw metrics to a format the UI can use.
-        // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-        // PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
 
         IntStream.range(0, experiment.getRewardVariables().size())
                 .forEach(index -> {
@@ -135,6 +120,13 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+
+        // If it hasn't been rendered yet then render the simulation metrics components as they are dependent on the rewardvariables of the experiment.
+        if (showSimulationMetrics && metricsWrapper == null) {
+            createSimulationMetricsSpansAndSparklines();
+            add(metricsWrapper, sparklinesWrapper);
+        }
+
         // TODO -> REFACTOR -> Why are we resetting the reward variables here? Why are there are two RewardVariableTables?
         rewardVariablesTable.setExperiment(experiment);
         updateSimulationMetrics();

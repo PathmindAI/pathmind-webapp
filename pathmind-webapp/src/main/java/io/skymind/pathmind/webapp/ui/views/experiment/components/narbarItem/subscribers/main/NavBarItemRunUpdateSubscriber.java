@@ -18,7 +18,7 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
     public void handleBusEvent(RunUpdateBusEvent event) {
         // We have to do it manually here because we could be in another tabbed browser and we don't have a full reload, just the run.
         ExperimentUtils.addOrUpdateRuns(experimentsNavBarItem.getExperiment(), event.getRuns());
-        experimentsNavBarItem.getExperiment().updateTrainingStatus();
+        ExperimentUtils.updateTrainingStatus(experimentsNavBarItem.getExperiment());
         experimentsNavBarItem.updateVariableComponentValues();
     }
 

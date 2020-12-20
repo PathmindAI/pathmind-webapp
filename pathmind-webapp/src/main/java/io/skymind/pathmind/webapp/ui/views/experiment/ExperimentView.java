@@ -66,9 +66,6 @@ public class ExperimentView extends DefaultExperimentView {
     private Anchor downloadModelAlpLink;
     private Button shareButton;
 
-    // TODO -> STEPH -> Are there class instances we may not need references to here like those I just committed. For example do we really
-    // a reference to middlePanel or is it just a temporary instance that can be passed as a return value in a method?
-    private HorizontalLayout middlePanel;
     private TagLabel archivedLabel;
     private TagLabel sharedWithSupportLabel;
 
@@ -90,7 +87,6 @@ public class ExperimentView extends DefaultExperimentView {
     protected ExperimentNotesField comparisonNotesField;
     private ObservationsPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
-    // TODO -> STEPH -> Only needed because I haven't yet pushed the comparison code to a subscriber.
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
 
     @Autowired
@@ -118,11 +114,10 @@ public class ExperimentView extends DefaultExperimentView {
         addClassName("experiment-view");
     }
 
-    // TODO -> STEPH -> Confirm that all subscribers in the experiment view are actually still required.
-    // TODO -> STEPH -> Look at all onAttach and onDetach to remove any that are no longer needed.
+    // TODO -> STEPH -> Look at all onAttach and onDetach to remove any that are no longer needed. Still need to remove compareView possibly.
     @Override
     protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, () -> getUI(),
+        EventBus.subscribe(this, getUISupplier(),
                 getViewSubscribers());
     }
 
@@ -151,8 +146,6 @@ public class ExperimentView extends DefaultExperimentView {
         archivedLabel = new TagLabel("Archived", false, "small");
         sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
 
-        setupExperimentContentPanel();
-
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
@@ -174,7 +167,7 @@ public class ExperimentView extends DefaultExperimentView {
                     titleBar,
                     stoppedTrainingNotification,
                     modelNeedToBeUpdatedLabel,
-                    middlePanel,
+                    getMiddlePanel(),
                     getBottomPanel()
                 ),
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -215,8 +208,8 @@ public class ExperimentView extends DefaultExperimentView {
         return true;
     }
 
-    private void setupExperimentContentPanel() {
-        middlePanel = WrapperUtils.wrapWidthFullHorizontal();
+    private HorizontalLayout getMiddlePanel() {
+        HorizontalLayout middlePanel = WrapperUtils.wrapWidthFullHorizontal();
         middlePanel.add(
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
@@ -226,6 +219,7 @@ public class ExperimentView extends DefaultExperimentView {
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
         middlePanel.setSpacing(false);
+        return middlePanel;
     }
 
     private VerticalLayout generateRewardFunctionGroup(CodeViewer codeViewer) {
@@ -336,13 +330,12 @@ public class ExperimentView extends DefaultExperimentView {
 
     @Override
     protected void createExperimentComponents() {
-        // TODO -> STEPH -> create other components
         experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
         experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
         experimentCodeViewer = new CodeViewer(() -> getUI());
+        experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
         // TODO -> STEPH -> We need to be able to create the observations table without experiment in the constructor if possible.
-        experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), experiment, () -> getUI());
         experimentObservationsPanel = new ObservationsPanel(experiment, true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
@@ -367,7 +360,7 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI());
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         comparisonCodeViewer = new CodeViewer(() -> getUI());
-        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), experiment, () -> getUI());
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
         // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
         comparisonObservationsPanel = new ObservationsPanel(experiment, true);
 

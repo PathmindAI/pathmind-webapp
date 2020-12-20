@@ -125,10 +125,6 @@ public class CompareMetricsChart extends DataChart {
         if (showEmptyChart) {
             series = Json.createObject();
         } else {
-            // updateBestPolicy must be done first as we're going to use the calculations in it to determine the size of the RewardVariables array.
-            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-//            updateBestPolicy(bestPolicy);
-            // HOTFIX
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
             createAxisTitles();

@@ -4,6 +4,7 @@ import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentCompareVi
 import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentCompareViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
+// TODO -> STEPH -> This should be an action rather than an event.
 public class ExperimentViewExperimentCompareViewSubscriber extends ExperimentCompareViewSubscriber {
 
     private ExperimentView experimentView;

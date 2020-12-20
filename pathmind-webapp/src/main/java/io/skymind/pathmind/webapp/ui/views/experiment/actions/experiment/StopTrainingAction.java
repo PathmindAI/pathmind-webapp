@@ -18,7 +18,6 @@ public class StopTrainingAction {
             trainingService.stopRun(experiment);
             experimentView.getSegmentIntegrator().stopTraining();
             stopTrainingButton.setVisible(false);
-            // TODO -> STEPH -> This should now be done through experimentView.setExperiment() for the current view and only other views should listen for events.
             fireEvents(experiment);
         });
     }

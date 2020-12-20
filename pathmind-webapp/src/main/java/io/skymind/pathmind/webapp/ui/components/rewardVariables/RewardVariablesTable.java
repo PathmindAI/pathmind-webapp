@@ -26,16 +26,13 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
-    private Supplier<Optional<UI>> getUISupplier;
     private Integer selectedRewardVariables;
 
-    public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier) {
-        this(getUISupplier, () -> {
-        });
+    public RewardVariablesTable() {
+        this(() -> {});
     }
 
-    public RewardVariablesTable(Supplier<Optional<UI>> getUISupplier, Command goalFieldValueChangeHandler) {
-        this.getUISupplier = getUISupplier;
+    public RewardVariablesTable(Command goalFieldValueChangeHandler) {
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setPadding(false);
         setSpacing(false);
@@ -76,7 +73,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(getUISupplier, rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
             container.add(row);
             rewardVariableNameFields.add(row);
         });

@@ -277,7 +277,7 @@ public class RunDAO {
         assert currentIndex != -1;
         runsForExperiment.set(currentIndex, run);
         experiment.setRuns(runsForExperiment);
-        experiment.updateTrainingStatus();
+        ExperimentUtils.updateTrainingStatus(experiment);
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }
 
@@ -304,8 +304,6 @@ public class RunDAO {
         }
 
         if(experiment.getBestPolicy() != null) {
-            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-//            PolicyUtils.updateSimulationMetricsData(bestPolicy);
             if (experiment.isHasGoals()) {
                 int goalsReached = 0;
                 for (RewardVariable rv : rewardVariablesWithGoals) {

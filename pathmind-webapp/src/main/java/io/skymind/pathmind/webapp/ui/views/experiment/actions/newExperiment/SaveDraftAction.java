@@ -13,10 +13,9 @@ public class SaveDraftAction {
 
         newExperimentView.updateExperimentFromComponents();
 
-        // TODO -> STEPH -> Combine all the individual saves into one DAO call, that is ExperimentDAO. That way we can both have less
-        // database calls AND we only need to pass one DAO layer class to this action (and view).
-        // TODO -> STEPH -> Confirm that this is the correct observations table we want to save.
-       observationDAO.saveExperimentObservations(experiment.getId(), experiment.getSelectedObservations());
+        // TODO -> REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2597 Combine all the individual saves into one DAO call, that
+        //  is ExperimentDAO. That way we can both have less database calls AND we only need to pass one DAO layer class to this action (and view).
+        observationDAO.saveExperimentObservations(experiment.getId(), experiment.getSelectedObservations());
         experimentDAO.updateUserNotes(experiment.getId(), experiment.getUserNotes());
         experimentDAO.updateRewardFunction(experiment);
 

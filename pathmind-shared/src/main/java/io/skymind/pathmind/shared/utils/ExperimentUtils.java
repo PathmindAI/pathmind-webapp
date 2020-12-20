@@ -10,11 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static io.skymind.pathmind.shared.constants.RunStatus.*;
+import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 
 public class ExperimentUtils {
 
@@ -82,7 +86,6 @@ public class ExperimentUtils {
                 .reduce(0, Integer::sum);
     }
 
-    // TODO -> STEPH -> This should be moved to the experiment load code because it's called in multiple places.
     public static double getEstimatedTrainingTime(Experiment experiment, double progress) {
         long totalSeconds = experiment.getRuns().stream()
                 .map(r -> {
@@ -213,6 +216,7 @@ public class ExperimentUtils {
         experiment.setBestPolicy(PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null));
     }
 
+    // TODO -> STEPH -> Confirm we can delete this as it's been moved.
 //    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
 //        experiment.getRuns().stream()
 //                .filter(r -> RunStatus.isError(r.getStatusEnum()))
@@ -240,4 +244,47 @@ public class ExperimentUtils {
         return message.split("\\n", 2)[0];
     }
 
+    public static void updateTrainingStatus(Experiment experiment) {
+        RunStatus status = experiment.getRuns().stream()
+                .map(Run::getStatusEnum)
+                .min(Comparator.comparingInt(RunStatus::getValue))
+                .orElse(NotStarted);
+
+        // In Running status, there can be some runs completed while others are yet to be started
+        // So checking that to make sure
+        if (status == NotStarted || status == Starting) {
+            if (experiment.getRuns().stream()
+                    .map(Run::getStatusEnum)
+                    .map(RunStatus::getValue)
+                    .anyMatch(statusVal -> statusVal > Starting.getValue())) {
+                status = Running;
+            }
+        }
+
+        if (status == RunStatus.Killed) {
+            if (experiment.getRuns().stream()
+                    .map(Run::getTrainingErrorId)
+                    .anyMatch(errorId -> errorId > 0)) {
+                status = Error;
+            }
+        }
+
+        experiment.setTrainingStatusEnum(status);
+    }
+
+    public static void updateExperimentInternals(Experiment experiment) {
+
+        ExperimentUtils.updateBestPolicy(experiment);
+
+        if(experiment.getBestPolicy() != null) {
+            PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
+            PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
+        }
+
+        ExperimentUtils.updateTrainingStatus(experiment);
+
+        // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
+//        updateTrainingErrorAndMessage(ctx, experiment);
+//        ExperimentUtils.updateEarlyStopReason(experiment);
+    }
 }

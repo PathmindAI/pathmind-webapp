@@ -13,12 +13,13 @@ public class CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscri
         this.compareMetricsChartPanel = compareMetricsChartPanel;
     }
 
+    /**
+     * This is an event rather than an action because it's not always needed, and in those cases that it is the nested component structure is quite
+     * significant and as a result it's a lot easier to manage this with an event than an action even though it should technically be an action.
+     * @param event
+     */
     @Override
     public void handleBusEvent(ExperimentRewardVariableSelectedViewBusEvent event) {
-        // TODO -> STEPH -> Should this be an event or an action? Most likely an action.
-        // TODO -> STEPH -> What exactly does this do again? And can this be pushed to later?
-        // TODO: This is triggered upon switching between experiments. 
-        // The compare metric chart is not showing the correct number of lines if user has toggled reward variables selection.
         if (event.isShow()) {
             compareMetricsChartPanel.getRewardVariableFilters().putIfAbsent(event.getRewardVariable().getId(), event.getRewardVariable());
         } else {

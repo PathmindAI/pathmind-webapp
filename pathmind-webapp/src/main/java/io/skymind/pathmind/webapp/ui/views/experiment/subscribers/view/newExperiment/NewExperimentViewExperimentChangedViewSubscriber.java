@@ -4,6 +4,7 @@ import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentChangedVi
 import io.skymind.pathmind.webapp.bus.subscribers.view.experiment.ExperimentChangedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
+// TODO -> STEPH -> SHould not be an event any more.
 public class NewExperimentViewExperimentChangedViewSubscriber extends ExperimentChangedViewSubscriber {
 
     private NewExperimentView newExperimentView;

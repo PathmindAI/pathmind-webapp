@@ -4,6 +4,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 
+// TODO -> STEPH -> Needs to be moved to an action.
 public class ExperimentCompareViewBusEvent implements PathmindViewBusEvent {
 
     private Experiment experiment;

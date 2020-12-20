@@ -278,13 +278,12 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     protected void createExperimentComponents() {
-        // TODO -> STEPH -> create other components
         // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
         rewardFunctionEditor = new RewardFunctionEditor(rewardValidationService);
         // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
         observationsPanel = new ObservationsPanel(experiment, false);
-        rewardVariablesTable = new RewardVariablesTable(getUISupplier());
+        rewardVariablesTable = new RewardVariablesTable();
 
         experimentComponentList.addAll(List.of(
                 notesField,

@@ -29,7 +29,6 @@ public class CompareMetricsChartPanel extends VerticalLayout {
     private Map<Long, RewardVariable> rewardVariableFilters;
 
     private Supplier<Optional<UI>> getUISupplier;
-
     public CompareMetricsChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
         rewardVariableFilters = new ConcurrentHashMap<>();
@@ -82,6 +81,15 @@ public class CompareMetricsChartPanel extends VerticalLayout {
         return rewardVariableFilters;
     }
 
+    public void updateChart() {
+        // Update chart data
+        List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
+        chart.setCompareMetricsChart(filteredAndSortedList, experiment.getBestPolicy());
+
+        redrawChart();
+    }
+
+
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
@@ -92,13 +100,4 @@ public class CompareMetricsChartPanel extends VerticalLayout {
         EventBus.subscribe(this, getUISupplier,
                 new CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber(this));
     }
-
-    public void updateChart() {
-        // Update chart data
-        List<RewardVariable> filteredAndSortedList = new ArrayList<>(rewardVariableFilters.values());
-        chart.setCompareMetricsChart(filteredAndSortedList, experiment.getBestPolicy());
-
-        redrawChart();
-    }
 }
-

@@ -20,7 +20,6 @@ import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 @Service
 public class ExperimentGoalsUpdateAsyncBatchService {
 
-    private final PolicyDAO policyDAO;
     private final RunDAO runDAO;
     private final ExperimentDAO experimentDAO;
     private final DSLContext ctx;
@@ -28,8 +27,7 @@ public class ExperimentGoalsUpdateAsyncBatchService {
     private final Boolean skip;
 
     public ExperimentGoalsUpdateAsyncBatchService(@Value("${pathmind.skip-goals-migration}") boolean skip,
-                                                  PolicyDAO policyDAO, RunDAO runDAO, ExperimentDAO experimentDAO, DSLContext ctx) {
-        this.policyDAO = policyDAO;
+                                                  RunDAO runDAO, ExperimentDAO experimentDAO, DSLContext ctx) {
         this.runDAO = runDAO;
         this.experimentDAO = experimentDAO;
         this.ctx = ctx;
@@ -52,8 +50,6 @@ public class ExperimentGoalsUpdateAsyncBatchService {
                     ctx.transaction(conf -> {
                         DSLContext transactionCtx = DSL.using(conf);
                         experimentDAO.getFullExperiment(experimentId).ifPresent(experiment -> {
-                            // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-//                            List<Policy> policies = policyDAO.getPoliciesForExperiment(transactionCtx, experiment.getId());
                             runDAO.calculateGoals(transactionCtx, experiment);
                         });
                     });
