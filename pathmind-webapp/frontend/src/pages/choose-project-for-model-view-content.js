@@ -19,15 +19,14 @@ class ChooseProjectForModelViewContent extends PolymerElement {
         .inner-content {
             text-align: left;
         }
-        .inner-content > vaadin-vertical-layout {
-            margin-bottom: var(--lumo-space-xl);
-        }
-        vaadin-combo-box,
-        vaadin-text-field {
-            margin-bottom: var(--lumo-space-xl);
+        vaadin-combo-box {
+            margin-bottom: var(--lumo-space-l);
         }
         vaadin-text-field {
             padding-top: 0;
+        }
+        #submitButton {
+            margin-top: var(--lumo-space-xxl);
         }
     </style>
     <vaadin-horizontal-layout class="panel-wrapper">
@@ -35,28 +34,20 @@ class ChooseProjectForModelViewContent extends PolymerElement {
         <vaadin-vertical-layout class="inner-content">
           <h3>Choose the Project for Your Model</h3>
           <p>Model uploaded. Now let's assign it to a project.</p>
-          <vaadin-vertical-layout hidden="{{showCreateNewProjectSection}}">
+          <vaadin-vertical-layout>
             <vaadin-combo-box
                 id="projectDropdown"
-                placeholder="Choose an existing project"
+                placeholder="Choose a project"
                 error-message="Please choose a project"
                 required
                 on-change="selectOnChange"
             ></vaadin-combo-box>
-            <p>Alternatively, you may choose to create a new project for this model.</p>
-            <vaadin-button id="switchToCreateProjectButton" theme="tertiary-inline" on-click="switchToCreateProjectButtonClicked">
-              Add to New Project
-            </vaadin-button>
           </vaadin-vertical-layout>
-          <vaadin-vertical-layout hidden="{{!showCreateNewProjectSection}}">
+          <vaadin-vertical-layout hidden="{{!isCreateNewProject}}">
             <vaadin-text-field
                 id="projectName"
                 label="New Project Name"
-                required
             ></vaadin-text-field>
-            <vaadin-button id="switchToExistingProjectButton" theme="tertiary-inline" on-click="switchToExistingProjectButtonClicked">
-                Add to Existing Project
-            </vaadin-button>
           </vaadin-vertical-layout>
         <vaadin-button id="submitButton" theme="primary" on-click="handleSubmitButtonClicked">
             Next
@@ -66,8 +57,31 @@ class ChooseProjectForModelViewContent extends PolymerElement {
     </vaadin-horizontal-layout>`;
   }
 
+  constructor() {
+      super();
+
+      customElements.whenDefined('vaadin-combo-box').then(() => {
+          const comboBox = this.$.projectDropdown;
+          comboBox.renderer = function(root, owner, model) {
+              if (model.item.label === "Create a New Project") {
+                root.innerHTML = `<vaadin-button theme='primary small' style='width: 100%;'>${model.item.label}</vaadin-button>`;
+              } else {
+                root.innerHTML = model.item.label;
+              }
+          }
+          comboBox.addEventListener("value-changed", (event) => {
+            if (event.target.value == 1) { // Create a New Project
+                this.isCreateNewProject = true;
+            } else {
+                this.isCreateNewProject = false;
+            }
+          });
+      });
+  }
+
   ready() {
       super.ready();
+      
       const projectNameTextField = this.$.projectName;
       projectNameTextField.focus();
       projectNameTextField.addEventListener("keyup", event => {
@@ -78,12 +92,7 @@ class ChooseProjectForModelViewContent extends PolymerElement {
       });
   }
 
-  switchToCreateProjectButtonClicked() {
-    this.showCreateNewProjectSection = true;
-  }
-
-  switchToExistingProjectButtonClicked() {
-    this.showCreateNewProjectSection = false;
+  selectOnChange(event) {
   }
 
   static get is() {
@@ -92,7 +101,7 @@ class ChooseProjectForModelViewContent extends PolymerElement {
 
   static get properties() {
     return {
-      showCreateNewProjectSection: {
+      isCreateNewProject: {
         type: Boolean,
         value: false,
       },

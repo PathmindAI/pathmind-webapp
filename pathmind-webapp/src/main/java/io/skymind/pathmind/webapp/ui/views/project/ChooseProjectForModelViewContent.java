@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Scope;
 @JsModule("./src/pages/choose-project-for-model-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProjectForModelViewContent.Model> {
+public class ChooseProjectForModelViewContent extends PolymerTemplate<TemplateModel> {
 
     @Id("projectDropdown")
     private ComboBox<Project> projectDropdown;
@@ -45,52 +45,56 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
     private SegmentIntegrator segmentIntegrator;
     private List<Project> projects;
     private Boolean addToNewProject = false;
+    private String createNewProjectText = "Create a New Project";
 
     @Autowired
     public ChooseProjectForModelViewContent(ProjectDAO projectDAO, SegmentIntegrator segmentIntegrator) {
         this.projectDAO = projectDAO;
         this.segmentIntegrator = segmentIntegrator;
+        Project dummyProject = new Project();
+        dummyProject.setName(createNewProjectText);
         projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId())
                         .stream()
                         .filter(project -> !project.isArchived())
                         .sorted(Comparator.comparing(Project::getLastActivityDate).reversed())
                         .collect(Collectors.toList());
+        projects.add(0, dummyProject);
         setupProjectDropdown();
         initBinder();
     }
 
     private void setupProjectDropdown() {
+        projectDropdown.setRequired(true);
         projectDropdown.setItemLabelGenerator(Project::getName);
         projectDropdown.setItems(projects);
-
     }
 
     @EventHandler
     private void handleSubmitButtonClicked() {
-        addToNewProject = getModel().getShowCreateNewProjectSection();
+
+        chosenProject = projectDropdown.getValue();
+
+        if (chosenProject == null) {
+            projectDropdown.setInvalid(true);
+            return;
+        }
+
+        addToNewProject = chosenProject.getName().equals(createNewProjectText);
 
         if (addToNewProject) {
             projectNameTextField.setRequired(true);
-            projectDropdown.setRequired(false);
 
             if (!FormUtils.isValidForm(binder, newProject)) {
                 return;
             }
         } else {
             projectNameTextField.setRequired(false);
-            projectDropdown.setRequired(true);
-
-            if (chosenProject == null) {
-                projectDropdown.setInvalid(true);
-                return;
-            }
         }
 
         if (addToNewProject) {
             // final long projectId = projectDAO.createNewProject(project);
             System.out.println("Submission successful: add to new project "+newProject.getName());
         } else {
-            chosenProject = projectDropdown.getValue();
             System.out.println("Submission successful: add to existing project "+chosenProject.getName());
         }
         // getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
@@ -99,7 +103,6 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
 
     @EventHandler
     private void selectOnChange() {
-
     }
 
     private void initBinder() {
@@ -112,9 +115,5 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
         binder.readBean(newProject);
 
         binder.setBean(newProject);
-    }
-
-    public interface Model extends TemplateModel {
-        Boolean getShowCreateNewProjectSection();
     }
 }
