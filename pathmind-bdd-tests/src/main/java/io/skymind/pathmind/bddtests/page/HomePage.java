@@ -50,7 +50,7 @@ public class HomePage extends PageObject {
 
     public void openProjectsPage() {
         projectsBtn.click();
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='v-loading-indicator first' and @style='display: none;']")));
+        utils.waitForLoadingBar();
     }
 
     public void logoutFromPathmind() {

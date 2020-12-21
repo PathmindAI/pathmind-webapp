@@ -137,7 +137,11 @@ public class Utils extends PageObject {
     }
 
     public void waitForLoadingBar() {
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='v-loading-indicator first' and @style='display: none;']")));
+        try {
+            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='v-loading-indicator first' and @style='display: none;']")));
+        }catch (org.openqa.selenium.NoSuchElementException ex){
+            ex.printStackTrace();
+        }
     }
 
     public void generateBigModelWithName(String name) throws IOException {

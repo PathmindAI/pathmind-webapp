@@ -104,4 +104,8 @@ public class ProjectsPage extends PageObject {
         int cellNumber = Integer.parseInt(projectCellNumber) + 1;
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
     }
+
+    public void projectsPageCheckProjectModelsNumber(String projectName, String modelsNumber) {
+        assertThat(getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(modelsNumber));
+    }
 }
