@@ -53,7 +53,7 @@ public class ProjectsPage extends PageObject {
 
     public void clickProjectsArchiveButton(String projectName) {
         waitABit(2000);
-        getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[4]/descendant::vaadin-button")).click();
+        getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[5]/descendant::vaadin-button")).click();
     }
 
     public void clickProjectsTab() {
