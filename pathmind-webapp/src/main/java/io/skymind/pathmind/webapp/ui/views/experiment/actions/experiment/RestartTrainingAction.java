@@ -12,13 +12,16 @@ public class RestartTrainingAction {
         if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, experimentView.getUserCaps(), experimentView.getSegmentIntegrator())) {
             return;
         }
-        Experiment experiment = experimentView.getExperiment();
-        trainingService.startRun(experiment);
-        experimentView.getSegmentIntegrator().restartTraining();
-        // IMPORTANT -> Note that trainingService.startRun(experiment) alters the experiment instance and so it needs to be reloaded. The only question
-        // is whether we need to reload everything or if we can just reload some parts. Due to time constraints we're going to reload everything for now
-        // through the setExperiment() instead of just using updateDetailsForExperiment().
-        experimentView.setExperiment(experiment);
-        // TODO -> TICKET -> https://github.com/SkymindIO/pathmind-webapp/issues/2598 Possible bug found? Why aren't we firing an event for the other browsers?
+
+        synchronized (experimentView.getExperimentLock()) {
+            Experiment experiment = experimentView.getExperiment();
+            trainingService.startRun(experiment);
+            experimentView.getSegmentIntegrator().restartTraining();
+            // IMPORTANT -> Note that trainingService.startRun(experiment) alters the experiment instance and so it needs to be reloaded. The only question
+            // is whether we need to reload everything or if we can just reload some parts. Due to time constraints we're going to reload everything for now
+            // through the setExperiment() instead of just using updateComponents().
+            experimentView.setExperiment(experiment);
+            // TODO -> TICKET -> https://github.com/SkymindIO/pathmind-webapp/issues/2598 Possible bug found? Why aren't we firing an event for the other browsers?
+        }
     }
 }

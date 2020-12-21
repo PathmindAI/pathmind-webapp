@@ -29,11 +29,6 @@ public class TrainingErrorDAO {
         return Optional.ofNullable(error);
     }
 
-    // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-//    public Optional<TrainingError> getErrorById(long errorId) {
-//        return Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, errorId));
-//    }
-
     @Cacheable("all_training_errors_keywords")
     public List<String> getAllErrorsKeywords() {
         return TrainingErrorRepository.getAllErrorsKeywords(ctx);

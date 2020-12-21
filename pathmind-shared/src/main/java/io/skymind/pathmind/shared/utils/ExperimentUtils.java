@@ -211,22 +211,9 @@ public class ExperimentUtils {
         }
     }
 
-    // TODO -> STEPH -> Temporary location to be consistent with the other methods to update the experiments internal values.
     public static void updateBestPolicy(Experiment experiment) {
         experiment.setBestPolicy(PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null));
     }
-
-    // TODO -> STEPH -> Confirm we can delete this as it's been moved.
-//    public static void updateTrainingErrorAndMessage(TrainingErrorDAO trainingErrorDAO, Experiment experiment) {
-//        experiment.getRuns().stream()
-//                .filter(r -> RunStatus.isError(r.getStatusEnum()))
-//                .findAny()
-//                .ifPresent(run ->
-//                        trainingErrorDAO.getErrorById(run.getTrainingErrorId()).ifPresent(trainingError -> {
-//                            experiment.setAllowRestartTraining(trainingError.isRestartable());
-//                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-//                        }));
-//    }
 
     public static void updateEarlyStopReason(Experiment experiment) {
         experiment.getRuns().stream()

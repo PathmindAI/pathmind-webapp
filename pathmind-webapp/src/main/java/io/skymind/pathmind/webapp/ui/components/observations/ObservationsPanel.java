@@ -30,19 +30,21 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     private Experiment experiment;
     private List<Observation> selectedObservations;
 
-    // For ProjectView only
+    /**
+     * For ProjectView only
+      */
     public ObservationsPanel(List<Observation> modelObservations) {
-        this(modelObservations, modelObservations, true, true);
+        this(modelObservations, true, true);
     }
 
-    public ObservationsPanel(Experiment experiment, Boolean isReadOnly) {
-        this(experiment.getModelObservations(), experiment.getSelectedObservations(), isReadOnly, false);
-        this.experiment = experiment;
+    /**
+     * For Experiment views only.
+     */
+    public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly) {
+        this(modelObservations, isReadOnly, false);
     }
 
-    public ObservationsPanel(List<Observation> modelObservations, List<Observation> selectedObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
-
-        this.selectedObservations = selectedObservations;
+    public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
 
         observationsTable = new ObservationsTable(isReadOnly);
 
@@ -66,12 +68,13 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
             // This is only for the experiment views. In that case we want to make sure they are different, meaning it's due to a
             // user initiated action rather than switching experiments within the view.
             List<Observation> selectedObservationsFromEvent = evt.stream().collect(Collectors.toList());
-            if(!ObservationUtils.areObservationsEqual(this.selectedObservations, selectedObservationsFromEvent)) {
+            if(!ObservationUtils.areObservationsEqual(getSelectedObservations(), selectedObservationsFromEvent)) {
                 experiment.setSelectedObservations(selectedObservationsFromEvent);
                 EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
             }
         });
     }
+
 
     private void setupObservationTable(List<Observation> modelObservations, List<Observation> selectedObservations) {
         observationsTable.setItems(new HashSet<>(modelObservations));
@@ -91,10 +94,6 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     }
 
     public void setSelectedObservations(List<Observation> observations) {
-        // REFACTOR -> This should really be part of the experiment because we have a lot of code that has to be duplicated all over the place
-        // to have the selectedObservations follow. And really they are the selected observations for the experiment.
-        // IMPORTANT -> This needs to be done before setting the value. If the above refactoring is done then this is no longer needed,
-        // and in fact this whole method may not be needed outside of the project view.
         this.selectedObservations = observations;
         observationsTable.setValue(new HashSet<>(observations));
     }
@@ -115,6 +114,8 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        setSelectedObservations(experiment.getSelectedObservations());
+
     }
 
     @Override

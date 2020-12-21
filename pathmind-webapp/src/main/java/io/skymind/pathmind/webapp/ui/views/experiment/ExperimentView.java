@@ -55,9 +55,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 @Slf4j
 public class ExperimentView extends DefaultExperimentView {
 
-    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
-    private Object experimentLock = new Object();
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveExperimentButton;
@@ -110,7 +107,6 @@ public class ExperimentView extends DefaultExperimentView {
         addClassName("experiment-view");
     }
 
-    // TODO -> STEPH -> Look at all onAttach and onDetach to remove any that are no longer needed. Still need to remove compareView possibly.
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier(),
@@ -222,7 +218,6 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
-        // TODO -> STEPH -> Can we combine logic somewhere so that it's just one place. The naming isn't clear what is what to me.
         boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
         String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
         return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -232,7 +227,6 @@ public class ExperimentView extends DefaultExperimentView {
 
     protected Div getButtonsWrapper() {
         createButtons();
-        // TODO -> STEPH -> Experiment lock may need to be re-introduced for racing conditions between update and laoding/switching experiments.
         restartTrainingButton.setVisible(false);
         restartTrainingButton.addClassNames("large-image-btn", "run");
         stopTrainingButton.setVisible(true);
@@ -281,7 +275,6 @@ public class ExperimentView extends DefaultExperimentView {
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
         restartTrainingButton.setVisible(false);
 
-        // TODO -> STEPH -> Do we need both visible and enabled since if it's not visible there's nothing to click?
         boolean allowRestart = experiment.isAllowRestartTraining() && ModelUtils.isValidModel(experiment.getModel());
         restartTrainingButton.setVisible(allowRestart);
         restartTrainingButton.setEnabled(allowRestart);
@@ -294,16 +287,15 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     @Override
-    protected void validateCorrectViewForExperiment() {
+    protected boolean isValidViewForExperiment() {
         if(experimentDAO.isDraftExperiment(experimentId)) {
             // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
             // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
             UI.getCurrent().navigate(NewExperimentView.class, experimentId);
+            return false;
+        } else {
+            return true;
         }
-    }
-
-    public Object getExperimentLock() {
-        return experimentLock;
     }
 
     public void showCompareExperimentComponents(boolean isCompareVisible) {
@@ -317,8 +309,8 @@ public class ExperimentView extends DefaultExperimentView {
         experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
         experimentCodeViewer = new CodeViewer(() -> getUI());
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
-        // TODO -> STEPH -> We need to be able to create the observations table without experiment in the constructor if possible.
-        experimentObservationsPanel = new ObservationsPanel(experiment, true);
+        // This is an exception because the modelObservations are the same for all experiments in the same group.
+        experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
@@ -334,17 +326,12 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected void createComparisonComponents() {
         // TODO -> STEPH -> Possibly found bug? -> In dev if you do url/experiment/newExperimentID it loads but doesn't change the URL.
-        // TODO -> STEPH -> Not all events needs to clone all data such as the experiment chart data.
-        // TODO -> STEPH -> Should we even clone event data like experiments when in most cases we want to replace them. Especially
-        // if we do the processing before the event is fired so it's done only once. Yes each component can alter the instance
-        // but if it's done before the event is fired then it saves every component from having to update each instance separately, not
-        // to mention all the instance creations and destructions.
         comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI());
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         comparisonCodeViewer = new CodeViewer(() -> getUI());
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
-        // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
-        comparisonObservationsPanel = new ObservationsPanel(experiment, true);
+        // This is an exception because the modelObservations are the same for all experiments in the same group.
+        comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
 
         comparisonExperimentComponents.addAll(List.of(
                 comparisonNotesField,

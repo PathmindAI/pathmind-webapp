@@ -17,7 +17,9 @@ public class NewExperimentSelectAction {
                 newExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
             } else {
                 newExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT + "/" + experiment.getId()));
-                newExperimentView.setExperiment(experiment);
+                synchronized (newExperimentView.getExperimentLock()) {
+                    newExperimentView.setExperiment(experiment);
+                }
             }
         });
     }

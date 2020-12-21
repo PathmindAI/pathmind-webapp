@@ -178,8 +178,8 @@ public class ExperimentDAO {
         experiment.setPolicies(loadPoliciesForExperiment(ctx, experiment.getId()));
 
         ExperimentUtils.updateExperimentInternals(experiment);
+
         // There are no extra costs if the experiment is in draft because all the values will be empty.
-        // TODO -> STEPH -> This cannot be trainingErrorDAO (DAO), needs to be at the Repository level however this code also seems to contain logic.
         updateTrainingErrorAndMessage(ctx, experiment);
         ExperimentUtils.updateEarlyStopReason(experiment);
     }

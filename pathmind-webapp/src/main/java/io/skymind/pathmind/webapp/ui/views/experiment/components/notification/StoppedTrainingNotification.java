@@ -50,11 +50,6 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
         clearErrorState();
 
         if (experiment.getTrainingStatusEnum() == RunStatus.Error || experiment.getTrainingStatusEnum() == RunStatus.Killed) {
-            // TODO -> STEPH -> getTrainingErrorAndMessage should be done only once and it should  be done before here.
-            // TODO -> STEPH -> This appears to be shown even when an experiment is loaded but need to confirm in dev. Just not sure how. I'll try locally by forcing an
-            // error in the debugger.
-            // TODO -> STEPH -> Can we not combine the above logic into a single if statement? Why is ExperimentUtils.updateTrainingErrorAndMessage() also have filters
-            // on RunStatus.Error but NOT on RunStatus.killed???
             if(experiment.isTrainingError()) {
                 showTheReasonWhyTheTrainingStopped(experiment.getTrainingError(), ERROR_LABEL, false);
             }
@@ -62,6 +57,5 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
             // TODO -> STEPH -> Confirm there's no logic error here because the code is odd. We have a toggle for isSuccess but the logic looks like it can only be true...
             showTheReasonWhyTheTrainingStopped(experiment.getTrainingStoppedEarlyMessage(), SUCCESS_LABEL, true);
         }
-
     }
 }

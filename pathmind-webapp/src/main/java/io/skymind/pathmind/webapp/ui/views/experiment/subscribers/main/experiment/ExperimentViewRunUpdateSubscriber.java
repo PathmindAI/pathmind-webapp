@@ -21,19 +21,20 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
 
-        // TODO -> STEPH -> do we need experimentLock here?
-        Experiment experiment = experimentView.getExperiment();
+        synchronized (experimentView.getExperimentLock()) {
+            Experiment experiment = experimentView.getExperiment();
 
-        experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
-        ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
-        ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
-        ExperimentUtils.updateExperimentInternals(experiment);
+            experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
+            ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
+            ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
+            ExperimentUtils.updateExperimentInternals(experiment);
 
-        // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
+            // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
 //        updateTrainingErrorAndMessage(ctx, experiment);
 //        ExperimentUtils.updateEarlyStopReason(experiment);
 
-        experimentView.updateDetailsForExperiment();
+            experimentView.updateComponents();
+        }
     }
 
     @Override

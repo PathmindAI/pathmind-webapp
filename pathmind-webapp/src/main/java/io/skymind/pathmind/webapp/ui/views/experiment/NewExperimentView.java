@@ -50,14 +50,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends DefaultExperimentView implements BeforeLeaveObserver {
 
-    // We have to use a lock object rather than the experiment because we are
-    // changing it's reference which makes it not thread safe. As well we cannot
-    // lock
-    // on this because part of the synchronization is in the eventbus listener in a
-    // subclass (which is also why we can't use synchronize on the method.
-    // TODO -> STEPH -> We'll have to bring this back for the same reasons as in the experiment view - see those notes for more details.
-    private Object experimentLock = new Object();
-
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
@@ -269,11 +261,14 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     @Override
-    protected void validateCorrectViewForExperiment() {
+    protected boolean isValidViewForExperiment() {
         if(!experimentDAO.isDraftExperiment(experimentId)) {
             // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
             // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
             UI.getCurrent().navigate(ExperimentView.class, experimentId);
+            return false;
+        } else {
+            return true;
         }
     }
 
@@ -281,8 +276,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
         rewardFunctionEditor = new RewardFunctionEditor(rewardValidationService);
-        // TODO -> STEPH -> Below are the components that should not include experiment as part of the constructor because it could be null for the comparison view.
-        observationsPanel = new ObservationsPanel(experiment, false);
+        // This is an exception because the modelObservations are the same for all experiments in the same group.
+        observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false);
         rewardVariablesTable = new RewardVariablesTable();
 
         experimentComponentList.addAll(List.of(

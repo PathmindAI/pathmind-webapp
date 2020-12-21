@@ -31,8 +31,12 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     protected abstract void createExperimentComponents();
     protected abstract void updateComponentEnablements();
-    protected abstract void validateCorrectViewForExperiment();
+    protected abstract boolean isValidViewForExperiment();
     protected abstract BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction();
+
+    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
+    private Object experimentLock = new Object();
 
     @Autowired
     protected ModelService modelService;
@@ -82,18 +86,15 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         experimentComponentList.add(experimentPanelTitle);
         experimentComponentList.add(experimentBreadcrumbs);
 
-        // TODO -> STEPH -> ExperimentsNavBar is special since it's not a specific experiment nor can one be set but we may still
-        // need to do something so for now I'm leaving it here as a reminder to deal with later.
         experimentsNavbar = new ExperimentsNavBar(this, getNavBarSelectedExperimentAction(), experimentDAO);
     }
 
     @Override
     protected void initLoadData() {
-        // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
-        // we will no longer have to retrieve the user information when loading this page.
-        // TODO -> REFACTOR -> This will probably be need to be adjusted when I'm done.
-        validateCorrectViewForExperiment();
-        loadFullExperimentData();
+        // We still need to lock here on load in case there is an event part way through the page's initial load.
+        synchronized (experimentLock) {
+            loadFullExperimentData();
+        }
     }
 
     @Override
@@ -109,44 +110,58 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         return experiment;
     }
 
-    // TODO -> STEPH -> We're reloading the experiment data every time here because we're assuming the data is not complete. This should be decided later as we know more
-    // because it will depend on who calls it. For example should this be done in the subscriber, etc. Keep in mind we'll also need the same code for initLoadData(). Right now
-    // loadExperimentData() is still loading everything, I haven't had the time to fully refactor everything.
+    /**
+     * EXTREMELY IMPORTANT -> Any code that calls this method should get the experimentLock beforehand otherwise it can lead to
+     * racing conditions. The lock can NOT be set in this method because the code setting up the experiment object most likely will
+     * be done OUTSIDE of this method. For example the subscriber may need to update the experiment instance's runs while this method
+     * is being called which would lead to a conflict.
+     */
     public void setExperiment(Experiment experiment) {
-        // Update experiment instances and load full experiment data.
-        // TODO -> STEPH -> this.experiment = experiment doesn't really do much right now but if we change the eventbus not to clone then this line could change. If not then remove the line.
         this.experiment = experiment;
         this.experimentId = experiment.getId();
         loadFullExperimentData();
         updateComponents();
     }
 
-    // TODO -> STEPH -> Need to the same for comparisonExperimentComponents for the notes field save.
     /**
-     * Updates the internal values of the experiment from the components.
+     * This is needed by both the NewExperimentView and the ExperimentView as we can have updates from other browsers and so
+     * on while setting up the experiment data.
+     */
+    public Object getExperimentLock() {
+        return experimentLock;
+    }
+
+     /**
+     * EXTREMELY IMPORTANT -> Any code that calls this method should get the experimentLock beforehand otherwise it can lead to
+     * racing conditions. The lock can NOT be set in this method because the code setting up the experiment object most likely will
+     * be done OUTSIDE of this method. For example the subscriber may need to update the experiment instance's runs while this method
+     * is being called which would lead to a conflict.
+     *
+     * Updates the internal values of the experiment from the components without changing the experiment instance. This is
+      * most often called when say the runs have been updated by a back end event and instead of reloading everything
+      * from the database we just update the experiment instance with the latest data and then re-render the components.
      */
     public void updateExperimentFromComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());
     }
 
-    private void updateComponents() {
+    public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         updateComponentEnablements();
         experimentsNavbar.setVisible(!experiment.isArchived());
     }
 
-    // TODO -> STEPH -> Not sure if this really belongs here or in the view but for now I'm putting it here. It will really depend on if we're
-    // using cloned instances of objects in the eventbus or not. If we don't this code becomes way faster.
-    // The reason updateComponents() and updateDetailsForExperiment() are separated is because updateDetailsForExperiment() may change and so for now it's more of a placeholder.
-    public void updateDetailsForExperiment() {
-        updateComponents();
-    }
-
+    /**
+     * This is separated from initLoadData() simply because it can also be called from within our code and it's not proper to call
+     * initLoadData outside of the initial page/view load.
+     */
     private void loadFullExperimentData() {
-        // TODO -> STEPH -> If not correct it needs to load the correct experiment/newExperiment view and re-route here. As in ifDraft, etc.
-        // Quick database call before loading the full experiment to see if we need to re-route between newExperimentView and ExperimentView and vice versa.
-        experiment = getExperimentForUser(experimentId)
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        // Do a quick database check to see if the user is on the right experiment page, and if so forward them right away rather than load and render the
+        // full experiment which can be expensive.
+        if(isValidViewForExperiment()) {
+            experiment = getExperimentForUser(experimentId)
+                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+        }
     }
 
     public void setComparisonExperiment(Experiment comparisonExperiment) {
