@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -18,6 +15,8 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+
+import static io.skymind.pathmind.webapp.ui.utils.UIConstants.MAX_SELECTED_METRICS_FOR_CHART;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout implements ExperimentComponent {
@@ -86,7 +85,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     public void setNumberOfSelectedRewardVariables(int num) {
         String disableSelectionClassName = "disable-selection";
         selectedRewardVariables = num;
-        if (num >= 2) {
+        if (num >= MAX_SELECTED_METRICS_FOR_CHART) {
             container.addClassName(disableSelectionClassName);
         } else {
             container.removeClassName(disableSelectionClassName);

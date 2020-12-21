@@ -9,6 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -86,7 +87,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), experiment.getRewardVariables());
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
-            if(!rewardFunction.equals(changeEvent.getValue())) {
+            if (!rewardFunction.equals(changeEvent.getValue())) {
                 rewardFunction = changeEvent.getValue();
                 EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
             }
@@ -144,10 +145,18 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     private String generateRewardFunction() {
         StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
+            sb.append("// Here's a suggested reward function to get started\n");
             for (RewardVariable rv : experiment.getRewardVariables()) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
-                    sb.append(MessageFormat.format("reward {0}= after.{1} - before.{1};", goal.getMathOperation(), rv.getName()));
+                    RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
+                    sb.append(
+                            MessageFormat.format(
+                                    "reward {1}= after.{0} - before.{0}; // {2} {0}",
+                                    rv.getName(), // 0
+                                    functionComponent.getMathOperation(), // 1
+                                    functionComponent.getComment() // 2
+                            ));
                     sb.append("\n");
                 }
             }

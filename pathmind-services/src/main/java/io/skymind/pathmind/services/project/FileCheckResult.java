@@ -2,31 +2,33 @@ package io.skymind.pathmind.services.project;
 
 import java.util.List;
 
-public interface FileCheckResult {
+public interface FileCheckResult<T> {
 
-    public boolean isFileCheckComplete();
+    boolean isFileCheckComplete();
 
-    public boolean isFileCheckSuccessful();
+    boolean isFileCheckSuccessful();
 
-    public boolean isCorrectFileType();
+    boolean isCorrectFileType();
 
-    public boolean isModelJarFilePresent();
+    boolean isModelJarFilePresent();
 
-    public boolean isHelperPresent();
+    boolean isHelperPresent();
 
-    public boolean isHelperUnique();
+    boolean isHelperUnique();
 
-    public List<String> getZipContentFileNames();
+    List<String> getDefinedHelpers();
 
-    public List<String> getDefinedHelpers();
+    void setCorrectFileType(boolean correctFileType);
 
-    public void setCorrectFileType(boolean correctFileType);
+    void setModelJarFilePresent(boolean modelJarFilePresent);
 
-    public void setModelJarFilePresent(boolean modelJarFilePresent);
+    void setDefinedHelpers(List<String> definedHelpers);
 
-    public void setZipContentFileNames(List<String> zipContentFileNames);
+    void setFileCheckComplete(boolean fileCheckComplete);
 
-    public void setDefinedHelpers(List<String> definedHelpers);
+    boolean isValidRLPlatform();
 
-    public void setFileCheckComplete(boolean fileCheckComplete);
+    T getParams();
+
+    void setParams(T params);
 }

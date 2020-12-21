@@ -37,7 +37,7 @@ public class PathmindApiAuthenticationProcessingFilter extends AbstractAuthentic
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        String apiKey = request.getHeader(HEADER_API_TOKEN_NAME);
+        String apiKey = StringUtils.trimToEmpty(request.getHeader(HEADER_API_TOKEN_NAME));
 
         if (StringUtils.isEmpty(apiKey)) {
             throw new AuthenticationCredentialsNotFoundException("No API key is provided on request");

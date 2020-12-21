@@ -18,8 +18,8 @@ public class RewardVariablesPage extends PageObject {
     private Utils utils;
 
     public void clickWizardRewardVariableNamesNextBtn() {
-        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='Reward Variable Names']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button"));
-        getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).click();
+        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='Goals']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button"));
+        getDriver().findElement(By.xpath("//span[text()='Goals']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).click();
     }
 
     public void checkThatThereIsAVariableNamed(String variableName) {
@@ -30,11 +30,10 @@ public class RewardVariablesPage extends PageObject {
         assertThat(variables, hasItem(variableName));
     }
 
-    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign, String goal) {
+    public void inputRewardVariableGoalValue(String rewardVariable, String goalSign) {
         getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-select")).click();
         getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']")).click();
-        getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(goal);
-        getDriver().findElement(By.xpath("//span[text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/descendant::vaadin-number-field")).sendKeys(Keys.ENTER);
+        getDriver().findElement(By.xpath("//vaadin-item[@label='" + goalSign + "']"));
     }
 
     public void checkWizardRewardVariableErrorIsShown(String variable, String error) {
@@ -43,6 +42,6 @@ public class RewardVariablesPage extends PageObject {
     }
 
     public void checkWizardNextButtonIsDisabled() {
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Reward Variable Names']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).getAttribute("aria-disabled"), is("true"));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Goals']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).getAttribute("aria-disabled"), is("true"));
     }
 }

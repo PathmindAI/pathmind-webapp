@@ -1,13 +1,9 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../../components/organisms/app-footer.js";
 
 class AccountEditViewContent extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles pathmind-dialog-view">
-                .panel-wrapper {
-                    overflow: initial;
-                }
-            </style>
             <vaadin-horizontal-layout class="panel-wrapper">
                 <div class="content">
                     <span class="section-title-label">Edit Account</span>
@@ -24,19 +20,19 @@ class AccountEditViewContent extends PolymerElement {
                             </vaadin-vertical-layout>
                         </vaadin-vertical-layout>
                     </vaadin-vertical-layout>
-                    <a class="support" href="{{contactLink}}">Contact Support</a>
                 </div>
-            </vaadin-horizontal-layout>`;
+            </vaadin-horizontal-layout>
+            <app-footer 
+                contactlink="{{contactLink}}"
+            ></app-footer>`;
+    }
+
+    _attachDom(dom) {
+        this.appendChild(dom);
     }
 
     static get is() {
         return "account-edit-view-content";
-    }
-
-    static get properties() {
-        return {
-            // Declare your properties here.
-        };
     }
 }
 

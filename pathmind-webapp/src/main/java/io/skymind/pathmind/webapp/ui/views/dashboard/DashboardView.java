@@ -36,7 +36,6 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.dashboard.components.DashboardLine;
-import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.dashboard.dataprovider.DashboardDataProvider;
 import io.skymind.pathmind.webapp.ui.views.dashboard.subscribers.main.DashboardViewRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.dashboard.utils.DashboardUtils;
@@ -61,8 +60,6 @@ public class DashboardView extends PathMindDefaultView {
 
     private Grid<DashboardItem> dashboardGrid;
 
-    private EmptyDashboardPlaceholder placeholder;
-
     private HorizontalLayout newProjectButtonWrapper;
 
     private Span title;
@@ -77,12 +74,10 @@ public class DashboardView extends PathMindDefaultView {
     protected Component getMainContent() {
         title = LabelFactory.createLabel("Recent", CssPathmindStyles.SECTION_TITLE_LABEL);
         newProjectButtonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal(new NewProjectButton());
-        placeholder = new EmptyDashboardPlaceholder(segmentIntegrator);
         setupDashboardGrid();
 
         VerticalLayout gridWrapper = WrapperUtils.wrapSizeFullVertical(
                 title,
-                placeholder,
                 dashboardGrid,
                 newProjectButtonWrapper);
         gridWrapper.setPadding(false);
@@ -167,11 +162,6 @@ public class DashboardView extends PathMindDefaultView {
 
     @Override
     protected void initScreen(BeforeEnterEvent event) {
-        boolean emptyDashboard = dataProvider.isEmpty();
-        title.setVisible(!emptyDashboard);
-        placeholder.setVisible(emptyDashboard);
-        dashboardGrid.setVisible(!emptyDashboard);
-        newProjectButtonWrapper.setVisible(!emptyDashboard);
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
             // dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
             dashboardGrid.setDataProvider(dataProvider);

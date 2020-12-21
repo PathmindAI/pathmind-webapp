@@ -28,6 +28,11 @@ public class ModelUploadStepDefinitions {
         modelUploadSteps.checkErrorMessageInModelCheckPanel(errorMessage);
     }
 
+    @Then("^Check that error message in model check panel starts with \"(.*)\"$")
+    public void checkErrorMessageStartsWith(String errorMessage) {
+        modelUploadSteps.checkErrorMessageStartsWithInModelCheckPanel(errorMessage);
+    }
+
     @When("^Upload ALP file '(.*)'$")
     public void uploadALPFile(String alpFile) {
         modelUploadSteps.uploadALPFile(alpFile);

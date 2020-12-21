@@ -3,7 +3,7 @@ package io.skymind.pathmind.services.project;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MockObjectStatusUpdater implements StatusUpdater {
+public class MockObjectStatusUpdater implements StatusUpdater<Object> {
 
     @Override
     public void updateStatus(double percentage) {
@@ -16,7 +16,7 @@ public class MockObjectStatusUpdater implements StatusUpdater {
     }
 
     @Override
-    public void fileSuccessfullyVerified(FileCheckResult result) {
+    public void fileSuccessfullyVerified(Object result) {
         log.info("File successfully verified:");
     }
 }

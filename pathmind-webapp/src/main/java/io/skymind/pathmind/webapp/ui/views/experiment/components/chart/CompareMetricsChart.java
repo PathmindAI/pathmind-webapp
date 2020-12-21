@@ -20,6 +20,9 @@ public class CompareMetricsChart extends DataChart {
     private RewardVariable[] rewardVariables;
     private String metric1AxisTitle;
     private String metric2AxisTitle;
+    private String metric1Color;
+    private String metric2Color;
+    private List<String> colors = ChartUtils.colors();
 
     public CompareMetricsChart() {
         super();
@@ -27,28 +30,33 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        List<String> colors = ChartUtils.colors();
-        for (int i = 0; i < rewardVariables.length; i++) {
-            if (rewardVariables[i] != null) {
-                String seriesColor = colors.get(rewardVariables[i].getArrayIndex() % 10);
-                Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
+        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rvar -> rvar != null).findFirst().get();
+        for (RewardVariable rv: rewardVariables) {
+            if (rv != null) {
+                String seriesColor = colors.get(rv.getArrayIndex() % 10);
+                Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rv);
                 Integer axisIndex = isFirstNonNullVariable ? 0 : 1;
-                series.put("" + i, Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
+                if (!isFirstNonNullVariable && firstNonNullVariable.getArrayIndex() % 10 == rv.getArrayIndex() % 10) {
+                    seriesColor = "black";
+                }
+                series.put("" + rv.getArrayIndex(), Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
             }
         }
         return series;
     }
 
-    private void createAxisTitles() {
+    private void createAxisTitlesAndColors() {
         metric1AxisTitle = null;
         metric2AxisTitle = null;
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
                 if (isFirstNonNullVariable) {
-                    metric1AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                    metric1AxisTitle = rewardVariables[i].getName() + " mean";
+                    metric1Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
                 } else {
-                    metric2AxisTitle = "<" + rewardVariables[i].getName() + "> mean";
+                    metric2AxisTitle = rewardVariables[i].getName() + " mean";
+                    metric2Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
                 }
             }
         }
@@ -125,7 +133,7 @@ public class CompareMetricsChart extends DataChart {
         } else {
             updateSelectedRewardVariables(selectedRewardVariables);
             series = createSeries();
-            createAxisTitles();
+            createAxisTitlesAndColors();
         }
         String type = "line";
         Boolean showTooltip = true;
@@ -143,6 +151,8 @@ public class CompareMetricsChart extends DataChart {
                 vAxisTitle,
                 metric1AxisTitle,
                 metric2AxisTitle,
+                metric1Color,
+                metric2Color,
                 curveLines,
                 seriesType,
                 series,

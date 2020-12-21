@@ -99,7 +99,7 @@ class ExperimentNavbarItem extends PolymerElement {
                 <div class="experiment-name">
                     <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                     <p>Created <slot></slot></p>
-                    <goals-reached-status reached=[[goalsReached]] hidden=[[!showGoals]]></goals-reached-status>
+                    <goals-reached-status reached=[[goalsReached]] hidden></goals-reached-status>
                 </div>
                 <vaadin-context-menu id="navbarItemMenu">
                     <template>

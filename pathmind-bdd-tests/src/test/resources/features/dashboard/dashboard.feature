@@ -13,29 +13,6 @@ Feature: Dashboard page
 #       | Click action                              |
 #       | Click AutotestProject dashboard item  |
 #       | Click in AutotestProject stage breadcrumb |
-  @tempEmail
-  Scenario: Check pathmind begin screen elements
-    Given Create new user Autotest, User with password Pass123456
-    When Open pathmind page
-    Then Login with new user email and Pass123456
-    When Check pathmind begin screen elements
-    When Click pathmind create your first project btn
-    When Check that new project page opened
-    When Click in 'Projects' button
-    When Click Getting Started tutorial button
-    Then Check that learn page http://help.pathmind.com/en/articles/4540076-getting-started-with-simple-stochastic opened
-
-#   @smoke
-#   Scenario: Check start page with the getting started message user see after login
-#     Given Open page sign-up
-#     When Fill new user form with name EditEmail, User
-#     When Fill new user password 'Abcd1234'
-#     When Fill new user confirmation password 'Abcd1234'
-#     When Create new user click sign in button
-#     When Get email and verify user email
-#     When Open pathmind page
-#     Then Login with new user email and Abcd1234
-#     Then Check that dashboard page opened with the getting started message
 
 #   Scenario: Check dashboard new project btn
 #     Given Login to the pathmind

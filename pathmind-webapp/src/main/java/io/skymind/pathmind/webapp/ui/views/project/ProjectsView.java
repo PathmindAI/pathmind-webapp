@@ -14,7 +14,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
@@ -33,7 +32,6 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.dashboard.components.EmptyDashboardPlaceholder;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +46,6 @@ public class ProjectsView extends PathMindDefaultView {
     private List<Project> projects;
     private Grid<Project> projectGrid;
 
-    private EmptyDashboardPlaceholder placeholder;
     private FlexLayout gridWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
 
@@ -67,21 +64,13 @@ public class ProjectsView extends PathMindDefaultView {
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
         headerWrapper.addClassName("page-content-header");
 
-        placeholder = new EmptyDashboardPlaceholder(segmentIntegrator);
-
         gridWrapper = new ViewSection(
                 headerWrapper,
                 archivesTabPanel,
                 projectGrid);
         gridWrapper.addClassName("page-content");
 
-        VerticalLayout pageWrapper = WrapperUtils.wrapSizeFullVertical(
-                placeholder,
-                gridWrapper
-        );
-        pageWrapper.setPadding(false);
-
-        return pageWrapper;
+        return gridWrapper;
     }
 
     private void setupTabbedPanel() {
@@ -178,10 +167,6 @@ public class ProjectsView extends PathMindDefaultView {
             projectGrid.setItems(projects);
         });
         archivesTabPanel.initData(event.getUI());
-
-        Boolean hasProjects = projects != null && !projects.isEmpty();
-        placeholder.setVisible(!hasProjects);
-        gridWrapper.setVisible(hasProjects);
 
         recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
     }

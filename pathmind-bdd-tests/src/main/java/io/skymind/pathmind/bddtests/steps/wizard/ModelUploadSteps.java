@@ -23,6 +23,11 @@ public class ModelUploadSteps {
     }
 
     @Step
+    public void checkErrorMessageStartsWithInModelCheckPanel(String errorMessage) {
+        modelUploadPage.checkErrorMessageStartsWithInModelCheckPanel(errorMessage);
+    }
+
+    @Step
     public void clickAlpUploadStepNextBtn() {
         modelUploadPage.clickAlpUploadStepNextBtn();
     }
