@@ -28,6 +28,12 @@ class DataChart extends PolymerElement {
             metric2axistitle: {
                 type: String,
             },
+            metric1color: {
+                type: String,
+            },
+            metric2color: {
+                type: String,
+            },
             curvelines: {
                 type: Boolean,
             },
@@ -67,6 +73,8 @@ class DataChart extends PolymerElement {
                                 series,
                                 metric1axistitle,
                                 metric2axistitle,
+                                metric1color,
+                                metric2color,
                                 stacked,
                                 viewwindow)`,
             }
@@ -115,7 +123,7 @@ class DataChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, metric1axistitle, metric2axistitle, stacked, viewwindow) {
+    _computeOptions(showtooltip, haxistitle, vaxistitle, curvelines, seriestype, series, metric1axistitle, metric2axistitle, metric1color, metric2color, stacked, viewwindow) {
         return {
             "tooltip": showtooltip ? { "isHtml": true } : { "trigger": "none" },
             "curveType": curvelines ? "function" : null,
@@ -132,7 +140,8 @@ class DataChart extends PolymerElement {
             "vAxes": [
                 {
                     "title": metric1axistitle ? metric1axistitle : vaxistitle,
-                    "titleTextStyle": {"italic": false},
+                    "titleTextStyle": {"italic": false, "color": metric1axistitle ? metric1color : "black"},
+                    "textStyle": {"color": metric1axistitle ? metric1color : "black"},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
                     "viewWindow": viewwindow,
@@ -142,13 +151,14 @@ class DataChart extends PolymerElement {
                 },
                 {
                     "title": metric2axistitle,
-                    "titleTextStyle": {"italic": false},
+                    "titleTextStyle": {"italic": false, "color": metric2axistitle ? (metric2color == metric1color ? "black" : metric2color) : "black"},
+                    "textStyle": {"color": metric2axistitle ? (metric2color == metric1color ? "black" : metric2color) : "black"},
                     "textPosition": vaxistitle ? "out" : "none",
                     "ticks": vaxistitle ? "auto" : [],
                     "viewWindow": viewwindow,
                     "viewWindowMode": viewwindow ? "pretty" : "maximized",
-                    "baselineColor": vaxistitle ? "black" : "#FFF",
-                    "gridlineColor": vaxistitle ? "#CCC" : "#FFF",
+                    "baselineColor": "transparent",
+                    "gridlineColor": "transparent",
                     "slantedText":true,
                     "slantedTextAngle":90 
                 }

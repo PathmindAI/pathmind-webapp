@@ -35,6 +35,7 @@ public class Routes {
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
     public static final String ERROR_URL = "error";
+    public static final String UPLOAD_MODEL_ERROR = "uploadModelError";
 
     public static final String EXPORT_POLICY_URL = "exportPolicy";
     public static final String PROJECT_URL = "project";

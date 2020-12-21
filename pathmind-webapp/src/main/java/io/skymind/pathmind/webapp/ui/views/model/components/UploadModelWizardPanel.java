@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -13,10 +12,9 @@ import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
-import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -27,14 +25,13 @@ import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigation
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
 public class UploadModelWizardPanel extends VerticalLayout {
     private final Model model;
     private final int maxFileSize;
-    private final String anylogicExportGuide = "https://help.anylogic.com/index.jsp?topic=%2Fcom.anylogic.help%2Fhtml%2Frunning%2Fexport-java-application.html";
 
     private VerticalLayout uploadModelPanel;
     private PathmindModelUploader upload;
@@ -42,7 +39,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
     private ProgressBar fileCheckProgressBar = new ProgressBar();
     private VerticalLayout fileCheckPanel;
 
-    private Command fileCheckerCommand;
+    private Consumer<ModelBytes> checkModelConsumer;
 
     private HorizontalLayout checkingModelComponent;
     private Span errorMessage;
@@ -57,7 +54,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
         this.maxFileSize = maxFileSize;
 
         setupLayout();
-        setWidthFull();
         setPadding(false);
         setSpacing(false);
     }
@@ -78,7 +74,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
 
     private HorizontalLayout getUploadModeSwitchButton() {
         HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
-        buttonWrapper.getStyle().set("margin", "var(--lumo-space-xxl) 0 calc(-1 * var(--lumo-space-l))");
         uploadModeSwitcher = new UploadModeSwitcherButton(mode, () -> switchUploadMode());
         upload.isFolderUploadSupported(isFolderUploadSupported -> {
             uploadModeSwitcher.setVisible(isFolderUploadSupported);
@@ -95,13 +90,15 @@ public class UploadModelWizardPanel extends VerticalLayout {
     }
 
     private void setupFileCheckPanel() {
-        errorMessage = LabelFactory.createLabel("");
+        errorMessage = LabelFactory.createLabel("", ERROR_LABEL);
         checkingModelComponent = WrapperUtils
                 .wrapWidthFullCenterHorizontal(LabelFactory.createLabel("Checking your model..."));
         fileCheckPanel = WrapperUtils.wrapWidthFullCenterVertical(
                 fileCheckProgressBar,
                 checkingModelComponent,
                 errorMessage);
+        fileCheckPanel.setPadding(false);
+        fileCheckPanel.addClassName("file-check-panel");
     }
 
     private void setupUploadPanel() {
@@ -113,6 +110,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
         addUploadRemoveFileListener();
 
         uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
+        uploadModelPanel.setPadding(false);
     }
 
     private void addUploadsFinishedListener() {
@@ -125,15 +123,17 @@ public class UploadModelWizardPanel extends VerticalLayout {
             }
             try {
                 Receiver receiver = upload.getReceiver();
+                byte[] data;
                 // In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
-                if (MultiFileMemoryBuffer.class.isInstance(receiver)) {
-                    MultiFileMemoryBuffer buffer = MultiFileMemoryBuffer.class.cast(receiver);
-                    model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+                if (receiver instanceof MultiFileMemoryBuffer) {
+                    MultiFileMemoryBuffer buffer = (MultiFileMemoryBuffer) receiver;
+                    data = UploadUtils.createZipFileFromBuffer(buffer);
                 } else {
-                    MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
-                    model.setFile(ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
+                    MemoryBuffer buffer = (MemoryBuffer) receiver;
+                    data = buffer.getInputStream().readAllBytes();
                 }
-                fileCheckerCommand.execute();
+                ModelBytes modelBytes = ModelBytes.of(data);
+                checkModelConsumer.accept(modelBytes);
                 log.info("Upload completed");
             } catch (IOException e) {
                 // TODO -> We need to do something if this fails.
@@ -145,56 +145,23 @@ public class UploadModelWizardPanel extends VerticalLayout {
     // Currently the only way this seems possible is by listening for the DOM event
     // as explained at: https://vaadin.com/forum/thread/17336034/remove-file-uploaded-vaadin-upload
     private void addUploadRemoveFileListener() {
-        upload.getElement().addEventListener("file-remove", new DomEventListener() {
-            @Override
-            public void handleEvent(DomEvent event) {
-                clearError();
-            }
-        });
+        upload.getElement().addEventListener("file-remove", (DomEventListener) event -> clearError());
     }
 
-    public void addFileUploadCompletedListener(Command command) {
-        fileCheckerCommand = command;
+    public void addFileUploadCompletedListener(Consumer<ModelBytes> checkModelConsumer) {
+        this.checkModelConsumer = checkModelConsumer;
     }
 
     public void addFileUploadFailedListener(Consumer<Collection<String>> consumer) {
         uploadFailedConsumer = consumer;
     }
 
-    private Div getInstructionsDiv() {
-        Div div = new Div();
-        div.setWidthFull();
+    private UploadModelInstructions getInstructionsDiv() {
+        UploadModelInstructions uploadModelInstructions = new UploadModelInstructions();
         upload.isFolderUploadSupported(isFolderUploadSupported -> {
-            if (mode == UploadMode.FOLDER && isFolderUploadSupported) {
-                setInstructionsForFolderUploadDiv(div);
-            } else {
-                setInstructionsForZipUploadDiv(div);
-            }
+            uploadModelInstructions.setIsZip(!(mode == UploadMode.FOLDER && isFolderUploadSupported));
         });
-        return div;
-    }
-
-    private void setInstructionsForFolderUploadDiv(Div div) {
-        div.getElement().setProperty("innerHTML",
-                "<ol>" +
-                        "<li><a href=\"" + anylogicExportGuide + "\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
-                        "<li>Upload the exported folder.</li>" +
-                        "</ol>");
-    }
-
-    private void setInstructionsForZipUploadDiv(Div div) {
-        div.getElement().setProperty("innerHTML",
-                "<ol>" +
-                        "<li><a href=\"" + anylogicExportGuide + "\" target=\"_blank\">Export your model as a standalone Java application.</a><br/>(AnyLogic Professional is required)</li>" +
-                        "<li>*Using the exported folder, Create a zip file that contains:</li>" +
-                        "<ul>" +
-                        "<li>model.jar</li>" +
-                        "<li>the \"database\" and \"cache\" folder if they exist</li>" +
-                        "<li>any excel sheets necessary for your AnyLogic simulation</li>" +
-                        "</ul>" +
-                        "<li>Upload the new zip file below." +
-                        "</ol>" +
-                        "<p>*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>");
+        return uploadModelInstructions;
     }
 
     public void showFileCheckPanel() {
@@ -216,7 +183,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
         if (checkingModelComponent != null) {
             checkingModelComponent.setVisible(false);
         }
-        errorMessage.getElement().setProperty("innerHTML", error);
+        errorMessage.getElement().executeJs("this.innerHTML = $0", error);
         upload.setVisible(true);
     }
 

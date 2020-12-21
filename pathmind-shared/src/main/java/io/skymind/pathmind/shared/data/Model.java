@@ -35,4 +35,8 @@ public class Model extends ArchivableData  {
     private int invalidModel;
     private int modelType;
     private int numberOfAgents;
+    private String pathmindHelper;
+    private String mainAgent;
+    private String experimentClass;
+    private String experimentType;
 }

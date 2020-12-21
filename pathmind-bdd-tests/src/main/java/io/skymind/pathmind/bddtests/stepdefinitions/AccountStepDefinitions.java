@@ -72,6 +72,16 @@ public class AccountStepDefinitions {
         loginPageSteps.checkHeaderUsername(firstName + Serenity.sessionVariableCalled("firstNameRandomNumber") + " " + lastName + Serenity.sessionVariableCalled("lastNameRandomNumber"));
     }
 
+    @Then("^Check account page footer components$")
+    public void checkAccountPageFooterComponents() {
+        accountPageSteps.checkAccountPageFooterComponents();
+    }
+
+    @When("^Click account footer '(.*)' btn$")
+    public void clickAccountFooterBtn(String btn) {
+        accountPageSteps.clickAccountFooterBtn(btn);
+    }
+
     @When("^Click account page api copy btn and paste to the search field$")
     public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
         accountPageSteps.clickAccountPageApiCopyBtnAndPasteToTheSearchField();
@@ -86,4 +96,5 @@ public class AccountStepDefinitions {
     public void accountPageAccessTokenCheckTokenExpires(String expiresDays) {
         accountPageSteps.accountPageAccessTokenCheckTokenExpires(expiresDays);
     }
+
 }

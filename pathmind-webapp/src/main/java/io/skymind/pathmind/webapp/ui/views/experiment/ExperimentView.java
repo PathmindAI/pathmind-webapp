@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -92,6 +93,8 @@ public class ExperimentView extends DefaultExperimentView {
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
+    @Value("${pathmind.al-engine-error-article.url}")
+    private String alEngineErrorArticleUrl;
 
     private Button restartTrainingButton;
 
@@ -331,7 +334,7 @@ public class ExperimentView extends DefaultExperimentView {
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
-        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
+        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
         experimentComponentList.addAll(List.of(
                 experimentNotesField,

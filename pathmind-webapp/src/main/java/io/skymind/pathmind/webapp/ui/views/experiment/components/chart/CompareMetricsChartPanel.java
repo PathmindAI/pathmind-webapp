@@ -19,6 +19,8 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.CompareMetricsChartPanelExperimentRewardVariableSelectedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_METRICS_FOR_CHART;
+
 @Slf4j
 public class CompareMetricsChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
@@ -52,7 +54,7 @@ public class CompareMetricsChartPanel extends VerticalLayout {
             long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
             if (numberOfSelectedRewardVariables == 0) {
                 experiment.getRewardVariables().stream().forEach(rewardVariable -> {
-                    if (rewardVariable.getArrayIndex() < 2) {
+                    if (rewardVariable.getArrayIndex() < DEFAULT_SELECTED_METRICS_FOR_CHART) {
                         rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable);
                     }
                 });
