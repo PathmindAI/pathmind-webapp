@@ -47,13 +47,13 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 }
 
 :host(:not(.dashboard):not(.search-results)) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
-    padding: var(--lumo-space-xxs) var(--lumo-space-m);
+    padding: var(--lumo-space-xxxs) var(--lumo-space-m);
     cursor: pointer;
 }
 
-:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-1"]),
-:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-2"]),
-:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-3"]) {
+:host([theme~="projects"]) [part~="header-cell"]:nth-of-type(2),
+:host([theme~="projects"]) [part~="header-cell"]:nth-of-type(3),
+:host([theme~="projects"]) [part~="header-cell"]:nth-of-type(4) {
     text-align: right;
 }
 

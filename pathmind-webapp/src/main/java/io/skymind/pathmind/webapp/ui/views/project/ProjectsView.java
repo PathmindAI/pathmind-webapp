@@ -112,7 +112,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setSortable(true);
 
         projectGrid.addColumn(Project::getModelCount)
-                .setHeader(LabelFactory.createLabel("Models", "text-align-right"))
+                .setHeader("Models")
                 .setClassNameGenerator(column -> "align-right")
                 .setFlexGrow(0)
                 .setResizable(true)
@@ -122,7 +122,7 @@ public class ProjectsView extends PathMindDefaultView {
                 new DatetimeDisplay(project.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
-                .setHeader(LabelFactory.createLabel("Created", "text-align-right"))
+                .setHeader("Created")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -132,7 +132,7 @@ public class ProjectsView extends PathMindDefaultView {
                 new DatetimeDisplay(project.getLastActivityDate())
         )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))
-                .setHeader(LabelFactory.createLabel("Last Activity", "text-align-right"))
+                .setHeader("Last Activity")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
