@@ -198,7 +198,13 @@ public class ExperimentDAO {
         return policies;
     }
 
-    public static void updateTrainingErrorAndMessage(DSLContext ctx, Experiment experiment) {
+    public void updateTrainingErrorAndMessage(Experiment experiment) {
+        updateTrainingErrorAndMessage(ctx, experiment);
+    }
+
+    // REFACTOR -> These should really be cached rather than requiring the same database calls over and over and over. At the very least we can just see if they
+    // are in memory and if so use that instead of search. See: https://github.com/SkymindIO/pathmind-webapp/issues/2599
+    private void updateTrainingErrorAndMessage(DSLContext ctx, Experiment experiment) {
         experiment.getRuns().stream()
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()

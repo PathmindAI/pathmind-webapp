@@ -62,7 +62,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
         createEnlargedChartDialog();
 
-        // QUESTION -> FIONNA -> Why do we have a RewardVariablesTable here in addition to the view? As in it should be a separate
+        // TODO -> STEPH -> Why do we have a RewardVariablesTable here in addition to the view? As in it should be a separate
         // component in the view or a subcomponent of this component. I ask because it's done differently between NewExperimentView
         // and ExperimentView. I ask because I'm trying to be consistent and I'm not sure if there are side effects, especially
         // when setting the experiment, etc.
@@ -138,10 +138,6 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     public void updateSimulationMetrics() {
 
         Policy bestPolicy = experiment.getBestPolicy();
-
-        // Needed to convert the raw metrics to a format the UI can use.
-        // TODO -> STEPH -> DELETE -> Confirm this can be deleted after testing.
-        // PolicyUtils.updateSimulationMetricsData(bestPolicy);
 
         if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
             showMetricValuesAndSparklines(false);

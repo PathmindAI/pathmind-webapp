@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment;
 
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
@@ -9,29 +10,38 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
     private ExperimentView experimentView;
+    private ExperimentDAO experimentDAO;
 
-    public ExperimentViewPolicyUpdateSubscriber(ExperimentView experimentView) {
+    public ExperimentViewPolicyUpdateSubscriber(ExperimentView experimentView, ExperimentDAO experimentDAO) {
         super();
         this.experimentView = experimentView;
+        this.experimentDAO = experimentDAO;
     }
 
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
+        // TODO -> STEPH -> We should have a different lock for the comparison experiment.
         synchronized (experimentView.getExperimentLock()) {
-            Experiment experiment = experimentView.getExperiment();
-            // TODO -> STEPH -> I'm not sure which is needed and which isn't needed for the run and policy updaters...
-            ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
-            ExperimentUtils.updateExperimentInternals(experiment);
-            // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
-//        updateTrainingErrorAndMessage(ctx, experiment);
-//        ExperimentUtils.updateEarlyStopReason(experiment);
-            // Re-render the components now that the experiment instance's internal values have been updated.
-            experimentView.updateComponents();
+            if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
+                updateExperimentInternalValues(event, experimentView.getExperiment());
+                experimentView.updateComponents();
+            } else {
+                updateExperimentInternalValues(event, experimentView.getComparisonExperiment());
+                experimentView.updateComparisonComponents();
+            }
         }
+    }
+
+    private void updateExperimentInternalValues(PolicyUpdateBusEvent event, Experiment experiment) {
+        ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
+        ExperimentUtils.updateExperimentInternals(experiment);
+        experimentDAO.updateTrainingErrorAndMessage(experiment);
+        ExperimentUtils.updateEarlyStopReason(experiment);
     }
 
     @Override
     public boolean filterBusEvent(PolicyUpdateBusEvent event) {
-        return experimentView.getExperimentId() == event.getExperimentId();
+        return ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment()) ||
+                ExperimentUtils.isSameExperiment(experimentView.getComparisonExperiment(), event.getExperiment());
     }
 }

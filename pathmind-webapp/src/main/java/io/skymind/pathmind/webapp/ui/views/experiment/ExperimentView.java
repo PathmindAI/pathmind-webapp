@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -36,6 +37,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.Restart
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
@@ -93,6 +95,11 @@ public class ExperimentView extends DefaultExperimentView {
 
     private Button restartTrainingButton;
 
+    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
+    protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
+
+    private Experiment comparisonExperiment;
+
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
@@ -107,6 +114,19 @@ public class ExperimentView extends DefaultExperimentView {
         addClassName("experiment-view");
     }
 
+    public void setComparisonExperiment(Experiment comparisonExperiment) {
+        this.comparisonExperiment = comparisonExperiment;
+        updateComparisonComponents();
+    }
+
+    public Experiment getComparisonExperiment() {
+        return comparisonExperiment;
+    }
+
+    public void updateComparisonComponents() {
+        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.experiment));
+    }
+
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier(),
@@ -115,8 +135,8 @@ public class ExperimentView extends DefaultExperimentView {
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(this),
-                new ExperimentViewRunUpdateSubscriber(this));
+                new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
     }
 
     @Override
@@ -305,9 +325,9 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected void createExperimentComponents() {
         experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
-        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
-        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI());
-        experimentCodeViewer = new CodeViewer(() -> getUI());
+        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
+        experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        experimentCodeViewer = new CodeViewer(getUISupplier());
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
@@ -321,14 +341,15 @@ public class ExperimentView extends DefaultExperimentView {
                 experimentSimulationMetricsPanel,
                 experimentObservationsPanel,
                 stoppedTrainingNotification));
+
+        // We also need to create the experiment comparison components.
+        createComparisonComponents();
     }
 
-    @Override
     protected void createComparisonComponents() {
-        // TODO -> STEPH -> Possibly found bug? -> In dev if you do url/experiment/newExperimentID it loads but doesn't change the URL.
-        comparisonChartsPanel = new ExperimentChartsPanel(() -> getUI());
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
-        comparisonCodeViewer = new CodeViewer(() -> getUI());
+        comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        comparisonCodeViewer = new CodeViewer(getUISupplier());
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
@@ -336,8 +357,8 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonExperimentComponents.addAll(List.of(
                 comparisonNotesField,
                 comparisonChartsPanel,
-                comparisonObservationsPanel,
                 comparisonCodeViewer,
-                comparisonSimulationMetricsPanel));
+                comparisonSimulationMetricsPanel,
+                comparisonObservationsPanel));
     }
 }

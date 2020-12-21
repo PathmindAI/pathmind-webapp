@@ -52,7 +52,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.selectExperimentAction = selectExperimentAction;
         this.defaultExperimentView = defaultExperimentView;
 
-        // QUESTION -> FIONNA -> I haven't checked but is the compare button only for the ExperimentView? If not then we can just do a
+        // TODO -> STEPH -> I haven't checked but is the compare button only for the ExperimentView? If not then we can just do a
         // simple if(defaultExperimentView instanceof ExperimentView) then add compare option.
 
         if (experiment.isDraft()) {
@@ -78,7 +78,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        // TODO -> STEPH -> Eventhandler will be on navbar rather than item because that would be too many events for nothing.
+        // TODO -> STEPH -> Needs to be converted to an action class to be consistent with the rest of the application.
         ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
             ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);
             defaultExperimentView.getSegmentIntegrator().archived(Experiment.class, true);
@@ -88,6 +88,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onCompareButtonClicked() {
+        // TODO -> STEPH -> When clicked it changes the experiment rather than just change the comparison components.
         if(experiment.isDraft()) {
             NotificationUtils.showError("Cannot compare draft experiment<br>Option shouldn't be available rather than error message");
         } else {

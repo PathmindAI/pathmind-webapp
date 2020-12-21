@@ -54,8 +54,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected ExperimentsNavBar experimentsNavbar;
 
     protected List<ExperimentComponent> experimentComponentList = new ArrayList<>();
-    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
-    protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
 
     // ExperimentID is also added as the experiment can be null whereas the experimentID always has to have a value. Used by the Subscribers for the view.
     protected long experimentId;
@@ -72,12 +70,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected void createScreens() {
         createSharedComponents();
         createExperimentComponents();
-        createComparisonComponents();
    }
-
-    // Implemented because it's not used in NewExperimentView.
-    protected void createComparisonComponents() {
-    }
 
     private void createSharedComponents() {
         experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
@@ -164,10 +157,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         }
     }
 
-    public void setComparisonExperiment(Experiment comparisonExperiment) {
-        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(comparisonExperiment));
-    }
-
     @Override
     protected void initScreen(BeforeEnterEvent event) {
         initializeComponentsWithData();
@@ -178,11 +167,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         return new ExperimentNotesField(experimentDAO, segmentIntegratorRunnable,false,true);
     }
 
-    // TODO -> STEPH -> For now the comparison experiment components are set with the experiment when it should be null for performance reasons but
-    // until the code is ready for that I'm just setting it to the current experiment.
     protected void initializeComponentsWithData() {
         updateComponents();
-        setComparisonExperiment(experiment);
     }
 
     // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).

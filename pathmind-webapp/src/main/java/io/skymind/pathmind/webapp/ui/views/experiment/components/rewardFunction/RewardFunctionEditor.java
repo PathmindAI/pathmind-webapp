@@ -157,7 +157,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     @Override
     public void updateExperiment() {
-        // TODO -> STEPH -> Confirm if this is needed because the binder should automatically do it. And if not then delete this method.
         experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
     }
 }

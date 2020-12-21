@@ -54,7 +54,6 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
                 showTheReasonWhyTheTrainingStopped(experiment.getTrainingError(), ERROR_LABEL, false);
             }
         } else if(experiment.isTrainingStoppedEarly()) {
-            // TODO -> STEPH -> Confirm there's no logic error here because the code is odd. We have a toggle for isSuccess but the logic looks like it can only be true...
             showTheReasonWhyTheTrainingStopped(experiment.getTrainingStoppedEarlyMessage(), SUCCESS_LABEL, true);
         }
     }

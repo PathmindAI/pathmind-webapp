@@ -165,7 +165,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         return panelsWrapper;
     }
 
-    // TODO -> STEPH -> Should use the same as the experimentView, that is the DEfaultExperimentView createsNotes method.
+    // TODO -> STEPH -> Should use the same as the experimentView, that is the DefaultExperimentView createsNotes method.
     private void createAndSetupNotesField() {
         notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         notesField.setPlaceholder("Add Notes (optional)");
@@ -183,6 +183,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     /************************************** UI element creations are above this line **************************************/
 
+    // REFACTOR -> The logic should really be in ExperimentUtils because it's business logic rather than GUI logic but for now we'll just leave it here.
     private boolean canStartTraining() {
         return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.isValidForTraining()
@@ -231,6 +232,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         }
     }
 
+    // STEPH -> TODO -> Should be moved to a component rather than here in the view.
     private void errorPopup(Command afterClickedCallback) {
         String header = "Before you leave....";
         String text = "";
@@ -246,7 +248,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     protected void updateComponentEnablements() {
-        // TODO -> STEPH -> Move all button enablement and visibility code here when an experiment is set and/or updated.
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
     }
@@ -255,8 +256,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         saveDraftButton.setEnabled(false);
         unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
-        // TODO -> STEPH -> We may not need isNeedsSaving after this refactoring is done. It depends on how the auto-save works.
-        // TODO -> When a value is changed we need to be able to automatically set these values back on.
         isNeedsSaving = false;
     }
 
