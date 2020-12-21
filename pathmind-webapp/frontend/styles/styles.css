@@ -134,6 +134,10 @@ background-color: var(--pm-grey-color-light);
     width: calc(100% * 2 / 3) !important;
 }
 
+.text-algin-right {
+    text-align: right;
+}
+
 .internal-banner {
     color: var(--lumo-body-text-color);
     background-color: var(--pm-gold-color);
@@ -361,10 +365,6 @@ background-color: var(--pm-grey-color-light);
 
 .projects-view .project-name-column:hover vaadin-button {
     visibility: visible;
-}
-
-.projects-view .project-name-column tag-label {
-    margin-left: auto;
 }
 
 .projects-view .view-section,

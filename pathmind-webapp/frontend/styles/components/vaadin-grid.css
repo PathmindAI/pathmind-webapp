@@ -25,6 +25,10 @@
     border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
+:host(:not(.dashboard):not(.search-results)) #items [part~="cell"].align-right {
+    text-align: right;
+}
+
 :host(:not(.dashboard):not(.search-results)) #items [part~="row"]:hover [part~="body-cell"] {
     background: var(--lumo-shade-5pct);
 }
@@ -43,7 +47,14 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 }
 
 :host(:not(.dashboard):not(.search-results)) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
+    padding: var(--lumo-space-xxs) var(--lumo-space-m);
     cursor: pointer;
+}
+
+:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-1"]),
+:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-2"]),
+:host([theme~="projects"]) [part~="cell"] ::slotted(vaadin-grid-cell-content[slot~="vaadin-grid-cell-content-3"]) {
+    text-align: right;
 }
 
 .grid-notes-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {

@@ -93,19 +93,15 @@ public class ProjectsView extends PathMindDefaultView {
 
     private void setupProjectGrid() {
         projectGrid = new Grid<Project>();
+        projectGrid.addThemeName("projects");
 
         projectGrid.addComponentColumn(project -> {
             String projectName = project.getName();
             Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-            Integer modelCount = project.getModelCount();
-            String modelCountText = ""+modelCount+" model";
-            if (modelCount > 1) {
-                modelCountText += "s";
-            }
             renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             renameProjectButton.addClassName("action-button");
             HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                new Span(projectName), renameProjectButton, new TagLabel(modelCountText, false, "small"));
+                new Span(projectName), renameProjectButton);
             projectNameColumn.addClassName("project-name-column");
             return projectNameColumn;
         })
@@ -115,11 +111,19 @@ public class ProjectsView extends PathMindDefaultView {
                 .setResizable(true)
                 .setSortable(true);
 
+        projectGrid.addColumn(Project::getModelCount)
+                .setHeader(LabelFactory.createLabel("Models", "text-align-right"))
+                .setClassNameGenerator(column -> "align-right")
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
+
         projectGrid.addComponentColumn(project -> 
                 new DatetimeDisplay(project.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
-                .setHeader("Created")
+                .setHeader(LabelFactory.createLabel("Created", "text-align-right"))
+                .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
@@ -128,7 +132,8 @@ public class ProjectsView extends PathMindDefaultView {
                 new DatetimeDisplay(project.getLastActivityDate())
         )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))
-                .setHeader("Last Activity")
+                .setHeader(LabelFactory.createLabel("Last Activity", "text-align-right"))
+                .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
