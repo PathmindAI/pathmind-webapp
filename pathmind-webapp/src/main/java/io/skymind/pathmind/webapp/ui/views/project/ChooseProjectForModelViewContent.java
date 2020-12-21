@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Scope;
 @JsModule("./src/pages/choose-project-for-model-view-content.js")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ChooseProjectForModelViewContent extends PolymerTemplate<TemplateModel> {
+public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProjectForModelViewContent.Model> {
 
     @Id("projectDropdown")
     private ComboBox<Project> projectDropdown;
@@ -67,6 +67,10 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<TemplateMo
         projectDropdown.setRequired(true);
         projectDropdown.setItemLabelGenerator(Project::getName);
         projectDropdown.setItems(projects);
+        if (projects.size() == 1) {
+            projectDropdown.setValue(projects.get(0));
+            getModel().setIsCreateNewProject(true);
+        }
     }
 
     @EventHandler
@@ -116,4 +120,9 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<TemplateMo
 
         binder.setBean(newProject);
     }
+
+    public interface Model extends TemplateModel {
+        void setIsCreateNewProject(Boolean isCreateNewProject);
+    }
+
 }
