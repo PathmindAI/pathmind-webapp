@@ -101,7 +101,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkProjectsPageProjectCreatedIs(String projectName, String date) {
         String projectCellNumber = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content")).getAttribute("slot").split("vaadin-grid-cell-content-")[1];
-        int cellNumber = Integer.parseInt(projectCellNumber) + 1;
+        int cellNumber = Integer.parseInt(projectCellNumber) + 2;
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
     }
 
