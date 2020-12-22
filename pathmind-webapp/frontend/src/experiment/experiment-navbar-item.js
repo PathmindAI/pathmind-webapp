@@ -62,13 +62,15 @@ class ExperimentNavbarItem extends PolymerElement {
                     height: var(--lumo-font-size-xs);
                     padding: 0;
                 }
-                status-icon[status~="pencil"] ~ div goals-reached-status {
+                :host([is-draft]) goals-reached-status {
                     display: none;
                 }
-                status-icon[status~="pencil"] ~ vaadin-context-menu {
+                :host([is-draft]) vaadin-context-menu,
+                :host([is-on-draft-experiment-view]) vaadin-context-menu {
                     display: none;
                 }
-                status-icon[status~="pencil"] ~ vaadin-button[title="Archive"] {
+                :host([is-draft]) vaadin-button[title="Archive"],
+                :host([is-on-draft-experiment-view]) vaadin-button[title="Archive"] {
                     display: block;
                 }
                 vaadin-context-menu {
@@ -101,7 +103,7 @@ class ExperimentNavbarItem extends PolymerElement {
                     <p>Created <slot></slot></p>
                     <goals-reached-status reached=[[goalsReached]] hidden></goals-reached-status>
                 </div>
-                <vaadin-context-menu id="navbarItemMenu">
+                <vaadin-context-menu id="navbarItemMenu" hidden="{{isOnDraftExperimentView}}">
                     <template>
                         <vaadin-context-menu-list-box>
                             <vaadin-context-menu-item class="vaadin-menu-item" on-click="triggerArchiveBtn">
@@ -148,12 +150,17 @@ class ExperimentNavbarItem extends PolymerElement {
                 reflectToAttribute: true,
             },
             isDraft: {
-                type: Boolean
+                type: Boolean,
+                reflectToAttribute: true,
             },
             isFavorite: {
                 type: Boolean,
                 value: false,
                 notify: true,
+                reflectToAttribute: true,
+            },
+            isOnDraftExperimentView: {
+                type: Boolean,
                 reflectToAttribute: true,
             },
             status: {
@@ -191,6 +198,11 @@ class ExperimentNavbarItem extends PolymerElement {
     }
 
     onArchiveButtonClicked(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    onCompareButtonClicked(event) {
         event.preventDefault();
         event.stopPropagation();
     }

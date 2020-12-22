@@ -101,8 +101,10 @@ public class ExperimentsNavBar extends VerticalLayout {
         experimentsNavBarItems.sort(Comparator.comparing(experimentsNavBarItem -> experimentsNavBarItem.getExperiment().getDateCreated(), Comparator.reverseOrder()));
         // Remove and re-add the navbar items so that they are in sorted order.
         rowsWrapper.removeAll();
-        experimentsNavBarItems.forEach(experimentsNavBarItem ->
-                rowsWrapper.add(experimentsNavBarItem));
+        experimentsNavBarItems.forEach(experimentsNavBarItem -> {
+            setIsOnDraftExperimentView(experimentsNavBarItem, selectedExperiment);
+            rowsWrapper.add(experimentsNavBarItem);
+        });
     }
 
     public List<Experiment> getExperiments() {
@@ -123,6 +125,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         experiments.stream()
                 .forEach(experiment -> {
                     ExperimentsNavBarItem navBarItem = createExperimentNavBarItem(experiment);
+                    setIsOnDraftExperimentView(navBarItem, selectedExperiment);
                     experimentsNavBarItems.add(navBarItem);
                     if (experiment.equals(selectedExperiment)) {
                         navBarItem.setAsCurrent();
@@ -133,6 +136,10 @@ public class ExperimentsNavBar extends VerticalLayout {
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
         return new ExperimentsNavBarItem(this, selectExperimentAction, defaultExperimentView, experimentDAO, experiment);
+    }
+
+    private void setIsOnDraftExperimentView(ExperimentsNavBarItem targetNavBarItem, Experiment experiment) {
+        targetNavBarItem.setIsOnDraftExperimentView(experiment.isDraft());
     }
 
     public void setCurrentExperiment(Experiment newCurrentExperiment) {
@@ -147,6 +154,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         setAllowNewExperimentCreation(ModelUtils.isValidModel(newCurrentExperiment.getModel()));
 
         experimentsNavBarItems.stream().forEach(experimentsNavBarItem -> {
+            setIsOnDraftExperimentView(experimentsNavBarItem, newCurrentExperiment);
             experimentsNavBarItem.removeAsCurrent();
             if (experimentsNavBarItem.getExperiment().equals(newCurrentExperiment)) {
                 experimentsNavBarItem.setAsCurrent();

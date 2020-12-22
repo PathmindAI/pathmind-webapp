@@ -136,6 +136,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsCurrent(false);
     }
 
+    public void setIsOnDraftExperimentView(boolean isOnDraftExperimentView) {
+        getModel().setIsOnDraftExperimentView(isOnDraftExperimentView);
+    }
+
     public Experiment getExperiment() {
         return experiment;
     }
@@ -163,6 +167,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setIsDraft(boolean isDraft);
 
         void setIsFavorite(boolean isFavorite);
+
+        void setIsOnDraftExperimentView(boolean isOnDraftExperimentView);
 
         void setStatus(String iconStatus);
 
