@@ -25,4 +25,9 @@ public class ApiStepDefinitions {
     public void checkAPIProjectsIdArchivedTrue(String projectName, String archived) {
         apiSteps.checkAPIProjectsIdArchivedTrue(projectName + Serenity.sessionVariableCalled("randomNumber"), archived);
     }
+
+    @When("^Api upload model '(.*)' to the new project$")
+    public void apiUploadModelToTheNewProject(String modelPath) {
+        apiSteps.apiUploadModelToTheNewProject(modelPath);
+    }
 }

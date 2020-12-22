@@ -66,4 +66,14 @@ public class ProjectsPageSteps {
     public void checkProjectsPageProjectCreatedIs(String projectName, String date) {
         projectsPage.checkProjectsPageProjectCreatedIs(projectName, date);
     }
+
+    @Step
+    public void projectsPageClickColumnToSorting(String column, String order) {
+        projectsPage.projectsPageClickColumnToSorting(column, order);
+    }
+
+    @Step
+    public void projectsPageClickFirstProjectFromList() {
+        projectsPage.projectsPageClickFirstProjectFromList();
+    }
 }

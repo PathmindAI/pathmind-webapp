@@ -101,4 +101,20 @@ public class ProjectsPage extends PageObject {
         int cellNumber = Integer.parseInt(projectCellNumber) + 1;
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[@slot='vaadin-grid-cell-content-" + cellNumber + "']/descendant::datetime-display")).getText(), is(date));
     }
+
+    public void projectsPageClickColumnToSorting(String column, String order) {
+        setImplicitTimeout(4, SECONDS);
+        for (int i = 0; i < 4; i++){
+            if (getDriver().findElements(By.xpath("//vaadin-grid-sorter[text()='" + column + "' and @direction='" + order + "']")).size() == 0) {
+                getDriver().findElement(By.xpath("//vaadin-grid-sorter[text()='" + column + "']")).click();
+            } else {
+                break;
+            }
+        }
+    }
+
+    public void projectsPageClickFirstProjectFromList() {
+        waitABit(3500);
+        getDriver().findElement(By.xpath("(//vaadin-horizontal-layout[@class='project-name-column'])[1]")).click();
+    }
 }

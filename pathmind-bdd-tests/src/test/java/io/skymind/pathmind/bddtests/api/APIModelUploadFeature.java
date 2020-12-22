@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bddtests;
+package io.skymind.pathmind.bddtests.api;
 
 import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
@@ -8,8 +8,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
     plugin = {"pretty", "html:target/cucumber"},
     glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-    features = "src/test/resources/features/api.feature",
+    features = "src/test/resources/features/api/apiModelUpload.feature",
     tags = {"@api"}
 )
-public class APIFeature {
+public class APIModelUploadFeature {
 }

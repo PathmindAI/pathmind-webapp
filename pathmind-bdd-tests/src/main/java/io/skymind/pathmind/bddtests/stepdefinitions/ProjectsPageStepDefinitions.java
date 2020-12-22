@@ -63,4 +63,14 @@ public class ProjectsPageStepDefinitions {
     public void checkProjectsPageProjectCreatedIs(String project, String date) {
         projectsPageSteps.checkProjectsPageProjectCreatedIs(project + Serenity.sessionVariableCalled("randomNumber"), date);
     }
+
+    @When("^Projects page click '(.*)' column to '(.*)' sorting$")
+    public void projectsPageClickColumnToSorting(String column, String order) {
+        projectsPageSteps.projectsPageClickColumnToSorting(column, order);
+    }
+
+    @When("^Projects page click first project from list$")
+    public void projectsPageClickFirstProjectFromList() {
+        projectsPageSteps.projectsPageClickFirstProjectFromList();
+    }
 }

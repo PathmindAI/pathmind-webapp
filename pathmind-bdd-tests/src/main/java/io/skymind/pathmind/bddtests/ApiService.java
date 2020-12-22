@@ -11,6 +11,7 @@ import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.File;
 
 public class ApiService extends PageObject {
 
@@ -60,5 +61,16 @@ public class ApiService extends PageObject {
             }
         }
         return jsonObject;
+    }
+
+    public ValidatableResponse uploadModelToTheNewProject(String modelPath){
+        return SerenityRest.
+            given().
+            multiPart("file", new File(System.getProperty("user.dir") + "/models/" + modelPath)).
+            header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
+            when().
+            post(PATHMIND_API_URL + "al/upload").
+            then().
+            statusCode(201);
     }
 }
