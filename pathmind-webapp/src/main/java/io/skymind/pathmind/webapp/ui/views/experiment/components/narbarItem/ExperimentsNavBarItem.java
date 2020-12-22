@@ -89,7 +89,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     @EventHandler
     private void onCompareButtonClicked() {
         // TODO -> STEPH -> When clicked it changes the experiment rather than just change the comparison components.
-        if(experiment.isDraft()) {
+        if (experiment.isDraft()) {
             NotificationUtils.showError("Cannot compare draft experiment<br>Option shouldn't be available rather than error message");
         } else {
             // This option should only be available for the ExperimentView so this should be safe.

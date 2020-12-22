@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -39,11 +38,13 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWi
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitleBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.ExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
@@ -81,6 +82,7 @@ public class ExperimentView extends DefaultExperimentView {
 
     // Experiment Comparison Components
     private Boolean isComparisonMode = true;
+    private ExperimentTitleBar comparisonTitleBar;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
     private ObservationsPanel comparisonObservationsPanel;
@@ -127,7 +129,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     public void updateComparisonComponents() {
-        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.experiment));
+        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.comparisonExperiment));
     }
 
     @Override
@@ -167,11 +169,7 @@ public class ExperimentView extends DefaultExperimentView {
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
-        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
-                downloadModelAlpLink, experimentTrainingStatusDetailsPanel, getButtonsWrapper());
-        titleBar.setPadding(true);
+        HorizontalLayout titleBar = createTitleBar();
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -182,7 +180,7 @@ public class ExperimentView extends DefaultExperimentView {
                     getBottomPanel()
                 ),
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        titleBar,
+                        comparisonTitleBar,
                         stoppedTrainingNotification,
                         modelNeedToBeUpdatedLabel,
                         compareExperimentVerticalLayout));
@@ -194,6 +192,19 @@ public class ExperimentView extends DefaultExperimentView {
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
+    }
+
+    private HorizontalLayout createTitleBar() {
+        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                    experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
+            downloadModelAlpLink, experimentTrainingStatusDetailsPanel, getButtonsWrapper());
+        titleBar.setPadding(true);
+        return titleBar;
+    }
+
+    private ExperimentTitleBar createComparisonTitleBar() {
+        return new ExperimentTitleBar();//, downloadModelAlpLink, experimentTrainingStatusDetailsPanel, getButtonsWrapper());
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
@@ -350,6 +361,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     protected void createComparisonComponents() {
+        comparisonTitleBar = createComparisonTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());
@@ -358,6 +370,7 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
 
         comparisonExperimentComponents.addAll(List.of(
+                comparisonTitleBar,
                 comparisonNotesField,
                 comparisonChartsPanel,
                 comparisonCodeViewer,
