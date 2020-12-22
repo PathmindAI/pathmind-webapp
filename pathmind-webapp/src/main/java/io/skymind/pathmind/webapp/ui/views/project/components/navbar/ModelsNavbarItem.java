@@ -24,13 +24,13 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     private ModelsNavbar modelsNavbar;
     private SegmentIntegrator segmentIntegrator;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.model = model;
         this.modelsNavbar = modelsNavbar;
         this.segmentIntegrator = segmentIntegrator;
 
-        getUISupplier.get().ifPresent(ui -> setModelDetails(ui, model));
+        setModelDetails(model);
     }
 
     @EventHandler
@@ -61,7 +61,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         return model;
     }
 
-    private void setModelDetails(UI ui, Model model) {
+    private void setModelDetails(Model model) {
         long projectId = model.getProjectId();
         long modelId = model.getId();
         getModel().setIsDraft(model.isDraft());

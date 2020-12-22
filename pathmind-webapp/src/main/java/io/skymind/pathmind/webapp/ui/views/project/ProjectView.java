@@ -147,7 +147,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             observationsPanel.addClassName("observations-panel-wrapper");
 
             modelsNavbar = new ModelsNavbar(
-                    () -> getUI(),
                     modelDAO,
                     selectedModel,
                     models,

@@ -27,10 +27,8 @@ public class ModelsNavbar extends VerticalLayout {
     private SegmentIntegrator segmentIntegrator;
 
     private ModelDAO modelDAO;
-    private Supplier<Optional<UI>> getUISupplier;
 
-    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
-        this.getUISupplier = getUISupplier;
+    public ModelsNavbar(ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.models = models;
         this.selectedModel = selectedModel;
@@ -110,7 +108,7 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, segmentIntegrator);
+        return new ModelsNavbarItem(this, modelDAO, model, segmentIntegrator);
     }
 
 }
