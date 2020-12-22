@@ -80,7 +80,7 @@ public class ExperimentView extends DefaultExperimentView {
     private SimulationMetricsPanel experimentSimulationMetricsPanel;
 
     // Experiment Comparison Components
-    private Boolean isComparisonMode = true;
+    private Boolean isComparisonMode = false;
     private ExperimentTitleBar comparisonTitleBar;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
@@ -120,7 +120,9 @@ public class ExperimentView extends DefaultExperimentView {
 
     public void setComparisonExperiment(Experiment comparisonExperiment) {
         this.comparisonExperiment = comparisonExperiment;
+        isComparisonMode = true;
         updateComparisonComponents();
+        showCompareExperimentComponents(isComparisonMode);
     }
 
     public Experiment getComparisonExperiment() {
@@ -175,16 +177,13 @@ public class ExperimentView extends DefaultExperimentView {
                     titleBar,
                     stoppedTrainingNotification,
                     getMiddlePanel(),
-                    getBottomPanel()
-                ),
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        comparisonTitleBar,
-                        stoppedTrainingNotification,
-                        compareExperimentVerticalLayout));
+                    getBottomPanel()),
+                compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         if (isComparisonMode) {
             experimentContent.addClassName("comparison-mode");
         }
+        showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             modelNeedToBeUpdatedLabel, experimentContent
@@ -213,16 +212,20 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
+        VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                    comparisonObservationsPanel,
+                    60),
+            generateRewardFunctionGroup(comparisonCodeViewer),
+            comparisonChartsPanel,
+            comparisonNotesField);
+        comparisonComponents.addClassName("comparison-panel");
+        comparisonComponents.setPadding(false);
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                        comparisonObservationsPanel,
-                        60),
-                generateRewardFunctionGroup(comparisonCodeViewer),
-                comparisonChartsPanel,
-                comparisonNotesField);
-        comparisonPanel.addClassName("comparison-panel");
-        comparisonPanel.setPadding(false);
+            comparisonTitleBar,
+            stoppedTrainingNotification,
+            comparisonComponents);
         return comparisonPanel;
     }
 
