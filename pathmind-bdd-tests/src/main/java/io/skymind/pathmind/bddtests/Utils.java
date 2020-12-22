@@ -138,7 +138,7 @@ public class Utils extends PageObject {
 
     public void waitForLoadingBar() {
         try {
-            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='v-loading-indicator first' and @style='display: none;']")));
+            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and not(@role)]")));
         }catch (org.openqa.selenium.NoSuchElementException ex){
             ex.printStackTrace();
         }
