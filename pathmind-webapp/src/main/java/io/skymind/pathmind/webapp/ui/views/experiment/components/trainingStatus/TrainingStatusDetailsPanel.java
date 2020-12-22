@@ -36,10 +36,7 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
 
     private Experiment experiment;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
-    public TrainingStatusDetailsPanel(Supplier<Optional<UI>> getUISupplier) {
-        this.getUISupplier = getUISupplier;
+    public TrainingStatusDetailsPanel() {
         add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Status"), statusLabel, completedTimeLabel),
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Elapsed"), elapsedTimeLabel),
                 trainingProgress);

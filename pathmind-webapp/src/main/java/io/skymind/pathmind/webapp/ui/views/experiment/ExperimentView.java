@@ -44,7 +44,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.Code
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.ExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
@@ -175,20 +174,26 @@ public class ExperimentView extends DefaultExperimentView {
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     titleBar,
                     stoppedTrainingNotification,
-                    modelNeedToBeUpdatedLabel,
                     getMiddlePanel(),
                     getBottomPanel()
                 ),
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                         comparisonTitleBar,
                         stoppedTrainingNotification,
-                        modelNeedToBeUpdatedLabel,
                         compareExperimentVerticalLayout));
         experimentContent.addClassName("view-section");
         if (isComparisonMode) {
             experimentContent.addClassName("comparison-mode");
         }
-        HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapSizeFullHorizontal(experimentContent);
+
+        VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            modelNeedToBeUpdatedLabel, experimentContent
+        );
+        experimentContentWrapper.setWidthFull();
+
+        HorizontalLayout pageWrapper = isShowNavBar() ? 
+                WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContentWrapper)
+                : WrapperUtils.wrapSizeFullHorizontal(experimentContentWrapper);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
@@ -339,7 +344,7 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected void createExperimentComponents() {
         experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
-        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
+        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
