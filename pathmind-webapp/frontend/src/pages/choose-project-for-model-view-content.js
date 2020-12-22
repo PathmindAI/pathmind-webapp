@@ -32,7 +32,7 @@ class ChooseProjectForModelViewContent extends PolymerElement {
     <vaadin-horizontal-layout class="panel-wrapper">
       <div class="content">
         <vaadin-vertical-layout class="inner-content">
-          <h3>Choose the Project for Your Model</h3>
+          <h3>Choose a Project for your Model</h3>
           <p>Model uploaded. Now let's assign it to a project.</p>
           <vaadin-vertical-layout>
             <vaadin-combo-box
