@@ -157,6 +157,7 @@ public class ExperimentDAO {
             List<Observation> observations = lastExperiment != null ? ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId()) : Collections.emptyList();
             Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
+            exp.setSelectedObservations(observations);
             return exp;
         });
     }
