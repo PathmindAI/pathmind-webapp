@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -18,6 +19,9 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.services.project.demo.DemoProjectService;
+import io.skymind.pathmind.services.project.demo.ExperimentManifest;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -32,6 +36,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +48,9 @@ public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
+    @Autowired
+    private DemoProjectService demoProjectService;
+
     private List<Project> projects;
     private Grid<Project> projectGrid;
 
@@ -51,6 +59,30 @@ public class ProjectsView extends PathMindDefaultView {
 
     public ProjectsView() {
         super();
+    }
+
+
+    public static class X extends Button {
+
+        public X(DemoProjectService demoProjectService) {
+            super("Demo", new Icon(VaadinIcon.HEART));
+            addClickListener(evt -> {
+                try {
+                    ExperimentManifest manifest = new ExperimentManifest(
+                            URI.create("https://files-media-images.s3-eu-west-1.amazonaws.com/SupplyChainDemoAsTuple+Exported.zip")
+                    );
+                    manifest.setRewardFunction(
+                            "reward -= after.waitTimeMean - before.waitTimeMean;\n" +
+                            "reward -= after.costTotalMean - before.costTotalMean;\n"
+                    );
+                    Experiment experiment = demoProjectService.createExperiment(manifest, SecurityUtils.getUserId());
+                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        }
     }
 
     protected Component getMainContent() {
@@ -66,6 +98,7 @@ public class ProjectsView extends PathMindDefaultView {
 
         gridWrapper = new ViewSection(
                 headerWrapper,
+                new X(demoProjectService),
                 archivesTabPanel,
                 projectGrid);
         gridWrapper.addClassName("page-content");
@@ -103,7 +136,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setResizable(true)
                 .setSortable(true);
 
-        projectGrid.addComponentColumn(project -> 
+        projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
@@ -112,7 +145,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setFlexGrow(0)
                 .setResizable(true);
 
-        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project -> 
+        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getLastActivityDate())
         )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))

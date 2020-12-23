@@ -64,6 +64,7 @@ import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -330,6 +331,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             segmentIntegrator.modelImported(false);
             log.info("Error occurred : " + error);
         }));
+    }
+
+    @Override
+    public AnylogicFileCheckResult getResult() {
+        throw new NotImplementedException("should not be called in UI");
+    }
+
+    @Override
+    public String getError() {
+        throw new NotImplementedException("should not be called in UI");
     }
 
     @Override

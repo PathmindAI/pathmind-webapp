@@ -22,6 +22,8 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
     private LocalDateTime dateCreated;
     private LocalDateTime lastActivityDate;
     private String userNotes;
+    @Builder.Default
+    private ProjectType projectType = ProjectType.REGULAR;
 
     private long pathmindUserId;
 
@@ -35,6 +37,7 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
                 .lastActivityDate(lastActivityDate)
                 .userNotes(userNotes)
                 .pathmindUserId(pathmindUserId)
+                .projectType(projectType)
                 .build());
     }
 
