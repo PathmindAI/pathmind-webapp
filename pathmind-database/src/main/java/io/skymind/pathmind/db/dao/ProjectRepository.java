@@ -6,16 +6,21 @@ import java.util.Optional;
 
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.ProjectType;
 import org.jooq.DSLContext;
+import org.jooq.SelectConditionStep;
 
 import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
 
 class ProjectRepository {
-    protected static List<Project> getProjectsForUser(DSLContext ctx, long userId) {
-        return ctx
+    protected static List<Project> getProjectsForUser(DSLContext ctx, long userId, ProjectType projectType) {
+        SelectConditionStep<ProjectRecord> query = ctx
                 .selectFrom(PROJECT)
-                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
-                .fetchInto(Project.class);
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId));
+        if (projectType !=  null) {
+            query = query.and(PROJECT.PROJECT_TYPE.eq(projectType));
+        }
+        return query.fetchInto(Project.class);
     }
 
     protected static void archive(DSLContext ctx, long projectId, boolean isArchive) {
@@ -32,6 +37,7 @@ class ProjectRepository {
         savedProject.setDateCreated(dateCreated);
         savedProject.setLastActivityDate(savedProject.getDateCreated());
         savedProject.setPathmindUserId(project.getPathmindUserId());
+        savedProject.setProjectType(project.getProjectType());
         savedProject.store();
         return savedProject.key().get(PROJECT.ID);
     }
