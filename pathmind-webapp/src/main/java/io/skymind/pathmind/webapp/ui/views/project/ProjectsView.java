@@ -17,6 +17,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
+
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
@@ -37,6 +39,7 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.PROJECTS_URL, layout = MainLayout.class)
+@RouteAlias(value = "", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private ProjectDAO projectDAO;

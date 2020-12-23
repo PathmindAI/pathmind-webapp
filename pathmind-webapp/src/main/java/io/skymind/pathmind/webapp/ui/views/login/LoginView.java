@@ -166,14 +166,10 @@ public class LoginView extends HorizontalLayout
         return loginForm;
     }
 
-    private Class getRerouteClass() {
-        return ProjectsView.class;
-    }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (SecurityUtils.isUserLoggedIn()) {
-            event.forwardTo(getRerouteClass());
+            event.forwardTo(ProjectsView.class);
             // Make sure automatic push mode is enabled. If we don't do this, automatic push
             // won't work even we have proper annotations in place.
             event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
