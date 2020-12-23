@@ -50,6 +50,7 @@ public class HomePage extends PageObject {
 
     public void openProjectsPage() {
         projectsBtn.click();
+        waitFor(ExpectedConditions.titleIs("Pathmind | Projects"));
         utils.waitForLoadingBar();
     }
 
