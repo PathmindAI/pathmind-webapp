@@ -7,7 +7,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 public class ExperimentBreadcrumbs extends Breadcrumbs implements ExperimentComponent {
 
     public ExperimentBreadcrumbs(Experiment experiment) {
-        new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
+        super(experiment.getProject(), experiment.getModel(), experiment);
     }
 
     public void setExperiment(Experiment experiment) {
