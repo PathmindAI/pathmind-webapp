@@ -1,11 +1,15 @@
 package io.skymind.pathmind.webapp.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class CookieUtils {
 
@@ -23,7 +27,11 @@ public class CookieUtils {
     }
 
     public static Cookie getCookie(String cookieName) {
-        return Arrays.stream(VaadinRequest.getCurrent().getCookies())
+        Cookie[] cookies = VaadinRequest.getCurrent().getCookies();
+        if (ArrayUtils.isEmpty(cookies)) {
+            return null;
+        }
+        return Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals(cookieName))
                 .findFirst()
                 .orElse(null);
