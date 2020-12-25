@@ -59,6 +59,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         initLoadData();
         // If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
         // Create screenComponents prior to having them added to the screen (mainly used for parent view classes)
+        // TODO -> STEPH -> This should really be createComponents, addComponents, and so on. The name screen is historical and no longer really appropriate.
         createScreens();
         addScreens();
         // Update the screen based on the parameters if need be.

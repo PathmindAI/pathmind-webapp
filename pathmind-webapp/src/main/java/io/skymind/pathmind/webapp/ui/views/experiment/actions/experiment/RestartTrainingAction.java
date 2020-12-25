@@ -6,21 +6,21 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 
-public class RestartTrainingAction {
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
-    public static void restartTraining(ExperimentView experimentView, RunDAO runDAO, TrainingService trainingService) {
+public class RestartTrainingAction {
+    public static void restartTraining(ExperimentView experimentView, Supplier<Experiment> getExperimentSupplier, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService) {
         if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, experimentView.getUserCaps(), experimentView.getSegmentIntegrator())) {
             return;
         }
 
-        synchronized (experimentView.getExperimentLock()) {
-            Experiment experiment = experimentView.getExperiment();
-            trainingService.startRun(experiment);
+        synchronized (getLockSupplier.get()) {
+            trainingService.startRun(getExperimentSupplier.get());
             experimentView.getSegmentIntegrator().restartTraining();
-            // IMPORTANT -> Note that trainingService.startRun(experiment) alters the experiment instance and so it needs to be reloaded. The only question
-            // is whether we need to reload everything or if we can just reload some parts. Due to time constraints we're going to reload everything for now
-            // through the setExperiment() instead of just using updateComponents().
-            experimentView.setExperiment(experiment);
+            // Note that trainingService.startRun(experiment) alters the experiment instance and so it needs to be re-rendered but NOT reset the experiment itself.
+            updateExperimentViewRunnable.run();
             // TODO -> TICKET -> https://github.com/SkymindIO/pathmind-webapp/issues/2598 Possible bug found? Why aren't we firing an event for the other browsers?
         }
     }

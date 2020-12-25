@@ -35,7 +35,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected abstract BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction();
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
+    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
     private Object experimentLock = new Object();
 
     @Autowired
@@ -140,6 +140,9 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
+        // TODO -> STEPH -> FIONNA -> Once we have the titlebar working we can remove the whole updateComponentEnablement method because it's
+        // done as part of the setExperiment() code in the ExperimentTitleBar class. We just need to do the same for the NewExperimentView. We could
+        // either do it now or push it off to a later ticket.
         updateComponentEnablements();
         experimentsNavbar.setVisible(!experiment.isArchived());
     }

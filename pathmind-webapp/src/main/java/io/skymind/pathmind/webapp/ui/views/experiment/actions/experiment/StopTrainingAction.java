@@ -10,15 +10,19 @@ import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
+import java.util.function.Supplier;
+
 public class StopTrainingAction {
 
-    public static void stopTraining(ExperimentView experimentView, TrainingService trainingService, Button stopTrainingButton) {
+    public static void stopTraining(ExperimentView experimentView, Supplier<Experiment> getExperimentSupplier, Runnable updateExperimentRunnable, Supplier<Object> getLockSupplier, TrainingService trainingService, Button stopTrainingButton) {
         ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
-            Experiment experiment = experimentView.getExperiment();
-            trainingService.stopRun(experiment);
-            experimentView.getSegmentIntegrator().stopTraining();
-            stopTrainingButton.setVisible(false);
-            fireEvents(experiment);
+            synchronized (getLockSupplier.get()) {
+                trainingService.stopRun(getExperimentSupplier.get());
+                experimentView.getSegmentIntegrator().stopTraining();
+                stopTrainingButton.setVisible(false);
+                updateExperimentRunnable.run();
+                fireEvents(getExperimentSupplier.get());
+            }
         });
     }
 

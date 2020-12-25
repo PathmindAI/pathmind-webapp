@@ -22,12 +22,14 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        synchronized (experimentView.getExperimentLock()) {
-            // TODO -> STEPH -> We should have a different lock for the comparison experiment.
-            if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
+        // TODO -> STEPH -> We should have a different lock for the comparison experiment.
+        if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
+            synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
                 experimentView.updateComponents();
-            } else {
+            }
+        } else {
+            synchronized (experimentView.getComparisonExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getComparisonExperiment());
                 experimentView.updateComparisonComponents();
             }

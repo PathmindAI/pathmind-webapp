@@ -1,20 +1,22 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.actions.shared;
 
-import java.util.Optional;
+import java.util.function.Supplier;
 
-import com.vaadin.flow.component.UI;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 
 public class UnarchiveExperimentAction {
-    public static void unarchiveExperiment(ExperimentDAO experimentDAO, Experiment experiment, SegmentIntegrator segmentIntegrator, Optional<UI> ui) {
+    public static void unarchive(DefaultExperimentView experimentView, Supplier<Experiment> getExperimentSupplier, Supplier<Object> getLockSupplier, ExperimentDAO experimentDAO) {
         ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, false);
-            segmentIntegrator.archived(Experiment.class, false);
-            ExperimentGuiUtils.navigateToExperiment(ui, experiment);
+            synchronized (getLockSupplier.get()) {
+                ExperimentGuiUtils.archiveExperiment(experimentDAO, getExperimentSupplier.get(), false);
+                experimentView.getSegmentIntegrator().archived(Experiment.class, false);
+            }
+            // There's no need to lock on the view because at that point it's a page reload.
+            ExperimentGuiUtils.navigateToExperiment(experimentView.getUI(), getExperimentSupplier.get());
         });
     }
 }

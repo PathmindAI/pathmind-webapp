@@ -1,4 +1,5 @@
-package io.skymind.pathmind.webapp.ui.views.experiment;
+package io.skymind.pathmind.webapp.ui.views.experiment
+        ;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +9,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -21,22 +18,13 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.RestartTrainingAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitleBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
@@ -58,20 +46,17 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 @Slf4j
 public class ExperimentView extends DefaultExperimentView {
 
-    private Button exportPolicyButton;
-    private Button stopTrainingButton;
-    private Button unarchiveExperimentButton;
-    private Anchor downloadModelAlpLink;
-    private Button shareButton;
-
-    private TagLabel archivedLabel;
-    private TagLabel sharedWithSupportLabel;
+    // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
+    // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
+    // why we can't use synchronize on the method).
+    private Object comparisonExperimentLock = new Object();
 
     private VerticalLayout compareExperimentVerticalLayout;
 
     private StoppedTrainingNotification stoppedTrainingNotification;
 
     // Experiment Components
+    private ExperimentTitleBar experimentTitleBar;
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
@@ -96,8 +81,6 @@ public class ExperimentView extends DefaultExperimentView {
     private String earlyStoppingUrl;
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
-
-    private Button restartTrainingButton;
 
     // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
     protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
@@ -157,16 +140,8 @@ public class ExperimentView extends DefaultExperimentView {
 
     @Override
     protected Component getMainContent() {
-        archivedLabel = new TagLabel("Archived", false, "small");
-        sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
-
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
         modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
-
-        // It is the same for all experiments from the same model so it doesn't have to be updated as long
-        // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
-        // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
-        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
@@ -199,16 +174,9 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private HorizontalLayout createTitleBar() {
-        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
-            downloadModelAlpLink, experimentTrainingStatusDetailsPanel, getButtonsWrapper());
+        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(experimentTitleBar);
         titleBar.setPadding(true);
         return titleBar;
-    }
-
-    private ExperimentTitleBar createComparisonTitleBar() {
-        return new ExperimentTitleBar();//, downloadModelAlpLink, experimentTrainingStatusDetailsPanel, getButtonsWrapper());
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
@@ -267,35 +235,19 @@ public class ExperimentView extends DefaultExperimentView {
         );
     }
 
-    protected Div getButtonsWrapper() {
-        createButtons();
-        restartTrainingButton.setVisible(false);
-        restartTrainingButton.addClassNames("large-image-btn", "run");
-        stopTrainingButton.setVisible(true);
-
-        Div buttonsWrapper = new Div(getActionButtonList());
-        buttonsWrapper.addClassName("buttons-wrapper");
-        return buttonsWrapper;
-    }
-
-    private void createButtons() {
-        restartTrainingButton = new Button("Restart Training", click -> RestartTrainingAction.restartTraining(this, runDAO, trainingService));
-        stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(this, trainingService, stopTrainingButton));
-        shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupportAction(experimentDAO, experiment, sharedWithSupportLabel, shareButton));
-        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchiveExperiment(experimentDAO, experiment, segmentIntegrator, getUI()));
-        exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(experiment, getUI()), false);
+    public Object getComparisonExperimentLock() {
+        return comparisonExperimentLock;
     }
 
     /**
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
-    protected Component[] getActionButtonList() {
-        return new Button[]{
-                unarchiveExperimentButton,
-                restartTrainingButton,
-                stopTrainingButton,
-                shareButton,
-                exportPolicyButton};
+    protected ExperimentTitleBar createExperimentTitleBar() {
+        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), experimentDAO, runDAO, trainingService, modelService, getUISupplier());
+    }
+
+    private ExperimentTitleBar createComparisonExperimentTitleBar() {
+        return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), experimentDAO, runDAO, trainingService, modelService, getUISupplier());
     }
 
     private HorizontalLayout getBottomPanel() {
@@ -309,24 +261,6 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     /************************************** UI element creations are above this line **************************************/
-
-    @Override
-    protected void updateComponentEnablements() {
-        unarchiveExperimentButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
-        stopTrainingButton.setVisible(experiment.isTrainingRunning());
-        restartTrainingButton.setVisible(false);
-
-        boolean allowRestart = experiment.isAllowRestartTraining() && ModelUtils.isValidModel(experiment.getModel());
-        restartTrainingButton.setVisible(allowRestart);
-        restartTrainingButton.setEnabled(allowRestart);
-
-        archivedLabel.setVisible(experiment.isArchived());
-
-        // Update components with SharedExperimentView (share through support).
-        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
-        shareButton.setVisible(!experiment.isSharedWithSupport());
-    }
 
     @Override
     protected boolean isValidViewForExperiment() {
@@ -346,6 +280,7 @@ public class ExperimentView extends DefaultExperimentView {
 
     @Override
     protected void createExperimentComponents() {
+        experimentTitleBar = createExperimentTitleBar();
         experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
@@ -356,6 +291,7 @@ public class ExperimentView extends DefaultExperimentView {
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
         experimentComponentList.addAll(List.of(
+                experimentTitleBar,
                 experimentNotesField,
                 experimentTrainingStatusDetailsPanel,
                 experimentChartsPanel,
@@ -368,8 +304,15 @@ public class ExperimentView extends DefaultExperimentView {
         createComparisonComponents();
     }
 
+    @Override
+    protected void updateComponentEnablements() {
+        // TODO -> STEPH -> FIONNA -> Once we have the titlebar working we can remove the whole updateComponentEnablement method because it's
+        // done as part of the setExperiment() code in the ExperimentTitleBar class. We just need to do the same for the NewExperimentView. We could
+        // either do it now or push it off to a later ticket.
+    }
+
     protected void createComparisonComponents() {
-        comparisonTitleBar = createComparisonTitleBar();
+        comparisonTitleBar = createComparisonExperimentTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());

@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment;
 
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.button.Button;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -8,19 +10,21 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 
 public class ShareWithSupportAction {
 
-    public static void shareWithSupportAction(ExperimentDAO experimentDAO, Experiment experiment, TagLabel sharedWithSupportLabel, Button shareButton) {
+    // Locking is not really required here because there's no way to turn it off, and all it does is enable some items.
+    public static void shareWithSupport(ExperimentDAO experimentDAO, Supplier<Experiment> getExperimentSupplier, TagLabel sharedWithSupportLabel, Button shareButton) {
         ConfirmationUtils.confirmationPopupDialog(
                 "Share training with support",
                 "This will give Pathmind a read-only mode to the experiment to help with debugging any issues.",
                 "Share Training",
                 () -> {
+                    Experiment experiment = getExperimentSupplier.get();
                     experimentDAO.shareExperimentWithSupport(experiment.getId());
                     experiment.setSharedWithSupport(true);
                     setSharedWithSupportComponents(sharedWithSupportLabel, shareButton, experiment);
                 });
-
     }
 
+    // TODO -> FIONNA -> Can we re-use the same shared with label? If not let me know and I'll adjust this method and class accordingly.
     private static void setSharedWithSupportComponents(TagLabel sharedWithSupportLabel, Button shareButton, Experiment experiment) {
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
         shareButton.setVisible(!experiment.isSharedWithSupport());
