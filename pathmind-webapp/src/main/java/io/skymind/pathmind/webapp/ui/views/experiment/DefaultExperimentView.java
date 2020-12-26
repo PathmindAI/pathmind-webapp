@@ -32,7 +32,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected abstract void createExperimentComponents();
     protected abstract void updateComponentEnablements();
     protected abstract boolean isValidViewForExperiment();
-    protected abstract BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction();
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
@@ -79,7 +78,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         experimentComponentList.add(experimentPanelTitle);
         experimentComponentList.add(experimentBreadcrumbs);
 
-        experimentsNavbar = new ExperimentsNavBar(this, getNavBarSelectedExperimentAction(), experimentDAO);
+        experimentsNavbar = new ExperimentsNavBar(this, experimentDAO);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -40,7 +39,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Save
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NewExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentNeedsSavingViewSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,11 +89,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction() {
-        return (experiment, defaultExperimentView) -> NewExperimentSelectAction.selectExperiment(experiment, defaultExperimentView);
     }
 
     @Override

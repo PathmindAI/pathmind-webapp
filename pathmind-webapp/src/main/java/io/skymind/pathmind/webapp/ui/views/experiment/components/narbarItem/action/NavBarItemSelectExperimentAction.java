@@ -6,7 +6,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
-public class ExperimentSelectAction {
+public class NavBarItemSelectExperimentAction {
 
     public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
         ExperimentView experimentView = (ExperimentView)defaultExperimentView;

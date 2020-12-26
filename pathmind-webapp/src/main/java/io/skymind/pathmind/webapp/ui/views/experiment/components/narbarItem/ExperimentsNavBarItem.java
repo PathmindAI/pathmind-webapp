@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
-import java.util.function.BiConsumer;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
@@ -19,11 +17,11 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.ExperimentCompareAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemSelectExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemArchiveExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemCompareExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
@@ -42,14 +40,12 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     private Experiment experiment;
 
-    private BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction;
     private DefaultExperimentView defaultExperimentView;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction, DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO, Experiment experiment) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO, Experiment experiment) {
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
-        this.selectExperimentAction = selectExperimentAction;
         this.defaultExperimentView = defaultExperimentView;
 
         // TODO -> STEPH -> I haven't checked but is the compare button only for the ExperimentView? If not then we can just do a
@@ -61,7 +57,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
             experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
         }
 
-        UI.getCurrent().getUI().ifPresent(ui -> setExperimentDetails(ui, experiment));
+        setExperimentDetails(experiment);
     }
 
     @EventHandler
@@ -73,31 +69,21 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void handleRowClicked() {
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         experimentsNavbar.setCurrentExperiment(selectedExperiment);
-        selectExperimentAction.accept(selectedExperiment, defaultExperimentView);
+        NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, defaultExperimentView);
     }
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        // TODO -> STEPH -> Needs to be converted to an action class to be consistent with the rest of the application.
-        ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
-            ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, true);
-            defaultExperimentView.getSegmentIntegrator().archived(Experiment.class, true);
-            ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(defaultExperimentView.getUISupplier(), experimentsNavbar.getExperiments());
-        });
+        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentDAO, experimentsNavbar, defaultExperimentView);
     }
 
     @EventHandler
     private void onCompareButtonClicked() {
         // TODO -> STEPH -> When clicked it changes the experiment rather than just change the comparison components.
-        if (experiment.isDraft()) {
-            NotificationUtils.showError("Cannot compare draft experiment<br>Option shouldn't be available rather than error message");
-        } else {
-            // This option should only be available for the ExperimentView so this should be safe.
-            ExperimentCompareAction.compare(experiment, (ExperimentView)defaultExperimentView, experimentDAO);
-        }
+        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView, experimentDAO);
     }
 
-    private void setExperimentDetails(UI ui, Experiment experiment) {
+    private void setExperimentDetails(Experiment experiment) {
         getModel().setIsDraft(experiment.isDraft());
         getModel().setExperimentName(experiment.getName());
         getModel().setShowGoals(!experiment.isDraft()

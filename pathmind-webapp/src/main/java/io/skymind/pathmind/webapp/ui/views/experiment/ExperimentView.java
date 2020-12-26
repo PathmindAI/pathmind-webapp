@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
@@ -30,7 +29,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitle
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.ExperimentSelectAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
@@ -131,11 +129,6 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected void onDetach(DetachEvent event) {
         EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected BiConsumer<Experiment, DefaultExperimentView> getNavBarSelectedExperimentAction() {
-        return (experiment, defaultExperimentView) -> ExperimentSelectAction.selectExperiment(experiment, defaultExperimentView);
     }
 
     @Override

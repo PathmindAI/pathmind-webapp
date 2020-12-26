@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.AttachEvent;
@@ -36,12 +35,10 @@ public class ExperimentsNavBar extends VerticalLayout {
 
     private ExperimentDAO experimentDAO;
 
-    private BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction;
     private DefaultExperimentView defaultExperimentView;
 
-    public ExperimentsNavBar(DefaultExperimentView defaultExperimentView, BiConsumer<Experiment, DefaultExperimentView> selectExperimentAction, ExperimentDAO experimentDAO) {
+    public ExperimentsNavBar(DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO) {
         this.defaultExperimentView = defaultExperimentView;
-        this.selectExperimentAction = selectExperimentAction;
         this.experimentDAO = experimentDAO;
         this.selectedExperiment = defaultExperimentView.getExperiment();
         this.modelId = selectedExperiment.getModelId();
@@ -135,7 +132,7 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, selectExperimentAction, defaultExperimentView, experimentDAO, experiment);
+        return new ExperimentsNavBarItem(this, defaultExperimentView, experimentDAO, experiment);
     }
 
     private void setIsOnDraftExperimentView(ExperimentsNavBarItem targetNavBarItem, Experiment experiment) {
