@@ -27,6 +27,10 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Experiment extends ArchivableData {
+
+    public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
+    public static final int MAX_SELECTED_REWARD_VARIABLES = 2;
+
     private static final long serialVersionUID = -5041305878245823921L;
     private long modelId;
     private String rewardFunction;
@@ -43,6 +47,7 @@ public class Experiment extends ArchivableData {
     // Helper GUI attributes not stored in the database
     private Project project;
     private Model model;
+    private Policy bestPolicy;
     private transient List<Policy> policies;
     private transient List<Run> runs;
     private List<Observation> modelObservations;
@@ -55,7 +60,7 @@ public class Experiment extends ArchivableData {
     private String trainingStoppedEarlyMessage;
 
     private List<RewardVariable> rewardVariables;
-    private Policy bestPolicy;
+    private List<RewardVariable> selectedRewardVariables;
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
@@ -97,55 +102,22 @@ public class Experiment extends ArchivableData {
         return hasGoals && Objects.equals(goalsReached, totalGoals);
     }
 
-    public String getTrainingError() {
-        return trainingError;
-    }
-
-    public void setTrainingError(String trainingError) {
-        this.trainingError = trainingError;
-    }
-
-    public boolean isAllowRestartTraining() {
-        return allowRestartTraining;
-    }
-
-    public void setAllowRestartTraining(boolean allowRestartTraining) {
-        this.allowRestartTraining = allowRestartTraining;
-    }
-
-    public boolean isTrainingStoppedEarly() {
-        return trainingStoppedEarly;
-    }
-
-    public void setTrainingStoppedEarly(boolean trainingStoppedEarly) {
-        this.trainingStoppedEarly = trainingStoppedEarly;
-    }
-
-    public String getTrainingStoppedEarlyMessage() {
-        return trainingStoppedEarlyMessage;
-    }
-
-    public void setTrainingStoppedEarlyMessage(String trainingStoppedEarlyMessage) {
-        this.trainingStoppedEarlyMessage = trainingStoppedEarlyMessage;
-    }
-
     public boolean isTrainingError() {
         return StringUtils.isNotEmpty(trainingError);
     }
 
-    public List<RewardVariable> getRewardVariables() {
-        return rewardVariables;
+    public void addSelectedRewardVariable(RewardVariable rewardVariable) {
+        if(selectedRewardVariables == null) {
+            selectedRewardVariables = new ArrayList<>();
+        }
+        selectedRewardVariables.add(rewardVariable);
     }
 
-    public void setRewardVariables(List<RewardVariable> rewardVariables) {
-        this.rewardVariables = rewardVariables;
-    }
-
-    public Policy getBestPolicy() {
-        return bestPolicy;
-    }
-
-    public void setBestPolicy(Policy bestPolicy) {
-        this.bestPolicy = bestPolicy;
+    public void toggleSelectedVariable(RewardVariable rewardVariable) {
+        if(selectedRewardVariables.contains(rewardVariable)) {
+            selectedRewardVariables.remove(rewardVariable);
+        } else {
+            selectedRewardVariables.add(rewardVariable);
+        }
     }
 }

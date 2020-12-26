@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class DefaultExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
     protected abstract void createExperimentComponents();
-    protected abstract void updateComponentEnablements();
     protected abstract boolean isValidViewForExperiment();
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
@@ -102,17 +101,13 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         return experiment;
     }
 
-    /**
-     * EXTREMELY IMPORTANT -> Any code that calls this method should get the experimentLock beforehand otherwise it can lead to
-     * racing conditions. The lock can NOT be set in this method because the code setting up the experiment object most likely will
-     * be done OUTSIDE of this method. For example the subscriber may need to update the experiment instance's runs while this method
-     * is being called which would lead to a conflict.
-     */
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        this.experimentId = experiment.getId();
-        loadFullExperimentData();
-        updateComponents();
+        synchronized (experimentLock) {
+            this.experiment = experiment;
+            this.experimentId = experiment.getId();
+            loadFullExperimentData();
+            updateComponents();
+        }
     }
 
     /**
@@ -139,10 +134,6 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
-        // TODO -> STEPH -> FIONNA -> Once we have the titlebar working we can remove the whole updateComponentEnablement method because it's
-        // done as part of the setExperiment() code in the ExperimentTitleBar class. We just need to do the same for the NewExperimentView. We could
-        // either do it now or push it off to a later ticket.
-        updateComponentEnablements();
         experimentsNavbar.setVisible(!experiment.isArchived());
     }
 

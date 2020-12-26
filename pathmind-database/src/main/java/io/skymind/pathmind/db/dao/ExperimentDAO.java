@@ -183,6 +183,8 @@ public class ExperimentDAO {
         // There are no extra costs if the experiment is in draft because all the values will be empty.
         updateTrainingErrorAndMessage(ctx, experiment);
         ExperimentUtils.updateEarlyStopReason(experiment);
+
+        ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
     private List<Policy> loadPoliciesForExperiment(DSLContext ctx, long experimentId) {

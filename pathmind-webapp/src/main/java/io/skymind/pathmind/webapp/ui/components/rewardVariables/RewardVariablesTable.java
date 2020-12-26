@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
@@ -16,14 +17,13 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
-import static io.skymind.pathmind.webapp.ui.utils.UIConstants.MAX_SELECTED_METRICS_FOR_CHART;
-
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout implements ExperimentComponent {
 
     private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
+    private Consumer<RewardVariable> rewardVariableSelectedConsumer;
     private Boolean actAsMultiSelect = false;
     private Integer selectedRewardVariables;
 
@@ -39,6 +39,10 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         container.setClassName("reward-variables-table");
 
         add(container);
+    }
+
+    public void setRewardVariableSelectedBiConsumer(Consumer<RewardVariable> rewardVariableSelectedConsumer) {
+        this.rewardVariableSelectedConsumer = rewardVariableSelectedConsumer;
     }
 
     public void setCodeEditorMode() {
@@ -72,7 +76,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, rewardVariableSelectedConsumer, actAsMultiSelect, this);
             container.add(row);
             rewardVariableNameFields.add(row);
         });
@@ -85,7 +89,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     public void setNumberOfSelectedRewardVariables(int num) {
         String disableSelectionClassName = "disable-selection";
         selectedRewardVariables = num;
-        if (num >= MAX_SELECTED_METRICS_FOR_CHART) {
+        if (num >= Experiment.MAX_SELECTED_REWARD_VARIABLES) {
             container.addClassName(disableSelectionClassName);
         } else {
             container.removeClassName(disableSelectionClassName);

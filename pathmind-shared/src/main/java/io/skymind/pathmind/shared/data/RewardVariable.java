@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,20 +30,31 @@ public class RewardVariable extends Data {
         setName(name);
     }
 
-    // Used for the cloning method.
-    private RewardVariable(long modelId, int arrayIndex, String dataType, String goalConditionType, Double goalValue) {
-        this.modelId = modelId;
-        this.arrayIndex = arrayIndex;
-        this.dataType = dataType;
-        this.goalConditionType = goalConditionType;
-        this.goalValue = goalValue;
-    }
-
     public GoalConditionType getGoalConditionTypeEnum() {
         return GoalConditionType.getEnumFromCode(goalConditionType).orElse(null);
     }
 
     public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
         goalConditionType = conditionType != null ? conditionType.getCode() : null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        RewardVariable that = (RewardVariable) o;
+        return Objects.equals(this.getId(), that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getId());
     }
 }

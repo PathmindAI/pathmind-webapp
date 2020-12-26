@@ -241,7 +241,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     @Override
-    protected void updateComponentEnablements() {
+    public void updateComponents() {
+        super.updateComponents();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
     }

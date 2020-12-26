@@ -3,16 +3,14 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetr
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -20,17 +18,16 @@ import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.action.SimulationRewardVariableSelectedAction;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SimulationMetricsPanel extends HorizontalLayout implements ExperimentComponent {
 
-    private MetricChartPanel metricChartPanel;
-    private Dialog metricChartDialog;
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
 
@@ -42,10 +39,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
     private boolean showSimulationMetrics;
 
-    // REFACTOR -> A quick somewhat hacky solution until we have time to refactor the code
-    private int indexClicked;
-
-    public SimulationMetricsPanel(boolean showSimulationMetrics, Supplier<Optional<UI>> getUISupplier) {
+    public SimulationMetricsPanel(boolean showSimulationMetrics, ExperimentView experimentView) {
 
         super();
 
@@ -63,6 +57,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();
         rewardVariablesTable.setSizeFull();
+        rewardVariablesTable.setRewardVariableSelectedBiConsumer(rewardVariable -> SimulationRewardVariableSelectedAction.selectRewardVariable(rewardVariable, experimentView));
 
         add(rewardVariablesTable);
     }
@@ -151,13 +146,5 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
                 });
 
         showMetricValuesAndSparklines(true);
-    }
-
-    public boolean isMetricChartPopupOpen() {
-        return metricChartDialog.isOpened();
-    }
-
-    public int getSparklineIndexClicked() {
-        return indexClicked;
     }
 }

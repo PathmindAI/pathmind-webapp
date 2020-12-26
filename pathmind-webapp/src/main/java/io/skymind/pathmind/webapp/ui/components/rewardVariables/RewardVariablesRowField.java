@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
+import java.util.function.Consumer;
+
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -9,14 +11,11 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentRewardVariableSelectedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-
-import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_METRICS_FOR_CHART;
 
 public class RewardVariablesRowField extends HorizontalLayout {
 
@@ -36,16 +35,16 @@ public class RewardVariablesRowField extends HorizontalLayout {
     // This is really only used to prevent eventbus updates for reward variables that are already set to show.
     private boolean isShow = true;
 
-    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Consumer<RewardVariable> rewardVariableSelectedConsumer, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
         setAlignItems(Alignment.BASELINE);
-        rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
+        rewardVariableNameSpan = LabelFactory.createLabel(rewardVariable.getName(), "reward-variable-name");
         if (actAsMultiSelect) {
             String clickedAttribute = "chosen";
-            if (rv.getArrayIndex() < DEFAULT_SELECTED_METRICS_FOR_CHART) {
+            if (rewardVariable.getArrayIndex() < Experiment.DEFAULT_SELECTED_REWARD_VARIABLES) {
                 rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
-                rewardVariablesTable.setNumberOfSelectedRewardVariables(DEFAULT_SELECTED_METRICS_FOR_CHART);
+                rewardVariablesTable.setNumberOfSelectedRewardVariables(Experiment.DEFAULT_SELECTED_REWARD_VARIABLES);
             }
 
             rewardVariableNameSpan.addClickListener(event -> {
@@ -55,14 +54,12 @@ public class RewardVariablesRowField extends HorizontalLayout {
                     spanElement.removeAttribute(clickedAttribute);
                     isShow = false;
                     rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables-1);
-                    EventBus.post(new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable, false));
-                } else {
-                    if (numberOfSelectedRewardVariables < 2) {
-                        spanElement.setAttribute(clickedAttribute, true);
-                        isShow = true;
-                        rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
-                        EventBus.post(new ExperimentRewardVariableSelectedViewBusEvent(rewardVariable, true));
-                    }
+                    rewardVariableSelectedConsumer.accept(rewardVariable);
+                } else if (numberOfSelectedRewardVariables < 2) {
+                    spanElement.setAttribute(clickedAttribute, true);
+                    isShow = true;
+                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
+                    rewardVariableSelectedConsumer.accept(rewardVariable);
                 }
             });
         }

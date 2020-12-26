@@ -35,6 +35,8 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
     }
 
     private void updateExperimentInternalValues(PolicyUpdateBusEvent event, Experiment experiment) {
+        // TODO -> STEPH -> This should all be done in a single ExperimentUtils method as it will have to be replicated
+        //  elsewhere. This is still done this way because the trainingErrorMessage needs to be done after the update.
         ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
         ExperimentUtils.updateExperimentInternals(experiment);
         experimentDAO.updateTrainingErrorAndMessage(experiment);

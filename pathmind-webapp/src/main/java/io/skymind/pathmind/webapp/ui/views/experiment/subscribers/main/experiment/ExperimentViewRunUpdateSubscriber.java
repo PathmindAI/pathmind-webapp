@@ -37,6 +37,8 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
     }
 
     private void updateExperimentInternalValues(RunUpdateBusEvent event, Experiment experiment) {
+        // TODO -> STEPH -> This should all be done in a single ExperimentUtils method as it will have to be replicated
+        //  elsewhere. This is still done this way because the trainingErrorMessage needs to be done after the update.
         experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
         ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
         ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());

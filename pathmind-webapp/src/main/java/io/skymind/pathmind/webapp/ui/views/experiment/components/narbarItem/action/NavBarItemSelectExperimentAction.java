@@ -7,16 +7,33 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class NavBarItemSelectExperimentAction {
-
     public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
-        ExperimentView experimentView = (ExperimentView)defaultExperimentView;
-        // If it's a new draft experiment then we just want to go to the draft view and ignore this.
-        if (experiment.isDraft()) {
-            experimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+        // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
+        if(defaultExperimentView instanceof ExperimentView) {
+            selectExperimentFromExperimentView(experiment, defaultExperimentView);
+        } else { // Must be NewExperimentView
+            selectExperimentFromNewExperimentView(experiment, defaultExperimentView);
+        }
+    }
+
+    private static void selectExperimentFromNewExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
+        if(experiment.isDraft()) {
+            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT + "/" + experiment.getId()));
+            synchronized (defaultExperimentView.getExperimentLock()) {
+                defaultExperimentView.setExperiment(experiment);
+            }
         } else {
-            experimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + experiment.getId()));
-            synchronized (experimentView.getExperimentLock()) {
-                experimentView.setExperiment(experiment);
+            defaultExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+        }
+    }
+
+    private static void selectExperimentFromExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
+        if (experiment.isDraft()) {
+            defaultExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+        } else {
+            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + experiment.getId()));
+            synchronized (defaultExperimentView.getExperimentLock()) {
+                defaultExperimentView.setExperiment(experiment);
             }
         }
     }

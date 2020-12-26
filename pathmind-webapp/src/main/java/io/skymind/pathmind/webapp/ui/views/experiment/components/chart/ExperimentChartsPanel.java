@@ -28,14 +28,10 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     private Experiment experiment;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
     public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier) {
 
-        this.getUISupplier = getUISupplier;
-
         Tabs chartTabs = createChartTabs();
-        compareMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
+        compareMetricsChartPanel = new CompareMetricsChartPanel();
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
@@ -75,12 +71,6 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
         }
     }
 
-    private void setupCharts() {
-        policyChartPanel.setExperiment(experiment);
-        compareMetricsChartPanel.setupChart(experiment);
-        selectVisibleChart();
-    }
-
     public void selectVisibleChart() {
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
@@ -91,7 +81,9 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        setupCharts();
+        policyChartPanel.setExperiment(experiment);
+        compareMetricsChartPanel.setExperiment(experiment);
+        selectVisibleChart();
     }
 
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {

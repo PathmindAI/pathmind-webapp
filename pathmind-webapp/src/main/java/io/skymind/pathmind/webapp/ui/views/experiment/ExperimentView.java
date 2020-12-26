@@ -278,7 +278,7 @@ public class ExperimentView extends DefaultExperimentView {
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
-        experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
+        experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
@@ -297,19 +297,12 @@ public class ExperimentView extends DefaultExperimentView {
         createComparisonComponents();
     }
 
-    @Override
-    protected void updateComponentEnablements() {
-        // TODO -> STEPH -> FIONNA -> Once we have the titlebar working we can remove the whole updateComponentEnablement method because it's
-        // done as part of the setExperiment() code in the ExperimentTitleBar class. We just need to do the same for the NewExperimentView. We could
-        // either do it now or push it off to a later ticket.
-    }
-
     protected void createComparisonComponents() {
         comparisonTitleBar = createComparisonExperimentTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());
-        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), getUISupplier());
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
 
