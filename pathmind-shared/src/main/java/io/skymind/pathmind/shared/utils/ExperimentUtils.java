@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.utils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -268,14 +270,13 @@ public class ExperimentUtils {
 
     public static void updateExperimentInternals(Experiment experiment) {
 
-        ExperimentUtils.updateBestPolicy(experiment);
-
+        updateBestPolicy(experiment);
         if(experiment.getBestPolicy() != null) {
             PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
             PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
         }
 
-        ExperimentUtils.updateTrainingStatus(experiment);
+        updateTrainingStatus(experiment);
 
         // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
 //        updateTrainingErrorAndMessage(ctx, experiment);
@@ -287,5 +288,6 @@ public class ExperimentUtils {
                 .filter(rewardVariable -> rewardVariable != null)
                 .filter(rewardVariable -> rewardVariable.getArrayIndex() < Experiment.DEFAULT_SELECTED_REWARD_VARIABLES)
                 .forEach(rewardVariable ->  experiment.addSelectedRewardVariable(rewardVariable));
+        Collections.sort(experiment.getSelectedRewardVariables(), Comparator.comparing(RewardVariable::getArrayIndex));
     }
 }

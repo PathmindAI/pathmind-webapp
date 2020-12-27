@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
@@ -19,9 +18,9 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemSelectExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemCompareExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemSelectExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
@@ -74,13 +73,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentDAO, experimentsNavbar, defaultExperimentView);
+        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, defaultExperimentView);
     }
 
     @EventHandler
     private void onCompareButtonClicked() {
         // TODO -> STEPH -> When clicked it changes the experiment rather than just change the comparison components.
-        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView, experimentDAO);
+        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView);
     }
 
     private void setExperimentDetails(Experiment experiment) {

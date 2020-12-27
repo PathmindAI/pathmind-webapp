@@ -6,8 +6,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RestartTrainingAction {

@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.TrainingService;
@@ -14,7 +13,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 
 public class StartRunAction {
 
-    public static void startRun(NewExperimentView newExperimentView, RewardFunctionEditor rewardFunctionEditor, TrainingService trainingService, RunDAO runDAO, ExperimentDAO experimentDAO, ObservationDAO observationDAO) {
+    public static void startRun(NewExperimentView newExperimentView, RewardFunctionEditor rewardFunctionEditor, TrainingService trainingService, RunDAO runDAO, ObservationDAO observationDAO) {
 
         if (!rewardFunctionEditor.validateBinder()) {
             return;
@@ -28,7 +27,7 @@ public class StartRunAction {
         // rely on the information in the notes.
         Experiment experiment = newExperimentView.getUpdatedExperiment();
 
-        experimentDAO.updateRewardFunction(experiment);
+        newExperimentView.getExperimentDAO().updateRewardFunction(experiment);
         observationDAO.saveExperimentObservations(experiment.getId(), experiment.getSelectedObservations());
 
         trainingService.startRun(experiment);

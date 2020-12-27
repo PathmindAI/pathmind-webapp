@@ -3,14 +3,12 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetr
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -22,7 +20,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.action.SimulationRewardVariableSelectedAction;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,12 +49,11 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         // component in the view or a subcomponent of this component. I ask because it's done differently between NewExperimentView
         // and ExperimentView. I ask because I'm trying to be consistent and I'm not sure if there are side effects, especially
         // when setting the experiment, etc.
-        rewardVariablesTable = new RewardVariablesTable();
+        rewardVariablesTable = new RewardVariablesTable(experimentView);
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();
         rewardVariablesTable.setSelectMode();
         rewardVariablesTable.setSizeFull();
-        rewardVariablesTable.setRewardVariableSelectedBiConsumer(rewardVariable -> SimulationRewardVariableSelectedAction.selectRewardVariable(rewardVariable, experimentView));
 
         add(rewardVariablesTable);
     }

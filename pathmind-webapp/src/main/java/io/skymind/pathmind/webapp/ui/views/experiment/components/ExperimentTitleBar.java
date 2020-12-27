@@ -1,13 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -26,10 +27,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTra
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * IMPORTANT -> This class is very unique because it contains a number of actions that need to set the experiment depending on whether it's the actual
@@ -96,8 +93,8 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
         restartTrainingButton = new Button("Restart Training", click -> RestartTrainingAction.restartTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, runDAO, trainingService));
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
-        shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentDAO, getExperimentSupplier, sharedWithSupportLabel, shareButton));
-        unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier, experimentDAO));
+        shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentView, getExperimentSupplier, sharedWithSupportLabel, shareButton));
+        unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)

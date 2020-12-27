@@ -1,23 +1,23 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
-import java.util.function.Consumer;
-
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.action.SimulationRewardVariableSelectedAction;
 
 public class RewardVariablesRowField extends HorizontalLayout {
+
+    private static final String CLICKED_ATTRIBUTE = "chosen";
 
     private Span rewardVariableNameSpan;
 
@@ -32,36 +32,19 @@ public class RewardVariablesRowField extends HorizontalLayout {
     private Command goalFieldValueChangeHandler;
 
     private RewardVariable rewardVariable;
-    // This is really only used to prevent eventbus updates for reward variables that are already set to show.
-    private boolean isShow = true;
 
-    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, Consumer<RewardVariable> rewardVariableSelectedConsumer, Boolean actAsMultiSelect, RewardVariablesTable rewardVariablesTable) {
+    private ExperimentView experimentView;
+    private boolean isSelected = false;
+
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, ExperimentView experimentView, Boolean actAsMultiSelect) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
+        this.experimentView = experimentView;
         setAlignItems(Alignment.BASELINE);
         rewardVariableNameSpan = LabelFactory.createLabel(rewardVariable.getName(), "reward-variable-name");
-        if (actAsMultiSelect) {
-            String clickedAttribute = "chosen";
-            if (rewardVariable.getArrayIndex() < Experiment.DEFAULT_SELECTED_REWARD_VARIABLES) {
-                rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
-                rewardVariablesTable.setNumberOfSelectedRewardVariables(Experiment.DEFAULT_SELECTED_REWARD_VARIABLES);
-            }
 
-            rewardVariableNameSpan.addClickListener(event -> {
-                Element spanElement = event.getSource().getElement();
-                int numberOfSelectedRewardVariables = rewardVariablesTable.getNumberOfSelectedRewardVariables();
-                if (spanElement.hasAttribute(clickedAttribute)) {
-                    spanElement.removeAttribute(clickedAttribute);
-                    isShow = false;
-                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables-1);
-                    rewardVariableSelectedConsumer.accept(rewardVariable);
-                } else if (numberOfSelectedRewardVariables < 2) {
-                    spanElement.setAttribute(clickedAttribute, true);
-                    isShow = true;
-                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
-                    rewardVariableSelectedConsumer.accept(rewardVariable);
-                }
-            });
+        if (actAsMultiSelect) {
+            setupMultiSelect();
         }
 
         conditionType = new Select<>();
@@ -95,6 +78,24 @@ public class RewardVariablesRowField extends HorizontalLayout {
         GuiUtils.removeMarginsPaddingAndSpacing(this);
         initBinder(rv);
         // setGoalFieldVisibility();
+    }
+
+    private void setupMultiSelect() {
+        rewardVariableNameSpan.addClickListener(event ->
+                SimulationRewardVariableSelectedAction.selectRewardVariable(rewardVariable, this, experimentView));
+    }
+
+    protected void setSelected(boolean selected) {
+        isSelected = selected;
+        if(isSelected) {
+            rewardVariableNameSpan.getElement().setAttribute(CLICKED_ATTRIBUTE, true);
+        } else {
+            rewardVariableNameSpan.getElement().removeAttribute(CLICKED_ATTRIBUTE);
+        }
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
     private void initBinder(RewardVariable rv) {
@@ -132,9 +133,5 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     public RewardVariable getRewardVariable() {
         return rewardVariable;
-    }
-
-    public boolean isShow() {
-        return isShow;
     }
 }

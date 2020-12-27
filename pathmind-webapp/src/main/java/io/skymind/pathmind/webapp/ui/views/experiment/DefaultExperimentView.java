@@ -181,4 +181,11 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     public SegmentIntegrator getSegmentIntegrator() {
         return segmentIntegrator;
     }
+
+    /**
+     * Helper method because a ton of actions need this and this significantly simplifies the paramters.
+     */
+    public ExperimentDAO getExperimentDAO() {
+        return experimentDAO;
+    }
 }

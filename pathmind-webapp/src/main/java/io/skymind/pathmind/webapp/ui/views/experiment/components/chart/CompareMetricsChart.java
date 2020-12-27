@@ -116,8 +116,6 @@ public class CompareMetricsChart extends DataChart {
     }
 
     private void updateSelectedRewardVariables(List<RewardVariable> selectedRewardVariables) {
-        // Make sure the list is sorted by arrayIndex as there are no guarantees it will be.
-        Collections.sort(selectedRewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         // Using the selectedRewardVariables create a new List with null's for all empty arrayIndex values so that the chart colors remain the same.
         rewardVariables = new RewardVariable[bestPolicy.getSparklinesData().size()];
         // Insert the RewardVariables at their appropriate index values.

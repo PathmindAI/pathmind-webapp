@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
@@ -15,20 +14,34 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
 public class RewardVariablesTable extends VerticalLayout implements ExperimentComponent {
 
+    private static final String DISABLE_SELECTION_CLASS_NAME = "disable-selection";
+
     private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
-    private Consumer<RewardVariable> rewardVariableSelectedConsumer;
     private Boolean actAsMultiSelect = false;
-    private Integer selectedRewardVariables;
+    // Yes the experiment can be had from the ExperimentView but that is more for the actions for now.
+    private ExperimentView experimentView;
 
+    /**
+     * This constructor is used by the NewExperimentView and has no selection logic.
+     */
     public RewardVariablesTable() {
         this(() -> {});
+    }
+
+    /**
+     * This constructor is used by the ExperimentView and the selection logic.
+     */
+    public RewardVariablesTable(ExperimentView experimentView) {
+        this(() -> {});
+        this.experimentView = experimentView;
     }
 
     public RewardVariablesTable(Command goalFieldValueChangeHandler) {
@@ -39,10 +52,6 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         container.setClassName("reward-variables-table");
 
         add(container);
-    }
-
-    public void setRewardVariableSelectedBiConsumer(Consumer<RewardVariable> rewardVariableSelectedConsumer) {
-        this.rewardVariableSelectedConsumer = rewardVariableSelectedConsumer;
     }
 
     public void setCodeEditorMode() {
@@ -76,7 +85,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, rewardVariableSelectedConsumer, actAsMultiSelect, this);
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, experimentView, actAsMultiSelect);
             container.add(row);
             rewardVariableNameFields.add(row);
         });
@@ -86,23 +95,29 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
     }
 
-    public void setNumberOfSelectedRewardVariables(int num) {
-        String disableSelectionClassName = "disable-selection";
-        selectedRewardVariables = num;
-        if (num >= Experiment.MAX_SELECTED_REWARD_VARIABLES) {
-            container.addClassName(disableSelectionClassName);
+    // TODO -> FIONNA -> STEPH -> (STEPH) If we want to put an popup dialog to say no you can't do this then we should
+    // do it at this level, that do a stream over all the fields and filter for those that are and aren't already selected
+    // and then enable a popup dialog because the decision is really made based on the conditions at this level rather
+    // than on the individual components. For now though I'm ignoring it and assuming the ability to just not be able to click
+    // will work as this is what is in dev.
+    public void updateSelectionClassForComponent() {
+        if (experimentView.getExperiment().getSelectedRewardVariables().size() >= Experiment.MAX_SELECTED_REWARD_VARIABLES) {
+            container.addClassName(DISABLE_SELECTION_CLASS_NAME);
         } else {
-            container.removeClassName(disableSelectionClassName);
+            container.removeClassName(DISABLE_SELECTION_CLASS_NAME);
         }
     }
-
-    public int getNumberOfSelectedRewardVariables() {
-        return selectedRewardVariables;
-    }
-
 
     @Override
     public void setExperiment(Experiment experiment) {
         setRewardVariables(experiment.getRewardVariables());
+        selectSelectedRewardVariables(experiment);
+        updateSelectionClassForComponent();
+    }
+
+    private void selectSelectedRewardVariables(Experiment experiment) {
+        rewardVariableNameFields.stream()
+                .filter(rewardVariablesRowField -> experiment.getSelectedRewardVariables().contains(rewardVariablesRowField.getRewardVariable()))
+                .forEach(rewardVariablesRowField ->  rewardVariablesRowField.setSelected(true));
     }
 }
