@@ -96,7 +96,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     }
 
     public void updateSelectionClassForComponent() {
-        if (experimentView.getExperiment().getSelectedRewardVariables().size() >= Experiment.MAX_SELECTED_REWARD_VARIABLES) {
+        if (experimentView.getExperiment().getSelectedRewardVariables().size() >= RewardVariable.MAX_SELECTED_REWARD_VARIABLES) {
             container.addClassName(DISABLE_SELECTION_CLASS_NAME);
         } else {
             container.removeClassName(DISABLE_SELECTION_CLASS_NAME);

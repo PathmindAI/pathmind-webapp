@@ -286,7 +286,7 @@ public class ExperimentUtils {
     public static void setupDefaultSelectedRewardVariables(Experiment experiment) {
         experiment.getRewardVariables().stream()
                 .filter(rewardVariable -> rewardVariable != null)
-                .filter(rewardVariable -> rewardVariable.getArrayIndex() < Experiment.DEFAULT_SELECTED_REWARD_VARIABLES)
+                .filter(rewardVariable -> rewardVariable.getArrayIndex() < RewardVariable.DEFAULT_SELECTED_REWARD_VARIABLES)
                 .forEach(rewardVariable ->  experiment.addSelectedRewardVariable(rewardVariable));
         Collections.sort(experiment.getSelectedRewardVariables(), Comparator.comparing(RewardVariable::getArrayIndex));
     }

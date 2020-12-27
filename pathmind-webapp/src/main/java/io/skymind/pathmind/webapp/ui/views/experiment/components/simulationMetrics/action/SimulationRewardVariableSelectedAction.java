@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.action;
 
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesRowField;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -52,9 +51,9 @@ public class SimulationRewardVariableSelectedAction {
     }
 
     private static boolean canSelect(ExperimentView experimentView) {
-        return experimentView.getExperiment().getSelectedRewardVariables().size() < Experiment.MAX_SELECTED_REWARD_VARIABLES;
+        return experimentView.getExperiment().getSelectedRewardVariables().size() < RewardVariable.MAX_SELECTED_REWARD_VARIABLES;
     }
     private static boolean canDeselect(ExperimentView experimentView) {
-        return experimentView.getExperiment().getSelectedRewardVariables().size() > 1;
+        return experimentView.getExperiment().getSelectedRewardVariables().size() > RewardVariable.MIN_SELECTED_REWARD_VARIABLES;
     }
 }

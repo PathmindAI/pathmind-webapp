@@ -127,10 +127,6 @@ public class RewardVariablesRowField extends HorizontalLayout {
         goalSpan.setVisible(!editable);
     }
 
-    public Span getRewardVariableSpan() {
-        return rewardVariableNameSpan;
-    }
-
     public RewardVariable getRewardVariable() {
         return rewardVariable;
     }
