@@ -12,6 +12,11 @@ public class SimulationRewardVariableSelectedAction {
     // medium effort. The hard part will be knowing which experiment is being updated whereas now we update both the main experiment
     // and the comparison experiment at the same time. Since it is very likely to be on the same reward variables I didn't go through
     // that effort yet.
+    // TODO -> FIONNA -> STEPH -> (STEPH) If we want to put an popup dialog to say no you can't do this then we should
+    // do it at this level, that do a stream over all the fields and filter for those that are and aren't already selected
+    // and then enable a popup dialog because the decision is really made based on the conditions at this level rather
+    // than on the individual components. For now though I'm ignoring it and assuming the ability to just not be able to click
+    // will work as this is what is in dev.
     public static void selectRewardVariable(RewardVariable rewardVariable, RewardVariablesRowField rewardVariablesRowField, ExperimentView experimentView) {
         if (rewardVariablesRowField.isSelected() && canDeselect(experimentView)) {
             toggleRow(rewardVariable, experimentView);

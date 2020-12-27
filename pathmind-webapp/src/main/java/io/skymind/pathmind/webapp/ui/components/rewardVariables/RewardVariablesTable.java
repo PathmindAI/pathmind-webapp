@@ -95,11 +95,6 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
     }
 
-    // TODO -> FIONNA -> STEPH -> (STEPH) If we want to put an popup dialog to say no you can't do this then we should
-    // do it at this level, that do a stream over all the fields and filter for those that are and aren't already selected
-    // and then enable a popup dialog because the decision is really made based on the conditions at this level rather
-    // than on the individual components. For now though I'm ignoring it and assuming the ability to just not be able to click
-    // will work as this is what is in dev.
     public void updateSelectionClassForComponent() {
         if (experimentView.getExperiment().getSelectedRewardVariables().size() >= Experiment.MAX_SELECTED_REWARD_VARIABLES) {
             container.addClassName(DISABLE_SELECTION_CLASS_NAME);
