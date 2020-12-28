@@ -11,13 +11,15 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.shared.Registration;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.utils.ObservationUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentNeedsSavingViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import org.springframework.util.CollectionUtils;
 
@@ -30,21 +32,32 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     private Experiment experiment;
     private List<Observation> selectedObservations;
 
+    private NewExperimentView newExperimentView;
+    private boolean isEnableValueChangeListener = true;
+
     /**
      * For ProjectView only
       */
     public ObservationsPanel(List<Observation> modelObservations) {
-        this(modelObservations, true, true);
+        this(modelObservations, true, true, null);
     }
 
     /**
-     * For Experiment views only.
+     * For ExperimentView only.
      */
     public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly) {
-        this(modelObservations, isReadOnly, false);
+        this(modelObservations, isReadOnly, false, null);
     }
 
-    public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, Boolean hideCheckboxes) {
+    /**
+     * For NewExperimentView only.
+     */
+    public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, NewExperimentView newExperimentView) {
+        this(modelObservations, isReadOnly, false, newExperimentView);
+    }
+    public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, Boolean hideCheckboxes, NewExperimentView newExperimentView) {
+
+        this.newExperimentView = newExperimentView;
 
         observationsTable = new ObservationsTable(isReadOnly);
 
@@ -62,19 +75,15 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         setPadding(false);
         setSpacing(false);
 
-        addValueChangeListener(evt -> {
-            if(experiment == null)
-                return;
-            // This is only for the experiment views. In that case we want to make sure they are different, meaning it's due to a
-            // user initiated action rather than switching experiments within the view.
-            List<Observation> selectedObservationsFromEvent = evt.stream().collect(Collectors.toList());
-            if(!ObservationUtils.areObservationsEqual(getSelectedObservations(), selectedObservationsFromEvent)) {
-                experiment.setSelectedObservations(selectedObservationsFromEvent);
-                EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
-            }
-        });
+        addObservationsTableValueChangeListener();
     }
 
+    private void addObservationsTableValueChangeListener() {
+        // This is only used for the NewExperimentView. The check needs to be here because we add it again on setSelectedObservations().
+        if(newExperimentView != null) {
+            addValueChangeListener(evt -> NeedsSavingAction.setNeedsSaving(newExperimentView));
+        }
+    }
 
     private void setupObservationTable(List<Observation> modelObservations, List<Observation> selectedObservations) {
         observationsTable.setItems(new HashSet<>(modelObservations));
@@ -95,11 +104,23 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     public void setSelectedObservations(List<Observation> observations) {
         this.selectedObservations = observations;
+        // TODO -> FIONNA -> STEPH -> (STEPH) I'm not sure how the value listener is all fired but ideally we'd want something like either
+        // isUserOriginated() on the event which is possible in Vaadin or we need to confirm that the observations value are different
+        // then the selected observations. That being said I'm not sure where the magic happens because I couldn't find a binder, or locate
+        // where the selectedObservations list is automatically updated, but if we can adjust that it would be easier. Either way we
+        // should look at the different options. Although the current solution is very hacky it works for now. Otherwise what happens is that
+        // on the set method the value change listener is fired which in turn causes.
+        isEnableValueChangeListener = false;
         observationsTable.setValue(new HashSet<>(observations));
+        isEnableValueChangeListener = true;
     }
 
     public void addValueChangeListener(SerializableConsumer<Set<Observation>> listener) {
-        observationsTable.addValueChangeListener(evt -> listener.accept(evt.getValue()));
+        observationsTable.addValueChangeListener(evt -> {
+            if(isEnableValueChangeListener) {
+                listener.accept(evt.getValue());
+            }
+        });
     }
 
     private Component getObservationsPanel(Boolean isReadOnly) {
@@ -115,7 +136,6 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setSelectedObservations(experiment.getSelectedObservations());
-
     }
 
     @Override

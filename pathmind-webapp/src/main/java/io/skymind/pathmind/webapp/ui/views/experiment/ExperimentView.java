@@ -236,11 +236,11 @@ public class ExperimentView extends DefaultExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), experimentDAO, runDAO, trainingService, modelService, getUISupplier());
+        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), experimentDAO, runDAO, trainingService, modelService, getUISupplier());
+        return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
     }
 
     private HorizontalLayout getBottomPanel() {
@@ -274,7 +274,7 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected void createExperimentComponents() {
         experimentTitleBar = createExperimentTitleBar();
-        experimentNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
@@ -299,7 +299,7 @@ public class ExperimentView extends DefaultExperimentView {
 
     protected void createComparisonComponents() {
         comparisonTitleBar = createComparisonExperimentTitleBar();
-        comparisonNotesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), this);

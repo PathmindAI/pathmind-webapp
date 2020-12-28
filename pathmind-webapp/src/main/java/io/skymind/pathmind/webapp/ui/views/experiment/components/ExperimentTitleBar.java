@@ -50,7 +50,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button shareButton;
 
     private ExperimentView experimentView;
-    private ExperimentDAO experimentDAO;
     private RunDAO runDAO;
     private TrainingService trainingService;
     private ModelService modelService;
@@ -61,19 +60,18 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     // This is for the action classes so that it's easier to read the code in the createButtons() method (it's not needed as per say).
     private Supplier<Experiment> getExperimentSupplier;
 
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, ExperimentDAO experimentDAO, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, experimentDAO, runDAO, trainingService, modelService, getUISupplier, false);
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, runDAO, trainingService, modelService, getUISupplier, false);
     }
 
     /**
      * Extra constructor is needed for the support shared experiment view.
      */
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, ExperimentDAO experimentDAO, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier, boolean isExportPolicyButtonOnly) {
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier, boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
         this.getExperimentSupplier = () -> getExperiment();
         this.updateExperimentViewRunnable = updateExperimentViewRunnable;
         this.getLockSupplier = getLockSupplier;
-        this.experimentDAO = experimentDAO;
         this.runDAO = runDAO;
         this.trainingService = trainingService;
         this.modelService = modelService;

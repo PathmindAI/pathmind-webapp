@@ -4,6 +4,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindViewBusEvent;
 
+// TODO -> STEPH -> This needs to be moved to an action.
 public class ExperimentRewardVariableSelectedViewBusEvent implements PathmindViewBusEvent {
 
     private RewardVariable rewardVariable;

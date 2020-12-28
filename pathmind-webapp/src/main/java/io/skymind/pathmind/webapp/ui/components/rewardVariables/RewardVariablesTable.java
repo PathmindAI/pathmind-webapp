@@ -28,6 +28,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     private Boolean actAsMultiSelect = false;
     // Yes the experiment can be had from the ExperimentView but that is more for the actions for now.
     private ExperimentView experimentView;
+    private Experiment experiment;
 
     /**
      * This constructor is used by the NewExperimentView and has no selection logic.
@@ -96,7 +97,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     }
 
     public void updateSelectionClassForComponent() {
-        if (experimentView.getExperiment().getSelectedRewardVariables().size() >= RewardVariable.MAX_SELECTED_REWARD_VARIABLES) {
+        if (experiment.getSelectedRewardVariables().size() >= RewardVariable.MAX_SELECTED_REWARD_VARIABLES) {
             container.addClassName(DISABLE_SELECTION_CLASS_NAME);
         } else {
             container.removeClassName(DISABLE_SELECTION_CLASS_NAME);
@@ -105,9 +106,12 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
 
     @Override
     public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
         setRewardVariables(experiment.getRewardVariables());
-        selectSelectedRewardVariables(experiment);
-        updateSelectionClassForComponent();
+        if(actAsMultiSelect) {
+            selectSelectedRewardVariables(experiment);
+            updateSelectionClassForComponent();
+        }
     }
 
     private void selectSelectedRewardVariables(Experiment experiment) {

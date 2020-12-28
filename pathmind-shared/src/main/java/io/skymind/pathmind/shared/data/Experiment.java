@@ -27,6 +27,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Experiment extends ArchivableData {
+    public static final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
     private static final long serialVersionUID = -5041305878245823921L;
     private long modelId;

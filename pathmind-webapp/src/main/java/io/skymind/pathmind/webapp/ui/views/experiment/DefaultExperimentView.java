@@ -156,8 +156,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     // Special case because in the new experiment view we add a lot of extra code therefore it's only considered a helper method.
-    protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable) {
-        return new ExperimentNotesField(experimentDAO, segmentIntegratorRunnable,false,true);
+    protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable, boolean hideSaveButton) {
+        return new ExperimentNotesField(this, experimentDAO, segmentIntegratorRunnable,false, hideSaveButton);
     }
 
     protected void initializeComponentsWithData() {

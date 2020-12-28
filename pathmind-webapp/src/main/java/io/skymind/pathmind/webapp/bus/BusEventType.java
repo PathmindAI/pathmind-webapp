@@ -9,7 +9,6 @@ public enum BusEventType {
     ExperimentStartTraining,
     ExperimentArchived,
     ExperimentFavorite,
-    ExperimentNeedsSaving,
     RewardVariableSelected,
     SetQueryParameter,
     ModelUpdate

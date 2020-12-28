@@ -2,9 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.List;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -24,7 +22,6 @@ import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -40,7 +37,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Star
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.newExperiment.NewExperimentViewExperimentNeedsSavingViewSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -78,17 +74,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         super();
         setUserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("new-experiment-view");
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getUISupplier(),
-                new NewExperimentViewExperimentNeedsSavingViewSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
     }
 
     @Override
@@ -160,7 +145,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     // TODO -> STEPH -> Should use the same as the experimentView, that is the DefaultExperimentView createsNotes method.
     private void createAndSetupNotesField() {
-        notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView());
+        notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView(), true);
         notesField.setPlaceholder("Add Notes (optional)");
         notesField.setOnNotesChangeHandler(() -> setNeedsSaving());
         if (experiment.isArchived()) {
@@ -245,6 +230,14 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         super.updateComponents();
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
+        saveDraftButton.setEnabled(isNeedsSaving);
+    }
+
+    @Override
+    public void setExperiment(Experiment experiment) {
+        // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
+        disableSaveNeeded();
+        super.setExperiment(experiment);
     }
 
     public void disableSaveNeeded() {
@@ -269,9 +262,9 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     protected void createExperimentComponents() {
         // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
-        rewardFunctionEditor = new RewardFunctionEditor(rewardValidationService);
+        rewardFunctionEditor = new RewardFunctionEditor(this, rewardValidationService);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
-        observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false);
+        observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         rewardVariablesTable = new RewardVariablesTable();
 
         experimentComponentList.addAll(List.of(

@@ -12,8 +12,6 @@ import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.experiment.ExperimentNeedsSavingViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
@@ -21,6 +19,8 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,8 +30,6 @@ import org.apache.commons.lang3.StringUtils;
  * as expected and be consistent with other components.
  */
 public class RewardFunctionEditor extends VerticalLayout implements ExperimentComponent {
-
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
     private Experiment experiment;
 
@@ -46,13 +44,13 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private String rewardFunction = "";
 
-    public RewardFunctionEditor(RewardValidationService rewardValidationService) {
+    public RewardFunctionEditor(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 
         setupRewardFunctionJuicyAceEditor();
-        setupValueChangeListener(rewardValidationService);
+        setupValueChangeListener(newExperimentView, rewardValidationService);
         setupEditorErrorLabel();
 
         setPadding(false);
@@ -78,18 +76,20 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private void setupEditorErrorLabel() {
         rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
+                "Reward Function must not exceed " + Experiment.REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
         rewardEditorErrorLabel.setVisible(false);
     }
 
-    private void setupValueChangeListener(RewardValidationService rewardValidationService) {
+    private void setupValueChangeListener(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
-            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
+            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > Experiment.REWARD_FUNCTION_MAX_LENGTH);
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), experiment.getRewardVariables());
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
             if (!rewardFunction.equals(changeEvent.getValue())) {
                 rewardFunction = changeEvent.getValue();
-                EventBus.post(new ExperimentNeedsSavingViewBusEvent(experiment));
+                // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
+                // reused in multiple parts of the code.
+                NeedsSavingAction.setNeedsSaving(newExperimentView);
             }
         });
     }
@@ -110,7 +110,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     }
 
     public boolean isRewardFunctionLessThanMaxLength() {
-        return rewardFunctionJuicyAceEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
+        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
     public boolean isRewardFunctionMoreThanMaxLength() {

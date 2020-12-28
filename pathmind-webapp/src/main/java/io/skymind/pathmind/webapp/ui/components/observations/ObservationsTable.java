@@ -70,5 +70,4 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
     protected void setPresentationValue(Set<Observation> newPresentationValue) {
         checkboxGroup.setValue(newPresentationValue);
     }
-
 }
