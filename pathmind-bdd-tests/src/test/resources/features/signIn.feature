@@ -27,11 +27,13 @@ Feature: Sign In form tests
   Scenario: Check login page elements
     Given Open pathmind page
     And Wait for sign-in page anti-flicker script
+    When Click in 'Already have an account?' button
     Then Check login page elements
     # Then Check network errors
 
   Scenario: Check Get started btn
     Given Open pathmind page
+    When Click in 'Already have an account?' button
     Then Click in 'Get started' button
     Then Check create new user page elements
 
