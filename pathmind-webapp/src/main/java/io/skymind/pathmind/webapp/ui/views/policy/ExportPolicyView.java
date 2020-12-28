@@ -18,16 +18,13 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.policy.ExportPolicyButton;
-import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,15 +40,16 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
+    private final ExportPolicyViewContent exportPolicyViewContent;
     private ExportPolicyButton exportButton;
-    private Button cancelButton;
     private Anchor downloadModelAlpLink;
 
     private long policyId;
     private Policy policy;
 
-    public ExportPolicyView() {
-        super();
+    @Autowired
+    public ExportPolicyView(ExportPolicyViewContent exportPolicyViewContent) {
+        this.exportPolicyViewContent = exportPolicyViewContent;
         addClassName("export-policy-view");
     }
 
@@ -66,28 +64,15 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
         downloadModelAlpLink = new DownloadModelAlpLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true);
 
-        Anchor learnMoreLink = new Anchor("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy", "Learn how to validate your policy");
-        learnMoreLink.setTarget("_blank");
+        exportPolicyViewContent.setFilename(exportButton.getPolicyFilename());
 
-        cancelButton = new Button("< Back to Experiment #" + policy.getExperiment().getName(), click -> handleCancelButtonClicked());
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        VerticalLayout exportPolicyViewContentAndButtons = WrapperUtils.wrapFormCenterVertical(
+            exportPolicyViewContent,
+            exportButton,
+            downloadModelAlpLink
+        );
 
-        VerticalLayout wrapperContent = WrapperUtils.wrapFormCenterVertical(
-                LabelFactory.createLabel("Export Policy", CssPathmindStyles.SECTION_TITLE_LABEL),
-                new Image("/frontend/images/exportPolicyIcon.gif", "Export Policy"),
-                LabelFactory.createLabel(exportButton.getPolicyFilename()),
-                createInstructionsDiv(),
-                learnMoreLink,
-                exportButton,
-                downloadModelAlpLink);
-        wrapperContent.setClassName("view-section");
-        return WrapperUtils.wrapCenterVertical("100%",
-                wrapperContent,
-                cancelButton);
-    }
-
-    private void handleCancelButtonClicked() {
-        getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, policy.getExperiment().getId()));
+        return exportPolicyViewContentAndButtons;
     }
 
     @Override
@@ -99,22 +84,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
     protected void initLoadData() {
         policy = policyDAO.getPolicyIfAllowed(policyId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Policy: " + policyId));
-    }
-
-    private Div createInstructionsDiv() {
-        Div div = new Div();
-        div.getElement().setProperty("innerHTML",
-                "<h3>To use your policy:</h3>" +
-                        "<ol>" +
-                        "<li>Download this file.</li>" +
-                        "<li>Return to AnyLogic and open the Pathmind Helper properties in your simulation.</li>" +
-                        "<ul>" +
-                        "<li>Change the 'Mode' to 'Use Policy'.</li>" +
-                        "<li>In 'policyFile', click 'Browse' and select the file you downloaded.</li>" +
-                        "</ul>" +
-                        "<li>Run the simulation to see the policy in action.</li>" +
-                        "</ol>");
-        return div;
     }
 
     private Breadcrumbs createBreadcrumbs() {

@@ -12,10 +12,9 @@ import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import com.vaadin.flow.dom.DomEvent;
 import com.vaadin.flow.dom.DomEventListener;
-import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -26,7 +25,6 @@ import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigation
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import static io.skymind.pathmind.shared.utils.UploadUtils.ensureZipFileStructure;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
@@ -41,7 +39,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
     private ProgressBar fileCheckProgressBar = new ProgressBar();
     private VerticalLayout fileCheckPanel;
 
-    private Command fileCheckerCommand;
+    private Consumer<ModelBytes> checkModelConsumer;
 
     private HorizontalLayout checkingModelComponent;
     private Span errorMessage;
@@ -125,15 +123,17 @@ public class UploadModelWizardPanel extends VerticalLayout {
             }
             try {
                 Receiver receiver = upload.getReceiver();
+                byte[] data;
                 // In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
-                if (MultiFileMemoryBuffer.class.isInstance(receiver)) {
-                    MultiFileMemoryBuffer buffer = MultiFileMemoryBuffer.class.cast(receiver);
-                    model.setFile(UploadUtils.createZipFileFromBuffer(buffer));
+                if (receiver instanceof MultiFileMemoryBuffer) {
+                    MultiFileMemoryBuffer buffer = (MultiFileMemoryBuffer) receiver;
+                    data = UploadUtils.createZipFileFromBuffer(buffer);
                 } else {
-                    MemoryBuffer buffer = MemoryBuffer.class.cast(receiver);
-                    model.setFile(ensureZipFileStructure(buffer.getInputStream().readAllBytes()));
+                    MemoryBuffer buffer = (MemoryBuffer) receiver;
+                    data = buffer.getInputStream().readAllBytes();
                 }
-                fileCheckerCommand.execute();
+                ModelBytes modelBytes = ModelBytes.of(data);
+                checkModelConsumer.accept(modelBytes);
                 log.info("Upload completed");
             } catch (IOException e) {
                 // TODO -> We need to do something if this fails.
@@ -145,16 +145,11 @@ public class UploadModelWizardPanel extends VerticalLayout {
     // Currently the only way this seems possible is by listening for the DOM event
     // as explained at: https://vaadin.com/forum/thread/17336034/remove-file-uploaded-vaadin-upload
     private void addUploadRemoveFileListener() {
-        upload.getElement().addEventListener("file-remove", new DomEventListener() {
-            @Override
-            public void handleEvent(DomEvent event) {
-                clearError();
-            }
-        });
+        upload.getElement().addEventListener("file-remove", (DomEventListener) event -> clearError());
     }
 
-    public void addFileUploadCompletedListener(Command command) {
-        fileCheckerCommand = command;
+    public void addFileUploadCompletedListener(Consumer<ModelBytes> checkModelConsumer) {
+        this.checkModelConsumer = checkModelConsumer;
     }
 
     public void addFileUploadFailedListener(Consumer<Collection<String>> consumer) {

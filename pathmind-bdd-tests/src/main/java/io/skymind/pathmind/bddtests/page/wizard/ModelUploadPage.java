@@ -106,4 +106,24 @@ public class ModelUploadPage extends PageObject {
             resetImplicitTimeout();
         }
     }
+
+    public void wizardModelUploadCheckFolderUploadPage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/following-sibling::vaadin-vertical-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\nUpload the exported folder."));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload exported folder"));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@theme='tertiary']")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).getText(), is("Upload as Zip"));
+    }
+
+    public void wizardModelUploadCheckArchiveUploadPage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/following-sibling::vaadin-vertical-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\n*Using the exported folder, Create a zip file that contains:\nmodel.jar\nthe \"database\" and \"cache\" folder if they exist\nany excel sheets necessary for your AnyLogic simulation\nUpload the new zip file below.\n*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead."));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload zip file"));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@theme='tertiary']")));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).getText(), is("Upload Folder"));
+    }
 }

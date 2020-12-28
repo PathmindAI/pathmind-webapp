@@ -51,4 +51,14 @@ public class ModelUploadSteps {
     public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
         modelUploadPage.checkWizardWarningLabelIsShown(warningLabel, isShown);
     }
+
+    @Step
+    public void wizardModelUploadCheckFolderUploadPage() {
+        modelUploadPage.wizardModelUploadCheckFolderUploadPage();
+    }
+
+    @Step
+    public void wizardModelUploadCheckArchiveUploadPage() {
+        modelUploadPage.wizardModelUploadCheckArchiveUploadPage();
+    }
 }

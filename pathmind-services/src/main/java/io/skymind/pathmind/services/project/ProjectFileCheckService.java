@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+@Deprecated
 @Slf4j
 public class ProjectFileCheckService {
 
@@ -43,7 +44,7 @@ public class ProjectFileCheckService {
                     FileUtils.writeByteArrayToFile(tempFile, model.getFile());
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
-                    final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
+                    final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
                         AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
                         String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
@@ -59,7 +60,8 @@ public class ProjectFileCheckService {
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
                         } else {
-                            setHyperparams(result, analysisResult);
+                            Hyperparams hyperparams = buildHyperparams(analysisResult);
+                            result.setParams(hyperparams);
                             model.setPathmindHelper(pmHelperName);
                             model.setMainAgent(mainAgentName);
                             model.setExperimentClass(expClassName);
@@ -78,7 +80,7 @@ public class ProjectFileCheckService {
                         }
                     }
                 } finally {
-                    tempFile.delete();
+                    FileUtils.deleteQuietly(tempFile);
                 }
 
             } catch (Exception e) {
@@ -115,16 +117,17 @@ public class ProjectFileCheckService {
         return Optional.empty();
     }
 
-    private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
-    	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
-    	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
-    	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
-    	fileCheckResult.setRewardVariableNames(params.getRewardVariableNames());
-    	fileCheckResult.setRewardVariableTypes(params.getRewardVariableTypes());
-    	fileCheckResult.setObservationNames(params.getObservationNames());
-    	fileCheckResult.setObservationTypes(params.getObservationTypes());
-    	fileCheckResult.setModelType(params.getMode());
-    	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
+    private Hyperparams buildHyperparams(HyperparametersDTO params) {
+    	return Hyperparams.builder()
+                .numObservation(Integer.parseInt(params.getObservations()))
+                .rewardVariableFunction(params.getRewardFunction())
+                .rewardVariableNames(params.getRewardVariableNames())
+                .rewardVariableTypes(params.getRewardVariableTypes())
+                .observationNames(params.getObservationNames())
+                .observationTypes(params.getObservationTypes())
+                .modelType(params.getMode())
+                .numberOfAgents(Integer.parseInt(params.getAgents())).build();
+
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {
