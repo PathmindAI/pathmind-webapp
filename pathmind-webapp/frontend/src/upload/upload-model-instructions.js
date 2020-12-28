@@ -20,7 +20,7 @@ class UploadModelInstructions extends PolymerElement {
                 <li>
                     <a href="{{anylogicExportGuide}}" target="_blank">
                         Export your model as a standalone Java application.
-                    </a><br/>(AnyLogic Professional is required)
+                    </a>
                 </li>
                 <div hidden="{{!isZip}}">
                     <li>*Using the exported folder, Create a zip file that contains:</li>
