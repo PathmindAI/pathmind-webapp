@@ -30,7 +30,7 @@ env:
   ENVIRONMENT: staging
   SQS_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-training-queue.fifo
   S3_BUCKET: staging-training-dynamic-files.pathmind.com
-  S3_BUCKET_STATIC: staging-training-static-files.pathmind.com
+  S3_BUCKET_STATIC: dev-training-static-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
