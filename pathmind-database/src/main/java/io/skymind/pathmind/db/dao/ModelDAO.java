@@ -47,6 +47,10 @@ public class ModelDAO {
         });
     }
 
+    public int getModelCountForProject(long projectId) {
+        return ModelRepository.getModelCount(ctx, projectId);
+    }
+
     public void updateUserNotes(long modelId, String userNotes) {
         ModelRepository.updateUserNotes(ctx, modelId, userNotes);
     }
