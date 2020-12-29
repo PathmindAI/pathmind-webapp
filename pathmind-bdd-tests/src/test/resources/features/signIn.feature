@@ -6,6 +6,8 @@ Feature: Sign In form tests
     When Login with credentials <email>, <password>
     Then Check that user <name> successfully logged in
     Then Logout from pathmind
+    When Open page /
+    Then Check login page elements
 
     Examples:
       | email          | password     | name |
