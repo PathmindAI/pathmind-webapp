@@ -22,6 +22,7 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
     private LocalDateTime dateCreated;
     private LocalDateTime lastActivityDate;
     private String userNotes;
+    private Integer modelCount;
 
     private long pathmindUserId;
 
