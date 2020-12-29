@@ -281,7 +281,6 @@ public class RunDAO {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }
 
-    // TODO -> STEPH -> Confirm this solution works as expected in all cases.
     public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
         experiment.setPolicies(policies);
         ExperimentUtils.updateBestPolicy(experiment);

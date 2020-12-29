@@ -314,7 +314,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
+    protected void initComponents(BeforeEnterEvent event) {
         if (project.getModels().isEmpty() || modelId == null) {
             event.forwardTo(Routes.UPLOAD_MODEL, "" + projectId);
             return;

@@ -45,10 +45,6 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
 
-        // TODO -> STEPH -> Why do we have a RewardVariablesTable here in addition to the view? As in it should be a separate
-        // component in the view or a subcomponent of this component. I ask because it's done differently between NewExperimentView
-        // and ExperimentView. I ask because I'm trying to be consistent and I'm not sure if there are side effects, especially
-        // when setting the experiment, etc.
         rewardVariablesTable = new RewardVariablesTable(experimentView);
         rewardVariablesTable.setCodeEditorMode();
         rewardVariablesTable.setCompactMode();

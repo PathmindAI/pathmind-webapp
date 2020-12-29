@@ -261,7 +261,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
+    protected void initComponents(BeforeEnterEvent event) {
     }
 
     private void handleRewardVariablesClicked() {

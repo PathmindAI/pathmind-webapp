@@ -24,7 +24,6 @@ public class DownloadModelAlpLink extends Anchor {
     private String modelName;
     private String modelPackageName;
 
-    // TODO -> FIONNA -> (FROM STEPH) Quick temporary implementation for the experiment view only.
     private ModelService modelService;
     private SegmentIntegrator segmentIntegrator;
     private boolean buttonMode;
@@ -60,30 +59,25 @@ public class DownloadModelAlpLink extends Anchor {
         }
     }
 
-    // TODO -> FIONNA -> I just quickly implemented this but the goal is that we don't have the experiment at component load time (for example we don't have
-    // a comparison experiment on the experimentView) so we can't know the project or model. This quickly resolves it but it's not pretty so either you or I
-    // will have to refactor it. It was done quickly to get the titlebar on the experimentView working for the experiment comparison feature (2149).
     public DownloadModelAlpLink(ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode) {
         this.modelService = modelService;
         this.segmentIntegrator = segmentIntegrator;
         this.buttonMode = buttonMode;
     }
 
-    // TODO -> FIONNA -> (FROM STEPH) I just quickly implemented this but the goal is that we don't have the experiment at component load time (for example we don't have
-    // a comparison experiment on the experimentView) so we can't know the project or model. This quickly resolves it but it's not pretty so either you or I
-    // will have to refactor it. It was done quickly to get the titlebar on the experimentView working for the experiment comparison feature (2149).
     public void setExperiment(Experiment experiment) {
         this.modelId = experiment.getModel().getId();
         this.modelName = experiment.getModel().getName();
         this.modelPackageName = experiment.getModel().getPackageName();
         this.projectName = experiment.getProject().getName();
 
+        // TODO -> FIONNA -> STEPH -> (FROM STEPH) -> I just quickly implemented this but the goal is that we don't have the experiment at component load time (for example we don't have
+        // a comparison experiment on the experimentView) so we can't know the project or model. This quickly resolves it but it's not pretty so either you or I
+        // will have to refactor it (either here or in a follow-up ticket). It was done quickly to get the titlebar on the experimentView working for the experiment comparison feature (2149).
         if(isAlreadyRendered) {
             return;
         }
 
-        // TODO -> FIONNA -> (FROM STEPH) The logic I implemented here is pretty gross but it works as a temporary solution until we have the time to clean up
-        //  this component. I would do it but I don't fully know how it's used across the application.
         Button downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
         if (!buttonMode) {
             downloadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);

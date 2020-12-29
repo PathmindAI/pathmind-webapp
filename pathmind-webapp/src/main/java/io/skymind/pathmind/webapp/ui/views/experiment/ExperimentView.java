@@ -7,11 +7,11 @@ import java.util.List;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
@@ -256,14 +256,13 @@ public class ExperimentView extends DefaultExperimentView {
     /************************************** UI element creations are above this line **************************************/
 
     @Override
-    protected boolean isValidViewForExperiment() {
-        if(experimentDAO.isDraftExperiment(experimentId)) {
-            // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
-            // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
-            UI.getCurrent().navigate(NewExperimentView.class, experimentId);
-            return false;
-        } else {
+    protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
+        if(!experimentDAO.isDraftExperiment(experimentId)) {
             return true;
+        } else {
+            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
+            event.forwardTo(Routes.NEW_EXPERIMENT_URL, experimentId);
+            return false;
         }
     }
 

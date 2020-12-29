@@ -30,7 +30,7 @@ public class Routes {
     public static final String NEW_PROJECT = "newProject";
     public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT_URL = "experiment";
-    public static final String NEW_EXPERIMENT = "newExperiment";
+    public static final String NEW_EXPERIMENT_URL = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";

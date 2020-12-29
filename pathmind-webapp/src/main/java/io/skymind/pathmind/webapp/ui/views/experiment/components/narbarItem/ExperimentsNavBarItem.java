@@ -47,11 +47,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.experiment = experiment;
         this.defaultExperimentView = defaultExperimentView;
 
-        // TODO -> STEPH -> I haven't checked but is the compare button only for the ExperimentView? If not then we can just do a
-        // simple if(defaultExperimentView instanceof ExperimentView) then add compare option.
-
         if (experiment.isDraft()) {
-            experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
+            experimentLink.setHref(Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId());
         } else {
             experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
         }
@@ -78,7 +75,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onCompareButtonClicked() {
-        // TODO -> STEPH -> When clicked it changes the experiment rather than just change the comparison components.
         NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView);
     }
 

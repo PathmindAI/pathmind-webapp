@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
@@ -12,6 +11,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
@@ -41,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 @CssImport("./styles/views/new-experiment-view.css")
-@Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
+@Route(value = Routes.NEW_EXPERIMENT_URL, layout = MainLayout.class)
 public class NewExperimentView extends DefaultExperimentView implements BeforeLeaveObserver {
 
     private RewardFunctionEditor rewardFunctionEditor;
@@ -143,7 +143,6 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         return panelsWrapper;
     }
 
-    // TODO -> STEPH -> Should use the same as the experimentView, that is the DefaultExperimentView createsNotes method.
     private void createAndSetupNotesField() {
         notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView(), true);
         notesField.setPlaceholder("Add Notes (optional)");
@@ -168,6 +167,13 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
                 && rewardFunctionEditor.isValidForTraining()
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
                 && !experiment.isArchived();
+    }
+
+    /**
+     * Only used by the Start Training so that we can disable the save on page leave.
+     */
+    public void removeNeedsSaving() {
+        isNeedsSaving = false;
     }
 
     public void setNeedsSaving() {
@@ -248,19 +254,17 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     @Override
-    protected boolean isValidViewForExperiment() {
-        if(!experimentDAO.isDraftExperiment(experimentId)) {
-            // TODO -> STEPH -> Why is this not forwarding correctly to the right page? Is there a ui.navigate somewhere else?
-            // For some reason I have to use UI.getCurrent() rather than getUI().ifPresent() because it's the only way to navigate at this stage.
-            UI.getCurrent().navigate(ExperimentView.class, experimentId);
-            return false;
-        } else {
+    protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
+        if(experimentDAO.isDraftExperiment(experimentId)) {
             return true;
+        } else {
+            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
+            event.forwardTo(Routes.EXPERIMENT_URL, experimentId);
+            return false;
         }
     }
 
     protected void createExperimentComponents() {
-        // TODO -> STEPH -> Create Notes should be similar to experiment where this is just the constructor.
         createAndSetupNotesField();
         rewardFunctionEditor = new RewardFunctionEditor(this, rewardValidationService);
         // This is an exception because the modelObservations are the same for all experiments in the same group.

@@ -18,7 +18,7 @@ public class NavBarItemSelectExperimentAction {
 
     private static void selectExperimentFromNewExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
         if(experiment.isDraft()) {
-            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT + "/" + experiment.getId()));
+            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId()));
             synchronized (defaultExperimentView.getExperimentLock()) {
                 defaultExperimentView.setExperiment(experiment);
             }

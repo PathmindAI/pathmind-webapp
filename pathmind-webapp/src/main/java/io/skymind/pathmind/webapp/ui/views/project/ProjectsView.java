@@ -161,7 +161,7 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
+    protected void initComponents(BeforeEnterEvent event) {
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
             // projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             projectGrid.setItems(projects);

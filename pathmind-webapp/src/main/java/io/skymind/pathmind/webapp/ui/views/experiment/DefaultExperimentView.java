@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -30,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class DefaultExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
     protected abstract void createExperimentComponents();
-    protected abstract boolean isValidViewForExperiment();
+    protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
@@ -65,13 +64,12 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     @Override
-    protected void createScreens() {
+    protected void createComponents() {
         createSharedComponents();
         createExperimentComponents();
    }
 
-    private void createSharedComponents() {
-        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
+    private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
 
         experimentComponentList.add(experimentPanelTitle);
@@ -144,14 +142,21 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     private void loadFullExperimentData() {
         // Do a quick database check to see if the user is on the right experiment page, and if so forward them right away rather than load and render the
         // full experiment which can be expensive.
-        if(isValidViewForExperiment()) {
-            experiment = getExperimentForUser(experimentId)
-                    .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        }
+        experiment = getExperimentForUser(experimentId)
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+    }
+
+    /**
+     * We need to override the method from PathmindDefaultView so that we can re-route if we trying to load
+     * say an experiment with NewExperimentView and so on using the URL.
+     */
+    @Override
+    protected boolean isValidView(BeforeEnterEvent event) {
+        return isValidViewForExperiment(event);
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
+    protected void initComponents(BeforeEnterEvent event) {
         initializeComponentsWithData();
     }
 

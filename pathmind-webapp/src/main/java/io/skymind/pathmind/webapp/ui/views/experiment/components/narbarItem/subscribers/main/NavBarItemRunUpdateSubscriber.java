@@ -21,7 +21,8 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
         //  elsewhere such as ExperimentViewRunUpdateSubscriber.
         experimentsNavBarItem.getExperiment().setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
         ExperimentUtils.addOrUpdateRuns(experimentsNavBarItem.getExperiment(), event.getRuns());
-        ExperimentUtils.updateTrainingStatus(experimentsNavBarItem.getExperiment());
+        ExperimentUtils.updatedRunsForPolicies(experimentsNavBarItem.getExperiment(), event.getRuns());
+        ExperimentUtils.updateExperimentInternals(experimentsNavBarItem.getExperiment());
         experimentsNavBarItem.updateVariableComponentValues();
     }
 

@@ -56,23 +56,32 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         if (!isAccessAllowedForUser()) {
             throw new InvalidDataException("Item does not exist");
         }
+        // This is used to determine if the view is correct URL such as newExperimentView and ExperimentView. If we're at the wrong
+        // URL then we want to event.forwardTo() the correct URL.
+        if(!isValidView(event)) {
+            return;
+        }
+
         initLoadData();
         // If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
         // Create screenComponents prior to having them added to the screen (mainly used for parent view classes)
-        // TODO -> STEPH -> This should really be createComponents, addComponents, and so on. The name screen is historical and no longer really appropriate.
-        createScreens();
-        addScreens();
+        createComponents();
+        addComponents();
         // Update the screen based on the parameters if need be.
-        initScreen(event);
+        initComponents(event);
         // Segment plugin added
         add(segmentIntegrator);
+    }
+
+    protected boolean isValidView(BeforeEnterEvent event) {
+        return true;
     }
 
     /**
      * This is mainly used for when a parent view such as DefaultExperimentView needs to create components that the sub (children)
      * views will need to have instantiated before the addScreens() method is called.
      **/
-    protected void createScreens() {
+    protected void createComponents() {
     }
 
     public void recalculateGridColumnWidth(Page page, Grid grid) {
@@ -90,7 +99,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         // Do nothing by default.
     }
 
-    private void addScreens() {
+    private void addComponents() {
         removeAll();
 
         CookieConsentBox cookieConsentBox = new CookieConsentBox();
@@ -124,7 +133,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     protected abstract Component getMainContent();
 
-    protected void initScreen(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initComponents(BeforeEnterEvent event) throws InvalidDataException {
     }
 
     @Override

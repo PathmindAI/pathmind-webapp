@@ -119,8 +119,6 @@ public class ExperimentUtils {
         return calculateProgressByIterationsProcessed(iterationsProcessed);
     }
 
-    // TODO -> STEPH -> This should be moved to the experiment load code because it's called in
-    //  multiple places. See: https://github.com/SkymindIO/pathmind-webapp/issues/2536
     public static double calculateProgressByIterationsProcessed(Integer iterationsProcessed) {
         double totalIterations = RunConstants.PBT_RUN_ITERATIONS * RunConstants.PBT_NUM_SAMPLES;
         double progress = (iterationsProcessed / totalIterations) * 100;

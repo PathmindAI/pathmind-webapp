@@ -20,7 +20,6 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
 
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
-        // TODO -> STEPH -> We should have a different lock for the comparison experiment.
         if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
             synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
