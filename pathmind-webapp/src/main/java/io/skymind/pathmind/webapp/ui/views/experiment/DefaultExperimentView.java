@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -156,7 +157,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     @Override
-    protected void initComponents(BeforeEnterEvent event) {
+    protected void initComponents(AttachEvent event) {
         initializeComponentsWithData();
     }
 

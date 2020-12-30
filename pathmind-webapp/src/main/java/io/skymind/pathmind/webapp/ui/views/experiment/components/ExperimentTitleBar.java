@@ -40,7 +40,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private ExperimentPanelTitle experimentPanelTitle;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
-    private TrainingStatusDetailsPanel trainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
+    private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 
     private Button exportPolicyButton;
     private Button stopTrainingButton;
@@ -80,6 +80,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         Component[] buttons = createButtons(isExportPolicyButtonOnly);
 
         experimentPanelTitle = new ExperimentPanelTitle();
+        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
         add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
             trainingStatusDetailsPanel,

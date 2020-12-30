@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -314,17 +315,23 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     @Override
-    protected void initComponents(BeforeEnterEvent event) {
+    protected boolean isValidView(BeforeEnterEvent event) {
         if (project.getModels().isEmpty() || modelId == null) {
             event.forwardTo(Routes.UPLOAD_MODEL, "" + projectId);
-            return;
+            return false;
         }
         if (selectedModel.isDraft()) {
             if (project.getModels().size() == 1) {
                 String target = PathmindUtils.getResumeUploadModelPath(projectId, modelId);
                 event.forwardTo(Routes.UPLOAD_MODEL, target);
+                return false;
             }
         }
+        return true;
+    }
+
+    @Override
+    protected void initComponents(AttachEvent event) {
         String modelNameText = "";
         modelNameText = "Model #" + selectedModel.getName();
         if (selectedModel.getPackageName() != null) {

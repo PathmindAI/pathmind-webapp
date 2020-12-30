@@ -260,10 +260,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return modelId != -1;
     }
 
-    @Override
-    protected void initComponents(BeforeEnterEvent event) {
-    }
-
     private void handleRewardVariablesClicked() {
         if (rewardVariablesPanel.canSaveChanges()) {
             rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);

@@ -3,12 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -51,16 +46,6 @@ public class ModelsNavbar extends VerticalLayout {
         add(rowsWrapper);
         addClassName("models-navbar");
         addModelsToNavbar();
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        // EventBus.subscribe(this, new NotificationModelUpdatedSubscriber(getUISupplier, models, selectedModel));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        // EventBus.unsubscribe(this);
     }
 
     public List<Model> getModels() {

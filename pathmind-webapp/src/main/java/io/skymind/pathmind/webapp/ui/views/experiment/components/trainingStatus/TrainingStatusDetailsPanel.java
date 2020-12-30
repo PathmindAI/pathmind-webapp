@@ -36,7 +36,10 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
 
     private Experiment experiment;
 
-    public TrainingStatusDetailsPanel() {
+    private Supplier<Optional<UI>> getUISupplier;
+
+    public TrainingStatusDetailsPanel(Supplier<Optional<UI>> getUISupplier) {
+        this.getUISupplier = getUISupplier;
         add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Status"), statusLabel, completedTimeLabel),
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Elapsed"), elapsedTimeLabel),
                 trainingProgress);
@@ -64,7 +67,7 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
         if (experiment.getTrainingStatusEnum().equals(Running)) {
             updateProgressBar(experiment);
         } else if (experiment.getTrainingStatusEnum().equals(Completed)) {
-            getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
+            getUISupplier.get().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
                 LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
                 final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
                 completedTimeLabel.setText(formattedTrainingCompletedTime);

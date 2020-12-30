@@ -112,7 +112,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     @Override
-    protected void onAttach(AttachEvent event) {
+    protected void addEventBusSubscribers() {
         EventBus.subscribe(this, getUISupplier(),
                 getViewSubscribers());
     }
@@ -266,7 +266,7 @@ public class ExperimentView extends DefaultExperimentView {
     protected void createExperimentComponents() {
         experimentTitleBar = createExperimentTitleBar();
         experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
-        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
+        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);

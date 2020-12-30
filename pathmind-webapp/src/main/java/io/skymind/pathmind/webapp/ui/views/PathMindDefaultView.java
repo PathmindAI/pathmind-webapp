@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
@@ -56,21 +57,30 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         if (!isAccessAllowedForUser()) {
             throw new InvalidDataException("Item does not exist");
         }
+
+        initLoadData();
+
         // This is used to determine if the view is correct URL such as newExperimentView and ExperimentView. If we're at the wrong
         // URL then we want to event.forwardTo() the correct URL.
         if(!isValidView(event)) {
             return;
         }
+    }
 
-        initLoadData();
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
         // If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
         // Create screenComponents prior to having them added to the screen (mainly used for parent view classes)
         createComponents();
         addComponents();
         // Update the screen based on the parameters if need be.
-        initComponents(event);
+        initComponents(attachEvent);
         // Segment plugin added
         add(segmentIntegrator);
+        addEventBusSubscribers();
+    }
+
+    protected void addEventBusSubscribers() {
     }
 
     protected boolean isValidView(BeforeEnterEvent event) {
@@ -133,7 +143,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     protected abstract Component getMainContent();
 
-    protected void initComponents(BeforeEnterEvent event) throws InvalidDataException {
+    protected void initComponents(AttachEvent event) throws InvalidDataException {
     }
 
     @Override

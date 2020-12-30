@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -161,7 +162,7 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initComponents(BeforeEnterEvent event) {
+    protected void initComponents(AttachEvent event) {
         VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
             // projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             projectGrid.setItems(projects);
