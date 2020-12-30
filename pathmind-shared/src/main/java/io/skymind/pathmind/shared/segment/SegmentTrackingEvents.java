@@ -14,7 +14,6 @@ public class SegmentTrackingEvents {
     public static final String EVENT_START_TRAINING = "Training Started";
     public static final String EVENT_TRAINING_COMPLETED = "Training Completed";
     public static final String EVENT_STOP_TRAINING = "Training Stopped";
-    public static final String EVENT_RESTART_TRAINING = "Training Restarted";
     public static final String EVENT_EXPORT_POLICY = "Policy Exported";
     public static final String EVENT_UPLOAD_MODEL_ERROR = "Upload Model Error View Visited";
     public static final String EVENT_SAVE_MODEL_DRAFT = "Model Draft Saved";

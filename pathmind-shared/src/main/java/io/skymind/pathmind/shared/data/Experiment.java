@@ -53,7 +53,6 @@ public class Experiment extends ArchivableData {
 
     // Helper attributes for error handling to prevent extra processing with training
     private String trainingError;
-    private boolean allowRestartTraining = false;
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
 

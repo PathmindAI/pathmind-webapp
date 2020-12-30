@@ -209,7 +209,6 @@ public class ExperimentDAO {
                 .findAny()
                 .ifPresent(run ->
                         Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
-                            experiment.setAllowRestartTraining(trainingError.isRestartable());
                             experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
                         }));
     }
