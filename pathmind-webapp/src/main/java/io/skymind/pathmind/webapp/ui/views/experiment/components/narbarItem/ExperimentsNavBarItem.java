@@ -24,6 +24,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.acti
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
@@ -97,6 +98,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
                 new NavBarItemExperimentFavoriteSubscriber(this),
                 new NavBarItemExperimentUpdatedSubscriber(this),
                 new NavBarItemRunUpdateSubscriber(this),
+                new NavBarItemPolicyUpdateSubscriber(this, experimentDAO),
                 new NavBarItemNotificationExperimentStartTrainingSubscriber(this));
     }
 

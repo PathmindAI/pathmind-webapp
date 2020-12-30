@@ -17,4 +17,10 @@ public class RewardScore implements Serializable {
 
     private Integer iteration;
     private Integer episodeCount;
+
+    public RewardScore(Double mean, Integer iteration, Integer episodeCount) {
+        this.mean = mean;
+        this.iteration = iteration;
+        this.episodeCount = episodeCount;
+    }
 }
