@@ -245,6 +245,7 @@ def process_message(message):
                 line=line.replace('{{ENVIRONMENT}}',ENVIRONMENT)
                 line=line.replace('{{SQS_URL}}',SQS_URL)
                 line=line.replace('{{NAME}}',NAME)
+                line=line.replace('{{S3_BUCKET_STATIC}}',S3_BUCKET_STATIC)
                 file.write(line+'\n')
 
         if 'retry' in body:
