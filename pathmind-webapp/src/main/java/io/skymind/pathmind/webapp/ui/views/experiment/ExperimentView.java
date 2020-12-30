@@ -51,6 +51,7 @@ public class ExperimentView extends DefaultExperimentView {
     private VerticalLayout compareExperimentVerticalLayout;
 
     private StoppedTrainingNotification stoppedTrainingNotification;
+    private StoppedTrainingNotification comparisonStoppedTrainingNotification;
 
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
@@ -139,8 +140,8 @@ public class ExperimentView extends DefaultExperimentView {
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    titleBar,
                     stoppedTrainingNotification,
+                    titleBar,
                     getMiddlePanel(),
                     getBottomPanel()),
                 compareExperimentVerticalLayout);
@@ -179,8 +180,8 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonComponents.addClassName("comparison-panel");
         comparisonComponents.setPadding(false);
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            comparisonStoppedTrainingNotification,
             comparisonTitleBar,
-            stoppedTrainingNotification,
             comparisonComponents);
         return comparisonPanel;
     }
@@ -296,6 +297,7 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
+        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
         comparisonExperimentComponents.addAll(List.of(
                 comparisonTitleBar,
@@ -303,6 +305,7 @@ public class ExperimentView extends DefaultExperimentView {
                 comparisonChartsPanel,
                 comparisonCodeViewer,
                 comparisonSimulationMetricsPanel,
-                comparisonObservationsPanel));
+                comparisonObservationsPanel,
+                comparisonStoppedTrainingNotification));
     }
 }
