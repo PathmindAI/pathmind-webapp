@@ -1,5 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment
-        ;
+package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +10,11 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
@@ -71,8 +70,6 @@ public class ExperimentView extends DefaultExperimentView {
     private CodeViewer comparisonCodeViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
 
-    @Autowired
-    private FeatureManager featureManager;
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
@@ -167,9 +164,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private HorizontalLayout createTitleBar() {
-        HorizontalLayout titleBar = WrapperUtils.wrapWidthFullHorizontal(experimentTitleBar);
-        titleBar.setPadding(true);
-        return titleBar;
+        return experimentTitleBar;
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
@@ -251,8 +246,6 @@ public class ExperimentView extends DefaultExperimentView {
         bottomPanel.setSpacing(false);
         return bottomPanel;
     }
-
-    /************************************** UI element creations are above this line **************************************/
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {

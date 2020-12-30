@@ -13,9 +13,6 @@ import java.util.Objects;
 public class RewardVariable extends Data {
 
     public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
-    // TODO -> FIONNA -> STEPH -> (FROM STEPH) -> I know Johnny wanted to limit it to 2 but I'm thinking we should maybe increase
-    // it because by default it's just one and there can only be more then 2 if the user explicitely asks. I think the
-    // original reason for this request was that the default was all rather than just 1.
     public static final int MIN_SELECTED_REWARD_VARIABLES = 1;
     public static final int MAX_SELECTED_REWARD_VARIABLES = 2;
 
