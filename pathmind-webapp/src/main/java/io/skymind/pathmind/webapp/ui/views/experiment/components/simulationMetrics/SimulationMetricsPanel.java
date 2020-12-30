@@ -34,13 +34,9 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
 
-    private boolean showSimulationMetrics;
-
-    public SimulationMetricsPanel(boolean showSimulationMetrics, ExperimentView experimentView) {
+    public SimulationMetricsPanel(ExperimentView experimentView) {
 
         super();
-
-        this.showSimulationMetrics = showSimulationMetrics;
 
         setSpacing(false);
         addClassName("simulation-metrics-table-wrapper");
@@ -99,7 +95,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         this.experiment = experiment;
 
         // If it hasn't been rendered yet then render the simulation metrics components as they are dependent on the rewardvariables of the experiment.
-        if (showSimulationMetrics && metricsWrapper == null) {
+        if (metricsWrapper == null) {
             createSimulationMetricsSpansAndSparklines();
             add(metricsWrapper, sparklinesWrapper);
         }

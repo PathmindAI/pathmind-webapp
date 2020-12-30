@@ -221,8 +221,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
-        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
+        String simulationMetricsHeaderText = "Simulation Metrics";
         return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
         );
@@ -277,7 +276,7 @@ public class ExperimentView extends DefaultExperimentView {
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel();
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
-        experimentSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), this);
+        experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
@@ -301,7 +300,7 @@ public class ExperimentView extends DefaultExperimentView {
         comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());
-        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(featureManager.isEnabled(Feature.SIMULATION_METRICS), this);
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
 

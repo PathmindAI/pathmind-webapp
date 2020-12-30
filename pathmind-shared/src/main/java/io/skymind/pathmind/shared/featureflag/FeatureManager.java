@@ -26,9 +26,6 @@ public class FeatureManager {
                 return true;
             case ACCOUNT_UPGRADE:
                 return false;
-                // TODO -> FIONNA -> STEPH -> (FROM STEPH) -> Is this ever toggled to off or we can remove the toggle since it's always on.
-            case SIMULATION_METRICS:
-                return simulationMetrics;
             default:
                 return true;
         }
