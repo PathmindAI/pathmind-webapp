@@ -24,7 +24,6 @@ public class ShareWithSupportAction {
                 });
     }
 
-    // TODO -> FIONNA -> STEPH -> (FROM STEPH) -> Can we re-use the same shared with label? If not let me know and I'll adjust this method and class accordingly.
     private static void setSharedWithSupportComponents(TagLabel sharedWithSupportLabel, Button shareButton, Experiment experiment) {
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
         shareButton.setVisible(!experiment.isSharedWithSupport());

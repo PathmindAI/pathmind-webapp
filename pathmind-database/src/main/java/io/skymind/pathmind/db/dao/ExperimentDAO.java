@@ -12,13 +12,12 @@ import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -189,13 +188,11 @@ public class ExperimentDAO {
     private List<Policy> loadPoliciesForExperiment(DSLContext ctx, long experimentId) {
         List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
         Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
-        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(ctx, DataUtils.convertToIds(policies));
-        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(ctx, DataUtils.convertToIds(policies));
-        policies.forEach(policy -> {
-            long id = policy.getId();
-            policy.setScores(rewardScores.get(id));
-            policy.setMetrics(metricsMap.get(id));
-            policy.setMetricsRaws(metricsRawMap.get(id));
+        // Needs to be done before selectBestPolicy() is selected
+        policies.forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
+        PolicyUtils.selectBestPolicy(policies).ifPresent(policy -> {
+            policy.setMetrics(MetricsRepository.getMetricsForPolicy(ctx, policy.getId()));
+            policy.setMetricsRaws(MetricsRawRepository.getMetricsRawForPolicy(ctx, policy.getId()));
         });
         return policies;
     }

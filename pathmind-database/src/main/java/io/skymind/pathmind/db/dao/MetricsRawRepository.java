@@ -1,7 +1,9 @@
 package io.skymind.pathmind.db.dao;
 
 import io.skymind.pathmind.db.utils.JooqUtils;
+import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
+import io.skymind.pathmind.shared.data.RewardScore;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
@@ -10,8 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static io.skymind.pathmind.db.jooq.Tables.METRICS;
-import static io.skymind.pathmind.db.jooq.Tables.METRICS_RAW;
+import static io.skymind.pathmind.db.jooq.Tables.*;
 import static org.jooq.impl.DSL.max;
 
 public class MetricsRawRepository {
@@ -22,10 +23,6 @@ public class MetricsRawRepository {
             .where(METRICS_RAW.POLICY_ID.in(policyIds))
             .groupBy(METRICS_RAW.POLICY_ID)
             .fetchMap(METRICS_RAW.POLICY_ID, max(METRICS_RAW.ITERATION));
-    }
-
-    protected static List<MetricsRaw> getMetricsRawForPolicy(DSLContext ctx, long policyId) {
-        return getMetricsRawForPolicies(ctx, Collections.singletonList(policyId)).getOrDefault(policyId, Collections.emptyList());
     }
 
     /**
@@ -66,5 +63,22 @@ public class MetricsRawRepository {
                 record.get(METRICS_RAW.INDEX),
                 JooqUtils.getSafeDouble(record.get(METRICS_RAW.VALUE)))
             );
+    }
+
+    /**
+     * Instead of calling getMetricsRawForPolicies() with a single policy I've re-written the method as it's faster with JOOQ.
+     */
+    public static List<MetricsRaw> getMetricsRawForPolicy(DSLContext ctx, long policyId) {
+        return ctx.select(METRICS_RAW.asterisk())
+                .from(METRICS_RAW)
+                .where(METRICS_RAW.POLICY_ID.eq(policyId))
+                .orderBy(METRICS_RAW.POLICY_ID, METRICS_RAW.AGENT, METRICS_RAW.ITERATION, METRICS_RAW.EPISODE, METRICS_RAW.INDEX)
+                .fetch(record -> new MetricsRaw(
+                        record.get(METRICS_RAW.AGENT),
+                        record.get(METRICS_RAW.ITERATION),
+                        record.get(METRICS_RAW.EPISODE),
+                        record.get(METRICS_RAW.INDEX),
+                        JooqUtils.getSafeDouble(record.get(METRICS_RAW.VALUE)))
+                );
     }
 }

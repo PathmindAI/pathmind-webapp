@@ -16,4 +16,11 @@ public class Metrics implements Serializable {
     private Double max;
     private Double min;
     private Double mean;
+
+    public Metrics(Integer agent, Integer iteration, Integer index, Double mean) {
+        this.agent = agent;
+        this.iteration = iteration;
+        this.index = index;
+        this.mean = mean;
+    }
 }
