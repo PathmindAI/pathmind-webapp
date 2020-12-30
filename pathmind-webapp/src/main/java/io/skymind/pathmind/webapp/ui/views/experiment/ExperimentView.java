@@ -267,6 +267,7 @@ public class ExperimentView extends DefaultExperimentView {
     protected void createExperimentComponents() {
         experimentTitleBar = createExperimentTitleBar();
         experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
+        experimentNotesField.setSecondaryStyle(true);
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
         experimentCodeViewer = new CodeViewer(getUISupplier());
@@ -292,6 +293,7 @@ public class ExperimentView extends DefaultExperimentView {
     protected void createComparisonComponents() {
         comparisonTitleBar = createComparisonExperimentTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), false);
+        comparisonNotesField.setSecondaryStyle(true);
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
         comparisonCodeViewer = new CodeViewer(getUISupplier());
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);

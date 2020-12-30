@@ -108,6 +108,11 @@ class NotesField extends PolymerElement {
                 value: false,
                 reflectToAttribute: true,
             },
+            secondaryStyle: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+            },
         }
     }
 
@@ -145,10 +150,21 @@ class NotesField extends PolymerElement {
                     margin-bottom: 0;
                     z-index: 1;
                 }
+                :host([secondary-style]) .header {
+                    box-sizing: border-box;
+                    background: var(--pm-app-bg-color);
+                    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
+                    margin-bottom: 0;
+                }
                 .header span:first-child {
                     font-weight: bold;
                     color: var(--pm-text-color);
                     margin-left: 0;
+                }
+                :host([secondary-style]) .header span:first-child {
+                    font-size: var(--lumo-font-size-s);
+                    font-weight: normal;
+                    color: var(--lumo-secondary-text-color);
                 }
                 .title {
                     flex: 1 1 0%;
@@ -207,6 +223,12 @@ class NotesField extends PolymerElement {
                 :host([compact]) vaadin-text-area {
                     border: none;
                     border-left: 1px solid var(--pm-grey-color-lightest);
+                    border-radius: 0;
+                }
+                :host([secondary-style]) vaadin-text-area {
+                    border: 1px solid var(--pm-grey-color-lightest);
+                    border-right: none;
+                    border-bottom: none;
                     border-radius: 0;
                 }
             </style>

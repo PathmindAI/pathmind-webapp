@@ -68,6 +68,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setCompact(compact);
     }
 
+    public void setSecondaryStyle(Boolean secondaryStyle) {
+        getModel().setSecondaryStyle(secondaryStyle);
+    }
+
     public void setOnNotesChangeHandler(Command onNotesChangeHandler) {
         this.onNotesChangeHandler = onNotesChangeHandler;
     }
@@ -126,5 +130,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setHidesavebutton(Boolean hidesavebutton);
 
         void setCompact(Boolean compact);
+
+        void setSecondaryStyle(Boolean secondaryStyle);
     }
 }
