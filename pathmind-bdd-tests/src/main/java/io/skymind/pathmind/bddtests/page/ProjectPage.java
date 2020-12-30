@@ -95,8 +95,6 @@ public class ProjectPage extends PageObject {
     }
 
     public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
-        System.out.println("MODEL " + getDriver().findElement(By.xpath("//models-navbar-item")));
-
         List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
         for (WebElement webElement : e) {
             String modelNumber = webElement.getText().split("#")[1].split(" ")[0];

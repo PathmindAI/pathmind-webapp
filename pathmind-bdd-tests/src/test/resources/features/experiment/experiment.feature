@@ -18,8 +18,7 @@ Feature: Experiment page
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     Then Click project start run button
-    When Open projects page
-    When Open project AutotestProject on projects page
+    When Click project/ breadcrumb btn
     Then Check experiment '1' status is 'Starting Cluster'
     Then Click the experiment name 1
     Then Check that the experiment status is 'Starting Cluster'
