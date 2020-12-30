@@ -21,7 +21,6 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.RestartTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
@@ -44,7 +43,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     private Button exportPolicyButton;
     private Button stopTrainingButton;
-    private Button restartTrainingButton;
     private Button unarchiveButton;
     private DownloadModelAlpLink downloadModelAlpLink;
     private Button shareButton;
@@ -90,7 +88,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     }
 
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
-        restartTrainingButton = new Button("Restart Training", click -> RestartTrainingAction.restartTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, runDAO, trainingService));
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
         shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentView, getExperimentSupplier, sharedWithSupportLabel, shareButton));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
@@ -104,7 +101,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         if(isExportPolicyButtonOnly) {
             return new Component[] {exportPolicyButton};
         } else {
-            return new Component[] {restartTrainingButton, stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
+            return new Component[] {stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
         }
     }
 
@@ -121,11 +118,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
-
-        restartTrainingButton.setVisible(false);
-        boolean allowRestart = experiment.isAllowRestartTraining() && ModelUtils.isValidModel(experiment.getModel());
-        restartTrainingButton.setVisible(allowRestart);
-        restartTrainingButton.setEnabled(allowRestart);
 
         archivedLabel.setVisible(experiment.isArchived());
 

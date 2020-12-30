@@ -35,7 +35,6 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOG
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_RESTART_TRAINING;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SEARCHED_SITE;
@@ -185,10 +184,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void stopTraining() {
         track(EVENT_STOP_TRAINING);
-    }
-
-    public void restartTraining() {
-        track(EVENT_RESTART_TRAINING);
     }
 
     public void downloadedALP() {
