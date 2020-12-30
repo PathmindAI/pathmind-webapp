@@ -6,7 +6,7 @@ replicaCount: 2
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: prod
+  tag: staging
   pullPolicy: Always
   command: ["java"]
   args:
@@ -22,24 +22,24 @@ service:
   port: 80
 
 env:
-  APPLICATION_URL: https://app.pathmind.com
-  INTERCOM_APP_ID: byklc7u3
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 5
+  APPLICATION_URL: https://staging.devpathmind.com
+  INTERCOM_APP_ID: q51xonft
+  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: prod
-  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
-  S3_BUCKET: prod-training-dynamic-files.pathmind.com
-  S3_BUCKET_STATIC: prod-training-static-files.pathmind.com
+  ENVIRONMENT: staging
+  SQS_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-training-queue.fifo
+  S3_BUCKET: staging-training-dynamic-files.pathmind.com
+  S3_BUCKET_STATIC: dev-training-static-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
-  MODEL_ANALYZER_URL: https://ma.devpathmind.com
+  MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
   JOB_MOCK_CYCLE: 0
   JOB_MOCK_MAX_MIN: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
-  SNS_UPDATER_SQS_FILTER_ATTR: prod
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-updater-queue
+  SNS_UPDATER_SQS_FILTER_ATTR: staging
   NEW_RUN_DAILY_LIMIT: 100
-  NEW_RUN_MONTHLY_LIMIT: 1000
+  NEW_RUN_MONTHLY_LIMIT: 2000
 
 readinessprobe:
   httpGet:
@@ -55,10 +55,10 @@ livenessprobe:
     port: 80
   initialDelaySeconds: 30
   periodSeconds: 15
-  
-name: pathmind
 
-namespace: default
+name: pathmind-slot
+
+namespace: staging
 
 ingress:
   enabled: false
