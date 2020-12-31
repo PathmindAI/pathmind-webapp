@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
@@ -141,12 +140,10 @@ public class ExperimentView extends DefaultExperimentView {
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
-        HorizontalLayout titleBar = createTitleBar();
-
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     stoppedTrainingNotification,
-                    titleBar,
+                    experimentTitleBar,
                     getMiddlePanel(),
                     getBottomPanel()),
                 compareExperimentVerticalLayout);
@@ -164,10 +161,6 @@ public class ExperimentView extends DefaultExperimentView {
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
-    }
-
-    private HorizontalLayout createTitleBar() {
-        return experimentTitleBar;
     }
 
     private VerticalLayout getComparisonExperimentPanel() {

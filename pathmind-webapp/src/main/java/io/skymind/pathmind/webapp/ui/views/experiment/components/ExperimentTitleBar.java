@@ -9,12 +9,12 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -33,7 +33,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.
  * In other words what adds to the complexity is that the button actions set/get different values based on which experiment this component is for. Meaning we
  * need to be a lot smarter then we probably want to be. If it wasn't for the actions on the buttons this class would again be a lot simpler.
  */
-public class ExperimentTitleBar extends HorizontalLayout implements ExperimentComponent {
+public class ExperimentTitleBar extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
     private ExperimentPanelTitle experimentPanelTitle;
@@ -48,7 +48,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button shareButton;
 
     private ExperimentView experimentView;
-    private RunDAO runDAO;
     private TrainingService trainingService;
     private ModelService modelService;
     private Runnable updateExperimentViewRunnable;
@@ -70,7 +69,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.getExperimentSupplier = () -> getExperiment();
         this.updateExperimentViewRunnable = updateExperimentViewRunnable;
         this.getLockSupplier = getLockSupplier;
-        this.runDAO = runDAO;
         this.trainingService = trainingService;
         this.modelService = modelService;
         this.getUISupplier = getUISupplier;
@@ -79,11 +77,16 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         experimentPanelTitle = new ExperimentPanelTitle();
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
-        add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
-            trainingStatusDetailsPanel,
-            getButtonsWrapper(buttons));
-        setPadding(true);
+
+        HorizontalLayout titleBarWrapper = new HorizontalLayout(
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                        experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
+                        trainingStatusDetailsPanel);
+        titleBarWrapper.setPadding(true);
+        add(titleBarWrapper, getButtonsWrapper(buttons));
+        addClassName("experiment-header");
+        setPadding(false);
+        setSpacing(false);
         setWidthFull();
     }
 

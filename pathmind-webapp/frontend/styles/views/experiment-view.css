@@ -9,6 +9,7 @@
 .experiment-view .section-title-label {
     flex: 1 0 auto;
     line-height: 1;
+    white-space: nowrap;
 }
 
 .experiment-view .bold-label {
@@ -38,14 +39,23 @@
     padding: 0;
 }
 
-.experiment-view .middle-panel > vaadin-vertical-layout {
-    flex: 0 0 auto;
-    width: auto !important;
+.experiment-view .view-section > vaadin-vertical-layout {
+    flex: 0 0 100%;
+    overflow: visible;
+}
+
+.experiment-view.comparison-mode .view-section > vaadin-vertical-layout {
+    flex: 1 1 50%;
+}
+
+.experiment-view .experiment-header {
+    position: relative;
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout:last-child {
     flex: 1 1 auto;
     width: 50% !important;
+    border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
 .experiment-view .simulation-metrics-table-wrapper {
@@ -225,6 +235,11 @@
     max-height: calc(100vh - 24rem);
 }
 
+.experiment-view.comparison-mode .bottom-panel,
+.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
+    max-height: auto;
+}
+
 .experiment-view vaadin-tabs {
     margin-bottom: 0;
 }
@@ -241,12 +256,19 @@
 }
 
 .experiment-view .buttons-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
-.experiment-view .buttons-wrapper vaadin-button:not(:first-child),
+.experiment-view .buttons-wrapper vaadin-button {
+    min-width: auto;
+    height: var(--lumo-size-s);
+    font-size: var(--lumo-font-size-s);
+    border-radius: 0;
+    margin: 0;
+}
+
 .experiment-view .buttons-wrapper .download-alp-link {
     margin-left: var(--lumo-space-s);
 }
@@ -327,6 +349,7 @@
 .experiment-view.comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
 .experiment-view.comparison-mode .row-2-of-3 {
     width: 100% !important;
+    border-left: none;
 }
 
 .experiment-view.comparison-mode .middle-panel,

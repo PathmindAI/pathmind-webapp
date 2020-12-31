@@ -154,6 +154,7 @@ class NotesField extends PolymerElement {
                     box-sizing: border-box;
                     background: var(--pm-app-bg-color);
                     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
+                    border-left: 1px solid var(--pm-grey-color-lightest);
                     margin-bottom: 0;
                 }
                 .header span:first-child {
