@@ -15,7 +15,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
@@ -29,9 +28,9 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
-import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
@@ -41,7 +40,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -144,7 +142,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
 
-        uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes());
+        uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
         rewardVariablesPanel = new RewardVariablesPanel();

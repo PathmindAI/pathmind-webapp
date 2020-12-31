@@ -254,14 +254,15 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     private void setupArchivesTabPanel() {
-        archivesTabPanel = new ArchivesTabPanel<Experiment>(
+        archivesTabPanel = new ArchivesTabPanel<>(
                 "Experiments",
                 experimentGrid,
                 this::getExperiments,
                 (experiment, isArchivable) -> {
                     ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
                     segmentIntegrator.archived(Experiment.class, isArchivable);
-                });
+                },
+                getUISupplier());
     }
 
     private void setupGrid() {
@@ -331,7 +332,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     @Override
-    protected void initComponents(AttachEvent event) {
+    protected void initComponents() {
         String modelNameText = "";
         modelNameText = "Model #" + selectedModel.getName();
         if (selectedModel.getPackageName() != null) {
@@ -341,7 +342,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         projectName.setText(project.getName());
         archivedLabel.setVisible(project.isArchived());
         modelName.setText(modelNameText);
-        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
                 experimentGrid.setItems(experiments);
@@ -351,8 +352,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
             }
         });
-        archivesTabPanel.initData(event.getUI());
-        recalculateGridColumnWidth(event.getUI().getPage(), experimentGrid);
+        archivesTabPanel.initData();
+        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
     }
 
     @Override

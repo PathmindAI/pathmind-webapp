@@ -161,8 +161,8 @@ public class DashboardView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initComponents(AttachEvent event) {
-        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+    protected void initComponents() {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier().get().get(), timeZoneId -> {
             // dashboardGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting data provider
             dashboardGrid.setDataProvider(dataProvider);
         });

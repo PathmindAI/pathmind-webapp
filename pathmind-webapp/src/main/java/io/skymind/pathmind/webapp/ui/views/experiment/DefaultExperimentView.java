@@ -157,7 +157,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     @Override
-    protected void initComponents(AttachEvent event) {
+    protected void initComponents() {
         initializeComponentsWithData();
     }
 
