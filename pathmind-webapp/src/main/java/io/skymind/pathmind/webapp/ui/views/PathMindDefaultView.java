@@ -11,6 +11,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.molecules.CookieConsentBox;
@@ -37,6 +38,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     private int previousWindowWidth = 0;
 
+    private UI ui;
+
     public PathMindDefaultView() {
         setWidth("100%");
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
@@ -45,6 +48,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     }
 
     public void beforeEnter(BeforeEnterEvent event) {
+
+        // IMPORTANT -> This is needed because the UI needed for component rendering is not always available on time.
+        ui = event.getUI();
+
         // IMPORTANT -> Needed so that Push works consistently on every page/view.
         event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 
@@ -65,18 +72,17 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         if(!isValidView(event)) {
             return;
         }
-    }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
         // If there is an exception in generating the screens we don't want to display any system related information to the user for security reasons.
         // Create screenComponents prior to having them added to the screen (mainly used for parent view classes)
         createComponents();
         addComponents();
         // Update the screen based on the parameters if need be.
-        initComponents(attachEvent);
+        initComponents();
         // Segment plugin added
         add(segmentIntegrator);
+        // This is needed for pages that are reloaded through ui.navigate such as the UploadModelView.
+        EventBus.unsubscribe(this);
         addEventBusSubscribers();
     }
 
@@ -143,7 +149,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     protected abstract Component getMainContent();
 
-    protected void initComponents(AttachEvent event) throws InvalidDataException {
+    protected void initComponents() throws InvalidDataException {
     }
 
     @Override
@@ -152,6 +158,10 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     }
 
     public Supplier<Optional<UI>> getUISupplier() {
-        return () -> getUI();
+        // Kind of a hacky solution compared to just getUI() but it's because we need the UI to be populated in the
+        // beforeEnter() rather than just onAttach because the components with the timezone require it. We also can't
+        // wait to render in the onAttach() method because some component navigate to themselves which means the
+        // onAttach() is not called again.
+        return () -> Optional.of(ui);
     }
 }
