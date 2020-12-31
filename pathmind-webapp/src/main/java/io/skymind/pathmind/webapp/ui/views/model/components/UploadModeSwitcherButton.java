@@ -17,8 +17,7 @@ public class UploadModeSwitcherButton extends Button {
         addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         addClickListener(evt -> {
             UploadMode switchedMode = mode == UploadMode.FOLDER ? UploadMode.ZIP : UploadMode.FOLDER;
-//            getUISupplier.get().ifPresent(ui ->
-            evt.getSource().getUI().ifPresent(ui ->
+            getUISupplier.get().ifPresent(ui ->
                     ui.navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(model.getProjectId(), switchedMode)));
         });
     }
