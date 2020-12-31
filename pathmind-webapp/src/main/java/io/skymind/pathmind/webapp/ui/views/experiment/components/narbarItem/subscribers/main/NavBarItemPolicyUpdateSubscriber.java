@@ -20,17 +20,19 @@ public class NavBarItemPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
-        updateExperimentInternalValues(event, experimentsNavBarItem.getExperiment());
+        updateExperimentInternalValues(event);
         experimentsNavBarItem.updateVariableComponentValues();
     }
 
-    private void updateExperimentInternalValues(PolicyUpdateBusEvent event, Experiment experiment) {
+    private void updateExperimentInternalValues(PolicyUpdateBusEvent event) {
         // TODO -> STEPH -> This should all be done in a single ExperimentUtils method as it will have to be replicated
         //  elsewhere. This is still done this way because the trainingErrorMessage needs to be done after the update.
-        ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
-        ExperimentUtils.updateExperimentInternals(experiment);
-        experimentDAO.updateTrainingErrorAndMessage(experiment);
-        ExperimentUtils.updateEarlyStopReason(experiment);
+        synchronized (experimentsNavBarItem.getExperimentLock()) {
+            ExperimentUtils.addOrUpdatePolicies(experimentsNavBarItem.getExperiment(), event.getPolicies());
+            ExperimentUtils.updateExperimentInternals(experimentsNavBarItem.getExperiment());
+            experimentDAO.updateTrainingErrorAndMessage(experimentsNavBarItem.getExperiment());
+            ExperimentUtils.updateEarlyStopReason(experimentsNavBarItem.getExperiment());
+        }
     }
 
     @Override
