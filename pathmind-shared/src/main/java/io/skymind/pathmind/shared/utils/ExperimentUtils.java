@@ -169,6 +169,10 @@ public class ExperimentUtils {
     }
 
     public static void updatedRunsForPolicies(Experiment experiment, List<Run> runs) {
+        // TODO -> STEPH -> Why can policies be null?
+        if(experiment.getPolicies() == null) {
+            return;
+        }
         runs.forEach(run ->
                 updatedRunForPolicies(experiment, run));
     }
@@ -267,18 +271,12 @@ public class ExperimentUtils {
     }
 
     public static void updateExperimentInternals(Experiment experiment) {
-
         updateBestPolicy(experiment);
         if(experiment.getBestPolicy() != null) {
             PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
             PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
         }
-
         updateTrainingStatus(experiment);
-
-        // TODO -> STEPH -> Do these need to be calculated and if so then do we need database calls?
-//        updateTrainingErrorAndMessage(ctx, experiment);
-//        ExperimentUtils.updateEarlyStopReason(experiment);
     }
 
     public static void setupDefaultSelectedRewardVariables(Experiment experiment) {

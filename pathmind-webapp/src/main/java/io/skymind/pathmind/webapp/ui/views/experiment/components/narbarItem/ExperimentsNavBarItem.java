@@ -39,6 +39,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private ExperimentDAO experimentDAO;
 
     private Experiment experiment;
+    private Object experimentLock = new Object();
 
     private DefaultExperimentView defaultExperimentView;
 
@@ -55,6 +56,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         }
 
         setExperimentDetails(experiment);
+    }
+
+    public Object getExperimentLock() {
+        return experimentLock;
     }
 
     @EventHandler
