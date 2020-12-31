@@ -10,8 +10,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -19,6 +17,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -100,7 +99,14 @@ public class ExperimentView extends DefaultExperimentView {
     public void setComparisonExperiment(Experiment comparisonExperiment) {
         this.comparisonExperiment = comparisonExperiment;
         isComparisonMode = true;
+        addClassName("comparison-mode");
         updateComparisonComponents();
+        showCompareExperimentComponents(isComparisonMode);
+    }
+
+    private void leaveComparisonMode() {
+        isComparisonMode = false;
+        removeClassName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
     }
 
@@ -132,7 +138,6 @@ public class ExperimentView extends DefaultExperimentView {
     @Override
     protected Component getMainContent() {
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-        modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
@@ -146,9 +151,6 @@ public class ExperimentView extends DefaultExperimentView {
                     getBottomPanel()),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
-        if (isComparisonMode) {
-            experimentContent.addClassName("comparison-mode");
-        }
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -169,6 +171,7 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
+        FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> leaveComparisonMode());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                     generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
@@ -182,7 +185,8 @@ public class ExperimentView extends DefaultExperimentView {
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             comparisonStoppedTrainingNotification,
             comparisonTitleBar,
-            comparisonComponents);
+            comparisonComponents,
+            comparisonModeCloseButton);
         return comparisonPanel;
     }
 

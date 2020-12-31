@@ -320,16 +320,26 @@
     width: 100%;
 }
 
-.experiment-view .comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
-.experiment-view .comparison-mode .row-2-of-3 {
+.experiment-view.comparison-mode .view-section {
+    overflow-y: hidden;
+}
+
+.experiment-view.comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
+.experiment-view.comparison-mode .row-2-of-3 {
     width: 100% !important;
 }
 
-.experiment-view .comparison-mode .middle-panel,
-.experiment-view .comparison-mode .bottom-panel {
+.experiment-view.comparison-mode .middle-panel,
+.experiment-view.comparison-mode .bottom-panel {
     flex-direction: column;
 }
 
-.experiment-view .comparison-mode {
+.experiment-view.comparison-mode {
     height: calc(100vh - 5rem) !important;
+}
+
+.experiment-view.comparison-mode floating-close-button {
+    position: absolute;
+    top: var(--lumo-space-xs);
+    right: var(--lumo-space-xs);
 }
