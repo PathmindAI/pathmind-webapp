@@ -90,6 +90,7 @@ public class ModelUploadPage extends PageObject {
     }
 
     public void checkThatModelUploadLinkOpened() {
+        waitABit(4000);
         getDriver().switchTo().frame(1);
         getDriver().switchTo().frame(1);
         getDriver().switchTo().frame(1);
