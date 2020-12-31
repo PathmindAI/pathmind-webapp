@@ -28,6 +28,6 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
-        return !!event.getExperiment().isArchived() && ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
+        return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
     }
 }
