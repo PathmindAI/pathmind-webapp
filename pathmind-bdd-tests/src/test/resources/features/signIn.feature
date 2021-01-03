@@ -15,9 +15,9 @@ Feature: Sign In form tests
 
   Scenario Outline: Login with invalid credentials
     Given Open pathmind page
-    And Wait for sign-in page anti-flicker script
+#    And Wait for sign-in page anti-flicker script
     When Login with credentials <email>, <password>
-    And Wait for sign-in page anti-flicker script
+#    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
     Examples:

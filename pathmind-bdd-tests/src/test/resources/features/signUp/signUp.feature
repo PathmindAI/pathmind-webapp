@@ -56,6 +56,10 @@ Feature: Sign Up
     When Open pathmind page
     Then Login with new user email and Pass123456
     And Wait for sign-in page anti-flicker script
+    When Create new CoffeeShop project with single reward function
+    When Click project start run button
+    When Logout from pathmind
+    Then Login with new user email and Pass123456
     Then Check that Create new user error Email is not verified shown
     Then Click in 'Resend' button
     Then Check that Email verification was sent to your email. popup is shown
