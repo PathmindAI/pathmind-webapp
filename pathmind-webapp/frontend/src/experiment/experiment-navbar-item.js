@@ -205,6 +205,9 @@ class ExperimentNavbarItem extends PolymerElement {
     onCompareButtonClicked(event) {
         event.preventDefault();
         event.stopPropagation();
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 500);
     }
 }
 

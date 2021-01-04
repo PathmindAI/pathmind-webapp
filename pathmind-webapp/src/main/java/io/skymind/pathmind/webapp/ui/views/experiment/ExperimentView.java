@@ -148,6 +148,9 @@ public class ExperimentView extends DefaultExperimentView {
                     getBottomPanel()),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
+        experimentContent.addSplitterDragendListener(dragend -> {
+            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        });
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(

@@ -87,9 +87,12 @@ class DataChart extends PolymerElement {
         this.$.chart.addEventListener("google-chart-ready", event => {
             var style = document.createElement("style");
             style.innerHTML = `
-                :host {
+                :host(#chart) {
+                    width: 100%;
+                    height: 100%;
+                }
+                div[dir="ltr"] {
                     width: 100% !important;
-                    height: 100% !important;
                 }
                 .google-visualization-tooltip div {
                     line-height: 1.2;

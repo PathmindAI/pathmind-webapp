@@ -246,6 +246,7 @@
 
 .experiment-view .hint-label {
     color: var(--lumo-secondary-text-color);
+    padding: 0 var(--lumo-space-s);
     margin-bottom: 0;
 }
 

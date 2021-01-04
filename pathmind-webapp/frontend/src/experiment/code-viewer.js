@@ -83,7 +83,6 @@ class CodeViewer extends PolymerElement {
                     width: 100%;
                     font-size: 0.8125rem;
                     border: 1px solid var(--pm-grey-color);
-                    border-radius: var(--lumo-border-radius);
                 }
                 code {
                     box-sizing: border-box;
@@ -107,7 +106,7 @@ class CodeViewer extends PolymerElement {
                     right: -1px;
                     padding: 0;
                     background-color: rgba(200,200,200,0.6);
-                    border-radius: 0 var(--lumo-border-radius) 0 0;
+                    border-radius: 0;
                     margin: 0;
                 }
                 iron-icon {
