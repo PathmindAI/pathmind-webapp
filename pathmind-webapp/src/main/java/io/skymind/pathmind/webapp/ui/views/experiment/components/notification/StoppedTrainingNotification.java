@@ -31,13 +31,15 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
     public void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {
         removeClassNames(NOTIFICATION_CSS_CLASSNAMES);
         addClassName(labelClass);
-        getElement().setProperty("innerHTML", text);
         if (showEarlyStoppingLink) {
+            getElement().setText(text);
             add(". Click ");
             Anchor earlyStopping = new Anchor(earlyStoppingUrl, "here");
             earlyStopping.setTarget("_blank");
             add(earlyStopping);
             add(" for more information.");
+        } else {
+            getElement().setProperty("innerHTML", text);
         }
         setVisible(true);
     }
@@ -67,6 +69,7 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
                 showTheReasonWhyTheTrainingStopped(trainingError, ERROR_LABEL, false);
             }
         } else if(experiment.isTrainingStoppedEarly()) {
+            System.out.println("message? "+experiment.getTrainingStoppedEarlyMessage());
             showTheReasonWhyTheTrainingStopped(experiment.getTrainingStoppedEarlyMessage(), SUCCESS_LABEL, true);
         }
     }
