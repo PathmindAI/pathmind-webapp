@@ -241,6 +241,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     public void setExperiment(Experiment experiment) {
+        saveDraftExperiment(() -> {});
         // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
         super.setExperiment(experiment);
