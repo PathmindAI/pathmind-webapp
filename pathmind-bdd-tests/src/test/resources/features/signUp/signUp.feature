@@ -1,6 +1,11 @@
 @signup
 Feature: Sign Up
 
+  Scenario: Check default page for first-time visitors
+    Given Delete all cookies
+    Given Open pathmind page
+    When Check create new user page elements
+
   @tempEmail
   Scenario Outline: Create new user
     Given Open page sign-up

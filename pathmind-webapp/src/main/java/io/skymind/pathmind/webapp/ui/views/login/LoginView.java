@@ -162,22 +162,25 @@ public class LoginView extends HorizontalLayout
         loginForm.setI18n(loginI18n);
         loginForm.setAction(Routes.LOGIN_URL);
         loginForm.addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
-        loginForm.addLoginListener(evt -> segmentIntegrator.userLoggedIn());
+        loginForm.addLoginListener(evt -> {
+            CookieUtils.setNotFirstTimeVisitCookie();
+            segmentIntegrator.userLoggedIn();
+        });
         return loginForm;
-    }
-
-    private Class getRerouteClass() {
-        return ProjectsView.class;
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         if (SecurityUtils.isUserLoggedIn()) {
-            event.forwardTo(getRerouteClass());
+            event.forwardTo(ProjectsView.class);
             // Make sure automatic push mode is enabled. If we don't do this, automatic push
             // won't work even we have proper annotations in place.
             event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
             return;
+        }
+        if (CookieUtils.getCookie("isFirstTimeVisit") == null) {
+            CookieUtils.setNotFirstTimeVisitCookie();
+            event.forwardTo(SignUpView.class);
         }
         add(segmentIntegrator);
     }

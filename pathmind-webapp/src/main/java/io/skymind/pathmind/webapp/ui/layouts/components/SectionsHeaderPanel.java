@@ -12,6 +12,8 @@ public class SectionsHeaderPanel extends HorizontalLayout {
         sectionsHorizontalLayout.add(linkedLogo());
         if (hasLoginUser) {
             RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
+            projectsLink.setHighlightCondition((link, event) ->
+                event.getLocation().getPath().equals(link.getHref()) || event.getLocation().getPath().equals(""));
 
             sectionsHorizontalLayout.add(
                     projectsLink,
