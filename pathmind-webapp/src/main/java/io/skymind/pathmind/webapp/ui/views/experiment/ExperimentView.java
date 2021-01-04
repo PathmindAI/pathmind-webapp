@@ -167,7 +167,10 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
-        FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> leaveComparisonMode());
+        FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
+            leaveComparisonMode();
+            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                     generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),

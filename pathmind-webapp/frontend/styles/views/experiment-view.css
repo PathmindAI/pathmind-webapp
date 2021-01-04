@@ -237,7 +237,7 @@
 
 .experiment-view.comparison-mode .bottom-panel,
 .experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
-    max-height: auto;
+    max-height: none;
 }
 
 .experiment-view vaadin-tabs {
