@@ -173,6 +173,11 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
+    public String getPageTitle() {
+        return "Pathmind | Projects";
+    }
+
+    @Override
     protected void initLoadData() throws InvalidDataException {
         projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
         projects.stream().map(project -> {
