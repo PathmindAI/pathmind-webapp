@@ -69,7 +69,6 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
                 showTheReasonWhyTheTrainingStopped(trainingError, ERROR_LABEL, false);
             }
         } else if(experiment.isTrainingStoppedEarly()) {
-            System.out.println("message? "+experiment.getTrainingStoppedEarlyMessage());
             showTheReasonWhyTheTrainingStopped(experiment.getTrainingStoppedEarlyMessage(), SUCCESS_LABEL, true);
         }
     }
