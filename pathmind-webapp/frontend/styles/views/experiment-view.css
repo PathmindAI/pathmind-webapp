@@ -189,6 +189,10 @@
     border-radius: 0;
 }
 
+.experiment-view.comparison-mode code-viewer {
+    height: 16rem;
+}
+
 .experiment-view .observations-panel {
     max-height: 27rem;
     border: none;
@@ -328,6 +332,14 @@
     width: 100%;
     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
     border: 1px solid transparent;
+}
+
+.experiment-view.comparison-mode .reason-why-the-training-stopped {
+    display: none;
+}
+
+.experiment-view .training-status-details-panel {
+    height: 3rem;
 }
 
 .experiment-view .tag.error-label {

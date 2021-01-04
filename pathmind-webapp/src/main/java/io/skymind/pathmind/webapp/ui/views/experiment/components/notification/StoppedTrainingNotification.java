@@ -39,7 +39,7 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
             add(earlyStopping);
             add(" for more information.");
         } else {
-            getElement().setProperty("innerHTML", text);
+            getElement().executeJs("this.innerHTML = $0", text);
         }
         setVisible(true);
     }
