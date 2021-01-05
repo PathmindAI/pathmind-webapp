@@ -207,7 +207,7 @@ class ExperimentNavbarItem extends PolymerElement {
         event.stopPropagation();
         setTimeout(function() {
             window.dispatchEvent(new Event('resize'));
-        }, 500);
+        }, 600);
     }
 }
 

@@ -93,6 +93,8 @@ class DataChart extends PolymerElement {
                 }
                 div[dir="ltr"] {
                     width: 100% !important;
+                    height: 0 !important;
+                    padding-bottom: 40.8%;
                 }
                 .google-visualization-tooltip div {
                     line-height: 1.2;

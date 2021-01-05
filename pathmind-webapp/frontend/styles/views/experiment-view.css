@@ -236,7 +236,6 @@
 .experiment-view .bottom-panel,
 .experiment-view .row-2-of-3 vaadin-vertical-layout {
     flex: 1;
-    max-height: calc(100vh - 24rem);
 }
 
 .experiment-view.comparison-mode .bottom-panel,
@@ -272,6 +271,10 @@
     font-size: var(--lumo-font-size-s);
     border-radius: 0;
     margin: 0;
+}
+
+.experiment-view .buttons-wrapper vaadin-button + vaadin-button:not([hidden]) {
+    margin-left: -1px;
 }
 
 .experiment-view .buttons-wrapper .download-alp-link {
