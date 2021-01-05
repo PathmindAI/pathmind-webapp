@@ -3,13 +3,11 @@ package io.skymind.pathmind.shared.security;
 public class Routes {
     public static final String WITH_PARAMETER = "/**";
 
-    public static final String ROOT_URL = "";
-
     public static final String LOGIN_URL = "sign-in";
     public static final String LOGIN_PROCESSING_URL = "sign-in";
 
     public static final String LOGOUT_URL = "sign-out";
-    public static final String LOGOUT_SUCCESS_URL = "";
+    public static final String LOGOUT_SUCCESS_URL = "sign-in?sign-out";
     public static final String SESSION_EXPIRED = "session-expired";
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";

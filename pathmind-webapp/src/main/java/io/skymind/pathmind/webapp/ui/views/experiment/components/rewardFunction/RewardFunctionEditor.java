@@ -150,13 +150,29 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
                     RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
-                    sb.append(
-                            MessageFormat.format(
-                                    "reward {1}= after.{0} - before.{0}; // {2} {0}",
-                                    rv.getName(), // 0
-                                    functionComponent.getMathOperation(), // 1
-                                    functionComponent.getComment() // 2
-                            ));
+                    switch (rv.getDataType()) {
+                        case "boolean": {
+                            sb.append(
+                                    MessageFormat.format(
+                                            "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
+                                            rv.getName(), // 0
+                                            functionComponent.getMathOperation(), // 1
+                                            functionComponent.getComment() // 2
+                                    )
+                            );
+                            break;
+                        }
+                        default: {
+                            sb.append(
+                                    MessageFormat.format(
+                                            "reward {1}= after.{0} - before.{0}; // {2} {0}",
+                                            rv.getName(), // 0
+                                            functionComponent.getMathOperation(), // 1
+                                            functionComponent.getComment() // 2
+                                    )
+                            );
+                        }
+                    }
                     sb.append("\n");
                 }
             }

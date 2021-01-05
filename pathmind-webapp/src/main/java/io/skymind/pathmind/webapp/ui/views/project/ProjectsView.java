@@ -19,7 +19,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-
+import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
@@ -30,7 +30,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewProjectButton;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -42,6 +41,7 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.PROJECTS_URL, layout = MainLayout.class)
+@RouteAlias(value = "", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private ProjectDAO projectDAO;
@@ -172,6 +172,11 @@ public class ProjectsView extends PathMindDefaultView {
     @Override
     protected Component getTitlePanel() {
         return null;
+    }
+
+    @Override
+    public String getPageTitle() {
+        return "Pathmind | Projects";
     }
 
     @Override
