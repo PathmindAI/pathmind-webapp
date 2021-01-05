@@ -71,9 +71,6 @@ public class DownloadModelAlpLink extends Anchor {
         this.modelPackageName = experiment.getModel().getPackageName();
         this.projectName = experiment.getProject().getName();
 
-        // TODO -> FIONNA -> STEPH -> (FROM STEPH) -> I just quickly implemented this but the goal is that we don't have the experiment at component load time (for example we don't have
-        // a comparison experiment on the experimentView) so we can't know the project or model. This quickly resolves it but it's not pretty so either you or I
-        // will have to refactor it (either here or in a follow-up ticket). It was done quickly to get the titlebar on the experimentView working for the experiment comparison feature (2149).
         if(isAlreadyRendered) {
             return;
         }

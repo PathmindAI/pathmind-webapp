@@ -104,13 +104,12 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     public void setSelectedObservations(List<Observation> observations) {
         this.selectedObservations = observations;
-        // TODO -> FIONNA -> STEPH -> (FROM STEPH) I'm not sure how the value listener is all fired but ideally we'd want something like either
+        // REFACTOR -> I'm not sure how the value listener is all fired but ideally we'd want something like either
         // isUserOriginated() on the event which is possible in Vaadin or we need to confirm that the observations value are different
         // then the selected observations. That being said I'm not sure where the magic happens because I couldn't find a binder, or locate
         // where the selectedObservations list is automatically updated, but if we can adjust that it would be easier. Either way we
-        // should look at the different options. Although the current solution is very hacky it works for now. Otherwise what happens is that
-        // on the set method the value change listener is fired which in turn causes. We can also push to a future tech debt ticket if
-        // we want to complete this PR sooner than later.
+        // should look at the different options. Although the current solution is hacky in my opinion it works for now. Otherwise what happens is that
+        // on the set method the value change listener is fired which in turn causes.
         isEnableValueChangeListener = false;
         observationsTable.setValue(new HashSet<>(observations));
         isEnableValueChangeListener = true;

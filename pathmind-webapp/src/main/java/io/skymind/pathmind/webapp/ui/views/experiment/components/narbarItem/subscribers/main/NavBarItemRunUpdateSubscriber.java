@@ -17,7 +17,7 @@ public class NavBarItemRunUpdateSubscriber extends RunUpdateSubscriber {
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
         // We have to do it manually here because we could be in another tabbed browser and we don't have a full reload, just the run.
-        // TODO -> STEPH -> This should all be done in a single ExperimentUtils method as it will have to be replicated
+        // REFACTOR -> This should all be done in a single ExperimentUtils method as it will have to be replicated
         //  elsewhere such as ExperimentViewRunUpdateSubscriber.
         updateExperimentInternalValues(event);
         experimentsNavBarItem.updateVariableComponentValues();

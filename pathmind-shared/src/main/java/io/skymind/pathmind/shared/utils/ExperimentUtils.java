@@ -169,7 +169,6 @@ public class ExperimentUtils {
     }
 
     public static void updatedRunsForPolicies(Experiment experiment, List<Run> runs) {
-        // TODO -> STEPH -> Why can policies be null?
         if(experiment.getPolicies() == null) {
             return;
         }

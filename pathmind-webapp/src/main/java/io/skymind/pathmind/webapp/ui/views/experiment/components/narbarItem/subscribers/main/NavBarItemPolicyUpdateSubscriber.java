@@ -25,7 +25,7 @@ public class NavBarItemPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
     }
 
     private void updateExperimentInternalValues(PolicyUpdateBusEvent event) {
-        // TODO -> STEPH -> This should all be done in a single ExperimentUtils method as it will have to be replicated
+        // REFACTOR -> This should all be done in a single ExperimentUtils method as it will have to be replicated
         //  elsewhere. This is still done this way because the trainingErrorMessage needs to be done after the update.
         synchronized (experimentsNavBarItem.getExperimentLock()) {
             ExperimentUtils.addOrUpdatePolicies(experimentsNavBarItem.getExperiment(), event.getPolicies());
