@@ -62,6 +62,10 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         WebElement button = utils.expandRootElement(archiveButton);
         button.findElement(By.cssSelector("button")).click();
+
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -120,8 +124,11 @@ public class ExperimentPage extends PageObject {
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
-        element.findElement(By.cssSelector("button")).click();
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
+        element.findElement(By.cssSelector("#button")).click();
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
