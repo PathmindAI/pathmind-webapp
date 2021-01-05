@@ -71,17 +71,10 @@ public class ProjectsView extends PathMindDefaultView {
 
     public static class X extends Button {
 
-        public X(DemoProjectService demoProjectService) {
-            super("Demo", new Icon(VaadinIcon.HEART));
+        public X(DemoProjectService demoProjectService, ExperimentManifest manifest) {
+            super(manifest.getName(), new Icon(VaadinIcon.HEART));
             addClickListener(evt -> {
                 try {
-                    ExperimentManifest manifest = new ExperimentManifest(
-                            URI.create("https://files-media-images.s3-eu-west-1.amazonaws.com/SupplyChainDemoAsTuple+Exported.zip")
-                    );
-                    manifest.setRewardFunction(
-                            "reward -= after.waitTimeMean - before.waitTimeMean;\n" +
-                            "reward -= after.costTotalMean - before.costTotalMean;\n"
-                    );
                     Experiment experiment = demoProjectService.createExperiment(manifest, SecurityUtils.getUserId());
                     getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
                 } catch (Exception e) {
@@ -103,9 +96,20 @@ public class ProjectsView extends PathMindDefaultView {
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
         headerWrapper.addClassName("page-content-header");
 
+        ExperimentManifest supplyChainManifest = ExperimentManifest.builder()
+                .name("Supply Chain Demo")
+                .modelUrl(URI.create("https://files-media-images.s3-eu-west-1.amazonaws.com/SupplyChainDemoAsTuple+Exported.zip"))
+                .rewardFunction(
+                        //@formatter:off
+                        "reward -= after.waitTimeMean - before.waitTimeMean;\n" +
+                        "reward -= after.costTotalMean - before.costTotalMean;\n"
+                        //@formatter:on
+                )
+                .build();
+
         gridWrapper = new ViewSection(
                 headerWrapper,
-                new X(demoProjectService),
+                new X(demoProjectService, supplyChainManifest),
                 archivesTabPanel,
                 projectGrid);
         gridWrapper.addClassName("page-content");
@@ -136,7 +140,7 @@ public class ProjectsView extends PathMindDefaultView {
             renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             renameProjectButton.addClassName("action-button");
             HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                new Span(projectName), renameProjectButton);
+                    new Span(projectName), renameProjectButton);
             projectNameColumn.addClassName("project-name-column");
             return projectNameColumn;
         })

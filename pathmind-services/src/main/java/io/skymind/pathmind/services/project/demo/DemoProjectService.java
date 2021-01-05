@@ -38,7 +38,7 @@ public class DemoProjectService {
                 final LocalDateTime now = LocalDateTime.now();
                 Project newProject = new Project();
                 newProject.setProjectType(ProjectType.DEMO);
-                newProject.setName("Demo Project");
+                newProject.setName("Demo Projects by Pathmind");
                 newProject.setPathmindUserId(userId);
                 newProject.setDateCreated(now);
                 newProject.setLastActivityDate(now);
