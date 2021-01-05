@@ -144,7 +144,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     }
 
     private void createAndSetupNotesField() {
-        notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView(), true);
+        notesField = createNotesField(() -> segmentIntegrator.addedNotesNewExperimentView(), false, true);
         notesField.setPlaceholder("Add Notes (optional)");
         notesField.setOnNotesChangeHandler(() -> setNeedsSaving());
         if (experiment.isArchived()) {

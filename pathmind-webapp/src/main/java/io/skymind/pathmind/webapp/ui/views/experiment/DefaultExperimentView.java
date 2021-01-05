@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
@@ -162,8 +161,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     // Special case because in the new experiment view we add a lot of extra code therefore it's only considered a helper method.
-    protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable, boolean hideSaveButton) {
-        return new ExperimentNotesField(this, experimentDAO, segmentIntegratorRunnable,false, hideSaveButton);
+    protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable, boolean allowAutoSave, boolean hideSaveButton) {
+        return new ExperimentNotesField(this, experimentDAO, segmentIntegratorRunnable, allowAutoSave, hideSaveButton);
     }
 
     protected void initializeComponentsWithData() {
