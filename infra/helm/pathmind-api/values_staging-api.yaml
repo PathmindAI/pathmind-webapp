@@ -1,64 +1,55 @@
-# Default values for pathmind.
+# Default values for pathmind-api.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: prod
+  tag: staging
   pullPolicy: Always
   command: ["java"]
   args:
     - "-Xmx4096m"
     - "-XX:+UseG1GC"
-    - "-Dvaadin.productionMode"
     - "-jar"
-    - "/app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar"
-    - "--server.port=80"
+    - "/app/pathmind-api/target/pathmind-api-0.0.1-SNAPSHOT.jar"
+    - "--server.port=8081"
 
 service:
   type: NodePort
-  port: 80
+  port: 8081
 
 env:
-  APPLICATION_URL: https://app.pathmind.com
-  INTERCOM_APP_ID: byklc7u3
-  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 5
+  APPLICATION_URL: https://staging.devpathmind.com
+  INTERCOM_APP_ID: q51xonft
+  WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: prod
-  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
-  S3_BUCKET: prod-training-dynamic-files.pathmind.com
-  S3_BUCKET_STATIC: prod-training-static-files.pathmind.com
+  ENVIRONMENT: staging
+  SQS_URL: https://queue.amazonaws.com/839270835622/staging-training-queue.fifo
+  S3_BUCKET: staging-training-dynamic-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
-  MODEL_ANALYZER_URL: https://ma.devpathmind.com
+  MODEL_ANALYZER_URL: https://ma.staging.devpathmind.com
   JOB_MOCK_CYCLE: 0
   JOB_MOCK_MAX_MIN: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/prod-updater-queue
-  SNS_UPDATER_SQS_FILTER_ATTR: prod
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-updater-queue
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:staging-updater-topic
+  SNS_UPDATER_SQS_FILTER_ATTR: staging
   NEW_RUN_DAILY_LIMIT: 100
-  NEW_RUN_MONTHLY_LIMIT: 1000
+  NEW_RUN_MONTHLY_LIMIT: 2000
+  API_WEBAPP_URL: https://staging.devpathmind.com/
+  API_FILE_SIZE: 500MB
+  API_REQUEST_SIZE: 500MB
 
-readinessprobe:
-  httpGet:
-    path: /
-    port: 80
-  initialDelaySeconds: 15
-  periodSeconds: 10
-  failureThreshold: 10
+readinessprobe: {}
 
-livenessprobe:
-  httpGet:
-    path: /
-    port: 80
-  initialDelaySeconds: 30
-  periodSeconds: 15
-  
-name: pathmind
+livenessprobe: {}
 
-namespace: default
+name: pathmind-api
+
+namespace: staging
 
 ingress:
   enabled: false
@@ -93,17 +84,4 @@ tolerations: []
 
 affinity: {}
 
-probes:
-  readinessProbe:
-    httpGet:
-      path: /
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 10
-    failureThreshold: 10
-  livenessProbe:
-    httpGet:
-      path: /
-      port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 15
+probes: {}
