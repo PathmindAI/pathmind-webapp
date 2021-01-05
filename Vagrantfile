@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
     # Add backports to install OpenJDK11
     sudo echo "deb http://ftp.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
-   
+
     # Add node sources
     wget https://deb.nodesource.com/setup_13.x && \
     bash ./setup_13.x && \
@@ -35,11 +35,13 @@ Vagrant.configure("2") do |config|
     echo "-------------------- Setting up DB"
     sudo -u postgres psql -c "CREATE USER skynet WITH PASSWORD 'skynetskynet123';"
     sudo -u postgres psql -c "CREATE DATABASE pathmind;"
+
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
+    sudo -u postgres psql -c "ALTER USER skynet WITH SUPERUSER;"
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo ". /vagrant/vagrant-user-env.sh;\n cd /vagrant" > /home/vagrant/.bash_profile
 
 SHELL
-    
+
 end
