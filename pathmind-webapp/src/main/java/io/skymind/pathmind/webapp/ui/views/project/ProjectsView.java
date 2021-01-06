@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +24,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.project.demo.DemoProjectService;
 import io.skymind.pathmind.services.project.demo.ExperimentManifest;
+import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
@@ -57,6 +57,9 @@ public class ProjectsView extends PathMindDefaultView {
 
     @Autowired
     private DemoProjectService demoProjectService;
+
+    @Autowired
+    private ExperimentManifestRepository experimentManifestRepository;
 
     private List<Project> projects;
     private Grid<Project> projectGrid;
@@ -96,16 +99,7 @@ public class ProjectsView extends PathMindDefaultView {
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
         headerWrapper.addClassName("page-content-header");
 
-        ExperimentManifest supplyChainManifest = ExperimentManifest.builder()
-                .name("Supply Chain Demo")
-                .modelUrl(URI.create("https://files-media-images.s3-eu-west-1.amazonaws.com/SupplyChainDemoAsTuple+Exported.zip"))
-                .rewardFunction(
-                        //@formatter:off
-                        "reward -= after.waitTimeMean - before.waitTimeMean;\n" +
-                        "reward -= after.costTotalMean - before.costTotalMean;\n"
-                        //@formatter:on
-                )
-                .build();
+        ExperimentManifest supplyChainManifest = experimentManifestRepository.getAll().get(0);
 
         gridWrapper = new ViewSection(
                 headerWrapper,
