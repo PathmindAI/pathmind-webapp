@@ -1,27 +1,25 @@
-# Default values for trainer.
+# Default values for pathmind-ma.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/trainer
-  tag: prod
+  repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind-ma
+  tag: staging
   pullPolicy: Always
 
-#service:
-#  type: NodePort
-#  port: 80
+service:
+  type: NodePort
+  port: 8080
 
 env:
-  SQS_URL: https://queue.amazonaws.com/839270835622/prod-training-queue.fifo
-  ENVIRONMENT: prod
-  NAME: prod-pathmind.k8s.local
-  KOPS_STATE_STORE: s3://prod-pathmind-kops-state/k8s.prod-pathmind.k8s.local
-  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:prod
-  S3_BUCKET_STATIC: prod-training-static-files.pathmind.com
+  ENVIRONMENT: staging
+  S3BUCKET: staging-model-analyzer-static-files.pathmind.com
 
-  
+name: pathmind-ma
+
+namespace: staging
 
 ingress:
   enabled: false
@@ -37,17 +35,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
+resources: 
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 2
-    memory: 1024Mi
+#  limits:
+#    cpu: 2
+#    memory: 2Gi
   requests:
     cpu: 1
-    memory: 512Mi
+    memory: 1Gi
 
 
 nodeSelector: {}

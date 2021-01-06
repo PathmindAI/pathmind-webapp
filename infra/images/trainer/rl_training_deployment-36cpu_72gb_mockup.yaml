@@ -47,6 +47,8 @@ spec:
           value: {{ENVIRONMENT}}
         - name: AWS_DEFAULT_REGION
           value: 'us-east-1'
+        - name: S3_BUCKET_STATIC
+          value: {{S3_BUCKET_STATIC}}
         - name: AWS_ACCESS_KEY_ID
           valueFrom:
             secretKeyRef:
