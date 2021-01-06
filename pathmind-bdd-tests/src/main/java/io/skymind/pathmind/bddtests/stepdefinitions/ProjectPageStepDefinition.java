@@ -84,4 +84,9 @@ public class ProjectPageStepDefinition {
     public void checkProjectTitleLabelTagIsArchived(String tag) {
         projectPageSteps.checkProjectTitleLabelTagIsArchived(tag);
     }
+
+    @Then("^Check that project page title is '(.*)'$")
+    public void checkThatProjectPageTitleIs(String title) {
+        projectPageSteps.checkThatProjectPageTitleIs(title + Serenity.sessionVariableCalled("randomNumber"));
+    }
 }
