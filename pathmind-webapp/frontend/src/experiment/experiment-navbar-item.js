@@ -65,10 +65,12 @@ class ExperimentNavbarItem extends PolymerElement {
                 :host([is-draft]) goals-reached-status {
                     display: none;
                 }
+                :host([is-current]) vaadin-context-menu,
                 :host([is-draft]) vaadin-context-menu,
                 :host([is-on-draft-experiment-view]) vaadin-context-menu {
                     display: none;
                 }
+                :host([is-current]) vaadin-button[title="Archive"],
                 :host([is-draft]) vaadin-button[title="Archive"],
                 :host([is-on-draft-experiment-view]) vaadin-button[title="Archive"] {
                     display: block;
