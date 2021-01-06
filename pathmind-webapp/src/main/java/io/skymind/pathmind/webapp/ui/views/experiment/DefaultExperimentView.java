@@ -79,7 +79,7 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     }
 
     @Override
-    protected void initLoadData() {
+    final protected void initLoadData() {
         // We still need to lock here on load in case there is an event part way through the page's initial load.
         synchronized (experimentLock) {
             loadFullExperimentData();
