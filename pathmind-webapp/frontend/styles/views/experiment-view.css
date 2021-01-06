@@ -356,6 +356,11 @@
 
 .experiment-view .comparison-panel {
     width: 100%;
+    height: 100%;
+}
+
+.experiment-view .comparison-panel vaadin-split-layout {
+    height: auto !important;
 }
 
 .experiment-view.comparison-mode .view-section {
