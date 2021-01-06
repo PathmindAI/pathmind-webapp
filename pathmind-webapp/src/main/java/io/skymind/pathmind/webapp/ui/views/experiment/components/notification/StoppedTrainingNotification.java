@@ -1,13 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.notification;
 
+import java.text.MessageFormat;
+
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-
-import java.text.MessageFormat;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
@@ -57,7 +57,7 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
         clearErrorState();
 
         if (RunStatus.isError(experiment.getTrainingStatusEnum())) {
-            if(experiment.isTrainingError()) {
+            if (experiment.isTrainingError()) {
                 String trainingError = experiment.getTrainingError();
                 if (ExperimentUtils.isAnyLogicEngineError(trainingError)) {
                     trainingError =
@@ -68,7 +68,7 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
                 }
                 showTheReasonWhyTheTrainingStopped(trainingError, ERROR_LABEL, false);
             }
-        } else if(experiment.isTrainingStoppedEarly()) {
+        } else if (experiment.isTrainingStoppedEarly()) {
             showTheReasonWhyTheTrainingStopped(experiment.getTrainingStoppedEarlyMessage(), SUCCESS_LABEL, true);
         }
     }

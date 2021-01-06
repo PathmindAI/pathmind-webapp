@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.bus.events.main;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;

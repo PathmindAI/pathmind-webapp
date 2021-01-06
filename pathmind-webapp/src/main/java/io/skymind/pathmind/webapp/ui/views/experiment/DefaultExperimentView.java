@@ -28,13 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class DefaultExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
-    protected abstract void createExperimentComponents();
-    protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
-
-    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
-    private Object experimentLock = new Object();
-
     @Autowired
     protected ModelService modelService;
     @Autowired
@@ -45,18 +38,21 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected TrainingService trainingService;
     @Autowired
     protected SegmentIntegrator segmentIntegrator;
-
     protected ExperimentBreadcrumbs experimentBreadcrumbs;
     protected ExperimentPanelTitle experimentPanelTitle;
     protected ExperimentsNavBar experimentsNavbar;
-
     protected List<ExperimentComponent> experimentComponentList = new ArrayList<>();
-
     // ExperimentID is also added as the experiment can be null whereas the experimentID always has to have a value. Used by the Subscribers for the view.
     protected long experimentId;
     protected Experiment experiment;
-
+    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
+    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
+    private Object experimentLock = new Object();
     private UserCaps userCaps;
+
+    protected abstract void createExperimentComponents();
+
+    protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
 
     @Override
     protected Component getTitlePanel() {
@@ -67,9 +63,10 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected void createComponents() {
         createSharedComponents();
         createExperimentComponents();
-   }
+    }
 
-    private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
+    private void createSharedComponents() {
+        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
 
         experimentComponentList.add(experimentPanelTitle);
@@ -116,15 +113,15 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
         return experimentLock;
     }
 
-     /**
+    /**
      * EXTREMELY IMPORTANT -> Any code that calls this method should get the experimentLock beforehand otherwise it can lead to
      * racing conditions. The lock can NOT be set in this method because the code setting up the experiment object most likely will
      * be done OUTSIDE of this method. For example the subscriber may need to update the experiment instance's runs while this method
      * is being called which would lead to a conflict.
-     *
+     * <p>
      * Updates the internal values of the experiment from the components without changing the experiment instance. This is
-      * most often called when say the runs have been updated by a back end event and instead of reloading everything
-      * from the database we just update the experiment instance with the latest data and then re-render the components.
+     * most often called when say the runs have been updated by a back end event and instead of reloading everything
+     * from the database we just update the experiment instance with the latest data and then re-render the components.
      */
     public void updateExperimentFromComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());

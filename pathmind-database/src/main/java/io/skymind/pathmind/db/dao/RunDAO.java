@@ -302,7 +302,7 @@ public class RunDAO {
             ExperimentRepository.updateGoalsTotal(transactionCtx, experiment.getId(), goalsTotalNum);
         }
 
-        if(experiment.getBestPolicy() != null) {
+        if (experiment.getBestPolicy() != null) {
             if (experiment.isHasGoals()) {
                 int goalsReached = 0;
                 for (RewardVariable rv : rewardVariablesWithGoals) {

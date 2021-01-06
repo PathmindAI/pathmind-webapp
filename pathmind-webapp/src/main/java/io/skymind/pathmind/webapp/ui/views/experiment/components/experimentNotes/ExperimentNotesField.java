@@ -21,25 +21,25 @@ public class ExperimentNotesField extends NotesField implements ExperimentCompon
                 allowAutoSave,
                 hideSaveButton);
 
-        if(defaultExperimentView instanceof ExperimentView) {
+        if (defaultExperimentView instanceof ExperimentView) {
             setSaveConsumer(updatedNotes -> {
                 experimentDAO.updateUserNotes(getExperiment().getId(), updatedNotes);
                 segmentIntegratorRunnable.run();
             });
         }
 
-        if(defaultExperimentView instanceof NewExperimentView) {
-            setOnNotesChangeHandler(() -> NeedsSavingAction.setNeedsSaving((NewExperimentView)defaultExperimentView));
+        if (defaultExperimentView instanceof NewExperimentView) {
+            setOnNotesChangeHandler(() -> NeedsSavingAction.setNeedsSaving((NewExperimentView) defaultExperimentView));
         }
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setNotesText(experiment.getUserNotes());
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
     }
 
     @Override

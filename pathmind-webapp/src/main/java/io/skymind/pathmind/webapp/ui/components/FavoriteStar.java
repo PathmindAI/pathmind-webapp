@@ -21,13 +21,13 @@ public class FavoriteStar extends PolymerTemplate<TemplateModel> implements HasS
         setValue(isFavorite);
     }
 
+    public boolean getValue() {
+        return isFavorite;
+    }
+
     public void setValue(boolean isFavorite) {
         this.isFavorite = isFavorite;
         getElement().setProperty("isFavorite", isFavorite);
-    }
-
-    public boolean getValue() {
-        return isFavorite;
     }
 
     @EventHandler

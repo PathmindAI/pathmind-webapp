@@ -34,14 +34,16 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
      * This constructor is used by the NewExperimentView and has no selection logic.
      */
     public RewardVariablesTable() {
-        this(() -> {});
+        this(() -> {
+        });
     }
 
     /**
      * This constructor is used by the ExperimentView and the selection logic.
      */
     public RewardVariablesTable(ExperimentView experimentView) {
-        this(() -> {});
+        this(() -> {
+        });
         this.experimentView = experimentView;
     }
 
@@ -108,7 +110,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setRewardVariables(experiment.getRewardVariables());
-        if(actAsMultiSelect) {
+        if (actAsMultiSelect) {
             selectSelectedRewardVariables(experiment);
             updateSelectionClassForComponent();
         }
@@ -117,6 +119,6 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     private void selectSelectedRewardVariables(Experiment experiment) {
         rewardVariableNameFields.stream()
                 .filter(rewardVariablesRowField -> experiment.getSelectedRewardVariables().contains(rewardVariablesRowField.getRewardVariable()))
-                .forEach(rewardVariablesRowField ->  rewardVariablesRowField.setSelected(true));
+                .forEach(rewardVariablesRowField -> rewardVariablesRowField.setSelected(true));
     }
 }

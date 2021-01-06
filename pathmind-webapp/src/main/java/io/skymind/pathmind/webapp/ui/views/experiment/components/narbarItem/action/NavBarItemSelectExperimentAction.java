@@ -9,7 +9,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 public class NavBarItemSelectExperimentAction {
     public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
         // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
-        if(defaultExperimentView instanceof ExperimentView) {
+        if (defaultExperimentView instanceof ExperimentView) {
             selectExperimentFromExperimentView(experiment, defaultExperimentView);
         } else { // Must be NewExperimentView
             selectExperimentFromNewExperimentView(experiment, defaultExperimentView);
@@ -17,7 +17,7 @@ public class NavBarItemSelectExperimentAction {
     }
 
     private static void selectExperimentFromNewExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
-        if(experiment.isDraft()) {
+        if (experiment.isDraft()) {
             defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId()));
             synchronized (defaultExperimentView.getExperimentLock()) {
                 defaultExperimentView.setExperiment(experiment);

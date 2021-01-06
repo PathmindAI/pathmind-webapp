@@ -44,6 +44,8 @@ import org.springframework.beans.factory.annotation.Value;
 @Route(value = Routes.NEW_EXPERIMENT_URL, layout = MainLayout.class)
 public class NewExperimentView extends DefaultExperimentView implements BeforeLeaveObserver {
 
+    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
+    protected ExperimentNotesField notesField;
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
@@ -53,19 +55,13 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     private Button saveDraftButton;
     private Button startRunButton;
     private Anchor downloadModelAlpLink;
-
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
-
     private boolean isNeedsSaving = false;
-
     @Autowired
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Autowired
     private ObservationDAO observationDAO;
-
-    protected ExperimentNotesField notesField;
 
     public NewExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
@@ -156,7 +152,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
         startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> StartRunAction.startRun(this, rewardFunctionEditor, trainingService, runDAO, observationDAO));
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {}));
+        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
+        }));
     }
 
     /************************************** UI element creations are above this line **************************************/
@@ -241,7 +238,8 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     public void setExperiment(Experiment experiment) {
-        saveDraftExperiment(() -> {});
+        saveDraftExperiment(() -> {
+        });
         // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
         super.setExperiment(experiment);
@@ -256,7 +254,7 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
-        if(experimentDAO.isDraftExperiment(experimentId)) {
+        if (experimentDAO.isDraftExperiment(experimentId)) {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.

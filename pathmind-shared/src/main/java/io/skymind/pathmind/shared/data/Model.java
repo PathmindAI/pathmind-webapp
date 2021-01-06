@@ -13,14 +13,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Model extends ArchivableData  {
-
-    private static final long serialVersionUID = 3143001029296125340L;
+public class Model extends ArchivableData {
 
     public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
-
     public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
-
+    private static final long serialVersionUID = 3143001029296125340L;
     private LocalDateTime dateCreated;
     private LocalDateTime lastActivityDate;
     private int numberOfObservations = DEFAULT_NUMBER_OF_OBSERVATIONS;

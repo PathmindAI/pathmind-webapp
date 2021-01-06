@@ -18,7 +18,8 @@ public class FloatingCloseButton extends PolymerTemplate<FloatingCloseButton.Mod
     }
 
     public FloatingCloseButton(String text) {
-        this(text, () -> {});
+        this(text, () -> {
+        });
     }
 
     public FloatingCloseButton(String text, Command clickHandler) {

@@ -24,15 +24,12 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscrib
 
 @CssImport("./styles/views/experiment/experiment-navbar.css")
 public class ExperimentsNavBar extends VerticalLayout {
+    public long modelId;
     private List<Experiment> experiments;
     private Experiment selectedExperiment;
-
     private List<ExperimentsNavBarItem> experimentsNavBarItems = new ArrayList<>();
     private VerticalLayout rowsWrapper;
     private NewExperimentButton newExperimentButton;
-
-    public long modelId;
-
     private ExperimentDAO experimentDAO;
 
     private DefaultExperimentView defaultExperimentView;
@@ -144,7 +141,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         setVisible(!newCurrentExperiment.isArchived());
 
         // There's no need processing any further if archived as the navbar is not visible.
-        if(newCurrentExperiment.isArchived()) {
+        if (newCurrentExperiment.isArchived()) {
             return;
         }
 

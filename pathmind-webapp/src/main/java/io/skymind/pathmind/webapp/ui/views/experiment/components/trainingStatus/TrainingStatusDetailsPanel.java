@@ -48,11 +48,6 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
         setPadding(false);
     }
 
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        update();
-    }
-
     public void update() {
         statusLabel.setText(experiment.getTrainingStatusEnum().toString());
         updateElapsedTimer();
@@ -61,6 +56,11 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        update();
     }
 
     private void updateProgressRow() {

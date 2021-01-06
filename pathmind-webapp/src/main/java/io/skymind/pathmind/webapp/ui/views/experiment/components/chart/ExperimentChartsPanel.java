@@ -79,13 +79,6 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
         }
     }
 
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        policyChartPanel.setExperiment(experiment);
-        compareMetricsChartPanel.setExperiment(experiment);
-        selectVisibleChart();
-    }
-
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
@@ -112,5 +105,12 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        policyChartPanel.setExperiment(experiment);
+        compareMetricsChartPanel.setExperiment(experiment);
+        selectVisibleChart();
     }
 }

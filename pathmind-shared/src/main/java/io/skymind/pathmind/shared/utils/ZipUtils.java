@@ -13,11 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ZipUtils {
 
-    @FunctionalInterface
-    public interface ZipStreamEntryConsumeFunction<T> {
-        T apply(ZipInputStream zipInputStream, ZipEntry zipEntry) throws IOException;
-    }
-
     public static <T> T processZipEntryInFile(byte[] zipFile, Predicate<String> entryNameCriteria, ZipStreamEntryConsumeFunction<T> consumeEntry) {
         T result = null;
         try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(zipFile))) {
@@ -47,6 +42,11 @@ public class ZipUtils {
             }
             return modelJar;
         };
+    }
+
+    @FunctionalInterface
+    public interface ZipStreamEntryConsumeFunction<T> {
+        T apply(ZipInputStream zipInputStream, ZipEntry zipEntry) throws IOException;
     }
 
 }

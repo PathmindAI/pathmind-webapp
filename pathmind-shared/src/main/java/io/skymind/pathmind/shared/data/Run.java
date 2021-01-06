@@ -38,13 +38,13 @@ public class Run extends Data {
     private Project project;
 
     // TODO -> Convert to a JOOQ converter.
-    public void setRunTypeEnum(RunType runTypeEnum) {
-        this.runType = runTypeEnum.getValue();
+    public RunType getRunTypeEnum() {
+        return RunType.getEnumFromValue(runType);
     }
 
     // TODO -> Convert to a JOOQ converter.
-    public RunType getRunTypeEnum() {
-        return RunType.getEnumFromValue(runType);
+    public void setRunTypeEnum(RunType runTypeEnum) {
+        this.runType = runTypeEnum.getValue();
     }
 
     public RunStatus getStatusEnum() {

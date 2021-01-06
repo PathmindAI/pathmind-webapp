@@ -1,13 +1,5 @@
 package io.skymind.pathmind.shared.utils;
 
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.training.constant.RunConstants;
-import org.apache.commons.lang3.StringUtils;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,10 +11,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static io.skymind.pathmind.shared.constants.RunStatus.*;
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import org.apache.commons.lang3.StringUtils;
+
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
+import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
+import static io.skymind.pathmind.shared.constants.RunStatus.Running;
+import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 
 public class ExperimentUtils {
+
+    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
 
     private ExperimentUtils() {
     }
@@ -47,8 +51,6 @@ public class ExperimentUtils {
     public static String getExperimentNumber(Experiment experiment) {
         return experiment.getName();
     }
-
-    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
 
     public static boolean isAnyLogicEngineError(String rlErrorText) {
         return StringUtils.trimToEmpty(rlErrorText).startsWith(AL_ENGINE_ERROR_PREFIX);
@@ -169,7 +171,7 @@ public class ExperimentUtils {
     }
 
     public static void updatedRunsForPolicies(Experiment experiment, List<Run> runs) {
-        if(experiment.getPolicies() == null) {
+        if (experiment.getPolicies() == null) {
             return;
         }
         runs.forEach(run ->
@@ -230,7 +232,7 @@ public class ExperimentUtils {
                 .filter(run -> StringUtils.isNotBlank(run.getSuccessMessage()) || StringUtils.isNotBlank(run.getWarningMessage()))
                 .findAny()
                 .ifPresent(run -> {
-                    if(StringUtils.isNotBlank(run.getSuccessMessage())) {
+                    if (StringUtils.isNotBlank(run.getSuccessMessage())) {
                         experiment.setTrainingStoppedEarly(true);
                         experiment.setTrainingStoppedEarlyMessage(StringUtils.isNotBlank(run.getSuccessMessage()) ? firstLine(run.getSuccessMessage()) : firstLine(run.getWarningMessage()));
                     }
@@ -271,7 +273,7 @@ public class ExperimentUtils {
 
     public static void updateExperimentInternals(Experiment experiment) {
         updateBestPolicy(experiment);
-        if(experiment.getBestPolicy() != null) {
+        if (experiment.getBestPolicy() != null) {
             PolicyUtils.updateSimulationMetricsData(experiment.getBestPolicy());
             PolicyUtils.updateCompareMetricsChartData(experiment.getBestPolicy());
         }
@@ -282,7 +284,7 @@ public class ExperimentUtils {
         experiment.getRewardVariables().stream()
                 .filter(rewardVariable -> rewardVariable != null)
                 .filter(rewardVariable -> rewardVariable.getArrayIndex() < RewardVariable.DEFAULT_SELECTED_REWARD_VARIABLES)
-                .forEach(rewardVariable ->  experiment.addSelectedRewardVariable(rewardVariable));
+                .forEach(rewardVariable -> experiment.addSelectedRewardVariable(rewardVariable));
         Collections.sort(experiment.getSelectedRewardVariables(), Comparator.comparing(RewardVariable::getArrayIndex));
     }
 }

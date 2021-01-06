@@ -41,44 +41,37 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 @Slf4j
 public class ExperimentView extends DefaultExperimentView {
 
+    protected ExperimentNotesField experimentNotesField;
+    protected ExperimentNotesField comparisonNotesField;
+    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
+    protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
     // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
     // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
     // why we can't use synchronize on the method).
     private Object comparisonExperimentLock = new Object();
-
     private VerticalLayout compareExperimentVerticalLayout;
-
     private StoppedTrainingNotification stoppedTrainingNotification;
     private StoppedTrainingNotification comparisonStoppedTrainingNotification;
-
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
-    protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ObservationsPanel experimentObservationsPanel;
     private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
     private SimulationMetricsPanel experimentSimulationMetricsPanel;
-
     // Experiment Comparison Components
     private Boolean isComparisonMode = false;
     private ExperimentTitleBar comparisonTitleBar;
     private ExperimentChartsPanel comparisonChartsPanel;
-    protected ExperimentNotesField comparisonNotesField;
     private ObservationsPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
-
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
-
-    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
-    protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
-
     private Experiment comparisonExperiment;
 
     public ExperimentView(
@@ -95,14 +88,6 @@ public class ExperimentView extends DefaultExperimentView {
         addClassName("experiment-view");
     }
 
-    public void setComparisonExperiment(Experiment comparisonExperiment) {
-        this.comparisonExperiment = comparisonExperiment;
-        isComparisonMode = true;
-        addClassName("comparison-mode");
-        updateComparisonComponents();
-        showCompareExperimentComponents(isComparisonMode);
-    }
-
     private void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
@@ -111,6 +96,14 @@ public class ExperimentView extends DefaultExperimentView {
 
     public Experiment getComparisonExperiment() {
         return comparisonExperiment;
+    }
+
+    public void setComparisonExperiment(Experiment comparisonExperiment) {
+        this.comparisonExperiment = comparisonExperiment;
+        isComparisonMode = true;
+        addClassName("comparison-mode");
+        updateComparisonComponents();
+        showCompareExperimentComponents(isComparisonMode);
     }
 
     public void updateComparisonComponents() {
@@ -142,10 +135,10 @@ public class ExperimentView extends DefaultExperimentView {
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    stoppedTrainingNotification,
-                    experimentTitleBar,
-                    getMiddlePanel(),
-                    getBottomPanel()),
+                        stoppedTrainingNotification,
+                        experimentTitleBar,
+                        getMiddlePanel(),
+                        getBottomPanel()),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         experimentContent.addSplitterDragendListener(dragend -> {
@@ -154,11 +147,11 @@ public class ExperimentView extends DefaultExperimentView {
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            modelNeedToBeUpdatedLabel, experimentContent
+                modelNeedToBeUpdatedLabel, experimentContent
         );
         experimentContentWrapper.setWidthFull();
 
-        HorizontalLayout pageWrapper = isShowNavBar() ? 
+        HorizontalLayout pageWrapper = isShowNavBar() ?
                 WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContentWrapper)
                 : WrapperUtils.wrapSizeFullHorizontal(experimentContentWrapper);
         pageWrapper.addClassName("page-content");
@@ -172,20 +165,20 @@ public class ExperimentView extends DefaultExperimentView {
             getElement().executeJs("window.dispatchEvent(new Event('resize'))");
         });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                    comparisonObservationsPanel,
-                    60),
-            generateRewardFunctionGroup(comparisonCodeViewer),
-            comparisonChartsPanel,
-            comparisonNotesField);
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                        comparisonObservationsPanel,
+                        60),
+                generateRewardFunctionGroup(comparisonCodeViewer),
+                comparisonChartsPanel,
+                comparisonNotesField);
         comparisonComponents.addClassName("comparison-panel");
         comparisonComponents.setPadding(false);
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            comparisonStoppedTrainingNotification,
-            comparisonTitleBar,
-            comparisonComponents,
-            comparisonModeCloseButton);
+                comparisonStoppedTrainingNotification,
+                comparisonTitleBar,
+                comparisonComponents,
+                comparisonModeCloseButton);
         return comparisonPanel;
     }
 
@@ -253,7 +246,7 @@ public class ExperimentView extends DefaultExperimentView {
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
-        if(!experimentDAO.isDraftExperiment(experimentId)) {
+        if (!experimentDAO.isDraftExperiment(experimentId)) {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.

@@ -54,7 +54,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
         }
         return Optional.ofNullable(experiment);
@@ -62,7 +62,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
             updateExperimentInternalValues(experiment);
         }

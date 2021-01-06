@@ -1,10 +1,10 @@
 package io.skymind.pathmind.webapp.utils;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.function.SerializableConsumer;
-
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.function.SerializableConsumer;
 
 /**
  * Date time utils which have a dependency to Vaadin classes.

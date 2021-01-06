@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;

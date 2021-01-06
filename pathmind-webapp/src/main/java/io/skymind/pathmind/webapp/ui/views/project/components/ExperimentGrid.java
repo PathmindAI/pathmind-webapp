@@ -39,7 +39,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
-        Grid.Column<Experiment> createdColumn = addComponentColumn(experiment -> 
+        Grid.Column<Experiment> createdColumn = addComponentColumn(experiment ->
                 new DatetimeDisplay(experiment.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Experiment::getDateCreated))

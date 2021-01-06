@@ -1,11 +1,11 @@
 package io.skymind.pathmind.shared.data;
 
+import java.util.Objects;
+
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Objects;
 
 @Getter
 @Setter

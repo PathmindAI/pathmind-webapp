@@ -96,17 +96,17 @@ public class SecurityConfiguration {
         }
 
         @Bean
+        public static ErrorPageRegistrar securityErrorPageRegistrar() {
+            return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT_URL));
+        }
+
+        @Bean
         @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
         public CurrentUser currentUser(UserDAO userDAO) {
             final String username = SecurityUtils.getUsername();
             PathmindUser user =
                     username != null ? userDAO.findByEmailIgnoreCase(username) : null;
             return () -> user;
-        }
-
-        @Bean
-        public static ErrorPageRegistrar securityErrorPageRegistrar() {
-            return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT_URL));
         }
 
         /**

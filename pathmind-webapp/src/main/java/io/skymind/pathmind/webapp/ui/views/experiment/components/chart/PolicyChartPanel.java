@@ -23,13 +23,6 @@ public class PolicyChartPanel extends VerticalLayout {
         setSpacing(false);
     }
 
-    public void setExperiment(Experiment newExperiment) {
-        synchronized (experimentLock) {
-            this.experiment = newExperiment;
-            updateChart();
-        }
-    }
-
     public void updateChart() {
         chart.setPolicyChart(experiment);
         redrawChart();
@@ -45,6 +38,13 @@ public class PolicyChartPanel extends VerticalLayout {
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    public void setExperiment(Experiment newExperiment) {
+        synchronized (experimentLock) {
+            this.experiment = newExperiment;
+            updateChart();
+        }
     }
 
     public long getExperimentId() {

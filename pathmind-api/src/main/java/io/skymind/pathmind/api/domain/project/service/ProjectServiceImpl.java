@@ -19,16 +19,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 class ProjectServiceImpl implements ProjectService {
 
-    private final ProjectDAO projectDAO;
-
-    public List<ProjectVO> getProjects(Long userId) {
-        Objects.requireNonNull(userId, "userId is required");
-        log.debug("loading projects for user {}", userId);
-        Collection<Project> projects = CollectionUtils.emptyIfNull(projectDAO.getProjectsForUser(userId));
-        log.debug("loaded {} projects for user {}", projects.size(), userId);
-        return projects.stream().map(map).collect(Collectors.toList());
-    }
-
     private static final Function<Project, ProjectVO> map = project -> {
         ProjectVO projectVO = ProjectVO.builder()
                 .id(project.getId())
@@ -40,5 +30,14 @@ class ProjectServiceImpl implements ProjectService {
         log.debug("mapped {} to {}", project, projectVO);
         return projectVO;
     };
+    private final ProjectDAO projectDAO;
+
+    public List<ProjectVO> getProjects(Long userId) {
+        Objects.requireNonNull(userId, "userId is required");
+        log.debug("loading projects for user {}", userId);
+        Collection<Project> projects = CollectionUtils.emptyIfNull(projectDAO.getProjectsForUser(userId));
+        log.debug("loaded {} projects for user {}", projects.size(), userId);
+        return projects.stream().map(map).collect(Collectors.toList());
+    }
 
 }

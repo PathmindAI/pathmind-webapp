@@ -85,17 +85,17 @@ public class RewardVariablesRowField extends HorizontalLayout {
                 SimulationRewardVariableSelectedAction.selectRewardVariable(rewardVariable, this, experimentView));
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
     protected void setSelected(boolean selected) {
         isSelected = selected;
-        if(isSelected) {
+        if (isSelected) {
             rewardVariableNameSpan.getElement().setAttribute(CLICKED_ATTRIBUTE, true);
         } else {
             rewardVariableNameSpan.getElement().removeAttribute(CLICKED_ATTRIBUTE);
         }
-    }
-
-    public boolean isSelected() {
-        return isSelected;
     }
 
     private void initBinder(RewardVariable rv) {

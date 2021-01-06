@@ -10,7 +10,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
@@ -81,7 +80,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         HorizontalLayout titleBarWrapper = new HorizontalLayout(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                         experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
-                        trainingStatusDetailsPanel);
+                trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
         addClassName("experiment-header");
@@ -101,10 +100,10 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         downloadModelAlpLink = new DownloadModelAlpLink(modelService, experimentView.getSegmentIntegrator(), false);
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
-        if(isExportPolicyButtonOnly) {
-            return new Component[] {exportPolicyButton};
+        if (isExportPolicyButtonOnly) {
+            return new Component[]{exportPolicyButton};
         } else {
-            return new Component[] {stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
+            return new Component[]{stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
         }
     }
 
@@ -129,16 +128,16 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         shareButton.setVisible(!experiment.isSharedWithSupport());
     }
 
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
         downloadModelAlpLink.setExperiment(experiment);
         updateComponentEnablements();
-    }
-    
-    public Experiment getExperiment() {
-        return experiment;
     }
 
     @Override

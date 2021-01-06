@@ -27,31 +27,23 @@ import org.springframework.beans.factory.annotation.Value;
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
-    @Id("lastName")
-    private TextField lastName;
-
-    @Id("firstName")
-    private TextField firstName;
-
-    @Id("email")
-    private TextField email;
-
-    @Id("signIn")
-    private Button signIn;
-
-    @Id("newPassword")
-    private PasswordField newPassword;
-
-    @Id("confirmNewPassword")
-    private PasswordField confirmNewPassword;
-
-    @Id("newPassNotes")
-    private VerticalLayout passwordValidationNotes;
-
     private final UserService userService;
     private final EmailNotificationService emailNotificationService;
     private final SegmentIntegrator segmentIntegrator;
-
+    @Id("lastName")
+    private TextField lastName;
+    @Id("firstName")
+    private TextField firstName;
+    @Id("email")
+    private TextField email;
+    @Id("signIn")
+    private Button signIn;
+    @Id("newPassword")
+    private PasswordField newPassword;
+    @Id("confirmNewPassword")
+    private PasswordField confirmNewPassword;
+    @Id("newPassNotes")
+    private VerticalLayout passwordValidationNotes;
     private PathmindUser user;
     private Binder<PathmindUser> binder;
 

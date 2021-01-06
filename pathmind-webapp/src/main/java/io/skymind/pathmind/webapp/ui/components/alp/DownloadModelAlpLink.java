@@ -71,7 +71,7 @@ public class DownloadModelAlpLink extends Anchor {
         this.modelPackageName = experiment.getModel().getPackageName();
         this.projectName = experiment.getProject().getName();
 
-        if(isAlreadyRendered) {
+        if (isAlreadyRendered) {
             return;
         }
 
