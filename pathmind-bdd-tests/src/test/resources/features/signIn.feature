@@ -15,9 +15,7 @@ Feature: Sign In form tests
 
   Scenario Outline: Login with invalid credentials
     Given Open pathmind page
-    And Wait for sign-in page anti-flicker script
     When Login with credentials <email>, <password>
-    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
     Examples:
@@ -25,10 +23,9 @@ Feature: Sign In form tests
       | bob@skymind.io     | invalidPass  |
       | invalid@skymind.io | pw!skymind19 |
       | fake@invalid.io    | fakePass     |
-
+@debug
   Scenario: Check login page elements
     Given Open pathmind page
-    And Wait for sign-in page anti-flicker script
     When Click in 'Already have an account?' button
     Then Check login page elements
     # Then Check network errors

@@ -36,6 +36,9 @@ public class PathmindApiAuthenticationProvider implements AuthenticationProvider
 
         return Optional.ofNullable(userDAO.findByApiKey(apiKey))
                 .map(user -> {
+                    if (user.getEmailVerifiedAt() == null) {
+                        throw new PreAuthenticatedCredentialsNotFoundException("email was not verified " + user.getEmail());
+                    }
                     LocalDateTime keyExpirationDate = user.getApiKeyCreatedAt().plus(keyValidityDuration);
                     if (keyExpirationDate.isBefore(LocalDateTime.now())) {
                         throw new CredentialsExpiredException("API Key had expired on " + DateTimeFormatter.ISO_LOCAL_DATE.format(keyExpirationDate));

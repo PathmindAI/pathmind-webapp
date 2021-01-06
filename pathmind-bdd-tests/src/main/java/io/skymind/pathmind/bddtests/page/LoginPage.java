@@ -266,7 +266,7 @@ public class LoginPage extends PageObject {
     }
 
     public void waitForSignInPageAntiFlickerScript() {
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".logo")));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".navbar-logo")));
     }
 
     public void clickSignUpWhatWeOfferButton() {
