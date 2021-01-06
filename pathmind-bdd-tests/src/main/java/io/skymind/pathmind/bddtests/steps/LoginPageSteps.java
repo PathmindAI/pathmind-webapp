@@ -4,7 +4,10 @@ import java.util.List;
 
 import io.skymind.pathmind.bddtests.page.HomePage;
 import io.skymind.pathmind.bddtests.page.LoginPage;
+import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.util.EnvironmentVariables;
+import net.thucydides.core.util.SystemEnvironmentVariables;
 
 import static net.thucydides.core.webdriver.ThucydidesWebDriverSupport.getDriver;
 
@@ -13,6 +16,9 @@ public class LoginPageSteps {
     private LoginPage loginPage;
     private HomePage homePage;
 
+    private static final EnvironmentVariables VARIABLES = SystemEnvironmentVariables.createEnvironmentVariables();
+    private static final String PATHMIND_URL = EnvironmentSpecificConfiguration.from(VARIABLES).getProperty("base.url");
+
     @Step
     public void openPathmindUrl() {
         loginPage.open();
@@ -20,6 +26,9 @@ public class LoginPageSteps {
 
     @Step
     public void loginWithCredential(String email, String password) {
+        if (getDriver().getCurrentUrl().contains("sign-up")) {
+            loginPage.openPage(PATHMIND_URL + "sign-in");
+        }
         if (getDriver().getCurrentUrl().contains("sign-in")) {
             loginPage.inputEmail(email);
             loginPage.inputPassword(password);

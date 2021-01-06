@@ -49,7 +49,7 @@ Feature: Wizard page
     Then Wait for text "Checking your model" to disappear
     When Click in 'this article' button
     When Open tab 1
-    Then Check page url is https://help.pathmind.com/en/articles/4408884-how-to-update-your-model-to-the-latest-version
+    Then Check page url is https://help.pathmind.com/en/articles/3354371-1-install-pathmind-helper
 
   Scenario: Check wizard Reward Variables not required
     Given Login to the pathmind
@@ -67,22 +67,22 @@ Feature: Wizard page
     Then Check that new experiment AutotestProject page is opened
     Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
 
-    @goals
-    Scenario: Check goals on the experiment view
-     Given Login to the pathmind
-     When Create new CoffeeShop project with draft model
-     When Click wizard upload ALP next btn
-     When Click wizard model details next btn
-     When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize'
-     When Input reward variable 'successfulCustomers' goal 'maximize'
-     When Input reward variable 'balkedCustomers' goal 'maximize'
-     When Input reward variable 'avgServiceTime' goal 'minimize'
-     When Click wizard reward variables next btn
-     Then Check that new experiment AutotestProject page is opened
-     Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'minimize'
-     Then Check that new experiment reward variable 'successfulCustomers' goal is 'maximize'
-     Then Check that new experiment reward variable 'balkedCustomers' goal is 'maximize'
-     Then Check that new experiment reward variable 'avgServiceTime' goal is 'minimize'
+  @goals
+  Scenario: Check goals on the experiment view
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize'
+    When Input reward variable 'successfulCustomers' goal 'maximize'
+    When Input reward variable 'balkedCustomers' goal 'maximize'
+    When Input reward variable 'avgServiceTime' goal 'minimize'
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'minimize'
+    Then Check that new experiment reward variable 'successfulCustomers' goal is 'maximize'
+    Then Check that new experiment reward variable 'balkedCustomers' goal is 'maximize'
+    Then Check that new experiment reward variable 'avgServiceTime' goal is 'minimize'
 
   Scenario: Check upload model AnyLogic link
     Given Login to the pathmind

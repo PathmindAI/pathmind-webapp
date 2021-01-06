@@ -19,6 +19,7 @@ env:
   NAME: dev-pathmind.k8s.local
   KOPS_STATE_STORE: s3://dev-pathmind-kops-state/k8s.dev-pathmind.k8s.local
   RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:test
+  S3_BUCKET_STATIC: test-training-static-files.pathmind.com
 
   
 

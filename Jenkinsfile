@@ -102,6 +102,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -118,6 +119,9 @@ pipeline {
                     }
                     if (env.BRANCH_NAME == 'test') {
                         DOCKER_TAG = "test"
+                    }
+                    if (env.BRANCH_NAME == 'staging') {
+                        DOCKER_TAG = "staging"
                     }
                 }
                 echo "Check out code"
@@ -146,6 +150,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -174,6 +179,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -201,6 +207,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                 }
             }
             parallel {

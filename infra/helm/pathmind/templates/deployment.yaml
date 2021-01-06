@@ -90,6 +90,8 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
+            - name: S3_BUCKET_STATIC
+              value: "{{ .Values.env.S3_BUCKET_STATIC }}"
             - name: JOB_MOCK_CYCLE
               value: "{{ .Values.env.JOB_MOCK_CYCLE }}"
             - name: JOB_MOCK_MAX_MIN
