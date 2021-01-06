@@ -90,7 +90,7 @@ class CodeViewer extends PolymerElement {
                     width: 100%;
                     max-height: calc(1.8em * 20);
                     height: 100%;
-                    white-space: pre;
+                    white-space: pre-wrap;
                     font-family: var(--code-font-family);
                     line-height: 1.8;
                     padding: var(--lumo-space-xs) var(--lumo-space-s);

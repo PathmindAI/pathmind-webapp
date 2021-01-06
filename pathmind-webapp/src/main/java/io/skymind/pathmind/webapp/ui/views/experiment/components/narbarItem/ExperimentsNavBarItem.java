@@ -138,6 +138,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     public void updateVariableComponentValues() {
+        getModel().setIsDraft(experiment.isDraft());
         getModel().setStatus(getIconStatus(experiment.getTrainingStatusEnum()));
         getModel().setStatusText(experiment.getTrainingStatusEnum().toString());
         // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
