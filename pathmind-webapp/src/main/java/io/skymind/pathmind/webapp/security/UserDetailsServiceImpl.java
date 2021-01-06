@@ -59,7 +59,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             if (numRuns >= allowedRunsNoVerified) {
                 throw new EmailIsNotVerifiedException(URLEncoder.encode(user.getEmail(), StandardCharsets.UTF_8));
             }
-            log.warn("Unverified user {} with email {} has no runs allowed", user.getId(), user.getEmail());
+            log.warn("Unverified user {} with email {} has {} runs and {} allowed", user.getId(), user.getEmail(), numRuns, allowedRunsNoVerified);
         }
 
         Set<SimpleGrantedAuthority> permissions = user.getAccountType().getGrantedAuthorities();
