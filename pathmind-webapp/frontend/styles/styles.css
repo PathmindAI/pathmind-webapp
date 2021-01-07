@@ -494,6 +494,10 @@ change-password-view-content .inner-content {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
 }
 
+.projects-view .demoMessage {
+    margin: 0;
+}
+
 .create-project-button {
     width: 275px;
 }

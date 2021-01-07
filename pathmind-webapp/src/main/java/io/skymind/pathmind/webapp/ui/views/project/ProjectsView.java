@@ -11,6 +11,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -23,9 +24,7 @@ import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.project.demo.DemoProjectService;
-import io.skymind.pathmind.services.project.demo.ExperimentManifest;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -40,7 +39,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.demo.DemoList;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,23 +70,6 @@ public class ProjectsView extends PathMindDefaultView {
         super();
     }
 
-
-    public static class X extends Button {
-
-        public X(DemoProjectService demoProjectService, ExperimentManifest manifest) {
-            super(manifest.getName(), new Icon(VaadinIcon.HEART));
-            addClickListener(evt -> {
-                try {
-                    Experiment experiment = demoProjectService.createExperiment(manifest, SecurityUtils.getUserId());
-                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-            addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        }
-    }
-
     protected Component getMainContent() {
         setupProjectGrid();
         setupTabbedPanel();
@@ -99,11 +81,13 @@ public class ProjectsView extends PathMindDefaultView {
         HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
         headerWrapper.addClassName("page-content-header");
 
-        ExperimentManifest supplyChainManifest = experimentManifestRepository.getAll().get(0);
+        Paragraph demoMessage = new Paragraph("Choose a demo to start exploring Pathmind.");
+        demoMessage.addClassName("demoMessage");
 
         gridWrapper = new ViewSection(
                 headerWrapper,
-                new X(demoProjectService, supplyChainManifest),
+                demoMessage,
+                new DemoList(demoProjectService, experimentManifestRepository),
                 archivesTabPanel,
                 projectGrid);
         gridWrapper.addClassName("page-content");
