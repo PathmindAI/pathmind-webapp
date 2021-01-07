@@ -29,6 +29,7 @@ Feature: E2E
     Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
+    Then Check that unexpected error alert is Not shown
     Then Click simulation metrics value icon
     When Open tab 1
     Then Check page title tag text is Simulation Metrics | Pathmind Knowledge Base
@@ -71,6 +72,7 @@ Feature: E2E
     When Click experiment breadcrumb btn
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
+    Then Check that unexpected error alert is Not shown
 
     Examples:
       | project name    | model                                 | reward function file                                | alp file                              | variable    | limit |
