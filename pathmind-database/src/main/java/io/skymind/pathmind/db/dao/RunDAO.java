@@ -39,6 +39,10 @@ public class RunDAO {
         this.ctx = ctx;
     }
 
+    public Long numberOfRunsByUser(long userId) {
+        return RunRepository.numberOfRunsByUser(ctx, userId);
+    }
+
     public Run getRun(long runId) {
         return RunRepository.getRun(ctx, runId);
     }

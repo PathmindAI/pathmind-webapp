@@ -208,4 +208,14 @@ class RunRepository {
                 .where(RUN.ID.eq(runId))
                 .fetchOne(0, long.class);
     }
+
+    public static long numberOfRunsByUser(DSLContext ctx, long userId) {
+        return ctx.select(count().as("num_runs"))
+                .from(RUN)
+                .innerJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                .innerJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .innerJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .fetchOne(0, long.class);
+    }
 }

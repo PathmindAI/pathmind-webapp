@@ -20,8 +20,17 @@ import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
+import io.skymind.pathmind.webapp.bus.events.view.ExperimentSavedViewBusEvent;
+import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -56,20 +65,43 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
     private Button startRunButton;
     private Anchor downloadModelAlpLink;
     private boolean isNeedsSaving = false;
+
+    private final int allowedRunsNoVerified;
+
+    @Autowired
+    private ModelService modelService;
+    @Autowired
+    private ExperimentDAO experimentDAO;
+    @Autowired
+    private RunDAO runDAO;
+    @Autowired
+    private PolicyDAO policyDAO;
+    @Autowired
+    private RewardVariableDAO rewardVariableDAO;
+    @Autowired
+    private ObservationDAO observationDAO;
+    @Autowired
+    private TrainingService trainingService;
+    @Autowired
+    private SegmentIntegrator segmentIntegrator;
     @Autowired
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Autowired
-    private ObservationDAO observationDAO;
+    private UserService userService;
+
+    private Breadcrumbs pageBreadcrumbs;
 
     public NewExperimentView(
+            @Value("${pm.allowed_run_no_verified}") int allowedRunsNoVerified,
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
         setUserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("new-experiment-view");
+        this.allowedRunsNoVerified = allowedRunsNoVerified;
     }
 
     @Override
@@ -160,10 +192,12 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
     // REFACTOR -> The logic should really be in ExperimentUtils because it's business logic rather than GUI logic but for now we'll just leave it here.
     private boolean canStartTraining() {
+        PathmindUser currentUser = userService.getCurrentUser();
         return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.isValidForTraining()
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
-                && !experiment.isArchived();
+                && !experiment.isArchived()
+                && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
     }
 
     /**
