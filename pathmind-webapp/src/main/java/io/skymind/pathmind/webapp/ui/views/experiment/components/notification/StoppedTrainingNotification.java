@@ -23,13 +23,15 @@ public class StoppedTrainingNotification extends Span {
     public void showTheReasonWhyTheTrainingStopped(String text, String labelClass, boolean showEarlyStoppingLink) {
         removeClassNames(NOTIFICATION_CSS_CLASSNAMES);
         addClassName(labelClass);
-        getElement().setProperty("innerHTML", text);
         if (showEarlyStoppingLink) {
+            getElement().setText(text);
             add(". Click ");
             Anchor earlyStopping = new Anchor(earlyStoppingUrl, "here");
             earlyStopping.setTarget("_blank");
             add(earlyStopping);
             add(" for more information.");
+        } else {
+            getElement().executeJs("this.innerHTML = $0", text);
         }
         setVisible(true);
     }
