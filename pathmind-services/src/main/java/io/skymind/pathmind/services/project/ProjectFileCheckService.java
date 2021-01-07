@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+@Deprecated
 @Slf4j
 public class ProjectFileCheckService {
 
@@ -43,22 +44,43 @@ public class ProjectFileCheckService {
                     FileUtils.writeByteArrayToFile(tempFile, model.getFile());
                     AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
                     //File check result.
-                    final FileCheckResult result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-
+                    final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        HyperparametersDTO analysisResult = client.analyze(tempFile, "project_" + model.getProjectId());
+                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                        String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
+                        String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
+                        String expTypeName = modelInfo.getExperimentType().toString();
+                        String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
+                        String reqId = "project_" + model.getProjectId();
+
+                        HyperparametersDTO analysisResult =
+                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
                             statusUpdater.updateError(optionalError.get());
                         } else {
-                            setHyperparams(result, analysisResult);
+                            Hyperparams hyperparams = buildHyperparams(analysisResult);
+                            result.setParams(hyperparams);
+                            model.setPathmindHelper(pmHelperName);
+                            model.setMainAgent(mainAgentName);
+                            model.setExperimentClass(expClassName);
+                            model.setExperimentType(expTypeName);
                             statusUpdater.fileSuccessfullyVerified(result);
                         }
                     } else {
-                        statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        if (!result.isHelperPresent()) {
+                            statusUpdater.updateError("You need to add PathmindHelper in your model.");
+                        } else if (!result.isHelperUnique()) {
+                            statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
+                        } else if (!result.isValidRLPlatform()) {
+                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
+                        } else {
+                            statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                        }
                     }
                 } finally {
-                    tempFile.delete();
+                    FileUtils.deleteQuietly(tempFile);
                 }
 
             } catch (Exception e) {
@@ -95,16 +117,17 @@ public class ProjectFileCheckService {
         return Optional.empty();
     }
 
-    private void setHyperparams(FileCheckResult result, HyperparametersDTO params) {
-    	AnylogicFileCheckResult fileCheckResult = AnylogicFileCheckResult.class.cast(result);
-    	fileCheckResult.setNumObservation(Integer.parseInt(params.getObservations()));
-    	fileCheckResult.setRewardVariableFunction(params.getRewardFunction());
-    	fileCheckResult.setRewardVariableNames(params.getRewardVariableNames());
-    	fileCheckResult.setRewardVariableTypes(params.getRewardVariableTypes());
-    	fileCheckResult.setObservationNames(params.getObservationNames());
-    	fileCheckResult.setObservationTypes(params.getObservationTypes());
-    	fileCheckResult.setModelType(params.getMode());
-    	fileCheckResult.setNumberOfAgents(Integer.parseInt(params.getAgents()));
+    private Hyperparams buildHyperparams(HyperparametersDTO params) {
+    	return Hyperparams.builder()
+                .numObservation(Integer.parseInt(params.getObservations()))
+                .rewardVariableFunction(params.getRewardFunction())
+                .rewardVariableNames(params.getRewardVariableNames())
+                .rewardVariableTypes(params.getRewardVariableTypes())
+                .observationNames(params.getObservationNames())
+                .observationTypes(params.getObservationTypes())
+                .modelType(params.getMode())
+                .numberOfAgents(Integer.parseInt(params.getAgents())).build();
+
     }
 
     public String getErrorMessage(InvalidModelType invalidModelType) {

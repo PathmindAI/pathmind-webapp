@@ -1,6 +1,6 @@
 package io.skymind.pathmind.services.project;
 
-public interface StatusUpdater {
+public interface StatusUpdater<FileCheckResult> {
     /**
      * Update state of progress bar
      *

@@ -23,6 +23,11 @@ public class ModelUploadSteps {
     }
 
     @Step
+    public void checkErrorMessageStartsWithInModelCheckPanel(String errorMessage) {
+        modelUploadPage.checkErrorMessageStartsWithInModelCheckPanel(errorMessage);
+    }
+
+    @Step
     public void clickAlpUploadStepNextBtn() {
         modelUploadPage.clickAlpUploadStepNextBtn();
     }
@@ -45,5 +50,15 @@ public class ModelUploadSteps {
     @Step
     public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
         modelUploadPage.checkWizardWarningLabelIsShown(warningLabel, isShown);
+    }
+
+    @Step
+    public void wizardModelUploadCheckFolderUploadPage() {
+        modelUploadPage.wizardModelUploadCheckFolderUploadPage();
+    }
+
+    @Step
+    public void wizardModelUploadCheckArchiveUploadPage() {
+        modelUploadPage.wizardModelUploadCheckArchiveUploadPage();
     }
 }

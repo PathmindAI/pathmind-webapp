@@ -6,6 +6,7 @@ import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -40,6 +41,8 @@ public class HomePage extends PageObject {
     private WebElement accountBtn;
     @FindBy(css = ".search-box_text-field")
     private WebElement searchBoxShadow;
+    @FindBy(css = ".navbar-logo")
+    private WebElement navBarLogo;
 
     public void checkNavAccLinkVisible(String name) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@id='nav-main-links']//a[2]")).getText(), is("Projects"));
@@ -47,7 +50,8 @@ public class HomePage extends PageObject {
 
     public void openProjectsPage() {
         projectsBtn.click();
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
+        waitFor(ExpectedConditions.titleIs("Pathmind | Projects"));
+        utils.waitForLoadingBar();
     }
 
     public void logoutFromPathmind() {
@@ -100,15 +104,16 @@ public class HomePage extends PageObject {
         accountBtn.click();
     }
 
-    public void clickGettingStartedGuideButton() {
-        WebElement element = getDriver().findElement(By.xpath("//empty-dashboard-placeholder"));
-        element.findElement(By.cssSelector("i a")).click();
-    }
-
     public void checkThatProjectsButtonHighlightIs(Boolean status) {
-        if (status){
+        Actions actions = new Actions(getDriver());
+        if (status) {
+            utils.waitForLoadingBar();
+            actions.moveToElement(navBarLogo).build().perform();
+            waitABit(3000);
             assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(""));
-        }else {
+        } else {
+            actions.moveToElement(navBarLogo).build().perform();
+            waitABit(3000);
             assertThat(getDriver().findElement(By.xpath("//a[text()='Projects']")).getAttribute("highlight"), is(nullValue()));
         }
     }
@@ -137,7 +142,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkNotesSearchFieldIs(String text) {
-        assertThat(searchBoxShadow.getText(),is(text));
+        assertThat(searchBoxShadow.getText(), is(text));
     }
 
     public void checkSearchResultPageContainsProjectName(String name) {
@@ -145,11 +150,11 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageContainsModelName(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper' and contains(text(), 'Model #')]//span[@class='highlight-label' and contains(text(),'"+name+"')]")).getText(), is(name));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper' and contains(text(), 'Model #')]//span[@class='highlight-label' and contains(text(),'" + name + "')]")).getText(), is(name));
     }
 
     public void clickAutotestProjectFromSearchPage(String name) {
-        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper']//span[@class='highlight-label' and contains(text(), '"+name+"')]")).click();
+        getDriver().findElement(By.xpath("//*[@class='highlighted-text-wrapper']//span[@class='highlight-label' and contains(text(), '" + name + "')]")).click();
     }
 
     public void clickToTheUniqueNoteOnTheSearchResultPage(String text) {
@@ -162,7 +167,7 @@ public class HomePage extends PageObject {
 
     public void checkSearchResultsForValueIs(String value) {
         waitABit(3000);
-        String[] text = getDriver().findElement(By.xpath("//*[@class='section-title-label truncated-label']")).getText().split(": ",2);
+        String[] text = getDriver().findElement(By.xpath("//*[@class='section-title-label truncated-label']")).getText().split(": ", 2);
         System.out.println(Arrays.toString(text));
         assertThat(text[1], is(value));
     }
@@ -174,7 +179,7 @@ public class HomePage extends PageObject {
 
     public void chooseSearchOption(String option) {
         getDriver().findElement(By.cssSelector(".search-box_select")).click();
-        getDriver().findElement(By.xpath("//vaadin-item[text()='"+option+"' and @role='option']")).click();
+        getDriver().findElement(By.xpath("//vaadin-item[text()='" + option + "' and @role='option']")).click();
     }
 
     public void checkSearchResultProjectIs(String value) {

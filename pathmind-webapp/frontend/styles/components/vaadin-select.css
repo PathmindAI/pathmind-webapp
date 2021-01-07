@@ -11,3 +11,7 @@
 :host(.search-box_select) [part="input-field"] {
     background: transparent;
 }
+
+:host([theme~="goals"]) {
+    width: 100%;
+}

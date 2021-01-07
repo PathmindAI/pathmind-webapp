@@ -121,7 +121,7 @@ class AccountViewContent extends PolymerElement {
                                         <iron-icon icon="vaadin:copy-o"></iron-icon>Copy
                                     </span>
                                     <span>
-                                        <iron-icon icon="vaadin:check"></iron-icon>Done
+                                        <iron-icon icon="vaadin:check"></iron-icon>Copied
                                     </span>
                                 </vaadin-button>
                             </vaadin-vertical-layout>

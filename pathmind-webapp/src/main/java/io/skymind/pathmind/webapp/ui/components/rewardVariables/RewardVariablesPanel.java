@@ -1,12 +1,9 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -25,21 +22,17 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private Button nextStepButton;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
-    public RewardVariablesPanel(Supplier<Optional<UI>> getUISupplier) {
-        this.getUISupplier = getUISupplier;
+    public RewardVariablesPanel() {
         setupForm();
         nextStepButton = UploadModelView.createNextStepButton();
 
         HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel("Reward Variable Names", NO_TOP_MARGIN_LABEL));
+                LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL));
         rewardVariablesNameLine.getStyle().set("align-items", "center");
 
         add(rewardVariablesNameLine,
                 GuiUtils.getFullWidthHr(),
-                new Paragraph("You have created a function to gather reward variables in your simulation. Here is the list of reward variables we extracted from your simulation."),
-                // new Paragraph("The reward variables will be used as simulation metrics to track experiment results. You can add a goal for each metric to define what success will look like for this model."),
+                new Paragraph("Set the goals for the training by choosing which metrics you want to minimize or maximize."),
                 formPanel,
                 WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton));
 
@@ -54,7 +47,6 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     private void setupForm() {
         rewardVariablesTable = new RewardVariablesTable(
-                getUISupplier,
                 () -> nextStepButton.setEnabled(canSaveChanges()));
         formPanel.setPadding(false);
         formPanel.add(rewardVariablesTable);
@@ -62,7 +54,7 @@ public class RewardVariablesPanel extends VerticalLayout {
 
     public void setupRewardVariables(List<RewardVariable> rewardVariables) {
         rewardVariablesTable.setRewardVariables(rewardVariables);
-        // rewardVariablesTable.makeEditable();
+        rewardVariablesTable.makeEditable();
     }
 
     public boolean canSaveChanges() {

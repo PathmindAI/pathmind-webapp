@@ -288,6 +288,11 @@ public class ExperimentUtils {
                         }));
     }
 
+    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
+    public static boolean isAnyLogicEngineError(String rlErrorText) {
+        return StringUtils.trimToEmpty(rlErrorText).startsWith(AL_ENGINE_ERROR_PREFIX);
+    }
+
     public static Optional<EarlyStopReason> getEarlyStopReason(Experiment experiment) {
         return experiment.getRuns().stream()
                 .filter(r -> StringUtils.isNotBlank(r.getSuccessMessage()) || StringUtils.isNotBlank(r.getWarningMessage()))
