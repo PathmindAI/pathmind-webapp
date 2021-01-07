@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -35,7 +37,11 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rvar -> rvar != null).findFirst().get();
+        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables)
+                .filter(rvar -> rvar != null)
+                .map(Optional::ofNullable).findFirst()
+                .flatMap(Function.identity())
+                .orElse(null);
         for (RewardVariable rv: rewardVariables) {
             if (rv != null) {
                 String seriesColor = colors.get(rv.getArrayIndex() % 10);
