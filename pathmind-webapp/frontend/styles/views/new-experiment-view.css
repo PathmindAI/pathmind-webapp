@@ -16,6 +16,15 @@
     height: 6.3rem;
 }
 
+.new-experiment-view .warning-label {
+    line-height: 1;
+    background: rgba(254, 193, 65, 0.7);
+    padding: var(--lumo-space-xs);
+    border: 1px solid var(--pm-gold-color);
+    border-radius: var(--lumo-border-radius);
+    margin-bottom: var(--lumo-space-m);
+}
+
 .new-experiment-view .section-title-label {
     line-height: 1;
     margin-bottom: var(--lumo-space-xs);
