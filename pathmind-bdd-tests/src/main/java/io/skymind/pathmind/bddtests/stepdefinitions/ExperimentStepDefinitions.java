@@ -219,4 +219,9 @@ public class ExperimentStepDefinitions {
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         experimentPageSteps.checkSideBarExperimentDateIs(experiment, date);
     }
+
+    @Then("^Click side nav '(.*)' button from navbarItemMenu for '(.*)'$")
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        experimentPageSteps.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
+    }
 }
