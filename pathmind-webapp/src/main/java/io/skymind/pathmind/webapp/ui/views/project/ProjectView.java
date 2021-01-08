@@ -95,7 +95,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private List<Observation> modelObservations = new ArrayList<>();
-    private String pageTitle = "Pathmind | ";
+    private String pageTitle;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
@@ -293,7 +293,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
         models = modelDAO.getModelsForProject(projectId);
         project.setModels(models);
-        pageTitle += project.getName();
+        pageTitle = "Pathmind | " + project.getName();
         if (models.size() > 0) {
             if (modelId == null) {
                 if (models.size() > 1) {

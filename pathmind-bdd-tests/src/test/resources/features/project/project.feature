@@ -1,13 +1,23 @@
 @projectPage
 Feature: Project page
 
-  Scenario: Check breadcrumb projects btn
+  Scenario: Check projectS breadcrumb btn
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
     When Click projects breadcrumb btn
     Then Check that projects page opened
+
+  Scenario: Check project breadcrumb btn
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click project/ breadcrumb btn
+    Then Check that project page title is 'Pathmind | AutotestProject'
+    When Click project/ breadcrumb btn
+    Then Check that project page title is 'Pathmind | AutotestProject'
 
   Scenario: Add second model to the exist project
     Given Login to the pathmind

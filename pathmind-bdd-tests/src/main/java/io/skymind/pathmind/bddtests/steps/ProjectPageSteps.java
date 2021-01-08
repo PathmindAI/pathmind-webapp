@@ -77,4 +77,9 @@ public class ProjectPageSteps {
     public void checkProjectTitleLabelTagIsArchived(String tag) {
         projectPage.checkProjectTitleLabelTagIsArchived(tag);
     }
+
+    @Step
+    public void checkThatProjectPageTitleIs(String title) {
+        projectPage.checkThatProjectPageTitleIs(title);
+    }
 }

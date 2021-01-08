@@ -2,6 +2,8 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -28,8 +30,12 @@ public class CompareMetricsChart extends DataChart {
 
     private JsonObject createSeries() {
         JsonObject series = Json.createObject();
-        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables).filter(rvar -> rvar != null).findFirst().get();
-        for (RewardVariable rv : rewardVariables) {
+        RewardVariable firstNonNullVariable = Arrays.stream(rewardVariables)
+                .filter(rvar -> rvar != null)
+                .map(Optional::ofNullable).findFirst()
+                .flatMap(Function.identity())
+                .orElse(null);
+        for (RewardVariable rv: rewardVariables) {
             if (rv != null) {
                 String seriesColor = colors.get(rv.getArrayIndex() % 10);
                 Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rv);
