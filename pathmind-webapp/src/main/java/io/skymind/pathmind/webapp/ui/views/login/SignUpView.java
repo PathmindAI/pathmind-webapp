@@ -154,7 +154,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
         Map<String, List<String>> parametersMap = queryParameters.getParameters();
         if (parametersMap != null) {
             List<String> planParamList = parametersMap.get("plan");
-            if (planParamList != null) {
+            if (planParamList != null && planParamList.size() > 0) {
                 segmentIntegrator.marketingSiteLead(planParamList.get(0));
             }
         }
