@@ -86,6 +86,7 @@ public class UpdaterListener {
                         buf.get(arr);
 
                         UpdateEvent event = objectMapper.readValue(message.getBody(), UpdateEvent.class);
+                        log.info("kepricondebug : UpdaterListener : " + event.getId() + ", " + event.getType());
 
                         try (ByteArrayInputStream bis = new ByteArrayInputStream(arr);
                              ObjectInputStream in = new ObjectInputStream(bis)) {

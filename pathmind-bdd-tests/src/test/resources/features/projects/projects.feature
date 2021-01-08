@@ -13,10 +13,6 @@ Feature: Projects page
     When Input name of the new project AutotestProject and click Create project button
     When Click projects breadcrumb btn
     Then Check that project exist in project list AutotestProject
-    Then Check projects page project 'AutotestProject' created is 'just now'
-    When Wait a bit 60000 ms
-    When Refresh page
-    Then Check projects page project 'AutotestProject' created is '1 minute ago'
 
   Scenario: Create new project and put it to archived
     Given Login to the pathmind

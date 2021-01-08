@@ -42,7 +42,6 @@ Feature: User accounts tests
     When In confirmation dialog click in 'OK' button
     When Open pathmind page
     Then Login with new user email and Abcd1234
-    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
   @tempEmail
@@ -64,7 +63,6 @@ Feature: User accounts tests
     When Get email and verify user email
     When Open pathmind page
     When Login with old user email and password Abcd1234
-    And Wait for sign-in page anti-flicker script
     Then Check that login form warning message is shown
 
   @tempEmail
