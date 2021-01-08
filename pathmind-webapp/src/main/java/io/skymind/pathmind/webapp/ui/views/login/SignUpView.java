@@ -12,6 +12,11 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Location;
+import com.vaadin.flow.router.OptionalParameter;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
@@ -30,13 +35,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
-public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
+public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView, HasUrlParameter<String> {
     @Id("lastName")
     private TextField lastName;
 
@@ -136,6 +144,20 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
 
     private void processValidationStatusChange(boolean hasValidationErrors) {
         getModel().setIsEmailUsed(hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null);
+    }
+
+    @Override
+    public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+        Location location = event.getLocation();
+        QueryParameters queryParameters = location.getQueryParameters();
+
+        Map<String, List<String>> parametersMap = queryParameters.getParameters();
+        if (parametersMap != null) {
+            List<String> planParamList = parametersMap.get("plan");
+            if (planParamList != null) {
+                segmentIntegrator.marketingSiteLead(planParamList.get(0));
+            }
+        }
     }
 
     public interface Model extends TemplateModel {
