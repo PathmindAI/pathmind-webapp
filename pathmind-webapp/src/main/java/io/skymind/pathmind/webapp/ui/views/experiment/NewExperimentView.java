@@ -305,7 +305,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         observationDAO.saveExperimentObservations(experiment.getId(), observationsPanel.getSelectedObservations());
         segmentIntegrator.draftSaved();
         disableSaveDraft();
-        NotificationUtils.showSuccess("Draft successfully saved");
+        // #2564 Hiding the success notification for now to prevent it from showing when user starts a training
+        // NotificationUtils.showSuccess("Draft successfully saved");
         isNeedsSaving = false;
         afterClickedCallback.execute();
     }
