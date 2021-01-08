@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Policy extends Data {
+public class Policy extends Data implements DeepCloneableInterface<Policy> {
     private static final long serialVersionUID = -2089053095112497536L;
     // GUI helper attributes
     Map<Integer, List<Double>> metricsLinesData;
@@ -53,5 +54,27 @@ public class Policy extends Data {
 
     public void setHasFile(boolean hasFile) {
         this.hasFile = hasFile;
+    }
+
+    @Override
+    public Policy shallowClone() {
+        return super.shallowClone(Policy.builder()
+                .runId(runId)
+                .externalId(externalId)
+                .startedAt(startedAt)
+                .stoppedAt(stoppedAt)
+                .scores(CloneUtils.shallowCloneList(scores))
+                .hasFile(hasFile)
+                .checkPointFileKey(checkPointFileKey)
+                .project(CloneUtils.shallowClone(project))
+                .model(CloneUtils.shallowClone(model))
+                .experiment(CloneUtils.shallowClone(experiment))
+                .run(CloneUtils.shallowClone(run))
+                .metrics(CloneUtils.shallowCloneList(metrics))
+                .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
+                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
+                .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
+                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
+                .build());
     }
 }

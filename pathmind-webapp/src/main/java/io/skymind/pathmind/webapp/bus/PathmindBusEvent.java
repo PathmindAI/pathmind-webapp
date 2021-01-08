@@ -4,6 +4,8 @@ import com.vaadin.flow.component.UI;
 
 public interface PathmindBusEvent {
 
+    PathmindBusEvent cloneForEventBus();
+
     BusEventType getEventType();
 
     default UI getSourceUI() {

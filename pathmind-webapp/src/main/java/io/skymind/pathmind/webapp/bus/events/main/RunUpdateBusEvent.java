@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.bus.events.main;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
@@ -67,5 +68,12 @@ public class RunUpdateBusEvent implements PathmindBusEvent {
 
     public long getModelId() {
         return runs.get(0).getModel().getId();
+    }
+
+    @Override
+    public RunUpdateBusEvent cloneForEventBus() {
+        return new RunUpdateBusEvent(runs.stream()
+                .map(run -> run.deepClone())
+                .collect(Collectors.toList()));
     }
 }

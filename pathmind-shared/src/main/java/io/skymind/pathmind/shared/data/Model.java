@@ -1,6 +1,7 @@
 package io.skymind.pathmind.shared.data;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Model extends ArchivableData {
+public class Model extends ArchivableData implements DeepCloneableInterface<Model> {
 
     public static final int DEFAULT_NUMBER_OF_OBSERVATIONS = 1;
     public static final String DEFAULT_INITIAL_MODEL_NAME = "Initial Model Revision";
@@ -36,4 +37,28 @@ public class Model extends ArchivableData {
     private String mainAgent;
     private String experimentClass;
     private String experimentType;
+
+    @Override
+    public Model shallowClone() {
+        return super.shallowClone(Model.builder()
+                .dateCreated(dateCreated)
+                .lastActivityDate(lastActivityDate)
+                .numberOfObservations(numberOfObservations)
+                .file(file == null ? null : Arrays.copyOf(file, file.length))
+                .alpFile(alpFile == null ? null : Arrays.copyOf(alpFile, alpFile.length))
+                .projectId(projectId)
+                .userNotes(userNotes)
+                .draft(draft)
+                .hasGoals(hasGoals)
+                .rewardVariablesCount(rewardVariablesCount)
+                .packageName(packageName)
+                .invalidModel(invalidModel)
+                .modelType(modelType)
+                .numberOfAgents(numberOfAgents)
+                .pathmindHelper(pathmindHelper)
+                .mainAgent(mainAgent)
+                .experimentClass(experimentClass)
+                .experimentType(experimentType)
+                .build());
+    }
 }

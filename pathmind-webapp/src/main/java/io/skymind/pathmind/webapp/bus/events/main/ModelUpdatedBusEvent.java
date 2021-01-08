@@ -8,6 +8,7 @@ public class ModelUpdatedBusEvent implements PathmindBusEvent {
 
     private Model model;
     private ModelUpdateType modelUpdateType;
+
     public ModelUpdatedBusEvent(Model model) {
         this(model, ModelUpdateType.ModelDataUpdate);
     }
@@ -41,5 +42,10 @@ public class ModelUpdatedBusEvent implements PathmindBusEvent {
     public enum ModelUpdateType {
         ModelDataUpdate,
         Archive
+    }
+
+    @Override
+    public ModelUpdatedBusEvent cloneForEventBus() {
+        return new ModelUpdatedBusEvent(model.deepClone(), modelUpdateType);
     }
 }

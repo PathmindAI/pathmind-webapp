@@ -20,4 +20,9 @@ public class ExperimentStartTrainingBusEvent implements PathmindBusEvent {
     public Experiment getExperiment() {
         return experiment;
     }
+
+    @Override
+    public ExperimentStartTrainingBusEvent cloneForEventBus() {
+        return new ExperimentStartTrainingBusEvent(experiment.deepClone());
+    }
 }

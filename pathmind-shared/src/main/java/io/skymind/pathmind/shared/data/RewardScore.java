@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RewardScore implements Serializable {
+public class RewardScore implements Serializable, DeepCloneableInterface<RewardScore> {
     // May be NaN!
     private Double max;
     private Double min;
@@ -22,5 +22,10 @@ public class RewardScore implements Serializable {
         this.mean = mean;
         this.iteration = iteration;
         this.episodeCount = episodeCount;
+    }
+
+    @Override
+    public RewardScore shallowClone() {
+        return new RewardScore(max, min, mean, iteration, episodeCount);
     }
 }

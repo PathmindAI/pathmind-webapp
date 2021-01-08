@@ -24,4 +24,9 @@ public class ExperimentCreatedBusEvent implements PathmindBusEvent {
     public long getModelId() {
         return experiment.getModelId();
     }
+
+    @Override
+    public ExperimentCreatedBusEvent cloneForEventBus() {
+        return new ExperimentCreatedBusEvent(experiment.deepClone());
+    }
 }

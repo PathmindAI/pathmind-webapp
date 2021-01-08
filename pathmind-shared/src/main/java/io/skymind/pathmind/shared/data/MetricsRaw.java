@@ -9,10 +9,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MetricsRaw implements Serializable {
+public class MetricsRaw implements Serializable, DeepCloneableInterface<MetricsRaw> {
     private Integer agent;
     private Integer iteration;
     private Integer episode;
     private Integer index;
     private Double value;
+
+    @Override
+    public MetricsRaw shallowClone() {
+        return new MetricsRaw(agent, iteration, episode, index, value);
+    }
 }
