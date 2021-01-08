@@ -262,6 +262,7 @@ public class LoginPage extends PageObject {
     }
 
     public void checkThatPopupIsShown(String popUp) {
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='closeable-notification-text-label']")));
         assertThat(getDriver().findElement(By.xpath("//span[@class='closeable-notification-text-label']")).getText(), is(popUp));
     }
 
