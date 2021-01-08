@@ -22,7 +22,7 @@
     padding: var(--lumo-space-xs);
     border: 1px solid var(--pm-gold-color);
     border-radius: var(--lumo-border-radius);
-    margin-bottom: var(--lumo-space-m);
+    margin: var(--lumo-space-xs) 0 var(--lumo-space-m);
 }
 
 .new-experiment-view .section-title-label {
