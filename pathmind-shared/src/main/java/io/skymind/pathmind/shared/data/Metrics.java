@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Metrics implements Serializable {
+public class Metrics implements Serializable, DeepCloneableInterface<Metrics> {
     private Integer agent;
     private Integer iteration;
     private Integer index;
@@ -22,5 +22,10 @@ public class Metrics implements Serializable {
         this.iteration = iteration;
         this.index = index;
         this.mean = mean;
+    }
+
+    @Override
+    public Metrics shallowClone() {
+        return new Metrics(agent, iteration, index, max, min, mean);
     }
 }

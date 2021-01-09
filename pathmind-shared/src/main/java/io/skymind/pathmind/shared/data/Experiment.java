@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Experiment extends ArchivableData {
+public class Experiment extends ArchivableData  implements DeepCloneableInterface<Experiment> {
+
     public static final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
     private static final long serialVersionUID = -5041305878245823921L;
@@ -109,5 +111,30 @@ public class Experiment extends ArchivableData {
         } else {
             selectedRewardVariables.add(rewardVariable);
         }
+    }
+    @Override
+    public Experiment shallowClone() {
+        return super.shallowClone(Experiment.builder()
+                .modelId(modelId)
+                .rewardFunction(rewardFunction)
+                .dateCreated(dateCreated)
+                .lastActivityDate(lastActivityDate)
+                .userNotes(userNotes)
+                .isFavorite(isFavorite)
+                .trainingStatus(trainingStatus)
+                .hasGoals(hasGoals)
+                .goalsReached(goalsReached)
+                .totalGoals(totalGoals)
+                .build());
+    }
+
+    @Override
+    public Experiment deepClone() {
+        Experiment experiment = shallowClone();
+        experiment.setProject(CloneUtils.shallowClone(project));
+        experiment.setModel(CloneUtils.shallowClone(model));
+        experiment.setPolicies(CloneUtils.shallowCloneList(policies));
+        experiment.setRuns(CloneUtils.shallowCloneList(runs));
+        return experiment;
     }
 }

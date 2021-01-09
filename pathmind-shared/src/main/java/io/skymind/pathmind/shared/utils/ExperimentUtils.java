@@ -139,6 +139,10 @@ public class ExperimentUtils {
         return experiment != null && experiment.getId() == secondExperiment.getId();
     }
 
+    public static boolean isSameExperiment(Experiment experiment, long secondExperimentId) {
+        return experiment != null && experiment.getId() == secondExperimentId;
+    }
+
     public static void addOrUpdatePolicies(Experiment experiment, List<Policy> updatedPolicies) {
         updatedPolicies.forEach(updatedPolicy -> {
             if (experiment.getPolicies() == null) {

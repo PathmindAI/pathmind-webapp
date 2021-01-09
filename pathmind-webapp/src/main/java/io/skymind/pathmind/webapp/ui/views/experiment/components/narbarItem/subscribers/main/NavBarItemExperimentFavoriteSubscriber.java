@@ -17,11 +17,12 @@ public class NavBarItemExperimentFavoriteSubscriber extends ExperimentFavoriteSu
 
     @Override
     public void handleBusEvent(ExperimentFavoriteBusEvent event) {
-        experimentsNavBarItem.updateExperiment(event.getExperiment());
+        experimentsNavBarItem.setIsFavorite(event.isFavorite());
+        experimentsNavBarItem.updateVariableComponentValues();
     }
 
     @Override
     public boolean filterBusEvent(ExperimentFavoriteBusEvent event) {
-        return !event.getExperiment().isArchived() && ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperiment());
+        return ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), event.getExperimentId());
     }
 }

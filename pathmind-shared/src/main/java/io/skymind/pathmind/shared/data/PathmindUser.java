@@ -16,7 +16,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PathmindUser {
+public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
+
     private long id;
     private String email;
     private String password;
@@ -53,5 +54,30 @@ public class PathmindUser {
 
     public boolean isSupportAccountType() {
         return UserRole.Support.equals(getAccountType());
+    }
+
+    @Override
+    public PathmindUser shallowClone() {
+        return PathmindUser.builder()
+                .id(id)
+                .email(email)
+                .password(password)
+                .accountType(accountType)
+                .firstname(firstname)
+                .lastname(lastname)
+                .address(address)
+                .city(city)
+                .state(state)
+                .country(country)
+                .zip(zip)
+                .deleteAt(deleteAt)
+                .emailVerifiedAt(emailVerifiedAt)
+                .emailVerificationToken(emailVerificationToken)
+                .passwordResetSendAt(passwordResetSendAt)
+                .stripeCustomerId(stripeCustomerId)
+                .newEmailToVerify(newEmailToVerify)
+                .apiKey(apiKey)
+                .apiKeyCreatedAt(apiKeyCreatedAt)
+                .build();
     }
 }

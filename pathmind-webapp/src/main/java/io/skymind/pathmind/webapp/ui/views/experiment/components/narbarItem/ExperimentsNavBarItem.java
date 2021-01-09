@@ -132,6 +132,11 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         return experiment;
     }
 
+    public void setIsFavorite(boolean isFavorite) {
+        experiment.setFavorite(isFavorite);
+        updateVariableComponentValues();
+    }
+
     public void updateExperiment(Experiment experiment) {
         this.experiment = experiment;
         updateVariableComponentValues();

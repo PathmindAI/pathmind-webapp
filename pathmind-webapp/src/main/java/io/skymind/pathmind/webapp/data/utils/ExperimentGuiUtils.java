@@ -31,7 +31,7 @@ public class ExperimentGuiUtils {
     public static void favoriteExperiment(ExperimentDAO experimentDAO, Experiment experiment, boolean newIsFavorite) {
         experiment.setFavorite(newIsFavorite);
         experimentDAO.markAsFavorite(experiment.getId(), newIsFavorite);
-        EventBus.post(new ExperimentFavoriteBusEvent(experiment));
+        EventBus.post(new ExperimentFavoriteBusEvent(experiment.getId(), newIsFavorite));
     }
 
     public static String getIconStatus(Experiment experiment, RunStatus status) {

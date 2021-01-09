@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Run extends Data {
+public class Run extends Data implements DeepCloneableInterface<Run> {
+
     private static final long serialVersionUID = 2452255564251125071L;
     private int runType;
     private long experimentId;
@@ -53,5 +55,34 @@ public class Run extends Data {
 
     public void setStatusEnum(RunStatus runStatus) {
         this.status = runStatus.getValue();
+    }
+
+    @Override
+    public Run shallowClone() {
+        return super.shallowClone(Run.builder()
+                .runType(runType)
+                .experimentId(experimentId)
+                .status(status)
+                .startedAt(startedAt)
+                .stoppedAt(stoppedAt)
+                .notificationSentAt(notificationSentAt)
+                .exportedAt(exportedAt)
+                .ec2CreatedAt(ec2CreatedAt)
+                .trainingErrorId(trainingErrorId)
+                .jobId(jobId)
+                .rllibError(rllibError)
+                .successMessage(successMessage)
+                .warningMessage(warningMessage)
+                .completingUpdatesAttempts(completingUpdatesAttempts)
+                .build());
+    }
+
+    @Override
+    public Run deepClone() {
+        Run run = shallowClone();
+        run.setExperiment(CloneUtils.shallowClone(experiment));
+        run.setModel(CloneUtils.shallowClone(model));
+        run.setProject(CloneUtils.shallowClone(project));
+        return run;
     }
 }
