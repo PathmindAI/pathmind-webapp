@@ -27,9 +27,11 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+@Slf4j
 public class ExperimentUtils {
     private ExperimentUtils() {
     }
@@ -175,6 +177,10 @@ public class ExperimentUtils {
     }
 
     public static void addOrUpdateRun(Experiment experiment, Run updatedRun) {
+        if (experiment.getId() != updatedRun.getExperimentId()) {
+            log.debug("Experiment ID mismatch!");
+            return;
+        }
         if (experiment.getRuns() == null) {
             experiment.setRuns(new ArrayList<>());
         }
