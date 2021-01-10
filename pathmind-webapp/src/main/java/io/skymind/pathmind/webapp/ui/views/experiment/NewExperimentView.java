@@ -191,7 +191,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
         panelTitleText = LabelFactory.createLabel("Experiment #" + experiment.getName(), CssPathmindStyles.SECTION_TITLE_LABEL);
+        Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
+        verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                verifyEmailReminder,
                 WrapperUtils.wrapWidthFullHorizontal(
                         panelTitleText,
                         downloadModelAlpLink
