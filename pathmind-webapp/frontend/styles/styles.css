@@ -654,3 +654,12 @@ h4 {
     padding: var(--lumo-space-xs) var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
 }
+
+.demo-view-content {
+    padding: var(--lumo-space-xl);
+    align-items: center;
+}
+
+.demo-view-content p {
+    text-align: center;
+}

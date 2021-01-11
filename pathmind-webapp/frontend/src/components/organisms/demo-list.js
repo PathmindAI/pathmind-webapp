@@ -11,14 +11,18 @@ class DemoList extends PolymerElement {
                 :host {
                     box-sizing: border-box;
                     display: flex;
+                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
                     position: relative;
                     width: 100%;
-                    font-family: var(--lumo-font-family-header);
-                    font-size: var(--lumo-font-size-s);
                     padding: 0 var(--lumo-space-m);
                     margin-bottom: var(--lumo-space-l);
+                }
+                vaadin-horizontal-layout {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    align-items: center;
                 }
                 ul {
                     display: flex;
@@ -31,6 +35,7 @@ class DemoList extends PolymerElement {
                 }
                 h4 {
                     width: 100%;
+                    font-family: var(--lumo-font-family-header);
                     text-align: center;
                     margin: 0;
                 }
@@ -44,10 +49,12 @@ class DemoList extends PolymerElement {
                 }
                 .demo-item {
                     flex: 0 1 14rem;
+                    font-size: var(--lumo-font-size-s);
                     padding: var(--lumo-space-m);
+                    background: var(--pm-grey-color-lightest);
                     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
                     border-radius: var(--lumo-border-radius);
-                    margin: 0 var(--lumo-space-m);
+                    margin: 0 var(--lumo-space-s) var(--lumo-space-m);
                     cursor: pointer;
                 }
                 .demo-item:hover {
@@ -86,8 +93,7 @@ class DemoList extends PolymerElement {
                     margin: 0;
                 }
             </style>
-            <details>
-                <summary>Show demos</summary>
+            <vaadin-horizontal-layout>
                 <dom-repeat items="{{demoDataList}}">
                     <template>
                         <vaadin-vertical-layout class="demo-item" data-item$="{{item.name}}" on-click="chooseDemoHandler">
@@ -97,16 +103,12 @@ class DemoList extends PolymerElement {
                         </vaadin-vertical-layout>
                     </template>
                 </dom-repeat>
-            </details>
+            </vaadin-horizontal-layout>
         `;
     }
 
     setData(demoDataList) {
         this.demoDataList = demoDataList;
-    }
-
-    chooseDemoHandler(event) {
-        console.log(event)
     }
 
     static get properties() {
@@ -122,7 +124,7 @@ class DemoList extends PolymerElement {
         },
         listView: {
             type: Boolean,
-            value: true,
+            value: false,
             reflectToAttribute: true,
         },
       };

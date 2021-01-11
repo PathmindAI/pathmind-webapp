@@ -11,7 +11,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -39,7 +38,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.demo.DemoList;
+import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +64,7 @@ public class ProjectsView extends PathMindDefaultView {
 
     private FlexLayout gridWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
+    private DemoViewContent demoViewContent;
 
     public ProjectsView() {
         super();
@@ -77,22 +77,48 @@ public class ProjectsView extends PathMindDefaultView {
         addClassName("projects-view");
 
         Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
+        Button showDemosButton = showDemosButton();
 
-        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
+        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, 
+                WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton(), showDemosButton));
         headerWrapper.addClassName("page-content-header");
 
-        Paragraph demoMessage = new Paragraph("Choose a demo to start exploring Pathmind.");
-        demoMessage.addClassName("demoMessage");
+        demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
 
         gridWrapper = new ViewSection(
                 headerWrapper,
-                demoMessage,
-                new DemoList(demoProjectService, experimentManifestRepository),
                 archivesTabPanel,
-                projectGrid);
+                projectGrid,
+                demoViewContent);
         gridWrapper.addClassName("page-content");
 
+        if (projects.isEmpty()) {
+            archivesTabPanel.setVisible(false);
+            projectGrid.setVisible(false);
+            demoViewContent.setVisible(true);
+            showDemosButton.setVisible(false);
+        } else {
+            archivesTabPanel.setVisible(true);
+            projectGrid.setVisible(true);
+            demoViewContent.setVisible(false);
+            showDemosButton.setVisible(true);
+        }
+
         return gridWrapper;
+    }
+
+    private Button showDemosButton() {
+        Button showDemosButton = new Button("Show Project Templates from Tutorials");
+        showDemosButton.addClickListener(click -> {
+            Boolean isDemosVisible = demoViewContent.isVisible();
+            demoViewContent.setVisible(!isDemosVisible);
+            if (isDemosVisible) { // previous state
+                showDemosButton.setText("Show Project Templates from Tutorials");
+            } else {
+                showDemosButton.setText("Hide Project Templates from Tutorials");
+            }
+        });
+        return showDemosButton;
     }
 
     private void setupTabbedPanel() {
