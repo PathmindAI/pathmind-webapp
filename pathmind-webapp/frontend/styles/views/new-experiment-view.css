@@ -75,6 +75,7 @@
 }
 
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
+    flex: 1 0 auto;
     justify-content: space-between;
     margin-bottom: var(--lumo-space-xxs);
 }
