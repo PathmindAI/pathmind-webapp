@@ -214,4 +214,9 @@ public class ExperimentPageSteps {
     public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
         experimentPage.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
     }
+
+    @Step
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPage.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
+    }
 }

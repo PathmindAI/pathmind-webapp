@@ -224,4 +224,9 @@ public class ExperimentStepDefinitions {
     public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
         experimentPageSteps.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
     }
+
+    @When("^Experiment page check number of the experiments is '(.*)' in the left sidebar$")
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPageSteps.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
+    }
 }

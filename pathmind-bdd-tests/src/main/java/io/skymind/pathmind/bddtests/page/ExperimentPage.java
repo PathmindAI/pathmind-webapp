@@ -354,4 +354,8 @@ public class ExperimentPage extends PageObject {
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         assertThat(utils.getExperimentNavbarItemByExperimentName(experiment, "#experimentLink > div > p:nth-child(2)").getText(), is(date));
     }
+
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
+    }
 }
