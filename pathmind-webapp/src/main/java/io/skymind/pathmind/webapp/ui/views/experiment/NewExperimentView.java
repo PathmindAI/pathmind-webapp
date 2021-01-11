@@ -99,7 +99,10 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
+        Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
+        verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                verifyEmailReminder,
                 WrapperUtils.wrapWidthFullHorizontal(
                         experimentPanelTitle,
                         downloadModelAlpLink

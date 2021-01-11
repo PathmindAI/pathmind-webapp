@@ -47,7 +47,6 @@ Feature: Save Model draft
     When Click wizard model details next btn
     And Check that there is a variable named kitchenCleanlinessLevel
     When Click wizard reward variables next btn
-    When Open projects page
-    When Open project AutotestProject on projects page
+    When Click project/ breadcrumb btn
     Then Check that models sidebar model '1' contains draft tag 'false'
     Then Check that models sidebar model '2' contains draft tag 'false'

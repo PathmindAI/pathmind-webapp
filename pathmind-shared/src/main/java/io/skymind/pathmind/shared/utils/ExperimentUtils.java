@@ -17,6 +17,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
@@ -24,6 +25,7 @@ import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
 import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 
+@Slf4j
 public class ExperimentUtils {
 
     private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
@@ -158,6 +160,10 @@ public class ExperimentUtils {
     }
 
     public static void addOrUpdateRun(Experiment experiment, Run updatedRun) {
+        if (experiment.getId() != updatedRun.getExperimentId()) {
+            log.debug("Experiment ID mismatch!");
+            return;
+        }
         if (experiment.getRuns() == null) {
             experiment.setRuns(new ArrayList<>());
         }
