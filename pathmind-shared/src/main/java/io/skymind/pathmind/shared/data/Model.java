@@ -40,7 +40,7 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
 
     @Override
     public Model shallowClone() {
-        return super.shallowClone(Model.builder()
+        Model model = super.shallowClone(Model.builder()
                 .dateCreated(dateCreated)
                 .lastActivityDate(lastActivityDate)
                 .numberOfObservations(numberOfObservations)
@@ -60,5 +60,10 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
                 .experimentClass(experimentClass)
                 .experimentType(experimentType)
                 .build());
+
+        model.setArchived(isArchived());
+        model.setName(getName());
+
+        return model;
     }
 }

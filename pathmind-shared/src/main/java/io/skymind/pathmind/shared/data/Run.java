@@ -59,7 +59,7 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
 
     @Override
     public Run shallowClone() {
-        return super.shallowClone(Run.builder()
+        Run run = super.shallowClone(Run.builder()
                 .runType(runType)
                 .experimentId(experimentId)
                 .status(status)
@@ -75,6 +75,9 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
                 .warningMessage(warningMessage)
                 .completingUpdatesAttempts(completingUpdatesAttempts)
                 .build());
+
+        run.setName(getName());
+        return run;
     }
 
     @Override
