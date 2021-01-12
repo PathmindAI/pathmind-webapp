@@ -8,7 +8,7 @@ image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
   tag: test
   pullPolicy: Always
-  command: ["entrypoint.sh"]
+  command: ["/app/entrypoint.sh"]
 
 service:
   type: NodePort
