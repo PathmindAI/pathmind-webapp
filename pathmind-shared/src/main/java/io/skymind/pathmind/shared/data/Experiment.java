@@ -139,6 +139,7 @@ public class Experiment extends ArchivableData  implements DeepCloneableInterfac
         experiment.setModel(CloneUtils.shallowClone(model));
         experiment.setPolicies(CloneUtils.shallowCloneList(policies));
         experiment.setRuns(CloneUtils.shallowCloneList(runs));
+        experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
         return experiment;
     }
 }

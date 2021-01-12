@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RewardVariable extends Data {
+public class RewardVariable extends Data implements DeepCloneableInterface<RewardVariable> {
 
     public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
     public static final int MIN_SELECTED_REWARD_VARIABLES = 1;
@@ -32,6 +32,15 @@ public class RewardVariable extends Data {
         this.arrayIndex = arrayIndex;
         this.dataType = dataType;
         setName(name);
+    }
+
+    // Used for the cloning method.
+    private RewardVariable(long modelId, int arrayIndex, String dataType, String goalConditionType, Double goalValue) {
+        this.modelId = modelId;
+        this.arrayIndex = arrayIndex;
+        this.dataType = dataType;
+        this.goalConditionType = goalConditionType;
+        this.goalValue = goalValue;
     }
 
     public GoalConditionType getGoalConditionTypeEnum() {
@@ -60,5 +69,14 @@ public class RewardVariable extends Data {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), getId());
+    }
+
+    public RewardVariable shallowClone() {
+        return super.shallowClone(new RewardVariable(
+                modelId,
+                arrayIndex,
+                dataType,
+                goalConditionType,
+                goalValue));
     }
 }
