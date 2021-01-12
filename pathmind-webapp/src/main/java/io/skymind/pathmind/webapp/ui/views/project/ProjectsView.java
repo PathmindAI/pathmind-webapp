@@ -108,15 +108,10 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     private Button showDemosButton() {
-        Button showDemosButton = new Button("Show Project Templates from Tutorials");
+        Button showDemosButton = new Button("Example Projects");
         showDemosButton.addClickListener(click -> {
             Boolean isDemosVisible = demoViewContent.isVisible();
             demoViewContent.setVisible(!isDemosVisible);
-            if (isDemosVisible) { // previous state
-                showDemosButton.setText("Show Project Templates from Tutorials");
-            } else {
-                showDemosButton.setText("Hide Project Templates from Tutorials");
-            }
         });
         return showDemosButton;
     }

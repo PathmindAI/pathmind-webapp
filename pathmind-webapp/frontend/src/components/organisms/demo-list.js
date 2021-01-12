@@ -22,7 +22,7 @@ class DemoList extends PolymerElement {
                 vaadin-horizontal-layout {
                     flex-wrap: wrap;
                     justify-content: center;
-                    align-items: center;
+                    align-items: stretch;
                 }
                 ul {
                     display: flex;
@@ -48,13 +48,14 @@ class DemoList extends PolymerElement {
                     width: 100%;
                 }
                 .demo-item {
-                    flex: 0 1 14rem;
+                    flex: 0 1 calc(33% - var(--lumo-space-l)*2);
+                    max-width: 20rem;
                     font-size: var(--lumo-font-size-s);
                     padding: var(--lumo-space-m);
                     background: var(--pm-grey-color-lightest);
                     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
                     border-radius: var(--lumo-border-radius);
-                    margin: 0 var(--lumo-space-s) var(--lumo-space-m);
+                    margin: 0 var(--lumo-space-l) var(--lumo-space-l);
                     cursor: pointer;
                 }
                 .demo-item:hover {
@@ -92,6 +93,12 @@ class DemoList extends PolymerElement {
                 :host([list-view]) p {
                     margin: 0;
                 }
+                .description {
+                    margin-bottom: var(--lumo-space-m);
+                }
+                .result {
+                    margin: auto 0 0;
+                }
             </style>
             <vaadin-horizontal-layout>
                 <dom-repeat items="{{demoDataList}}">
@@ -99,7 +106,8 @@ class DemoList extends PolymerElement {
                         <vaadin-vertical-layout class="demo-item" data-item$="{{item.name}}" on-click="chooseDemoHandler">
                             <h4>{{item.name}}</h4>
                             <div class="demo-img-wrapper" hidden="{{hideImage}}"><img src="{{item.imageUrl}}"/></div>
-                            <p>{{item.description}}</p>
+                            <p class="description">{{item.description}}</p>
+                            <p class="result"><b>Result:</b> {{item.result}}</p>
                         </vaadin-vertical-layout>
                     </template>
                 </dom-repeat>

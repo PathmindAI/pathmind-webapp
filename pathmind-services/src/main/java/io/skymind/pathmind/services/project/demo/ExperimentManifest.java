@@ -20,5 +20,6 @@ public class ExperimentManifest {
     private String rewardFunction;
     private URI imageUrl;
     private String description;
+    private String result;
 
 }
