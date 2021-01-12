@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+sleep 12h
+
 HOSTNAME=$(hostname)
 aws sqs create-queue --queue-name ${HOSTNAME}-updater-queue --attributes "{\"MessageRetentionPeriod\":\"60\"}"
 cat ./infra/sqs_policy.json | sed \"s/BUILD_ID/${HOSTNAME}/g\" > /tmp/${HOSTNAME}-sqs_policy.json
