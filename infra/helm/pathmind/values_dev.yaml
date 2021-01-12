@@ -8,9 +8,7 @@ image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
   tag: dev
   pullPolicy: Always
-  command: ["sleep"]
-  args:
-    - "12h"
+  command: ["/app/entrypoint.sh"]
 
 service:
   type: NodePort
