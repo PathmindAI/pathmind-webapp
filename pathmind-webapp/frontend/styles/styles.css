@@ -7,7 +7,6 @@ html {
     --pm-app-bg-color: #f6f8fa;
     --pm-highlight-light: rgba(240, 241, 246, 0.25);
     --pm-highlight-medium: rgba(240, 241, 246, 0.5);
-    --pm-highlight-strong: rgba(240, 241, 246, 0.5);
     --pm-friendly-color: #3a966b;
     --pm-friendly-color-bright: #b2ea17;
     --pm-danger-color: #d80947;
@@ -22,10 +21,6 @@ html {
     --pm-grey-color-light: #d0d0d0;
     --pm-grey-color-lighter: #dee3ed;
     --pm-grey-color-lightest: #eaeeef;
-    --pm-blue-color-darkest: #1a2949;
-    --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
-    --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
-    --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
     --pm-yellow-color: #fff51f;
 
@@ -132,10 +127,6 @@ background-color: var(--pm-grey-color-light);
 
 .row-2-of-3 {
     width: calc(100% * 2 / 3) !important;
-}
-
-.text-algin-right {
-    text-align: right;
 }
 
 .internal-banner {
