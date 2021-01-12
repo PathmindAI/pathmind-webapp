@@ -27,7 +27,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public boolean filterBusEvent(RunUpdateBusEvent event) {
-        return isSameExperiment(event) || (!experimentView.getExperiment().isArchived());
+        return isSameExperiment(event) && (!experimentView.getExperiment().isArchived());
     }
 
     private boolean isSameExperiment(RunUpdateBusEvent event) {
