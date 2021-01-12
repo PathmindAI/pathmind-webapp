@@ -129,8 +129,9 @@
 }
 
 .project-view .page-content-header {
-    margin-bottom: 0;
+    flex: 1 0 auto;
     padding: 0 0 0 var(--lumo-space-m) ;
+    margin-bottom: 0;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
@@ -141,7 +142,11 @@
 }
 
 .project-view .page-content-header + vaadin-horizontal-layout {
-    flex: 1;
+    flex: 1 0 auto;
+}
+
+.project-view vaadin-grid {
+    flex: 1 1 100%;
 }
 
 .project-view .model-wrapper .section-title-label {
