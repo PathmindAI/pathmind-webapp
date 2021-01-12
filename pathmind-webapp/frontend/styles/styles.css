@@ -143,26 +143,6 @@ background-color: var(--pm-grey-color-light);
     background-color: var(--pm-gold-color);
 }
 
-[tooltip-content] {
-    position: relative;
-}
-
-[tooltip-content]:hover::after {
-    content: attr(tooltip-content);
-    position: absolute;
-    top: calc(-0.8 * var(--lumo-space-xs));
-    left: 0;
-    line-height: 1;
-    background-color: white;
-    padding: 0.14em 0.16em;
-    z-index: 1;
-}
-
-[tooltip-content] span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 [icon="vaadin:star"] {
     color: var(--pm-gold-color);
 }
