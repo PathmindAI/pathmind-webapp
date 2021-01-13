@@ -13,6 +13,9 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinRequest;
+import com.vaadin.flow.server.VaadinService;
+import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -21,6 +24,13 @@ import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
@@ -52,14 +62,18 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
     private final EmailNotificationService emailNotificationService;
     private final SegmentIntegrator segmentIntegrator;
 
+    private final AuthenticationManager authenticationManager;
+
     private PathmindUser user;
     private Binder<PathmindUser> binder;
 
-    public SignUpView(UserService userService, EmailNotificationService emailNotificationService, SegmentIntegrator segmentIntegrator,
+    public SignUpView(UserService userService, AuthenticationManager authenticationManager,
+                      EmailNotificationService emailNotificationService, SegmentIntegrator segmentIntegrator,
                       @Value("${pathmind.contact-support.address}") String contactLink) {
         this.userService = userService;
         this.emailNotificationService = emailNotificationService;
         this.segmentIntegrator = segmentIntegrator;
+        this.authenticationManager = authenticationManager;
         getModel().setContactLink(contactLink);
         user = new PathmindUser();
         initView();
@@ -78,14 +92,18 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
         confirmNewPassword.setRequired(true);
 
         signIn.addClickListener(e -> {
+            final String passwordValue = newPassword.getValue();
             UserService.PasswordValidationResults validationResults = userService
-                    .validatePassword(newPassword.getValue(), confirmNewPassword.getValue());
+                    .validatePassword(passwordValue, confirmNewPassword.getValue());
 
             if (binder.validate().isOk() && validationResults.isOk()) {
-                user.setPassword(newPassword.getValue());
+                user.setPassword(passwordValue);
                 user = userService.signup(user);
                 emailNotificationService.sendVerificationEmail(user, user.getEmail(), true);
                 segmentIntegrator.userRegistered(user);
+
+                loginUser(user.getEmail(), passwordValue);
+
                 getUI().ifPresent(ui -> ui.navigate(VerificationEmailSentView.class));
             } else {
                 newPassword.setInvalid(true);
@@ -95,6 +113,15 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
                 confirmNewPassword.setErrorMessage(validationResults.getConfirmPasswordValidationError());
             }
         });
+    }
+
+    private void loginUser(String emailValue, String passwordValue) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(emailValue, passwordValue);
+        VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
+        HttpServletRequest request = ((VaadinServletRequest)vaadinRequest).getHttpServletRequest();
+        token.setDetails(new WebAuthenticationDetails(request));
+        Authentication authenticatedUser = authenticationManager.authenticate(token);
+        SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
     }
 
     private void initBinder() {

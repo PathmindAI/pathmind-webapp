@@ -1,4 +1,4 @@
-@notifications
+@notifications @disabled
 Feature: Notifications
 
   Scenario: Check new version notification is shown

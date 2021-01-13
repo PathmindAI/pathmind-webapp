@@ -33,6 +33,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.Routes;
@@ -43,6 +44,7 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEven
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentSavedViewBusEvent;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
@@ -107,6 +109,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     private boolean isNeedsSaving = false;
 
+    private final int allowedRunsNoVerified;
+
     @Autowired
     private ModelService modelService;
     @Autowired
@@ -127,16 +131,20 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
+    @Autowired
+    private UserService userService;
 
     private Breadcrumbs pageBreadcrumbs;
 
     public NewExperimentView(
+            @Value("${pm.allowed_run_no_verified}") int allowedRunsNoVerified,
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
         this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
         addClassName("new-experiment-view");
+        this.allowedRunsNoVerified = allowedRunsNoVerified;
     }
 
     @Override
@@ -266,10 +274,12 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     /************************************** UI element creations are above this line **************************************/
 
     private boolean canStartTraining() {
+        PathmindUser currentUser = userService.getCurrentUser();
         return ModelUtils.isValidModel(experiment.getModel())
                 && rewardFunctionEditor.isValidForTraining()
                 && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
-                && !experiment.isArchived();
+                && !experiment.isArchived()
+                && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
     }
 
     public void setNeedsSaving() {

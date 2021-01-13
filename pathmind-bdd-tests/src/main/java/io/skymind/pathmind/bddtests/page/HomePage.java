@@ -84,7 +84,7 @@ public class HomePage extends PageObject {
 
     public void checkThatProjectsPageOpened() {
         waitFor(ExpectedConditions.titleIs("Pathmind | Projects"));
-        assertThat(getDriver().getCurrentUrl(), containsString("/projects"));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")).getText(), is("Projects"));
     }
 
     public void closeBrowserTab() {
