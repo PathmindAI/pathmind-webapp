@@ -12,13 +12,6 @@ public enum SearchResultItemType {
         this.name = name;
     }
 
-    public static SearchResultItemType getEnumFromName(String name) {
-        return Arrays.stream(values())
-                .filter(itemType -> itemType.getName().equals(name))
-                .findAny()
-                .get();
-    }
-
     public String getName() {
         return name;
     }
@@ -26,5 +19,12 @@ public enum SearchResultItemType {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public static SearchResultItemType getEnumFromName(String name) {
+        return Arrays.stream(values())
+                .filter(itemType -> itemType.getName().equals(name))
+                .findAny()
+                .get();
     }
 }

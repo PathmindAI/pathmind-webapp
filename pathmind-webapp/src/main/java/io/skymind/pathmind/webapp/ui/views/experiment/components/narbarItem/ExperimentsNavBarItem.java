@@ -81,7 +81,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
     @EventHandler
     private void onCompareButtonClicked() {
-        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView) defaultExperimentView);
+        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView);
     }
 
     private void setExperimentDetails(Experiment experiment) {

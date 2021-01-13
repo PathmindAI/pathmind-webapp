@@ -22,7 +22,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
 
     @Override
     public void handleBusEvent(RunUpdateBusEvent event) {
-        if (ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
+        if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
             synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
                 experimentView.updateComponents();

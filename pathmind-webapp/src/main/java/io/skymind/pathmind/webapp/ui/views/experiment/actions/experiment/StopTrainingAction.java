@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment;
 
-import java.util.function.Supplier;
-
 import com.vaadin.flow.component.button.Button;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -11,6 +9,8 @@ import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+
+import java.util.function.Supplier;
 
 public class StopTrainingAction {
 

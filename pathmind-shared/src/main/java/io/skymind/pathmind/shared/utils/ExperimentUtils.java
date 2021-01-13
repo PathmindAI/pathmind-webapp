@@ -28,8 +28,6 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @Slf4j
 public class ExperimentUtils {
 
-    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
-
     private ExperimentUtils() {
     }
 
@@ -53,6 +51,8 @@ public class ExperimentUtils {
     public static String getExperimentNumber(Experiment experiment) {
         return experiment.getName();
     }
+
+    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
 
     public static boolean isAnyLogicEngineError(String rlErrorText) {
         return StringUtils.trimToEmpty(rlErrorText).startsWith(AL_ENGINE_ERROR_PREFIX);

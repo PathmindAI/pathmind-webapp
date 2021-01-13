@@ -2,9 +2,11 @@ package io.skymind.pathmind.shared.data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.utils.CloneUtils;
@@ -15,12 +17,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import static io.skymind.pathmind.shared.constants.RunStatus.Error;
+import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
+import static io.skymind.pathmind.shared.constants.RunStatus.Running;
+import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
+
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Experiment extends ArchivableData  implements DeepCloneableInterface<Experiment> {
+public class Experiment extends ArchivableData implements DeepCloneableInterface<Experiment> {
 
     public static final int REWARD_FUNCTION_MAX_LENGTH = 65535;
 
@@ -99,14 +106,14 @@ public class Experiment extends ArchivableData  implements DeepCloneableInterfac
     }
 
     public void addSelectedRewardVariable(RewardVariable rewardVariable) {
-        if (selectedRewardVariables == null) {
+        if(selectedRewardVariables == null) {
             selectedRewardVariables = new ArrayList<>();
         }
         selectedRewardVariables.add(rewardVariable);
     }
 
     public void toggleSelectedVariable(RewardVariable rewardVariable) {
-        if (selectedRewardVariables.contains(rewardVariable)) {
+        if(selectedRewardVariables.contains(rewardVariable)) {
             selectedRewardVariables.remove(rewardVariable);
         } else {
             selectedRewardVariables.add(rewardVariable);

@@ -14,10 +14,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserMetrics {
 
-    private int runsCreatedToday;
-    private int runsCreatedThisMonth;
     public enum UserCapType {
         Daily,
         Monthly
     }
+
+    private int runsCreatedToday;
+    private int runsCreatedThisMonth;
 }
