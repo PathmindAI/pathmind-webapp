@@ -1,5 +1,6 @@
 html {
     /* pathmind-colors */
+    --pm-primary-color-dark: #2f779a;
     --pm-primary-color: #4f97aa;
     --pm-primary-color-bright: #38a9c1;
     --pm-text-color: #1a2949;
@@ -23,6 +24,8 @@ html {
     --pm-grey-color-lightest: #eaeeef;
     --pm-green-color: #00a60b;
     --pm-yellow-color: #fff51f;
+    --pm-blue-color-dark: #1a49a9;
+    --pm-blue-color-light: #e0eafb;
 
     /* pathmind reward variable colors */
     --variable-color-0: #17a747;
@@ -84,6 +87,7 @@ html {
     --lumo-primary-color-75pct: rgba(79, 151, 170, 0.75);
     --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
     --lumo-primary-color-25pct: rgba(79, 151, 170, 0.25);
+    --lumo-primary-color-20pct: rgba(79, 151, 170, 0.2);
     --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
     --lumo-primary-color: var(--pm-primary-color);
     --lumo-border-radius: 6px;

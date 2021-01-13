@@ -5,162 +5,205 @@ class AccountUpgradeViewContent extends PolymerElement {
     return html`
       <style include="shared-styles pathmind-dialog-view">
         :host {
-          display: block;
-          height: 100%;
+            justify-content: center;
+            padding: var(--lumo-space-xl) var(--lumo-space-m);
         }
-
-        .content {
-          max-width: 100%;
-          padding: var(--lumo-space-xl) 0;
+        :host > vaadin-horizontal-layout {
+            justify-content: center;
+            align-items: stretch;
+            width: 100%;
         }
-
-        .cards-holder {
-          justify-content: center;
-          width: 100%;
-          height: 100%;
+        h1 {
+            margin: 0 auto var(--lumo-space-xl);
         }
-
         .inner-content {
-          margin: 10px 0px;
-          width: 400px;
-          border-top: 8px solid var(--pm-primary-color);
+            flex: 1 0 calc((100% - var(--lumo-space-l) * 2) / 3);
+          width: calc((100% - var(--lumo-space-l) * 2) / 3);
+          font-size: var(--lumo-font-size-m);
+          padding: var(--lumo-space-l);
+          border: 1px solid var(--pm-grey-color-lighter);
+          margin-top: 0;
         }
-
-        .professional-cont {
-          margin: 0 var(--lumo-space-xs);
+        .inner-content > :last-child {
+            width: 100%;
+            margin: auto auto var(--lumo-space-m);
         }
-
+        .inner-content:nth-child(2) {
+          margin: 0 var(--lumo-space-l) 0;
+        }
+        @media screen and (max-width: 1023px) {
+            :host {
+                height: auto;
+                padding: var(--lumo-space-m) var(--lumo-space-l) var(--lumo-space-l);
+            }
+            :host > vaadin-horizontal-layout {
+                flex-direction: column;
+            }
+            .inner-content {
+                flex: 1 1 auto;
+                max-width: 100%;
+                width: 100%;
+                margin: 0;
+            }
+            .inner-content:nth-child(2) {
+                margin: var(--lumo-space-xxl) 0;
+            }
+        }
         .card-header {
-          width: 250px;
-          margin: auto;
-          padding-bottom: 10px;
-          border-bottom: 1px solid var(--pm-primary-color);
-          align-items: center;
+            position: relative;
+            align-items: center;
+            width: calc(100% + 2 * var(--lumo-space-l));
+            padding: var(--lumo-space-l) var(--lumo-space-l);
+            margin: calc(-1 * var(--lumo-space-l)) calc(-1 * var(--lumo-space-l)) 0;
+            border-radius: var(--lumo-border-radius);
         }
-
+        .popular-tag {
+            position: absolute;
+            top: calc(-1 * var(--lumo-space-s));
+            right: var(--lumo-space-s);
+            color: white;
+            font-size: var(--lumo-font-size-xs);
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: .04rem;
+            background-color: var(--pm-friendly-color);
+            padding: var(--lumo-space-xxs) var(--lumo-space-xs);
+            border-radius: var(--lumo-border-radius-s);
+            box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.16);
+        }
+        .inner-content:nth-child(1) .card-header {
+            background-color: var(--pm-grey-color-lightest);
+        }
+        .inner-content:nth-child(1) .title {
+            color: var(--pm-grey-color-darkest);
+        }
+        .inner-content:nth-child(2) .card-header {
+            background-color: rgb(216 238 245);
+        }
+        .inner-content:nth-child(2) .title {
+            color: var(--pm-primary-color-dark);
+        }
+        .inner-content:nth-child(3) .card-header {
+            background-color: var(--pm-blue-color-light);
+        }
+        .inner-content:nth-child(3) .title {
+            color: var(--pm-blue-color-dark);
+        }
         .title {
-          font-size: 1.5em;
-          font-weight: 300;
+            letter-spacing: .05rem;
+            margin: 0 auto;
         }
-
-        .details {
-          font-size: 0.8em;
-          color: #676767;
-          font-weight: 500;
-        }
-
         .price-cont {
-          margin: 20px auto;
-          align-items: center;
-          display: flex;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: var(--lumo-font-size-xl);
+            line-height: 1.3;
+          margin: var(--lumo-space-l) auto;
         }
-
         .price {
-          font-size: 2em;
+            font-size: 4rem;
+            font-family: var(--lumo-font-family-header);
+            font-weight: 500;
+            letter-spacing: -.03rem;
+            margin-right: var(--lumo-space-xxxs);
         }
-
-        .pre-part {
-          padding-bottom: 8px;
-          padding-right: 4px;
+        .additional-info {
+            font-size: var(--lumo-font-size-s);
         }
-
-        .post-part {
-          padding-left: 5px;
-          color: #676767;
+        .features {
+            text-align: left;
+            padding: 0;
+            margin: var(--lumo-space-m) 0 var(--lumo-space-xl) var(--lumo-space-l);
         }
-
-        .feature {
-          padding: 5px 0 5px 25px;
-          color: #878787;
-          font-size: 0.85em;
+        li {
+            list-style: none;
+            position: relative;
+            padding-left: var(--lumo-font-size-xl);
+            margin-bottom: var(--lumo-space-s);
         }
-
-        .feature-available {
-          padding-left: 0px;
-          color: var(--pm-text-color);
-          align-self: center;
-          font-weight: bold;
+        li::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: calc(var(--lumo-font-size-s) / 2);
+            left: 0;
+            width: var(--lumo-space-s);
+            height: var(--lumo-space-s);
+            background-color: var(--lumo-primary-color);
         }
-
-        .highlight {
-          font-weight: 700;
-        }
-
-        iron-icon {
-          width: 16px;
-          height: 16px;
-          color: var(--pm-friendly-color);
-          padding-right: 5px;
-        }
-
         vaadin-button {
-          margin: 35px auto 25px;
+            width: 100%;
+            margin: 0;
+        }
+        vaadin-button[disabled] {
+            color: var(--lumo-secondary-text-color);
+            font-weight: bold;
         }
         a {
           margin: auto;
         }
-
-        .support {
-          color: #878787;
-          padding-top: 40px;
+        .caption {
+            font-size: var(--lumo-font-size-s);
+          color: var(--lumo-secondary-text-color);
+          margin-top: var(--lumo-space-xl);
         }
       </style>
-      <div class="content">
-        <vaadin-horizontal-layout class="cards-holder">
-          <vaadin-vertical-layout class="inner-content">
+    <h1>Subscription Plans</h1>
+    <vaadin-horizontal-layout>
+        <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
-              <span class="title">Trial</span>
-              <span class="details">30 Days Trial</span>
+                <h2 class="title">Basic</h2>
+                <span class="details">For Students and Hobbyists</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-              <span class="price">Free</span>
+                <span class="price">Free</span>
             </span>
-
-            <div class="feature feature-available">
-              Details coming soon.
-            </div>
-
-            <vaadin-button id="freeBtn" theme="tertiary" disabled
-              >Current Plan</vaadin-button
-            >
-          </vaadin-vertical-layout>
-
-          <vaadin-vertical-layout class="inner-content professional-cont">
+            <ul class="features">
+                <li>25 Experiments Per Month</li>
+                <li>Unlimited Policy Export</li>
+            </ul>
+            <vaadin-button id="freeBtn" theme="tertiary" disabled>Current Plan</vaadin-button>
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
-              <span class="title">Professional</span>
-              <span class="details">Monthly Subscription</span>
-            </vaadin-vertical-layout>
-            <div class="feature feature-available">
-              Details coming soon.
-            </div>
-
-            <vaadin-button id="proBtn" theme="primary"
-              >Choose Pro</vaadin-button
-            >
-          </vaadin-vertical-layout>
-
-          <vaadin-vertical-layout class="inner-content">
-            <vaadin-vertical-layout class="card-header">
-              <span class="title">Enterprise</span>
-              <span class="details">Annual Subscription</span>
+                <h2 class="title">Professional</h2>
+                <span class="details">For Professional Simulation Engineers</span>
+                <span class="popular-tag">POPULAR</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-              <span class="post-part">Contact Pathmind for more details</span>
+                <span><span class="price">$500</span>/Month</span>
+                <span class="additional-info">For yearly subscription per seat</span>
             </span>
-
-            <div class="feature feature-available">
-              Details coming soon.
-            </div>
-
+            <ul class="features">
+                <li>200 Experiments Per Month</li>
+                <li>Unlimited Policy Export</li>
+                <li>Technical Support Included</li>
+            </ul>
+            <vaadin-button id="proBtn" theme="primary">Choose Pro</vaadin-button>
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout class="inner-content">
+            <vaadin-vertical-layout class="card-header">
+                <h2 class="title">Enterprise</h2>
+                <span class="details">For Consultancies & Corporate Teams</span>
+            </vaadin-vertical-layout>
+            <span class="price-cont">
+                <span><span class="price">$1,000</span>/Month</span>
+                <span class="additional-info">For yearly subscription per seat</span>
+            </span>
+            <ul class="features">
+                <li>2,000 Experiments Per Month</li>
+                <li>Unlimited Policy Export</li>
+                <li>Technical Support Included</li>
+                <li>Policy Serving Enabled</li>
+                <li>RL Advisory and Training</li>
+            </ul>
             <a href="{{contactLink}}">
-              <vaadin-button id="enterpriseBtn" theme="primary"
-                >Contact Us</vaadin-button
-              >
+                <vaadin-button id="enterpriseBtn" theme="primary">Contact Us</vaadin-button>
             </a>
-          </vaadin-vertical-layout>
-        </vaadin-horizontal-layout>
-        <div class="support">Applicable taxes not included</div>
-      </div>
+        </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
+    <p class="caption">Applicable taxes not included</p>
     `;
   }
 
