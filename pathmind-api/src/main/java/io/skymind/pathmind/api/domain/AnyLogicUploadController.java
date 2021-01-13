@@ -50,24 +50,31 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class AnyLogicUploadController {
 
     private final UriComponentsBuilder experimentUriBuilder;
-    @Autowired
-    ProjectDAO projectDAO;
-    @Autowired
-    ModelDAO modelDAO;
-    @Autowired
-    ModelService modelService;
-    @Autowired
-    RewardVariableDAO rewardVariableDAO;
-    @Autowired
-    ObservationDAO observationDAO;
-    @Autowired
-    private ModelFileVerifier modelFileVerifier;
-    @Autowired
-    private ProjectFileCheckService projectFileCheckService;
 
     public AnyLogicUploadController(@Value("${pm.api.webapp.url}") String webappDomainUrl) {
         experimentUriBuilder = UriComponentsBuilder.fromHttpUrl(webappDomainUrl);
     }
+
+    @Autowired
+    ProjectDAO projectDAO;
+
+    @Autowired
+    ModelDAO modelDAO;
+
+    @Autowired
+    ModelService modelService;
+
+    @Autowired
+    private ModelFileVerifier modelFileVerifier;
+
+    @Autowired
+    private ProjectFileCheckService projectFileCheckService;
+
+    @Autowired
+    RewardVariableDAO rewardVariableDAO;
+
+    @Autowired
+    ObservationDAO observationDAO;
 
     /*
     create new project and upload model:
@@ -152,7 +159,7 @@ public class AnyLogicUploadController {
             log.error("failed to get file from AL", e);
             builder.path("uploadModelError");
             if (e instanceof ModelCheckException) {
-                builder.path("/" + StringUtils.trimToEmpty(e.getMessage()));
+                builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
             }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);

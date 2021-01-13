@@ -81,10 +81,6 @@ public class RewardVariablesTable extends VerticalLayout {
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
     }
 
-    public int getNumberOfSelectedRewardVariables() {
-        return selectedRewardVariables;
-    }
-
     public void setNumberOfSelectedRewardVariables(int num) {
         String disableSelectionClassName = "disable-selection";
         selectedRewardVariables = num;
@@ -93,5 +89,9 @@ public class RewardVariablesTable extends VerticalLayout {
         } else {
             container.removeClassName(disableSelectionClassName);
         }
+    }
+
+    public int getNumberOfSelectedRewardVariables() {
+        return selectedRewardVariables;
     }
 }

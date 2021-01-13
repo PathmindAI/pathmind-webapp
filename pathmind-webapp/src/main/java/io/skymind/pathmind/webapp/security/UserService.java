@@ -137,6 +137,28 @@ public class UserService {
         userDAO.rotateApiKey(user.getId());
     }
 
+    public static class PasswordValidationResults {
+        private Collection<String> passwordValidationErrors = new ArrayList<>();
+        private String confirmPasswordValidationError = "";
+
+        public Collection<String> getPasswordValidationErrors() {
+            return passwordValidationErrors;
+        }
+
+        public String getConfirmPasswordValidationError() {
+            return confirmPasswordValidationError;
+        }
+
+        public void setConfirmPasswordValidationError(String confirmPasswordValidationError) {
+            this.confirmPasswordValidationError = confirmPasswordValidationError;
+        }
+
+        public boolean isOk() {
+            return passwordValidationErrors.isEmpty() && confirmPasswordValidationError.isEmpty();
+        }
+    }
+
+
     /*
      * When user wants to change email, we keep this email in a temporary field till it's verified.
      * For the new address, a new verification token is generated, so that previous one will not work.
@@ -161,26 +183,5 @@ public class UserService {
         }
         update(user);
         return user;
-    }
-
-    public static class PasswordValidationResults {
-        private Collection<String> passwordValidationErrors = new ArrayList<>();
-        private String confirmPasswordValidationError = "";
-
-        public Collection<String> getPasswordValidationErrors() {
-            return passwordValidationErrors;
-        }
-
-        public String getConfirmPasswordValidationError() {
-            return confirmPasswordValidationError;
-        }
-
-        public void setConfirmPasswordValidationError(String confirmPasswordValidationError) {
-            this.confirmPasswordValidationError = confirmPasswordValidationError;
-        }
-
-        public boolean isOk() {
-            return passwordValidationErrors.isEmpty() && confirmPasswordValidationError.isEmpty();
-        }
     }
 }

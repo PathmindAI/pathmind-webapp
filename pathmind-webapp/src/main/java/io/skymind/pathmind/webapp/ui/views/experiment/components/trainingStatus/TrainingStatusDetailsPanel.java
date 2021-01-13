@@ -19,9 +19,9 @@ import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
@@ -72,6 +72,11 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
         EventBus.unsubscribe(this);
     }
 
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        update();
+    }
+
     public void update() {
         experiment.updateTrainingStatus();
         statusLabel.setText(experiment.getTrainingStatusEnum().toString());
@@ -81,11 +86,6 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        update();
     }
 
     private void updateProgressRow() {

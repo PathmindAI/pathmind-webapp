@@ -72,7 +72,7 @@ public class AWSApiClient {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
-        log.info("kepricondebug aws client : " + this.toString());
+        log.info("kepricondebug aws client : " +  this.toString());
 
     }
 

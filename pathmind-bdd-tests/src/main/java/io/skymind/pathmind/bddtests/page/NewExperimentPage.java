@@ -25,8 +25,8 @@ import static org.hamcrest.Matchers.not;
 
 public class NewExperimentPage extends PageObject {
 
-    private final By byInput = By.cssSelector("input");
     private Utils utils;
+
     @FindBy(xpath = "//*[@class='experiments-navbar']/vaadin-button")
     private WebElement newExperimentBtn;
     @FindBy(xpath = "//juicy-ace-editor")
@@ -37,6 +37,7 @@ public class NewExperimentPage extends PageObject {
     private List<WebElement> rewardVariableNameInputs;
     @FindBy(xpath = "//confirm-popup")
     private WebElement confirmPopup;
+    private final By byInput = By.cssSelector("input");
 
     public void clickSideBarNewExperimentBtn() {
         Actions actions = new Actions(getDriver());

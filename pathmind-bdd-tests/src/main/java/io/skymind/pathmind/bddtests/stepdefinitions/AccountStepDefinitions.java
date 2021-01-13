@@ -1,7 +1,5 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
-import java.util.Date;
-
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.EmailApi;
@@ -9,6 +7,8 @@ import io.skymind.pathmind.bddtests.steps.AccountPageSteps;
 import io.skymind.pathmind.bddtests.steps.LoginPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
+
+import java.util.Date;
 
 public class AccountStepDefinitions {
 

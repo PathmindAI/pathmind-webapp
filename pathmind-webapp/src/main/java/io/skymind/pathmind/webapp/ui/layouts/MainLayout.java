@@ -69,16 +69,16 @@ public class MainLayout extends AppLayout implements PageConfigurator {
         }
     }
 
+    public void setSearchBoxValue(String text) {
+        if (accountHeaderPanel != null) {
+            accountHeaderPanel.setSearchBoxValue(text);
+        }
+    }
+
     public String getSearchBoxValue() {
         if (accountHeaderPanel != null) {
             return accountHeaderPanel.getSearchBoxValue();
         }
         return "";
-    }
-
-    public void setSearchBoxValue(String text) {
-        if (accountHeaderPanel != null) {
-            accountHeaderPanel.setSearchBoxValue(text);
-        }
     }
 }

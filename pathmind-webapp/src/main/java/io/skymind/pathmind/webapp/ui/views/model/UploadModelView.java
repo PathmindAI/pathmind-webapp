@@ -29,9 +29,9 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
+import io.skymind.pathmind.services.project.FileCheckResult;
 import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
@@ -41,6 +41,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -140,17 +141,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         super();
     }
 
-    public static String createResumeUploadTarget(Project project, Model model) {
-        return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
-    }
-
-    public static Button createNextStepButton() {
-        Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
-        nextStepButton.setIconAfterText(true);
-        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        return nextStepButton;
-    }
-
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
 
@@ -194,7 +184,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         List<Component> sections = new ArrayList<>();
         if (isResumeUpload() && model.isArchived()) {
             sections.add(
-                    LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
+                LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
             );
         }
         sections.add(sectionTitleWrapper);
@@ -382,5 +372,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
             }
         }
+    }
+
+    public static String createResumeUploadTarget(Project project, Model model) {
+        return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
+    }
+
+    public static Button createNextStepButton() {
+        Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
+        nextStepButton.setIconAfterText(true);
+        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return nextStepButton;
     }
 }

@@ -29,10 +29,6 @@ public class PathmindApiAuthenticationProvider implements AuthenticationProvider
         this.keyValidityDuration = keyValidityDuration;
     }
 
-    private static Authentication map(PathmindUser userDetails) {
-        return new PathmindApiUser(userDetails.getName(), null, userDetails.getId(), new ArrayList<>());
-    }
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
@@ -56,6 +52,10 @@ public class PathmindApiAuthenticationProvider implements AuthenticationProvider
     @Override
     public boolean supports(Class<?> authentication) {
         return authentication.equals(PathmindAuthenticationToken.class);
+    }
+
+    private static Authentication map(PathmindUser userDetails) {
+        return new PathmindApiUser(userDetails.getName(), null, userDetails.getId(), new ArrayList<>());
     }
 
 }

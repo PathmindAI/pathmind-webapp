@@ -16,8 +16,8 @@ import static org.hamcrest.Matchers.startsWith;
 
 public class ModelUploadPage extends PageObject {
 
-    private final By byInput = By.cssSelector("input");
     private Utils utils;
+
     @FindBy(xpath = "//vaadin-upload")
     private WebElement uploadShadow;
     @FindBy(xpath = "//upload-alp-instructions")
@@ -26,6 +26,9 @@ public class ModelUploadPage extends PageObject {
     private WebElement warningLabelElement;
     @FindBy(xpath = "//vaadin-button[text()='Upload as Zip']")
     private WebElement uploadAsZipBtn;
+
+    private final By byInput = By.cssSelector("input");
+
 
     public void uploadModelFile(String model) {
         waitABit(2500);

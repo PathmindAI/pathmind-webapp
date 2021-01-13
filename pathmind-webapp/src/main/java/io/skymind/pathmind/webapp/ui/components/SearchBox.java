@@ -17,15 +17,15 @@ import io.skymind.pathmind.webapp.ui.views.search.SearchResultsView;
 import org.apache.commons.lang3.StringUtils;
 
 public class SearchBox extends HorizontalLayout {
-    public static final int MAX_SEARCH_TYPE_LENGTH;
-    public static final int MAX_KEYWORD_LENGTH = 200;
-    public static final int OPERATOR_LENGTH = 1;
     private static final List<String> SEARCH_TYPES = Arrays.asList("All", "Project", "Model", "Experiment");
+    public static final int MAX_SEARCH_TYPE_LENGTH;
 
     static {
         MAX_SEARCH_TYPE_LENGTH = SEARCH_TYPES.stream().map(String::length).max(Integer::compareTo).get();
     }
 
+    public static final int MAX_KEYWORD_LENGTH = 200;
+    public static final int OPERATOR_LENGTH = 1;
     private String searchType = "All";
     private String CLASS_NAME = "search-box";
     private Select searchSelect = typeSelect();
@@ -73,11 +73,11 @@ public class SearchBox extends HorizontalLayout {
         searchTextField.setValue("");
     }
 
-    public String getValue() {
-        return searchTextField.getValue();
-    }
-
     public void setValue(String text) {
         searchTextField.setValue(text);
+    }
+
+    public String getValue() {
+        return searchTextField.getValue();
     }
 }

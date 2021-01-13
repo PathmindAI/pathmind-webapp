@@ -1,7 +1,5 @@
 package io.skymind.pathmind.bddtests;
 
-import javax.xml.bind.DatatypeConverter;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.restassured.response.ValidatableResponse;
@@ -11,6 +9,8 @@ import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.rest.SerenityRest;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class ApiService extends PageObject {
 
@@ -36,21 +36,21 @@ public class ApiService extends PageObject {
 
     public ValidatableResponse getUserProjects() {
         return SerenityRest.
-                given().
-                header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
-                when().
-                get(PATHMIND_API_URL + "projects").
-                then().
-                statusCode(200);
+            given().
+            header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
+            when().
+            get(PATHMIND_API_URL + "projects").
+            then().
+            statusCode(200);
     }
 
     public JsonObject getProjectByProjectName(String projectName) {
         JsonArray jsonArray = SerenityRest.
-                given().
-                header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
-                when().
-                get(PATHMIND_API_URL + "projects").
-                as(JsonArray.class);
+            given().
+            header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
+            when().
+            get(PATHMIND_API_URL + "projects").
+            as(JsonArray.class);
 
         JsonObject jsonObject = new JsonObject();
         for (int i = 0; i < jsonArray.size(); i++) {

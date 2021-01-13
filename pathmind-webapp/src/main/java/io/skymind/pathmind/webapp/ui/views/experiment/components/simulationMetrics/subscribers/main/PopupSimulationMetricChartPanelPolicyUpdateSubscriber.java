@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main;
 
-import java.util.Map;
-
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
@@ -9,6 +7,8 @@ import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
+
+import java.util.Map;
 
 public class PopupSimulationMetricChartPanelPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
@@ -27,9 +27,8 @@ public class PopupSimulationMetricChartPanelPolicyUpdateSubscriber extends Polic
     public void handleBusEvent(PolicyUpdateBusEvent event) {
         ExperimentUtils.addOrUpdatePolicies(simulationMetricsPanel.getExperiment(), event.getPolicies());
         Policy bestPolicy = PolicyUtils.selectBestPolicy(simulationMetricsPanel.getExperiment().getPolicies()).orElse(null);
-        if (bestPolicy == null) {
+        if(bestPolicy == null)
             return;
-        }
         Boolean reachedGoal = PolicyUtils.isGoalReached(metricChartPanel.getRewardVariable(), bestPolicy);
         Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(simulationMetricsPanel.getSparklineIndexClicked());
         // Doing it this way to let future developers know that we're reusing the reward variable because overloading

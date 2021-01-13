@@ -6,10 +6,10 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        plugin = {"pretty", "html:target/cucumber"},
-        glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-        features = "src/test/resources/features/api.feature",
-        tags = {"@api"}
+    plugin = {"pretty", "html:target/cucumber"},
+    glue = "io.skymind.pathmind.bddtests.stepdefinitions",
+    features = "src/test/resources/features/api.feature",
+    tags = {"@api"}
 )
 public class APIFeature {
 }

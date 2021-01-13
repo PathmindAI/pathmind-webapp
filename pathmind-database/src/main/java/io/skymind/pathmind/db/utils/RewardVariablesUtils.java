@@ -1,13 +1,13 @@
 package io.skymind.pathmind.db.utils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.RewardVariable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RewardVariablesUtils {
     public static void copyGoalsFromPreviousModel(RewardVariableDAO rewardVariableDAO, ModelDAO modelDAO, long projectId,

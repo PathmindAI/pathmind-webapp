@@ -89,10 +89,6 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
         getModel().setContactLink(contactLink);
     }
 
-    static boolean isValid(String email) {
-        return email.matches(EMAIL_REGEX);
-    }
-
     @Override
     public void afterNavigation(AfterNavigationEvent afterNavigationEvent) {
         resetLayouts();
@@ -184,6 +180,10 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
         }
 
         emailNotificationService.sendResetPasswordEmail(user);
+    }
+
+    static boolean isValid(String email) {
+        return email.matches(EMAIL_REGEX);
     }
 
     @Override

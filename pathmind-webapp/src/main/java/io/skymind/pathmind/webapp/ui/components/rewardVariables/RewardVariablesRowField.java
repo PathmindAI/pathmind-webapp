@@ -55,13 +55,13 @@ public class RewardVariablesRowField extends HorizontalLayout {
                 if (spanElement.hasAttribute(clickedAttribute)) {
                     spanElement.removeAttribute(clickedAttribute);
                     isShow = false;
-                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables - 1);
+                    rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables-1);
                     EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
                 } else {
                     if (numberOfSelectedRewardVariables < 2) {
                         spanElement.setAttribute(clickedAttribute, true);
                         isShow = true;
-                        rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables + 1);
+                        rewardVariablesTable.setNumberOfSelectedRewardVariables(numberOfSelectedRewardVariables+1);
                         EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
                     }
                 }
