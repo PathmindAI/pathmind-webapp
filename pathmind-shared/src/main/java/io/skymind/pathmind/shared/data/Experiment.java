@@ -127,8 +127,6 @@ public class Experiment extends ArchivableData  implements DeepCloneableInterfac
                 .totalGoals(totalGoals)
                 .sharedWithSupport(sharedWithSupport)
                 .build());
-        experiment.setArchived(isArchived());
-        experiment.setName(getName());
         return experiment;
     }
 

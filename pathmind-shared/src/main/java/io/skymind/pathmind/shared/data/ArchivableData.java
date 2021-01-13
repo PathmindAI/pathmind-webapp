@@ -15,4 +15,9 @@ public class ArchivableData extends Data {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+
+    public <T extends ArchivableData> T shallowClone(T data) {
+        data.setArchived(isArchived());
+        return super.shallowClone(data);
+    }
 }

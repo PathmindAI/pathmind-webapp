@@ -75,8 +75,6 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
                 .warningMessage(warningMessage)
                 .completingUpdatesAttempts(completingUpdatesAttempts)
                 .build());
-
-        run.setName(getName());
         return run;
     }
 

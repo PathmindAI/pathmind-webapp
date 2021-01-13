@@ -60,10 +60,6 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
                 .experimentClass(experimentClass)
                 .experimentType(experimentType)
                 .build());
-
-        model.setArchived(isArchived());
-        model.setName(getName());
-
         return model;
     }
 }

@@ -36,10 +36,6 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
                 .userNotes(userNotes)
                 .pathmindUserId(pathmindUserId)
                 .build());
-
-        project.setArchived(isArchived());
-        project.setName(getName());
-
         return project;
     }
 
