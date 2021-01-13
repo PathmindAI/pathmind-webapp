@@ -2,6 +2,7 @@ package io.skymind.pathmind.shared.segment;
 
 public class SegmentTrackingEvents {
 
+    public static final String EVENT_MARKETING_SITE_LEAD = "Lead from Marketing Site";
     public static final String EVENT_SIGN_UP = "Signed up";
     public static final String EVENT_VERIFICATION_EMAIL = "Verification Email Sent";
     public static final String EVENT_VERIFY_EMAIL = "Email Verified";

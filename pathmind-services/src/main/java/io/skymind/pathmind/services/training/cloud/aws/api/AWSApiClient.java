@@ -180,6 +180,7 @@ public class AWSApiClient {
 
     public String jobStop(String jobId) throws JsonProcessingException {
         Job job = new Job(bucketName, jobId, true, mockCycle);
+        job.setOrigin("webapp");
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
