@@ -1,9 +1,5 @@
 package io.skymind.pathmind.bddtests.page;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.common.collect.Ordering;
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
@@ -14,12 +10,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInRelativeOrder;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @DefaultUrl("page:home.page")
 public class ModelPage extends PageObject {

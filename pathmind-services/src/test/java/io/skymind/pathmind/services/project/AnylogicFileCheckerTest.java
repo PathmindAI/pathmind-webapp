@@ -27,11 +27,12 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AnylogicFileCheckerTest {
-    private static ThreadLocal<File> jarFile = new ThreadLocal<>();
     private File validFile = new File("./src/test/resources/static/CoffeeShopAnylogicExported.zip");
     private File inValidFile = new File("./src/test/resources/static/CoffeeShop.zip");
     private File invalidFormat = new File("./src/test/resources/static/Sample.txt");
     private File corruptedType = new File("./src/test/resources/static/corrupted.zip");
+    private static ThreadLocal<File> jarFile = new ThreadLocal<>();
+
     private AnylogicFileCheckResult anylogicFileCheckResult = new AnylogicFileCheckResult();
 
     private StatusUpdater statusUpdater = new MockObjectStatusUpdater();

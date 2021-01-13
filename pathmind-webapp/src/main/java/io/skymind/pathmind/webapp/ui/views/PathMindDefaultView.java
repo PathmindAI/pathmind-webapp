@@ -1,8 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
@@ -21,6 +18,9 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind

@@ -20,19 +20,18 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProcessingFilter.HEADER_API_TOKEN_NAME;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 
 @WebMvcTest(ProjectController.class)
 public class ProjectControllerTest {
 
-    @MockBean
-    UserDAO userDAO;
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    UserDAO userDAO;
 
     @Test
     public void trimPmTokenHeaderValue() throws Exception {
@@ -64,37 +63,30 @@ public class ProjectControllerTest {
         public ProjectService projectService() {
             return mock(ProjectService.class);
         }
-
         @Bean
         public ProjectDAO projectDAO() {
             return mock(ProjectDAO.class);
         }
-
         @Bean
         public ModelDAO modelDAO() {
             return mock(ModelDAO.class);
         }
-
         @Bean
         public ModelService modelService() {
             return mock(ModelService.class);
         }
-
         @Bean
         public RewardVariableDAO rewardVariableDAO() {
             return mock(RewardVariableDAO.class);
         }
-
         @Bean
         public ObservationDAO observationDAO() {
             return mock(ObservationDAO.class);
         }
-
         @Bean
         public ModelAnalyzerApiClient maClient() {
             return mock(ModelAnalyzerApiClient.class);
         }
-
         @Bean
         public ModelFileVerifier modelFileVerifier() {
             return mock(ModelFileVerifier.class);

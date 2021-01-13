@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 
 import io.skymind.pathmind.webapp.bus.events.view.ExperimentSwitchedViewBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.view.ExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 
 public class RewardFunctionEditorExperimentSwitchedViewSubscriber extends ExperimentSwitchedViewSubscriber {

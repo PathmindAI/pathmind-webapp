@@ -80,16 +80,16 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
         this.getElement().setProperty("value", "");
     }
 
-    @Synchronize({"change"})
-    public String getValue() {
-        return this.getElement().getProperty("value");
-    }
-
     public void setValue(String value) {
         this.getElement().setProperty("value", value);
         // By default Ace editor highlight the new value
         // This is to override default behaviour of Ace editor
         this.getElement().executeJs("this.editor.clearSelection()");
+    }
+
+    @Synchronize({"change"})
+    public String getValue() {
+        return this.getElement().getProperty("value");
     }
 
     private JsonArray generateLocalVariablesAutocompleteOption(List<RewardVariable> rewardVariables) {

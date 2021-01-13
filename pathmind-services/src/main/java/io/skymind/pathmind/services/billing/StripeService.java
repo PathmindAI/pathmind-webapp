@@ -36,13 +36,17 @@ import org.springframework.stereotype.Service;
 public class StripeService {
 
     private static Logger log = LogManager.getLogger(StripeService.class);
-    private final UserDAO userDAO;
+
     @Value("${pathmind.stripe.public.key}")
     private String publicKey;
+
     @Value("${pathmind.stripe.secret.key}")
     private String secretKey;
+
     @Value("${pathmind.stripe.professional-plan-id}")
     private String professionalPlanId;
+
+    private final UserDAO userDAO;
 
     public StripeService(@Autowired UserDAO userDAO) {
         this.userDAO = userDAO;

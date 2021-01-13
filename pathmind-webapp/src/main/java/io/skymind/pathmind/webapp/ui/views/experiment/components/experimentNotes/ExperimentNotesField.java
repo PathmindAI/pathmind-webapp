@@ -16,7 +16,7 @@ import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
 
-public class ExperimentNotesField extends NotesField implements BeforeLeaveObserver {
+public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver {
 
     private Supplier<Optional<UI>> getUISupplier;
     private Consumer<String> saveConsumer;
@@ -35,12 +35,12 @@ public class ExperimentNotesField extends NotesField implements BeforeLeaveObser
         setOnNotesChangeHandler(() -> EventBus.post(new ExperimentChangedViewBusEvent(experiment)));
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     @Override

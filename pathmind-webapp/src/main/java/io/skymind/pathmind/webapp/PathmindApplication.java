@@ -40,9 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableScheduling
 @EnableAsync
 public class PathmindApplication implements CommandLineRunner {
-    @Autowired
-    private ExperimentGoalsUpdateAsyncBatchService goalsUpdateAsyncBatchService;
-
     public static void main(String[] args) {
         SpringApplication.run(PathmindApplication.class, args);
     }
@@ -110,6 +107,9 @@ public class PathmindApplication implements CommandLineRunner {
             throw new RuntimeException(e);
         }
     }
+
+    @Autowired
+    private ExperimentGoalsUpdateAsyncBatchService goalsUpdateAsyncBatchService;
 
     @Override
     public void run(String... args) throws Exception {

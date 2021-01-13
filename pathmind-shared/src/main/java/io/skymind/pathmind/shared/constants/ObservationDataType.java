@@ -12,6 +12,20 @@ public enum ObservationDataType {
     LONG("long"), LONG_ARRAY("long[]"),
     BOOLEAN("boolean"), BOOLEAN_ARRAY("boolean[]");
 
+    private String name;
+
+    ObservationDataType(String name) {
+        this.name = name;
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public String getValue() {
+        return name;
+    }
+
     private static final Map<String, ObservationDataType> BY_NAME;
 
     static {
@@ -20,12 +34,6 @@ public enum ObservationDataType {
             map.put(instance.getValue(), instance);
         }
         BY_NAME = Collections.unmodifiableMap(map);
-    }
-
-    private String name;
-
-    ObservationDataType(String name) {
-        this.name = name;
     }
 
     public static Optional<ObservationDataType> getEnumFromValue(String value) {
@@ -38,13 +46,5 @@ public enum ObservationDataType {
 
     public static boolean isArray(ObservationDataType dataType) {
         return dataType.name.endsWith("[]");
-    }
-
-    public String toString() {
-        return name;
-    }
-
-    public String getValue() {
-        return name;
     }
 }

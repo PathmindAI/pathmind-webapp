@@ -18,21 +18,14 @@ public enum UserRole {
     Master(4, "Master", Set.of(BASIC_READ, SETTINGS_READ)),
     Support(5, "Support", Set.of(BASIC_READ, EXTENDED_READ, SETTINGS_READ));
 
-    private final Set<ViewPermission> permissions;
     private int id;
     private String name;
+    private final Set<ViewPermission> permissions;
 
     UserRole(int id, String name, Set<ViewPermission> permissions) {
         this.id = id;
         this.name = name;
         this.permissions = permissions;
-    }
-
-    public static UserRole getEnumFromId(int id) {
-        return Arrays.stream(values())
-                .filter(userRole -> userRole.getId() == id)
-                .findAny()
-                .get();
     }
 
     public String toString() {
@@ -41,6 +34,13 @@ public enum UserRole {
 
     public int getId() {
         return this.id;
+    }
+
+    public static UserRole getEnumFromId(int id) {
+        return Arrays.stream(values())
+                .filter(userRole -> userRole.getId() == id)
+                .findAny()
+                .get();
     }
 
     public Set<ViewPermission> getPermissions() {

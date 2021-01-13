@@ -1,5 +1,10 @@
 package io.skymind.pathmind.services;
 
+import io.skymind.pathmind.shared.data.RewardVariable;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import javax.tools.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -7,24 +12,43 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.ToolProvider;
-
-import io.skymind.pathmind.shared.data.RewardVariable;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import static io.skymind.pathmind.shared.utils.VariableParserUtils.isArray;
 import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIndexFromVariableName;
 
 @Slf4j
 @Service
 public class RewardValidationService {
-    private static String fillInTemplate(String rewardFunction, List<RewardVariable> rewardVariables) {
+    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables){
+        final String code = fillInTemplate(rewardFunction, rewardVariables);
+        final String[] lines = code.split("\n");
+        int startReward = 0;
+        int endReward = 0;
+        for (int i = 0; i < lines.length; i++) {
+            if(lines[i].equals("// START CUSTOM RESET 0119724160")) startReward = i;
+            if(lines[i].equals("// END CUSTOM RESET 0119724160")) endReward = i;
+        }
+
+        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        compiler.getTask(null, null, diagnostics, null, null, Arrays.asList(
+                new CharSequenceJavaFileObject("Environment", code)
+        )).call();
+
+        final ArrayList<String> errors = new ArrayList<>();
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+            if(diagnostic.getLineNumber() >= startReward && diagnostic.getLineNumber() <= endReward){
+                errors.add(diagnostic.getKind() +": Line "+(diagnostic.getLineNumber() - startReward - 1)+": "+diagnostic.getMessage(Locale.ROOT));
+            }
+        }
+        // getDiagnostics() should be empty if everything is fine,
+        // otherwise, return a generic error
+        if (errors.isEmpty() && !diagnostics.getDiagnostics().isEmpty()) {
+            errors.add("ERROR: Invalid reward function");
+        }
+        return errors;
+    }
+
+    private static String fillInTemplate(String rewardFunction, List<RewardVariable> rewardVariables){
         return "package pathmind;\n" +
                 "\n" +
                 "public class Environment {\n" +
@@ -69,12 +93,12 @@ public class RewardValidationService {
         StringBuilder builder = new StringBuilder();
         builder.append("    private static class Model {\n");
         normalizeVariables(rewardVariables)
-                .forEach(rv -> builder.append(String.format("        public %s %s;\n", rv.getDataType(), rv.getName())));
+            .forEach(rv -> builder.append(String.format("        public %s %s;\n", rv.getDataType(), rv.getName())));
         builder.append("    }\n");
         return builder.toString();
     }
-
-    private static List<RewardVariable> normalizeVariables(List<RewardVariable> rewardVariables) {
+    
+    private static List<RewardVariable> normalizeVariables(List<RewardVariable> rewardVariables){
         List<RewardVariable> normalizedRewardVariables = new ArrayList<>();
         for (RewardVariable rewardVariable : rewardVariables) {
             if (isArray(rewardVariable.getName())) {
@@ -92,47 +116,14 @@ public class RewardValidationService {
         }
         return normalizedRewardVariables;
     }
-
-    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables) {
-        final String code = fillInTemplate(rewardFunction, rewardVariables);
-        final String[] lines = code.split("\n");
-        int startReward = 0;
-        int endReward = 0;
-        for (int i = 0; i < lines.length; i++) {
-            if (lines[i].equals("// START CUSTOM RESET 0119724160")) {
-                startReward = i;
-            }
-            if (lines[i].equals("// END CUSTOM RESET 0119724160")) {
-                endReward = i;
-            }
-        }
-
-        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-        final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        compiler.getTask(null, null, diagnostics, null, null, Arrays.asList(
-                new CharSequenceJavaFileObject("Environment", code)
-        )).call();
-
-        final ArrayList<String> errors = new ArrayList<>();
-        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-            if (diagnostic.getLineNumber() >= startReward && diagnostic.getLineNumber() <= endReward) {
-                errors.add(diagnostic.getKind() + ": Line " + (diagnostic.getLineNumber() - startReward - 1) + ": " + diagnostic.getMessage(Locale.ROOT));
-            }
-        }
-        // getDiagnostics() should be empty if everything is fine,
-        // otherwise, return a generic error
-        if (errors.isEmpty() && !diagnostics.getDiagnostics().isEmpty()) {
-            errors.add("ERROR: Invalid reward function");
-        }
-        return errors;
-    }
-
+    
+    
     private static class CharSequenceJavaFileObject extends SimpleJavaFileObject {
 
         private final CharSequence content;
 
         CharSequenceJavaFileObject(String className, CharSequence content) {
-            super(URI.create("string:///" + className.replace('.', '/') + JavaFileObject.Kind.SOURCE.extension), JavaFileObject.Kind.SOURCE);
+            super(URI.create("string:///"+className.replace('.', '/')+JavaFileObject.Kind.SOURCE.extension), JavaFileObject.Kind.SOURCE);
             this.content = content;
         }
 

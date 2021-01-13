@@ -18,16 +18,6 @@ public enum GoalConditionType {
     ),
     ;
 
-    private static final Map<String, GoalConditionType> BY_CODE;
-
-    static {
-        Map<String, GoalConditionType> map = new ConcurrentHashMap<>();
-        for (GoalConditionType instance : GoalConditionType.values()) {
-            map.put(instance.getCode(), instance);
-        }
-        BY_CODE = Collections.unmodifiableMap(map);
-    }
-
     private final String code;
     private final String name;
     private final RewardFunctionComponent rewardFunctionComponent;
@@ -38,11 +28,21 @@ public enum GoalConditionType {
         this.rewardFunctionComponent = rewardFunctionComponent;
     }
 
-    public static Optional<GoalConditionType> getEnumFromCode(String code) {
-        return code == null ? Optional.empty() : Optional.ofNullable(BY_CODE.get(code));
-    }
-
     public String toString() {
         return name;
+    }
+
+    private static final Map<String, GoalConditionType> BY_CODE;
+
+    static {
+        Map<String, GoalConditionType> map = new ConcurrentHashMap<>();
+        for (GoalConditionType instance : GoalConditionType.values()) {
+            map.put(instance.getCode(), instance);
+        }
+        BY_CODE = Collections.unmodifiableMap(map);
+    }
+
+    public static Optional<GoalConditionType> getEnumFromCode(String code) {
+        return code == null ? Optional.empty() : Optional.ofNullable(BY_CODE.get(code));
     }
 }

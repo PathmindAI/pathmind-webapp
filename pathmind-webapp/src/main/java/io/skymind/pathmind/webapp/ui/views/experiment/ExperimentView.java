@@ -30,6 +30,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.TrainingError;
@@ -73,6 +74,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.Experimen
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
 import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -87,13 +90,6 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_
 @Slf4j
 public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
-    protected ExperimentNotesField notesField;
-    @Autowired
-    protected ExperimentDAO experimentDAO;
-    @Autowired
-    protected PolicyDAO policyDAO;
-    @Autowired
-    protected SegmentIntegrator segmentIntegrator;
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
     private Object experimentLock = new Object();
@@ -102,13 +98,16 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private Button unarchiveExperimentButton;
     private Anchor downloadModelAlpLink;
     private Button shareButton;
+
     private long experimentId = -1;
     private long modelId = -1;
     private List<RewardVariable> rewardVariables;
     private Policy bestPolicy;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
+
     private UserCaps userCaps;
+
     private HorizontalLayout middlePanel;
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private TagLabel archivedLabel;
@@ -119,21 +118,31 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     private CodeViewer codeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ExperimentsNavBar experimentsNavbar;
+    protected ExperimentNotesField notesField;
+
     private ObservationsPanel observationsPanel;
+
     private StoppedTrainingNotification stoppedTrainingNotification;
     private SimulationMetricsPanel simulationMetricsPanel;
+
     @Autowired
     private ModelService modelService;
+    @Autowired
+    protected ExperimentDAO experimentDAO;
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
     @Autowired
     private ObservationDAO observationDAO;
+    @Autowired
+    protected PolicyDAO policyDAO;
     @Autowired
     private TrainingErrorDAO trainingErrorDAO;
     @Autowired
     private TrainingService trainingService;
     @Autowired
     private RunDAO runDAO;
+    @Autowired
+    protected SegmentIntegrator segmentIntegrator;
     @Autowired
     private FeatureManager featureManager;
     @Autowired
@@ -383,6 +392,23 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         this.experimentId = experimentId;
     }
 
+    public void setExperiment(Experiment selectedExperiment) {
+        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
+        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
+        synchronized (experimentLock) {
+            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
+                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
+            } else {
+                experiment = getExperimentForUser(selectedExperiment.getId())
+                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
+                loadExperimentData();
+                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
+
+                updateScreenComponents();
+            }
+        }
+    }
+
     @Override
     protected void initLoadData() throws InvalidDataException {
         // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
@@ -517,23 +543,6 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    public void setExperiment(Experiment selectedExperiment) {
-        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        synchronized (experimentLock) {
-            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
-            } else {
-                experiment = getExperimentForUser(selectedExperiment.getId())
-                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-                loadExperimentData();
-                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
-
-                updateScreenComponents();
-            }
-        }
     }
 
     public long getModelId() {
