@@ -38,32 +38,22 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     private final FeatureManager featureManager;
 
     private final UserService userService;
-
+    private final Duration keyValidityDuration;
     @Id("editInfoBtn")
     private Button editInfoBtn;
-
     @Id("changePasswordBtn")
     private Button changePasswordBtn;
-
     @Id("upgradeBtn")
     private Button upgradeBtn;
-
     @Id("cancelSubscriptionBtn")
     private Button cancelSubscriptionBtn;
-
     @Id("editPaymentBtn")
     private Button editPaymentBtn;
-
     @Id("rotateApiKeyBtn")
     private Button rotateApiKeyBtn;
-
     private StripeService stripeService;
-
     private SegmentIntegrator segmentIntegrator;
-
     private PathmindUser user;
-
-    private final Duration keyValidityDuration;
 
     @Autowired
     public AccountViewContent(

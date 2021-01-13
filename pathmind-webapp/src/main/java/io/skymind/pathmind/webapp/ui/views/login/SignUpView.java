@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.login;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
@@ -30,40 +32,29 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP_URL)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView {
-    @Id("lastName")
-    private TextField lastName;
-
-    @Id("firstName")
-    private TextField firstName;
-
-    @Id("email")
-    private TextField email;
-
-    @Id("signIn")
-    private Button signIn;
-
-    @Id("newPassword")
-    private PasswordField newPassword;
-
-    @Id("confirmNewPassword")
-    private PasswordField confirmNewPassword;
-
-    @Id("newPassNotes")
-    private VerticalLayout passwordValidationNotes;
-
     private final UserService userService;
     private final EmailNotificationService emailNotificationService;
     private final SegmentIntegrator segmentIntegrator;
-
     private final AuthenticationManager authenticationManager;
-
+    @Id("lastName")
+    private TextField lastName;
+    @Id("firstName")
+    private TextField firstName;
+    @Id("email")
+    private TextField email;
+    @Id("signIn")
+    private Button signIn;
+    @Id("newPassword")
+    private PasswordField newPassword;
+    @Id("confirmNewPassword")
+    private PasswordField confirmNewPassword;
+    @Id("newPassNotes")
+    private VerticalLayout passwordValidationNotes;
     private PathmindUser user;
     private Binder<PathmindUser> binder;
 
@@ -118,7 +109,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
     private void loginUser(String emailValue, String passwordValue) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(emailValue, passwordValue);
         VaadinRequest vaadinRequest = VaadinService.getCurrentRequest();
-        HttpServletRequest request = ((VaadinServletRequest)vaadinRequest).getHttpServletRequest();
+        HttpServletRequest request = ((VaadinServletRequest) vaadinRequest).getHttpServletRequest();
         token.setDetails(new WebAuthenticationDetails(request));
         Authentication authenticatedUser = authenticationManager.authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(authenticatedUser);

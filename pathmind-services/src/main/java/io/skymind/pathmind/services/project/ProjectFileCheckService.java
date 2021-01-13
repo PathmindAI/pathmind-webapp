@@ -1,5 +1,11 @@
 package io.skymind.pathmind.services.project;
 
+import java.io.File;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
@@ -7,12 +13,6 @@ import io.skymind.pathmind.shared.data.Model;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 @Deprecated
 @Slf4j
@@ -46,7 +46,7 @@ public class ProjectFileCheckService {
                     //File check result.
                     final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
                     if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult) result).getPriorityModelInfo();
                         String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
                         String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
                         String expTypeName = modelInfo.getExperimentType().toString();
@@ -54,7 +54,7 @@ public class ProjectFileCheckService {
                         String reqId = "project_" + model.getProjectId();
 
                         HyperparametersDTO analysisResult =
-                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+                                client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
 
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
@@ -97,7 +97,7 @@ public class ProjectFileCheckService {
         if (param != null && param.isOldVersionFound()) {
             return Optional.of(getErrorMessage(InvalidModelType.OLD_REWARD_VARIABLES));
         } else if (param == null || param.getObservationNames() == null
-            || param.getObservationTypes() == null || param.getRewardVariableNames() == null || param.getRewardVariableTypes() == null) {
+                || param.getObservationTypes() == null || param.getRewardVariableNames() == null || param.getRewardVariableTypes() == null) {
             return Optional.of("Unable to analyze the model.");
         } else if (param.getRewardVariableNames().isEmpty() || param.getRewardVariableTypes().isEmpty()) {
             return Optional.of("Failed to read reward variables.");
@@ -118,7 +118,7 @@ public class ProjectFileCheckService {
     }
 
     private Hyperparams buildHyperparams(HyperparametersDTO params) {
-    	return Hyperparams.builder()
+        return Hyperparams.builder()
                 .numObservation(Integer.parseInt(params.getObservations()))
                 .rewardVariableFunction(params.getRewardFunction())
                 .rewardVariableNames(params.getRewardVariableNames())
@@ -132,7 +132,7 @@ public class ProjectFileCheckService {
 
     public String getErrorMessage(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
-            case MISSING_OBSERVATIONS :
+            case MISSING_OBSERVATIONS:
                 return INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS;
             default:
                 String articleUrl = getArticleUrlForInvalidReason(invalidModelType);
@@ -142,9 +142,9 @@ public class ProjectFileCheckService {
 
     private String getArticleUrlForInvalidReason(InvalidModelType invalidModelType) {
         switch (invalidModelType) {
-            case OLD_REWARD_VARIABLES :
+            case OLD_REWARD_VARIABLES:
                 return convertModelsToSupportLatestVersionURL;
-            default :
+            default:
                 // Currently only invalid model reason is reward variables 
                 return convertModelsToSupportLatestVersionURL;
         }

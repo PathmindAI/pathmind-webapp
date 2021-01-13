@@ -1,10 +1,10 @@
 package io.skymind.pathmind.services.project;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -33,21 +33,15 @@ public class AnyLogicModelInfo {
     private static List<String> actions = List.of(PM_ACTIONS, RL_ACTION);
     private static List<String> reward = List.of(PM_REWARD);
     private static List<String> config = List.of(RL_CONFIG);
+    private String experimentClass;
+    private String superClass;
+    private String mainAgentClass;
+    private ExperimentType experimentType;
 
-    enum ExperimentType {
-        Simulation,
-        RLExperiment;
-
-        public static ExperimentType getExperiment(String superClass) {
-            superClass = superClass.replaceAll("/", ".");
-            if (superClass.equals(SIMULATION_SUPER_CLASS)) {
-                return Simulation;
-            } else if (superClass.equals(RLEXPERIMENT_SUPER_CLASS)){
-                return RLExperiment;
-            } else {
-                throw new IllegalStateException(superClass + " is not supported class for Experiment");
-            }
-        }
+    public AnyLogicModelInfo(String experimentClass, String superClass) {
+        this.experimentClass = experimentClass;
+        this.superClass = superClass;
+        this.experimentType = ExperimentType.getExperiment(superClass);
     }
 
     public static boolean isSupportedExperiment(String superClass) {
@@ -76,22 +70,26 @@ public class AnyLogicModelInfo {
 
     public static String getNameFromClass(String className) {
         String[] split = className.replaceAll("/", ".").split("\\.");
-        return split.length > 1 ? split[split.length -1] : "";
+        return split.length > 1 ? split[split.length - 1] : "";
     }
-
-
-    private String experimentClass;
-    private String superClass;
-    private String mainAgentClass;
-    private ExperimentType experimentType;
 //    private String observationClass;
 //    private String actionClass;
 //    private String rewardClass;
 //    private String configurationClass;
 
-    public AnyLogicModelInfo(String experimentClass, String superClass) {
-        this.experimentClass = experimentClass;
-        this.superClass = superClass;
-        this.experimentType = ExperimentType.getExperiment(superClass);
+    enum ExperimentType {
+        Simulation,
+        RLExperiment;
+
+        public static ExperimentType getExperiment(String superClass) {
+            superClass = superClass.replaceAll("/", ".");
+            if (superClass.equals(SIMULATION_SUPER_CLASS)) {
+                return Simulation;
+            } else if (superClass.equals(RLEXPERIMENT_SUPER_CLASS)) {
+                return RLExperiment;
+            } else {
+                throw new IllegalStateException(superClass + " is not supported class for Experiment");
+            }
+        }
     }
 }

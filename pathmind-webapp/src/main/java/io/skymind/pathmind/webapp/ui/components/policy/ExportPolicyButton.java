@@ -26,13 +26,6 @@ public class ExportPolicyButton extends Anchor {
     private Policy policy;
     private String policyFilename;
 
-    // Hack -> Quick little solution to deal "same erasure" issue with lambda's.
-    public interface ExperimentSupplier extends Supplier<Experiment> {
-    }
-
-    public interface PolicySupplier extends Supplier<Policy> {
-    }
-
     public ExportPolicyButton(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO, PolicySupplier getPolicySupplier) {
         super();
         this.policy = getPolicySupplier.get();
@@ -91,6 +84,13 @@ public class ExportPolicyButton extends Anchor {
     private StreamResource getResourceStream(String filename) {
         return new StreamResource(removeInvalidChars(filename),
                 () -> new ByteArrayInputStream(policyFileService.getPolicyFile(policy.getId())));
+    }
+
+    // Hack -> Quick little solution to deal "same erasure" issue with lambda's.
+    public interface ExperimentSupplier extends Supplier<Experiment> {
+    }
+
+    public interface PolicySupplier extends Supplier<Policy> {
     }
 
 }

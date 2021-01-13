@@ -6,7 +6,6 @@ import java.util.List;
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 
 import static org.hamcrest.MatcherAssert.assertThat;

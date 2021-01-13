@@ -15,7 +15,7 @@ public class NewExperimentViewExperimentStartTrainingSubscriber extends Experime
     }
 
     @Override
-     public void handleBusEvent(ExperimentStartTrainingBusEvent event) {
+    public void handleBusEvent(ExperimentStartTrainingBusEvent event) {
         getUiSupplier().get().get().navigate(ExperimentView.class, event.getExperiment().getId());
     }
 

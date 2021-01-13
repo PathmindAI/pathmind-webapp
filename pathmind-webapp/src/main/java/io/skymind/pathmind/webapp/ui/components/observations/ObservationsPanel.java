@@ -1,12 +1,10 @@
 package io.skymind.pathmind.webapp.ui.components.observations;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
@@ -53,7 +51,7 @@ public class ObservationsPanel extends VerticalLayout {
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
-        
+
         if (hideCheckboxes) {
             add(createObservationsList(modelObservations));
         } else {
@@ -67,12 +65,13 @@ public class ObservationsPanel extends VerticalLayout {
         setSpacing(false);
 
         addValueChangeListener(evt -> {
-            if(experiment == null)
+            if (experiment == null) {
                 return;
+            }
             // This is only for the experiment views. In that case we want to make sure they are different, meaning it's due to a
             // user initiated action rather than switching experiments within the view.
             List<Observation> selectedObservationsFromEvent = evt.stream().collect(Collectors.toList());
-            if(!ObservationUtils.areObservationsEqual(this.selectedObservations, selectedObservationsFromEvent)) {
+            if (!ObservationUtils.areObservationsEqual(this.selectedObservations, selectedObservationsFromEvent)) {
                 experiment.setSelectedObservations(selectedObservationsFromEvent);
                 EventBus.post(new ExperimentChangedViewBusEvent(experiment));
             }

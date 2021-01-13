@@ -1,13 +1,13 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;

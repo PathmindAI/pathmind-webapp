@@ -19,68 +19,15 @@ import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.MetricsRawUtils;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.convertValidDouble;
 
 @Slf4j
 public class ProgressInterpreter {
-    enum RAY_PROGRESS {
-        EPISODE_REWARD_MAX("episode_reward_max"),
-        EPISODE_REWARD_MIN("episode_reward_min"),
-        EPISODE_REWARD_MEAN("episode_reward_mean"),
-        EPISODES_THIS_ITER("episodes_this_iter"),
-        TRAINING_ITERATION("training_iteration"),
-        METRICS_RAW("hist_stats/metrics_raw");
-
-        String column;
-
-        RAY_PROGRESS(String column) {
-            this.column = column;
-        }
-
-        static String[] metricsColumns(int numReward, int numAgents) {
-            List<String> columns = new ArrayList<>(Arrays.asList(TRAINING_ITERATION.column));
-            for (int i = 0; i < numReward * numAgents; i++) {
-                columns.add(metricsMax(i));
-                columns.add(metricsMin(i));
-                columns.add(metricsMean(i));
-            }
-
-            return columns.toArray(new String[0]);
-        }
-
-        static RAY_PROGRESS[] scoreColumns() {
-            return new RAY_PROGRESS[]{EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
-        }
-
-        static String[] metricsRawColumns() {
-            return new String[]{EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
-        }
-
-        static final String metrics_max = "custom_metrics/metrics_%d_max";
-        static final String metrics_min = "custom_metrics/metrics_%d_min";
-        static final String metrics_mean = "custom_metrics/metrics_%d_mean";
-
-        static String metricsMax(int index) {
-            return String.format(metrics_max, index);
-        }
-
-        static String metricsMin(int index) {
-            return String.format(metrics_min, index);
-        }
-
-        static String metricsMean(int index) {
-            return String.format(metrics_mean, index);
-        }
-    }
-
     private static final int ALGORITHM = 0;
     private static final int NAME = 2;
-
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss");
-
     private static final int TRIAL_ID_LEN = 8;
     private static final int DATE_LEN = 19;
 
@@ -232,5 +179,54 @@ public class ProgressInterpreter {
             }
         }
         return metricsRaws;
+    }
+
+    enum RAY_PROGRESS {
+        EPISODE_REWARD_MAX("episode_reward_max"),
+        EPISODE_REWARD_MIN("episode_reward_min"),
+        EPISODE_REWARD_MEAN("episode_reward_mean"),
+        EPISODES_THIS_ITER("episodes_this_iter"),
+        TRAINING_ITERATION("training_iteration"),
+        METRICS_RAW("hist_stats/metrics_raw");
+
+        static final String metrics_max = "custom_metrics/metrics_%d_max";
+        static final String metrics_min = "custom_metrics/metrics_%d_min";
+        static final String metrics_mean = "custom_metrics/metrics_%d_mean";
+        String column;
+
+        RAY_PROGRESS(String column) {
+            this.column = column;
+        }
+
+        static String[] metricsColumns(int numReward, int numAgents) {
+            List<String> columns = new ArrayList<>(Arrays.asList(TRAINING_ITERATION.column));
+            for (int i = 0; i < numReward * numAgents; i++) {
+                columns.add(metricsMax(i));
+                columns.add(metricsMin(i));
+                columns.add(metricsMean(i));
+            }
+
+            return columns.toArray(new String[0]);
+        }
+
+        static RAY_PROGRESS[] scoreColumns() {
+            return new RAY_PROGRESS[]{EPISODE_REWARD_MAX, EPISODE_REWARD_MIN, EPISODE_REWARD_MEAN, EPISODES_THIS_ITER, TRAINING_ITERATION};
+        }
+
+        static String[] metricsRawColumns() {
+            return new String[]{EPISODES_THIS_ITER.column, TRAINING_ITERATION.column, METRICS_RAW.column};
+        }
+
+        static String metricsMax(int index) {
+            return String.format(metrics_max, index);
+        }
+
+        static String metricsMin(int index) {
+            return String.format(metrics_min, index);
+        }
+
+        static String metricsMean(int index) {
+            return String.format(metrics_mean, index);
+        }
     }
 }

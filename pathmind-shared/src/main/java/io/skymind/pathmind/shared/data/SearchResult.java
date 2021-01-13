@@ -106,12 +106,12 @@ public class SearchResult {
         this.updateDate = updateDate;
     }
 
-    public void setIsArchived(Boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-
     public Boolean getIsArchived() {
         return isArchived;
+    }
+
+    public void setIsArchived(Boolean isArchived) {
+        this.isArchived = isArchived;
     }
 
 }

@@ -18,8 +18,8 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -113,12 +113,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
         }
     }
 
-    private void setExperiment(Experiment experiment) {
-        this.experiment = experiment.deepClone();
-        // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
-        experiment.updateTrainingStatus();
-    }
-
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
         policyChartPanel.setVisible(false);
@@ -145,6 +139,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    private void setExperiment(Experiment experiment) {
+        this.experiment = experiment.deepClone();
+        // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
+        experiment.updateTrainingStatus();
     }
 
     public List<RewardVariable> getRewardVariables() {

@@ -29,44 +29,44 @@ public class DashboardItem {
         return this.project;
     }
 
-    public Model getModel() {
-        return this.model;
-    }
-
-    public Experiment getExperiment() {
-        return this.experiment;
-    }
-
-    public Run getLatestRun() {
-        return this.latestRun;
-    }
-
-    public LocalDateTime getLatestUpdateTime() {
-        return this.latestUpdateTime;
-    }
-
-    public boolean isPolicyExported() {
-        return this.policyExported;
-    }
-
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public Model getModel() {
+        return this.model;
     }
 
     public void setModel(Model model) {
         this.model = model;
     }
 
+    public Experiment getExperiment() {
+        return this.experiment;
+    }
+
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public Run getLatestRun() {
+        return this.latestRun;
     }
 
     public void setLatestRun(Run latestRun) {
         this.latestRun = latestRun;
     }
 
+    public LocalDateTime getLatestUpdateTime() {
+        return this.latestUpdateTime;
+    }
+
     public void setLatestUpdateTime(LocalDateTime latestUpdateTime) {
         this.latestUpdateTime = latestUpdateTime;
+    }
+
+    public boolean isPolicyExported() {
+        return this.policyExported;
     }
 
     public void setPolicyExported(boolean policyExported) {

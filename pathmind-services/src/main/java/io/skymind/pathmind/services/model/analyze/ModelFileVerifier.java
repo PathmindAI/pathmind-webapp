@@ -1,11 +1,5 @@
 package io.skymind.pathmind.services.model.analyze;
 
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +14,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Service;
+
 @Slf4j
 @Service
 public class ModelFileVerifier {
@@ -33,23 +32,6 @@ public class ModelFileVerifier {
 //    public ModelFileVerifier(ProjectFileCheckService projectFileCheckService) {
 //        this.projectFileCheckService = projectFileCheckService;
 //    }
-
-    public ModelBytes assureModelBytes(ModelBytes modelBytes) {
-        try {
-            byte[] modifiedBytes = ensureZipFileStructure(modelBytes.getBytes());
-            return ModelBytes.of(modifiedBytes);
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-            // TODO:  return ModelBytes.error(e.getMessage());
-        }
-    }
-//
-//    public  ModelBytes analyze(ModelBytes modelBytes) {
-//        ModelBytes cleaned = assureModelBytes(modelBytes);
-////        projectFileCheckService.checkFile(this, model);
-//        return new byte[0];
-//    }
-
 
     /**
      * The zip file should only contain model.jar and database folder,
@@ -97,6 +79,22 @@ public class ModelFileVerifier {
         }
         zos.close();
         return baos.toByteArray();
+    }
+//
+//    public  ModelBytes analyze(ModelBytes modelBytes) {
+//        ModelBytes cleaned = assureModelBytes(modelBytes);
+////        projectFileCheckService.checkFile(this, model);
+//        return new byte[0];
+//    }
+
+    public ModelBytes assureModelBytes(ModelBytes modelBytes) {
+        try {
+            byte[] modifiedBytes = ensureZipFileStructure(modelBytes.getBytes());
+            return ModelBytes.of(modifiedBytes);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+            // TODO:  return ModelBytes.error(e.getMessage());
+        }
     }
 
 }

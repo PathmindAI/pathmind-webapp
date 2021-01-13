@@ -1,5 +1,8 @@
 package io.skymind.pathmind.bddtests.page.wizard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
@@ -7,21 +10,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 
 public class ModelDetailsPage extends PageObject {
 
+    private final By byTextarea = By.cssSelector("textarea");
     private Utils utils;
-
     @FindBy(xpath = "//span[text()='Notes']/following-sibling::vaadin-text-area")
     private WebElement modelDetailsNotesShadow;
-
-    private final By byTextarea = By.cssSelector("textarea");
 
     public void inputModelDetailsNotes(String notes) {
         WebElement e = utils.expandRootElement(modelDetailsNotesShadow);

@@ -6,11 +6,17 @@ public interface FileCheckResult<T> {
 
     boolean isFileCheckComplete();
 
+    void setFileCheckComplete(boolean fileCheckComplete);
+
     boolean isFileCheckSuccessful();
 
     boolean isCorrectFileType();
 
+    void setCorrectFileType(boolean correctFileType);
+
     boolean isModelJarFilePresent();
+
+    void setModelJarFilePresent(boolean modelJarFilePresent);
 
     boolean isHelperPresent();
 
@@ -18,13 +24,7 @@ public interface FileCheckResult<T> {
 
     List<String> getDefinedHelpers();
 
-    void setCorrectFileType(boolean correctFileType);
-
-    void setModelJarFilePresent(boolean modelJarFilePresent);
-
     void setDefinedHelpers(List<String> definedHelpers);
-
-    void setFileCheckComplete(boolean fileCheckComplete);
 
     boolean isValidRLPlatform();
 

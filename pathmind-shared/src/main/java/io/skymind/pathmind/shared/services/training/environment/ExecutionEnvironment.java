@@ -15,10 +15,10 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExecutionEnvironment {
+    private final JDK jdkVersion;
     private AnyLogic anylogicVersion;
     private PathmindHelper pathmindHelperVersion;
     private NativeRL nativerlVersion;
-    private final JDK jdkVersion;
     private Conda condaVersion;
     private EC2InstanceType ec2InstanceType;
     private int PBT_RUN_ITERATIONS;

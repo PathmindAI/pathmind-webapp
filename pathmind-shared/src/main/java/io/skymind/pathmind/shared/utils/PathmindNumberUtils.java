@@ -115,17 +115,18 @@ public class PathmindNumberUtils {
 
     /**
      * convert Python style double value to Java Double style
+     *
      * @param str
      * @return
      */
     public static double convertValidDouble(String str) {
         str = str.trim();
         if (str.equalsIgnoreCase("nan")) {
-            str =  String.valueOf(Double.NaN);
+            str = String.valueOf(Double.NaN);
         } else if (str.equalsIgnoreCase("inf")) {
             str = String.valueOf(Double.POSITIVE_INFINITY);
         } else if (str.equalsIgnoreCase("-inf")) {
-            str =  String.valueOf(Double.NEGATIVE_INFINITY);
+            str = String.valueOf(Double.NEGATIVE_INFINITY);
         }
         return Double.valueOf(str);
     }

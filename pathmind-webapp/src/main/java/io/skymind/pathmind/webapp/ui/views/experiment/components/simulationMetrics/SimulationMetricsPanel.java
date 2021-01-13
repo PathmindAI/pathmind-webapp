@@ -22,14 +22,14 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.MetricChartPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.PopupSimulationMetricChartPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.main.SimulationMetricsPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.subscribers.view.SimulationMetricsPanelExperimentSwitchedViewSubscriber;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

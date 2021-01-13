@@ -1,20 +1,17 @@
 package io.skymind.pathmind.webapp.utils;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class CookieUtils {
 
     public static void setNotFirstTimeVisitCookie() {
-        setCookie("isFirstTimeVisit", "false", 365*24*60*60); // expires in a year
+        setCookie("isFirstTimeVisit", "false", 365 * 24 * 60 * 60); // expires in a year
     }
 
     public static void setCookie(String cookieName, String value, int age) {

@@ -28,6 +28,14 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
     private Supplier<Optional<UI>> uiSupplier;
     private boolean isListenForEventOnSameUI;
 
+    public EventBusSubscriber() {
+        this(false);
+    }
+
+    public EventBusSubscriber(boolean isListenForEventOnSameUI) {
+        this.isListenForEventOnSameUI = isListenForEventOnSameUI;
+    }
+
     public abstract BusEventType getEventType();
 
     public abstract void handleBusEvent(T event);
@@ -40,14 +48,6 @@ public abstract class EventBusSubscriber<T extends PathmindBusEvent> {
      */
     public boolean isAttached() {
         return getUiSupplier().get().isPresent();
-    }
-
-    public EventBusSubscriber() {
-        this(false);
-    }
-
-    public EventBusSubscriber(boolean isListenForEventOnSameUI) {
-        this.isListenForEventOnSameUI = isListenForEventOnSameUI;
     }
 
     /**

@@ -29,7 +29,6 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_DOW
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EDIT_INFO;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ERROR_PAGE;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXPORT_POLICY;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
@@ -46,6 +45,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UNA
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENT_VIEW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_MODELS_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_USER_RUN_CAP_LIMIT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFICATION_EMAIL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFY_EMAIL;

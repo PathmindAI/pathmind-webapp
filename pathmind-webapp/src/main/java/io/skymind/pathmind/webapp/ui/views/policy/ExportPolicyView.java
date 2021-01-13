@@ -1,12 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.policy;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
@@ -19,18 +15,19 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.policy.ExportPolicyButton;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
 @Route(value = Routes.EXPORT_POLICY_URL, layout = MainLayout.class)
 public class ExportPolicyView extends PathMindDefaultView implements HasUrlParameter<Long> {
+    private final ExportPolicyViewContent exportPolicyViewContent;
     @Autowired
     private ModelService modelService;
     @Autowired
@@ -39,8 +36,6 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
     private PolicyFileService policyFileService;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-
-    private final ExportPolicyViewContent exportPolicyViewContent;
     private ExportPolicyButton exportButton;
     private Anchor downloadModelAlpLink;
 
@@ -67,9 +62,9 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
         exportPolicyViewContent.setFilename(exportButton.getPolicyFilename());
 
         VerticalLayout exportPolicyViewContentAndButtons = WrapperUtils.wrapFormCenterVertical(
-            exportPolicyViewContent,
-            exportButton,
-            downloadModelAlpLink
+                exportPolicyViewContent,
+                exportButton,
+                downloadModelAlpLink
         );
 
         return exportPolicyViewContentAndButtons;

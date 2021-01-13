@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services;
 
+import java.util.List;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -11,8 +13,6 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 

@@ -1,31 +1,32 @@
 package io.skymind.pathmind.bddtests.page;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
+import io.skymind.pathmind.bddtests.Utils;
+import net.serenitybdd.core.pages.PageObject;
+import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import io.skymind.pathmind.bddtests.Utils;
-import net.serenitybdd.core.pages.PageObject;
-import net.thucydides.core.annotations.DefaultUrl;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @DefaultUrl("page:home.page")
 public class ProjectsPage extends PageObject {
 
+    private final By byInput = By.cssSelector("input");
+    private final By byTextarea = By.cssSelector("textarea");
     private Utils utils;
-
     @FindBy(xpath = "//vaadin-text-area[1]")
     private WebElement experimentNotesField;
     @FindBy(xpath = "//vaadin-button[text()='New Project']")
     private WebElement newProjectBtn;
-
-    private final By byInput = By.cssSelector("input");
-    private final By byTextarea = By.cssSelector("textarea");
 
     public void clickCreateNewProjectBtn() {
         waitABit(3500);

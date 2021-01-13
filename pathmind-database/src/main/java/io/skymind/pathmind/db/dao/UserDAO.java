@@ -1,11 +1,11 @@
 package io.skymind.pathmind.db.dao;
 
+import java.util.UUID;
+
 import io.skymind.pathmind.shared.data.PathmindUser;
 import org.jooq.DSLContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
-
-import java.util.UUID;
 
 @Repository
 public class UserDAO {
