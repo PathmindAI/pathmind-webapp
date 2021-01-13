@@ -154,16 +154,12 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
 
     @Override
     protected void initComponents() {
-        initializeComponentsWithData();
+        updateComponents();
     }
 
     // Special case because in the new experiment view we add a lot of extra code therefore it's only considered a helper method.
     protected ExperimentNotesField createNotesField(Runnable segmentIntegratorRunnable, boolean allowAutoSave, boolean hideSaveButton) {
         return new ExperimentNotesField(this, experimentDAO, segmentIntegratorRunnable, allowAutoSave, hideSaveButton);
-    }
-
-    protected void initializeComponentsWithData() {
-        updateComponents();
     }
 
     // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
