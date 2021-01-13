@@ -330,6 +330,21 @@ background-color: var(--pm-grey-color-light);
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
+.projects-view .demo-dialog {
+    width: 40rem;
+    height: 40rem;
+}
+
+.demo-view-content + vaadin-button {
+    position: absolute;
+    top: var(--lumo-space-m);
+    right: var(--lumo-space-m);
+}
+
+vaadin-dialog-overlay .demo-view-content {
+    padding: var(--lumo-space-xs);
+}
+
 .projects-view .project-name-column {
     align-items: center;
 }

@@ -9,6 +9,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
@@ -65,6 +66,7 @@ public class ProjectsView extends PathMindDefaultView {
     private FlexLayout gridWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
     private DemoViewContent demoViewContent;
+    private Dialog demoDialog;
 
     public ProjectsView() {
         super();
@@ -84,34 +86,49 @@ public class ProjectsView extends PathMindDefaultView {
         headerWrapper.addClassName("page-content-header");
 
         demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
+        setupDemoDialog();
 
         gridWrapper = new ViewSection(
                 headerWrapper,
                 archivesTabPanel,
-                projectGrid,
-                demoViewContent);
+                projectGrid);
         gridWrapper.addClassName("page-content");
 
         if (projects.isEmpty()) {
+            gridWrapper.add(demoViewContent);
             archivesTabPanel.setVisible(false);
             projectGrid.setVisible(false);
             demoViewContent.setVisible(true);
             showDemosButton.setVisible(false);
         } else {
-            archivesTabPanel.setVisible(true);
-            projectGrid.setVisible(true);
-            demoViewContent.setVisible(false);
             showDemosButton.setVisible(true);
         }
 
         return gridWrapper;
     }
 
+    private void setupDemoDialog() {
+        demoDialog = new Dialog();
+        demoDialog.getElement().getClassList().add("demo-dialog");
+        demoDialog.addOpenedChangeListener(openedChangedEvent -> {
+            if (openedChangedEvent.isOpened()) {
+                demoDialog.removeAll();
+                Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+                closeButton.addClickListener(event -> demoDialog.close());
+                // demoViewContent has to be re-initiated here every time
+                // otherwise it will be empty from the 2nd time onwards
+                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
+                demoDialog.add(demoViewContent, closeButton);
+            }
+        });
+    }
+
     private Button showDemosButton() {
         Button showDemosButton = new Button("Example Projects");
         showDemosButton.addClickListener(click -> {
-            Boolean isDemosVisible = demoViewContent.isVisible();
-            demoViewContent.setVisible(!isDemosVisible);
+            if (!projects.isEmpty()) {
+                demoDialog.open();
+            }
         });
         return showDemosButton;
     }
