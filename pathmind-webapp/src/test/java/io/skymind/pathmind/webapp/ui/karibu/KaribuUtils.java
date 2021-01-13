@@ -19,6 +19,21 @@ import static org.junit.Assert.assertSame;
 
 public class KaribuUtils {
 
+    private static class ParentComponent extends Div {
+
+        private final UI ui;
+
+        public ParentComponent(UI ui, Component component) {
+            this.ui = ui;
+            add(component);
+        }
+
+        @Override
+        public Optional<UI> getUI() {
+            return Optional.of(ui);
+        }
+    }
+
     public static UI setup(Component component) {
         MockedUI ui = Mockito.spy(new MockedUI());
         MockVaadin.setup(new Routes(), () -> ui);
@@ -41,20 +56,5 @@ public class KaribuUtils {
 
     public static void mockExtendedClientDetails() {
         UI.getCurrent().getInternals().setExtendedClientDetails(new KaribuExtendedClientDetails());
-    }
-
-    private static class ParentComponent extends Div {
-
-        private final UI ui;
-
-        public ParentComponent(UI ui, Component component) {
-            this.ui = ui;
-            add(component);
-        }
-
-        @Override
-        public Optional<UI> getUI() {
-            return Optional.of(ui);
-        }
     }
 }

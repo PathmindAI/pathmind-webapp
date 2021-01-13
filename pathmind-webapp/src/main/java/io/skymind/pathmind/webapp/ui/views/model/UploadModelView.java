@@ -139,17 +139,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         super();
     }
 
-    public static String createResumeUploadTarget(Project project, Model model) {
-        return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
-    }
-
-    public static Button createNextStepButton() {
-        Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
-        nextStepButton.setIconAfterText(true);
-        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        return nextStepButton;
-    }
-
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
 
@@ -193,7 +182,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         List<Component> sections = new ArrayList<>();
         if (isResumeUpload() && model.isArchived()) {
             sections.add(
-                    LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
+                LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
             );
         }
         sections.add(sectionTitleWrapper);
@@ -377,5 +366,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
             }
         }
+    }
+
+    public static String createResumeUploadTarget(Project project, Model model) {
+        return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
+    }
+
+    public static Button createNextStepButton() {
+        Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
+        nextStepButton.setIconAfterText(true);
+        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        return nextStepButton;
     }
 }

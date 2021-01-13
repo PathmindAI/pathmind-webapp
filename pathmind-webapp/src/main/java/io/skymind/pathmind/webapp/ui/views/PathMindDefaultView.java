@@ -1,8 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
@@ -22,6 +20,9 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * Do NOT implement any default methods for this interface because a large part of it's goal is to remind
@@ -68,7 +69,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
         // This is used to determine if the view is correct URL such as newExperimentView and ExperimentView. If we're at the wrong
         // URL then we want to event.forwardTo() the correct URL.
-        if (!isValidView(event)) {
+        if(!isValidView(event)) {
             return;
         }
 

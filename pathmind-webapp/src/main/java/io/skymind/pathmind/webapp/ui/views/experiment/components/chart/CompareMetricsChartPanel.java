@@ -38,12 +38,6 @@ public class CompareMetricsChartPanel extends VerticalLayout implements Experime
         return experiment;
     }
 
-    @Override
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-        updateChart();
-    }
-
     public long getExperimentId() {
         return experiment.getId();
     }
@@ -52,5 +46,11 @@ public class CompareMetricsChartPanel extends VerticalLayout implements Experime
         // Update chart data
         chart.setCompareMetricsChart(experiment.getSelectedRewardVariables(), experiment.getBestPolicy());
         redrawChart();
+    }
+
+    @Override
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        updateChart();
     }
 }

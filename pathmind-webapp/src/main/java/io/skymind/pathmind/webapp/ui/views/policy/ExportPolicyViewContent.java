@@ -20,7 +20,7 @@ public class ExportPolicyViewContent extends PolymerTemplate<ExportPolicyViewCon
     public void setFilename(String filename) {
         getModel().setFilename(filename);
     }
-
+    
     public interface Model extends TemplateModel {
         void setFilename(String filename);
     }

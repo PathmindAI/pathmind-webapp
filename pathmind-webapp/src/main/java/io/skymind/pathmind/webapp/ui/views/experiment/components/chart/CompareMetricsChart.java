@@ -35,7 +35,7 @@ public class CompareMetricsChart extends DataChart {
                 .map(Optional::ofNullable).findFirst()
                 .flatMap(Function.identity())
                 .orElse(null);
-        for (RewardVariable rv: rewardVariables) {
+        for (RewardVariable rv : rewardVariables) {
             if (rv != null) {
                 String seriesColor = colors.get(rv.getArrayIndex() % 10);
                 Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rv);

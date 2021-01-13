@@ -24,13 +24,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private PathmindApiAuthenticationProvider pathmindApiAuthenticationProvider;
-    @Autowired
-    private AuthenticationFailureHandlerEntryPoint authenticationFailureHandlerEntryPoint;
 
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(pathmindApiAuthenticationProvider);
     }
+
+    @Autowired
+    private AuthenticationFailureHandlerEntryPoint authenticationFailureHandlerEntryPoint;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

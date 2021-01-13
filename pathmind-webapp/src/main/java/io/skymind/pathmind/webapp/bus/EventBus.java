@@ -49,8 +49,10 @@ import org.springframework.security.concurrent.DelegatingSecurityContextExecutor
  */
 public class EventBus {
     private static final EventBus EVENT_BUS = new EventBus();
-    private static final ExecutorService EXECUTOR_SERVICE = new DelegatingSecurityContextExecutorService(Executors.newCachedThreadPool());
     private static ConcurrentHashMap<Component, List<EventBusSubscriber>> componentSubscribers = new ConcurrentHashMap<>();
+
+    private static final ExecutorService EXECUTOR_SERVICE = new DelegatingSecurityContextExecutorService(Executors.newCachedThreadPool());
+
     private Map<BusEventType, List<EventBusSubscriber>> subscribers;
 
     private EventBus() {

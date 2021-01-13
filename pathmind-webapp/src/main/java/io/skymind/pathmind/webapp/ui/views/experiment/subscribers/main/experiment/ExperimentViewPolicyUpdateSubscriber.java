@@ -20,7 +20,7 @@ public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber
 
     @Override
     public void handleBusEvent(PolicyUpdateBusEvent event) {
-        if (ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
+        if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
             synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
                 experimentView.updateComponents();

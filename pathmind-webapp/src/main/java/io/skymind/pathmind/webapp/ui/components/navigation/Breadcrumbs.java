@@ -118,12 +118,12 @@ public class Breadcrumbs extends HorizontalLayout {
     }
 
     private class BreadcrumbItem<T, C extends Component & HasUrlParameter<T>> {
-        protected Span spanComponent;
-        protected RouterLink routerLinkComponent;
         private String name;
         private Class<C> navigationTarget;
         private T parameter;
         private boolean isCurrentStep = false;
+        protected Span spanComponent;
+        protected RouterLink routerLinkComponent;
 
         public BreadcrumbItem(String name) {
             this.name = name;

@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
+import com.vaadin.flow.shared.Registration;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.utils.ObservationUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
@@ -33,7 +37,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     /**
      * For ProjectView only
-     */
+      */
     public ObservationsPanel(List<Observation> modelObservations) {
         this(modelObservations, true, true, null);
     }
@@ -51,7 +55,6 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, NewExperimentView newExperimentView) {
         this(modelObservations, isReadOnly, false, newExperimentView);
     }
-
     public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly, Boolean hideCheckboxes, NewExperimentView newExperimentView) {
 
         this.newExperimentView = newExperimentView;
@@ -59,7 +62,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
-
+        
         if (hideCheckboxes) {
             add(createObservationsList(modelObservations));
         } else {
@@ -77,7 +80,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     private void addObservationsTableValueChangeListener() {
         // This is only used for the NewExperimentView. The check needs to be here because we add it again on setSelectedObservations().
-        if (newExperimentView != null) {
+        if(newExperimentView != null) {
             addValueChangeListener(evt -> NeedsSavingAction.setNeedsSaving(newExperimentView));
         }
     }
@@ -114,7 +117,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
 
     public void addValueChangeListener(SerializableConsumer<Set<Observation>> listener) {
         observationsTable.addValueChangeListener(evt -> {
-            if (isEnableValueChangeListener) {
+            if(isEnableValueChangeListener) {
                 listener.accept(evt.getValue());
             }
         });

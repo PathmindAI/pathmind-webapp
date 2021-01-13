@@ -3,14 +3,17 @@ package io.skymind.pathmind.services.analytics;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.segment.analytics.Analytics;
-import com.segment.analytics.messages.TrackMessage;
-import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Run;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.segment.analytics.Analytics;
+import com.segment.analytics.messages.TrackMessage;
+
+import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_TRAINING_COMPLETED;
 

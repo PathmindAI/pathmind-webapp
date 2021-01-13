@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,6 +17,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -101,7 +103,7 @@ public class ProjectsView extends PathMindDefaultView {
             renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             renameProjectButton.addClassName("action-button");
             HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    new Span(projectName), renameProjectButton);
+                new Span(projectName), renameProjectButton);
             projectNameColumn.addClassName("project-name-column");
             return projectNameColumn;
         })
@@ -118,7 +120,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setResizable(true)
                 .setSortable(true);
 
-        projectGrid.addComponentColumn(project ->
+        projectGrid.addComponentColumn(project -> 
                 new DatetimeDisplay(project.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
@@ -128,7 +130,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setFlexGrow(0)
                 .setResizable(true);
 
-        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
+        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project -> 
                 new DatetimeDisplay(project.getLastActivityDate())
         )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))
