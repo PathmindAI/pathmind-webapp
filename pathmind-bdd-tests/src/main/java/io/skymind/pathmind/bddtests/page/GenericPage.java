@@ -90,8 +90,13 @@ public class GenericPage extends PageObject {
                 assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[2]")).getText(), is("If you stop the training before it completes, you won't be able to download the policy. If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
                 assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p/b")).getText(), is("If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
                 assertThat(popupShadowRoot.findElement(By.cssSelector("#confirm")).getCssValue("background-color"), is("rgba(216, 9, 71, 1)"));
+                break;
             case ("Experiment Archived"):
-                assertThat(getDriver().findElement(By.xpath("//confirm-popup/div")).getText(), is("The experiment was archived."));
+                assertThat(popupShadowRoot.findElement(By.cssSelector("popup > div.message")).getText(), is("The experiment was archived."));
+                break;
+            case ("Experiment Unarchived"):
+                assertThat(popupShadowRoot.findElement(By.cssSelector("popup > div.message")).getText(), is("The experiment was unarchived."));
+                break;
         }
         resetImplicitTimeout();
     }
