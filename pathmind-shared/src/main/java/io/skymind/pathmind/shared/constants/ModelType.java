@@ -14,14 +14,6 @@ public enum ModelType {
         this.name = name;
     }
 
-    public String toString() {
-        return name;
-    }
-
-    public int getValue() {
-        return id;
-    }
-
     public static ModelType fromValue(int value) {
         return Arrays.stream(values())
                 .filter(modelType -> modelType.getValue() == value)
@@ -34,5 +26,13 @@ public enum ModelType {
                 .filter(it -> it.name.equals(name))
                 .findAny()
                 .get();
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public int getValue() {
+        return id;
     }
 }

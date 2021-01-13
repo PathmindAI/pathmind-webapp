@@ -15,9 +15,15 @@ import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.shared.services.training.versions.VersionEnum;
 
 public class AWSFileManager {
-    private static AWSFileManager instance;
     private static final String S3_COPY = "aws s3 cp s3://";
     private static final String STATIC_BUCKET = "${S3_BUCKET_STATIC}";
+    private static final Map<String, Map<VersionEnum, List<String>>> versions = new HashMap<>();
+    private static AWSFileManager instance;
+    private String currentMode = "PROD";
+
+    private AWSFileManager() {
+        setData();
+    }
 
     public static AWSFileManager getInstance() {
         if (instance == null) {
@@ -26,13 +32,6 @@ public class AWSFileManager {
 
         return instance;
     }
-
-    private AWSFileManager() {
-        setData();
-    }
-
-    private static final Map<String, Map<VersionEnum, List<String>>> versions = new HashMap<>();
-    private String currentMode = "PROD";
 
     private void setData() {
         Map<VersionEnum, List<String>> vTable = new HashMap<>();

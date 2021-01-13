@@ -1,14 +1,14 @@
 package io.skymind.pathmind.services.project;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -30,7 +30,7 @@ public class AnylogicFileCheckResult implements FileCheckResult<Hyperparams> {
         boolean isAllSuccessful = isCorrectFileType() && isModelJarFilePresent() && isHelperPresent() && isHelperUnique() && getPriorityModelInfo() != null && isValidRLPlatform();
         if (!isAllSuccessful) {
             log.info("Correct File Type: {}, Model Jar Present: {}, Helper Present: {}, Helper Unique: {}, Helper: {}, Models: {}, RL Platform: {}",
-                isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique(), definedHelpers, modelInfos, rlPlatform);
+                    isCorrectFileType(), isModelJarFilePresent(), isHelperPresent(), isHelperUnique(), definedHelpers, modelInfos, rlPlatform);
         }
         return isAllSuccessful;
     }
@@ -72,14 +72,14 @@ public class AnylogicFileCheckResult implements FileCheckResult<Hyperparams> {
         if (modelInfos.size() > 1) {
             // Simulation has a higher priority than RLExperiment when they exist together
             List<AnyLogicModelInfo> simulations = modelInfos.stream()
-                .filter(m -> m.getExperimentType().equals(AnyLogicModelInfo.ExperimentType.Simulation))
-                .collect(Collectors.toList());
+                    .filter(m -> m.getExperimentType().equals(AnyLogicModelInfo.ExperimentType.Simulation))
+                    .collect(Collectors.toList());
 
             // if there are more than two simulations, the simulation that has "Simulation" is higher priority
             if (simulations.size() > 1) {
                 priorityModelInfo = simulations.stream()
-                    .filter(m -> m.getExperimentClass().endsWith("/Simulation"))
-                    .findFirst().orElse(null);
+                        .filter(m -> m.getExperimentClass().endsWith("/Simulation"))
+                        .findFirst().orElse(null);
             } else {
                 priorityModelInfo = simulations.get(0);
             }

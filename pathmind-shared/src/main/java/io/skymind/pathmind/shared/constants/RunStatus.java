@@ -16,27 +16,11 @@ public enum RunStatus {
     Stopping(7, "Stopping"),
     Completing(8, "Completing");
 
-    private int id;
-    private String name;
-
     private static final Map<Integer, RunStatus> STATUS_BY_ID;
     private static final EnumSet<RunStatus> RUNNING_STATES = EnumSet.of(Starting, Running, Restarting, Completing);
     private static final EnumSet<RunStatus> COMPLETING_STATES = EnumSet.of(Completing, Completed);
     private static final EnumSet<RunStatus> FINISHED_STATES = EnumSet.of(Completed, Error, Killed);
     private static final EnumSet<RunStatus> ERROR_STATES = EnumSet.of(Error, Killed);
-
-    RunStatus(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public String toString() {
-        return name;
-    }
-
-    public int getValue() {
-        return id;
-    }
 
     static {
         Map<Integer, RunStatus> map = new ConcurrentHashMap<>();
@@ -44,6 +28,14 @@ public enum RunStatus {
             map.put(instance.getValue(), instance);
         }
         STATUS_BY_ID = Collections.unmodifiableMap(map);
+    }
+
+    private int id;
+    private String name;
+
+    RunStatus(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public static RunStatus getEnumFromValue(int value) {
@@ -64,5 +56,13 @@ public enum RunStatus {
 
     public static boolean isError(RunStatus status) {
         return ERROR_STATES.contains(status);
+    }
+
+    public String toString() {
+        return name;
+    }
+
+    public int getValue() {
+        return id;
     }
 }

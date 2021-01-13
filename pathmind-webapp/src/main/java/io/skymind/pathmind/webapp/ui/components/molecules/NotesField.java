@@ -19,7 +19,8 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     private String notesText;
     private Consumer<String> saveConsumer;
-    private Command onNotesChangeHandler = () -> {};
+    private Command onNotesChangeHandler = () -> {
+    };
 
     public NotesField(String title, String notesText, Consumer<String> saveConsumer) {
         this(title, notesText, saveConsumer, false, true, false);
@@ -39,13 +40,13 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         setHideSaveButton(hideSaveButton);
     }
 
+    public String getNotesText() {
+        return notesText;
+    }
+
     public void setNotesText(String notesText) {
         this.notesText = notesText;
         getModel().setNotes(notesText);
-    }
-
-    public String getNotesText() {
-        return notesText;
     }
 
     public void setPlaceholder(String placeholder) {

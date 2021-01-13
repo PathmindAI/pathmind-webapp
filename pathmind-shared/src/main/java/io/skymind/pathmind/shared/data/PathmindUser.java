@@ -35,8 +35,8 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
     private LocalDateTime passwordResetSendAt;
     private String stripeCustomerId;
     private String newEmailToVerify;
-	private String apiKey;
-	private LocalDateTime apiKeyCreatedAt;
+    private String apiKey;
+    private LocalDateTime apiKeyCreatedAt;
 
     private List<Project> projects;
 
@@ -48,12 +48,12 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
         return UserRole.getEnumFromId(this.accountType);
     }
 
-    public boolean isSupportAccountType() {
-        return UserRole.Support.equals(getAccountType());
-    }
-
     public void setAccountType(int accountType) {
         this.accountType = accountType;
+    }
+
+    public boolean isSupportAccountType() {
+        return UserRole.Support.equals(getAccountType());
     }
 
     @Override

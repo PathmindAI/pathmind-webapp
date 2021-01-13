@@ -38,10 +38,8 @@ public class ExecutionProgressWatcher implements ApplicationListener<ContextRefr
 
     private class Runner implements Runnable {
         private final long UPDATE_INTERVAL;
-
-        private boolean stop = false;
-
         private final ExecutionProgressUpdater updater;
+        private boolean stop = false;
 
         Runner(ExecutionProgressUpdater updater, long seconds) {
             this.updater = updater;

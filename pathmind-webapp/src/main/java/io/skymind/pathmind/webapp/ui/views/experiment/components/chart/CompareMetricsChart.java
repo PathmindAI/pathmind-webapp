@@ -42,7 +42,7 @@ public class CompareMetricsChart extends DataChart {
                 .map(Optional::ofNullable).findFirst()
                 .flatMap(Function.identity())
                 .orElse(null);
-        for (RewardVariable rv: rewardVariables) {
+        for (RewardVariable rv : rewardVariables) {
             if (rv != null) {
                 String seriesColor = colors.get(rv.getArrayIndex() % 10);
                 Boolean isFirstNonNullVariable = firstNonNullVariable.equals(rv);
@@ -50,7 +50,7 @@ public class CompareMetricsChart extends DataChart {
                 if (!isFirstNonNullVariable && firstNonNullVariable.getArrayIndex() % 10 == rv.getArrayIndex() % 10) {
                     seriesColor = "black";
                 }
-                series.put("" + rv.getArrayIndex(), Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': "+axisIndex+"}"));
+                series.put("" + rv.getArrayIndex(), Json.parse("{'color': '" + seriesColor + "', 'targetAxisIndex': " + axisIndex + "}"));
             }
         }
         return series;

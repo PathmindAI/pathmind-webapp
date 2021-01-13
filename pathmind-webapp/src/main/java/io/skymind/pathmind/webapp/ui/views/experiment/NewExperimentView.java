@@ -58,7 +58,6 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -77,19 +76,19 @@ import org.springframework.beans.factory.annotation.Value;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends PathMindDefaultView implements HasUrlParameter<Long>, BeforeLeaveObserver {
 
+    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
+    private final int allowedRunsNoVerified;
     // We have to use a lock object rather than the experiment because we are
     // changing it's reference which makes it not thread safe. As well we cannot
     // lock
     // on this because part of the synchronization is in the eventbus listener in a
     // subclass (which is also why we can't use synchronize on the method.
     private Object experimentLock = new Object();
-
     private long experimentId = -1;
     private long modelId = -1;
     private List<RewardVariable> rewardVariables;
     private Experiment experiment;
     private List<Experiment> experiments = new ArrayList<>();
-
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
@@ -102,15 +101,8 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
     private Button saveDraftButton;
     private Button startRunButton;
     private Anchor downloadModelAlpLink;
-
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
-
     private UserCaps userCaps;
-
     private boolean isNeedsSaving = false;
-
-    private final int allowedRunsNoVerified;
-
     @Autowired
     private ModelService modelService;
     @Autowired
@@ -332,10 +324,6 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
         });
     }
 
-    public void setExperiment(Experiment selectedExperiment) {
-        triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
-    }
-
     private void navigateToAnotherDraftExperiment(Experiment selectedExperiment) {
         // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
         // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
@@ -439,6 +427,10 @@ public class NewExperimentView extends PathMindDefaultView implements HasUrlPara
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    public void setExperiment(Experiment selectedExperiment) {
+        triggerSaveDraft(() -> navigateToAnotherDraftExperiment(selectedExperiment));
     }
 
     public long getModelId() {

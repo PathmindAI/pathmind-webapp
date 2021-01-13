@@ -6,11 +6,6 @@ import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
 public class ModelUpdatedBusEvent implements PathmindBusEvent {
 
-    public enum ModelUpdateType {
-        ModelDataUpdate,
-        Archive
-    }
-
     private Model model;
     private ModelUpdateType modelUpdateType;
 
@@ -47,5 +42,10 @@ public class ModelUpdatedBusEvent implements PathmindBusEvent {
     @Override
     public ModelUpdatedBusEvent cloneForEventBus() {
         return new ModelUpdatedBusEvent(model.deepClone(), modelUpdateType);
+    }
+
+    public enum ModelUpdateType {
+        ModelDataUpdate,
+        Archive
     }
 }

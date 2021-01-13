@@ -1,7 +1,5 @@
 package io.skymind.pathmind.db.dao;
 
-import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 

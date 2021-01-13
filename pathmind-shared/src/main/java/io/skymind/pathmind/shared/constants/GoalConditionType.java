@@ -18,20 +18,6 @@ public enum GoalConditionType {
     ),
     ;
 
-    private final String code;
-    private final String name;
-    private final RewardFunctionComponent rewardFunctionComponent;
-
-    GoalConditionType(String code, String name, RewardFunctionComponent rewardFunctionComponent) {
-        this.code = code;
-        this.name = name;
-        this.rewardFunctionComponent = rewardFunctionComponent;
-    }
-
-    public String toString() {
-        return name;
-    }
-
     private static final Map<String, GoalConditionType> BY_CODE;
 
     static {
@@ -42,7 +28,21 @@ public enum GoalConditionType {
         BY_CODE = Collections.unmodifiableMap(map);
     }
 
+    private final String code;
+    private final String name;
+    private final RewardFunctionComponent rewardFunctionComponent;
+
+    GoalConditionType(String code, String name, RewardFunctionComponent rewardFunctionComponent) {
+        this.code = code;
+        this.name = name;
+        this.rewardFunctionComponent = rewardFunctionComponent;
+    }
+
     public static Optional<GoalConditionType> getEnumFromCode(String code) {
         return code == null ? Optional.empty() : Optional.ofNullable(BY_CODE.get(code));
+    }
+
+    public String toString() {
+        return name;
     }
 }

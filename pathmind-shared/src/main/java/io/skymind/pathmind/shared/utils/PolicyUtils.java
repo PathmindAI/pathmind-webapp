@@ -180,7 +180,7 @@ public class PolicyUtils {
             }
             metricValue = policy.getSimulationMetrics().get(rv.getArrayIndex());
         }
-        if (rv.getGoalConditionTypeEnum() != null &&  rv.getGoalValue() != null) {
+        if (rv.getGoalConditionTypeEnum() != null && rv.getGoalValue() != null) {
             if (rv.getGoalConditionTypeEnum().equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
                 return metricValue + uncertaintyValue >= rv.getGoalValue();
             } else {

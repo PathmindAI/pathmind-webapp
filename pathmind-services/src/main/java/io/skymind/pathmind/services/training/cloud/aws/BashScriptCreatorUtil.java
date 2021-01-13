@@ -1,10 +1,10 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Observation;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import io.skymind.pathmind.shared.constants.ObservationDataType;
+import io.skymind.pathmind.shared.data.Observation;
 
 // TODO: we should consider refactoring the whole AWSExecutionProvider code related with script.sh creation and move
 // the operations to a BashScriptCreator class. I won't do that now because it will generate a lot of changes and my

@@ -18,12 +18,6 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Stopping;
 @Getter
 public class ProviderJobStatus {
 
-    private final RunStatus runStatus;
-
-    private final List<String> description;
-
-    private final ExperimentState experimentState;
-
     public static ProviderJobStatus KILLED = new ProviderJobStatus(Killed);
     public static ProviderJobStatus RESTARTING = new ProviderJobStatus(Restarting);
     public static ProviderJobStatus COMPLETED = new ProviderJobStatus(Completed);
@@ -31,6 +25,9 @@ public class ProviderJobStatus {
     public static ProviderJobStatus STARTING = new ProviderJobStatus(Starting);
     public static ProviderJobStatus STOPPING = new ProviderJobStatus(Stopping);
     public static ProviderJobStatus COMPLETING = new ProviderJobStatus(Completing);
+    private final RunStatus runStatus;
+    private final List<String> description;
+    private final ExperimentState experimentState;
 
     public ProviderJobStatus(RunStatus runStatus) {
         this(runStatus, Collections.emptyList());

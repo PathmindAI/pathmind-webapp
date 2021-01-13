@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.InitialPageSettings;

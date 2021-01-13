@@ -20,16 +20,6 @@ public enum NativeRL implements VersionEnum {
 
     private static final EnumSet<NativeRL> OLD_VERSION = EnumSet.of(VERSION_1_0_7, VERSION_1_1_0, VERSION_1_1_1);
 
-    @Override
-    public List<String> fileNames() {
-        if (OLD_VERSION.contains(this)) {
-            return Arrays.asList(String.format(baseFileName, "1.0.0"));
-        } else {
-            String version = this.toString().replace("VERSION_", "").replace("_", ".");
-            return Arrays.asList(String.format(baseFileName, version));
-        }
-    }
-
     public static List<NativeRL> activeValues() {
         return Arrays.stream(NativeRL.values()).filter(value -> {
             try {
@@ -39,5 +29,15 @@ public enum NativeRL implements VersionEnum {
                 return false;
             }
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> fileNames() {
+        if (OLD_VERSION.contains(this)) {
+            return Arrays.asList(String.format(baseFileName, "1.0.0"));
+        } else {
+            String version = this.toString().replace("VERSION_", "").replace("_", ".");
+            return Arrays.asList(String.format(baseFileName, version));
+        }
     }
 }

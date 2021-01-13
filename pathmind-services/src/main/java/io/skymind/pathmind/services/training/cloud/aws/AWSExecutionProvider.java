@@ -1,5 +1,33 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
+
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
@@ -14,54 +42,59 @@ import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
-import io.skymind.pathmind.shared.services.training.versions.*;
+import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
+import io.skymind.pathmind.shared.services.training.versions.Conda;
+import io.skymind.pathmind.shared.services.training.versions.JDK;
+import io.skymind.pathmind.shared.services.training.versions.NativeRL;
+import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
-import java.io.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.*;
-import static io.skymind.pathmind.shared.constants.RunStatus.*;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.var;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varCondition;
+import static io.skymind.pathmind.services.training.cloud.aws.BashScriptCreatorUtil.varExp;
+import static io.skymind.pathmind.shared.constants.RunStatus.Completing;
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
+import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 
 @Service
 @Slf4j
 public class AWSExecutionProvider implements ExecutionProvider {
+    public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
+    public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
+    public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
+    public static final int RLLIB_MAX_LEN = 1024;
+    public static final int SUCCESS_MAX_LEN = 1024;
+    public static final int WARNING_MAX_LEN = 1024;
+    private static final String AWS_JOB_ID_PREFIX = "id";
+    private static final String OBS_SNIPPET_FILE = "obs.txt";
+    private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
+            Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    private static final Predicate<String> ERROR_STRING_MATCH = Pattern.compile("^(\\w+\\.)*\\w+:(.*)$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
     private final AWSApiClient client;
     private final ObjectMapper objectMapper;
     private final AWSFileManager fileManager;
     private final TrainingErrorDAO trainingErrorDAO;
-
-    private static final String AWS_JOB_ID_PREFIX = "id";
-    public static final String RLLIB_ERROR_PREFIX = "x-rllib_error";
-    public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
-    public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
-    private static final String OBS_SNIPPET_FILE = "obs.txt";
-    
-    public static final int RLLIB_MAX_LEN = 1024;
-    public static final int SUCCESS_MAX_LEN = 1024;
-    public static final int WARNING_MAX_LEN = 1024;
-    
-    private static final Predicate<String> ERROR_KEY_MATCH = // todo: possible even get a date of error as second match group
-            Pattern.compile("(.)*error_(.*)txt$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
     public AWSExecutionProvider(AWSApiClient client, ObjectMapper objectMapper, TrainingErrorDAO trainingErrorDAO) {
         this.client = client;
         this.objectMapper = objectMapper;
         this.trainingErrorDAO = trainingErrorDAO;
         this.fileManager = AWSFileManager.getInstance();
+    }
+
+    static String findLineWithException(List<String> lines) {
+        String exceptionLine = null;
+        ListIterator<String> stringListIterator = lines.listIterator(lines.size());
+        while (exceptionLine == null && stringListIterator.hasPrevious()) {
+            String line = stringListIterator.previous();
+            if (ERROR_STRING_MATCH.test(line)) {
+                exceptionLine = line;
+            }
+        }
+        return exceptionLine;
     }
 
     @Override
@@ -160,8 +193,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 // make sure every trial of experimentStat has "TERMINATED" status
                 if (experimentState != null && experimentState.getCheckpoints() != null) {
                     experimentState.getCheckpoints().stream()
-                        .filter(chk -> chk.getStatus().equals(CheckPoint.RUNNING))
-                        .forEach(chk -> chk.setStatus(CheckPoint.TERMINATED));
+                            .filter(chk -> chk.getStatus().equals(CheckPoint.RUNNING))
+                            .forEach(chk -> chk.setStatus(CheckPoint.TERMINATED));
                 }
 
                 ProviderJobStatus completingStatus = new ProviderJobStatus(Completing, new ArrayList<>(), experimentState);
@@ -169,10 +202,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                     String[] lines = m.split("\n");
                     Set<String> reasons = new HashSet<>();
                     Arrays.stream(lines)
-                        .filter(s -> s.contains("Early Stop Reason"))
-                        .forEach(s -> {
-                            reasons.add(s.split(":")[1].trim());
-                        });
+                            .filter(s -> s.contains("Early Stop Reason"))
+                            .forEach(s -> {
+                                reasons.add(s.split(":")[1].trim());
+                            });
 
                     if (reasons.size() > 1) {
                         log.info(String.format("The number of early stop reasons is more than 2: %s", reasons));
@@ -282,41 +315,27 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     public String getRLlibError(String jobHandle) {
         return client.listObjects(jobHandle + "/output/")
-                        .getObjectSummaries().parallelStream()
-                        .map(S3ObjectSummary::getKey)
-                        .filter(ERROR_KEY_MATCH)
-                        .map(it -> {
-                            byte[] bytes = client.fileContents(it);
-                            try (BufferedReader r = new BufferedReader(new InputStreamReader(
-                                    new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
-                            ) {
-                                List<String> lines = r.lines().collect(Collectors.toList());
-                                return findLineWithException(lines);
-                            } catch (Exception e) {
-                                return null;
-                            }
-                        })
-                        .distinct()
+                .getObjectSummaries().parallelStream()
+                .map(S3ObjectSummary::getKey)
+                .filter(ERROR_KEY_MATCH)
+                .map(it -> {
+                    byte[] bytes = client.fileContents(it);
+                    try (BufferedReader r = new BufferedReader(new InputStreamReader(
+                            new ByteArrayInputStream(bytes), StandardCharsets.UTF_8))
+                    ) {
+                        List<String> lines = r.lines().collect(Collectors.toList());
+                        return findLineWithException(lines);
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .distinct()
                 .collect(Collectors.joining(";\n"));
-    }
-
-    private static final Predicate<String> ERROR_STRING_MATCH = Pattern.compile("^(\\w+\\.)*\\w+:(.*)$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
-
-    static String findLineWithException(List<String> lines) {
-        String exceptionLine = null;
-        ListIterator<String> stringListIterator = lines.listIterator(lines.size());
-        while (exceptionLine == null && stringListIterator.hasPrevious()) {
-            String line = stringListIterator.previous();
-            if (ERROR_STRING_MATCH.test(line)) {
-                exceptionLine = line;
-            }
-        }
-        return exceptionLine;
     }
 
     public Optional<String> getExperimentReport(String jobHandle) {
         return getFile(jobHandle, TrainingFile.REPORT_FILE)
-            .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
+                .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
@@ -344,14 +363,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_4_0_DH:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
-                        // Setup NativeRL
-                        "mkdir -p work",
-                        "cd work",
-                        String.format("unzip ../%s > /dev/null", filename),
-                        String.format("rm ../%s", filename),
-                        "mv nativerl-bin/* .",
-                        "mv examples/train.sh .",
-                        "cd .."));
+                            // Setup NativeRL
+                            "mkdir -p work",
+                            "cd work",
+                            String.format("unzip ../%s > /dev/null", filename),
+                            String.format("rm ../%s", filename),
+                            "mv nativerl-bin/* .",
+                            "mv examples/train.sh .",
+                            "cd .."));
                 });
 
                 files.addAll(fileManager.getFiles(nativerlVersion));

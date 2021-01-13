@@ -12,12 +12,10 @@ import static org.hamcrest.Matchers.is;
 
 public class NewProjectPage extends PageObject {
 
+    private final By byInput = By.cssSelector("input");
     private Utils utils;
-
     @FindBy(xpath = "//new-project-view")
     private WebElement newProjectView;
-
-    private final By byInput = By.cssSelector("input");
 
     public void inputNameOfTheNewProject(String projectName) {
         WebElement e2 = utils.expandRootElement(newProjectView.findElement(By.cssSelector("#projectName")));

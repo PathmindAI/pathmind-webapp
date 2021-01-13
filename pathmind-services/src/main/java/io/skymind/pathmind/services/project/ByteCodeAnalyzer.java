@@ -12,7 +12,13 @@ import java.util.List;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.objectweb.asm.*;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 /*To read and find PathmindHelper qualifiedClassName from class files using ASM*/
 @Slf4j
@@ -62,7 +68,7 @@ public class ByteCodeAnalyzer extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         if (name.equals("createRoot") && access == Opcodes.ACC_PUBLIC) {
             models.stream().filter(m -> m.getExperimentClass().equals(this.qualifiedClassName))
-                .forEach(m -> m.setMainAgentClass(Type.getReturnType(desc).getClassName()));
+                    .forEach(m -> m.setMainAgentClass(Type.getReturnType(desc).getClassName()));
         }
         return null;
     }
@@ -82,9 +88,9 @@ public class ByteCodeAnalyzer extends ClassVisitor {
         for (String classFile : classFiles) {
             if (classFile.endsWith("model.properties")) {
                 FileUtils.readLines(new File(classFile), Charset.defaultCharset()).stream()
-                    .filter(line -> line.startsWith("ReinforcementLearningPlatform"))
-                    .findFirst()
-                    .ifPresent(line -> rlPlatform = line);
+                        .filter(line -> line.startsWith("ReinforcementLearningPlatform"))
+                        .findFirst()
+                        .ifPresent(line -> rlPlatform = line);
                 continue;
             }
             try (InputStream inputStream = new FileInputStream(classFile)) {

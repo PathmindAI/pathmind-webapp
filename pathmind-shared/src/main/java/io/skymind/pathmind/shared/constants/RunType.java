@@ -16,18 +16,18 @@ public enum RunType {
         this.name = name;
     }
 
+    public static RunType getEnumFromValue(int value) {
+        return Arrays.stream(values())
+                .filter(runType -> runType.getValue() == value)
+                .findAny()
+                .get();
+    }
+
     public String toString() {
         return name;
     }
 
     public int getValue() {
         return id;
-    }
-
-    public static RunType getEnumFromValue(int value) {
-        return Arrays.stream(values())
-                .filter(runType -> runType.getValue() == value)
-                .findAny()
-                .get();
     }
 }

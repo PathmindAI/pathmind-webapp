@@ -1,5 +1,7 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.util.Calendar;
+
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
@@ -10,10 +12,10 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.Calendar;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @DefaultUrl("page:home.page")
 public class AccountPage extends PageObject {
@@ -119,8 +121,8 @@ public class AccountPage extends PageObject {
     }
 
     public void clickAccountFooterBtn(String btn) {
-        for(WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))){
-            if (element.getText().contains(btn)){
+        for (WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))) {
+            if (element.getText().contains(btn)) {
                 element.click();
                 break;
             }

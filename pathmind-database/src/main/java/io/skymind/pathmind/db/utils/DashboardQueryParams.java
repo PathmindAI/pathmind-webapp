@@ -10,11 +10,6 @@ public final class DashboardQueryParams {
     private int offset;
     private QUERY_TYPE queryType;
 
-    public enum QUERY_TYPE {
-        FETCH_SINGLE_BY_EXPERIMENT,
-        FETCH_MULTIPLE_BY_USER
-    }
-
     public long getUserId() {
         return userId;
     }
@@ -53,5 +48,10 @@ public final class DashboardQueryParams {
 
     public void setQueryType(QUERY_TYPE queryType) {
         this.queryType = queryType;
+    }
+
+    public enum QUERY_TYPE {
+        FETCH_SINGLE_BY_EXPERIMENT,
+        FETCH_MULTIPLE_BY_USER
     }
 }
