@@ -114,7 +114,7 @@ public class Experiment extends ArchivableData  implements DeepCloneableInterfac
     }
     @Override
     public Experiment shallowClone() {
-        Experiment experiment = super.shallowClone(Experiment.builder()
+        return super.shallowClone(Experiment.builder()
                 .modelId(modelId)
                 .rewardFunction(rewardFunction)
                 .dateCreated(dateCreated)
@@ -127,7 +127,6 @@ public class Experiment extends ArchivableData  implements DeepCloneableInterfac
                 .totalGoals(totalGoals)
                 .sharedWithSupport(sharedWithSupport)
                 .build());
-        return experiment;
     }
 
     @Override

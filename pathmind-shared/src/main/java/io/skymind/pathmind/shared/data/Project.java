@@ -30,13 +30,12 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
 
     @Override
     public Project shallowClone() {
-        Project project = super.shallowClone(Project.builder()
+        return super.shallowClone(Project.builder()
                 .dateCreated(dateCreated)
                 .lastActivityDate(lastActivityDate)
                 .userNotes(userNotes)
                 .pathmindUserId(pathmindUserId)
                 .build());
-        return project;
     }
 
     @Override
