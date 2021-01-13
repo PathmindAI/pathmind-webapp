@@ -158,6 +158,7 @@ class AccountUpgradeViewContent extends PolymerElement {
             </vaadin-vertical-layout>
             <span class="price-cont">
                 <span class="price">Free</span>
+                <span class="additional-info">&nbsp;</span>
             </span>
             <ul class="features">
                 <li>25 Experiments Per Month</li>
