@@ -290,4 +290,15 @@ public class GenericPage extends PageObject {
     public void openUrlFromTheVariable(String url) {
         getDriver().navigate().to(Serenity.sessionVariableCalled(url).toString());
     }
+
+    public void checkElement(boolean elementExist, String elementXpath, String elementText) {
+        setImplicitTimeout(2, SECONDS);
+        if (elementExist) {
+            assertThat(getDriver().findElements(By.xpath(elementXpath)).size(), is(not(0)));
+            assertThat(getDriver().findElement(By.xpath(elementXpath)).getText(), is(elementText));
+        }else {
+            assertThat(getDriver().findElements(By.xpath(elementXpath)).size(), is(0));
+        }
+        resetImplicitTimeout();
+    }
 }
