@@ -58,7 +58,7 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
 
     @Override
     public Policy shallowClone() {
-        Policy policy = super.shallowClone(Policy.builder()
+        return super.shallowClone(Policy.builder()
                 .runId(runId)
                 .externalId(externalId)
                 .startedAt(startedAt)
@@ -76,8 +76,5 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
                 .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
                 .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
                 .build());
-
-        policy.setName(getName());
-        return policy;
     }
 }
