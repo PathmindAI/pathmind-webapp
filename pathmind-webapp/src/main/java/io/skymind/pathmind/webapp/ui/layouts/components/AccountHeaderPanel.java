@@ -89,19 +89,19 @@ public class AccountHeaderPanel extends HorizontalLayout {
         }
     }
 
-    public String getSearchBoxValue() {
-        return searchBox.getValue();
-    }
-
     public void setSearchBoxValue(String text) {
         searchBox.setValue(text);
     }
 
-    public PathmindUser getUser() {
-        return user;
+    public String getSearchBoxValue() {
+        return searchBox.getValue();
     }
 
     public void setUser(PathmindUser user) {
         this.user = user;
+    }
+
+    public PathmindUser getUser() {
+        return user;
     }
 }

@@ -12,7 +12,6 @@ public class ExperimentUpdatedBusEvent implements PathmindBusEvent {
         super();
         this.experiment = experiment;
     }
-
     @Override
     public BusEventType getEventType() {
         return BusEventType.ExperimentUpdate;

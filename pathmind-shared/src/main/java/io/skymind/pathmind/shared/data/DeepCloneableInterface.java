@@ -7,4 +7,5 @@ public interface DeepCloneableInterface<T> {
     default T deepClone() {
         return shallowClone();
     }
+
 }

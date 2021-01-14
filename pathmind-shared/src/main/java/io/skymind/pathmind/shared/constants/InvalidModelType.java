@@ -9,6 +9,16 @@ public enum InvalidModelType {
 
     OLD_REWARD_VARIABLES(1), MISSING_OBSERVATIONS(2);
 
+    private int id;
+
+    private InvalidModelType(int id) {
+        this.id = id;
+    }
+
+    public int getValue() {
+        return id;
+    }
+
     private static final Map<Integer, InvalidModelType> BY_ID;
 
     static {
@@ -19,17 +29,7 @@ public enum InvalidModelType {
         BY_ID = Collections.unmodifiableMap(map);
     }
 
-    private int id;
-
-    private InvalidModelType(int id) {
-        this.id = id;
-    }
-
     public static Optional<InvalidModelType> getEnumFromValue(int id) {
         return Optional.ofNullable(BY_ID.get(id));
-    }
-
-    public int getValue() {
-        return id;
     }
 }

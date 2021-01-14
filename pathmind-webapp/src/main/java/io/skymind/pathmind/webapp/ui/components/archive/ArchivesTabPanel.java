@@ -26,7 +26,6 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel {
     private Supplier<List<T>> getItems;
     private BiConsumer<T, Boolean> archiveDAO;
     private Supplier<Optional<UI>> getUISupplier;
-
     public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO, Supplier<Optional<UI>> getUISupplier) {
         this(tabName, true, grid, getItems, archiveDAO, getUISupplier);
     }

@@ -11,6 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PathmindErrorHandler implements ErrorHandler {
 
+    @Override
+    public void error(ErrorEvent event) {
+        String errorId = generateUniqueErrorId();
+
+        log.error(String.format("Error #%s: %s", errorId, event.getThrowable().getMessage()), event.getThrowable());
+        String errorMessage = String.format("<b>An unexpected error occurred</b><br>Please contact Pathmind for assistance.<br>#%s", errorId);
+
+        NotificationUtils.showError(errorMessage);
+    }
+
     /**
      * Generates a unique error id of length 12 chars
      * 6 random numbers - HHmmss
@@ -24,16 +34,6 @@ public class PathmindErrorHandler implements ErrorHandler {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
         return String.format("%s-%2$tH%2$tM%2$tS", generated, LocalDateTime.now());
-    }
-
-    @Override
-    public void error(ErrorEvent event) {
-        String errorId = generateUniqueErrorId();
-
-        log.error(String.format("Error #%s: %s", errorId, event.getThrowable().getMessage()), event.getThrowable());
-        String errorMessage = String.format("<b>An unexpected error occurred</b><br>Please contact Pathmind for assistance.<br>#%s", errorId);
-
-        NotificationUtils.showError(errorMessage);
     }
 
 }

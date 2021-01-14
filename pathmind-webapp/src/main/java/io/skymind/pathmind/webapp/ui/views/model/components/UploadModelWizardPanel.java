@@ -50,7 +50,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
     private Consumer<Collection<String>> uploadFailedConsumer;
 
     private Supplier<Optional<UI>> getUISupplier;
-
     public UploadModelWizardPanel(Model model, UploadMode mode, int maxFileSize, Supplier<Optional<UI>> getUISupplier) {
         this.model = model;
         this.mode = mode;

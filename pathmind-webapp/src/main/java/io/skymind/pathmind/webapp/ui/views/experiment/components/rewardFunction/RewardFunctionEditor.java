@@ -129,10 +129,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         return FormUtils.isValidForm(binder, experiment);
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
@@ -140,6 +136,10 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         binder.setBean(experiment);
         setVariableNames(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(rewardFunction);
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     private String generateRewardFunction() {

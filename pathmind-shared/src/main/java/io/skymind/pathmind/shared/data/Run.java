@@ -40,13 +40,13 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
     private Project project;
 
     // TODO -> Convert to a JOOQ converter.
-    public RunType getRunTypeEnum() {
-        return RunType.getEnumFromValue(runType);
+    public void setRunTypeEnum(RunType runTypeEnum) {
+        this.runType = runTypeEnum.getValue();
     }
 
     // TODO -> Convert to a JOOQ converter.
-    public void setRunTypeEnum(RunType runTypeEnum) {
-        this.runType = runTypeEnum.getValue();
+    public RunType getRunTypeEnum() {
+        return RunType.getEnumFromValue(runType);
     }
 
     public RunStatus getStatusEnum() {
