@@ -13,9 +13,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
@@ -29,9 +27,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Tag("experiment-navbar-item")
 @JsModule("./src/experiment/experiment-navbar-item.js")
@@ -104,18 +99,12 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         if (experiment.isArchived()) {
             return;
         }
-
-        List<EventBusSubscriber> subscribers = new ArrayList<>();
-        subscribers.add(new NavBarItemExperimentFavoriteSubscriber(this));
-
-        if (ExperimentUtils.isRunning(experiment) || ExperimentUtils.isNotStarted(experiment)) {
-            subscribers.add(new NavBarItemExperimentUpdatedSubscriber(this));
-            subscribers.add(new NavBarItemRunUpdateSubscriber(this));
-            subscribers.add(new NavBarItemPolicyUpdateSubscriber(this, experimentDAO));
-            subscribers.add(new NavBarItemNotificationExperimentStartTrainingSubscriber(this));
-        }
-
-        EventBus.subscribe(this, defaultExperimentView.getUISupplier(), subscribers);
+        EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
+                new NavBarItemExperimentFavoriteSubscriber(this),
+                new NavBarItemExperimentUpdatedSubscriber(this),
+                new NavBarItemRunUpdateSubscriber(this),
+                new NavBarItemPolicyUpdateSubscriber(this, experimentDAO),
+                new NavBarItemNotificationExperimentStartTrainingSubscriber(this));
     }
 
     @Override
