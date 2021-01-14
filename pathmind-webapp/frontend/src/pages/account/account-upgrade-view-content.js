@@ -4,19 +4,22 @@ class AccountUpgradeViewContent extends PolymerElement {
   static get template() {
     return html`
       <style include="shared-styles pathmind-dialog-view">
-        :host {
+        account-upgrade-view-content {
+            box-sizing: border-box;
+            width: 100%;
             justify-content: center;
             padding: var(--lumo-space-xl) var(--lumo-space-m);
+            text-align: center;
         }
-        :host > vaadin-horizontal-layout {
+        account-upgrade-view-content > vaadin-horizontal-layout {
             justify-content: center;
             align-items: stretch;
             width: 100%;
         }
-        h1 {
+        account-upgrade-view-content h1 {
             margin: 0 auto var(--lumo-space-xl);
         }
-        .inner-content {
+        account-upgrade-view-content .inner-content {
             flex: 1 0 calc((100% - var(--lumo-space-l) * 2) / 3);
           width: calc((100% - var(--lumo-space-l) * 2) / 3);
           font-size: var(--lumo-font-size-m);
@@ -24,32 +27,32 @@ class AccountUpgradeViewContent extends PolymerElement {
           border: 1px solid var(--pm-grey-color-lighter);
           margin-top: 0;
         }
-        .inner-content > :last-child {
+        account-upgrade-view-content .inner-content > :last-child {
             width: 100%;
             margin: auto auto var(--lumo-space-m);
         }
-        .inner-content:nth-child(2) {
+        account-upgrade-view-content .inner-content:nth-child(2) {
           margin: 0 var(--lumo-space-l) 0;
         }
         @media screen and (max-width: 1023px) {
-            :host {
+            account-upgrade-view-content {
                 height: auto;
                 padding: var(--lumo-space-m) var(--lumo-space-l) var(--lumo-space-l);
             }
-            :host > vaadin-horizontal-layout {
+            account-upgrade-view-content > vaadin-horizontal-layout {
                 flex-direction: column;
             }
-            .inner-content {
+            account-upgrade-view-content .inner-content {
                 flex: 1 1 auto;
                 max-width: 100%;
                 width: 100%;
                 margin: 0;
             }
-            .inner-content:nth-child(2) {
+            account-upgrade-view-content .inner-content:nth-child(2) {
                 margin: var(--lumo-space-xxl) 0;
             }
         }
-        .card-header {
+        account-upgrade-view-content .card-header {
             position: relative;
             align-items: center;
             width: calc(100% + 2 * var(--lumo-space-l));
@@ -57,7 +60,7 @@ class AccountUpgradeViewContent extends PolymerElement {
             margin: calc(-1 * var(--lumo-space-l)) calc(-1 * var(--lumo-space-l)) 0;
             border-radius: var(--lumo-border-radius);
         }
-        .popular-tag {
+        account-upgrade-view-content .popular-tag {
             position: absolute;
             top: calc(-1 * var(--lumo-space-s));
             right: var(--lumo-space-s);
@@ -71,29 +74,29 @@ class AccountUpgradeViewContent extends PolymerElement {
             border-radius: var(--lumo-border-radius-s);
             box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.16);
         }
-        .inner-content:nth-child(1) .card-header {
+        account-upgrade-view-content .inner-content:nth-child(1) .card-header {
             background-color: var(--pm-grey-color-lightest);
         }
-        .inner-content:nth-child(1) .title {
+        account-upgrade-view-content .inner-content:nth-child(1) .title {
             color: var(--pm-grey-color-darkest);
         }
-        .inner-content:nth-child(2) .card-header {
+        account-upgrade-view-content .inner-content:nth-child(2) .card-header {
             background-color: rgb(216 238 245);
         }
-        .inner-content:nth-child(2) .title {
+        account-upgrade-view-content .inner-content:nth-child(2) .title {
             color: var(--pm-primary-color-dark);
         }
-        .inner-content:nth-child(3) .card-header {
+        account-upgrade-view-content .inner-content:nth-child(3) .card-header {
             background-color: var(--pm-blue-color-light);
         }
-        .inner-content:nth-child(3) .title {
+        account-upgrade-view-content .inner-content:nth-child(3) .title {
             color: var(--pm-blue-color-dark);
         }
-        .title {
+        account-upgrade-view-content .title {
             letter-spacing: .05rem;
             margin: 0 auto;
         }
-        .price-cont {
+        account-upgrade-view-content .price-cont {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -101,28 +104,28 @@ class AccountUpgradeViewContent extends PolymerElement {
             line-height: 1.3;
           margin: var(--lumo-space-l) auto;
         }
-        .price {
+        account-upgrade-view-content .price {
             font-size: 4rem;
             font-family: var(--lumo-font-family-header);
             font-weight: 500;
             letter-spacing: -.03rem;
             margin-right: var(--lumo-space-xxxs);
         }
-        .additional-info {
+        account-upgrade-view-content .additional-info {
             font-size: var(--lumo-font-size-s);
         }
-        .features {
+        account-upgrade-view-content .features {
             text-align: left;
             padding: 0;
             margin: var(--lumo-space-m) 0 var(--lumo-space-xl) var(--lumo-space-l);
         }
-        li {
+        account-upgrade-view-content li {
             list-style: none;
             position: relative;
             padding-left: var(--lumo-font-size-xl);
             margin-bottom: var(--lumo-space-s);
         }
-        li::before {
+        account-upgrade-view-content li::before {
             content: '';
             display: block;
             position: absolute;
@@ -132,18 +135,18 @@ class AccountUpgradeViewContent extends PolymerElement {
             height: var(--lumo-space-s);
             background-color: var(--lumo-primary-color);
         }
-        vaadin-button {
+        account-upgrade-view-content vaadin-button {
             width: 100%;
             margin: 0;
         }
-        vaadin-button[disabled] {
+        account-upgrade-view-content vaadin-button[disabled] {
             color: var(--lumo-secondary-text-color);
             font-weight: bold;
         }
-        a {
+        account-upgrade-view-content a {
           margin: auto;
         }
-        .caption {
+        account-upgrade-view-content .caption {
             font-size: var(--lumo-font-size-s);
           color: var(--lumo-secondary-text-color);
           margin-top: var(--lumo-space-xl);
@@ -206,6 +209,10 @@ class AccountUpgradeViewContent extends PolymerElement {
     </vaadin-horizontal-layout>
     <p class="caption">Applicable taxes not included</p>
     `;
+  }
+
+  _attachDom(dom) {
+    this.appendChild(dom);
   }
 
   static get is() {
