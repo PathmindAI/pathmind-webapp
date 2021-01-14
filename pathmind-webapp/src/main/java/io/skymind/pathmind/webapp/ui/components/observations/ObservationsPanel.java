@@ -133,6 +133,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         return wrapper;
     }
 
+    @Override
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setSelectedObservations(experiment.getSelectedObservations());
