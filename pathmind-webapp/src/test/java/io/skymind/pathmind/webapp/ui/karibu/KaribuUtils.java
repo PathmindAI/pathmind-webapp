@@ -34,6 +34,11 @@ public class KaribuUtils {
         }
     }
 
+    public static void setup() {
+        MockedUI ui = Mockito.spy(new MockedUI());
+        MockVaadin.setup(new Routes(), () -> ui);
+    }
+
     public static UI setup(Component component) {
         MockedUI ui = Mockito.spy(new MockedUI());
         MockVaadin.setup(new Routes(), () -> ui);
