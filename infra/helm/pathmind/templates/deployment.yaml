@@ -28,6 +28,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash","-c","aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/$(hostname)-updater-queue"]
           command: {{ .Values.image.command }}
           args:
 {{- range .Values.image.args }}

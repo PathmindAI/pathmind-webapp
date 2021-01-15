@@ -166,6 +166,17 @@ class AccountViewContent extends PolymerElement {
     ready() {
         super.ready();
         document.getElementById("rotateApiMenu")._setProperty("openOn", "click");
+
+        document.getElementById("accessToken").addEventListener("copy", event => {
+            // This will handle the clipboard data to eliminate extra linebreak at the end of the string
+            const selection = document.getElementById("accessToken").innerHTML.replace(/\s/g, '');
+            if (event.clipboardData) {
+                event.clipboardData.setData("text/plain", selection);
+            } else {
+                window.clipboardData.setData("text", selection);
+            }
+            event.preventDefault();
+        });
     }
 
     triggerRotateBtn() {

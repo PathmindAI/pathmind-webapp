@@ -32,6 +32,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXP
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_MARKETING_SITE_LEAD;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
@@ -68,6 +69,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
                              @Value("${skymind.segment.enabled}") Boolean enabled) {
         this.sourceKey = key;
         this.enabled = enabled;
+    }
+
+    public void marketingSiteLead(String plan) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("plan", plan);
+        track(EVENT_MARKETING_SITE_LEAD, additionalInfo);
     }
 
     public void userLoggedIn() {
