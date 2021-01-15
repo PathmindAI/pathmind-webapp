@@ -41,7 +41,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     public void setNotesText(String notesText) {
         this.notesText = notesText;
-        getModel().setNotes(notesText);
+        getElement().callJsFunction("_notesChanged", notesText);
     }
 
     public String getNotesText() {
@@ -114,8 +114,6 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setTitle(String title);
 
         void setPlaceholder(String placerholder);
-
-        void setNotes(String notes);
 
         void setWarning(Boolean warning);
 

@@ -62,15 +62,6 @@ class NotesField extends PolymerElement {
             },
             notes: {
                 type: String,
-                observer: "_notesChanged",
-            },
-            _notesChangeObserverLock: {
-                type: Boolean,
-                value: false,
-            },
-            _notesChangedObserverTriggered: {
-                type: Boolean,
-                value: false,
             },
             allowautosave: {
                 type: Boolean,
@@ -259,7 +250,6 @@ class NotesField extends PolymerElement {
 
     ready() {
         super.ready();
-        this.$.textarea.value = this.notes;
         this.$.textarea.addEventListener("keyup", debounce(event => {
             this.calculateWordCount(this.$.textarea.value);
             if (this.$.textarea.value !== this.notes && !this.unsaved) {
@@ -279,7 +269,7 @@ class NotesField extends PolymerElement {
 
     onSave(event) {
         if (this.canSave(this.$.textarea.value)) {
-            this.notes = this.$.textarea.value;
+            this.notes = this.notes ? this.$.textarea.value.slice(0) : "";
             this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
             setTimeout(() => {
@@ -289,11 +279,12 @@ class NotesField extends PolymerElement {
     }
 
     calculateWordCount(notes) {
-        this.wordcount = notes.length;
+        this.wordcount = notes ? notes.length : 0;
     }
 
     _notesChanged(newValue, oldValue) {
-        this.$.textarea.value = newValue;
+        this.notes = newValue;
+        this.$.textarea.value = newValue ? newValue.slice(0) : "";
         this.calculateWordCount(newValue);
     }
 
