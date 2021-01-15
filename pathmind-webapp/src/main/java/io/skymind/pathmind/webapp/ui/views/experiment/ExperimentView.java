@@ -118,6 +118,11 @@ public class ExperimentView extends DefaultExperimentView {
     }
 
     @Override
+    public String getViewUrl() {
+        return Routes.EXPERIMENT_URL;
+    }
+
+    @Override
     protected void addEventBusSubscribers() {
         EventBus.subscribe(this, getUISupplier(),
                 getViewSubscribers());

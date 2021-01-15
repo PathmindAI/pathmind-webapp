@@ -31,6 +31,8 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
     protected abstract void createExperimentComponents();
     protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
 
+    public abstract String getViewUrl();
+
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
     private Object experimentLock = new Object();

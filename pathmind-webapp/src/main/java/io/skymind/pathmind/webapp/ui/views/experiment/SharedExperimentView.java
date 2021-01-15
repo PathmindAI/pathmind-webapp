@@ -26,6 +26,11 @@ public class SharedExperimentView extends ExperimentView {
     }
 
     @Override
+    public String getViewUrl() {
+        return Routes.SHARED_EXPERIMENT;
+    }
+
+    @Override
     protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
         return experimentDAO.getExperimentForSupportIfAllowed(specificExperimentId, SecurityUtils.getUserId());
     }

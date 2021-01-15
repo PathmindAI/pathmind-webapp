@@ -5,14 +5,24 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class NavBarItemSelectExperimentAction {
     public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
         // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
-        if(defaultExperimentView instanceof ExperimentView) {
-            selectExperimentFromExperimentView(experiment, defaultExperimentView);
-        } else { // Must be NewExperimentView
-            selectExperimentFromNewExperimentView(experiment, defaultExperimentView);
+        switch (defaultExperimentView.getViewUrl()) {
+            case Routes.NEW_EXPERIMENT_URL: {
+                selectExperimentFromNewExperimentView(experiment, defaultExperimentView);
+                break;
+            }
+            case Routes.EXPERIMENT_URL:
+            case Routes.SHARED_EXPERIMENT: {
+                selectExperimentFromExperimentView(experiment, defaultExperimentView);
+                break;
+            }
+            default:
+                log.warn("Unknown view to process {}", defaultExperimentView.getClass().getSimpleName());
         }
     }
 

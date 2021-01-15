@@ -87,6 +87,11 @@ public class NewExperimentView extends DefaultExperimentView implements BeforeLe
         return mainContent;
     }
 
+    @Override
+    public String getViewUrl() {
+        return Routes.NEW_EXPERIMENT_URL;
+    }
+
     private HorizontalLayout createMainPanel() {
 
         createButtons();
