@@ -5,7 +5,6 @@ import io.skymind.pathmind.webapp.ui.karibu.KaribuUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import static com.github.mvysny.kaributesting.v10.LocatorJ.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,7 +22,7 @@ public class NotesFieldTest {
 
     @After
     public void tearDown() {
-        SecurityContextHolder.clearContext();
+        KaribuUtils.tearDown();
     }
 
     @Test

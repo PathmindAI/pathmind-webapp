@@ -51,6 +51,10 @@ public class KaribuUtils {
         MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
     }
 
+    public static void tearDown() {
+        MockVaadin.tearDown();
+    }
+
     public static Class<? extends HasElement> getActiveViewClass() {
         return UI.getCurrent().getInternals().getActiveRouterTargetsChain().get(0).getClass();
     }
