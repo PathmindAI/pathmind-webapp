@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -128,6 +130,14 @@ public abstract class DefaultExperimentView extends PathMindDefaultView implemen
      */
     public void updateExperimentFromComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());
+    }
+
+    // TODO: Runnable is just an example, can be any @FunctionalInterface like () -> { }
+    public void updateExperimentFromComponentsSync(Runnable action) {
+        synchronized (experimentLock) {
+            experimentComponentList.forEach(ExperimentComponent::updateExperiment);
+            action.run();
+        }
     }
 
     public void updateComponents() {
