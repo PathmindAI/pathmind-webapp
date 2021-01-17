@@ -1,15 +1,15 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Objects;
-
 @Getter
 @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class RewardVariable extends Data implements DeepCloneableInterface<RewardVariable> {
 
     public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
@@ -49,26 +49,6 @@ public class RewardVariable extends Data implements DeepCloneableInterface<Rewar
 
     public void setGoalConditionTypeEnum(GoalConditionType conditionType) {
         goalConditionType = conditionType != null ? conditionType.getCode() : null;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        RewardVariable that = (RewardVariable) o;
-        return Objects.equals(this.getId(), that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getId());
     }
 
     public RewardVariable shallowClone() {
