@@ -2,38 +2,38 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.act
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class NavBarItemSelectExperimentAction {
-    public static void selectExperiment(Experiment experiment, DefaultExperimentView defaultExperimentView) {
+    public static void selectExperiment(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
-        if(defaultExperimentView instanceof ExperimentView) {
-            selectExperimentFromExperimentView(experiment, defaultExperimentView);
+        if(abstractExperimentView instanceof ExperimentView) {
+            selectExperimentFromExperimentView(experiment, abstractExperimentView);
         } else { // Must be NewExperimentView
-            selectExperimentFromNewExperimentView(experiment, defaultExperimentView);
+            selectExperimentFromNewExperimentView(experiment, abstractExperimentView);
         }
     }
 
-    private static void selectExperimentFromNewExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
+    private static void selectExperimentFromNewExperimentView(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         if(experiment.isDraft()) {
-            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId()));
-            synchronized (defaultExperimentView.getExperimentLock()) {
-                defaultExperimentView.setExperiment(experiment);
+            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId()));
+            synchronized (abstractExperimentView.getExperimentLock()) {
+                abstractExperimentView.setExperiment(experiment);
             }
         } else {
-            defaultExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
         }
     }
 
-    private static void selectExperimentFromExperimentView(Experiment experiment, DefaultExperimentView defaultExperimentView) {
+    private static void selectExperimentFromExperimentView(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         if (experiment.isDraft()) {
-            defaultExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
         } else {
-            defaultExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + experiment.getId()));
-            synchronized (defaultExperimentView.getExperimentLock()) {
-                defaultExperimentView.setExperiment(experiment);
+            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + experiment.getId()));
+            synchronized (abstractExperimentView.getExperimentLock()) {
+                abstractExperimentView.setExperiment(experiment);
             }
         }
     }

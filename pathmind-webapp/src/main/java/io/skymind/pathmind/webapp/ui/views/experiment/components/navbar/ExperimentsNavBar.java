@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
-import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main.NavBarExperimentCreatedSubscriber;
@@ -35,12 +35,12 @@ public class ExperimentsNavBar extends VerticalLayout {
 
     private ExperimentDAO experimentDAO;
 
-    private DefaultExperimentView defaultExperimentView;
+    private AbstractExperimentView abstractExperimentView;
 
-    public ExperimentsNavBar(DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO) {
-        this.defaultExperimentView = defaultExperimentView;
+    public ExperimentsNavBar(AbstractExperimentView abstractExperimentView, ExperimentDAO experimentDAO) {
+        this.abstractExperimentView = abstractExperimentView;
         this.experimentDAO = experimentDAO;
-        this.selectedExperiment = defaultExperimentView.getExperiment();
+        this.selectedExperiment = abstractExperimentView.getExperiment();
         this.modelId = selectedExperiment.getModelId();
 
         rowsWrapper = new VerticalLayout();
@@ -48,7 +48,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         rowsWrapper.setPadding(false);
         rowsWrapper.setSpacing(false);
 
-        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, defaultExperimentView.getSegmentIntegrator());
+        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, abstractExperimentView.getSegmentIntegrator());
 
         setPadding(false);
         setSpacing(false);
@@ -61,11 +61,11 @@ public class ExperimentsNavBar extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         if (selectedExperiment.isArchived()) {
-            EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
+            EventBus.subscribe(this, abstractExperimentView.getUISupplier(),
                     new NavBarNotificationExperimentStartTrainingSubscriber(this),
                     new NavBarNotificationExperimentArchivedSubscriber(this));
         } else {
-            EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
+            EventBus.subscribe(this, abstractExperimentView.getUISupplier(),
                     new NavBarExperimentArchivedSubscriber(this),
                     new NavBarExperimentCreatedSubscriber(this),
                     new NavBarNotificationExperimentStartTrainingSubscriber(this),
@@ -132,7 +132,7 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     private ExperimentsNavBarItem createExperimentNavBarItem(Experiment experiment) {
-        return new ExperimentsNavBarItem(this, defaultExperimentView, experimentDAO, experiment);
+        return new ExperimentsNavBarItem(this, abstractExperimentView, experimentDAO, experiment);
     }
 
     private void setIsOnDraftExperimentView(ExperimentsNavBarItem targetNavBarItem, Experiment experiment) {

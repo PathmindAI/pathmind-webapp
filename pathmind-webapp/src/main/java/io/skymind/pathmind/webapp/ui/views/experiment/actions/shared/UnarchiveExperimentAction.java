@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 
 public class UnarchiveExperimentAction {
-    public static void unarchive(DefaultExperimentView experimentView, Supplier<Experiment> getExperimentSupplier, Supplier<Object> getLockSupplier) {
+    public static void unarchive(AbstractExperimentView experimentView, Supplier<Experiment> getExperimentSupplier, Supplier<Object> getLockSupplier) {
         ConfirmationUtils.unarchive("experiment", () -> {
             synchronized (getLockSupplier.get()) {
                 ExperimentGuiUtils.archiveExperiment(experimentView.getExperimentDAO(), getExperimentSupplier.get(), false);

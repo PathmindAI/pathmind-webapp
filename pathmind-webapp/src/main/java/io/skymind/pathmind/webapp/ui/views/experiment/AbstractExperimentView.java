@@ -26,7 +26,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.E
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class DefaultExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public abstract class AbstractExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
 
     protected abstract void createExperimentComponents();
     protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);

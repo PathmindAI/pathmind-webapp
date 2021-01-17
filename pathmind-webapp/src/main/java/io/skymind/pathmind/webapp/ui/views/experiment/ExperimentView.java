@@ -39,7 +39,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
-public class ExperimentView extends DefaultExperimentView {
+public class ExperimentView extends AbstractExperimentView {
 
     // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
     // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also

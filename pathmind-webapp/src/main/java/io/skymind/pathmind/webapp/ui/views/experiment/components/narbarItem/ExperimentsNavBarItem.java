@@ -16,7 +16,7 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.views.experiment.DefaultExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemCompareExperimentAction;
@@ -41,13 +41,13 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private Experiment experiment;
     private Object experimentLock = new Object();
 
-    private DefaultExperimentView defaultExperimentView;
+    private AbstractExperimentView abstractExperimentView;
 
-    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, DefaultExperimentView defaultExperimentView, ExperimentDAO experimentDAO, Experiment experiment) {
+    public ExperimentsNavBarItem(ExperimentsNavBar experimentsNavbar, AbstractExperimentView abstractExperimentView, ExperimentDAO experimentDAO, Experiment experiment) {
         this.experimentsNavbar = experimentsNavbar;
         this.experimentDAO = experimentDAO;
         this.experiment = experiment;
-        this.defaultExperimentView = defaultExperimentView;
+        this.abstractExperimentView = abstractExperimentView;
 
         if (experiment.isDraft()) {
             experimentLink.setHref(Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId());
@@ -71,17 +71,17 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void handleRowClicked() {
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         experimentsNavbar.setCurrentExperiment(selectedExperiment);
-        NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, defaultExperimentView);
+        NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, abstractExperimentView);
     }
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, defaultExperimentView);
+        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, abstractExperimentView);
     }
 
     @EventHandler
     private void onCompareButtonClicked() {
-        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView)defaultExperimentView);
+        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView) abstractExperimentView);
     }
 
     private void setExperimentDetails(Experiment experiment) {
@@ -99,7 +99,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         if (experiment.isArchived()) {
             return;
         }
-        EventBus.subscribe(this, defaultExperimentView.getUISupplier(),
+        EventBus.subscribe(this, abstractExperimentView.getUISupplier(),
                 new NavBarItemExperimentFavoriteSubscriber(this),
                 new NavBarItemExperimentUpdatedSubscriber(this),
                 new NavBarItemRunUpdateSubscriber(this),

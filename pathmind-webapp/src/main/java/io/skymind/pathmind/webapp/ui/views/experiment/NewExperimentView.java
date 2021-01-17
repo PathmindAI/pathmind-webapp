@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @CssImport("./styles/views/new-experiment-view.css")
 @Route(value = Routes.NEW_EXPERIMENT_URL, layout = MainLayout.class)
-public class NewExperimentView extends DefaultExperimentView implements BeforeLeaveObserver {
+public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
     protected ExperimentNotesField notesField;
