@@ -301,4 +301,8 @@ public class GenericPage extends PageObject {
         }
         resetImplicitTimeout();
     }
+
+    public String definePanel(String slot) {
+        return (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
+    }
 }

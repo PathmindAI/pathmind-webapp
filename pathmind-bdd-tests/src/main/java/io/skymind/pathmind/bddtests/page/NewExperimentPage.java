@@ -218,6 +218,6 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickNewExperimentPageObservationCheckbox(String observation) {
-        getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
     }
 }

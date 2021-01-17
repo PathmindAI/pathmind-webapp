@@ -5,6 +5,8 @@ import io.skymind.pathmind.bddtests.page.experimentview.ExperimentViewHeader;
 import io.skymind.pathmind.bddtests.page.experimentview.ExperimentViewMiddlePanel;
 import net.thucydides.core.annotations.Step;
 
+import java.io.IOException;
+
 public class ExperimentViewSteps {
 
     private ExperimentViewHeader experimentViewHeader;
@@ -24,5 +26,25 @@ public class ExperimentViewSteps {
     @Step
     public void experimentPageCheckBottomPanel(String slot) {
         experimentViewBottomPanel.experimentPageCheckBottomPanel(slot);
+    }
+
+    @Step
+    public void experimentPageCheckSimulationMetrics(String slot, String commaSeparatedMetrics) {
+        experimentViewMiddlePanel.experimentPageCheckSimulationMetrics(slot, commaSeparatedMetrics);
+    }
+
+    @Step
+    public void experimentPageCheckSimulationMetricIsChosen(String slot, String rewardVar, boolean chosen) {
+        experimentViewMiddlePanel.experimentPageCheckSimulationMetricIsChosen(slot, rewardVar, chosen);
+    }
+
+    @Step
+    public void experimentPageCheckObservationIsChecked(String slot, String observation, boolean checked) {
+        experimentViewMiddlePanel.experimentPageCheckObservationIsChecked(slot, observation, checked);
+    }
+
+    @Step
+    public void experimentPageCheckRewardFunction(String slot, String rewardFunctionFilePath) throws IOException {
+        experimentViewBottomPanel.experimentPageCheckRewardFunction(slot, rewardFunctionFilePath);
     }
 }
