@@ -44,7 +44,7 @@ public class ExperimentView extends AbstractExperimentView {
     // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
     // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
     // why we can't use synchronize on the method).
-    private Object comparisonExperimentLock = new Object();
+    private final Object comparisonExperimentLock = new Object();
 
     private VerticalLayout compareExperimentVerticalLayout;
 

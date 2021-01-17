@@ -33,7 +33,7 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
 
     // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
     // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method).
-    private Object experimentLock = new Object();
+    private final Object experimentLock = new Object();
 
     @Autowired
     protected ModelService modelService;
