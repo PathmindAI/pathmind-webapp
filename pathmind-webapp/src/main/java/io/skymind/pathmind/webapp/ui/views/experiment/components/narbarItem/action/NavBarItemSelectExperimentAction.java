@@ -11,8 +11,10 @@ public class NavBarItemSelectExperimentAction {
         // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
         if(abstractExperimentView instanceof ExperimentView) {
             selectExperimentFromExperimentView(experiment, abstractExperimentView);
-        } else { // Must be NewExperimentView
+        } else if(abstractExperimentView instanceof NewExperimentView) {
             selectExperimentFromNewExperimentView(experiment, abstractExperimentView);
+        } else {
+            throw new RuntimeException("I can't happen.");
         }
     }
 
