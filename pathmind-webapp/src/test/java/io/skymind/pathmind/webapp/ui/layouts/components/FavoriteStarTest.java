@@ -25,9 +25,9 @@ public class FavoriteStarTest {
 
     @Test
     public void favoriteStarTest() {
-        assertEquals(favoriteStar.getValue(), false);
+        assertEquals(false, favoriteStar.getValue());
         favoriteStar.setValue(true);
-        assertEquals(favoriteStar.getValue(), true);
+        assertEquals(true, favoriteStar.getValue());
     }
 
 }

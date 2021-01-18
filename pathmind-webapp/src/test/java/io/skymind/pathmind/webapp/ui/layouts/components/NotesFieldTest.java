@@ -27,7 +27,7 @@ public class NotesFieldTest {
 
     @Test
     public void notesFieldTextTest() {
-        assertEquals(notesField.getNotesText(), "abc");
+        assertEquals("abc", notesField.getNotesText());
     }
     
     @Test
@@ -40,10 +40,10 @@ public class NotesFieldTest {
     
     @Test
     public void notesFieldTextChangeTest() {
-        assertEquals(notesField.getNotesText(), "abc");
+        assertEquals("abc", notesField.getNotesText());
         notesField.setNotesText("Changed the text haha");
-        assertEquals(notesField.getNotesText(), "Changed the text haha");
-        assertNotEquals(notesField.getNotesText(), "abc");
+        assertEquals("Changed the text haha", notesField.getNotesText());
+        assertNotEquals("abc", notesField.getNotesText());
     }
 
 }
