@@ -126,4 +126,43 @@ public class AccountPage extends PageObject {
             }
         }
     }
+
+    public void checkSubscriptionPlansPage() {
+        assertThat(getDriver().findElement(By.xpath("//h1")).getText(), is("Subscription Plans"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::h2")).getText(), is("Basic"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='details']")).getText(), is("For Students and Hobbyists"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='price']")).getText(), is("Free"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='additional-info']")).getText(), is(" "));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::ul")).getText(), is("25 Experiments Per Month\nUnlimited Policy Export"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::vaadin-button")).getText(), is("Current Plan"));
+
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::h2")).getText(), is("Professional"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='details']")).getText(), is("For Professional Simulation Engineers"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='popular-tag']")).getText(), is("POPULAR"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$500"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='additional-info']")).getText(), is("For yearly subscription per seat"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("200 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::vaadin-button")).getText(), is("Choose Pro"));
+
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::h2")).getText(), is("Enterprise"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='details']")).getText(), is("For Consultancies & Corporate Teams"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$1,000"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='additional-info']")).getText(), is("For yearly subscription per seat"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("2,000 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included\nPolicy Serving Enabled\nRL Advisory and Training"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::vaadin-button")).getText(), is("Contact Us"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::a")).getAttribute("href"), is("mailto:support@pathmind.com"));
+
+        assertThat(getDriver().findElement(By.xpath("//p[@class='caption']")).getText(), is("Applicable taxes not included"));
+    }
+
+    public void checkSubscriptionPlansUpgradePage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='title']")).getText(), is("Upgrade to Professional"));
+        assertThat(getDriver().findElement(By.xpath("//p[@class='sub-title']")).getText(), containsString("Please fill in the information below. All fields are required."));
+        assertThat(getDriver().findElement(By.id("name")).getText(), is("Name on card"));
+        assertThat(getDriver().findElement(By.id("address")).getText(), containsString("Billing Address"));
+        assertThat(getDriver().findElement(By.id("city")).getText(), containsString("City"));
+        assertThat(getDriver().findElement(By.id("state")).getText(), containsString("State"));
+        assertThat(getDriver().findElement(By.id("zip")).getText(), containsString("Zip"));
+        assertThat(getDriver().findElement(By.id("card-element")).getText(), containsString(""));
+    }
 }

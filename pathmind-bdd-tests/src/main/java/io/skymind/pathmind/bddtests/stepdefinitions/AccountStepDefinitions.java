@@ -97,4 +97,13 @@ public class AccountStepDefinitions {
         accountPageSteps.accountPageAccessTokenCheckTokenExpires(expiresDays);
     }
 
+    @Then("^Check subscription plans page$")
+    public void checkSubscriptionPlansPage() {
+        accountPageSteps.checkSubscriptionPlansPage();
+    }
+
+    @Then("^Check subscription plans upgrade page$")
+    public void checkSubscriptionPlansUpgradePage() {
+        accountPageSteps.checkSubscriptionPlansUpgradePage();
+    }
 }
