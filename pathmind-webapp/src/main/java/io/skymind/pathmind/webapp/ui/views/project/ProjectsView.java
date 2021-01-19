@@ -26,6 +26,8 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.project.demo.DemoProjectService;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -47,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Route(value = Routes.PROJECTS_URL, layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView {
+
     @Autowired
     private ProjectDAO projectDAO;
     @Autowired
@@ -68,8 +71,12 @@ public class ProjectsView extends PathMindDefaultView {
     private DemoViewContent demoViewContent;
     private Dialog demoDialog;
 
-    public ProjectsView() {
+    private FeatureManager featureManager;
+
+    public ProjectsView(FeatureManager featureManager) {
         super();
+        this.featureManager = featureManager;
+
     }
 
     protected Component getMainContent() {
@@ -81,7 +88,7 @@ public class ProjectsView extends PathMindDefaultView {
         Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
         Button showDemosButton = showDemosButton();
 
-        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, 
+        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle,
                 WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton(), showDemosButton));
         headerWrapper.addClassName("page-content-header");
 
@@ -98,10 +105,15 @@ public class ProjectsView extends PathMindDefaultView {
             gridWrapper.add(demoViewContent);
             archivesTabPanel.setVisible(false);
             projectGrid.setVisible(false);
-            demoViewContent.setVisible(true);
-            showDemosButton.setVisible(false);
+            if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
+                showDemosButton.setVisible(false);
+                demoViewContent.setVisible(true);
+            } else {
+                demoViewContent.setVisible(false);
+                showDemosButton.setVisible(false);
+            }
         } else {
-            showDemosButton.setVisible(true);
+            showDemosButton.setVisible(featureManager.isEnabled(Feature.EXAMPLE_PROJECTS));
         }
 
         return gridWrapper;
