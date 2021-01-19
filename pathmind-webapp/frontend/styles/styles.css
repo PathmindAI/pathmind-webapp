@@ -438,6 +438,7 @@ change-password-view-content {
 account-view-content .panel-wrapper,
 account-edit-view-content .panel-wrapper,
 change-password-view-content .panel-wrapper {
+    flex: 1 0 auto;
     min-height: auto;
     overflow: visible;
 }
