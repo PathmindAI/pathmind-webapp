@@ -22,7 +22,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private String simMetricsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/span";
     private String simMetricsHeaderRowXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/descendant::*[@class='header-row']";
     private String observationsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='secondary']/span";
-    private String rewardFunctionLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[9]/span";
+    private String rewardFunctionLabelXpath = "(//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout/span[@class='bold-label'])[3]";
     private String rewardVariablesListXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name']";
     private String simulationMetricChosenXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and @chosen]";
     private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
