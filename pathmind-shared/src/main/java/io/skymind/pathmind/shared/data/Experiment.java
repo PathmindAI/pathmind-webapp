@@ -59,7 +59,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private String trainingStoppedEarlyMessage;
 
     private List<RewardVariable> rewardVariables;
-    private List<RewardVariable> selectedRewardVariables;
+    private List<RewardVariable> selectedRewardVariables = new ArrayList<>();
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
