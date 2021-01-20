@@ -90,34 +90,32 @@ public class HistogramChartPanel extends VerticalLayout {
 //        chart.setPolicyChart(experiment);
 
         log.info("kepricondebug histogram panel : {}", this.experiment.getId());
-        Policy policy = PolicyUtils.selectBestPolicy(this.experiment).get();
+        if (metricsData.size() > 0) {
+            Policy policy = PolicyUtils.selectBestPolicy(this.experiment).get();
 
+            List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
 
-        List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
+            Map<Integer, List<Double>> uncertaintyMap = null;
+            if (metricsRawList != null && metricsRawList.size() > 0) {
+                // (k: index, v: meanValueList)
+                uncertaintyMap = policy.getMetricsRaws().stream()
+                    .collect(groupingBy(MetricsRaw::getIndex,
+                        mapping(MetricsRaw::getValue, Collectors.toList())
+                        )
+                    );
 
-        Map<Integer, List<Double>> uncertaintyMap = null;
-        if (metricsRawList != null && metricsRawList.size() > 0) {
-            // (k: index, v: meanValueList)
-            uncertaintyMap = policy.getMetricsRaws().stream()
-                .collect(groupingBy(MetricsRaw::getIndex,
-                    mapping(MetricsRaw::getValue, Collectors.toList())
-                    )
-                );
+                policy.setUncertainty(uncertaintyMap.values().stream()
+                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                    .collect(Collectors.toList()));
+            }
 
-            policy.setUncertainty(uncertaintyMap.values().stream()
-                .map(list -> PathmindNumberUtils.calculateUncertainty(list))
-                .collect(Collectors.toList()));
+            JsonArray cols = createCols();
+            JsonArray rows = createRows(uncertaintyMap);
+
+            chart.setData(cols, rows);
+        } else {
+            chart.setChartEmpty();
         }
-
-        int index = metricsData.values().stream().collect(Collectors.toList()).get(0).getArrayIndex();
-
-
-
-        JsonArray cols = createCols();
-//        JsonArray rows = createRows(uncertaintyMap.get(index), uncertaintyMap.get(index+1));
-        JsonArray rows = createRows(uncertaintyMap);
-
-        chart.setData(cols, rows);
 
         redrawChart();
     }
