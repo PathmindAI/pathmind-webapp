@@ -8,6 +8,8 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
+import java.util.List;
+
 @Tag("histogram-chart")
 @JsModule("./src/components/atoms/histogram-chart.js")
 public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implements HasStyle {
@@ -18,10 +20,12 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     public void setupChart(
             String hAxisTitle,
             String vAxisTitle,
+            List<String> colors,
             JsonObject viewWindow
     ) {
         getModel().setHaxistitle(hAxisTitle);
         getModel().setVaxistitle(vAxisTitle);
+        getModel().setColors(colors);
 
         // JsonObject and JsonArray are not allowed types for TemplateModel methods
         // So we have to set it through calling the JS function
@@ -49,6 +53,8 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
         void setHaxistitle(String hAxisTitle);
 
         void setVaxistitle(String vAxisTitle);
+
+        void setColors(List<String> colors);
 
     }
 }

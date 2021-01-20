@@ -45,6 +45,8 @@ public class HistogramChartPanel extends VerticalLayout {
 
     List<RewardVariable> rewardVariables;
 
+    private List<String> colors = ChartUtils.colors();
+
     public HistogramChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
         this.metricsData = new ConcurrentHashMap<>();
@@ -52,8 +54,7 @@ public class HistogramChartPanel extends VerticalLayout {
         setPadding(false);
         setSpacing(false);
 
-        chart.setupChart("value", "frequency", null);
-        chart.setChartEmpty();
+
     }
 
     @Override
@@ -112,6 +113,11 @@ public class HistogramChartPanel extends VerticalLayout {
             JsonArray cols = createCols();
             JsonArray rows = createRows(uncertaintyMap);
 
+            List<String> selectedColors = metricsData.values().stream()
+                .map(r -> colors.get(r.getArrayIndex() % 10))
+                .collect(Collectors.toList());
+
+            chart.setupChart("value", "frequency", selectedColors, null);
             chart.setData(cols, rows);
         } else {
             chart.setChartEmpty();
@@ -162,7 +168,6 @@ public class HistogramChartPanel extends VerticalLayout {
     }
 
     public void redrawChart() {
-        log.info("kepricondebug redraw : {}", this.metricsData);
         chart.redraw();
     }
 
