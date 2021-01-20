@@ -20,16 +20,20 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
+@Slf4j
 public class ExperimentChartsPanel extends VerticalLayout {
 
     private CompareMetricsChartPanel compareMetricsChartPanel;
+    private HistogramChartPanel histogramChartPanel;
     private PolicyChartPanel policyChartPanel;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
     private Tabs chartTabs;
+    private Tab histogramChartTab;
     private Tab metricsChartTab;
     private Tab rewardScoreChartTab;
 
@@ -43,11 +47,14 @@ public class ExperimentChartsPanel extends VerticalLayout {
         this.getUISupplier = getUISupplier;
 
         Tabs chartTabs = createChartTabs();
+        histogramChartPanel = new HistogramChartPanel(getUISupplier);
         compareMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                histogramChartPanel,
+                policyChartPanel,
                 compareMetricsChartPanel,
                 policyChartPanel);
 
@@ -69,16 +76,20 @@ public class ExperimentChartsPanel extends VerticalLayout {
     }
 
     private Tabs createChartTabs() {
+        histogramChartTab = new Tab("Histogram");
         metricsChartTab = new Tab("Metrics");
         rewardScoreChartTab = new Tab("Mean Reward Score");
-        chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
+        chartTabs = new Tabs(histogramChartTab, metricsChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
         chartTabs.addSelectedChangeListener(event -> setVisiblePanel(true));
         return chartTabs;
     }
 
     private void setVisiblePanel(boolean isRedraw) {
+        log.info("kepricondebug chart tabs : " + chartTabs.getSelectedIndex());
         if (chartTabs.getSelectedIndex() == 0) {
+            setHistogramChartPanelVisible(isRedraw);
+        } else if (chartTabs.getSelectedIndex() == 1) {
             setCompareMetricsChartPanelVisible(isRedraw);
         } else {
             setPolicyChartPanelVisible(isRedraw);
@@ -100,6 +111,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
     public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
         setExperiment(newExperiment);
         this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
+        histogramChartPanel.setupChart(experiment, rewardVariables);
         policyChartPanel.setExperiment(experiment);
         compareMetricsChartPanel.setupChart(experiment, rewardVariables);
         selectVisibleChart();
@@ -119,8 +131,19 @@ public class ExperimentChartsPanel extends VerticalLayout {
         experiment.updateTrainingStatus();
     }
 
+    private void setHistogramChartPanelVisible(boolean isRedraw) {
+        trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(true);
+        policyChartPanel.setVisible(false);
+        compareMetricsChartPanel.setVisible(false);
+        if (isRedraw) {
+            histogramChartPanel.redrawChart();
+        }
+    }
+
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(false);
         policyChartPanel.setVisible(false);
         compareMetricsChartPanel.setVisible(true);
         if (isRedraw) {
@@ -130,6 +153,7 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(false);
         policyChartPanel.setVisible(true);
         compareMetricsChartPanel.setVisible(false);
         if (isRedraw) {
