@@ -2,8 +2,9 @@ package io.skymind.pathmind.services.project.demo;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -27,26 +28,23 @@ public class DemoProjectService {
 
     public Experiment createExperiment(ExperimentManifest manifest, long userId) throws Exception {
 
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+
         Path tmp = Files.createTempFile("pm-demo", "model");
         Request.Get(manifest.getModelUrl()).execute().saveContent(tmp.toFile());
         ModelBytes bytes = ModelBytes.of(Files.readAllBytes(tmp));
 
         Experiment experiment = experimentService.createExperimentFromModelBytes(bytes, () -> {
-            List<Project> projects = projectDAO.getProjectsForUser(userId);
-            if (projects.isEmpty()) {
-                final LocalDateTime now = LocalDateTime.now();
-                Project newProject = new Project();
-                newProject.setName("Demo Projects by Pathmind");
-                newProject.setPathmindUserId(userId);
-                newProject.setDateCreated(now);
-                newProject.setLastActivityDate(now);
-                long newProjectId = projectDAO.createNewProject(newProject);
-                newProject.setId(newProjectId);
-                log.info("created demo project {}", newProjectId);
-                return newProject;
-            } else {
-                return projects.get(0);
-            }
+            final LocalDateTime now = LocalDateTime.now();
+            Project newProject = new Project();
+            newProject.setName(MessageFormat.format("Demo: {0} ({1})", manifest.getName(), now.format(format)));
+            newProject.setPathmindUserId(userId);
+            newProject.setDateCreated(now);
+            newProject.setLastActivityDate(now);
+            long newProjectId = projectDAO.createNewProject(newProject);
+            newProject.setId(newProjectId);
+            log.info("created demo project {}", newProjectId);
+            return newProject;
         });
 
         experiment.setRewardFunction(manifest.getRewardFunction());
