@@ -10,6 +10,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.HistogramChartPanelPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.HistogramChartPanelRewardVariableSelectedViewSubscriber;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,12 @@ import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_M
 
 @Slf4j
 public class HistogramChartPanel extends VerticalLayout {
+    @Getter
     private Object experimentLock = new Object();
 
     private HistogramChart chart = new HistogramChart();
 
+    @Getter
     private Experiment experiment;
 
     private Supplier<Optional<UI>> getUISupplier;
@@ -53,7 +56,7 @@ public class HistogramChartPanel extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent event) {
         EventBus.subscribe(this, getUISupplier,
-//            new CompareMetricsChartPanelPolicyUpdateSubscriber(this),
+            new HistogramChartPanelPolicyUpdateSubscriber(this),
             new HistogramChartPanelRewardVariableSelectedViewSubscriber(this));
     }
 

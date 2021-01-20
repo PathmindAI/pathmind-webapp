@@ -11,6 +11,7 @@ import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ChartUtils;
 
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     private void updateData( ) {
+        PolicyUtils.updateSimulationMetricsData(bestPolicy);
         List<MetricsRaw> metricsRawList = bestPolicy.getMetricsRaws();
 
         if (selectedRewardVariables.size() > 0 && (metricsRawList != null && metricsRawList.size() > 0)) {
