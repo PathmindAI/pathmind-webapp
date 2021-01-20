@@ -89,40 +89,36 @@ public class HistogramChartPanel extends VerticalLayout {
 
     public void updateChart() {
 //        chart.setPolicyChart(experiment);
-
-        log.info("kepricondebug histogram panel : {}", this.experiment.getId());
-        if (metricsData.size() > 0) {
-            Policy policy = PolicyUtils.selectBestPolicy(this.experiment).get();
-
+        Optional<Policy> opt = PolicyUtils.selectBestPolicy(this.experiment);
+        if (opt.isPresent()) {
+            Policy policy = opt.get();
             List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
 
-            Map<Integer, List<Double>> uncertaintyMap = null;
-            if (metricsRawList != null && metricsRawList.size() > 0) {
+            log.info("kepricondebug histogram panel : {}", this.experiment.getId());
+            if (metricsData.size() > 0 && (metricsRawList != null && metricsRawList.size() > 0)) {
                 // (k: index, v: meanValueList)
-                uncertaintyMap = policy.getMetricsRaws().stream()
+                Map<Integer, List<Double>> uncertaintyMap = policy.getMetricsRaws().stream()
                     .collect(groupingBy(MetricsRaw::getIndex,
                         mapping(MetricsRaw::getValue, Collectors.toList())
                         )
                     );
 
-                policy.setUncertainty(uncertaintyMap.values().stream()
-                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
-                    .collect(Collectors.toList()));
+                JsonArray cols = createCols();
+                JsonArray rows = createRows(uncertaintyMap);
+
+                List<String> selectedColors = metricsData.values().stream()
+                    .map(r -> colors.get(r.getArrayIndex() % 10))
+                    .collect(Collectors.toList());
+
+                chart.setupChart("value", "frequency", selectedColors, null);
+                chart.setData(cols, rows);
+                redrawChart();
+                return;
             }
-
-            JsonArray cols = createCols();
-            JsonArray rows = createRows(uncertaintyMap);
-
-            List<String> selectedColors = metricsData.values().stream()
-                .map(r -> colors.get(r.getArrayIndex() % 10))
-                .collect(Collectors.toList());
-
-            chart.setupChart("value", "frequency", selectedColors, null);
-            chart.setData(cols, rows);
-        } else {
-            chart.setChartEmpty();
         }
 
+        chart.setupChart("value", "frequency", List.of("navy"), null);
+        chart.setChartEmpty();
         redrawChart();
     }
 
