@@ -197,6 +197,12 @@ public class PolicyUtils {
     }
 
     public static void updateCompareMetricsChartData(Policy bestPolicy) {
+
+        // If empty then there is nothing to calculate.
+        if(bestPolicy.getSparklinesData().isEmpty()) {
+            return;
+        }
+
         Map<Integer, List<Double>> allLinesData = new LinkedHashMap<>();
         // Get first metric's sparkline data
         Map<Integer, Double> firstMetricSparklineData = bestPolicy.getSparklinesData().get(0);
