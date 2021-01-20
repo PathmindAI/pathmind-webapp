@@ -13,8 +13,8 @@ public class ExperimentManifestRepository {
                 ExperimentManifest.builder()
                         .name("Automated Guided Vehicles (AGV)")
                         .imageUrl(URI.create("https://downloads.intercomcdn.com/i/o/273937963/e33cea1e9b5ac12c5d6de951/image.png"))
-                        .description("This model simulates product delivery in Europe. The supply chain includes three manufacturing centers and fifteen distributors that order random amounts of the product every 1-2 days. There is a fleet of trucks in each manufacturing facility. When a manufacturing facility receives an order from a distributor, it checks the number of products in storage. If the required amount is available, it sends a loaded truck to the distributor. Otherwise, the order waits until the factory produces sufficient inventory.")
-                        .result("Reinforcement learning outperforms nearest manufacturing center heuristic by over 80%.")
+                        .description("A fleet of automated guided vehicles (AGVs) optimizes its dispatching routes to maximize product throughput in a manufacturing center. When component parts arrive to be processed, they must be brought to the appropriate machine according to a specific processing sequence.")
+                        .result("The reinforcement learning policy outperforms the optimizer by over 20%.")
                         .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/AGVPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
@@ -29,8 +29,8 @@ public class ExperimentManifestRepository {
                 ExperimentManifest.builder()
                         .name("Product Delivery")
                         .imageUrl(URI.create("https://downloads.intercomcdn.com/i/o/233456333/5221ec61b7e207c74823733d/image.png"))
-                        .description("A fleet of automated guided vehicles (AGVs) optimizes its dispatching routes to maximize product throughput in a manufacturing center. When component parts arrive to be processed, they must be brought to the appropriate machine according to a specific processing sequence.")
-                        .result("The reinforcement learning policy outperforms the optimizer by over 20%.")
+                        .description("This model simulates product delivery in Europe. The supply chain includes three manufacturing centers and fifteen distributors that order random amounts of the product every 1-2 days. There is a fleet of trucks in each manufacturing facility. When a manufacturing facility receives an order from a distributor, it checks the number of products in storage. If the required amount is available, it sends a loaded truck to the distributor. Otherwise, the order waits until the factory produces sufficient inventory.")
+                        .result("Reinforcement learning outperforms nearest manufacturing center heuristic by over 80%.")
                         .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/ProductDeliveryPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
