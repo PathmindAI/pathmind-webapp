@@ -110,14 +110,13 @@ Create PG dump
 */
 def createPgDump() {
     // Get db url ans pass
-    sh "echo ${env.ghprbTargetBranch}"
     branch="dev"
     dbpass = sh(returnStdout: true, script: "kubectl get secret dburlcli  -o=jsonpath='{.data.DB_URL_CLI}' -n \"${branch}\" | base64 --decode | rev | cut -f1 -d'=' | rev | tr -d '\n'")
     dburl = sh(returnStdout: true, script: "kubectl get secret dburlcli  -o=jsonpath='{.data.DB_URL_CLI}' -n \"${branch}\" | base64 --decode | sed 's@ *password=.*@@g' | sed 's@ @ --@g'")
     sh """
         set -x
         export PGPASSWORD="${dbpass}"
-        /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs --${dburl} > /tmp/${env.ghprbTargetBranch}_dump_${env.BUILD_NUMBER}.sql
+        /usr/lib/postgresql/11/bin/pg_dump -C -w --format=c --blobs --${dburl} > /tmp/dev_dump_${env.BUILD_NUMBER}.sql
     """
 }
 
@@ -129,7 +128,7 @@ def loadPgDump() {
     dburl = "--host=postgres.${env.BUILD_NUMBER} --port=5432 --dbname=pathminddb --user=pathminddb"
     sh """
         set -x
-        PGPASSWORD='Asdf1234' /usr/lib/postgresql/11/bin/pg_restore ${dburl} < /tmp/${env.ghprbTargetBranch}_dump_${env.BUILD_NUMBER}.sql || echo 0
+        PGPASSWORD='Asdf1234' /usr/lib/postgresql/11/bin/pg_restore ${dburl} < /tmp/dev_dump_${env.BUILD_NUMBER}.sql || echo 0
     """
 }
 
@@ -147,8 +146,8 @@ pipeline {
     environment {
         IMAGE_NAME = 'pathmind'
         DOCKER_REG = "839270835622.dkr.ecr.us-east-1.amazonaws.com"
-        HELM_FILE = "values_${env.ghprbTargetBranch}.yaml"
-        HELM_FILE_UPDATER = "values_${env.ghprbTargetBranch}-updater.yaml"
+        HELM_FILE = "values_dev.yaml"
+        HELM_FILE_UPDATER = "values_dev-updater.yaml"
         DEPLOY_PROD = false
     }
 
@@ -224,7 +223,7 @@ pipeline {
                     echo "Waiting for psql to come up"
                     sh "timeout 900 bash -c 'while ! pg_isready  -h postgres-${env.BUILD_NUMBER} -q; do sleep 5; done'"
                 }
-                //Create a dump from ${env.ghprbTargetBranch}
+                //Create a dump from dev
                 createPgDump()
                 //Load Dev Dump
                 loadPgDump()
@@ -235,7 +234,7 @@ pipeline {
                     sh "cat /tmp/sqs_policy.json | sed \"s/BUILD_ID/${env.BUILD_NUMBER}/g\" > /tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "aws sqs set-queue-attributes --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue --attributes file:///tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "rm /tmp/${env.BUILD_NUMBER}-sqs_policy.json"
-                    sh "aws sns subscribe --topic-arn arn:aws:sns:us-east-1:839270835622:${env.ghprbTargetBranch}-updater-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue --attributes \"{\\\"RawMessageDelivery\\\":\\\"true\\\"}\""
+                    sh "aws sns subscribe --topic-arn arn:aws:sns:us-east-1:839270835622:dev-updater-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue --attributes \"{\\\"RawMessageDelivery\\\":\\\"true\\\"}\""
                     
                     echo "Creating S3 bucket for tests"
                     sh "aws s3api create-bucket --bucket ${env.BUILD_ID}-training-dynamic-files.pathmind.com --region us-east-1"
@@ -266,7 +265,7 @@ pipeline {
                     try {
                         echo "Running E2E tests"
                         sh "rm -rf pathmind-bdd-tests/target/"
-                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${env.ghprbTargetBranch} |  base64 --decode` -Dtags=e2e -f pom.xml -P bdd-tests")
+                        TEST_STATUS = sh(returnStatus: true, script: "mvn clean verify -Dheadless=true -Denvironments.default.base.url=http://${RELEASE_ID}/ -Dpostgresql.host=postgres-${env.BUILD_NUMBER} -Dpostgresql.port=5432 -Dpostgresql.db=pathminddb -Dpostgresql.username=pathminddb -Dpostgresql.password=Asdf1234 -Dhttp.keepAlive=false -Dwebdriver.driver=remote -Dwebdriver.remote.url=http://zalenium/wd/hub -Dwebdriver.remote.driver=chrome -DforkNumber=6 -Dfailsafe.rerunFailingTestsCount=3 -Dpathmind.api.key=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n dev |  base64 --decode` -Dtags=e2e -f pom.xml -P bdd-tests")
                         publishHTML(target: [
                             reportDir: 'pathmind-bdd-tests/target/site/serenity',
                             reportFiles: 'index.html',
