@@ -172,11 +172,11 @@ pipeline {
     // Pipeline stages
     stages {
         stage('Git clone and setup') {
-            when {
+            /*when {
                 allOf{
                     expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
-            }
+            }*/
             steps {
                 echo "Check out code"
                 checkout scm
