@@ -11,7 +11,6 @@ import io.skymind.pathmind.services.experiment.ExperimentService;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.ProjectType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.fluent.Request;
@@ -33,11 +32,10 @@ public class DemoProjectService {
         ModelBytes bytes = ModelBytes.of(Files.readAllBytes(tmp));
 
         Experiment experiment = experimentService.createExperimentFromModelBytes(bytes, () -> {
-            List<Project> projects = projectDAO.getProjectsForUser(userId, ProjectType.DEMO);
+            List<Project> projects = projectDAO.getProjectsForUser(userId);
             if (projects.isEmpty()) {
                 final LocalDateTime now = LocalDateTime.now();
                 Project newProject = new Project();
-                newProject.setProjectType(ProjectType.DEMO);
                 newProject.setName("Demo Projects by Pathmind");
                 newProject.setPathmindUserId(userId);
                 newProject.setDateCreated(now);

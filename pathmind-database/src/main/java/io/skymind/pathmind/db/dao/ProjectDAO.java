@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.ProjectType;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -45,15 +44,11 @@ public class ProjectDAO {
     }
 
     public List<Project> getProjectsForUser(long userId) {
-        return getProjectsForUser(userId, null);
+        return ProjectRepository.getProjectsForUser(ctx, userId);
     }
 
     public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
         return ProjectRepository.getProjectIfAllowed(ctx, projectId, userId);
-    }
-
-    public List<Project> getProjectsForUser(long userId, ProjectType projectType) {
-        return ProjectRepository.getProjectsForUser(ctx, userId, projectType);
     }
 
 }

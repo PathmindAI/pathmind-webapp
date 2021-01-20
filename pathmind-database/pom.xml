@@ -97,14 +97,6 @@
                             <includes>.*</includes>
                             <excludes>Databasechangelog.*</excludes>
                             <inputSchema>public</inputSchema>
-                            <forcedTypes>
-                                <forcedType>
-                                    <userType>io.skymind.pathmind.shared.data.ProjectType</userType>
-                                    <converter>io.skymind.pathmind.db.converter.ProjectTypeConverter</converter>
-                                    <expression>.*project_type</expression>
-                                    <types>.*</types>
-                                </forcedType>
-                            </forcedTypes>
                             <recordTimestampFields>LAST_ACTIVITY_DATE</recordTimestampFields>
                         </database>
                         <target>

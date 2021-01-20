@@ -4,12 +4,10 @@
 package io.skymind.pathmind.db.jooq.tables;
 
 
-import io.skymind.pathmind.db.converter.ProjectTypeConverter;
 import io.skymind.pathmind.db.jooq.Indexes;
 import io.skymind.pathmind.db.jooq.Keys;
 import io.skymind.pathmind.db.jooq.Public;
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
-import io.skymind.pathmind.shared.data.ProjectType;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -23,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -45,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 145748496;
+    private static final long serialVersionUID = 2071385895;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -96,11 +94,6 @@ public class Project extends TableImpl<ProjectRecord> {
     public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
-     * The column <code>public.project.project_type</code>.
-     */
-    public final TableField<ProjectRecord, ProjectType> PROJECT_TYPE = createField(DSL.name("project_type"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "", new ProjectTypeConverter());
-
-    /**
      * Create a <code>public.project</code> table reference
      */
     public Project() {
@@ -140,7 +133,7 @@ public class Project extends TableImpl<ProjectRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.PROJECT_PATHMIND_USER_FK_INDEX, Indexes.PROJECT_PKEY, Indexes.PROJECT_USER_TYPE_IDX, Indexes.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID);
+        return Arrays.<Index>asList(Indexes.PROJECT_PATHMIND_USER_FK_INDEX, Indexes.PROJECT_PKEY, Indexes.UNIQUE_PROJECT_NAME_PATHMIND_USER_ID);
     }
 
     @Override
@@ -194,11 +187,11 @@ public class Project extends TableImpl<ProjectRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Long, Long, String, LocalDateTime, LocalDateTime, Boolean, String, ProjectType> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row7<Long, Long, String, LocalDateTime, LocalDateTime, Boolean, String> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }
