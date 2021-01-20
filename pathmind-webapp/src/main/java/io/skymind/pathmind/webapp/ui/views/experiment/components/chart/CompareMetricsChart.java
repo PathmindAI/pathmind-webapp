@@ -19,7 +19,6 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class CompareMetricsChart extends DataChart {
-
     private Policy metricsPolicy;
     private Map<Integer, List<Double>> compareMetricsChartData;
     // This must be an array due to a number of issues. For example a list containing a null item at the end will result in the list being decreased in size. This guarantees

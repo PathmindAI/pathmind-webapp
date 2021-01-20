@@ -4,13 +4,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import elemental.json.Json;
-import elemental.json.JsonArray;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
@@ -24,11 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.webapp.ui.utils.UIConstants.DEFAULT_SELECTED_METRICS_FOR_CHART;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
 
 @Slf4j
 public class HistogramChartPanel extends VerticalLayout {
@@ -40,21 +33,16 @@ public class HistogramChartPanel extends VerticalLayout {
 
     private Supplier<Optional<UI>> getUISupplier;
     @Getter
-    private Map<Long, RewardVariable> metricsData;
-//    private Map<Long, RewardVariable> rewardVariableFilters;
+    private Map<Long, RewardVariable> rewardVariableFilters;
 
     List<RewardVariable> rewardVariables;
 
-    private List<String> colors = ChartUtils.colors();
-
     public HistogramChartPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
-        this.metricsData = new ConcurrentHashMap<>();
+        this.rewardVariableFilters = new ConcurrentHashMap<>();
         add(chart);
         setPadding(false);
         setSpacing(false);
-
-
     }
 
     @Override
@@ -74,11 +62,11 @@ public class HistogramChartPanel extends VerticalLayout {
             this.experiment = newExperiment.deepClone();
             this.rewardVariables = rewardVariables;
 
-            long numberOfSelectedRewardVariables = metricsData.values().stream().filter(rv -> rv != null).count();
+            long numberOfSelectedRewardVariables = rewardVariableFilters.values().stream().filter(rv -> rv != null).count();
             if (numberOfSelectedRewardVariables == 0) {
                 rewardVariables.stream().forEach(rewardVariable -> {
                     if (rewardVariable.getArrayIndex() < DEFAULT_SELECTED_METRICS_FOR_CHART) {
-                        metricsData.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
+                        rewardVariableFilters.putIfAbsent(rewardVariable.getId(), rewardVariable.deepClone());
                     }
                 });
             }
@@ -88,84 +76,17 @@ public class HistogramChartPanel extends VerticalLayout {
     }
 
     public void updateChart() {
-//        chart.setPolicyChart(experiment);
         Optional<Policy> opt = PolicyUtils.selectBestPolicy(this.experiment);
         if (opt.isPresent()) {
-            Policy policy = opt.get();
-            List<MetricsRaw> metricsRawList = policy.getMetricsRaws();
-
-            log.info("kepricondebug histogram panel : {}", this.experiment.getId());
-            if (metricsData.size() > 0 && (metricsRawList != null && metricsRawList.size() > 0)) {
-                // (k: index, v: meanValueList)
-                Map<Integer, List<Double>> uncertaintyMap = policy.getMetricsRaws().stream()
-                    .collect(groupingBy(MetricsRaw::getIndex,
-                        mapping(MetricsRaw::getValue, Collectors.toList())
-                        )
-                    );
-
-                JsonArray cols = createCols();
-                JsonArray rows = createRows(uncertaintyMap);
-
-                List<String> selectedColors = metricsData.values().stream()
-                    .map(r -> colors.get(r.getArrayIndex() % 10))
-                    .collect(Collectors.toList());
-
-                chart.setupChart("value", "frequency", selectedColors, null);
-                chart.setData(cols, rows);
-                redrawChart();
-                return;
-            }
+            chart.setHistogramData(new ArrayList<>(rewardVariableFilters.values()), opt.get());
+        } else {
+            chart.setChartEmpty();
         }
 
-        chart.setupChart("value", "frequency", List.of("navy"), null);
-        chart.setChartEmpty();
         redrawChart();
-    }
-
-    private JsonArray createCols() {
-        JsonArray cols = Json.createArray();
-        metricsData.values().forEach(r -> {
-            cols.set(cols.length(), Json.parse("{\"label\":\"" + r.getName() + "\", \"type\":\"number\"}"));
-        });
-
-        return cols;
-    }
-
-    private JsonArray createRows(Map<Integer, List<Double>> uncertaintyMap) {
-        JsonArray rows = Json.createArray();
-        List<Integer> keys = metricsData.values().stream().map(RewardVariable::getArrayIndex).collect(Collectors.toList());
-
-        List<List<Double>> histogramData = uncertaintyMap.entrySet().stream()
-            .filter(e -> keys.contains(e.getKey()))
-            .map(e -> e.getValue())
-            .collect(Collectors.toList());
-
-
-        List<Double> values = histogramData.get(0);
-        log.info("kepricondebug histogramData : {}", histogramData);
-        log.info("kepricondebug values : {}", values);
-
-//        values.forEach(v -> rows.set(rows.length(), createRowItem(v)));
-        for (int i = 0; i < values.size(); i++) {
-            int finalI = i;
-            List<Double> arr = new ArrayList<>();
-            histogramData.forEach(list -> arr.add(list.get(finalI)));
-            rows.set(rows.length(), createRowItem(arr));
-        }
-        return rows;
-    }
-
-    private JsonArray createRowItem(List<Double> rowValues) {
-        JsonArray rowItem = Json.createArray();
-        for (int i = 0; i < rowValues.size(); i++) {
-            rowItem.set(i, rowValues.get(i));
-        }
-        return rowItem;
     }
 
     public void redrawChart() {
         chart.redraw();
     }
-
-
 }
