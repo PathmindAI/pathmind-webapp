@@ -23,7 +23,7 @@ Feature: Sign In form tests
       | bob@skymind.io     | invalidPass  |
       | invalid@skymind.io | pw!skymind19 |
       | fake@invalid.io    | fakePass     |
-@debug
+
   Scenario: Check login page elements
     Given Open pathmind page
     When Click in 'Already have an account?' button

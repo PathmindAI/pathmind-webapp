@@ -7,7 +7,7 @@ vpc_cidr="10.20.0.0/16"
 vpc_azs=["us-east-1a", "us-east-1b"]
 # CIDRs of subnets
 public_subnets=["10.20.1.0/24", "10.20.2.0/24"]
-private_subnets=["10.20.10.0/24", "10.20.12.0/24"]
+private_subnets=["10.20.10.0/24", "10.20.12.0/24", "10.20.16.0/21"]
 # If true, one NAT GW will be used for all private IPs (not recommended in prod)
 single_nat_gateway="true"
 
