@@ -55,7 +55,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
         add(container);
     }
 
-    public void setItems(Set<Observation> observations) {
+    public void setItems(LinkedHashSet<Observation> observations) {
         observationsList = observations;
         checkboxGroup.setItems(observationsList);
         checkboxGroup.setItemLabelGenerator(Observation::getVariable);
