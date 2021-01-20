@@ -1,9 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
@@ -18,13 +14,15 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
-import lombok.extern.slf4j.Slf4j;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-@Slf4j
 public class ExperimentChartsPanel extends VerticalLayout {
 
     private CompareMetricsChartPanel compareMetricsChartPanel;
@@ -86,7 +84,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
     }
 
     private void setVisiblePanel(boolean isRedraw) {
-        log.info("kepricondebug chart tabs : " + chartTabs.getSelectedIndex());
         if (chartTabs.getSelectedIndex() == 0) {
             setHistogramChartPanelVisible(isRedraw);
         } else if (chartTabs.getSelectedIndex() == 1) {
