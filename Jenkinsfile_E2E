@@ -156,11 +156,6 @@ pipeline {
         DEPLOY_PROD = false
     }
 
-    parameters {
-        string(name: 'GIT_BRANCH', defaultValue: 'schedule-E2E-tests', description: 'Git branch to build')
-        booleanParam(name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
-    }
-
     //all is built and run from the master
     agent {
         node {
@@ -172,11 +167,11 @@ pipeline {
     // Pipeline stages
     stages {
         stage('Git clone and setup') {
-            /*when {
+            when {
                 allOf{
                     expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
-            }*/
+            }
             steps {
                 echo "Check out code"
                 checkout scm
