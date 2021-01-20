@@ -174,7 +174,7 @@ pipeline {
         stage('Git clone and setup') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             steps {
@@ -193,7 +193,7 @@ pipeline {
         stage('Build Docker Images') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             parallel {
@@ -208,7 +208,7 @@ pipeline {
         stage('Publish Docker Images') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             parallel {
@@ -223,7 +223,7 @@ pipeline {
         stage('Deploying helm chart') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             steps {
@@ -269,7 +269,7 @@ pipeline {
         stage('Testing') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             steps {
@@ -296,7 +296,7 @@ pipeline {
         stage('Set pipeline status') {
             when {
                 allOf{
-                    expression { env.GIT_BRANCH == 'dev' }
+                    expression { env.GIT_BRANCH == 'schedule-E2E-tests' }
                 }
             }
             steps {
