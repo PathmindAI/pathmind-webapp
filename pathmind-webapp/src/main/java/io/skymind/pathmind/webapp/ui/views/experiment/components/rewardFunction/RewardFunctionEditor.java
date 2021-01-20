@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,9 +8,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.services.RewardValidationService;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
@@ -20,6 +22,7 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created as it's own component so that we can easily swap in AceEditor later
@@ -129,7 +132,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
-        ExperimentUtils.generateDefaultRewardFunction(experiment);
+        rewardFunction = StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction());
         binder.setBean(experiment);
         setVariableNames(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(rewardFunction);
@@ -137,6 +140,44 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    private String generateRewardFunction() {
+        StringBuilder sb = new StringBuilder();
+        if (experiment.isHasGoals()) {
+            sb.append("// Here's a suggested reward function to get started\n");
+            for (RewardVariable rv : experiment.getRewardVariables()) {
+                GoalConditionType goal = rv.getGoalConditionTypeEnum();
+                if (goal != null) {
+                    RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
+                    switch (rv.getDataType()) {
+                        case "boolean": {
+                            sb.append(
+                                    MessageFormat.format(
+                                            "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
+                                            rv.getName(), // 0
+                                            functionComponent.getMathOperation(), // 1
+                                            functionComponent.getComment() // 2
+                                    )
+                            );
+                            break;
+                        }
+                        default: {
+                            sb.append(
+                                    MessageFormat.format(
+                                            "reward {1}= after.{0} - before.{0}; // {2} {0}",
+                                            rv.getName(), // 0
+                                            functionComponent.getMathOperation(), // 1
+                                            functionComponent.getComment() // 2
+                                    )
+                            );
+                        }
+                    }
+                    sb.append("\n");
+                }
+            }
+        }
+        return sb.toString();
     }
 
     @Override
