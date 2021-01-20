@@ -130,6 +130,7 @@ public class ProjectsView extends PathMindDefaultView {
                 // demoViewContent has to be re-initiated here every time
                 // otherwise it will be empty from the 2nd time onwards
                 demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
+                demoViewContent.setOnChooseDemoHandler(() -> demoDialog.close());
                 demoDialog.add(demoViewContent, closeButton);
             }
         });

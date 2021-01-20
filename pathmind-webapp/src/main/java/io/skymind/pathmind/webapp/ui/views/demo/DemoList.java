@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import elemental.json.Json;
@@ -25,6 +26,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
 
     private DemoProjectService demoProjectService;
     private List<ExperimentManifest> manifests;
+    private Command onChooseDemoHandler = () -> {};
 
     public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo) {
         this.demoProjectService = demoProjectService;
@@ -36,6 +38,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     private void chooseDemoHandler(@EventData("event.model.item.name") String demoName) {
         try {
             ExperimentManifest targetDemo;
+            onChooseDemoHandler.execute();
             if (demoName != null) {
                 targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(demoName)).findFirst().orElse(null);
                 if (targetDemo != null) {
@@ -46,6 +49,10 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setOnChooseDemoHandler(Command handler) {
+        onChooseDemoHandler = handler;
     }
 
     public void setData() {
