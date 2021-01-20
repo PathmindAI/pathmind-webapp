@@ -1,4 +1,4 @@
-@account
+@account @disabled
 Feature: Check Subscription Plans
 
   Scenario: Check Subscription Plans page
