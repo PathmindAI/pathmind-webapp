@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../atoms/loading-spinner.js";
 
 class DemoList extends PolymerElement {
     static get is() {
@@ -37,7 +38,7 @@ class DemoList extends PolymerElement {
                     width: 100%;
                     font-family: var(--lumo-font-family-header);
                     text-align: center;
-                    margin: 0;
+                    margin: 0 0 var(--lumo-space-s);
                 }
                 p {
                     line-height: 1.4;
@@ -97,7 +98,43 @@ class DemoList extends PolymerElement {
                     margin-bottom: var(--lumo-space-m);
                 }
                 .result {
-                    margin: auto 0 0;
+                    margin: 0 0 var(--lumo-space-m);
+                }
+                .arrow-icon {
+                    display: inline-block;
+                    position: relative;
+                    width: .7rem;
+                    height: .7rem;
+                    margin-left: var(--lumo-space-xs);
+                }
+                .arrow-icon::after {
+                    content: '';
+                    box-sizing: border-box;
+                    display: block;
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    top: -2px;
+                    left: -4px;
+                    border-right: 2px solid white;
+                    border-bottom: 2px solid white;
+                    transform: rotate(-45deg) skew(12deg, 12deg);
+                }
+                vaadin-button {
+                    width: 100%;
+                    margin-top: auto;
+                }
+                vaadin-button > span {
+                    display: flex;
+                    align-items: center;
+                }
+                vaadin-button[loading] > span.getStartedText,
+                vaadin-button:not([loading]) > span.loadingText {
+                    display: none;
+                }
+                loading-spinner {
+                    display: inline-block;
+                    margin-right: var(--lumo-space-xs);
                 }
             </style>
             <vaadin-horizontal-layout>
@@ -105,9 +142,13 @@ class DemoList extends PolymerElement {
                     <template>
                         <vaadin-vertical-layout class="demo-item" data-item$="{{item.name}}" on-click="chooseDemoHandler">
                             <h4>{{item.name}}</h4>
-                            <div class="demo-img-wrapper" hidden="{{hideImage}}"><img src="{{item.imageUrl}}"/></div>
+                            <div class="demo-img-wrapper"><img src="{{item.imageUrl}}"/></div>
                             <p class="description">{{item.description}}</p>
                             <p class="result"><b>Result:</b> {{item.result}}</p>
+                            <vaadin-button theme="primary" data-item$="{{item.name}}" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
+                                <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
+                                <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
+                            </vaadin-button>
                         </vaadin-vertical-layout>
                     </template>
                 </dom-repeat>
@@ -117,6 +158,11 @@ class DemoList extends PolymerElement {
 
     setData(demoDataList) {
         this.demoDataList = demoDataList;
+    }
+
+    buttonClickedHandler(event) {
+        this.disableButtons = true;
+        event.target.setAttribute("loading", true);
     }
 
     static get properties() {
@@ -134,6 +180,10 @@ class DemoList extends PolymerElement {
             type: Boolean,
             value: false,
             reflectToAttribute: true,
+        },
+        disableButtons: {
+            type: Boolean,
+            value: false,
         },
       };
     }
