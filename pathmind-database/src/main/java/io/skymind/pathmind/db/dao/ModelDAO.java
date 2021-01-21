@@ -61,7 +61,10 @@ public class ModelDAO {
             DSLContext transactionCtx = DSL.using(configuration);
             model.setDraft(false);
             ModelRepository.updateModel(transactionCtx, model.getId(), false, modelNotes);
-            return ExperimentRepository.createNewExperiment(transactionCtx, model.getId(), model.isHasGoals());
+            Experiment experiment = ExperimentRepository.createNewExperiment(transactionCtx, model.getId(), model.isHasGoals());
+            experiment.setSelectedObservations(ObservationRepository.getObservationsForModel(transactionCtx, model.getId()));
+            ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
+            return experiment;
         });
     }
 

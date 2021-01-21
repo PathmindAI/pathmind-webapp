@@ -3,12 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -27,10 +22,8 @@ public class ModelsNavbar extends VerticalLayout {
     private SegmentIntegrator segmentIntegrator;
 
     private ModelDAO modelDAO;
-    private Supplier<Optional<UI>> getUISupplier;
 
-    public ModelsNavbar(Supplier<Optional<UI>> getUISupplier, ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
-        this.getUISupplier = getUISupplier;
+    public ModelsNavbar(ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.models = models;
         this.selectedModel = selectedModel;
@@ -53,16 +46,6 @@ public class ModelsNavbar extends VerticalLayout {
         add(rowsWrapper);
         addClassName("models-navbar");
         addModelsToNavbar();
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        // EventBus.subscribe(this, new NotificationModelUpdatedSubscriber(getUISupplier, models, selectedModel));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        // EventBus.unsubscribe(this);
     }
 
     public List<Model> getModels() {
@@ -110,7 +93,7 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, getUISupplier, modelDAO, model, segmentIntegrator);
+        return new ModelsNavbarItem(this, modelDAO, model, segmentIntegrator);
     }
 
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.Metrics;
+import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
@@ -42,8 +43,20 @@ class MetricsRepository {
                 );
     }
 
+    /**
+     * Instead of calling getMetricsForPolicy() with a single policy I've re-written the method as it's faster with JOOQ.
+     */
     protected static List<Metrics> getMetricsForPolicy(DSLContext ctx, long policyId) {
-        return getMetricsForPolicies(ctx, Collections.singletonList(policyId)).getOrDefault(policyId, Collections.emptyList());
+        return ctx.select(METRICS.asterisk())
+                .from(METRICS)
+                .where(METRICS.POLICY_ID.eq(policyId))
+                .orderBy(METRICS.POLICY_ID, METRICS.AGENT, METRICS.ITERATION, METRICS.INDEX)
+                .fetch(record -> new Metrics(
+                        record.get(METRICS.AGENT),
+                        record.get(METRICS.ITERATION),
+                        record.get(METRICS.INDEX),
+                        JooqUtils.getSafeDouble(record.get(METRICS.MEAN)))
+                );
     }
 
     /**

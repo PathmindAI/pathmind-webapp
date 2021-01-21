@@ -24,10 +24,4 @@ public class RewardVariablesUtils {
             });
         });
     }
-
-    public static List<RewardVariable> deepClone(List<RewardVariable> rewardVariables) {
-        return rewardVariables.stream()
-                .map(rewardVariable -> rewardVariable.deepClone())
-                .collect(Collectors.toList());
-    }
 }

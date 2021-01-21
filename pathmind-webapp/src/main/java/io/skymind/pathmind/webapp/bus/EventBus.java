@@ -74,14 +74,6 @@ public class EventBus {
                 .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
     }
 
-    public static void post(PathmindViewBusEvent event) {
-        EVENT_BUS.subscribers.get(event.getEventType()).stream()
-                .filter(subscriber -> !subscriber.filterSameUI(event))
-                .filter(subscriber -> subscriber.filterBusEvent(event))
-                .filter(subscriber -> subscriber.isAttached())
-                .forEach(subscriber -> fireEventToSubscriber(event, subscriber));
-    }
-
     private static void fireEventToSubscriber(PathmindBusEvent event, EventBusSubscriber subscriber) {
         EXECUTOR_SERVICE.execute(() ->
                 PushUtils.push(subscriber.getUiSupplier(), () -> subscriber.handleBusEvent(event.cloneForEventBus())));

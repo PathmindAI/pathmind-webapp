@@ -25,6 +25,7 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/components/vaadin-menu-bar.css", themeFor = "vaadin-menu-bar")
 @CssImport(value = "./styles/components/vaadin-context-menu-list-box.css", themeFor = "vaadin-context-menu-list-box")
+@CssImport(value = "./styles/components/vaadin-context-menu-item.css", themeFor = "vaadin-context-menu-item")
 @CssImport(value = "./styles/components/vaadin-grid.css", themeFor = "vaadin-grid")
 @CssImport(value = "./styles/components/vaadin-grid-sorter.css", themeFor = "vaadin-grid-sorter")
 @CssImport(value = "./styles/components/vaadin-split-layout.css", themeFor = "vaadin-split-layout")

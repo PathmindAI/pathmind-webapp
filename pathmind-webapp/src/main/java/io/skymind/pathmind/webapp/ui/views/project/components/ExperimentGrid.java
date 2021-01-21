@@ -14,7 +14,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
@@ -22,7 +22,7 @@ import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 public class ExperimentGrid extends Grid<Experiment> {
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
-            ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
+            ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
             Experiment refreshedExperiment = experiment;
             experiment.setFavorite(newIsFavorite);
             getDataProvider().refreshItem(refreshedExperiment);
@@ -88,6 +88,6 @@ public class ExperimentGrid extends Grid<Experiment> {
 
         // Sort by created by default
         sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
-        addItemClickListener(event -> ExperimentUtils.navigateToExperiment(getUI(), event.getItem()));
+        addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
     }
 }

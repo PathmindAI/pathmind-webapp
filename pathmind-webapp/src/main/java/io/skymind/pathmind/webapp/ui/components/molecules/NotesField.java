@@ -41,7 +41,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     public void setNotesText(String notesText) {
         this.notesText = notesText;
-        getModel().setNotes(notesText);
+        getElement().callJsFunction("_notesChanged", notesText);
     }
 
     public String getNotesText() {
@@ -68,6 +68,10 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         getModel().setCompact(compact);
     }
 
+    public void setSecondaryStyle(Boolean secondaryStyle) {
+        getModel().setSecondaryStyle(secondaryStyle);
+    }
+
     public void setOnNotesChangeHandler(Command onNotesChangeHandler) {
         this.onNotesChangeHandler = onNotesChangeHandler;
     }
@@ -84,6 +88,14 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
         // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
         saveNotes(updatedNotesText);
+    }
+
+    public void setSaveConsumer(Consumer<String> saveConsumer) {
+        this.saveConsumer = saveConsumer;
+    }
+
+    public Consumer<String> getSaveConsumer() {
+        return saveConsumer;
     }
 
     protected void saveNotes() {
@@ -103,8 +115,6 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
         void setPlaceholder(String placerholder);
 
-        void setNotes(String notes);
-
         void setWarning(Boolean warning);
 
         void setUnsaved(Boolean unsaved);
@@ -118,5 +128,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         void setHidesavebutton(Boolean hidesavebutton);
 
         void setCompact(Boolean compact);
+
+        void setSecondaryStyle(Boolean secondaryStyle);
     }
 }

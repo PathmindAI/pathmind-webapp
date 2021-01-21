@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -62,6 +61,10 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         WebElement button = utils.expandRootElement(archiveButton);
         button.findElement(By.cssSelector("button")).click();
+
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -120,8 +123,24 @@ public class ExperimentPage extends PageObject {
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
         element.findElement(By.cssSelector("button")).click();
+    }
+
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        waitABit(3500);
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, "#small-menu"));
+        element.findElement(By.cssSelector("button")).click();
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        switch (btn) {
+            case ("Archive"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
+                break;
+            case ("Compare"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(2) > span")).click();
+                break;
+        }
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -287,10 +306,10 @@ public class ExperimentPage extends PageObject {
         assertThat(exportViewPolicy.findElement(By.cssSelector(".filename")).getText(), containsString(model));
         assertThat(exportViewPolicy.findElement(By.cssSelector("h4")).getText(), is("To use your policy:"));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > ol")).getText(), is("Download this file.\n" +
-                "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
-                "Change the 'Mode' to 'Use Policy'.\n" +
-                "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
-                "Run the simulation to see the policy in action."));
+            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
+            "Change the 'Mode' to 'Use Policy'.\n" +
+            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
+            "Run the simulation to see the policy in action."));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getText(), is("Learn how to validate your policy"));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]"))));
@@ -340,5 +359,9 @@ public class ExperimentPage extends PageObject {
 
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         assertThat(utils.getExperimentNavbarItemByExperimentName(experiment, "#experimentLink > div > p:nth-child(2)").getText(), is(date));
+    }
+
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
     }
 }

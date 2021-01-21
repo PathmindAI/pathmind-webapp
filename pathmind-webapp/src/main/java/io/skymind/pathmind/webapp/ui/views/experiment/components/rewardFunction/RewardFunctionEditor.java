@@ -3,12 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
@@ -17,8 +12,6 @@ import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
@@ -26,7 +19,9 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.subscribers.view.RewardFunctionEditorExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -34,15 +29,10 @@ import org.apache.commons.lang3.StringUtils;
  * with minimal code impact. I extended it so that binding code etc, would work
  * as expected and be consistent with other components.
  */
-public class RewardFunctionEditor extends VerticalLayout {
-
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
-
-    private Supplier<Optional<UI>> getUISupplier;
+public class RewardFunctionEditor extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
 
-    private List<RewardVariable> rewardVariables;
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
@@ -54,15 +44,13 @@ public class RewardFunctionEditor extends VerticalLayout {
 
     private String rewardFunction = "";
 
-    public RewardFunctionEditor(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService) {
+    public RewardFunctionEditor(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
-        this.getUISupplier = getUISupplier;
-        this.rewardVariables = rewardVariables;
 
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 
         setupRewardFunctionJuicyAceEditor();
-        setupValueChangeListener(rewardValidationService);
+        setupValueChangeListener(newExperimentView, rewardValidationService);
         setupEditorErrorLabel();
 
         setPadding(false);
@@ -73,14 +61,9 @@ public class RewardFunctionEditor extends VerticalLayout {
                 rewardEditorErrorLabel));
         add(rewardFunctionJuicyAceEditor);
 
-        if (experiment.isArchived()) {
-            setEnabled(false);
-        }
-
         addClassName("reward-fn-editor-panel");
 
         setupBinder();
-        setExperiment(experiment);
     }
 
     private void setupRewardFunctionJuicyAceEditor() {
@@ -89,23 +72,24 @@ public class RewardFunctionEditor extends VerticalLayout {
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
-        setVariableNames(rewardVariables);
     }
 
     private void setupEditorErrorLabel() {
         rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Reward Function must not exceed " + REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
+                "Reward Function must not exceed " + Experiment.REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
         rewardEditorErrorLabel.setVisible(false);
     }
 
-    private void setupValueChangeListener(RewardValidationService rewardValidationService) {
+    private void setupValueChangeListener(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
-            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > REWARD_FUNCTION_MAX_LENGTH);
-            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), rewardVariables);
+            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > Experiment.REWARD_FUNCTION_MAX_LENGTH);
+            rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), experiment.getRewardVariables());
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
             if (!rewardFunction.equals(changeEvent.getValue())) {
                 rewardFunction = changeEvent.getValue();
-                EventBus.post(new ExperimentChangedViewBusEvent(experiment));
+                // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
+                // reused in multiple parts of the code.
+                NeedsSavingAction.setNeedsSaving(newExperimentView);
             }
         });
     }
@@ -126,7 +110,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     }
 
     public boolean isRewardFunctionLessThanMaxLength() {
-        return rewardFunctionJuicyAceEditor.getValue().length() <= REWARD_FUNCTION_MAX_LENGTH;
+        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
     public boolean isRewardFunctionMoreThanMaxLength() {
@@ -146,17 +130,23 @@ public class RewardFunctionEditor extends VerticalLayout {
     }
 
     public void setExperiment(Experiment experiment) {
+        setEnabled(!experiment.isArchived());
         this.experiment = experiment;
         rewardFunction = StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction());
         binder.setBean(experiment);
+        setVariableNames(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(rewardFunction);
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     private String generateRewardFunction() {
         StringBuilder sb = new StringBuilder();
         if (experiment.isHasGoals()) {
             sb.append("// Here's a suggested reward function to get started\n");
-            for (RewardVariable rv : rewardVariables) {
+            for (RewardVariable rv : experiment.getRewardVariables()) {
                 GoalConditionType goal = rv.getGoalConditionTypeEnum();
                 if (goal != null) {
                     RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
@@ -191,13 +181,7 @@ public class RewardFunctionEditor extends VerticalLayout {
     }
 
     @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getUISupplier,
-                new RewardFunctionEditorExperimentSwitchedViewSubscriber(this));
+    public void updateExperiment() {
+        experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
     }
 }
