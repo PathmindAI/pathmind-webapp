@@ -19,13 +19,15 @@ import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Tag("demo-list")
 @JsModule("./src/components/organisms/demo-list.js")
 public class DemoList extends PolymerTemplate<DemoList.Model> {
 
-    private DemoProjectService demoProjectService;
-    private List<ExperimentManifest> manifests;
+    private final DemoProjectService demoProjectService;
+    private final List<ExperimentManifest> manifests;
     private Command onChooseDemoHandler = () -> {};
     private Boolean createdDemoProject = false;
 
@@ -50,7 +52,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Failed to choose handler", e);
             }
         }
     }
