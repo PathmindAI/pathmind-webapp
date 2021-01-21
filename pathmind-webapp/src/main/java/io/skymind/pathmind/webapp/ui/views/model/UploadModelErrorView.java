@@ -32,6 +32,7 @@ public class UploadModelErrorView extends PathMindDefaultView implements HasUrlP
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
+//        super.onAttach(attachEvent);
         segmentIntegrator.uploadModelError();
     }
 

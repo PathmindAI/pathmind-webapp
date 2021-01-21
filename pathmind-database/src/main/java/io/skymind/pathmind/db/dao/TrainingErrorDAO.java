@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.NOT_AN_ERROR;
 import static io.skymind.pathmind.shared.services.training.constant.ErrorConstants.UNKNOWN_ERROR_KEYWORD;
 
-;
-
 @Repository
 public class TrainingErrorDAO {
     private final DSLContext ctx;
@@ -29,10 +27,6 @@ public class TrainingErrorDAO {
             error = TrainingErrorRepository.getErrorByKeyword(ctx, UNKNOWN_ERROR_KEYWORD);
         }
         return Optional.ofNullable(error);
-    }
-
-    public Optional<TrainingError> getErrorById(long errorId) {
-        return Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, errorId));
     }
 
     @Cacheable("all_training_errors_keywords")

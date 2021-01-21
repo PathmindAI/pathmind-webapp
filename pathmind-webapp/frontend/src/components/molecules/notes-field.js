@@ -62,15 +62,6 @@ class NotesField extends PolymerElement {
             },
             notes: {
                 type: String,
-                observer: "_notesChanged",
-            },
-            _notesChangeObserverLock: {
-                type: Boolean,
-                value: false,
-            },
-            _notesChangedObserverTriggered: {
-                type: Boolean,
-                value: false,
             },
             allowautosave: {
                 type: Boolean,
@@ -104,6 +95,11 @@ class NotesField extends PolymerElement {
                 value: false,
             },
             compact: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true,
+            },
+            secondaryStyle: {
                 type: Boolean,
                 value: false,
                 reflectToAttribute: true,
@@ -145,10 +141,22 @@ class NotesField extends PolymerElement {
                     margin-bottom: 0;
                     z-index: 1;
                 }
+                :host([secondary-style]) .header {
+                    box-sizing: border-box;
+                    background: var(--pm-app-bg-color);
+                    padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
+                    border-left: 1px solid var(--pm-grey-color-lightest);
+                    margin-bottom: 0;
+                }
                 .header span:first-child {
                     font-weight: bold;
                     color: var(--pm-text-color);
                     margin-left: 0;
+                }
+                :host([secondary-style]) .header span:first-child {
+                    font-size: var(--lumo-font-size-s);
+                    font-weight: normal;
+                    color: var(--lumo-secondary-text-color);
                 }
                 .title {
                     flex: 1 1 0%;
@@ -209,6 +217,12 @@ class NotesField extends PolymerElement {
                     border-left: 1px solid var(--pm-grey-color-lightest);
                     border-radius: 0;
                 }
+                :host([secondary-style]) vaadin-text-area {
+                    border: 1px solid var(--pm-grey-color-lightest);
+                    border-right: none;
+                    border-bottom: none;
+                    border-radius: 0;
+                }
             </style>
             <div class="header">
                 <span class="title">[[title]]</span>
@@ -236,7 +250,6 @@ class NotesField extends PolymerElement {
 
     ready() {
         super.ready();
-        this.$.textarea.value = this.notes;
         this.$.textarea.addEventListener("keyup", debounce(event => {
             this.calculateWordCount(this.$.textarea.value);
             if (this.$.textarea.value !== this.notes && !this.unsaved) {
@@ -256,7 +269,7 @@ class NotesField extends PolymerElement {
 
     onSave(event) {
         if (this.canSave(this.$.textarea.value)) {
-            this.notes = this.$.textarea.value;
+            this.notes = this.notes ? this.$.textarea.value.slice(0) : "";
             this.unsaved = false;
             this.$.saveIcon.classList.add('fade-in');
             setTimeout(() => {
@@ -266,11 +279,12 @@ class NotesField extends PolymerElement {
     }
 
     calculateWordCount(notes) {
-        this.wordcount = notes.length;
+        this.wordcount = notes ? notes.length : 0;
     }
 
     _notesChanged(newValue, oldValue) {
-        this.$.textarea.value = newValue;
+        this.notes = newValue;
+        this.$.textarea.value = newValue ? newValue.slice(0) : "";
         this.calculateWordCount(newValue);
     }
 

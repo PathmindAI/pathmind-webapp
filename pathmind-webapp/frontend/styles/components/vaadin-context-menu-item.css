@@ -1,0 +1,4 @@
+:host [part="content"] {
+    display: flex;
+    align-items: center;
+}

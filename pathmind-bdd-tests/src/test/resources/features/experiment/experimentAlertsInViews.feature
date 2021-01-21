@@ -32,6 +32,8 @@ Feature: Experiment page alerts in multiple views
     When Check that confirmation dialog is shown false
     When Open tab 0
     When Check that confirmation dialog is shown true
+    When Check that the 'Experiment Archived' confirmation dialog is shown
+    When Experiment page check number of the experiments is '0' in the left sidebar
     When In confirmation dialog click in 'OK' button
     Then Check that project AutotestProject page is opened
     When Open projects/model/experiment archived tab
@@ -46,7 +48,9 @@ Feature: Experiment page alerts in multiple views
     When Open tab 0
     When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown true
+    When Check that the 'Experiment Unarchived' confirmation dialog is shown
     When In confirmation dialog click in 'OK' button
+    When Experiment page check number of the experiments is '1' in the left sidebar
     Then Check that 'Experiment #1' exist on the experiment page
 
   @otherView

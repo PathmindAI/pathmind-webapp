@@ -9,10 +9,15 @@ import java.util.Optional;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -48,15 +53,39 @@ public class ExperimentDAO {
     }
 
     public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
-        return Optional.ofNullable(ExperimentRepository.getSharedExperiment(ctx, experimentId, userId));
+        Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
+        if(experiment != null) {
+            loadExperimentData(experiment);
+        }
+        return Optional.ofNullable(experiment);
     }
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
-        return Optional.ofNullable(ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId));
+        Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
+        if(experiment != null) {
+            loadExperimentData(experiment);
+            updateExperimentInternalValues(experiment);
+        }
+        return Optional.ofNullable(experiment);
+    }
+
+    private void loadExperimentData(Experiment experiment) {
+        experiment.setModelObservations(ObservationRepository.getObservationsForModel(ctx, experiment.getModelId()));
+        experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
+        experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
+        experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
+        ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
     public List<Experiment> getExperimentsForModel(long modelId) {
         return getExperimentsForModel(modelId, true);
+    }
+
+    /**
+     * Used as a quick check before a full experiment load to see if we're on the right view between ExperimentView and NewExperimentView.
+     */
+    public boolean isDraftExperiment(long experimentId) {
+        return RunRepository.getNumberOfRunsForExperiment(ctx, experimentId) == 0;
     }
 
     public List<Experiment> getExperimentsForModel(long modelId, boolean isIncludeArchived) {
@@ -128,6 +157,7 @@ public class ExperimentDAO {
             List<Observation> observations = lastExperiment != null ? ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId()) : Collections.emptyList();
             Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
+            exp.setSelectedObservations(observations);
             return exp;
         });
     }
@@ -139,11 +169,47 @@ public class ExperimentDAO {
     public Optional<Experiment> getFullExperiment(long experimentId) {
         Optional<Experiment> optionalExperiment = getExperiment(experimentId);
         optionalExperiment.ifPresent(experiment -> {
-            // REFACTOR -> STEPH -> Not good enough as there is a bunch of logic to parse the data in PolicyDAO therefore
-            // for now some code is outside of this method.
-            experiment.setPolicies(PolicyRepository.getPoliciesForExperiment(ctx, experimentId));
-            experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experimentId));
+            updateExperimentInternalValues(experiment);
         });
         return optionalExperiment;
+    }
+
+    private void updateExperimentInternalValues(Experiment experiment) {
+        experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
+        experiment.setPolicies(loadPoliciesForExperiment(ctx, experiment.getId()));
+
+        ExperimentUtils.updateExperimentInternals(experiment);
+
+        // There are no extra costs if the experiment is in draft because all the values will be empty.
+        updateTrainingErrorAndMessage(ctx, experiment);
+        ExperimentUtils.updateEarlyStopReason(experiment);
+    }
+
+    private List<Policy> loadPoliciesForExperiment(DSLContext ctx, long experimentId) {
+        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(ctx, experimentId);
+        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(ctx, DataUtils.convertToIds(policies));
+        // Needs to be done before selectBestPolicy() is selected
+        policies.forEach(policy -> policy.setScores(rewardScores.get(policy.getId())));
+        PolicyUtils.selectBestPolicy(policies).ifPresent(policy -> {
+            policy.setMetrics(MetricsRepository.getMetricsForPolicy(ctx, policy.getId()));
+            policy.setMetricsRaws(MetricsRawRepository.getMetricsRawForPolicy(ctx, policy.getId()));
+        });
+        return policies;
+    }
+
+    public void updateTrainingErrorAndMessage(Experiment experiment) {
+        updateTrainingErrorAndMessage(ctx, experiment);
+    }
+
+    // REFACTOR -> These should really be cached rather than requiring the same database calls over and over and over. At the very least we can just see if they
+    // are in memory and if so use that instead of search. See: https://github.com/SkymindIO/pathmind-webapp/issues/2599
+    private void updateTrainingErrorAndMessage(DSLContext ctx, Experiment experiment) {
+        experiment.getRuns().stream()
+                .filter(r -> RunStatus.isError(r.getStatusEnum()))
+                .findAny()
+                .ifPresent(run ->
+                        Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
+                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
+                        }));
     }
 }

@@ -3,7 +3,6 @@ package io.skymind.pathmind.shared.data;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
