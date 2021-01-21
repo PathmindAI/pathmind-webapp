@@ -31,8 +31,8 @@ public class ExperimentChartsPanel extends VerticalLayout {
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
     private Tabs chartTabs;
-    private Tab histogramChartTab;
     private Tab metricsChartTab;
+    private Tab histogramChartTab;
     private Tab rewardScoreChartTab;
 
     private Experiment experiment;
@@ -45,15 +45,14 @@ public class ExperimentChartsPanel extends VerticalLayout {
         this.getUISupplier = getUISupplier;
 
         Tabs chartTabs = createChartTabs();
-        histogramChartPanel = new HistogramChartPanel(getUISupplier);
         compareMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
+        histogramChartPanel = new HistogramChartPanel(getUISupplier);
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                histogramChartPanel,
-                policyChartPanel,
                 compareMetricsChartPanel,
+                histogramChartPanel,
                 policyChartPanel);
 
         VerticalLayout chartsPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -74,10 +73,10 @@ public class ExperimentChartsPanel extends VerticalLayout {
     }
 
     private Tabs createChartTabs() {
-        histogramChartTab = new Tab("Histogram");
         metricsChartTab = new Tab("Metrics");
+        histogramChartTab = new Tab("Histogram");
         rewardScoreChartTab = new Tab("Mean Reward Score");
-        chartTabs = new Tabs(histogramChartTab, metricsChartTab, rewardScoreChartTab);
+        chartTabs = new Tabs(metricsChartTab, histogramChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
         chartTabs.addSelectedChangeListener(event -> setVisiblePanel(true));
         return chartTabs;
@@ -85,9 +84,9 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     private void setVisiblePanel(boolean isRedraw) {
         if (chartTabs.getSelectedIndex() == 0) {
-            setHistogramChartPanelVisible(isRedraw);
-        } else if (chartTabs.getSelectedIndex() == 1) {
             setCompareMetricsChartPanelVisible(isRedraw);
+        } else if (chartTabs.getSelectedIndex() == 1) {
+            setHistogramChartPanelVisible(isRedraw);
         } else {
             setPolicyChartPanelVisible(isRedraw);
         }
