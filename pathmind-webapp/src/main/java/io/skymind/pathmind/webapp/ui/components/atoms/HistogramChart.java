@@ -69,7 +69,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
         updateData();
     }
 
-    private void updateData( ) {
+    private void updateData() {
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
         List<MetricsRaw> metricsRawList = bestPolicy.getMetricsRaws();
 

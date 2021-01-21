@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Run extends Data implements DeepCloneableInterface<Run> {
+
     private static final long serialVersionUID = 2452255564251125071L;
     private int runType;
     private long experimentId;

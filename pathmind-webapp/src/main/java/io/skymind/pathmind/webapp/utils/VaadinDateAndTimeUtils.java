@@ -3,6 +3,9 @@ package io.skymind.pathmind.webapp.utils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.function.SerializableConsumer;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 /**
  * Date time utils which have a dependency to Vaadin classes.
  */
@@ -17,6 +20,10 @@ public class VaadinDateAndTimeUtils {
      */
     public static void withUserTimeZoneId(UI ui, SerializableConsumer<String> timeZoneConsumer) {
         ui.getPage().retrieveExtendedClientDetails(details -> timeZoneConsumer.accept(details.getTimeZoneId()));
+    }
+
+    public static void withUserTimeZoneId(Supplier<Optional<UI>> getUISupplier, SerializableConsumer<String> timeZoneConsumer) {
+        getUISupplier.get().ifPresent(ui -> withUserTimeZoneId(ui, timeZoneConsumer));
     }
 
     /**

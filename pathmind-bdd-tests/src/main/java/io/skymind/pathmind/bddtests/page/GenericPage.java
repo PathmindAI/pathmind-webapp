@@ -84,10 +84,20 @@ public class GenericPage extends PageObject {
         WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
 
         assertThat(header.getText(), is(confirmationDialogHeader));
-        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[1]")).getText(), is("Are you sure you want to stop training?"));
-        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[2]")).getText(), is("If you stop the training before it completes, you won't be able to download the policy. If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
-        assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p/b")).getText(), is("If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
-        assertThat(popupShadowRoot.findElement(By.cssSelector("#confirm")).getCssValue("background-color"), is("rgba(216, 9, 71, 1)"));
+        switch (confirmationDialogHeader) {
+            case ("Stop training"):
+                assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[1]")).getText(), is("Are you sure you want to stop training?"));
+                assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p[2]")).getText(), is("If you stop the training before it completes, you won't be able to download the policy. If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
+                assertThat(getDriver().findElement(By.xpath("//confirm-popup/div/p/b")).getText(), is("If you decide you want to start the training again, you can start a new experiment and use the same reward function."));
+                assertThat(popupShadowRoot.findElement(By.cssSelector("#confirm")).getCssValue("background-color"), is("rgba(216, 9, 71, 1)"));
+                break;
+            case ("Experiment Archived"):
+                assertThat(popupShadowRoot.findElement(By.cssSelector("popup > div.message")).getText(), is("The experiment was archived."));
+                break;
+            case ("Experiment Unarchived"):
+                assertThat(popupShadowRoot.findElement(By.cssSelector("popup > div.message")).getText(), is("The experiment was unarchived."));
+                break;
+        }
         resetImplicitTimeout();
     }
 
@@ -105,11 +115,11 @@ public class GenericPage extends PageObject {
 
         List<WebElement> buttons = popupShadowRoot.findElements(By.cssSelector("vaadin-button"));
         Optional<WebElement> first = buttons.stream()
-                .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
-                .findFirst();
+            .filter(b -> b.isDisplayed() && b.getText().equals(buttonText))
+            .findFirst();
         String errorMessage = String.format("Button '%s' doesn't exist. Available buttons: %s.",
-                buttonText,
-                StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
+            buttonText,
+            StringUtils.join(buttons.stream().map(WebElement::getText).collect(Collectors.joining(", ")))
         );
         assertThat(errorMessage, first.isPresent());
         first.get().click();
@@ -279,5 +289,20 @@ public class GenericPage extends PageObject {
 
     public void openUrlFromTheVariable(String url) {
         getDriver().navigate().to(Serenity.sessionVariableCalled(url).toString());
+    }
+
+    public void checkElement(boolean elementExist, String elementXpath, String elementText) {
+        setImplicitTimeout(2, SECONDS);
+        if (elementExist) {
+            assertThat(getDriver().findElements(By.xpath(elementXpath)).size(), is(not(0)));
+            assertThat(getDriver().findElement(By.xpath(elementXpath)).getText(), is(elementText));
+        }else {
+            assertThat(getDriver().findElements(By.xpath(elementXpath)).size(), is(0));
+        }
+        resetImplicitTimeout();
+    }
+
+    public String definePanel(String slot) {
+        return (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
     }
 }

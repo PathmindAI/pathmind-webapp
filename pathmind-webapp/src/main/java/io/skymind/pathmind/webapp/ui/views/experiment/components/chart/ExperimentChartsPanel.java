@@ -1,29 +1,22 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
-import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.ExperimentChartsPanelRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.view.ExperimentChartsPanelExperimentSwitchedViewSubscriber;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-public class ExperimentChartsPanel extends VerticalLayout {
+public class ExperimentChartsPanel extends VerticalLayout implements ExperimentComponent {
 
     private CompareMetricsChartPanel compareMetricsChartPanel;
     private HistogramChartPanel histogramChartPanel;
@@ -36,17 +29,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
     private Tab rewardScoreChartTab;
 
     private Experiment experiment;
-    private List<RewardVariable> rewardVariables;
 
-    private Supplier<Optional<UI>> getUISupplier;
-
-    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier, Experiment experiment, List<RewardVariable> rewardVariables) {
-
-        this.getUISupplier = getUISupplier;
+    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier) {
 
         Tabs chartTabs = createChartTabs();
-        compareMetricsChartPanel = new CompareMetricsChartPanel(getUISupplier);
-        histogramChartPanel = new HistogramChartPanel(getUISupplier);
+        compareMetricsChartPanel = new CompareMetricsChartPanel();
+        histogramChartPanel = new HistogramChartPanel();
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
@@ -68,8 +56,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
         addClassName("row-2-of-3");
 
         setCompareMetricsChartPanelVisible(true);
-
-        setupCharts(experiment, rewardVariables);
     }
 
     private Tabs createChartTabs() {
@@ -92,27 +78,6 @@ public class ExperimentChartsPanel extends VerticalLayout {
         }
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentChartsPanelRunUpdateSubscriber(this),
-                new ExperimentChartsPanelExperimentSwitchedViewSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
-    public void setupCharts(Experiment newExperiment, List<RewardVariable> newRewardVariables) {
-        setExperiment(newExperiment);
-        this.rewardVariables = RewardVariablesUtils.deepClone(newRewardVariables);
-        histogramChartPanel.setupChart(experiment, rewardVariables);
-        policyChartPanel.setExperiment(experiment);
-        compareMetricsChartPanel.setupChart(experiment, rewardVariables);
-        selectVisibleChart();
-    }
-
     public void selectVisibleChart() {
         if (experiment.getTrainingStatusEnum() == RunStatus.NotStarted || experiment.getTrainingStatusEnum() == RunStatus.Starting) {
             setPlaceholderVisible();
@@ -121,10 +86,12 @@ public class ExperimentChartsPanel extends VerticalLayout {
         }
     }
 
-    private void setExperiment(Experiment experiment) {
-        this.experiment = experiment.deepClone();
-        // This always needs to be done on set because we cannot rely on whoever set it to have done it. And it should be done on the cloned version.
-        experiment.updateTrainingStatus();
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        histogramChartPanel.setExperiment(experiment);
+        policyChartPanel.setExperiment(experiment);
+        compareMetricsChartPanel.setExperiment(experiment);
+        selectVisibleChart();
     }
 
     private void setHistogramChartPanelVisible(boolean isRedraw) {
@@ -165,9 +132,5 @@ public class ExperimentChartsPanel extends VerticalLayout {
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    public List<RewardVariable> getRewardVariables() {
-        return rewardVariables;
     }
 }

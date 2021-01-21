@@ -9,13 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
 import static io.skymind.pathmind.shared.constants.RunStatus.NotStarted;
@@ -28,6 +28,9 @@ import static io.skymind.pathmind.shared.constants.RunStatus.Starting;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Experiment extends ArchivableData implements DeepCloneableInterface<Experiment> {
+
+    public static final int REWARD_FUNCTION_MAX_LENGTH = 65535;
+
     private static final long serialVersionUID = -5041305878245823921L;
     private long modelId;
     private String rewardFunction;
@@ -44,10 +47,19 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     // Helper GUI attributes not stored in the database
     private Project project;
     private Model model;
+    private Policy bestPolicy;
     private transient List<Policy> policies;
     private transient List<Run> runs;
     private List<Observation> modelObservations;
     private List<Observation> selectedObservations;
+
+    // Helper attributes for error handling to prevent extra processing with training
+    private String trainingError;
+    private boolean trainingStoppedEarly = false;
+    private String trainingStoppedEarlyMessage;
+
+    private List<RewardVariable> rewardVariables;
+    private List<RewardVariable> selectedRewardVariables = new ArrayList<>();
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
@@ -55,6 +67,14 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     public void setTrainingStatusEnum(RunStatus trainingStatus) {
         this.trainingStatus = trainingStatus.getValue();
+    }
+
+    public boolean isTrainingCompleted() {
+        return RunStatus.Completed.getValue() == trainingStatus;
+    }
+
+    public boolean isTrainingRunning() {
+        return RunStatus.isRunning(getTrainingStatusEnum());
     }
 
     // IMPORTANT -> This is resolves #893. I looked at ThreadLocal as well as adjusting how the code uses the policies but deemed this to offer the best tradeoffs.
@@ -77,29 +97,28 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         runs.add(run);
     }
 
-    public void updateRuns(List<Run> runs) {
-        runs.forEach(this::updateRun);
-    }
-
-    public void updateRun(Run run) {
-        if (runs == null) {
-            runs = new ArrayList<>();
-            runs.add(run);
-        } else {
-            IntStream.range(0, runs.size())
-                    .filter(index -> runs.get(index).getId() == run.getId())
-                    .findFirst()
-                    .ifPresentOrElse(
-                            index -> runs.set(index, run),
-                            () -> runs.add(run));
-        }
-        updateTrainingStatus();
-    }
-
     public boolean isGoalsReached() {
         return hasGoals && Objects.equals(goalsReached, totalGoals);
     }
 
+    public boolean isTrainingError() {
+        return StringUtils.isNotEmpty(trainingError);
+    }
+
+    public void addSelectedRewardVariable(RewardVariable rewardVariable) {
+        if(selectedRewardVariables == null) {
+            selectedRewardVariables = new ArrayList<>();
+        }
+        selectedRewardVariables.add(rewardVariable);
+    }
+
+    public void toggleSelectedVariable(RewardVariable rewardVariable) {
+        if(selectedRewardVariables.contains(rewardVariable)) {
+            selectedRewardVariables.remove(rewardVariable);
+        } else {
+            selectedRewardVariables.add(rewardVariable);
+        }
+    }
     @Override
     public Experiment shallowClone() {
         return super.shallowClone(Experiment.builder()
@@ -113,6 +132,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                 .hasGoals(hasGoals)
                 .goalsReached(goalsReached)
                 .totalGoals(totalGoals)
+                .sharedWithSupport(sharedWithSupport)
                 .build());
     }
 
@@ -123,34 +143,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         experiment.setModel(CloneUtils.shallowClone(model));
         experiment.setPolicies(CloneUtils.shallowCloneList(policies));
         experiment.setRuns(CloneUtils.shallowCloneList(runs));
+        experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
         return experiment;
-    }
-
-    public void updateTrainingStatus() {
-        RunStatus status = getRuns().stream()
-                .map(Run::getStatusEnum)
-                .min(Comparator.comparingInt(RunStatus::getValue))
-                .orElse(NotStarted);
-
-        // In Running status, there can be some runs completed while others are yet to be started
-        // So checking that to make sure
-        if (status == NotStarted || status == Starting) {
-            if (getRuns().stream()
-                    .map(Run::getStatusEnum)
-                    .map(RunStatus::getValue)
-                    .anyMatch(statusVal -> statusVal > Starting.getValue())) {
-                status = Running;
-            }
-        }
-
-        if (status == RunStatus.Killed) {
-            if (getRuns().stream()
-                    .map(Run::getTrainingErrorId)
-                    .anyMatch(errorId -> errorId > 0)) {
-                status = Error;
-            }
-        }
-        setTrainingStatusEnum(status);
-
     }
 }

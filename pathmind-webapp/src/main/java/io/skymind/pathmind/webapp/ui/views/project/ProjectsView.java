@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -88,7 +89,8 @@ public class ProjectsView extends PathMindDefaultView {
                     projectDAO.archive(project.getId(), isArchive);
                     project.setArchived(isArchive);
                     segmentIntegrator.archived(Project.class, isArchive);
-                });
+                },
+                getUISupplier());
     }
 
     private void setupProjectGrid() {
@@ -189,13 +191,13 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
-        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+    protected void initComponents() {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             projectGrid.setItems(projects);
         });
-        archivesTabPanel.initData(event.getUI());
+        archivesTabPanel.initData();
 
-        recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
+        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), projectGrid);
     }
 }

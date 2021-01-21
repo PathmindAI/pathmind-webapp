@@ -102,11 +102,11 @@ class AccountViewContent extends PolymerElement {
                                 <div id="apiExpiryDate">{{apiKeyExpiresPhrase}}</div>
                                 <vaadin-context-menu id="rotateApiMenu">
                                     <template>
-                                        <vaadin-list-box>
+                                        <vaadin-context-menu-list-box>
                                             <vaadin-item on-click="triggerRotateBtn">
                                                 Rotate
                                             </vaadin-item>
-                                        </vaadin-list-box>
+                                        </vaadin-context-menu-list-box>
                                     </template>
                                     <vaadin-button id="rotateApiKeyBtn" theme="small"></vaadin-button>
                                     <vaadin-button id="small-menu" theme="tertiary small">

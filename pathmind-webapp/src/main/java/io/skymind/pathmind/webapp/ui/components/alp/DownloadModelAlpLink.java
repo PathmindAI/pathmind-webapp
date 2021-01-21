@@ -9,6 +9,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -23,11 +24,16 @@ public class DownloadModelAlpLink extends Anchor {
     private String modelName;
     private String modelPackageName;
 
+    private ModelService modelService;
+    private SegmentIntegrator segmentIntegrator;
+    private boolean buttonMode;
+    private boolean isAlreadyRendered;
+
     public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator) {
         this(projectName, model, modelService, segmentIntegrator, false);
     }
 
-    public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator, Boolean buttonMode) {
+    public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode) {
         this.modelId = model.getId();
         this.modelName = model.getName();
         this.modelPackageName = model.getPackageName();
@@ -51,6 +57,44 @@ public class DownloadModelAlpLink extends Anchor {
         } else {
             setVisible(false);
         }
+    }
+
+    public DownloadModelAlpLink(ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode) {
+        this.modelService = modelService;
+        this.segmentIntegrator = segmentIntegrator;
+        this.buttonMode = buttonMode;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        this.modelId = experiment.getModel().getId();
+        this.modelName = experiment.getModel().getName();
+        this.modelPackageName = experiment.getModel().getPackageName();
+        this.projectName = experiment.getProject().getName();
+
+        if(isAlreadyRendered) {
+            return;
+        }
+
+        Button downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
+        if (!buttonMode) {
+            downloadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        }
+
+        getElement().setAttribute("download", true);
+        getElement().addEventListener("click", event -> {
+            segmentIntegrator.downloadedALP();
+        });
+        addClassName("download-alp-link");
+        if (modelService.hasModelAlp(modelId)) {
+            modelService.getModelAlp(modelId).ifPresent(resource -> {
+                getElement().setAttribute("href", getResourceStream(resource));
+            });
+            add(downloadButton);
+        } else {
+            setVisible(false);
+        }
+
+        isAlreadyRendered = true;
     }
 
     private String generateFileName() {

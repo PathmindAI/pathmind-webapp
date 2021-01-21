@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.components.archive;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -24,21 +25,22 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel {
     private Grid<T> grid;
     private Supplier<List<T>> getItems;
     private BiConsumer<T, Boolean> archiveDAO;
-
-    public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO) {
-        this(tabName, true, grid, getItems, archiveDAO);
+    private Supplier<Optional<UI>> getUISupplier;
+    public ArchivesTabPanel(String tabName, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO, Supplier<Optional<UI>> getUISupplier) {
+        this(tabName, true, grid, getItems, archiveDAO, getUISupplier);
     }
 
     /**
      * By default ArchivesTabPanel creates an component column, you can set
      * isAutoAppendColumn to false, in order to disable this feature
      */
-    public ArchivesTabPanel(String tabName, boolean isAutoCreateActionColumn, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO) {
+    public ArchivesTabPanel(String tabName, boolean isAutoCreateActionColumn, Grid<T> grid, Supplier<List<T>> getItems, BiConsumer<T, Boolean> archiveDAO, Supplier<Optional<UI>> getUISupplier) {
         super(tabName, ARCHIVES_TAB);
 
         this.grid = grid;
         this.getItems = getItems;
         this.archiveDAO = archiveDAO;
+        this.getUISupplier = getUISupplier;
 
         setAlignItems(Alignment.START);
 
@@ -76,8 +78,8 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel {
     /**
      * This needs to be called because there is are no listeners for the grid to know if grid.setItems() has been called.
      */
-    public void initData(UI ui) {
-        VaadinDateAndTimeUtils.withUserTimeZoneId(ui, timeZoneId -> {
+    public void initData() {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier, timeZoneId -> {
             // Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
             grid.setItems(getFilteredModels(getItems.get(), false));
         });

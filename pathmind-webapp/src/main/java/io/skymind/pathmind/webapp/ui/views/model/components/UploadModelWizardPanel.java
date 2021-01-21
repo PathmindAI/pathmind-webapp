@@ -2,8 +2,11 @@ package io.skymind.pathmind.webapp.ui.views.model.components;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -13,15 +16,13 @@ import com.vaadin.flow.component.upload.Receiver;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.dom.DomEventListener;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
-import io.skymind.pathmind.webapp.ui.views.model.utils.UploadModelViewNavigationUtils;
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,10 +49,12 @@ public class UploadModelWizardPanel extends VerticalLayout {
     private UploadMode mode;
     private Consumer<Collection<String>> uploadFailedConsumer;
 
-    public UploadModelWizardPanel(Model model, UploadMode mode, int maxFileSize) {
+    private Supplier<Optional<UI>> getUISupplier;
+    public UploadModelWizardPanel(Model model, UploadMode mode, int maxFileSize, Supplier<Optional<UI>> getUISupplier) {
         this.model = model;
         this.mode = mode;
         this.maxFileSize = maxFileSize;
+        this.getUISupplier = getUISupplier;
 
         setupLayout();
         setPadding(false);
@@ -74,7 +77,7 @@ public class UploadModelWizardPanel extends VerticalLayout {
 
     private HorizontalLayout getUploadModeSwitchButton() {
         HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
-        uploadModeSwitcher = new UploadModeSwitcherButton(mode, () -> switchUploadMode());
+        uploadModeSwitcher = new UploadModeSwitcherButton(mode, getUISupplier, model);
         upload.isFolderUploadSupported(isFolderUploadSupported -> {
             uploadModeSwitcher.setVisible(isFolderUploadSupported);
         });
@@ -82,12 +85,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
         return buttonWrapper;
     }
 
-
-    private void switchUploadMode() {
-        UploadMode switchedMode = mode == UploadMode.FOLDER ? UploadMode.ZIP : UploadMode.FOLDER;
-        getUI().ifPresent(ui ->
-                ui.navigate(UploadModelView.class, UploadModelViewNavigationUtils.getUploadModelParameters(model.getProjectId(), switchedMode)));
-    }
 
     private void setupFileCheckPanel() {
         errorMessage = LabelFactory.createLabel("", ERROR_LABEL);

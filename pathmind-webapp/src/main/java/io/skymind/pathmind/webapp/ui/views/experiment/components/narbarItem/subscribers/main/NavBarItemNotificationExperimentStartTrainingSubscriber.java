@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main;
 
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentStartTrainingSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.ExperimentsNavBarItem;
 
 public class NavBarItemNotificationExperimentStartTrainingSubscriber extends ExperimentStartTrainingSubscriber {

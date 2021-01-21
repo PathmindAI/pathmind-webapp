@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import liquibase.change.custom.CustomSqlChange;
 import liquibase.database.Database;
 import liquibase.database.jvm.JdbcConnection;
@@ -41,7 +42,7 @@ public class UpdateExperiment_ChangeSet_20200923_02 implements CustomSqlChange {
                     }).collect(Collectors.toList());
                     Experiment experiment = new Experiment();
                     experiment.setRuns(fakeRuns);
-                    experiment.updateTrainingStatus();
+                    ExperimentUtils.updateTrainingStatus(experiment);
                     return new UpdateInformation(entry.getKey(), experiment.getTrainingStatusEnum().getValue());
                 }).collect(Collectors.toList());
         return allUpdates.stream().map(update -> new RawSqlStatement(
