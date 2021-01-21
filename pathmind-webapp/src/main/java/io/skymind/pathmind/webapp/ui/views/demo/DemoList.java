@@ -27,6 +27,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     private DemoProjectService demoProjectService;
     private List<ExperimentManifest> manifests;
     private Command onChooseDemoHandler = () -> {};
+    private Boolean createdDemoProject = false;
 
     public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo) {
         this.demoProjectService = demoProjectService;
@@ -36,18 +37,21 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
 
     @EventHandler
     private void chooseDemoHandler(@EventData("event.model.item.name") String demoName) {
-        try {
-            ExperimentManifest targetDemo;
-            onChooseDemoHandler.execute();
-            if (demoName != null) {
-                targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(demoName)).findFirst().orElse(null);
-                if (targetDemo != null) {
-                    Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
-                    getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+        if (!createdDemoProject) {
+            createdDemoProject = true;
+            try {
+                ExperimentManifest targetDemo;
+                onChooseDemoHandler.execute();
+                if (demoName != null) {
+                    targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(demoName)).findFirst().orElse(null);
+                    if (targetDemo != null) {
+                        Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
+                        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
