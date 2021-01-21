@@ -10,6 +10,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -26,7 +27,7 @@ public class VerificationEmailSentView extends PolymerTemplate<VerificationEmail
 
     public VerificationEmailSentView(@Value("${pathmind.contact-support.address}") String contactLink) {
         getModel().setContactLink(contactLink);
-        backToLogin.addClickListener(evt -> getUI().ifPresent(ui -> ui.navigate(LoginView.class)));
+        backToLogin.addClickListener(evt -> getUI().ifPresent(ui -> ui.navigate(ProjectsView.class)));
     }
 
     @Override

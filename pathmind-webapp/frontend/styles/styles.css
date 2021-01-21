@@ -1,5 +1,6 @@
 html {
     /* pathmind-colors */
+    --pm-primary-color-dark: #2f779a;
     --pm-primary-color: #4f97aa;
     --pm-primary-color-bright: #38a9c1;
     --pm-text-color: #1a2949;
@@ -7,7 +8,6 @@ html {
     --pm-app-bg-color: #f6f8fa;
     --pm-highlight-light: rgba(240, 241, 246, 0.25);
     --pm-highlight-medium: rgba(240, 241, 246, 0.5);
-    --pm-highlight-strong: rgba(240, 241, 246, 0.5);
     --pm-friendly-color: #3a966b;
     --pm-friendly-color-bright: #b2ea17;
     --pm-danger-color: #d80947;
@@ -22,12 +22,10 @@ html {
     --pm-grey-color-light: #d0d0d0;
     --pm-grey-color-lighter: #dee3ed;
     --pm-grey-color-lightest: #eaeeef;
-    --pm-blue-color-darkest: #1a2949;
-    --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
-    --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
-    --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
     --pm-yellow-color: #fff51f;
+    --pm-blue-color-dark: #1a49a9;
+    --pm-blue-color-light: #e0eafb;
 
     /* pathmind reward variable colors */
     --variable-color-0: #17a747;
@@ -89,6 +87,7 @@ html {
     --lumo-primary-color-75pct: rgba(79, 151, 170, 0.75);
     --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
     --lumo-primary-color-25pct: rgba(79, 151, 170, 0.25);
+    --lumo-primary-color-20pct: rgba(79, 151, 170, 0.2);
     --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
     --lumo-primary-color: var(--pm-primary-color);
     --lumo-border-radius: 6px;
@@ -137,26 +136,6 @@ background-color: var(--pm-grey-color-light);
 .internal-banner {
     color: var(--lumo-body-text-color);
     background-color: var(--pm-gold-color);
-}
-
-[tooltip-content] {
-    position: relative;
-}
-
-[tooltip-content]:hover::after {
-    content: attr(tooltip-content);
-    position: absolute;
-    top: calc(-0.8 * var(--lumo-space-xs));
-    left: 0;
-    line-height: 1;
-    background-color: white;
-    padding: 0.14em 0.16em;
-    z-index: 1;
-}
-
-[tooltip-content] span {
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 [icon="vaadin:star"] {
@@ -409,18 +388,37 @@ background-color: var(--pm-grey-color-light);
 }
 
 .upload-model-view .view-section {
-    max-width: 540px;
+    max-width: 500px;
     flex: 0 0 auto;
-    margin-top: var(--lumo-space-xxl);
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    margin: var(--lumo-space-xxl) auto;
+}
+
+.upload-model-view vaadin-upload {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: center;
+    margin-top: var(--lumo-space-xl);
+}
+
+.upload-model-view .file-check-panel {
+    margin-top: var(--lumo-space-l);
+}
+
+.upload-model-view .error-label:not(:empty) {
+    padding: var(--lumo-space-s);
+    border-radius: var(--lumo-border-radius);
 }
 
 .upload-model-view .view-section > vaadin-vertical-layout > vaadin-horizontal-layout:last-child {
-    margin-top: var(--lumo-space-xl);
+    margin: var(--lumo-space-xxl) 0 0;
 }
 
 .upload-model-view .warning-label {
     padding: 0 var(--lumo-space-xxs);
 }
+
+/* Account Views */
 
 account-view {
     background: var(--pm-app-bg-color);
@@ -430,6 +428,28 @@ account-view {
     flex-direction: column;
     box-sizing: border-box;
     align-items: center;
+}
+
+account-view-content,
+account-edit-view-content,
+change-password-view-content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100%;
+}
+
+account-view-content .panel-wrapper,
+account-edit-view-content .panel-wrapper,
+change-password-view-content .panel-wrapper {
+    flex: 1 0 auto;
+    min-height: auto;
+    overflow: visible;
+}
+
+account-edit-view-content .inner-content,
+change-password-view-content .inner-content {
+    text-align: left;
 }
 
 /* Title bar */

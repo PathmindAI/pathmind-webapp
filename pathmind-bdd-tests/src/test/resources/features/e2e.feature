@@ -29,6 +29,7 @@ Feature: E2E
     Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
+    Then Check that unexpected error alert is Not shown
     Then Click simulation metrics value icon
     When Open tab 1
     Then Check page title tag text is Simulation Metrics | Pathmind Knowledge Base
@@ -47,11 +48,6 @@ Feature: E2E
     #    ------------------------
     #Check reward function block
     Then Check experiment page reward function <reward function file>
-    #Check sparkline btn
-    When Click experiment page show sparkline btn for variable '<variable>'
-    Then Check experiment page chart pop-up is shown for variable '<variable>'
-    When Click pop-up dialog close btn
-    Then Check that no confirmation dialog is shown
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp
@@ -60,7 +56,7 @@ Feature: E2E
     Then Check learning progress block title 'Learning Progress'
     Then Check learning progress block selected tab 'true' name is 'Metrics'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
-    Then Check learning progress block metrics hint 'You can click on the simulation metric names above to toggle the lines on this chart.'
+    Then Check learning progress block metrics hint 'Select any two metrics on the simulation metric names above for comparison.'
     Then Check learning progress block metrics data-chart is shown
     When Click in 'Mean Reward Score' button
     Then Check learning progress block selected tab 'false' name is 'Metrics'
@@ -73,9 +69,10 @@ Feature: E2E
     #Check export policy
     When Click in 'Export Policy' button
     Then Check export policy page 'simplestochastic'
-    When Click in '< Back to Experiment #2' button
+    When Click experiment breadcrumb btn
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
+    Then Check that unexpected error alert is Not shown
 
     Examples:
       | project name    | model                                 | reward function file                                | alp file                              | variable    | limit |

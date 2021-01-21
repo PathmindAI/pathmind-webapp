@@ -54,8 +54,4 @@ public class TabPanel extends HorizontalLayout {
                 consumer.accept(change.getSelectedTab().getLabel())
         );
     }
-
-    public void setTab(String tabName) {
-        tabs.stream().forEach(tab -> tab.setSelected(tab.getLabel().equals(tabName)));
-    }
 }

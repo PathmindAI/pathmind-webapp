@@ -155,16 +155,6 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickSimulationMetricsOverviewIcon();
     }
 
-    @When("^Click experiment page show sparkline btn for variable '(.*)'$")
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPageSteps.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Then("^Check experiment page chart pop-up is shown for variable '(.*)'$")
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPageSteps.checkExperimentPageChartPopUpIsShownForVariable(variable);
-    }
-
     @Then("^Check variable '(.*)' simulation metric value '(.*)'$")
     public void checkVariableSimulationMetricValue(String variable, String value) {
         experimentPageSteps.checkVariableSimulationMetricValue(variable, value);
@@ -223,5 +213,20 @@ public class ExperimentStepDefinitions {
     @Then("^Check experiment page observation '(.*)' is selected '(.*)'$")
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         experimentPageSteps.checkExperimentPageObservationIsSelected(observation, isSelected);
+    }
+
+    @Then("^Check side bar experiment '(.*)' date is '(.*)'$")
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        experimentPageSteps.checkSideBarExperimentDateIs(experiment, date);
+    }
+
+    @Then("^Click side nav '(.*)' button from navbarItemMenu for '(.*)'$")
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        experimentPageSteps.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
+    }
+
+    @When("^Experiment page check number of the experiments is '(.*)' in the left sidebar$")
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPageSteps.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
     }
 }

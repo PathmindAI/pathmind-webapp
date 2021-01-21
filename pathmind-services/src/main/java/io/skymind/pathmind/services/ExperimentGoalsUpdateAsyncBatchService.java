@@ -1,10 +1,10 @@
 package io.skymind.pathmind.services;
 
+import java.util.List;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Policy;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -12,15 +12,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 
 @Slf4j
 @Service
 public class ExperimentGoalsUpdateAsyncBatchService {
 
-    private final PolicyDAO policyDAO;
     private final RunDAO runDAO;
     private final ExperimentDAO experimentDAO;
     private final DSLContext ctx;
@@ -28,8 +25,7 @@ public class ExperimentGoalsUpdateAsyncBatchService {
     private final Boolean skip;
 
     public ExperimentGoalsUpdateAsyncBatchService(@Value("${pathmind.skip-goals-migration}") boolean skip,
-                                                  PolicyDAO policyDAO, RunDAO runDAO, ExperimentDAO experimentDAO, DSLContext ctx) {
-        this.policyDAO = policyDAO;
+                                                  RunDAO runDAO, ExperimentDAO experimentDAO, DSLContext ctx) {
         this.runDAO = runDAO;
         this.experimentDAO = experimentDAO;
         this.ctx = ctx;
@@ -51,9 +47,8 @@ public class ExperimentGoalsUpdateAsyncBatchService {
                 try {
                     ctx.transaction(conf -> {
                         DSLContext transactionCtx = DSL.using(conf);
-                        experimentDAO.getExperiment(experimentId).ifPresent(experiment -> {
-                            List<Policy> policies = policyDAO.getPoliciesForExperiment(transactionCtx, experiment.getId());
-                            runDAO.calculateGoals(transactionCtx, experiment, policies);
+                        experimentDAO.getFullExperiment(experimentId).ifPresent(experiment -> {
+                            runDAO.calculateGoals(transactionCtx, experiment);
                         });
                     });
                 } catch (Throwable err) {

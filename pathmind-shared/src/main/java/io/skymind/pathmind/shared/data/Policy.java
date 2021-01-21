@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +47,9 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
     // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
     private Map<Integer, Map<Integer, Double>> sparklinesData = new LinkedHashMap<>();
     private List<String> uncertainty = new ArrayList<>();
+
+    // GUI helper attributes
+    Map<Integer, List<Double>> metricsLinesData;
 
     public List<RewardScore> getScores() {
         return scores == null ? Collections.emptyList() : scores;

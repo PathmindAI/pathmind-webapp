@@ -3,13 +3,11 @@ package io.skymind.pathmind.shared.security;
 public class Routes {
     public static final String WITH_PARAMETER = "/**";
 
-    public static final String ROOT_URL = "";
-
     public static final String LOGIN_URL = "sign-in";
     public static final String LOGIN_PROCESSING_URL = "sign-in";
 
     public static final String LOGOUT_URL = "sign-out";
-    public static final String LOGOUT_SUCCESS_URL = "";
+    public static final String LOGOUT_SUCCESS_URL = "sign-in?sign-out";
     public static final String SESSION_EXPIRED = "session-expired";
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
@@ -30,11 +28,12 @@ public class Routes {
     public static final String NEW_PROJECT = "newProject";
     public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT_URL = "experiment";
-    public static final String NEW_EXPERIMENT = "newExperiment";
+    public static final String NEW_EXPERIMENT_URL = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
     public static final String ERROR_URL = "error";
+    public static final String UPLOAD_MODEL_ERROR = "uploadModelError";
 
     public static final String EXPORT_POLICY_URL = "exportPolicy";
     public static final String PROJECT_URL = "project";

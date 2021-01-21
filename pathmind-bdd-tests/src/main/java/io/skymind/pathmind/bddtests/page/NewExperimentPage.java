@@ -48,7 +48,7 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageOpened(String projectName) {
-        assertThat(getDriver().findElement(By.xpath("//a[contains(@href, 'project/')]")).getText(), containsString(projectName));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//a[contains(@href, 'project/')]")), containsString(projectName));
     }
 
     public void inputRewardFunctionFile(String rewardFile) {
@@ -156,8 +156,8 @@ public class NewExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + checkbox + "']")).click();
     }
 
-    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
-        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign + goal));
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign) {
+        assertThat(getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + rewardVariable + "']/parent::vaadin-horizontal-layout/span[@class='goal-display-span']")).getText(), is(goalSign));
     }
 
     public void checkThatExperimentPageTitleIs(String experiment) {
@@ -181,7 +181,7 @@ public class NewExperimentPage extends PageObject {
     public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
         waitABit(3500);
         WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
-        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("#archiveButton"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         assertThat(archiveButton.getAttribute("title"), is(tooltip));
     }
@@ -218,6 +218,6 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void clickNewExperimentPageObservationCheckbox(String observation) {
-        getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
     }
 }

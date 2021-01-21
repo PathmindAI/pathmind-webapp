@@ -19,8 +19,6 @@ class TrainingStartingPlaceholder extends PolymerElement {
                     width: 100%;
                     background-color: var(--pm-highlight-light);
                     padding: var(--lumo-space-m) var(--lumo-space-xxl);
-                    border: 1px solid var(--pm-grey-color);
-                    border-radius: var(--lumo-border-radius);
                 }
                 chart-placeholder {
                     position: absolute;

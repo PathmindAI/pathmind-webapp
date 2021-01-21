@@ -49,7 +49,7 @@ Feature: Wizard page
     Then Wait for text "Checking your model" to disappear
     When Click in 'this article' button
     When Open tab 1
-    Then Check page url is https://help.pathmind.com/en/articles/4408884-how-to-update-your-model-to-the-latest-version
+    Then Check page url is https://help.pathmind.com/en/articles/3354371-1-install-pathmind-helper
 
   Scenario: Check wizard Reward Variables not required
     Given Login to the pathmind
@@ -67,31 +67,22 @@ Feature: Wizard page
     Then Check that new experiment AutotestProject page is opened
     Then Check experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
 
-  #  @goals
-  #  Scenario: Check goals error msg
-  #   Given Login to the pathmind
-  #   When Create new CoffeeShop project with draft model
-  #   When Click wizard upload ALP next btn
-  #   When Click wizard model details next btn
-  #   When Input reward variable 'kitchenCleanlinessLevel' goal '≥' value ' '
-  #   When Input reward variable 'successfulCustomers' goal '≤' value ' '
-  #   When Input reward variable 'balkedCustomers' goal '≥' value ' '
-  #   When Input reward variable 'avgServiceTime' goal '≤' value ' '
-  #   Then Check wizard reward variable 'kitchenCleanlinessLevel' error is shown 'Enter a goal value'
-  #   Then Check wizard reward variable 'successfulCustomers' error is shown 'Enter a goal value'
-  #   Then Check wizard reward variable 'balkedCustomers' error is shown 'Enter a goal value'
-  #   Then Check wizard reward variable 'avgServiceTime' error is shown 'Enter a goal value'
-  #   When Check wizard next button is disabled
-  #   When Input reward variable 'kitchenCleanlinessLevel' goal '≤' value '1'
-  #   When Input reward variable 'successfulCustomers' goal '≥' value '2'
-  #   When Input reward variable 'balkedCustomers' goal '≤' value '3'
-  #   When Input reward variable 'avgServiceTime' goal '≥' value '4'
-  #   When Click wizard reward variables next btn
-  #   Then Check that new experiment AutotestProject page is opened
-  #   Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is '≤' and value '1.0'
-  #   Then Check that new experiment reward variable 'successfulCustomers' goal is '≥' and value '2.0'
-  #   Then Check that new experiment reward variable 'balkedCustomers' goal is '≤' and value '3.0'
-  #   Then Check that new experiment reward variable 'avgServiceTime' goal is '≥' and value '4.0'
+  @goals
+  Scenario: Check goals on the experiment view
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize'
+    When Input reward variable 'successfulCustomers' goal 'maximize'
+    When Input reward variable 'balkedCustomers' goal 'maximize'
+    When Input reward variable 'avgServiceTime' goal 'minimize'
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'minimize'
+    Then Check that new experiment reward variable 'successfulCustomers' goal is 'maximize'
+    Then Check that new experiment reward variable 'balkedCustomers' goal is 'maximize'
+    Then Check that new experiment reward variable 'avgServiceTime' goal is 'minimize'
 
   Scenario: Check upload model AnyLogic link
     Given Login to the pathmind
@@ -119,3 +110,26 @@ Feature: Wizard page
     When Check wizard warning label 'This draft model is archived.' is shown 'true'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
+
+  Scenario Outline: Check that upload model page is not accessed for different users
+    Given Open page sign-up
+    When Fill new user form with name <First Name>, <Last Name>
+    When Fill new user password '<Password>'
+    When Fill new user confirmation password '<Password>'
+    When Create new user click sign in button
+    When Get email and verify user email
+    When Open pathmind page
+    Then Login with new user email and <Password>
+    Then Check that user <First Name> <Last Name> successfully logged in
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Save experiment url into the variable 'modelUploadUrl'
+    Then Delete all cookies
+    When Login to the pathmind
+    When Open url from the variable 'modelUploadUrl'
+    When Check that Invalid data error page opened
+
+    Examples:
+      | First Name | Last Name | Password   |
+      | Evgeniy    | Autotest  | Pass123456 |

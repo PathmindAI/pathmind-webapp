@@ -95,8 +95,6 @@ public class ProjectPage extends PageObject {
     }
 
     public void archiveModelWithPackageNameFromLeftSidebar(String modelId, String packageName) {
-        System.out.println("MODEL " + getDriver().findElement(By.xpath("//models-navbar-item")));
-
         List<WebElement> e = getDriver().findElements(By.xpath("//models-navbar-item"));
         for (WebElement webElement : e) {
             String modelNumber = webElement.getText().split("#")[1].split(" ")[0];
@@ -146,5 +144,9 @@ public class ProjectPage extends PageObject {
 
     public void checkProjectTitleLabelTagIsArchived(String tag) {
         assertThat(getDriver().findElement(By.xpath("(//*[@class='page-content-header'])[1]/descendant::span[@class='section-subtitle-label']/following-sibling::tag-label")).getText(), is(tag));
+    }
+
+    public void checkThatProjectPageTitleIs(String title) {
+        assertThat(getDriver().getTitle(), is(title));
     }
 }

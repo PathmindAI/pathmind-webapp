@@ -107,6 +107,10 @@ class ElapsedTimer extends PolymerElement {
             return numberString >= 10 ? numberString : "0" + numberString;
         }
 
+        if (hours == 0) {
+            return `${addZero(mins)}m ${addZero(secs)}s`;
+        }
+
         return `${addZero(hours)}h ${addZero(mins)}m ${addZero(secs)}s`;
     }
 }

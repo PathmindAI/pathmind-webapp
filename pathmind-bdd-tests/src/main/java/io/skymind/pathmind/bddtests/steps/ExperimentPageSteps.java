@@ -146,16 +146,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        experimentPage.clickExperimentPageShowSparklineBtnForVariable(variable);
-    }
-
-    @Step
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        experimentPage.checkExperimentPageChartPopUpIsShownForVariable(variable);
-    }
-
-    @Step
     public void checkVariableSimulationMetricValue(String variable, String value) {
         experimentPage.checkVariableSimulationMetricValue(variable, value);
     }
@@ -213,5 +203,20 @@ public class ExperimentPageSteps {
     @Step
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         experimentPage.checkExperimentPageObservationIsSelected(observation, isSelected);
+    }
+
+    @Step
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        experimentPage.checkSideBarExperimentDateIs(experiment, date);
+    }
+
+    @Step
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        experimentPage.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
+    }
+
+    @Step
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPage.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
     }
 }

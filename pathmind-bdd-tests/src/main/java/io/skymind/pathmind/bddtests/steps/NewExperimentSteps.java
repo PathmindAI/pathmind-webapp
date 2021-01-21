@@ -80,8 +80,8 @@ public class NewExperimentSteps {
     }
 
     @Step
-    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign, String goal) {
-        newExperimentPage.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign, goal);
+    public void checkThatNewExperimentRewardVariableGoalAndValue(String rewardVariable, String goalSign) {
+        newExperimentPage.checkThatNewExperimentRewardVariableGoalAndValue(rewardVariable, goalSign);
     }
 
     @Step

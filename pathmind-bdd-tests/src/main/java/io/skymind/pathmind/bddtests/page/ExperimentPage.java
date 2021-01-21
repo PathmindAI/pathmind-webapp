@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -62,6 +61,10 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         WebElement button = utils.expandRootElement(archiveButton);
         button.findElement(By.cssSelector("button")).click();
+
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -120,8 +123,24 @@ public class ExperimentPage extends PageObject {
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
         element.findElement(By.cssSelector("button")).click();
+    }
+
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        waitABit(3500);
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, "#small-menu"));
+        element.findElement(By.cssSelector("button")).click();
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        switch (btn) {
+            case ("Archive"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
+                break;
+            case ("Compare"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(2) > span")).click();
+                break;
+        }
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -266,20 +285,6 @@ public class ExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).click();
     }
 
-    public void clickExperimentPageShowSparklineBtnForVariable(String variable) {
-        WebElement showBtn = getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']"));
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(showBtn);
-        actions.perform();
-        getDriver().findElement(By.xpath("//span[contains(@class,'reward-variable-name') and text()='" + variable + "']/ancestor::vaadin-horizontal-layout[@class='simulation-metrics-table-wrapper']/descendant::vaadin-vertical-layout[@class='sparkline']/descendant::vaadin-button")).click();
-    }
-
-    public void checkExperimentPageChartPopUpIsShownForVariable(String variable) {
-        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']")).size(), is(not(0)));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::span[@class='bold-label']")).getText(), is(variable));
-        assertThat(getDriver().findElements(By.xpath("//vaadin-dialog-overlay[@id='overlay']/descendant::data-chart")).size(), is(not(0)));
-    }
-
     public void checkVariableSimulationMetricValue(String variable, String value) {
         assertThat(getDriver().findElement(By.xpath("//span[text()='" + variable + "']/ancestor::*[@class='simulation-metrics-table-wrapper']/descendant::*[@class='metrics-wrapper']/span")).getText(), is(value));
     }
@@ -294,24 +299,25 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExportPolicyPage(String model) {
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='view-section']/img"))));
-        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/img")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::span")).getText(), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/h3")).getText(), is("To use your policy:"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::div/ol")).getText(), is("Download this file.\n" +
-                "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
-                "Change the 'Mode' to 'Use Policy'.\n" +
-                "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
-                "Run the simulation to see the policy in action."));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getText(), is("Learn how to validate your policy"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[1]")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]"))));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[2]/vaadin-button")).getText(), is("Export Policy"));
+        WebElement exportViewPolicy = utils.expandRootElement(getDriver().findElement(By.xpath("//export-policy-view-content")));
+        waitFor(ExpectedConditions.visibilityOf(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon"))));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector(".filename")).getText(), containsString(model));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("h4")).getText(), is("To use your policy:"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > ol")).getText(), is("Download this file.\n" +
+            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
+            "Change the 'Mode' to 'Use Policy'.\n" +
+            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
+            "Run the simulation to see the policy in action."));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getText(), is("Learn how to validate your policy"));
+        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
+        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]"))));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]/vaadin-button")).getText(), is("Export Policy"));
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(".download-alp-link"))));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']/following-sibling::a[3]/vaadin-button")).getText(), is("Model ALP"));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]")).getAttribute("href"), containsString(model));
+        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]/vaadin-button")).getText(), is("Model ALP"));
     }
 
     public void checkLearningProgressTitle(String title) {
@@ -349,5 +355,13 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']")).getAttribute("aria-checked"), is(isSelected));
+    }
+
+    public void checkSideBarExperimentDateIs(String experiment, String date) {
+        assertThat(utils.getExperimentNavbarItemByExperimentName(experiment, "#experimentLink > div > p:nth-child(2)").getText(), is(date));
+    }
+
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
     }
 }

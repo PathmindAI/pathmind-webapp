@@ -125,6 +125,15 @@ public class ModelPageSteps {
     }
 
     @Step
+    public void checkSideBarModelsDateIs(String model, String date) {
+        modelPage.checkSideBarModelsDateIs(model, date);
+    }
+
+    @Step
+    public void checkModelPageCreatedIs(String model, String date) {
+        modelPage.checkModelPageCreatedIs(model, date);
+    }
+
     public void addModelNoteToTheProjectPage(String note) {
         modelPage.addModelNoteToTheProjectPage(note);
     }
@@ -133,4 +142,5 @@ public class ModelPageSteps {
     public void checkModelNoteOnTheProjectPage(String note) {
         modelPage.checkModelNoteOnTheProjectPage(note);
     }
+
 }

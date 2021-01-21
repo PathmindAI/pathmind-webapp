@@ -138,9 +138,8 @@ public class Utils extends PageObject {
 
     public void waitForLoadingBar() {
         try {
-            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: block;' and @class='v-loading-indicator first']")));
-            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and @class='v-loading-indicator first']")));
-        } catch (org.openqa.selenium.NoSuchElementException ex) {
+            waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and not(@role)]")));
+        }catch (org.openqa.selenium.NoSuchElementException ex){
             ex.printStackTrace();
         }
     }
@@ -161,6 +160,19 @@ public class Utils extends PageObject {
         for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
             WebElement experimentNavbarItemShadow = expandRootElement(webElement);
             if (experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText().split("\n")[0].equals(experimentName)) {
+                if (cssSelector == null) {
+                    return webElement;
+                }
+                return experimentNavbarItemShadow.findElement(By.cssSelector(cssSelector));
+            }
+        }
+        return null;
+    }
+
+    public WebElement getModelNavbarItemByModelName(String experimentName, String cssSelector) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//models-navbar-item"))) {
+            WebElement experimentNavbarItemShadow = expandRootElement(webElement);
+            if (experimentNavbarItemShadow.findElement(By.cssSelector(".model-name p:nth-child(2)")).getText().contains(experimentName)) {
                 if (cssSelector == null) {
                     return webElement;
                 }

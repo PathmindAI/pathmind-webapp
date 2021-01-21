@@ -62,11 +62,6 @@ public class HomePageStepDefinitions {
         homePageSteps.clickBackButton();
     }
 
-    @When("^Click Getting Started tutorial button$")
-    public void clickGettingStartedGuideButton() {
-        homePageSteps.clickGettingStartedGuideButton();
-    }
-
     @When("^Input '(.*)' to the notes search field$")
     public void inputToTheNotesSearchField(String text) {
         homePageSteps.inputToTheNotesSearchField(text);
@@ -185,5 +180,11 @@ public class HomePageStepDefinitions {
     @When("^Click and send enter btn to the search field$")
     public void clickAndSendEnterBtnToTheSearchField() {
         homePageSteps.clickAndSendEnterBtnToTheSearchField();
+    }
+
+    @When("^Click user menu '(.*)' btn$")
+    public void clickUserMenuBtn(String btn) {
+        homePageSteps.openUserDropdown();
+        homePageSteps.clickUserMenuBtn(btn);
     }
 }

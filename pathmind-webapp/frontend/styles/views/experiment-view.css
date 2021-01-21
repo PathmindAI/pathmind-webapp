@@ -9,6 +9,21 @@
 .experiment-view .section-title-label {
     flex: 1 0 auto;
     line-height: 1;
+    white-space: nowrap;
+}
+
+.experiment-view .bold-label {
+    /* same as .panel-title-label but since this panel is reused on Experiment &
+       New Experiment view, we're going to keep it as .bold-label for now */
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
 .experiment-view .section-title-label ~ tag-label {
@@ -21,17 +36,26 @@
     min-width: auto;
     background: white;
     border-radius: 0;
-    padding: var(--lumo-space-m);
+    padding: 0;
 }
 
-.experiment-view .middle-panel > vaadin-vertical-layout {
-    flex: 0 0 auto;
-    width: auto !important;
+.experiment-view .view-section > vaadin-vertical-layout {
+    flex: 0 0 100%;
+    overflow: visible;
+}
+
+.experiment-view.comparison-mode .view-section > vaadin-vertical-layout {
+    flex: 1 1 50%;
+}
+
+.experiment-view .experiment-header {
+    position: relative;
 }
 
 .experiment-view .middle-panel > vaadin-vertical-layout:last-child {
     flex: 1 1 auto;
     width: 50% !important;
+    border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
 .experiment-view .simulation-metrics-table-wrapper {
@@ -41,10 +65,8 @@
     max-height: calc(1.8em * 20);
     font-size: var(--lumo-font-size-xs);
     line-height: 1.8;
-    padding: var(--lumo-space-s);
+    padding: var(--lumo-space-xs);
     padding-top: 0;
-    border: 1px solid var(--pm-grey-color);
-    border-radius: var(--lumo-border-radius);
     overflow: auto;
 }
 
@@ -107,6 +129,12 @@
     cursor: pointer;
 }
 
+.experiment-view .reward-variables-table.disable-selection .reward-variable-name:not([chosen]) {
+    background-color: var(--pm-grey-color-lightest);
+    border-color: var(--pm-grey-color-lightest);
+    cursor: default;
+}
+
 .experiment-view .metrics-wrapper span {
     display: flex;
     align-items: center;
@@ -156,8 +184,19 @@
     align-items: flex-end;
 }
 
+.experiment-view code-viewer {
+    border: none;
+    border-radius: 0;
+}
+
+.experiment-view.comparison-mode code-viewer {
+    height: 16rem;
+}
+
 .experiment-view .observations-panel {
     max-height: 27rem;
+    border: none;
+    border-radius: 0;
 }
 
 .experiment-view .observations-table {
@@ -197,7 +236,11 @@
 .experiment-view .bottom-panel,
 .experiment-view .row-2-of-3 vaadin-vertical-layout {
     flex: 1;
-    max-height: calc(100vh - 24rem);
+}
+
+.experiment-view.comparison-mode .bottom-panel,
+.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
+    max-height: none;
 }
 
 .experiment-view vaadin-tabs {
@@ -206,6 +249,7 @@
 
 .experiment-view .hint-label {
     color: var(--lumo-secondary-text-color);
+    padding: 0 var(--lumo-space-s);
     margin-bottom: 0;
 }
 
@@ -216,12 +260,23 @@
 }
 
 .experiment-view .buttons-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
-.experiment-view .buttons-wrapper vaadin-button:not(:first-child),
+.experiment-view .buttons-wrapper vaadin-button {
+    min-width: auto;
+    height: var(--lumo-size-s);
+    font-size: var(--lumo-font-size-s);
+    border-radius: 0;
+    margin: 0;
+}
+
+.experiment-view .buttons-wrapper vaadin-button + vaadin-button:not([hidden]) {
+    margin-left: -1px;
+}
+
 .experiment-view .buttons-wrapper .download-alp-link {
     margin-left: var(--lumo-space-s);
 }
@@ -230,7 +285,6 @@
     display: block;
 }
 
-.experiment-view .bold-label,
 .new-experiment-view .bold-label {
     margin-bottom: var(--lumo-space-xs);
 }
@@ -281,8 +335,14 @@
     width: 100%;
     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
     border: 1px solid transparent;
-    border-radius: var(--lumo-border-radius);
-    margin: var(--lumo-space-xs) 0 0;
+}
+
+.experiment-view.comparison-mode .reason-why-the-training-stopped {
+    display: none;
+}
+
+.experiment-view .training-status-details-panel {
+    height: 3rem;
 }
 
 .experiment-view .tag.error-label {
@@ -292,4 +352,38 @@
 
 .experiment-view .reason-why-the-training-stopped:empty {
     display: none;
+}
+
+.experiment-view .comparison-panel {
+    width: 100%;
+    height: 100%;
+}
+
+.experiment-view .comparison-panel vaadin-split-layout {
+    height: auto !important;
+}
+
+.experiment-view.comparison-mode .view-section {
+    overflow-y: hidden;
+}
+
+.experiment-view.comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
+.experiment-view.comparison-mode .row-2-of-3 {
+    width: 100% !important;
+    border-left: none;
+}
+
+.experiment-view.comparison-mode .middle-panel,
+.experiment-view.comparison-mode .bottom-panel {
+    flex-direction: column;
+}
+
+.experiment-view.comparison-mode {
+    height: calc(100vh - 5rem) !important;
+}
+
+.experiment-view.comparison-mode floating-close-button {
+    position: absolute;
+    top: var(--lumo-space-xs);
+    right: var(--lumo-space-xs);
 }

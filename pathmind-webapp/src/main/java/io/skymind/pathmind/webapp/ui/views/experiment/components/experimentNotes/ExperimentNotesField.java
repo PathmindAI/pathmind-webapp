@@ -1,42 +1,41 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.router.BeforeLeaveEvent;
-import com.vaadin.flow.router.BeforeLeaveObserver;
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.ExperimentChangedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSavedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.subscribers.view.ExperimentNotesFieldExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
-public class ExperimentNotesField extends NotesField  implements BeforeLeaveObserver {
-
-    private Supplier<Optional<UI>> getUISupplier;
-    private Consumer<String> saveConsumer;
+public class ExperimentNotesField extends NotesField implements ExperimentComponent {
 
     private Experiment experiment;
 
-    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer) {
-        this(getUISupplier, title, experiment, saveConsumer, false, false);
-    }
+    public ExperimentNotesField(AbstractExperimentView abstractExperimentView, ExperimentDAO experimentDAO, Runnable segmentIntegratorRunnable, Boolean allowAutoSave, Boolean hideSaveButton) {
+        super("Notes",
+                "",
+                null,
+                false,
+                allowAutoSave,
+                hideSaveButton);
 
-    public ExperimentNotesField(Supplier<Optional<UI>> getUISupplier, String title, Experiment experiment, Consumer<String> saveConsumer, Boolean allowAutoSave, Boolean hideSaveButton) {
-        super(title, experiment.getUserNotes(), saveConsumer, false, allowAutoSave, hideSaveButton);
-        this.getUISupplier = getUISupplier;
-        this.saveConsumer = saveConsumer;
-        this.experiment = experiment.shallowClone();
-        setOnNotesChangeHandler(() -> EventBus.post(new ExperimentChangedViewBusEvent(experiment)));
+        if(abstractExperimentView instanceof ExperimentView) {
+            setSaveConsumer(updatedNotes -> {
+                experimentDAO.updateUserNotes(getExperiment().getId(), updatedNotes);
+                segmentIntegratorRunnable.run();
+            });
+        }
+
+        if(abstractExperimentView instanceof NewExperimentView) {
+            setOnNotesChangeHandler(() -> NeedsSavingAction.setNeedsSaving((NewExperimentView) abstractExperimentView));
+        }
     }
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        setNotesText(experiment.getUserNotes());
     }
 
     public Experiment getExperiment() {
@@ -44,19 +43,7 @@ public class ExperimentNotesField extends NotesField  implements BeforeLeaveObse
     }
 
     @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getUISupplier,
-                new ExperimentNotesFieldExperimentSwitchedViewSubscriber(this, saveConsumer),
-                new ExperimentNotesFieldExperimentSavedViewSubscriber(this, saveConsumer));
-    }
-
-    @Override
-    public void beforeLeave(BeforeLeaveEvent event) {
-        saveNotes();
+    public void updateExperiment() {
+        experiment.setUserNotes(getNotesText());
     }
 }

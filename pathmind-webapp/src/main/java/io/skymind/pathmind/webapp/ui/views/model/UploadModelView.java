@@ -15,7 +15,6 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
@@ -29,8 +28,10 @@ import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.model.analyze.ModelBytes;
+import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
-import io.skymind.pathmind.services.project.FileCheckResult;
+import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.shared.constants.ModelType;
@@ -40,6 +41,7 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
@@ -48,6 +50,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -57,7 +60,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -73,7 +75,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_
 
 @Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater, HasUrlParameter<String>, BeforeLeaveObserver {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver {
 
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int UPLOAD_MODE_SEGMENT = 1;
@@ -93,6 +95,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     @Autowired
     private ObservationDAO observationDAO;
+
+    @Autowired
+    private ModelFileVerifier modelFileVerifier;
 
     @Autowired
     private ProjectFileCheckService projectFileCheckService;
@@ -137,10 +142,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
 
-        uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes());
+        uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-        rewardVariablesPanel = new RewardVariablesPanel(() -> getUI());
+        rewardVariablesPanel = new RewardVariablesPanel();
 
         modelBinder.readBean(model);
 
@@ -156,8 +161,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             setVisibleWizardPanel(uploadModelWizardPanel);
         }
 
-        uploadModelWizardPanel.addFileUploadCompletedListener(() -> handleUploadWizardClicked());
-        uploadModelWizardPanel.addFileUploadFailedListener(errors -> handleUploadFailed(errors));
+        uploadModelWizardPanel.addFileUploadCompletedListener(this::handleUploadWizardClicked);
+        uploadModelWizardPanel.addFileUploadFailedListener(this::handleUploadFailed);
         uploadALPWizardPanel.addButtonClickListener(click -> handleUploadALPClicked());
         modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
         rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
@@ -245,16 +250,12 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             this.model = ModelUtils.generateNewDefaultModel();
             model.setProjectId(projectId);
         }
-        project = projectDAO.getProject(projectId)
+        project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
     }
 
     private boolean isResumeUpload() {
         return modelId != -1;
-    }
-
-    @Override
-    protected void initScreen(BeforeEnterEvent event) {
     }
 
     private void handleRewardVariablesClicked() {
@@ -288,7 +289,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
     }
 
-    private void handleUploadWizardClicked() {
+    private void handleUploadWizardClicked(ModelBytes modelBytes) {
+        byte[] file = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
+        model.setFile(file);
         uploadModelWizardPanel.showFileCheckPanel();
         projectFileCheckService.checkFile(this, model);
     }
@@ -324,13 +327,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     }
 
     @Override
-    public void fileSuccessfullyVerified(FileCheckResult result) {
+    public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
         getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
             uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
             setVisibleWizardPanel(uploadALPWizardPanel);
             List<Observation> observationList = new ArrayList<>();
             if (result != null) {
-                AnylogicFileCheckResult alResult = AnylogicFileCheckResult.class.cast(result);
+                Hyperparams alResult = result.getParams();
                 rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
                 observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
                 model.setNumberOfObservations(alResult.getNumObservation());

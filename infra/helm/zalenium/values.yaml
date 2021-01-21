@@ -89,18 +89,18 @@ hub:
 
   ## Environment variables passed to Zalenium hub.
   ## https://github.com/zalando/zalenium/blob/master/docs/usage_examples.md
-  desiredContainers: 16
+  desiredContainers: 24
   maxDockerSeleniumContainers: 24
   videoRecordingEnabled: true
   # the limits/requests below are for Selenium pods (containers)
   cpuRequest: 1
   cpuLimit: 2
-  memRequest: 1Gi
-  memLimit: 2Gi
+  memRequest: 2Gi
+  memLimit: 3Gi
   screenWidth: 1920
   screenHeight: 1080
   timeZone: "UTC"
-  seleniumImageName: "elgalu/selenium"
+  seleniumImageName: "elgalu/selenium:3.141.59-p44"
   maxTestSessions: 100
   newSessionsWaitTimeout: 600000
   debugEnabled: false

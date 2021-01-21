@@ -54,16 +54,6 @@ public class DashboardPageSteps {
     }
 
     @Step
-    public void checkDashboardBeginScreenElements() {
-        dashboardPage.checkDashboardBeginScreenElements();
-    }
-
-    @Step
-    public void clickDashboardCreateYourFirstProjectBtn() {
-        dashboardPage.clickDashboardCreateYourFirstProjectBtn();
-    }
-
-    @Step
     public void clickStageWriteRewardFunctionFromDashboard(String projectName) {
         dashboardPage.clickStageWriteRewardFunctionFromDashboard(projectName);
     }

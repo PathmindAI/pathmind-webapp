@@ -2,18 +2,21 @@ package io.skymind.pathmind.shared.segment;
 
 public class SegmentTrackingEvents {
 
+    public static final String EVENT_MARKETING_SITE_LEAD = "Lead from Marketing Site";
     public static final String EVENT_SIGN_UP = "Signed up";
     public static final String EVENT_VERIFICATION_EMAIL = "Verification Email Sent";
     public static final String EVENT_VERIFY_EMAIL = "Email Verified";
     public static final String EVENT_LOGIN = "Signed in";
     public static final String EVENT_IMPORT_MODEL = "Model Uploaded";
+    public static final String EVENT_ONBOARDING_TUTORIAL = "Onboarding Tutorial Link Clicked";
+    public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
     public static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
     public static final String EVENT_CREATE_PROJECT = "Project Created";
     public static final String EVENT_START_TRAINING = "Training Started";
     public static final String EVENT_TRAINING_COMPLETED = "Training Completed";
     public static final String EVENT_STOP_TRAINING = "Training Stopped";
-    public static final String EVENT_RESTART_TRAINING = "Training Restarted";
     public static final String EVENT_EXPORT_POLICY = "Policy Exported";
+    public static final String EVENT_UPLOAD_MODEL_ERROR = "Upload Model Error View Visited";
     public static final String EVENT_SAVE_MODEL_DRAFT = "Model Draft Saved";
     public static final String EVENT_DOWNLOAD_MODEL_ALP = "Model ALP Downloaded";
     public static final String EVENT_SAVE_EXPERIMENT_DRAFT = "Experiment Draft Saved";

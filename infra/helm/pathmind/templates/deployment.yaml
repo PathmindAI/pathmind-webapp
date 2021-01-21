@@ -28,6 +28,10 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/bash","-c","aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/$(hostname)-updater-queue"]
           command: {{ .Values.image.command }}
           args:
 {{- range .Values.image.args }}
@@ -90,6 +94,8 @@ spec:
               value: "{{ .Values.env.SQS_URL }}"
             - name: S3_BUCKET
               value: "{{ .Values.env.S3_BUCKET }}"
+            - name: S3_BUCKET_STATIC
+              value: "{{ .Values.env.S3_BUCKET_STATIC }}"
             - name: JOB_MOCK_CYCLE
               value: "{{ .Values.env.JOB_MOCK_CYCLE }}"
             - name: JOB_MOCK_MAX_MIN

@@ -2,7 +2,6 @@ package io.skymind.pathmind.shared.data;
 
 import java.io.Serializable;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +16,13 @@ public class Metrics implements Serializable, DeepCloneableInterface<Metrics> {
     private Double max;
     private Double min;
     private Double mean;
+
+    public Metrics(Integer agent, Integer iteration, Integer index, Double mean) {
+        this.agent = agent;
+        this.iteration = iteration;
+        this.index = index;
+        this.mean = mean;
+    }
 
     @Override
     public Metrics shallowClone() {

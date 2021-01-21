@@ -1,29 +1,23 @@
 package io.skymind.pathmind.webapp.ui.components.rewardVariables;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.view.RewardVariableSelectedViewBusEvent;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.subscribers.view.RewardVariablesRowFieldExperimentSwitchedViewSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.action.SimulationRewardVariableSelectedAction;
 
 public class RewardVariablesRowField extends HorizontalLayout {
+
+    private static final String CLICKED_ATTRIBUTE = "chosen";
 
     private Span rewardVariableNameSpan;
 
@@ -38,52 +32,40 @@ public class RewardVariablesRowField extends HorizontalLayout {
     private Command goalFieldValueChangeHandler;
 
     private RewardVariable rewardVariable;
-    // This is really only used to prevent eventbus updates for reward variables that are already set to show.
-    private boolean isShow = true;
 
-    private Supplier<Optional<UI>> getUISupplier;
+    private ExperimentView experimentView;
+    private boolean isSelected = false;
 
-    protected RewardVariablesRowField(Supplier<Optional<UI>> getUISupplier, RewardVariable rv, Command goalFieldValueChangeHandler, Boolean actAsMultiSelect) {
-        this.getUISupplier = getUISupplier;
+    protected RewardVariablesRowField(RewardVariable rv, Command goalFieldValueChangeHandler, ExperimentView experimentView, Boolean actAsMultiSelect) {
         this.rewardVariable = rv;
         this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
+        this.experimentView = experimentView;
         setAlignItems(Alignment.BASELINE);
-        rewardVariableNameSpan = LabelFactory.createLabel(rv.getName(), "reward-variable-name");
-        if (actAsMultiSelect) {
-            String clickedAttribute = "chosen";
-            rewardVariableNameSpan.getElement().setAttribute(clickedAttribute, true);
+        rewardVariableNameSpan = LabelFactory.createLabel(rewardVariable.getName(), "reward-variable-name");
 
-            rewardVariableNameSpan.addClickListener(event -> {
-                Element spanElement = event.getSource().getElement();
-                if (spanElement.hasAttribute(clickedAttribute)) {
-                    spanElement.removeAttribute(clickedAttribute);
-                    isShow = false;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, false));
-                } else {
-                    spanElement.setAttribute(clickedAttribute, true);
-                    isShow = true;
-                    EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
-                }
-            });
+        if (actAsMultiSelect) {
+            setupMultiSelect();
         }
 
         conditionType = new Select<>();
         conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
-        conditionType.setItemLabelGenerator(type -> type != null ? type.toString() : "None");
+        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "None");
         // The item label generator did not add "None" to the dropdown
         // It only shows if the empty item is selected
         conditionType.setEmptySelectionAllowed(true);
         // This is for the item label on the dropdown
         conditionType.setEmptySelectionCaption("None");
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-        conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
+        // conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
 
         goalField = new NumberField();
         goalField.addClassName("goal-field");
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
         goalField.addValueChangeListener(event -> goalFieldValueChangeHandler.execute());
+        goalField.setVisible(false); // #2541: bring back goal but hide value field
+        goalField.setEnabled(false); // #2541: bring back goal but hide value field
 
-        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().toString() + rv.getGoalValue());
+        String goalDisplayText = rv.getGoalConditionType() == null ? "—" : String.format(rv.getGoalConditionTypeEnum().getRewardFunctionComponent().getComment());
         goalSpan = LabelFactory.createLabel(goalDisplayText, "goal-display-span");
 
         goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, goalField, goalSpan);
@@ -95,27 +77,35 @@ public class RewardVariablesRowField extends HorizontalLayout {
         setWidthFull();
         GuiUtils.removeMarginsPaddingAndSpacing(this);
         initBinder(rv);
-        setGoalFieldVisibility();
+        // setGoalFieldVisibility();
+    }
+
+    private void setupMultiSelect() {
+        rewardVariableNameSpan.addClickListener(event ->
+                SimulationRewardVariableSelectedAction.selectRewardVariable(rewardVariable, this, experimentView));
+    }
+
+    protected void setSelected(boolean selected) {
+        isSelected = selected;
+        if(isSelected) {
+            rewardVariableNameSpan.getElement().setAttribute(CLICKED_ATTRIBUTE, true);
+        } else {
+            rewardVariableNameSpan.getElement().removeAttribute(CLICKED_ATTRIBUTE);
+        }
+    }
+
+    public boolean isSelected() {
+        return isSelected;
     }
 
     private void initBinder(RewardVariable rv) {
         binder = new Binder<>();
         binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
-        goalValueBinding = binder.forField(goalField).asRequired("Enter a goal value").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
+        // goalValueBinding = binder.forField(goalField).asRequired("Enter a goal value").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
         binder.setBean(rv);
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new RewardVariablesRowFieldExperimentSwitchedViewSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
+    // For #2541, the value field is not needed, but it may be brought back later on
     private void setGoalFieldVisibility() {
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
@@ -137,25 +127,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
         goalSpan.setVisible(!editable);
     }
 
-    public Span getRewardVariableSpan() {
-        return rewardVariableNameSpan;
-    }
-
     public RewardVariable getRewardVariable() {
         return rewardVariable;
-    }
-
-    public boolean isShow() {
-        return isShow;
-    }
-
-    public void reset() {
-        if (isShow) {
-            return;
-        }
-
-        getRewardVariableSpan().getElement().setAttribute("chosen", true);
-        isShow = true;
-        EventBus.post(new RewardVariableSelectedViewBusEvent(rewardVariable, true));
     }
 }

@@ -17,7 +17,7 @@ import io.skymind.pathmind.shared.services.training.versions.VersionEnum;
 public class AWSFileManager {
     private static AWSFileManager instance;
     private static final String S3_COPY = "aws s3 cp s3://";
-    private static final String STATIC_BUCKET = "${ENVIRONMENT}-training-static-files.pathmind.com";
+    private static final String STATIC_BUCKET = "${S3_BUCKET_STATIC}";
 
     public static AWSFileManager getInstance() {
         if (instance == null) {

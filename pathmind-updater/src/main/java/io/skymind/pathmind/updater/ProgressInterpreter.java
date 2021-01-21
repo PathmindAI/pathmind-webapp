@@ -19,7 +19,10 @@ import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.MetricsRawUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import lombok.extern.slf4j.Slf4j;
+
+import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.convertValidDouble;
 
 @Slf4j
 public class ProgressInterpreter {
@@ -143,9 +146,9 @@ public class ProgressInterpreter {
                 final Integer episodeCount = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
 
                 scores.add(new RewardScore(
-                        Double.valueOf(max.equals("nan") ? "NaN" : max),
-                        Double.valueOf(min.equals("nan") ? "NaN" : min),
-                        Double.valueOf(mean.equals("nan") ? "NaN" : mean),
+                        convertValidDouble(max),
+                        convertValidDouble(min),
+                        convertValidDouble(mean),
                         iteration,
                         episodeCount
                 ));
@@ -181,16 +184,12 @@ public class ProgressInterpreter {
                         final String max = record.getString(RAY_PROGRESS.metricsMax((agent * numReward) + idx));
                         final String min = record.getString(RAY_PROGRESS.metricsMin((agent * numReward) + idx));
                         final String mean = record.getString(RAY_PROGRESS.metricsMean((agent * numReward) + idx));
-                        metrics.add(new Metrics(agent, iteration, idx, safeDouble(max), safeDouble(min), safeDouble(mean)));
+                        metrics.add(new Metrics(agent, iteration, idx, convertValidDouble(max), convertValidDouble(min), convertValidDouble(mean)));
                     }
                 }
             }
             policy.setMetrics(metrics);
         }
-    }
-
-    private static double safeDouble(String value) {
-        return Double.valueOf(value.equals("nan") ? "NaN" : value);
     }
 
     public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward, int numAgents) {

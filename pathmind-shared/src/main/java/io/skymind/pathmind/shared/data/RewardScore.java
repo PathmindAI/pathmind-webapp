@@ -2,7 +2,6 @@ package io.skymind.pathmind.shared.data;
 
 import java.io.Serializable;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +17,12 @@ public class RewardScore implements Serializable, DeepCloneableInterface<RewardS
 
     private Integer iteration;
     private Integer episodeCount;
+
+    public RewardScore(Double mean, Integer iteration, Integer episodeCount) {
+        this.mean = mean;
+        this.iteration = iteration;
+        this.episodeCount = episodeCount;
+    }
 
     @Override
     public RewardScore shallowClone() {

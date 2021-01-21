@@ -28,6 +28,11 @@ public class ModelUploadStepDefinitions {
         modelUploadSteps.checkErrorMessageInModelCheckPanel(errorMessage);
     }
 
+    @Then("^Check that error message in model check panel starts with \"(.*)\"$")
+    public void checkErrorMessageStartsWith(String errorMessage) {
+        modelUploadSteps.checkErrorMessageStartsWithInModelCheckPanel(errorMessage);
+    }
+
     @When("^Upload ALP file '(.*)'$")
     public void uploadALPFile(String alpFile) {
         modelUploadSteps.uploadALPFile(alpFile);
@@ -51,5 +56,15 @@ public class ModelUploadStepDefinitions {
     @When("^Check wizard warning label '(.*)' is shown '(.*)'$")
     public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
         modelUploadSteps.checkWizardWarningLabelIsShown(warningLabel, isShown);
+    }
+
+    @When("^Wizard model upload check folder upload page$")
+    public void wizardModelUploadCheckFolderUploadPage() {
+        modelUploadSteps.wizardModelUploadCheckFolderUploadPage();
+    }
+
+    @When("^Wizard model upload check archive upload page$")
+    public void wizardModelUploadCheckArchiveUploadPage() {
+        modelUploadSteps.wizardModelUploadCheckArchiveUploadPage();
     }
 }

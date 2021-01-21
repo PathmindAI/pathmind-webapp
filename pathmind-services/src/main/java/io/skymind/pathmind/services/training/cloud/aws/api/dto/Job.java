@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 public class Job {
@@ -32,6 +33,10 @@ public class Job {
     @JsonProperty("maxMin")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String maxElaspedTime;
+
+    @Setter
+    @JsonProperty("origin")
+    private String origin;
 
     public Job(String s3Bucket, String s3Path, int mockCycle, int mockMaxMin) {
         this(s3Bucket, s3Path, false, mockCycle, mockMaxMin);

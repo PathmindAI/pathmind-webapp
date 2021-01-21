@@ -58,4 +58,14 @@ public class ProjectsPageStepDefinitions {
     public void checkProjectPageModelALPBtn(String filename) {
         projectsPageSteps.checkProjectPageModelALPBtn(filename);
     }
+
+    @Then("^Check projects page project '(.*)' created is '(.*)'$")
+    public void checkProjectsPageProjectCreatedIs(String project, String date) {
+        projectsPageSteps.checkProjectsPageProjectCreatedIs(project + Serenity.sessionVariableCalled("randomNumber"), date);
+    }
+
+    @When("^Projects page check project '(.*)' models number '(.*)'$")
+    public void projectsPageCheckProjectModelsNumber(String projectName, String modelsNumber) {
+        projectsPageSteps.projectsPageCheckProjectModelsNumber(projectName + Serenity.sessionVariableCalled("randomNumber"), modelsNumber);
+    }
 }

@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ import org.springframework.util.Assert;
 @Slf4j
 @Service
 @Getter
+@ToString
 public class AWSApiClient {
 
     private final AmazonS3 s3Client;
@@ -70,6 +72,7 @@ public class AWSApiClient {
             Assert.isTrue(mockCycle > 0, "Mock Cycle should be greater than zero");
             log.warn("Running with mock cycle {}", mockCycle);
         }
+        log.info("kepricondebug aws client : " +  this.toString());
 
     }
 
@@ -177,6 +180,7 @@ public class AWSApiClient {
 
     public String jobStop(String jobId) throws JsonProcessingException {
         Job job = new Job(bucketName, jobId, true, mockCycle);
+        job.setOrigin("webapp");
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)

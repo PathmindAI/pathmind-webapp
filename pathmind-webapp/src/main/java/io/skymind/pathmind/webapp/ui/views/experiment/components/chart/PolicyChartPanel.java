@@ -3,13 +3,9 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.subscribers.main.PolicyChartPanelPolicyUpdateSubscriber;
 
 public class PolicyChartPanel extends VerticalLayout {
     private Object experimentLock = new Object();
@@ -29,7 +25,7 @@ public class PolicyChartPanel extends VerticalLayout {
 
     public void setExperiment(Experiment newExperiment) {
         synchronized (experimentLock) {
-            this.experiment = newExperiment.deepClone();
+            this.experiment = newExperiment;
             updateChart();
         }
     }
@@ -54,17 +50,4 @@ public class PolicyChartPanel extends VerticalLayout {
     public long getExperimentId() {
         return experiment.getId();
     }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, getUISupplier,
-                new PolicyChartPanelPolicyUpdateSubscriber(this));
-    }
-
 }
-
