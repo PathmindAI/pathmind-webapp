@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout.SplitterDragendEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -41,8 +43,10 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 @Slf4j
 public class ExperimentView extends AbstractExperimentView {
 
-    // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
-    // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
+    // Similar to DefaultExperimentView in that we have to use a lock object rather
+    // than the (comparison) experiment because we are changing it's reference which
+    // makes it not thread safe. As well we cannot lock on this because part of the
+    // synchronization is in the eventbus listener in a subclass (which is also
     // why we can't use synchronize on the method).
     private final Object comparisonExperimentLock = new Object();
 
@@ -54,6 +58,7 @@ public class ExperimentView extends AbstractExperimentView {
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
     private SplitLayout middlePanel;
+    private SplitLayout bottomPanel;
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
@@ -77,13 +82,14 @@ public class ExperimentView extends AbstractExperimentView {
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
 
-    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
+    // Although this is really only for the experiment view it's a lot simpler to
+    // put it at the parent level otherwise a lot of methods would have to be
+    // overriden in ExperimentView.
     protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
 
     private Experiment comparisonExperiment;
 
-    public ExperimentView(
-            @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
+    public ExperimentView(@Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
@@ -101,6 +107,7 @@ public class ExperimentView extends AbstractExperimentView {
         isComparisonMode = true;
         addClassName("comparison-mode");
         middlePanel.addThemeName("comparison-mode");
+        bottomPanel.addThemeName("comparison-mode");
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
     }
@@ -109,6 +116,7 @@ public class ExperimentView extends AbstractExperimentView {
         isComparisonMode = false;
         removeClassName("comparison-mode");
         middlePanel.removeThemeName("comparison-mode");
+        bottomPanel.removeThemeName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
     }
 
@@ -117,18 +125,17 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     public void updateComparisonComponents() {
-        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.comparisonExperiment));
+        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent
+                .setExperiment(this.comparisonExperiment));
     }
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(),
-                getViewSubscribers());
+        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
+        return List.of(new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
     }
 
@@ -144,18 +151,18 @@ public class ExperimentView extends AbstractExperimentView {
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
         middlePanel = getMiddlePanel();
+        bottomPanel = getBottomPanel();
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     stoppedTrainingNotification,
                     experimentTitleBar,
                     middlePanel,
-                    getBottomPanel()),
+                    bottomPanel),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
-        experimentContent.addSplitterDragendListener(dragend -> {
-            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
-        });
+        experimentContent.addSplitterDragendListener(resizeChartOnDrag());
+        bottomPanel.addSplitterDragendListener(resizeChartOnDrag());
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -229,6 +236,10 @@ public class ExperimentView extends AbstractExperimentView {
         );
     }
 
+    private ComponentEventListener<SplitterDragendEvent<SplitLayout>> resizeChartOnDrag() {
+        return dragend -> getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+    }
+
     public Object getComparisonExperimentLock() {
         return comparisonExperimentLock;
     }
@@ -244,13 +255,12 @@ public class ExperimentView extends AbstractExperimentView {
         return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
     }
 
-    private HorizontalLayout getBottomPanel() {
-        HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
+    private SplitLayout getBottomPanel() {
+        SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 experimentChartsPanel,
-                experimentNotesField);
+                experimentNotesField,
+                70);
         bottomPanel.addClassName("bottom-panel");
-        bottomPanel.setPadding(false);
-        bottomPanel.setSpacing(false);
         return bottomPanel;
     }
 
