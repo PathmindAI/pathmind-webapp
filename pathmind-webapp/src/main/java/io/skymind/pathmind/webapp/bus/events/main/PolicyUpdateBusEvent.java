@@ -8,6 +8,13 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
+/**
+ * Event used to indicate policies have been updated for an experiment. The experiment
+ * details are taken from the first policy in the list of policies. The policies cannot be
+ * null or empty, and each policy has to have the appropriate data such as a run, experiment,
+ * model, and project. There is also an added safety check to confirm that all policies
+ * belong to the same experiment otherwise there will be an IllegalStateException.
+ */
 public class PolicyUpdateBusEvent implements PathmindBusEvent {
 
     private List<Policy> policies;
