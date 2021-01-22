@@ -46,4 +46,14 @@ public class ExperimentViewStepDefinitions {
     public void experimentPageCheckRewardFunction(String slot, String rewardFunctionFilePath) throws IOException {
         experimentViewSteps.experimentPageCheckRewardFunction(slot, rewardFunctionFilePath);
     }
+
+    @When("^Experiment page '(.*)' slot click reward variable '(.*)'$")
+    public void experimentPageSlotClickRewardVariable(String slot, String rewardVar) {
+        experimentViewSteps.experimentPageSlotClickRewardVariable(slot, rewardVar);
+    }
+
+    @When("^Experiment page '(.*)' slot check reward variable '(.*)' is chosen '(.*)'$")
+    public void experimentPageSlotCheckRewardVariableIsChosen(String slot, String rewardVar, boolean chosen) {
+        experimentViewSteps.experimentPageSlotCheckRewardVariableIsChosen(slot, rewardVar, chosen);
+    }
 }
