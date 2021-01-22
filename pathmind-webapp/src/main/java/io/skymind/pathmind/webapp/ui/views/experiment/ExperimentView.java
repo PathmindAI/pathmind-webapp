@@ -110,6 +110,10 @@ public class ExperimentView extends AbstractExperimentView {
         getElement().executeJs("window.dispatchEvent(new Event('resize'))");
     }
 
+    public boolean isComparisonMode() {
+        return isComparisonMode;
+    }
+
     public Experiment getComparisonExperiment() {
         return comparisonExperiment;
     }
