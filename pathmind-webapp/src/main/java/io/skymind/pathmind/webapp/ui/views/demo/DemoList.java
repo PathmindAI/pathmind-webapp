@@ -52,7 +52,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                     }
                 }
             } catch (Exception e) {
-                log.error("Failed to choose handler", e);
+                log.error("Failed to handle project creation from demo chosen", e);
             }
         }
     }
