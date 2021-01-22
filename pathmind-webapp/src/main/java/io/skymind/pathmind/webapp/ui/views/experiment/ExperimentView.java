@@ -53,6 +53,7 @@ public class ExperimentView extends AbstractExperimentView {
 
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
+    private SplitLayout middlePanel;
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
@@ -99,6 +100,7 @@ public class ExperimentView extends AbstractExperimentView {
         this.comparisonExperiment = comparisonExperiment;
         isComparisonMode = true;
         addClassName("comparison-mode");
+        middlePanel.addThemeName("comparison-mode");
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
     }
@@ -106,6 +108,7 @@ public class ExperimentView extends AbstractExperimentView {
     private void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
+        middlePanel.removeThemeName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
     }
 
@@ -140,11 +143,13 @@ public class ExperimentView extends AbstractExperimentView {
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
+        middlePanel = getMiddlePanel();
+
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     stoppedTrainingNotification,
                     experimentTitleBar,
-                    getMiddlePanel(),
+                    middlePanel,
                     getBottomPanel()),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
@@ -198,17 +203,15 @@ public class ExperimentView extends AbstractExperimentView {
         return true;
     }
 
-    private HorizontalLayout getMiddlePanel() {
-        HorizontalLayout middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(
+    private SplitLayout getMiddlePanel() {
+        SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                         experimentObservationsPanel,
                         60),
-                generateRewardFunctionGroup(experimentCodeViewer));
+                generateRewardFunctionGroup(experimentCodeViewer),
+                40);
         middlePanel.addClassName("middle-panel");
-        middlePanel.setPadding(false);
-        middlePanel.setSpacing(false);
         return middlePanel;
     }
 

@@ -52,10 +52,15 @@
     position: relative;
 }
 
+.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
+    border-left: 1px solid var(--pm-grey-color-lightest);
+}
+
 .experiment-view .middle-panel > vaadin-vertical-layout:last-child {
     flex: 1 1 auto;
     width: 50% !important;
     border-left: 1px solid var(--pm-grey-color-lightest);
+    overflow: hidden;
 }
 
 .experiment-view .simulation-metrics-table-wrapper {
@@ -379,6 +384,22 @@
 .experiment-view.comparison-mode .bottom-panel {
     flex-direction: column;
 }
+
+.experiment-view.comparison-mode .middle-panel,
+.experiment-view.comparison-mode .middle-panel > vaadin-split-layout {
+    flex-basis: auto !important;
+    height: auto !important;
+}
+
+.experiment-view.comparison-mode .middle-panel > vaadin-vertical-layout:last-child {
+    flex: 1 1 auto !important;
+}
+
+.experiment-view.comparison-mode .middle-panel > vaadin-split-layout {
+    width: 100% !important;
+}
+
+.experiment-view.comparison-mode .middle-panel .splitter
 
 .experiment-view.comparison-mode {
     height: calc(100vh - 5rem) !important;
