@@ -53,6 +53,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                 }
             } catch (Exception e) {
                 log.error("Failed to handle project creation from demo chosen", e);
+                NotificationUtils.showError("Something went wrong. Please try again or contact Pathmind support.");
             }
         }
     }
