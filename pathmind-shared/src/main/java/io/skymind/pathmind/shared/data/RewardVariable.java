@@ -1,7 +1,6 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class RewardVariable extends Data implements DeepCloneableInterface<RewardVariable> {
 
     public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
