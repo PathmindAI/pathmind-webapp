@@ -90,7 +90,7 @@ public class ProjectsView extends PathMindDefaultView {
                 WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton(), showDemosButton));
         headerWrapper.addClassName("page-content-header");
 
-        demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
+        demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
         setupDemoDialog();
 
         gridWrapper = new ViewSection(
@@ -127,7 +127,7 @@ public class ProjectsView extends PathMindDefaultView {
                 closeButton.addClickListener(event -> demoDialog.close());
                 // demoViewContent has to be re-initiated here every time
                 // otherwise it will be empty from the 2nd time onwards
-                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository);
+                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
                 demoViewContent.setOnChooseDemoHandler(() -> demoDialog.close());
                 demoDialog.add(demoViewContent, closeButton);
             }

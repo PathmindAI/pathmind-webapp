@@ -18,6 +18,8 @@ import io.skymind.pathmind.services.project.demo.ExperimentManifest;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,14 +28,16 @@ import lombok.extern.slf4j.Slf4j;
 @JsModule("./src/components/organisms/demo-list.js")
 public class DemoList extends PolymerTemplate<DemoList.Model> {
 
+    private final SegmentIntegrator segmentIntegrator;
     private final DemoProjectService demoProjectService;
     private final List<ExperimentManifest> manifests;
     private Command onChooseDemoHandler = () -> {};
     private Boolean createdDemoProject = false;
 
-    public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo) {
+    public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo, SegmentIntegrator segmentIntegrator) {
         this.demoProjectService = demoProjectService;
         this.manifests = repo.getAll();
+        this.segmentIntegrator = segmentIntegrator;
         setData();
     }
 
@@ -46,6 +50,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                 onChooseDemoHandler.execute();
                 if (demoName != null) {
                     targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(demoName)).findFirst().orElse(null);
+                    segmentIntegrator.createProjectFromExample(demoName);
                     if (targetDemo != null) {
                         Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
                         getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
