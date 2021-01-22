@@ -329,12 +329,14 @@
     margin-left: var(--lumo-space-xxxs);
 }
 
-.experiment-view .reason-why-the-training-stopped {
+.experiment-view .reason-why-the-training-stopped,
+.experiment-view .error-label {
     box-sizing: border-box;
     display: inline-block;
     width: 100%;
     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
     border: 1px solid transparent;
+    border-radius: 0;
 }
 
 .experiment-view.comparison-mode .reason-why-the-training-stopped {
