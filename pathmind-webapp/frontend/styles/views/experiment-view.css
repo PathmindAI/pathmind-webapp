@@ -72,7 +72,6 @@
     box-sizing: border-box;
     flex: 1;
     width: 100%;
-    max-height: calc(1.8em * 20);
     font-size: var(--lumo-font-size-xs);
     line-height: 1.8;
     padding: var(--lumo-space-xs);
@@ -195,6 +194,7 @@
 }
 
 .experiment-view code-viewer {
+    height: 100%;
     border: none;
     border-radius: 0;
 }
@@ -252,8 +252,10 @@
     flex: 1 1 auto;
 }
 
-.experiment-view .bottom-panel > vaadin-vertical-layout {
-    overflow: visible;
+.experiment-view .bottom-panel .row-2-of-3 .bold-label {
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .experiment-view.comparison-mode .bottom-panel,
@@ -388,7 +390,8 @@
 }
 
 .experiment-view.comparison-mode .middle-panel > vaadin-vertical-layout:last-child,
-.experiment-view.comparison-mode .row-2-of-3 {
+.experiment-view.comparison-mode .row-2-of-3,
+.experiment-view.comparison-mode notes-field {
     width: 100% !important;
     border-left: none;
 }
@@ -400,7 +403,13 @@
 
 .experiment-view.comparison-mode .middle-panel,
 .experiment-view.comparison-mode .middle-panel > vaadin-split-layout {
+    flex-shrink: 0;
     flex-basis: auto !important;
+    height: auto !important;
+}
+
+.experiment-view.comparison-mode .middle-panel > vaadin-split-layout:nth-of-type(1) {
+    flex: 1 0 auto;
     height: auto !important;
 }
 

@@ -57,6 +57,7 @@ public class ExperimentView extends AbstractExperimentView {
 
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
+    private SplitLayout panelsSplitWrapper;
     private SplitLayout middlePanel;
     private SplitLayout bottomPanel;
     protected ExperimentNotesField experimentNotesField;
@@ -106,15 +107,18 @@ public class ExperimentView extends AbstractExperimentView {
         this.comparisonExperiment = comparisonExperiment;
         isComparisonMode = true;
         addClassName("comparison-mode");
+        panelsSplitWrapper.addThemeName("comparison-mode");
         middlePanel.addThemeName("comparison-mode");
         bottomPanel.addThemeName("comparison-mode");
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
+        resizeChart();
     }
 
     private void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
+        panelsSplitWrapper.removeThemeName("comparison-mode");
         middlePanel.removeThemeName("comparison-mode");
         bottomPanel.removeThemeName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
@@ -152,16 +156,18 @@ public class ExperimentView extends AbstractExperimentView {
 
         middlePanel = getMiddlePanel();
         bottomPanel = getBottomPanel();
+        panelsSplitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+                middlePanel, bottomPanel, 40);
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     stoppedTrainingNotification,
                     experimentTitleBar,
-                    middlePanel,
-                    bottomPanel),
+                    panelsSplitWrapper),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         experimentContent.addSplitterDragendListener(resizeChartOnDrag());
+        panelsSplitWrapper.addSplitterDragendListener(resizeChartOnDrag());
         bottomPanel.addSplitterDragendListener(resizeChartOnDrag());
         showCompareExperimentComponents(isComparisonMode);
 
@@ -181,7 +187,7 @@ public class ExperimentView extends AbstractExperimentView {
     private VerticalLayout getComparisonExperimentPanel() {
         FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
             leaveComparisonMode();
-            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+            resizeChart();
         });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -236,8 +242,12 @@ public class ExperimentView extends AbstractExperimentView {
         );
     }
 
+    private void resizeChart() {
+        getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+    }
+
     private ComponentEventListener<SplitterDragendEvent<SplitLayout>> resizeChartOnDrag() {
-        return dragend -> getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        return dragend -> resizeChart();
     }
 
     public Object getComparisonExperimentLock() {
