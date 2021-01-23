@@ -29,6 +29,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewComparisonExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -103,10 +104,11 @@ public class ExperimentView extends AbstractExperimentView {
         showCompareExperimentComponents(isComparisonMode);
     }
 
-    private void leaveComparisonMode() {
+    public void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
+        getElement().executeJs("window.dispatchEvent(new Event('resize'))");
     }
 
     public Experiment getComparisonExperiment() {
@@ -126,7 +128,12 @@ public class ExperimentView extends AbstractExperimentView {
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
-                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
+                new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewComparisonExperimentArchivedSubscriber(this));
+    }
+
+    public boolean isComparisonMode() {
+        return isComparisonMode;
     }
 
     @Override
@@ -169,7 +176,6 @@ public class ExperimentView extends AbstractExperimentView {
     private VerticalLayout getComparisonExperimentPanel() {
         FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
             leaveComparisonMode();
-            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
         });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
