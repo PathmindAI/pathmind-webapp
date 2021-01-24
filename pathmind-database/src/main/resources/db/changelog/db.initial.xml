@@ -1893,4 +1893,9 @@
         </delete>
     </changeSet>
 
+    <changeSet id="2709-01" author="steph@followsteph.com">
+        <dropColumn tableName="REWARD_SCORE" columnName="MIN"/>
+        <dropColumn tableName="REWARD_SCORE" columnName="MAX"/>
+    </changeSet>
+
 </databaseChangeLog>
