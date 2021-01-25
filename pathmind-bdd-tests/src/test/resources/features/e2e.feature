@@ -24,8 +24,6 @@ Feature: E2E
     #Check Simulation Metrics block
     Then Check that 1 metrics are shown for reward variables
     Then Check variable 'goalReached' is chosen 'true'
-    When Click in 'goalReached' button
-    Then Check variable 'goalReached' is chosen 'false'
     Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
