@@ -6,7 +6,6 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -14,12 +13,8 @@ import java.util.Optional;
 
 @Slf4j
 public class HistogramChartPanel extends VerticalLayout implements ExperimentComponent {
-    @Getter
-    private Object experimentLock = new Object();
-
     private HistogramChart chart = new HistogramChart();
 
-    @Getter
     private Experiment experiment;
 
     public HistogramChartPanel() {

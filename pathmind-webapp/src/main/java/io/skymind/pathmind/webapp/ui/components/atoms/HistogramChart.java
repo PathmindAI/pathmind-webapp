@@ -14,9 +14,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ChartUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -106,7 +104,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
 
     private JsonArray createRows(Map<Integer, List<Double>> uncertaintyMap) {
         JsonArray rows = Json.createArray();
-        List<Integer> keys = selectedRewardVariables.stream().map(RewardVariable::getArrayIndex).collect(Collectors.toList());
+        Set<Integer> keys = selectedRewardVariables.stream().map(RewardVariable::getArrayIndex).collect(Collectors.toCollection(HashSet::new));
 
         List<List<Double>> histogramData = uncertaintyMap.entrySet().stream()
             .filter(e -> keys.contains(e.getKey()))
