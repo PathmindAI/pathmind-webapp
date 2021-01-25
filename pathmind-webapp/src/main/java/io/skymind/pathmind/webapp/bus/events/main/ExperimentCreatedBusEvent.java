@@ -4,6 +4,11 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
+/**
+ * Event used to indicate when a new experiment has been created. We have to include
+ * the full experiment instance because this is used to add the new experiment
+ * to the navbar and so on.
+ */
 public class ExperimentCreatedBusEvent implements PathmindBusEvent {
 
     private Experiment experiment;

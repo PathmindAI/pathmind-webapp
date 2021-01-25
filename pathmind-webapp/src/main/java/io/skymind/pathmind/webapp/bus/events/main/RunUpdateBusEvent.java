@@ -9,6 +9,12 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
+/**
+ * Event used to indicate a Run or list of Runs have been updated. Each run must have an experiment,
+ * model, and project otherwise the event will fail with an IllegalStateException. The experiment
+ * is determined by looking at the experimentId of the first run. Also all runs must have the same
+ * experiment otherwise there will be an IllegalStateException.
+ */
 public class RunUpdateBusEvent implements PathmindBusEvent {
     private List<Run> runs;
     private Experiment experiment;
