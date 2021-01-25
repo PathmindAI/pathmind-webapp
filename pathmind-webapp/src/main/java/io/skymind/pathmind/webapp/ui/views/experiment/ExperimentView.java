@@ -137,11 +137,6 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
-    }
-
-    @Override
     protected Component getMainContent() {
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
