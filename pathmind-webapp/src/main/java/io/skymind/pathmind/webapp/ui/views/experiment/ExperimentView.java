@@ -31,6 +31,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewComparisonExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -115,13 +116,14 @@ public class ExperimentView extends AbstractExperimentView {
         resizeChart();
     }
 
-    private void leaveComparisonMode() {
+    public void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
         panelsSplitWrapper.removeThemeName("comparison-mode");
         middlePanel.removeThemeName("comparison-mode");
         bottomPanel.removeThemeName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
+        resizeChart();
     }
 
     public Experiment getComparisonExperiment() {
@@ -139,8 +141,14 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
-                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
+        return List.of(
+                new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewComparisonExperimentArchivedSubscriber(this));
+    }
+
+    public boolean isComparisonMode() {
+        return isComparisonMode;
     }
 
     @Override

@@ -26,7 +26,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
 
     Then Experiment page Check 'primary' simulation metric 'kitchenCleanlinessLevel' is chosen 'true'
-    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'true'
+    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'false'
 
     Then Experiment page Check 'primary' observation 'orderQueueSize' is checked 'false'
     Then Experiment page Check 'primary' observation 'collectQueueSize' is checked 'false'
@@ -75,7 +75,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
 
     Then Experiment page Check 'primary' simulation metric 'kitchenCleanlinessLevel' is chosen 'true'
-    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'true'
+    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'false'
 
     Then Experiment page Check 'primary' observation 'orderQueueSize' is checked 'false'
     Then Experiment page Check 'primary' observation 'collectQueueSize' is checked 'false'
@@ -121,7 +121,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
 
     Then Experiment page Check 'primary' simulation metric 'kitchenCleanlinessLevel' is chosen 'true'
-    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'true'
+    Then Experiment page Check 'secondary' simulation metric 'successfulCustomers' is chosen 'false'
 
     Then Experiment page Check 'primary' observation 'orderQueueSize' is checked 'false'
     Then Experiment page Check 'primary' observation 'collectQueueSize' is checked 'false'
