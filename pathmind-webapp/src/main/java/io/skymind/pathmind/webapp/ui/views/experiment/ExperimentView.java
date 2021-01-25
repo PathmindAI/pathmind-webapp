@@ -124,14 +124,9 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
-                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
+    return List.of(
+            new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
+            new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
     }
 
     @Override
