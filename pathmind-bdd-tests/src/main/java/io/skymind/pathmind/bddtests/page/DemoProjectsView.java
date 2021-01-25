@@ -88,4 +88,25 @@ public class DemoProjectsView extends PageObject {
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > p.result")).getText(), is(THIRD_DEMO_RESULT));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > vaadin-button")).size(), is(not(0)));
     }
+
+    public void clickDemoPopupGetStartedBtn(String model) {
+        WebElement demoList = utils.expandRootElement(demoListShadow);
+        String btnNumber= "";
+        switch (model) {
+            case "Automated Guided Vehicles (AGV)":
+                btnNumber = "1";
+                break;
+            case "Product Delivery":
+                btnNumber = "2";
+                break;
+            case "Autonomous Moon Landing":
+                btnNumber = "3";
+                break;
+        }
+        WebElement btn = utils.expandRootElement(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(" + btnNumber + ") > vaadin-button")));
+        btn.findElement(By.id("button")).click();
+        setImplicitTimeout(600, SECONDS);
+        utils.waitForLoadingBar();
+        resetImplicitTimeout();
+    }
 }

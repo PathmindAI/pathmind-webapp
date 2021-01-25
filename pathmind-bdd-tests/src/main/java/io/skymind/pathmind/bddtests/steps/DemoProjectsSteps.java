@@ -22,4 +22,9 @@ public class DemoProjectsSteps {
     public void checkDemoPopupElements() {
         demoProjectsView.checkDemoPopupElements();
     }
+
+    @Step
+    public void clickDemoPopupGetStartedBtn(String model) {
+        demoProjectsView.clickDemoPopupGetStartedBtn(model);
+    }
 }

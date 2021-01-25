@@ -23,4 +23,9 @@ public class DemoProjectsStepDefinitions {
     public void checkDemoPopupElements() {
         demoProjectsSteps.checkDemoPopupElements();
     }
+
+    @When("^Click demo popup '(.*)' get started btn$")
+    public void clickDemoPopupGetStartedBtn(String model) {
+        demoProjectsSteps.clickDemoPopupGetStartedBtn(model);
+    }
 }
