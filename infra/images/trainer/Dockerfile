@@ -26,5 +26,5 @@ RUN apt-get update && \
 	chmod +x ./kubectl && \
 	mv ./kubectl /usr/local/bin/kubectl 
 
-CMD ["python","trigger.py"]
+CMD ["python3","trigger.py"]
 #CMD ["bash","-c","sleep 10000000"]
