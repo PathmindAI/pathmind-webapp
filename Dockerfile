@@ -6,12 +6,13 @@ COPY . .
 
 #basic packages
 RUN apt-get update && \
-        apt-get install python -y && \
+        apt-get install python3 -y && \
+        apt-get install python3-pip -y && \
         apt-get install curl -y && \
         apt-get install vim -y && \
 	curl -O https://bootstrap.pypa.io/get-pip.py && \
-        python get-pip.py && \
-        pip install awscli 
+        pip3 install awscli && \
+        aws --version
 
 RUN chmod +x entrypoint.sh
 
