@@ -8,7 +8,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.ACCOUNT_EDIT_URL, layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT_EDIT, layout = MainLayout.class)
 public class AccountEditView extends PathMindDefaultView {
 
     private final AccountEditViewContent accountEditViewContent;

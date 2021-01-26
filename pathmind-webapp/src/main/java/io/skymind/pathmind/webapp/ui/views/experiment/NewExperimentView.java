@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 @CssImport("./styles/views/new-experiment-view.css")
-@Route(value = Routes.NEW_EXPERIMENT_URL, layout = MainLayout.class)
+@Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
     private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
@@ -272,7 +272,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.EXPERIMENT_URL, experimentId);
+            event.forwardTo(Routes.EXPERIMENT, experimentId);
             return false;
         }
     }

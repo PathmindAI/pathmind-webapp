@@ -7,7 +7,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.ACCOUNT_URL, layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT, layout = MainLayout.class)
 public class AccountView extends PathMindDefaultView {
 
     private final AccountViewContent accountViewContent;

@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -17,7 +16,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -40,7 +38,7 @@ import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProj
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.PROJECTS_URL, layout = MainLayout.class)
+@Route(value = Routes.PROJECTS, layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView {
     @Autowired

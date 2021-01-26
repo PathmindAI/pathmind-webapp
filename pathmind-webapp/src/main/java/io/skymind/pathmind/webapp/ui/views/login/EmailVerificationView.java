@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Tag("email-verification-view")
 @JsModule("./src/pages/account/email-verification-view.js")
-@Route(value = Routes.EMAIL_VERIFICATION_URL)
+@Route(value = Routes.EMAIL_VERIFICATION)
 public class EmailVerificationView extends PolymerTemplate<EmailVerificationView.Model>
         implements PublicView, HasUrlParameter<String>, AfterNavigationObserver {
     @Id("backToApp")

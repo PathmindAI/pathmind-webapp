@@ -12,9 +12,9 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.skymind.pathmind.shared.security.Routes.ACCOUNT_UPGRADE_URL;
+import static io.skymind.pathmind.shared.security.Routes.ACCOUNT_UPGRADE;
 
-@Route(value = ACCOUNT_UPGRADE_URL, layout = MainLayout.class)
+@Route(value = ACCOUNT_UPGRADE, layout = MainLayout.class)
 public class AccountUpgradeView extends PathMindDefaultView {
     private final AccountUpgradeViewContent accountUpgradeViewContent;
 

@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -65,7 +64,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PANEL_TITLE_LABEL;
 
-@Route(value = Routes.PROJECT_URL, layout = MainLayout.class)
+@Route(value = Routes.PROJECT, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int MODEL_ID_SEGMENT = 2;
