@@ -41,10 +41,6 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
         getModel().setHaxistitle(hAxisTitle);
         getModel().setVaxistitle(vAxisTitle);
         getModel().setColors(colors);
-
-        // JsonObject and JsonArray are not allowed types for TemplateModel methods
-        // So we have to set it through calling the JS function
-        getElement().callJsFunction("setViewWindow", viewWindow);
     }
 
     public void setData(JsonArray cols, JsonArray rows) {
