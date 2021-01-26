@@ -8,7 +8,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.ACCOUNT_CHANGE_PASS_URL, layout = MainLayout.class)
+@Route(value = Routes.ACCOUNT_CHANGE_PASS, layout = MainLayout.class)
 public class ChangePasswordView extends PathMindDefaultView {
 
     private final ChangePasswordViewContent changePasswordViewContent;

@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Tag("reset-password-view")
 @JsModule("./src/pages/account/reset-password-view.js")
-@Route(value = Routes.RESET_PASSWORD_URL)
+@Route(value = Routes.RESET_PASSWORD)
 @Slf4j
 public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
         implements PublicView, HasUrlParameter<String>, AfterNavigationObserver {

@@ -36,7 +36,7 @@ import io.skymind.pathmind.webapp.ui.views.search.components.SearchResultItem;
 import io.skymind.pathmind.webapp.ui.views.search.dataprovider.SearchResultsDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.SEARCHRESULTS_URL, layout = MainLayout.class)
+@Route(value = Routes.SEARCHRESULTS, layout = MainLayout.class)
 public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String> {
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
