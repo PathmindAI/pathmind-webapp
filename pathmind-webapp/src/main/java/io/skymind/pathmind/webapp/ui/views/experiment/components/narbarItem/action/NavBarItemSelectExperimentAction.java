@@ -45,6 +45,7 @@ public class NavBarItemSelectExperimentAction {
                 List<RewardVariable> selectedRewardVariables = CloneUtils.shallowCloneList(abstractExperimentView.getExperiment().getSelectedRewardVariables());
                 abstractExperimentView.setExperiment(experiment, false);
                 abstractExperimentView.getExperiment().setSelectedRewardVariables(selectedRewardVariables);
+
                 // If we're in the experimentView in the experimentComparison mode then we need to select the rewardVariables from the comparison experiment
                 // to keep everything synchronized. This has to be done after setExperiment(experiment) above because setExperiment reloads the experiment from
                 // the database because the navbar only has a partial experiment (we don't load all the experiment data for the navbar for performance reasons.
@@ -52,9 +53,8 @@ public class NavBarItemSelectExperimentAction {
                     // we have to update the experiment from the view because the experiment instance sent in is replaced by the one loaded from the DAO layer.
                     abstractExperimentView.getExperiment().setSelectedRewardVariables(
                             CloneUtils.shallowCloneList(((ExperimentView)abstractExperimentView).getComparisonExperiment().getSelectedRewardVariables()));
-                    // We could update just the chart and reward variable component but since the chart is the only expensive component to render we may as well
-                    // just re-render everything for now to keep the code simple.
                 }
+
                 // The delayed rendering. This is needed for both setting the experiment, the reward variables, and possibly the comparisonExperiment if need be.
                 abstractExperimentView.updateComponents();
             }
