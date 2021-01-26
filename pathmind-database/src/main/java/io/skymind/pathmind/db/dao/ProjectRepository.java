@@ -7,7 +7,6 @@ import java.util.Optional;
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import io.skymind.pathmind.shared.data.Project;
 import org.jooq.DSLContext;
-import org.jooq.SelectConditionStep;
 
 import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
 
