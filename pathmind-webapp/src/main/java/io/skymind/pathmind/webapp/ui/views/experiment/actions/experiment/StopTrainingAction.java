@@ -4,7 +4,7 @@ import com.vaadin.flow.component.button.Button;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentStopTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
 import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
@@ -34,6 +34,6 @@ public class StopTrainingAction {
         // Send run updated event, meaning that all policies under the run is updated.
         // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
         EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
+        EventBus.post(new ExperimentStopTrainingBusEvent(experiment));
     }
 }

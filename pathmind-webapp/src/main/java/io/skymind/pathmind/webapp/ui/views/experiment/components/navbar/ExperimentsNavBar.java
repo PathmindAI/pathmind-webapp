@@ -82,6 +82,14 @@ public class ExperimentsNavBar extends VerticalLayout {
         return modelId;
     }
 
+    public void updateExperiment(Experiment experiment) {
+        if (experiment.isArchived()) {
+            removeExperiment(experiment);
+        } else {
+            addExperiment(experiment);
+        }
+    }
+
     public void removeExperiment(Experiment experiment) {
         List<ExperimentsNavBarItem> toRemoveNavBarItems = experimentsNavBarItems.stream()
                 .filter(experimentsNavBarItem -> ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), experiment))

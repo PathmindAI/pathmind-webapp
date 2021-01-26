@@ -174,11 +174,6 @@ public class DashboardView extends PathMindDefaultView {
                 new DashboardViewRunUpdateSubscriber(this));
     }
 
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
     public void refreshExperiment(long experimentId) {
         dataProvider.refreshItemByExperiment(experimentId);
     }
