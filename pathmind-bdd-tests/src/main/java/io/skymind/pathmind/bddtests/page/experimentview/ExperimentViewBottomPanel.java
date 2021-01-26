@@ -27,11 +27,13 @@ public class ExperimentViewBottomPanel extends PageObject {
     private String learningProgressLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/span";
     private String learningProgressTabOneLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[1]";
     private String learningProgressTabTwoLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[2]";
+    private String learningProgressTabThreeLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[3]";
     private String rewardFunctionXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::code-viewer";
 
     private static final String LEARNING_PROGRESS_LABEL = "Learning Progress";
     private static final String LEARNING_PROGRESS_TAB_ONE_LABEL = "Metrics";
-    private static final String LEARNING_PROGRESS_TAB_TWO_LABEL = "Mean Reward Score";
+    private static final String LEARNING_PROGRESS_TAB_TWO_LABEL = "Histogram";
+    private static final String LEARNING_PROGRESS_TAB_THREE_LABEL = "Mean Reward Score";
     private static final String NOTES_FIELD = "Notes";
 
     public void experimentPageCheckBottomPanel(String slot) {
@@ -40,6 +42,7 @@ public class ExperimentViewBottomPanel extends PageObject {
         genericPage.checkElement(true, String.format(learningProgressLabelXpath, slot), LEARNING_PROGRESS_LABEL);
         genericPage.checkElement(true, String.format(learningProgressTabOneLabelXpath, slot), LEARNING_PROGRESS_TAB_ONE_LABEL);
         genericPage.checkElement(true, String.format(learningProgressTabTwoLabelXpath, slot), LEARNING_PROGRESS_TAB_TWO_LABEL);
+        genericPage.checkElement(true, String.format(learningProgressTabThreeLabelXpath, slot), LEARNING_PROGRESS_TAB_THREE_LABEL);
 
         WebElement notesShadow = utils.expandRootElement(getDriver().findElement(By.xpath(String.format(notesFieldXpath, slot))));
         assertThat(notesShadow.findElement(By.cssSelector(".title")).getText(), is(NOTES_FIELD));

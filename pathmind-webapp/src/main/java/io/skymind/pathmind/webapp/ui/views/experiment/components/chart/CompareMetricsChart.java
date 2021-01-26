@@ -13,7 +13,6 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 
 public class CompareMetricsChart extends DataChart {
-
     private Policy bestPolicy;
     // This must be an array due to a number of issues. For example a list containing a null item at the end will result in the list being decreased in size. This guarantees
     // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
