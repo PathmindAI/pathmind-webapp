@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -40,7 +39,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-@Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Route(value = Routes.EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 public class ExperimentView extends AbstractExperimentView {
 
@@ -91,7 +90,8 @@ public class ExperimentView extends AbstractExperimentView {
 
     private Experiment comparisonExperiment;
 
-    public ExperimentView(@Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
+    public ExperimentView(
+            @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
@@ -149,11 +149,6 @@ public class ExperimentView extends AbstractExperimentView {
 
     public boolean isComparisonMode() {
         return isComparisonMode;
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
     }
 
     @Override
@@ -288,7 +283,7 @@ public class ExperimentView extends AbstractExperimentView {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.NEW_EXPERIMENT_URL, experimentId);
+            event.forwardTo(Routes.NEW_EXPERIMENT, experimentId);
             return false;
         }
     }

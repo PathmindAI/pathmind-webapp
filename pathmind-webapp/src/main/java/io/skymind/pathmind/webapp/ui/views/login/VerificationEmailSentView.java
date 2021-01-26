@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Tag("verification-email-sent-view")
 @JsModule("./src/pages/account/verification-email-sent-view.js")
-@Route(value = Routes.VERIFICATION_EMAIL_SENT_URL)
+@Route(value = Routes.VERIFICATION_EMAIL_SENT)
 public class VerificationEmailSentView extends PolymerTemplate<VerificationEmailSentView.Model> implements PublicView {
 
     @Id("backToLogin")

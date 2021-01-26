@@ -77,7 +77,7 @@ public class EmailNotificationService {
     }
 
     private String createEmailVerificationLink(PathmindUser pathmindUser) {
-        return applicationURL + "/" + Routes.EMAIL_VERIFICATION_URL + "/" + pathmindUser.getEmailVerificationToken();
+        return applicationURL + "/" + Routes.EMAIL_VERIFICATION + "/" + pathmindUser.getEmailVerificationToken();
     }
 
     /**
@@ -113,7 +113,7 @@ public class EmailNotificationService {
     }
 
     private String createResetPasswordLink(PathmindUser pathmindUser) {
-        return applicationURL + "/" + Routes.RESET_PASSWORD_URL + "/" + pathmindUser.getEmailVerificationToken();
+        return applicationURL + "/" + Routes.RESET_PASSWORD + "/" + pathmindUser.getEmailVerificationToken();
     }
 
     public void sendTrainingCompletedEmail(Run run, RunStatus jobStatus) {
@@ -159,7 +159,7 @@ public class EmailNotificationService {
     }
 
     private String createExperimentPageLink(Experiment experiment) {
-        return applicationURL + "/" + Routes.EXPERIMENT_URL + "/" + experiment.getId();
+        return applicationURL + "/" + Routes.EXPERIMENT + "/" + experiment.getId();
     }
 
 }

@@ -19,11 +19,13 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 public class ExperimentChartsPanel extends VerticalLayout implements ExperimentComponent {
 
     private CompareMetricsChartPanel compareMetricsChartPanel;
+    private HistogramChartPanel histogramChartPanel;
     private PolicyChartPanel policyChartPanel;
     private TrainingStartingPlaceholder trainingStartingPlaceholder;
 
     private Tabs chartTabs;
     private Tab metricsChartTab;
+    private Tab histogramChartTab;
     private Tab rewardScoreChartTab;
 
     private Experiment experiment;
@@ -32,11 +34,13 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
         Tabs chartTabs = createChartTabs();
         compareMetricsChartPanel = new CompareMetricsChartPanel();
+        histogramChartPanel = new HistogramChartPanel();
         policyChartPanel = new PolicyChartPanel(getUISupplier);
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 compareMetricsChartPanel,
+                histogramChartPanel,
                 policyChartPanel);
 
         VerticalLayout chartsPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -56,8 +60,9 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     private Tabs createChartTabs() {
         metricsChartTab = new Tab("Metrics");
+        histogramChartTab = new Tab("Histogram");
         rewardScoreChartTab = new Tab("Mean Reward Score");
-        chartTabs = new Tabs(metricsChartTab, rewardScoreChartTab);
+        chartTabs = new Tabs(metricsChartTab, histogramChartTab, rewardScoreChartTab);
         chartTabs.addThemeVariants(TabsVariant.LUMO_SMALL);
         chartTabs.addSelectedChangeListener(event -> setVisiblePanel(true));
         return chartTabs;
@@ -66,6 +71,8 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
     private void setVisiblePanel(boolean isRedraw) {
         if (chartTabs.getSelectedIndex() == 0) {
             setCompareMetricsChartPanelVisible(isRedraw);
+        } else if (chartTabs.getSelectedIndex() == 1) {
+            setHistogramChartPanelVisible(isRedraw);
         } else {
             setPolicyChartPanelVisible(isRedraw);
         }
@@ -81,13 +88,25 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        histogramChartPanel.setExperiment(experiment);
         policyChartPanel.setExperiment(experiment);
         compareMetricsChartPanel.setExperiment(experiment);
         selectVisibleChart();
     }
 
+    private void setHistogramChartPanelVisible(boolean isRedraw) {
+        trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(true);
+        policyChartPanel.setVisible(false);
+        compareMetricsChartPanel.setVisible(false);
+        if (isRedraw) {
+            histogramChartPanel.redrawChart();
+        }
+    }
+
     private void setCompareMetricsChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(false);
         policyChartPanel.setVisible(false);
         compareMetricsChartPanel.setVisible(true);
         if (isRedraw) {
@@ -97,6 +116,7 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     private void setPolicyChartPanelVisible(boolean isRedraw) {
         trainingStartingPlaceholder.setVisible(false);
+        histogramChartPanel.setVisible(false);
         policyChartPanel.setVisible(true);
         compareMetricsChartPanel.setVisible(false);
         if (isRedraw) {

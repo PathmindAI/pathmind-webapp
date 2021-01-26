@@ -42,7 +42,7 @@ import io.skymind.pathmind.webapp.utils.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-@Route(Routes.LOGIN_URL)
+@Route(Routes.LOGIN)
 @Theme(Lumo.class)
 @CssImport(value = "./styles/components/vaadin-button.css", themeFor = "vaadin-button")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css")
@@ -160,7 +160,7 @@ public class LoginView extends HorizontalLayout
 
         LoginForm loginForm = new LoginForm();
         loginForm.setI18n(loginI18n);
-        loginForm.setAction(Routes.LOGIN_URL);
+        loginForm.setAction(Routes.LOGIN);
         loginForm.addForgotPasswordListener(e -> getUI().ifPresent(ui -> ui.navigate(ResetPasswordView.class)));
         loginForm.addLoginListener(evt -> {
             CookieUtils.setNotFirstTimeVisitCookie();

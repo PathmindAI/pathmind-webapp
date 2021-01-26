@@ -20,7 +20,7 @@ public class NavBarItemSelectExperimentAction {
 
     private static void selectExperimentFromNewExperimentView(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         if(experiment.isDraft()) {
-            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT + "/" + experiment.getId()));
             synchronized (abstractExperimentView.getExperimentLock()) {
                 abstractExperimentView.setExperiment(experiment);
             }
@@ -33,7 +33,7 @@ public class NavBarItemSelectExperimentAction {
         if (experiment.isDraft()) {
             abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
         } else {
-            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT_URL + "/" + experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT + "/" + experiment.getId()));
             synchronized (abstractExperimentView.getExperimentLock()) {
                 abstractExperimentView.setExperiment(experiment);
             }

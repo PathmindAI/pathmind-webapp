@@ -34,6 +34,11 @@ public class KaribuUtils {
         }
     }
 
+    public static void setup() {
+        MockedUI ui = Mockito.spy(new MockedUI());
+        MockVaadin.setup(new Routes(), () -> ui);
+    }
+
     public static UI setup(Component component) {
         MockedUI ui = Mockito.spy(new MockedUI());
         MockVaadin.setup(new Routes(), () -> ui);
@@ -44,6 +49,10 @@ public class KaribuUtils {
     public static void setupRoutes(Class<? extends Component>... routes) {
         HashSet<Class<? extends Component>> routesSet = new HashSet<>(Arrays.asList(routes));
         MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
+    }
+
+    public static void tearDown() {
+        MockVaadin.tearDown();
     }
 
     public static Class<? extends HasElement> getActiveViewClass() {

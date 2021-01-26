@@ -1,23 +1,19 @@
 package io.skymind.pathmind.webapp.ui.components.observations;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializableConsumer;
-import com.vaadin.flow.shared.Registration;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.utils.ObservationUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
@@ -86,7 +82,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     }
 
     private void setupObservationTable(List<Observation> modelObservations, List<Observation> selectedObservations) {
-        observationsTable.setItems(new HashSet<>(modelObservations));
+        observationsTable.setItems(new LinkedHashSet<>(modelObservations));
         setSelectedObservations(CollectionUtils.isEmpty(selectedObservations) ? modelObservations : selectedObservations);
     }
 
@@ -111,7 +107,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         // should look at the different options. Although the current solution is hacky in my opinion it works for now. Otherwise what happens is that
         // on the set method the value change listener is fired which in turn causes.
         isEnableValueChangeListener = false;
-        observationsTable.setValue(new HashSet<>(observations));
+        observationsTable.setValue(new LinkedHashSet<>(observations));
         isEnableValueChangeListener = true;
     }
 
