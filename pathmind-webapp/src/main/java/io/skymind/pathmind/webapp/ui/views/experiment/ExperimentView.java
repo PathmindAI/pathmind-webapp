@@ -135,10 +135,6 @@ public class ExperimentView extends AbstractExperimentView {
                 new ExperimentViewComparisonExperimentArchivedSubscriber(this));
     }
 
-    public boolean isComparisonMode() {
-        return isComparisonMode;
-    }
-
     @Override
     protected Component getMainContent() {
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
