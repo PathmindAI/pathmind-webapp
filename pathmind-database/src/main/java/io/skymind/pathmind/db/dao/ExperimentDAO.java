@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Repository;
@@ -65,8 +66,20 @@ public class ExperimentDAO {
         if(experiment != null) {
             loadExperimentData(experiment);
             updateExperimentInternalValues(experiment);
+            setupDefaultRewardFunction(experiment);
         }
         return Optional.ofNullable(experiment);
+    }
+
+    private void setupDefaultRewardFunction(Experiment experiment) {
+        // If there is no default reward function create one and save it so that we can avoid the popup notifications
+        // of saving and so on when loading a new experiment. Ideally this should be done on experiment creation
+        // however older experiments may still require this logic. There is also a ticket to add a default reward
+        // function on creation at: https://github.com/SkymindIO/pathmind-webapp/issues/2754
+        if(StringUtils.isEmpty(experiment.getRewardFunction())) {
+            experiment.setRewardFunction(ExperimentUtils.generateRewardFunction(experiment));
+            ExperimentRepository.updateRewardFunction(ctx, experiment);
+        }
     }
 
     private void loadExperimentData(Experiment experiment) {
