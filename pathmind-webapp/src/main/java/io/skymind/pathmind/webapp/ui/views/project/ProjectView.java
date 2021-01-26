@@ -2,18 +2,18 @@ package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -54,8 +54,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
-import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
@@ -63,7 +61,7 @@ import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PANEL_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 @Route(value = Routes.PROJECT_URL, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
@@ -112,10 +110,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
-    private RewardVariablesTable rewardVariablesTable;
-    private ObservationsPanel observationsPanel;
     private NotesField modelNotesField;
-    private SplitLayout modelWrapper;
+    private VerticalLayout modelWrapper;
 
     private ScreenTitlePanel titlePanel;
 
@@ -142,10 +138,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             setupArchivesTabPanel();
             newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
             modelNotesField = createModelNotesField();
-            rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setRewardVariables(rewardVariables);
-            observationsPanel = new ObservationsPanel(modelObservations);
-            observationsPanel.addClassName("observations-panel-wrapper");
 
             modelsNavbar = new ModelsNavbar(
                     modelDAO,
@@ -177,18 +169,39 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                     ),
                     modelNotesField
             );
-            VerticalLayout rightPanel = createRightPanel();
 
             HorizontalLayout experimentGridHeader = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
                     archivesTabPanel, newExperimentButton
             );
 
-            modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            modelHeaderWrapper, experimentGridHeader, experimentGrid
-                    ),
-                    rightPanel,
-                    70);
+            // To be moved to separate methods later
+            HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                LabelFactory.createLabel("Metrics", BOLD_LABEL),
+                createMetricSelectionGroup());
+            metricSelectionRow.addClassName("metric-selection-row");
+
+            HorizontalLayout observationSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                    LabelFactory.createLabel("Observations", BOLD_LABEL),
+                    createObservationSelectionGroup());
+            observationSelectionRow.addClassName("observation-selection-row");
+
+            HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                    LabelFactory.createLabel("Columns", BOLD_LABEL),
+                    createColumnSelectionGroup());
+            columnSelectionRow.addClassName("column-selection-row");
+
+            
+            Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+
+            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                            errorMessage,
+                            modelHeaderWrapper,
+                            experimentGridHeader,
+                            metricSelectionRow,
+                            observationSelectionRow,
+                            columnSelectionRow,
+                            experimentGrid
+                    );
             modelWrapper.addClassName("model-wrapper");
         }
 
@@ -206,18 +219,29 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return gridWrapper;
     }
 
-    private VerticalLayout createRightPanel() {
-        Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+    private MultiSelectListBox<String> createColumnSelectionGroup() {
+        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
+        multiSelectGroup.setItems("Favorite", "Id #", "Created", "Status", "Notes", "Action");
+        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
+        return multiSelectGroup;
+    }
 
-        VerticalLayout rightPanelCard = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                errorMessage,
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        LabelFactory.createLabel("Simulation Metrics", PANEL_TITLE_LABEL),
-                        rewardVariablesTable
-                ),
-                observationsPanel);
+    private MultiSelectListBox<String> createObservationSelectionGroup() {
+        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
+        List<String> observationNames = modelObservations.stream()
+                .map(obs -> obs.getVariable()).collect(Collectors.toList());
+        multiSelectGroup.setItems(observationNames);
+        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
+        return multiSelectGroup;
+    }
 
-        return rightPanelCard;
+    private MultiSelectListBox<String> createMetricSelectionGroup() {
+        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
+        List<String> metricNames = rewardVariables.stream()
+                .map(obs -> obs.getName()).collect(Collectors.toList());
+        multiSelectGroup.setItems(metricNames);
+        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
+        return multiSelectGroup;
     }
 
     private NotesField createNotesField() {

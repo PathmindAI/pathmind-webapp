@@ -89,5 +89,6 @@ public class ExperimentGrid extends Grid<Experiment> {
         // Sort by created by default
         sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
         addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
+        setColumnReorderingAllowed(true);
     }
 }

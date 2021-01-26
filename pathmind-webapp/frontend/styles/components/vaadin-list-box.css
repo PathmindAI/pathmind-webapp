@@ -1,0 +1,22 @@
+:host([theme~="grid-select"]) [part="items"] {
+    flex-direction: row;
+}
+
+:host([theme~="grid-select"]) [part="items"] ::slotted(vaadin-item) {
+    font-size: var(--lumo-font-size-s);
+    padding: var(--lumo-space-xs) var(--lumo-space-xs) var(--lumo-space-xs) 0;
+    border-radius: 0;
+}
+
+/* Customized Scrollbar for WebKit Browsers */
+:host [part="items"]::-webkit-scrollbar {
+    width: 3px;
+}
+
+:host [part="items"]::-webkit-scrollbar-track {
+    background-color: var(--pm-app-bg-color);
+}
+
+:host [part="items"]::-webkit-scrollbar-thumb {
+    background-color: var(--pm-grey-color-light);
+}
