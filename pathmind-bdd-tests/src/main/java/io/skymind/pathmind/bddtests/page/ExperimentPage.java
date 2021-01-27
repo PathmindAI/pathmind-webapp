@@ -325,7 +325,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "']")).getText(), is(tab));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='"+selected+"' and text()='"+tab+"']")).size(), is(not(0)));
     }
 
     public void checkLearningProgressBlockMetricsHint(String hint) {
@@ -363,5 +363,15 @@ public class ExperimentPage extends PageObject {
 
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
         assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
+    }
+
+    public void checkLearningProgressBlockTabs(String tabs) {
+        List<String> items = Arrays.asList(tabs.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
     }
 }

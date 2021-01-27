@@ -229,4 +229,9 @@ public class ExperimentStepDefinitions {
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
         experimentPageSteps.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
     }
+
+    @Then("^Check learning progress block tabs '(.*)'$")
+    public void checkLearningProgressBlockTabs(String tabs) {
+        experimentPageSteps.checkLearningProgressBlockTabs(tabs);
+    }
 }
