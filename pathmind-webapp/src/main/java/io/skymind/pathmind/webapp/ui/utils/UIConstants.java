@@ -5,8 +5,4 @@ public class UIConstants {
 
     public static final String CENTERED_FORM_WIDTH = "520px";
 
-    public static final Integer DEFAULT_SELECTED_METRICS_FOR_CHART = 1;
-
-    public static final Integer MAX_SELECTED_METRICS_FOR_CHART = 2;
-
 }

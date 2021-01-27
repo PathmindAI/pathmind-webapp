@@ -72,4 +72,13 @@ public class AccountPageSteps {
         accountPage.accountPageAccessTokenCheckTokenExpires(expiresDays);
     }
 
+    @Step
+    public void checkSubscriptionPlansPage() {
+        accountPage.checkSubscriptionPlansPage();
+    }
+
+    @Step
+    public void checkSubscriptionPlansUpgradePage() {
+        accountPage.checkSubscriptionPlansUpgradePage();
+    }
 }

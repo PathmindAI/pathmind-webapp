@@ -19,13 +19,11 @@ import static org.jooq.impl.DSL.max;
 
 class RewardScoreRepository {
     protected static List<RewardScore> getRewardScoresForPolicy(DSLContext ctx, long policyId) {
-        return ctx.select(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT)
+        return ctx.select(REWARD_SCORE.MEAN, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT)
                 .from(REWARD_SCORE)
                 .where(REWARD_SCORE.POLICY_ID.eq(policyId))
                 .orderBy(REWARD_SCORE.ITERATION)
                 .fetch(record -> new RewardScore(
-                        JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
-                        JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
                         JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
                         record.get(REWARD_SCORE.ITERATION),
                         record.get(REWARD_SCORE.EPISODE_COUNT)));

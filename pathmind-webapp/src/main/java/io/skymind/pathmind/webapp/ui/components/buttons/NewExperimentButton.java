@@ -5,8 +5,11 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class NewExperimentButton extends Button {
     private long modelId;
@@ -22,7 +25,9 @@ public class NewExperimentButton extends Button {
 
         addClickListener(evt -> getUI().ifPresent(ui -> {
             segmentIntegrator.newExperiment();
-            ExperimentUtils.createAndNavigateToNewExperiment(ui, experimentDAO, this.modelId);
+            Experiment experiment = experimentDAO.createNewExperiment(modelId);
+            EventBus.post(new ExperimentCreatedBusEvent(experiment));
+            ui.navigate(NewExperimentView.class, experiment.getId());
         }));
 
         addThemeVariants(buttonVariant);

@@ -40,8 +40,7 @@ Feature: Save Model draft
     When Check that model successfully uploaded
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
-    When Open projects page
-    When Open project AutotestProject on projects page
+    When Click project/ breadcrumb btn
     Then Check that there are 1 model(s) with 'Draft' tag in project page
     When Click the model name 2
     When Click wizard upload ALP next btn

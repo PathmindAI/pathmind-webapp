@@ -1,150 +1,74 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.db.dao.TrainingErrorDAO;
-import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.TrainingService;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.data.TrainingError;
-import io.skymind.pathmind.shared.data.user.UserCaps;
-import io.skymind.pathmind.shared.featureflag.Feature;
-import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
-import io.skymind.pathmind.shared.security.SecurityUtils;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentUpdatedBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
-import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
-import io.skymind.pathmind.webapp.ui.components.codeViewer.CodeViewer;
+import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
-import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitleBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.observations.subscribers.view.ObservationsPanelExperimentSwitchedViewSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.ExperimentViewRunUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.view.ExperimentViewExperimentSwitchedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
-import io.skymind.pathmind.webapp.ui.views.policy.ExportPolicyView;
-import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
-import io.skymind.pathmind.webapp.utils.PathmindUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
 
 @Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
 @Slf4j
-public class ExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public class ExperimentView extends AbstractExperimentView {
 
-    // We have to use a lock object rather than the experiment because we are changing it's reference which makes it not thread safe. As well we cannot lock
-    // on this because part of the synchronization is in the eventbus listener in a subclass (which is also why we can't use synchronize on the method.
-    private Object experimentLock = new Object();
-    private Button exportPolicyButton;
-    private Button stopTrainingButton;
-    private Button unarchiveExperimentButton;
-    private Anchor downloadModelAlpLink;
-    private Button shareButton;
+    // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
+    // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
+    // why we can't use synchronize on the method).
+    private final Object comparisonExperimentLock = new Object();
 
-    private long experimentId = -1;
-    private long modelId = -1;
-    private List<RewardVariable> rewardVariables;
-    private Policy bestPolicy;
-    private Experiment experiment;
-    private List<Experiment> experiments = new ArrayList<>();
-
-    private UserCaps userCaps;
-
-    private HorizontalLayout middlePanel;
-    private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
-    private TagLabel archivedLabel;
-    private TagLabel sharedWithSupportLabel;
-    private Span panelTitle;
-    private VerticalLayout rewardVariablesGroup;
-    private VerticalLayout rewardFunctionGroup;
-    private CodeViewer codeViewer;
-    private ExperimentChartsPanel experimentChartsPanel;
-    private ExperimentsNavBar experimentsNavbar;
-    protected ExperimentNotesField notesField;
-
-    private ObservationsPanel observationsPanel;
+    private VerticalLayout compareExperimentVerticalLayout;
 
     private StoppedTrainingNotification stoppedTrainingNotification;
-    private SimulationMetricsPanel simulationMetricsPanel;
+    private StoppedTrainingNotification comparisonStoppedTrainingNotification;
 
-    @Autowired
-    private ModelService modelService;
-    @Autowired
-    protected ExperimentDAO experimentDAO;
-    @Autowired
-    private RewardVariableDAO rewardVariableDAO;
-    @Autowired
-    private ObservationDAO observationDAO;
-    @Autowired
-    protected PolicyDAO policyDAO;
-    @Autowired
-    private TrainingErrorDAO trainingErrorDAO;
-    @Autowired
-    private TrainingService trainingService;
-    @Autowired
-    private RunDAO runDAO;
-    @Autowired
-    protected SegmentIntegrator segmentIntegrator;
-    @Autowired
-    private FeatureManager featureManager;
+    // Experiment Components
+    private ExperimentTitleBar experimentTitleBar;
+    protected ExperimentNotesField experimentNotesField;
+    private CodeViewer experimentCodeViewer;
+    private ExperimentChartsPanel experimentChartsPanel;
+    private ObservationsPanel experimentObservationsPanel;
+    private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
+    private SimulationMetricsPanel experimentSimulationMetricsPanel;
+
+    // Experiment Comparison Components
+    private Boolean isComparisonMode = false;
+    private ExperimentTitleBar comparisonTitleBar;
+    private ExperimentChartsPanel comparisonChartsPanel;
+    protected ExperimentNotesField comparisonNotesField;
+    private ObservationsPanel comparisonObservationsPanel;
+    private CodeViewer comparisonCodeViewer;
+    private SimulationMetricsPanel comparisonSimulationMetricsPanel;
+
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
@@ -152,15 +76,17 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
 
-    private Breadcrumbs pageBreadcrumbs;
-    private Button restartTraining;
+    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
+    protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
+
+    private Experiment comparisonExperiment;
 
     public ExperimentView(
             @Value("${pathmind.notification.newRunDailyLimit}") int newRunDailyLimit,
             @Value("${pathmind.notification.newRunMonthlyLimit}") int newRunMonthlyLimit,
             @Value("${pathmind.notification.newRunNotificationThreshold}") int newRunNotificationThreshold) {
         super();
-        this.userCaps = new UserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
+        setUserCaps(newRunDailyLimit, newRunMonthlyLimit, newRunNotificationThreshold);
     }
 
     // Required for SharedExperimentView.
@@ -169,18 +95,38 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         addClassName("experiment-view");
     }
 
+    public void setComparisonExperiment(Experiment comparisonExperiment) {
+        this.comparisonExperiment = comparisonExperiment;
+        isComparisonMode = true;
+        addClassName("comparison-mode");
+        updateComparisonComponents();
+        showCompareExperimentComponents(isComparisonMode);
+    }
+
+    private void leaveComparisonMode() {
+        isComparisonMode = false;
+        removeClassName("comparison-mode");
+        showCompareExperimentComponents(isComparisonMode);
+    }
+
+    public Experiment getComparisonExperiment() {
+        return comparisonExperiment;
+    }
+
+    public void updateComparisonComponents() {
+        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.comparisonExperiment));
+    }
+
     @Override
-    protected void onAttach(AttachEvent event) {
-        EventBus.subscribe(this, () -> getUI(),
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(),
                 getViewSubscribers());
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
-                new ExperimentViewPolicyUpdateSubscriber(this),
-                new ExperimentViewRunUpdateSubscriber(this),
-                new ExperimentViewExperimentSwitchedViewSubscriber(this),
-                new ObservationsPanelExperimentSwitchedViewSubscriber(observationDAO, observationsPanel));
+                new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
     }
 
     @Override
@@ -189,51 +135,58 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
     }
 
     @Override
-    protected Component getTitlePanel() {
-        pageBreadcrumbs = createBreadcrumbs();
-        return new ScreenTitlePanel(pageBreadcrumbs);
-    }
-
-    @Override
     protected Component getMainContent() {
-        panelTitle = LabelFactory.createLabel("Experiment #" + experiment.getName(), SECTION_TITLE_LABEL);
-        archivedLabel = new TagLabel("Archived", false, "small");
-        sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
-        trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(() -> getUI());
-        experimentsNavbar = new ExperimentsNavBar(
-                () -> getUI(),
-                experimentDAO,
-                policyDAO,
-                experiment,
-                experiments,
-                segmentIntegrator);
-
-        setupExperimentContentPanel();
-
         Span modelNeedToBeUpdatedLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-        modelNeedToBeUpdatedLabel.getStyle().set("margin-top", "2px");
 
-        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
+        compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
-        // It is the same for all experiments from the same model so it doesn't have to be updated as long
-        // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
-        // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
-        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
-
-        VerticalLayout experimentContent = WrapperUtils.wrapWidthFullVertical(
-                WrapperUtils.wrapWidthFullHorizontal(
-                        WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                                panelTitle, archivedLabel, sharedWithSupportLabel),
-                        downloadModelAlpLink, trainingStatusDetailsPanel, getButtonsWrapper()),
-                stoppedTrainingNotification,
-                modelNeedToBeUpdatedLabel,
-                middlePanel,
-                getBottomPanel());
+        SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                    stoppedTrainingNotification,
+                    experimentTitleBar,
+                    getMiddlePanel(),
+                    getBottomPanel()),
+                compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
-        HorizontalLayout pageWrapper = isShowNavBar() ? WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContent) : WrapperUtils.wrapSizeFullHorizontal(experimentContent);
+        experimentContent.addSplitterDragendListener(dragend -> {
+            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        });
+        showCompareExperimentComponents(isComparisonMode);
+
+        VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            modelNeedToBeUpdatedLabel, experimentContent
+        );
+        experimentContentWrapper.setWidthFull();
+
+        HorizontalLayout pageWrapper = isShowNavBar() ? 
+                WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContentWrapper)
+                : WrapperUtils.wrapSizeFullHorizontal(experimentContentWrapper);
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
+    }
+
+    private VerticalLayout getComparisonExperimentPanel() {
+        FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
+            leaveComparisonMode();
+            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        });
+        VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                    comparisonObservationsPanel,
+                    60),
+            generateRewardFunctionGroup(comparisonCodeViewer),
+            comparisonChartsPanel,
+            comparisonNotesField);
+        comparisonComponents.addClassName("comparison-panel");
+        comparisonComponents.setPadding(false);
+        VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            comparisonStoppedTrainingNotification,
+            comparisonTitleBar,
+            comparisonComponents,
+            comparisonModeCloseButton);
+        return comparisonPanel;
     }
 
     /**
@@ -245,308 +198,119 @@ public class ExperimentView extends PathMindDefaultView implements HasUrlParamet
         return true;
     }
 
-    private void setupExperimentContentPanel() {
-        codeViewer = new CodeViewer(() -> getUI(), experiment);
-        rewardFunctionGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel("Reward Function", BOLD_LABEL), codeViewer
-        );
-
-        boolean showSimulationMetrics = featureManager.isEnabled(Feature.SIMULATION_METRICS);
-        simulationMetricsPanel = new SimulationMetricsPanel(experiment, showSimulationMetrics, rewardVariables, () -> getUI());
-        String simulationMetricsHeaderText = showSimulationMetrics ? "Simulation Metrics" : "Reward Variables";
-
-        rewardVariablesGroup = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
-        );
-
-        observationsPanel = new ObservationsPanel(experiment, true);
-
-        middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(rewardVariablesGroup, observationsPanel, rewardFunctionGroup);
+    private HorizontalLayout getMiddlePanel() {
+        HorizontalLayout middlePanel = WrapperUtils.wrapWidthFullHorizontal();
+        middlePanel.add(
+                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                        generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
+                        experimentObservationsPanel,
+                        60),
+                generateRewardFunctionGroup(experimentCodeViewer));
         middlePanel.addClassName("middle-panel");
         middlePanel.setPadding(false);
+        middlePanel.setSpacing(false);
+        return middlePanel;
     }
 
-    protected Div getButtonsWrapper() {
-        restartTraining = new Button("Restart Training", click -> {
-            synchronized (experimentLock) {
-                if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, userCaps, segmentIntegrator)) {
-                    return;
-                }
-                trainingService.startRun(experiment);
-                segmentIntegrator.restartTraining();
-                initLoadData();
-                // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2278
-                trainingStatusDetailsPanel.setExperiment(experiment);
-                clearErrorState();
-                experimentChartsPanel.setupCharts(experiment, rewardVariables);
-            }
-        });
-        restartTraining.setVisible(false);
-        restartTraining.addClassNames("large-image-btn", "run");
-
-        exportPolicyButton = GuiUtils.getPrimaryButton(
-                "Export Policy",
-                click -> getUI().ifPresent(ui -> ui.navigate(ExportPolicyView.class, bestPolicy.getId())),
-                false);
-
-        stopTrainingButton = new Button("Stop Training", click -> showStopTrainingConfirmationDialog());
-        stopTrainingButton.setVisible(true);
-
-        shareButton = new Button("Share with support", click -> showShareConfirmationDialog());
-
-        unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> unarchiveExperiment());
-
-        notesField = createViewNotesField();
-
-        Div buttonsWrapper = new Div(getActionButtonList());
-
-        buttonsWrapper.addClassName("buttons-wrapper");
-        return buttonsWrapper;
+    private VerticalLayout generateRewardFunctionGroup(CodeViewer codeViewer) {
+        return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel("Reward Function", BOLD_LABEL),
+                codeViewer
+        );
     }
 
-    private void showShareConfirmationDialog() {
-        ConfirmationUtils.confirmationPopupDialog(
-                "Share training with support",
-                "This will give Pathmind a read-only mode to the experiment to help with debugging any issues.",
-                "Share Training",
-                () -> {
-                    experimentDAO.shareExperimentWithSupport(experiment.getId());
-                    experiment.setSharedWithSupport(true);
-                    setSharedWithSupportComponents();
-                });
+    private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
+        String simulationMetricsHeaderText = "Simulation Metrics";
+        return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
+        );
+    }
+
+    public Object getComparisonExperimentLock() {
+        return comparisonExperimentLock;
     }
 
     /**
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
-    protected Component[] getActionButtonList() {
-        return new Button[]{
-                unarchiveExperimentButton,
-                restartTraining,
-                stopTrainingButton,
-                shareButton,
-                exportPolicyButton};
+    protected ExperimentTitleBar createExperimentTitleBar() {
+        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
+    }
+
+    private ExperimentTitleBar createComparisonExperimentTitleBar() {
+        return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
     }
 
     private HorizontalLayout getBottomPanel() {
-        experimentChartsPanel = new ExperimentChartsPanel(() -> getUI(), experiment, rewardVariables);
         HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
                 experimentChartsPanel,
-                notesField);
+                experimentNotesField);
         bottomPanel.addClassName("bottom-panel");
         bottomPanel.setPadding(false);
+        bottomPanel.setSpacing(false);
         return bottomPanel;
     }
 
-    private Breadcrumbs createBreadcrumbs() {
-        return new Breadcrumbs(experiment.getProject(), experiment.getModel(), experiment);
-    }
-
-    private ExperimentNotesField createViewNotesField() {
-        return new ExperimentNotesField(
-                getUISupplier(),
-                "Notes",
-                experiment,
-                updatedNotes -> {
-                    experimentDAO.updateUserNotes(notesField.getExperiment().getId(), updatedNotes);
-                    segmentIntegrator.updatedNotesExperimentView();
-                },
-                true,
-                false
-        );
-    }
-
-    private void showStopTrainingConfirmationDialog() {
-        ConfirmationUtils.showStopTrainingConfirmationPopup(() -> {
-            trainingService.stopRun(experiment);
-            segmentIntegrator.stopTraining();
-            stopTrainingButton.setVisible(false);
-            fireEvents();
-        });
-    }
-
-    private void unarchiveExperiment() {
-        ConfirmationUtils.unarchive("experiment", () -> {
-            ExperimentUtils.archiveExperiment(experimentDAO, experiment, false);
-            segmentIntegrator.archived(Experiment.class, false);
-            ExperimentUtils.navigateToExperiment(getUI(), experiment);
-        });
-    }
-
-    /************************************** UI element creations are above this line **************************************/
-
-    private void fireEvents() {
-        // An event for each policy since we only need to update some of the policies in a run.
-        if (experiment.getPolicies() != null && !experiment.getPolicies().isEmpty()) {
-            EventBus.post(new PolicyUpdateBusEvent(experiment.getPolicies()));
-        }
-        // Send run updated event, meaning that all policies under the run is updated.
-        // This is needed especially in dashboard, to refresh the item only once per run, instead of after all policy updates
-        EventBus.post(new RunUpdateBusEvent(experiment.getRuns()));
-        EventBus.post(new ExperimentUpdatedBusEvent(experiment));
-    }
-
     @Override
-    public void setParameter(BeforeEvent event, Long experimentId) {
-        this.experimentId = experimentId;
-    }
-
-    public void setExperiment(Experiment selectedExperiment) {
-        // The only reason I'm synchronizing here is in case an event is fired while it's still loading the data (which can take several seconds). We should still be on the
-        // same experiment but just because right now loads can take up to several seconds I'm being extra cautious.
-        synchronized (experimentLock) {
-            if (ExperimentUtils.isDraftRunType(selectedExperiment)) {
-                getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, selectedExperiment.getId()));
-            } else {
-                experiment = getExperimentForUser(selectedExperiment.getId())
-                        .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + selectedExperiment.getId()));
-                loadExperimentData();
-                getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, "experiment/" + selectedExperiment.getId()));
-
-                updateScreenComponents();
-            }
-        }
-    }
-
-    @Override
-    protected void initLoadData() throws InvalidDataException {
-        // REFACTOR -> STEPH -> #2203 -> https://github.com/SkymindIO/pathmind-webapp/issues/2203 Once we do that
-        // we will no longer have to retrieve the user information when loading this page.
-        experiment = getExperimentForUser()
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
-        loadExperimentData();
-    }
-
-    protected Optional<Experiment> getExperimentForUser() {
-        return experimentDAO.getExperimentIfAllowed(experimentId, SecurityUtils.getUserId());
-    }
-
-    // Overridden in the SharedExperimentView so that we can get it based on the type of user (normal vs support user).
-    protected Optional<Experiment> getExperimentForUser(long specificExperimentId) {
-        return experimentDAO.getExperimentIfAllowed(specificExperimentId, SecurityUtils.getUserId());
-    }
-
-    private void loadExperimentData() {
-        modelId = experiment.getModelId();
-        experimentId = experiment.getId();
-        // REFACTOR -> STEPH -> This should be part of loading up the experiment along with the other items as they are needed throughout
-        // and easily missed in other places.
-        experiment.setPolicies(policyDAO.getPoliciesForExperiment(experimentId));
-        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        experiment.setModelObservations(observationDAO.getObservationsForModel(experiment.getModelId()));
-        experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experimentId));
-        bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
-        experiment.setRuns(runDAO.getRunsForExperiment(experiment));
-        if (!experiment.isArchived()) {
-            experiments = experimentDAO.getExperimentsForModel(modelId).stream()
-                    .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
-        }
-    }
-
-    private void setSharedWithSupportComponents() {
-        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
-        shareButton.setVisible(!experiment.isSharedWithSupport());
-    }
-
-    @Override
-    protected void initScreen(BeforeEnterEvent event) {
-        // Part of a bigger refactoring. The goal is to eventually remove the setExperiment code and use the ExperimentChangedViewSubscriber
-        // instead because the logic and code is not the same between loading the initial screen and when updateScreenComponents is called. There's
-        // a mix of logic and code between setExperiment and updateScreenComponents that is inconsistent. By splitting these off it should
-        // hopefully make it easier to manage. Again this is just a first part, I'm (Steph) planning to split this code between the initial
-        // load and any event updates as well as experiment select.
-        updateScreenComponents();
-    }
-
-    protected void updateScreenComponents() {
-        clearErrorState();
-        setSharedWithSupportComponents();
-        if (isShowNavBar()) {
-            experimentsNavbar.setVisible(!experiment.isArchived());
-        }
-        panelTitle.setText("Experiment #" + experiment.getName());
-        // Check is needed for the shared experiment view which has no breadcrumb.
-        if (pageBreadcrumbs != null) {
-            pageBreadcrumbs.setText(3, "Experiment #" + experiment.getName());
-        }
-        if (!ModelUtils.isValidModel(experiment.getModel()) && isShowNavBar()) {
-            experimentsNavbar.setAllowNewExperimentCreation(false);
-        }
-        updateDetailsForExperiment();
-        trainingStatusDetailsPanel.setExperiment(experiment);
-    }
-
-    private void updateUIForError(TrainingError error, String errorText) {
-
-        if (ExperimentUtils.isAnyLogicEngineError(errorText)) {
-            errorText =
-                    "AnyLogic engine has returned ERROR. Please follow " +
-                            "<a target=\"_blank\" href=\"{0}\">these instructions</a> " +
-                            "to reproduce the error back in AnyLogic";
-            errorText = MessageFormat.format(errorText, alEngineErrorArticleUrl);
-        }
-
-        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(errorText, ERROR_LABEL, false);
-
-        // Not used in the shared view but this code can be left as the buttons are not included in the shared view.
-        boolean allowRestart = error.isRestartable() && ModelUtils.isValidModel(experiment.getModel());
-        restartTraining.setVisible(allowRestart);
-        restartTraining.setEnabled(allowRestart);
-    }
-
-    private void clearErrorState() {
-        stoppedTrainingNotification.clearErrorState();
-        updateButtonEnablement();
-    }
-
-    public void updateDetailsForExperiment() {
-        updateButtonEnablement();
-        archivedLabel.setVisible(experiment.isArchived());
-        RunStatus status = experiment.getTrainingStatusEnum();
-        if (status == RunStatus.Error || status == RunStatus.Killed) {
-            ExperimentUtils.getTrainingErrorAndMessage(trainingErrorDAO, experiment)
-                    .ifPresent(pair -> {
-                        this.updateUIForError(pair.getLeft(), pair.getRight());
-                    });
+    protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
+        if(!experimentDAO.isDraftExperiment(experimentId)) {
+            return true;
         } else {
-            ExperimentUtils.getEarlyStopReason(experiment)
-                    .ifPresent(reason -> {
-                        String label = reason.isSuccess() ? SUCCESS_LABEL : WARNING_LABEL;
-                        stoppedTrainingNotification.showTheReasonWhyTheTrainingStopped(reason.getMessage(), label, true);
-                    });
+            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
+            event.forwardTo(Routes.NEW_EXPERIMENT_URL, experimentId);
+            return false;
         }
     }
 
-    public void updateButtonEnablement() {
-        RunStatus trainingStatus = experiment.getTrainingStatusEnum();
-        boolean isCompleted = trainingStatus == RunStatus.Completed;
-        unarchiveExperimentButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(isCompleted && bestPolicy != null && bestPolicy.hasFile());
-        boolean canBeStopped = RunStatus.isRunning(trainingStatus);
-        stopTrainingButton.setVisible(canBeStopped);
-        restartTraining.setVisible(false);
+    public void showCompareExperimentComponents(boolean isCompareVisible) {
+        compareExperimentVerticalLayout.setVisible(isCompareVisible);
     }
 
-    public void setBestPolicy(Policy bestPolicy) {
-        this.bestPolicy = bestPolicy;
+    @Override
+    protected void createExperimentComponents() {
+        experimentTitleBar = createExperimentTitleBar();
+        experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
+        experimentNotesField.setSecondaryStyle(true);
+        experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
+        experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        experimentCodeViewer = new CodeViewer(getUISupplier());
+        experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
+        // This is an exception because the modelObservations are the same for all experiments in the same group.
+        experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
+        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
+
+        experimentComponentList.addAll(List.of(
+                experimentTitleBar,
+                experimentNotesField,
+                experimentTrainingStatusDetailsPanel,
+                experimentChartsPanel,
+                experimentCodeViewer,
+                experimentSimulationMetricsPanel,
+                experimentObservationsPanel,
+                stoppedTrainingNotification));
+
+        // We also need to create the experiment comparison components.
+        createComparisonComponents();
     }
 
-    public Object getExperimentLock() {
-        return experimentLock;
-    }
+    protected void createComparisonComponents() {
+        comparisonTitleBar = createComparisonExperimentTitleBar();
+        comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
+        comparisonNotesField.setSecondaryStyle(true);
+        comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        comparisonCodeViewer = new CodeViewer(getUISupplier());
+        comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
+        // This is an exception because the modelObservations are the same for all experiments in the same group.
+        comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
+        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
-    // ExperimentID is also added as the experiment can be null whereas the experimentID always has to have a value. Used by the Subscribers for the view.
-    public long getExperimentId() {
-        return experimentId;
+        comparisonExperimentComponents.addAll(List.of(
+                comparisonTitleBar,
+                comparisonNotesField,
+                comparisonChartsPanel,
+                comparisonCodeViewer,
+                comparisonSimulationMetricsPanel,
+                comparisonObservationsPanel,
+                comparisonStoppedTrainingNotification));
     }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public long getModelId() {
-        return modelId;
-    }
-
 }

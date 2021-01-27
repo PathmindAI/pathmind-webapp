@@ -1,27 +1,26 @@
 package io.skymind.pathmind.services;
 
-import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.utils.DBUtils;
-import org.jooq.DSLContext;
-
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.utils.DBUtils;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
-import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+
+import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
 @Slf4j
 public abstract class TrainingService {
@@ -74,7 +73,7 @@ public abstract class TrainingService {
     		run.setStatusEnum(RunStatus.Starting);
     		String executionId = startRun(exp.getModel(), exp, run, iterations, maxTimeInSec, numSamples);
     		runDAO.markAsStarting(transactionCtx, run.getId(), executionId);
-    		exp.updateTrainingStatus();
+    		ExperimentUtils.updateTrainingStatus(exp);
     		experimentDAO.updateTrainingStatus(transactionCtx, exp);
             log.info("Started {} training job with id {}", DiscoveryRun, executionId);
     	});
@@ -104,7 +103,7 @@ public abstract class TrainingService {
                 run.setStatusEnum(RunStatus.Stopping);
                 runDAO.markAsStopping(transactionCtx, run);
             });
-            experiment.updateTrainingStatus();
+            ExperimentUtils.updateTrainingStatus(experiment);
             experimentDAO.updateTrainingStatus(transactionCtx, experiment);
             log.info("Stopped {} training job with id {}", DiscoveryRun, runs.get(0).getJobId());
         });

@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main;
 
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentStartTrainingSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
@@ -13,11 +13,6 @@ public class NavBarNotificationExperimentStartTrainingSubscriber extends Experim
 
     public NavBarNotificationExperimentStartTrainingSubscriber(ExperimentsNavBar experimentsNavBar) {
         super();
-        this.experimentsNavBar = experimentsNavBar;
-    }
-
-    public NavBarNotificationExperimentStartTrainingSubscriber(boolean isListenForEventOnSameUI, ExperimentsNavBar experimentsNavBar) {
-        super(isListenForEventOnSameUI);
         this.experimentsNavBar = experimentsNavBar;
     }
 
