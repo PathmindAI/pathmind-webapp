@@ -50,4 +50,5 @@ public class ProjectDAO {
     public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
         return ProjectRepository.getProjectIfAllowed(ctx, projectId, userId);
     }
+
 }

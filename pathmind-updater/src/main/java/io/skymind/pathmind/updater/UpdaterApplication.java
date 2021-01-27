@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
-@PropertySource({"application.properties", "shared.properties"})
+@PropertySource({"classpath:application.properties", "classpath:shared.properties"})
 public class UpdaterApplication {
 
     public static void main(String[] args) {
