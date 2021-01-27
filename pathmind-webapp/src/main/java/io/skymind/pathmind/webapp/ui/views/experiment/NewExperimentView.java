@@ -55,6 +55,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
+    private SplitButton splitButton;
     private Anchor downloadModelAlpLink;
     private boolean isNeedsSaving = false;
 
@@ -129,7 +130,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
-        SplitButton splitButton = createSplitButton();
+        splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
                 splitButton,
                 unarchiveExperimentButton);
@@ -146,10 +147,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     private SplitButton createSplitButton() {
         List<Button> actionButtons = new ArrayList<Button>();
-        actionButtons.add(saveDraftButton);
         actionButtons.add(startRunButton);
+        actionButtons.add(saveDraftButton);
         SplitButton splitButton = new SplitButton(actionButtons);
         splitButton.addThemeName("new-experiment-split-button");
+        splitButton.setMainButton(startRunButton.getText());
         return splitButton;
     }
 
@@ -165,7 +167,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private void createButtons() {
         // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
-        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> StartRunAction.startRun(this, rewardFunctionEditor, trainingService, runDAO, observationDAO));
+        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor, trainingService, runDAO, observationDAO));
         saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
         }));
     }
@@ -242,6 +244,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
+        splitButton.setVisible(!experiment.isArchived());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(isNeedsSaving);

@@ -33,7 +33,7 @@ public class SplitButton extends HorizontalLayout {
         setSpacing(false);
     }
 
-    private void setMainButton(String buttonText) {
+    public void setMainButton(String buttonText) {
         Button targetButton = buttons.get(buttonText);
         mainButton.setText(buttonText);
         setMainButtonClickListener(targetButton);
