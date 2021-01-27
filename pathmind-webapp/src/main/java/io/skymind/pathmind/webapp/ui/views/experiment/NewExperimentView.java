@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
@@ -8,7 +9,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -26,6 +26,7 @@ import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
@@ -128,9 +129,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
-        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton);
-        saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-        HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton,
+        SplitButton splitButton = createSplitButton();
+        HorizontalLayout buttonsWrapper = new HorizontalLayout(
+                splitButton,
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
 
@@ -141,6 +142,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
         panelsWrapper.setSpacing(false);
         return panelsWrapper;
+    }
+
+    private SplitButton createSplitButton() {
+        List<Button> actionButtons = new ArrayList<Button>();
+        actionButtons.add(saveDraftButton);
+        actionButtons.add(startRunButton);
+        SplitButton splitButton = new SplitButton(actionButtons);
+        splitButton.addThemeName("new-experiment-split-button");
+        return splitButton;
     }
 
     private void createAndSetupNotesField() {

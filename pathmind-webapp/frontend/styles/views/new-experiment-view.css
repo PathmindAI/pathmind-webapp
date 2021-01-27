@@ -153,7 +153,6 @@
     margin-top: 0px;
 }
 
-
 .new-experiment-view .error-label {
     box-sizing: border-box;
     width: 100%;
@@ -161,4 +160,9 @@
 
 .new-experiment-view .download-alp-link {
     align-self: center;
+}
+
+.new-experiment-view .new-experiment-split-button {
+    align-items: flex-start;
+    height: auto;
 }
