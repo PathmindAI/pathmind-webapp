@@ -51,7 +51,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
-    private Span notesSavedHint;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -111,9 +110,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         CssPathmindStyles.SECTION_SUBTITLE_LABEL));
         panelTitle.setClassName("panel-title");
 
-        notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
-        notesSavedHint.setVisible(false);
-
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
         VerticalLayout rewardVariablesPanel = WrapperUtils
@@ -132,7 +128,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
-        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton, notesSavedHint);
+        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton);
         saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton,
                 unarchiveExperimentButton);
@@ -252,7 +248,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void disableSaveNeeded() {
         saveDraftButton.setEnabled(false);
-        notesSavedHint.setVisible(false);
         isNeedsSaving = false;
     }
 
