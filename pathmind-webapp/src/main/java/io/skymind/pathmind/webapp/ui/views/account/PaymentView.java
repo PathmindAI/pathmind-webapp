@@ -10,7 +10,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static io.skymind.pathmind.shared.security.Routes.PAYMENT_URL;
+import static io.skymind.pathmind.shared.security.Routes.PAYMENT;
 
 /**
  * Serverside part of the payment-view element which handles the integration to Stripe.
@@ -19,7 +19,7 @@ import static io.skymind.pathmind.shared.security.Routes.PAYMENT_URL;
  * <p>
  * DO NOT SEND CREDIT CARD INFORMATION FROM FRONTEND TO BACKEND. LET STRIPE HANDLE ALL THAT INSTEAD AND ONLY PASS IDS.
  */
-@Route(value = PAYMENT_URL, layout = MainLayout.class)
+@Route(value = PAYMENT, layout = MainLayout.class)
 public class PaymentView extends PathMindDefaultView {
 
     private final PaymentViewContent paymentViewContent;

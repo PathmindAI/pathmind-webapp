@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 @Tag("sign-up-view")
 @CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
-@Route(value = Routes.SIGN_UP_URL)
+@Route(value = Routes.SIGN_UP)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView, HasUrlParameter<String> {
     @Id("lastName")
     private TextField lastName;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -29,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewComparisonExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-@Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Route(value = Routes.EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 public class ExperimentView extends AbstractExperimentView {
 
@@ -103,10 +103,15 @@ public class ExperimentView extends AbstractExperimentView {
         showCompareExperimentComponents(isComparisonMode);
     }
 
-    private void leaveComparisonMode() {
+    public void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
+        getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+    }
+
+    public boolean isComparisonMode() {
+        return isComparisonMode;
     }
 
     public Experiment getComparisonExperiment() {
@@ -126,12 +131,8 @@ public class ExperimentView extends AbstractExperimentView {
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
-                new ExperimentViewRunUpdateSubscriber(this, experimentDAO));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent event) {
-        EventBus.unsubscribe(this);
+                new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewComparisonExperimentArchivedSubscriber(this));
     }
 
     @Override
@@ -169,7 +170,6 @@ public class ExperimentView extends AbstractExperimentView {
     private VerticalLayout getComparisonExperimentPanel() {
         FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
             leaveComparisonMode();
-            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
         });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -257,7 +257,7 @@ public class ExperimentView extends AbstractExperimentView {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.NEW_EXPERIMENT_URL, experimentId);
+            event.forwardTo(Routes.NEW_EXPERIMENT, experimentId);
             return false;
         }
     }

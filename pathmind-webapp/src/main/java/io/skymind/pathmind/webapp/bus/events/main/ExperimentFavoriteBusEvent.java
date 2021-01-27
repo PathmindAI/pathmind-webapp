@@ -3,6 +3,10 @@ package io.skymind.pathmind.webapp.bus.events.main;
 import io.skymind.pathmind.webapp.bus.BusEventType;
 import io.skymind.pathmind.webapp.bus.PathmindBusEvent;
 
+/**
+ * Event used to indicate whether or not an experiment has been starred or not. We don't
+ * send the whole experiment because we only need to know the state.
+ */
 public class ExperimentFavoriteBusEvent implements PathmindBusEvent {
 
     private long experimentId;

@@ -22,7 +22,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.acti
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemCompareExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action.NavBarItemSelectExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentFavoriteSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentUpdatedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemExperimentStopTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemNotificationExperimentStartTrainingSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
@@ -50,9 +50,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.abstractExperimentView = abstractExperimentView;
 
         if (experiment.isDraft()) {
-            experimentLink.setHref(Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId());
+            experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
         } else {
-            experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
+            experimentLink.setHref(Routes.EXPERIMENT + "/" + experiment.getId());
         }
 
         setExperimentDetails(experiment);
@@ -101,7 +101,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         }
         EventBus.subscribe(this, abstractExperimentView.getUISupplier(),
                 new NavBarItemExperimentFavoriteSubscriber(this),
-                new NavBarItemExperimentUpdatedSubscriber(this),
+                new NavBarItemExperimentStopTrainingSubscriber(this),
                 new NavBarItemRunUpdateSubscriber(this),
                 new NavBarItemPolicyUpdateSubscriber(this, experimentDAO),
                 new NavBarItemNotificationExperimentStartTrainingSubscriber(this));

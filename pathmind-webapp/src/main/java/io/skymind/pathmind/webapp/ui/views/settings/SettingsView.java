@@ -10,7 +10,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.SETTINGS_URL, layout = MainLayout.class)
+@Route(value = Routes.SETTINGS, layout = MainLayout.class)
 @Permission(permissions = ViewPermission.SETTINGS_READ)
 public class SettingsView extends PathMindDefaultView {
 

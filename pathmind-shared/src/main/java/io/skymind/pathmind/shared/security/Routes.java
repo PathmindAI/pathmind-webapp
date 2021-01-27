@@ -3,44 +3,45 @@ package io.skymind.pathmind.shared.security;
 public class Routes {
     public static final String WITH_PARAMETER = "/**";
 
-    public static final String LOGIN_URL = "sign-in";
-    public static final String LOGIN_PROCESSING_URL = "sign-in";
+    public static final String LOGIN = "sign-in";
+    public static final String LOGIN_PROCESSING = "sign-in";
 
-    public static final String LOGOUT_URL = "sign-out";
-    public static final String LOGOUT_SUCCESS_URL = "sign-in?sign-out";
+    public static final String LOGOUT = "sign-out";
+    public static final String LOGOUT_SUCCESS = "sign-in?sign-out";
     public static final String SESSION_EXPIRED = "session-expired";
     public static final String BAD_CREDENTIALS = "bad-credentials";
     public static final String EMAIL_VERIFICATION_FAILED = "email-verification-failed";
 
-    public static final String EARLY_ACCESS_SIGN_UP_URL = "early-access-sign-up";
-    public static final String SIGN_UP_URL = "sign-up";
-    public static final String RESET_PASSWORD_URL = "reset-password";
-    public static final String EMAIL_VERIFICATION_URL = "email-verification";
-    public static final String VERIFICATION_EMAIL_SENT_URL = "verification-email-sent";
+    public static final String EARLY_ACCESS_SIGN_UP = "early-access-sign-up";
+    public static final String SIGN_UP = "sign-up";
+    public static final String RESET_PASSWORD = "reset-password";
+    public static final String EMAIL_VERIFICATION = "email-verification";
+    public static final String VERIFICATION_EMAIL_SENT = "verification-email-sent";
 
-    public static final String ACCOUNT_EDIT_URL = "account/edit";
-    public static final String ACCOUNT_URL = "account";
-    public static final String ACCOUNT_CHANGE_PASS_URL = "account/change-password";
-    public static final String ACCOUNT_UPGRADE_URL = "account/upgrade";
-    public static final String PAYMENT_URL = "payment";
+    public static final String ACCOUNT_EDIT = "account/edit";
+    public static final String ACCOUNT = "account";
+    public static final String ACCOUNT_CHANGE_PASS = "account/change-password";
+    public static final String ACCOUNT_UPGRADE = "account/upgrade";
+    public static final String PAYMENT = "payment";
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
+    public static final String DEMOS_URL = "demos";
     public static final String MODEL_PATH = "/model/";
-    public static final String EXPERIMENT_URL = "experiment";
-    public static final String NEW_EXPERIMENT_URL = "newExperiment";
+    public static final String EXPERIMENT = "experiment";
+    public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
-    public static final String ERROR_URL = "error";
+    public static final String ERROR = "error";
     public static final String UPLOAD_MODEL_ERROR = "uploadModelError";
 
-    public static final String EXPORT_POLICY_URL = "exportPolicy";
-    public static final String PROJECT_URL = "project";
-    public static final String PROJECTS_URL = "projects";
-    public static final String DASHBOARD_URL = "dashboard";
+    public static final String EXPORT_POLICY = "exportPolicy";
+    public static final String PROJECT = "project";
+    public static final String PROJECTS = "projects";
+    public static final String DASHBOARD = "dashboard";
 
-    public static final String SETTINGS_URL = "settings";
+    public static final String SETTINGS = "settings";
 
-    public static final String SEARCHRESULTS_URL = "search-results";
+    public static final String SEARCHRESULTS = "search-results";
 }
