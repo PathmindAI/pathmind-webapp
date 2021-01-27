@@ -64,7 +64,6 @@ public class DemoProjectsView extends PageObject {
         WebElement demoList = utils.expandRootElement(demoListShadow);
 
         assertThat(demoPopupTitle.getText(), is(DEMO_POPUP_TITLE));
-        assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1)")).getAttribute("data-item"), is(FIRST_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > h4")).getText(), is(FIRST_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > div > img")).getAttribute("src"), is(FIRST_DEMO_URL));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > div")).size(), is(not(0)));
@@ -72,7 +71,6 @@ public class DemoProjectsView extends PageObject {
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > p.result")).getText(), is(FIRST_DEMO_RESULT));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > vaadin-button")).size(), is(not(0)));
 
-        assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2)")).getAttribute("data-item"), is(SECOND_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > h4")).getText(), is(SECOND_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > div > img")).getAttribute("src"), is(SECOND_DEMO_URL));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > div")).size(), is(not(0)));
@@ -80,7 +78,6 @@ public class DemoProjectsView extends PageObject {
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > p.result")).getText(), is(SECOND_DEMO_RESULT));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > vaadin-button")).size(), is(not(0)));
 
-        assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3)")).getAttribute("data-item"), is(THIRD_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > h4")).getText(), is(THIRD_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > div > img")).getAttribute("src"), is(THIRD_DEMO_URL));
         assertThat(demoList.findElements(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > div")).size(), is(not(0)));

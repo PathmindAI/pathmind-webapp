@@ -57,10 +57,6 @@ class DemoList extends PolymerElement {
                     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
                     border-radius: var(--lumo-border-radius);
                     margin: 0 var(--lumo-space-l) var(--lumo-space-l);
-                    cursor: pointer;
-                }
-                .demo-item:hover {
-                    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.18);
                 }
                 details {
                     width: 100%;
@@ -140,7 +136,7 @@ class DemoList extends PolymerElement {
             <vaadin-horizontal-layout>
                 <dom-repeat items="{{demoDataList}}">
                     <template>
-                        <vaadin-vertical-layout class="demo-item" data-item$="{{item.name}}" on-click="chooseDemoHandler">
+                        <vaadin-vertical-layout class="demo-item">
                             <h4>{{item.name}}</h4>
                             <div class="demo-img-wrapper"><img src="{{item.imageUrl}}"/></div>
                             <p class="description">{{item.description}}</p>

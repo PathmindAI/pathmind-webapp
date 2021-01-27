@@ -42,7 +42,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     }
 
     @EventHandler
-    private void chooseDemoHandler(@EventData("event.model.item.name") String demoName) {
+    private void buttonClickedHandler(@EventData("event.model.item.name") String demoName) {
         if (!createdDemoProject) {
             createdDemoProject = true;
             try {
