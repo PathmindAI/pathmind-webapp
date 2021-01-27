@@ -51,7 +51,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
-    private Span unsavedChanges;
     private Span notesSavedHint;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
@@ -112,8 +111,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         CssPathmindStyles.SECTION_SUBTITLE_LABEL));
         panelTitle.setClassName("panel-title");
 
-        unsavedChanges = LabelFactory.createLabel("Unsaved changes!", "hint-label");
-        unsavedChanges.setVisible(false);
         notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
         notesSavedHint.setVisible(false);
 
@@ -135,8 +132,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
-        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton,
-                unsavedChanges, notesSavedHint);
+        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton, notesSavedHint);
         saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton,
                 unarchiveExperimentButton);
@@ -189,13 +185,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
-        unsavedChanges.setVisible(true);
         saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
         startRunButton.setEnabled(canStartTraining());
-    }
-
-    public void setUnsavedChangesLabel(boolean isVisible) {
-        unsavedChanges.setVisible(isVisible);
     }
 
     public Experiment getUpdatedExperiment() {
@@ -261,7 +252,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void disableSaveNeeded() {
         saveDraftButton.setEnabled(false);
-        unsavedChanges.setVisible(false);
         notesSavedHint.setVisible(false);
         isNeedsSaving = false;
     }
