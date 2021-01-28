@@ -50,9 +50,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         this.abstractExperimentView = abstractExperimentView;
 
         if (experiment.isDraft()) {
-            experimentLink.setHref(Routes.NEW_EXPERIMENT_URL + "/" + experiment.getId());
+            experimentLink.setHref(Routes.NEW_EXPERIMENT + "/" + experiment.getId());
         } else {
-            experimentLink.setHref(Routes.EXPERIMENT_URL + "/" + experiment.getId());
+            experimentLink.setHref(Routes.EXPERIMENT + "/" + experiment.getId());
         }
 
         setExperimentDetails(experiment);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -38,7 +37,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
-@Route(value = Routes.EXPERIMENT_URL, layout = MainLayout.class)
+@Route(value = Routes.EXPERIMENT, layout = MainLayout.class)
 @Slf4j
 public class ExperimentView extends AbstractExperimentView {
 
@@ -111,6 +110,10 @@ public class ExperimentView extends AbstractExperimentView {
         getElement().executeJs("window.dispatchEvent(new Event('resize'))");
     }
 
+    public boolean isComparisonMode() {
+        return isComparisonMode;
+    }
+
     public Experiment getComparisonExperiment() {
         return comparisonExperiment;
     }
@@ -130,10 +133,6 @@ public class ExperimentView extends AbstractExperimentView {
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewComparisonExperimentArchivedSubscriber(this));
-    }
-
-    public boolean isComparisonMode() {
-        return isComparisonMode;
     }
 
     @Override
@@ -258,7 +257,7 @@ public class ExperimentView extends AbstractExperimentView {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.NEW_EXPERIMENT_URL, experimentId);
+            event.forwardTo(Routes.NEW_EXPERIMENT, experimentId);
             return false;
         }
     }

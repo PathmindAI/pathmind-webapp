@@ -5,31 +5,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
-import io.skymind.pathmind.db.utils.RewardVariablesUtils;
-import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.experiment.ExperimentService;
+import io.skymind.pathmind.services.experiment.ModelCheckException;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
-import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
-import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
-import io.skymind.pathmind.services.project.Hyperparams;
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
-import io.skymind.pathmind.services.project.StatusUpdater;
-import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,25 +42,11 @@ public class AnyLogicUploadController {
     }
 
     @Autowired
-    ProjectDAO projectDAO;
+    private ProjectDAO projectDAO;
 
     @Autowired
-    ModelDAO modelDAO;
+    private ExperimentService experimentService;
 
-    @Autowired
-    ModelService modelService;
-
-    @Autowired
-    private ModelFileVerifier modelFileVerifier;
-
-    @Autowired
-    private ProjectFileCheckService projectFileCheckService;
-
-    @Autowired
-    RewardVariableDAO rewardVariableDAO;
-
-    @Autowired
-    ObservationDAO observationDAO;
 
     /*
     create new project and upload model:
@@ -95,41 +67,17 @@ public class AnyLogicUploadController {
             file.transferTo(tempFile.toFile());
             log.debug("saved file {} to temp location {}", file.getOriginalFilename(), tempFile);
 
-            Project project = null;
+            Project prj = null;
             if (projectId != null) {
-                project = projectDAO.getProjectIfAllowed(projectId, pmUser.getUserId())
+                prj = projectDAO.getProjectIfAllowed(projectId, pmUser.getUserId())
                         .orElseThrow(() -> {
                             log.error("project {} does not belong to user {}", projectId, pmUser.getUserId());
                             throw new AccessDeniedException("project does not belong to user");
                         });
             }
+            final Optional<Project> project = Optional.ofNullable(prj);
 
-            Model model = new Model();
-            ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
-            byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
-            model.setFile(bytes);
-            StatusUpdaterImpl status = new StatusUpdaterImpl();
-            projectFileCheckService.checkFile(status, model).get(); // here we need to wait
-            if (StringUtils.isNoneEmpty(status.getError())) {
-                throw new ModelCheckException(status.getError());
-            }
-            AnylogicFileCheckResult result = status.getResult();
-            if (result == null) {
-                throw new ModelCheckException("No validation result");
-            }
-
-            List<RewardVariable> rewardVariables = new ArrayList<>();
-            List<Observation> observationList = new ArrayList<>();
-
-            Hyperparams alResult = result.getParams();
-            rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
-            observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
-            model.setNumberOfObservations(alResult.getNumObservation());
-            model.setRewardVariablesCount(rewardVariables.size());
-            model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
-            model.setNumberOfAgents(alResult.getNumberOfAgents());
-
-            if (project == null) {
+            Supplier<Project> projectSupplier =  () -> project.orElseGet(() -> {
                 final LocalDateTime now = LocalDateTime.now();
                 Project newProject = new Project();
                 newProject.setName("AL-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
@@ -137,16 +85,12 @@ public class AnyLogicUploadController {
                 long newProjectId = projectDAO.createNewProject(newProject);
                 newProject.setId(newProjectId);
                 log.info("created project {}", newProjectId);
-                project = newProject;
-            }
+                return newProject;
+            });
 
-            modelService.addDraftModelToProject(model, project.getId(), "");
-            log.info("created model {}", model.getId());
-            RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
-            rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
-            observationDAO.updateModelObservations(model.getId(), observationList);
+            ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
+            Experiment experiment = experimentService.createExperimentFromModelBytes(modelBytes, projectSupplier);
 
-            Experiment experiment = modelService.resumeModelCreation(model, "");
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
             URI experimentUri = builder
@@ -165,34 +109,6 @@ public class AnyLogicUploadController {
             return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
         }
 
-    }
-
-    public static class ModelCheckException extends Exception {
-        public ModelCheckException(String message) {
-            super(message);
-        }
-    }
-
-    @Getter
-    public static class StatusUpdaterImpl implements StatusUpdater<AnylogicFileCheckResult> {
-
-        private String error;
-        private AnylogicFileCheckResult result;
-
-        @Override
-        public void updateStatus(double percentage) {
-            // ~ no op
-        }
-
-        @Override
-        public void updateError(String error) {
-            this.error = error;
-        }
-
-        @Override
-        public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
-            this.result = result;
-        }
     }
 
 }

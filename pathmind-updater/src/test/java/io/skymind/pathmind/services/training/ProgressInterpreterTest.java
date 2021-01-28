@@ -44,7 +44,6 @@ public class ProgressInterpreterTest {
         assertNotNull(policy.getMetrics());
         assertEquals(time, policy.getStartedAt());
         assertEquals(51, policy.getScores().size());
-        assertEquals(0.19725925509919762, policy.getScores().get(16).getMax(), 0);
         assertEquals(1, policy.getMetrics().get(0).getIteration().longValue());
         assertEquals(0, policy.getMetrics().get(0).getIndex().longValue());
         assertEquals(0.7947621966401736, policy.getMetrics().get(0).getMean().doubleValue(), 0);

@@ -105,6 +105,12 @@ public class WrapperUtils {
         return horizontalLayout;
     }
 
+    public static HorizontalLayout wrapWidthFullRightHorizontal(Component... components) {
+        HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(components);
+        horizontalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+        return horizontalLayout;
+    }
+
     public static SplitLayout wrapCenterAlignmentFullSplitLayoutHorizontal(Component primaryComponent, Component secondaryComponent) {
         return wrapCenterAlignmentFullSplitLayoutHorizontal(primaryComponent, secondaryComponent, 50);
     }

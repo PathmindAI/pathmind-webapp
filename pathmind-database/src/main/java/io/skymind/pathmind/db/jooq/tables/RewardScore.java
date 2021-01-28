@@ -20,7 +20,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RewardScore extends TableImpl<RewardScoreRecord> {
 
-    private static final long serialVersionUID = 1691411485;
+    private static final long serialVersionUID = -1479676039;
 
     /**
      * The reference instance of <code>public.reward_score</code>
@@ -62,19 +62,9 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
     public final TableField<RewardScoreRecord, Long> POLICY_ID = createField(DSL.name("policy_id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
-     * The column <code>public.reward_score.min</code>.
-     */
-    public final TableField<RewardScoreRecord, BigDecimal> MIN = createField(DSL.name("min"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
-
-    /**
      * The column <code>public.reward_score.mean</code>.
      */
     public final TableField<RewardScoreRecord, BigDecimal> MEAN = createField(DSL.name("mean"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
-
-    /**
-     * The column <code>public.reward_score.max</code>.
-     */
-    public final TableField<RewardScoreRecord, BigDecimal> MAX = createField(DSL.name("max"), org.jooq.impl.SQLDataType.NUMERIC(32, 17), this, "");
 
     /**
      * The column <code>public.reward_score.iteration</code>.
@@ -165,11 +155,11 @@ public class RewardScore extends TableImpl<RewardScoreRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, BigDecimal, BigDecimal, BigDecimal, Integer, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row4<Long, BigDecimal, Integer, Integer> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }
