@@ -13,16 +13,18 @@
 
 #header [part~="cell"] {
     color: var(--pm-grey-color);
+    border: none;
+}
+
+#header [part~="row"],
+#items [part~="row"] {
+    border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
 #items [part~="cell"] {
     font-size: var(--lumo-font-size-s);
     color: var(--pm-grey-color-darker);
     border-top: none;
-}
-
-:host(:not(.dashboard):not(.search-results)) #items [part~="cell"] {
-    border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
 :host(:not(.dashboard):not(.search-results)) #items [part~="cell"].align-right {

@@ -2,7 +2,9 @@ package io.skymind.pathmind.webapp.ui.views.project.components;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -20,8 +22,11 @@ import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 
 public class ExperimentGrid extends Grid<Experiment> {
+
+    private Map<String, Column> columnList = new LinkedHashMap<>();
+
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
-        addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
+        Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
             Experiment refreshedExperiment = experiment;
             experiment.setFavorite(newIsFavorite);
@@ -31,7 +36,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
-        addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
+        Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
                 .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
                 .setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
@@ -48,7 +53,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setAutoWidth(true)
                 .setResizable(true);
-        addComponentColumn(experiment -> new StatusIcon(experiment))
+        Grid.Column<Experiment> statusColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
                 .setHeader("Status")
                 .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
                 .setAutoWidth(true)
@@ -76,7 +81,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         //         .setFlexGrow(0)
         //         .setResizable(true)
         //         .setSortable(true);
-        addColumn(experiment -> {
+        Grid.Column<Experiment> notesColumn = addColumn(experiment -> {
             String userNotes = experiment.getUserNotes();
             return userNotes.isEmpty() ? "—" : userNotes;
         })
@@ -90,5 +95,15 @@ public class ExperimentGrid extends Grid<Experiment> {
         sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
         addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
         setColumnReorderingAllowed(true);
+
+        columnList.put("Favorite", favoriteColumn);
+        columnList.put("Id #", nameColumn);
+        columnList.put("Created", createdColumn);
+        columnList.put("Status", statusColumn);
+        columnList.put("Notes", notesColumn);
+    }
+
+    public Map<String, Column> getColumnList() {
+        return columnList;
     }
 }

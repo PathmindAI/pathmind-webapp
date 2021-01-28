@@ -1,18 +1,17 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -102,7 +101,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
-    private Grid<Experiment> experimentGrid;
+    private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
     private Span projectName;
@@ -203,17 +202,22 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private MultiselectComboBox<String> createColumnSelectionGroup() {
         MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
-        Set<String> columnList = new LinkedHashSet<String>();
-        columnList.add("Favorite");
-        columnList.add("Id #");
-        columnList.add("Created");
-        columnList.add("Status");
-        columnList.add("Notes");
-        columnList.add("Action");
+        Map<String, Column> experimentGridColumns = experimentGrid.getColumnList();
+        Set<String> columnList = experimentGridColumns.keySet();
         multiSelectGroup.setItems(columnList);
         multiSelectGroup.setValue(columnList);
         multiSelectGroup.addSelectionListener(event -> {
-            
+            String addedSelection = String.join("", event.getAddedSelection());
+            if (!addedSelection.isEmpty()) {
+                System.out.println("addedSelection: "+addedSelection);
+                experimentGridColumns.get(addedSelection).setVisible(true);
+            }
+            String removedSelection = String.join("", event.getRemovedSelection());
+            if (!removedSelection.isEmpty()) {
+                experimentGridColumns.get(removedSelection).setVisible(false);
+                System.out.println("removedSelection: "+removedSelection);
+            }
+
         });
         return multiSelectGroup;
     }
