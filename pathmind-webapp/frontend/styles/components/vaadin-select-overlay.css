@@ -1,5 +1,5 @@
 :host([theme~="split-button"]) {
-    --vaadin-select-text-field-width: 14rem !important;
+    --vaadin-select-text-field-width: 10rem !important;
 }
 
 :host([theme~="new-experiment-split-button"]) {

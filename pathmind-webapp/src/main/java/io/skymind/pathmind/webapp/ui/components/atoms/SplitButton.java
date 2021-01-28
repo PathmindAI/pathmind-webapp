@@ -64,12 +64,12 @@ public class SplitButton extends HorizontalLayout {
             }
             dropdown.setValue("");
         });
-        dropdown.getElement().setAttribute("theme", splitButtonTheme);
+        dropdown.getElement().setAttribute("theme", splitButtonTheme + " align-center");
     }
 
     public void addThemeName(String additionalThemeName) {
         addClassName(additionalThemeName);
-        dropdown.getElement().setAttribute("theme", splitButtonTheme + " " + additionalThemeName);
+        dropdown.getElement().setAttribute("theme", splitButtonTheme + " align-center " + additionalThemeName);
         mainButton.addThemeName(additionalThemeName);
     }
 
