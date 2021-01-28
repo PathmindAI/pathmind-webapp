@@ -204,20 +204,18 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
         Map<String, Column> experimentGridColumns = experimentGrid.getColumnList();
         Set<String> columnList = experimentGridColumns.keySet();
+        multiSelectGroup.setPlaceholder("Customize your table columns");
         multiSelectGroup.setItems(columnList);
         multiSelectGroup.setValue(columnList);
         multiSelectGroup.addSelectionListener(event -> {
             String addedSelection = String.join("", event.getAddedSelection());
             if (!addedSelection.isEmpty()) {
-                System.out.println("addedSelection: "+addedSelection);
                 experimentGridColumns.get(addedSelection).setVisible(true);
             }
             String removedSelection = String.join("", event.getRemovedSelection());
             if (!removedSelection.isEmpty()) {
-                experimentGridColumns.get(removedSelection).setVisible(false);
                 System.out.println("removedSelection: "+removedSelection);
             }
-
         });
         return multiSelectGroup;
     }
@@ -227,6 +225,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         List<String> observationNames = modelObservations.stream()
                 .map(obs -> obs.getVariable()).collect(Collectors.toList());
         multiSelectGroup.setItems(observationNames);
+        multiSelectGroup.setPlaceholder("Select observations to show on the table");
         return multiSelectGroup;
     }
 
@@ -235,6 +234,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.setRenderer(TemplateRenderer.<RewardVariable>of("[[item.name]]").withProperty("name", RewardVariable::getName));
         multiSelectGroup.setItemLabelGenerator(rewardVariable -> rewardVariable.getName());
         multiSelectGroup.setItems(rewardVariables);
+        multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         return multiSelectGroup;
     }
 
