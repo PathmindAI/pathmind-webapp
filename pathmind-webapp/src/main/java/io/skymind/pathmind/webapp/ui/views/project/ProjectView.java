@@ -1,7 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
@@ -14,6 +16,7 @@ import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -60,6 +63,7 @@ import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -123,124 +127,110 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
         addClassName("project-view");
 
-        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
+        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
+                CssPathmindStyles.PROJECT_TITLE);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         NotesField projectNotesField = createNotesField();
         Button edit = new Button("Rename", evt -> renameProject());
         edit.setClassName("no-shrink");
 
-        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
+        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
+                CssPathmindStyles.PROJECT_TITLE);
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
         if (selectedModel != null) {
             setupGrid();
             setupArchivesTabPanel();
-            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
+            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
+                    segmentIntegrator);
             modelNotesField = createModelNotesField();
 
-            modelsNavbar = new ModelsNavbar(
-                    modelDAO,
-                    selectedModel,
-                    models,
-                    segmentIntegrator
-            );
+            modelsNavbar = new ModelsNavbar(modelDAO, selectedModel, models, segmentIntegrator);
         }
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(projectName, edit),
-                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
-                ),
-                projectNotesField
-        );
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)),
+                projectNotesField);
         headerWrapper.addClassName("page-content-header");
 
         HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal();
         modelHeaderWrapper.addClassName("page-content-header");
 
         if (selectedModel != null) {
-            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService, segmentIntegrator);
-            modelHeaderWrapper.add(
-                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName),
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadAlpLink
-                    ),
-                    modelNotesField
-            );
+            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService,
+                    segmentIntegrator);
+            modelHeaderWrapper
+                    .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
+                                    .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
+                            downloadAlpLink), modelNotesField);
 
-            HorizontalLayout experimentGridHeader = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    archivesTabPanel, newExperimentButton
-            );
+            HorizontalLayout experimentGridHeader = WrapperUtils
+                    .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
             // To be moved to separate methods later
             HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                LabelFactory.createLabel("Metrics", BOLD_LABEL),
-                createMetricSelectionGroup());
+                    LabelFactory.createLabel("Metrics", BOLD_LABEL), createMetricSelectionGroup());
             metricSelectionRow.addClassName("metric-selection-row");
 
             HorizontalLayout observationSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Observations", BOLD_LABEL),
-                    createObservationSelectionGroup());
+                    LabelFactory.createLabel("Observations", BOLD_LABEL), createObservationSelectionGroup());
             observationSelectionRow.addClassName("observation-selection-row");
 
             HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Columns", BOLD_LABEL),
-                    createColumnSelectionGroup());
+                    LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
             columnSelectionRow.addClassName("column-selection-row");
 
-            
             Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
-            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            errorMessage,
-                            modelHeaderWrapper,
-                            experimentGridHeader,
-                            metricSelectionRow,
-                            observationSelectionRow,
-                            columnSelectionRow,
-                            experimentGrid
-                    );
+            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
+                    experimentGridHeader, metricSelectionRow, observationSelectionRow, columnSelectionRow,
+                    experimentGrid);
             modelWrapper.addClassName("model-wrapper");
         }
 
         FlexLayout gridWrapper = new ViewSection(headerWrapper);
         if (selectedModel != null) {
-            gridWrapper.add(
-                    WrapperUtils.wrapSizeFullBetweenHorizontal(
-                            modelsNavbar,
-                            modelWrapper
-                    )
-            );
+            gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
         }
         gridWrapper.addClassName("page-content");
 
         return gridWrapper;
     }
 
-    private MultiSelectListBox<String> createColumnSelectionGroup() {
-        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
-        multiSelectGroup.setItems("Favorite", "Id #", "Created", "Status", "Notes", "Action");
-        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
+    private MultiselectComboBox<String> createColumnSelectionGroup() {
+        MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
+        Set<String> columnList = new LinkedHashSet<String>();
+        columnList.add("Favorite");
+        columnList.add("Id #");
+        columnList.add("Created");
+        columnList.add("Status");
+        columnList.add("Notes");
+        columnList.add("Action");
+        multiSelectGroup.setItems(columnList);
+        multiSelectGroup.setValue(columnList);
+        multiSelectGroup.addSelectionListener(event -> {
+            
+        });
         return multiSelectGroup;
     }
 
-    private MultiSelectListBox<String> createObservationSelectionGroup() {
-        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
+    private MultiselectComboBox<String> createObservationSelectionGroup() {
+        MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
         List<String> observationNames = modelObservations.stream()
                 .map(obs -> obs.getVariable()).collect(Collectors.toList());
         multiSelectGroup.setItems(observationNames);
-        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
         return multiSelectGroup;
     }
 
-    private MultiSelectListBox<String> createMetricSelectionGroup() {
-        MultiSelectListBox<String> multiSelectGroup = new MultiSelectListBox<>();
-        List<String> metricNames = rewardVariables.stream()
-                .map(obs -> obs.getName()).collect(Collectors.toList());
-        multiSelectGroup.setItems(metricNames);
-        multiSelectGroup.getElement().setAttribute("theme", "grid-select");
+    private MultiselectComboBox<RewardVariable> createMetricSelectionGroup() {
+        MultiselectComboBox<RewardVariable> multiSelectGroup = new MultiselectComboBox<>();
+        multiSelectGroup.setRenderer(TemplateRenderer.<RewardVariable>of("[[item.name]]").withProperty("name", RewardVariable::getName));
+        multiSelectGroup.setItemLabelGenerator(rewardVariable -> rewardVariable.getName());
+        multiSelectGroup.setItems(rewardVariables);
         return multiSelectGroup;
     }
 

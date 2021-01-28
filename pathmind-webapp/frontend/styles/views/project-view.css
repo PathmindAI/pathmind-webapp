@@ -113,12 +113,12 @@
 .project-view .observation-selection-row,
 .project-view .column-selection-row {
     padding: 0 var(--lumo-space-s);
-    border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
 .project-view .metric-selection-row .bold-label,
 .project-view .observation-selection-row .bold-label,
 .project-view .column-selection-row .bold-label {
+    flex: 0 0 7rem;
     width: 7rem;
     font-size: var(--lumo-font-size-s);
 }
