@@ -20,6 +20,7 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-number-field.css", themeFor = "vaadin-number-field")
+@CssImport(value = "./styles/components/vaadin-item.css", themeFor = "vaadin-item")
 @CssImport(value = "./styles/components/vaadin-select.css", themeFor = "vaadin-select")
 @CssImport(value = "./styles/components/vaadin-select-overlay.css", themeFor = "vaadin-select-overlay")
 @CssImport(value = "./styles/components/vaadin-select-text-field.css", themeFor = "vaadin-select-text-field")
