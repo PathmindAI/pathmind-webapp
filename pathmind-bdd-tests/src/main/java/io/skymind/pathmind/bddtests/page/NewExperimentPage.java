@@ -31,7 +31,7 @@ public class NewExperimentPage extends PageObject {
     private WebElement newExperimentBtn;
     @FindBy(xpath = "//juicy-ace-editor")
     private WebElement rewardField;
-    @FindBy(xpath = "//vaadin-button[text()='Train Policy']")
+    @FindBy(xpath = "//vaadin-button[@theme='small new-experiment-split-button split-button primary']")
     private WebElement startDiscoveryRunBtn;
     @FindBy(xpath = "//vaadin-text-field[contains(@class,'reward-variable-name-field')]")
     private List<WebElement> rewardVariableNameInputs;
@@ -86,9 +86,12 @@ public class NewExperimentPage extends PageObject {
     public void clickProjectSaveDraftBtn() {
         waitABit(5000);
         Actions action = new Actions(getDriver());
-        WebElement we = getDriver().findElement(By.xpath("//vaadin-button[text()='Save']"));
-        JavascriptExecutor executor = (JavascriptExecutor) getDriver();
-        executor.executeScript("arguments[0].click();", we);
+        WebElement we = getDriver().findElement(By.xpath("//vaadin-select[@theme='split-button align-center new-experiment-split-button']"));
+//        JavascriptExecutor executor = (JavascriptExecutor) getDriver();
+//        executor.executeScript("arguments[0].click();", we);
+        we.click();
+        getDriver().findElement(By.xpath("//vaadin-item[@value='1']")).click();
+
         setImplicitTimeout(5, SECONDS);
         try {
             WebElement closePopUp = getDriver().findElement(By.xpath("//span[text()='Draft successfully saved']/following-sibling::vaadin-button[@theme='icon']"));
