@@ -110,13 +110,11 @@
 }
 
 .project-view .metric-selection-row,
-.project-view .observation-selection-row,
 .project-view .column-selection-row {
     padding: 0 var(--lumo-space-s);
 }
 
 .project-view .metric-selection-row .bold-label,
-.project-view .observation-selection-row .bold-label,
 .project-view .column-selection-row .bold-label {
     flex: 0 0 7rem;
     width: 7rem;

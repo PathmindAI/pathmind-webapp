@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -22,6 +23,8 @@ import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 
 public class ExperimentGrid extends Grid<Experiment> {
+
+    private Map<String, Column> additionalColumnList = new LinkedHashMap<>();
 
     private Map<String, Column> columnList = new LinkedHashMap<>();
 
@@ -57,6 +60,13 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setHeader("Status")
                 .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
                 .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
+        Grid.Column<Experiment> selectedObsColumn = addColumn(experiment -> 
+                String.join(", ", experiment.getSelectedObservations().stream().map(obs -> obs.getVariable()).collect(Collectors.toList())))
+                .setHeader("Selected Observations")
+                .setWidth("16rem")
                 .setFlexGrow(0)
                 .setResizable(true)
                 .setSortable(true);
@@ -100,10 +110,22 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Id #", nameColumn);
         columnList.put("Created", createdColumn);
         columnList.put("Status", statusColumn);
+        columnList.put("Selected Observations", selectedObsColumn);
         columnList.put("Notes", notesColumn);
     }
 
     public Map<String, Column> getColumnList() {
         return columnList;
+    }
+
+    public void addOrShowColumn(String columnName) {
+        Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
+                .setHeader("Status")
+                .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
+        additionalColumnList.put(columnName, newColumn);
     }
 }

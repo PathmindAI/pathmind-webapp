@@ -1,10 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -25,14 +23,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
@@ -82,8 +78,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
     @Autowired
-    private ObservationDAO observationDAO;
-    @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private ModelCheckerService modelCheckerService;
@@ -96,7 +90,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Model> models;
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
-    private List<Observation> modelObservations = new ArrayList<>();
     private String pageTitle;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
@@ -175,10 +168,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                     LabelFactory.createLabel("Metrics", BOLD_LABEL), createMetricSelectionGroup());
             metricSelectionRow.addClassName("metric-selection-row");
 
-            HorizontalLayout observationSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Observations", BOLD_LABEL), createObservationSelectionGroup());
-            observationSelectionRow.addClassName("observation-selection-row");
-
             HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
                     LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
             columnSelectionRow.addClassName("column-selection-row");
@@ -186,7 +175,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
             modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
-                    experimentGridHeader, metricSelectionRow, observationSelectionRow, columnSelectionRow,
+                    experimentGridHeader, metricSelectionRow, columnSelectionRow,
                     experimentGrid);
             modelWrapper.addClassName("model-wrapper");
         }
@@ -214,18 +203,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             }
             String removedSelection = String.join("", event.getRemovedSelection());
             if (!removedSelection.isEmpty()) {
-                System.out.println("removedSelection: "+removedSelection);
+                experimentGridColumns.get(removedSelection).setVisible(false);
             }
         });
-        return multiSelectGroup;
-    }
-
-    private MultiselectComboBox<String> createObservationSelectionGroup() {
-        MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
-        List<String> observationNames = modelObservations.stream()
-                .map(obs -> obs.getVariable()).collect(Collectors.toList());
-        multiSelectGroup.setItems(observationNames);
-        multiSelectGroup.setPlaceholder("Select observations to show on the table");
         return multiSelectGroup;
     }
 
@@ -329,7 +309,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelId = selectedModel != null ? selectedModel.getId() : null;
             experiments = experimentDAO.getExperimentsForModel(modelId);
             rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-            modelObservations = observationDAO.getObservationsForModel(modelId);
         }
     }
 
