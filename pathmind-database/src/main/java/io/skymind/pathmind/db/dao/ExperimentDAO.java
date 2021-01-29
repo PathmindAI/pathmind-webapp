@@ -225,4 +225,14 @@ public class ExperimentDAO {
                             experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
                         }));
     }
+
+    public void saveExperiment(Experiment experiment) {
+        ctx.transaction(conf -> {
+            DSLContext transactionCtx = DSL.using(conf);
+            ExperimentObservationRepository.deleteExperimentObservations(transactionCtx, experiment.getId());
+            ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
+            ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
+            ExperimentRepository.updateRewardFunction(ctx, experiment);
+        });
+    }
 }
