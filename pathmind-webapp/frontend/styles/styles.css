@@ -350,6 +350,7 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .projects-view .project-name-column vaadin-button {
+    height: auto;
     visibility: hidden;
 }
 

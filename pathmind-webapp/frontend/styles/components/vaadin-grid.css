@@ -16,8 +16,8 @@ background-color: var(--pm-grey-color-light);
     border: none;
 }
 
-#header [part~="row"],
-#items [part~="row"] {
+:host(:not(.search-results)) #header [part~="row"],
+:host(:not(.search-results)) #items [part~="row"] {
     border-bottom: var(--_lumo-grid-border-width) solid var(--_lumo-grid-border-color);
 }
 
@@ -49,8 +49,12 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 }
 
 :host(:not(.dashboard):not(.search-results)) [part~="cell"] ::slotted(vaadin-grid-cell-content) {
-    padding: var(--lumo-space-xxxs) var(--lumo-space-m);
+    padding: var(--lumo-space-xs) var(--lumo-space-m);
     cursor: pointer;
+}
+
+[part~="header-cell"] ::slotted(vaadin-grid-cell-content) {
+    padding: var(--lumo-space-xxxs) var(--lumo-space-m);
 }
 
 :host([theme~="projects"]) [part~="header-cell"]:nth-of-type(2),
@@ -95,4 +99,8 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 
 :host(.search-results) #items [part~="row"]:last-child [part~="cell"] {
     border-bottom: none;
+}
+
+:host(:not([theme~="projects"])) [part~="cell"]:not([part~="details-cell"]):not([part~="header-cell"]) {
+    align-items: flex-start;
 }
