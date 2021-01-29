@@ -91,6 +91,17 @@ public class ExperimentGrid extends Grid<Experiment> {
         //         .setFlexGrow(0)
         //         .setResizable(true)
         //         .setSortable(true);
+        Grid.Column<Experiment> rewardFunctionColumn = addColumn(experiment -> experiment.getRewardFunction())
+                .setClassNameGenerator(column -> "grid-reward-fn-column")
+                .setHeader("Reward Function")
+                .setFlexGrow(1)
+                .setResizable(true)
+                .setSortable(false);
+
+        // Sort by created by default
+        sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
+        addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
+        setColumnReorderingAllowed(true);
         Grid.Column<Experiment> notesColumn = addColumn(experiment -> {
             String userNotes = experiment.getUserNotes();
             return userNotes.isEmpty() ? "—" : userNotes;
@@ -111,6 +122,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Created", createdColumn);
         columnList.put("Status", statusColumn);
         columnList.put("Selected Observations", selectedObsColumn);
+        columnList.put("Reward Function", rewardFunctionColumn);
         columnList.put("Notes", notesColumn);
     }
 

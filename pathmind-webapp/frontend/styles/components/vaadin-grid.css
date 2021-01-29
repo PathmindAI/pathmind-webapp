@@ -59,6 +59,12 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
     text-align: right;
 }
 
+.grid-reward-fn-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {
+    max-height: 8rem;
+    white-space: pre-wrap;
+    overflow: auto;
+}
+
 .grid-notes-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {
     overflow: hidden;
 }
