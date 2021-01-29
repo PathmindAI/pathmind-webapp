@@ -1,7 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment;
 
-import io.skymind.pathmind.db.dao.RunDAO;
-import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEvent;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -11,18 +9,18 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 
 public class StartRunAction {
 
-    public static void startRun(NewExperimentView newExperimentView, RewardFunctionEditor rewardFunctionEditor, TrainingService trainingService, RunDAO runDAO) {
+    public static void startRun(NewExperimentView newExperimentView, RewardFunctionEditor rewardFunctionEditor) {
 
         if (!rewardFunctionEditor.validateBinder()) {
             return;
         }
-        if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(runDAO, newExperimentView.getUserCaps(), newExperimentView.getSegmentIntegrator())) {
+        if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(newExperimentView.getRunDAO(), newExperimentView.getUserCaps(), newExperimentView.getSegmentIntegrator())) {
             return;
         }
 
         newExperimentView.updateExperimentFromComponents();
         newExperimentView.getExperimentDAO().saveExperiment(newExperimentView.getExperiment());
-        trainingService.startRun(newExperimentView.getExperiment());
+        newExperimentView.getTrainingService().startRun(newExperimentView.getExperiment());
         newExperimentView.getSegmentIntegrator().startTraining();
         EventBus.post(new ExperimentStartTrainingBusEvent(newExperimentView.getExperiment()));
 
