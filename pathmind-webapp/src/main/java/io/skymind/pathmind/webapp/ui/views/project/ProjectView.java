@@ -211,10 +211,21 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private MultiselectComboBox<RewardVariable> createMetricSelectionGroup() {
         MultiselectComboBox<RewardVariable> multiSelectGroup = new MultiselectComboBox<>();
+        Map<String, Column> experimentGridAdditionalColumns = experimentGrid.getAdditionalColumnList();
         multiSelectGroup.setRenderer(TemplateRenderer.<RewardVariable>of("[[item.name]]").withProperty("name", RewardVariable::getName));
         multiSelectGroup.setItemLabelGenerator(rewardVariable -> rewardVariable.getName());
         multiSelectGroup.setItems(rewardVariables);
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
+        multiSelectGroup.addSelectionListener(event -> {
+            RewardVariable addedSelection = event.getAddedSelection().stream().findFirst().orElse(null);
+            if (addedSelection != null) {
+                experimentGrid.addOrShowColumn(addedSelection);
+            }
+            RewardVariable removedSelection = event.getRemovedSelection().stream().findFirst().orElse(null);
+            if (removedSelection != null) {
+                experimentGridAdditionalColumns.get(removedSelection.getName()).setVisible(false);
+            }
+        });
         return multiSelectGroup;
     }
 

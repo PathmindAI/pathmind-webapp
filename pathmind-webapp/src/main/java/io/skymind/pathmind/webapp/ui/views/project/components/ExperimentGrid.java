@@ -16,7 +16,9 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
@@ -130,14 +132,33 @@ public class ExperimentGrid extends Grid<Experiment> {
         return columnList;
     }
 
-    public void addOrShowColumn(String columnName) {
-        Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
-                .setHeader("Status")
-                .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
-        additionalColumnList.put(columnName, newColumn);
+    public Map<String, Column> getAdditionalColumnList() {
+        return additionalColumnList;
     }
+
+    public void addOrShowColumn(RewardVariable rewardVar) {
+        String rewardVariableName = rewardVar.getName();
+        int rewardVarIndex = rewardVar.getArrayIndex();
+        if (additionalColumnList.get(rewardVariableName) == null) {
+            Grid.Column<Experiment> newColumn = addColumn(experiment -> {
+                        if (experiment.getBestPolicy() != null) {
+                            Policy bestPolicy = experiment.getBestPolicy();
+                            // First conditional value is with uncertainty, second value is without uncertainty
+                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
+                                    ? bestPolicy.getUncertainty().get(rewardVarIndex)
+                                    : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex));
+                        }
+                        return "—";
+                    })
+                    .setHeader(rewardVariableName)
+                    .setAutoWidth(true)
+                    .setFlexGrow(0)
+                    .setResizable(true)
+                    .setSortable(true);
+            additionalColumnList.put(rewardVariableName, newColumn);
+        } else {
+            additionalColumnList.get(rewardVariableName).setVisible(true);
+        }
+    }
+
 }
