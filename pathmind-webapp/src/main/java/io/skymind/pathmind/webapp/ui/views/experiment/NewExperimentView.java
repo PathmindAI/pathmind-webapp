@@ -195,6 +195,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         isNeedsSaving = true;
         saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
         startRunButton.setEnabled(canStartTraining());
+        splitButton.enableMainButton(canStartTraining());
     }
 
     public Experiment getUpdatedExperiment() {
@@ -246,8 +247,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         super.updateComponents();
         splitButton.setVisible(!experiment.isArchived());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-        startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(isNeedsSaving);
+        startRunButton.setEnabled(canStartTraining());
+        splitButton.enableMainButton(canStartTraining());
     }
 
     @Override

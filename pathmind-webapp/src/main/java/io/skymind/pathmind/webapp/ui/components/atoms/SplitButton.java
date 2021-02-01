@@ -47,6 +47,10 @@ public class SplitButton extends HorizontalLayout {
         };
     }
 
+    public void enableMainButton(Boolean enable) {
+        mainButton.setEnabled(enable);
+    }
+
     private Button getTargetButtonFromButtonText(String buttonText) {
         return buttons.get(buttonText);
     }
