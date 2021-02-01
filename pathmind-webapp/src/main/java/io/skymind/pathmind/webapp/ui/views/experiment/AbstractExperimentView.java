@@ -100,11 +100,21 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     public void setExperiment(Experiment experiment) {
+        setExperiment(experiment, true);
+    }
+
+    /**
+     * In cases such as NarBarItemSelectExperimentAction where we want to delay updating the components as there
+     * may be additional actions and logic going on. The default is set to true, that is render when experiment is set.
+     */
+    public void setExperiment(Experiment experiment, boolean isUpdateComponent) {
         synchronized (experimentLock) {
             this.experiment = experiment;
             this.experimentId = experiment.getId();
             loadFullExperimentData();
-            updateComponents();
+            if(isUpdateComponent) {
+                updateComponents();
+            }
         }
     }
 
@@ -184,9 +194,17 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     /**
-     * Helper method because a ton of actions need this and this significantly simplifies the paramters.
+     * Helper method because a ton of actions need this and this significantly simplifies the parameters.
      */
     public ExperimentDAO getExperimentDAO() {
         return experimentDAO;
+    }
+
+    public RunDAO getRunDAO() {
+        return runDAO;
+    }
+
+    public TrainingService getTrainingService() {
+        return trainingService;
     }
 }

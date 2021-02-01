@@ -330,6 +330,21 @@ background-color: var(--pm-grey-color-light);
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
+.projects-view .demo-dialog {
+    width: 40rem;
+    height: 40rem;
+}
+
+.demo-view-content + vaadin-button {
+    position: absolute;
+    top: var(--lumo-space-m);
+    right: var(--lumo-space-m);
+}
+
+vaadin-dialog-overlay .demo-view-content {
+    padding: var(--lumo-space-xs);
+}
+
 .projects-view .project-name-column {
     align-items: center;
 }
@@ -345,11 +360,15 @@ background-color: var(--pm-grey-color-light);
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,
-.projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
+}
+
+.projects-view .page-content {
+    box-sizing: border-box;
+    flex: 1 0 auto;
 }
 
 .projects-view .view-section,
@@ -492,6 +511,10 @@ change-password-view-content .inner-content {
 
 .projects-view .page-title {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
+}
+
+.projects-view .demoMessage {
+    margin: 0;
 }
 
 .create-project-button {
@@ -649,4 +672,17 @@ h4 {
     margin-top: var(--lumo-space-l);
     padding: var(--lumo-space-xs) var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
+}
+
+.demo-view-content {
+    padding: var(--lumo-space-xl);
+    align-items: center;
+}
+
+.projects-view .page-content > .demo-view-content {
+    padding: var(--lumo-space-m);
+}
+
+.demo-view-content h2 {
+    text-align: center;
 }

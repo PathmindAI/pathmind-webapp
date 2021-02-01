@@ -37,7 +37,7 @@ public class AccountHeaderPanelTest {
         TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        accountHeaderPanel = new AccountHeaderPanel(() -> Optional.of(ui), user, new FeatureManager(false));
+        accountHeaderPanel = new AccountHeaderPanel(() -> Optional.of(ui), user, new FeatureManager(false, false));
         ui = KaribuUtils.setup(accountHeaderPanel);
     }
 

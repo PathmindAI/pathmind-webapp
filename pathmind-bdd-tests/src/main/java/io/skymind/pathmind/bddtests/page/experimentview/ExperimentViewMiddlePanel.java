@@ -28,6 +28,9 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
     private String observationCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='true']";
     private String observationNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='false']";
+    private String rewardVariableXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s']";
+    private String rewardVariableCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and @chosen]";
+    private String rewardVariableNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
 
 
     private static final String SIM_METRICS_LABEL = "Simulation Metrics";
@@ -36,7 +39,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private static final String REWARD_FUNCTION_LABEL = "Reward Function";
 
     public void experimentPageCheckMiddlePanel(String slot) {
-        String panel = (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
+        String panel = genericPage.definePanel(slot);
         assertThat(getDriver().findElements(By.xpath(String.format(middlePanelXpath, slot, panel))).size(), is(not(0)));
         genericPage.checkElement(true, String.format(simMetricsLabelXpath, slot, panel), SIM_METRICS_LABEL);
         genericPage.checkElement(true, String.format(simMetricsHeaderRowXpath, slot, panel), SIM_METRICS_HEADER_ROW);
@@ -45,10 +48,9 @@ public class ExperimentViewMiddlePanel extends PageObject {
     }
 
     public void experimentPageCheckSimulationMetrics(String slot, String commaSeparatedMetrics) {
-        String panel = (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
         List<String> items = Arrays.asList(commaSeparatedMetrics.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath(String.format(rewardVariablesListXpath, slot, panel)))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath(String.format(rewardVariablesListXpath, slot, genericPage.definePanel(slot))))) {
             actual.add(webElement.getText());
         }
         assertThat(actual, containsInRelativeOrder(items.toArray()));
@@ -67,6 +69,18 @@ public class ExperimentViewMiddlePanel extends PageObject {
             genericPage.checkElement(true, String.format(observationCheckedXpath, slot, genericPage.definePanel(slot), observation), observation);
         } else {
             genericPage.checkElement(true, String.format(observationNotCheckedXpath, slot, genericPage.definePanel(slot), observation), observation);
+        }
+    }
+
+    public void experimentPageSlotClickRewardVariable(String slot, String rewardVar) {
+        getDriver().findElement(By.xpath(String.format(rewardVariableXpath, slot, genericPage.definePanel(slot), rewardVar))).click();
+    }
+
+    public void experimentPageSlotCheckRewardVariableIsChosen(String slot, String rewardVar, boolean chosen) {
+        if (chosen) {
+            genericPage.checkElement(true, String.format(rewardVariableCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
+        } else {
+            genericPage.checkElement(true, String.format(rewardVariableNotCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
         }
     }
 }

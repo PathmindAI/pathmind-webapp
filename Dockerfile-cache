@@ -5,8 +5,8 @@ WORKDIR /app
 RUN apt-get update -y && \
         apt-get install wget -y && \
         apt-get install rsync -y && \
-        wget https://deb.nodesource.com/setup_13.x && \
-        bash ./setup_13.x && \
+        wget https://deb.nodesource.com/setup_14.x && \
+        bash ./setup_14.x && \
         apt-get update -y && \
         apt-get install nodejs -y && \
         apt-get install maven -y
