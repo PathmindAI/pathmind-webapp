@@ -17,12 +17,12 @@ import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -40,6 +40,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Star
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.NewExperimentViewFavoriteSubscriber;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -64,8 +66,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private final int allowedRunsNoVerified;
 
     @Autowired
-    private ObservationDAO observationDAO;
-    @Autowired
     private RewardValidationService rewardValidationService;
     @Autowired
     private ModelCheckerService modelCheckerService;
@@ -87,6 +87,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected Component getMainContent() {
         HorizontalLayout mainContent = createMainPanel();
         return mainContent;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
     }
 
     private HorizontalLayout createMainPanel() {
@@ -260,6 +265,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     public void disableSaveNeeded() {
