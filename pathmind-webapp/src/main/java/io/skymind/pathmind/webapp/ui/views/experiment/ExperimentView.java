@@ -31,6 +31,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.St
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewComparisonExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -146,6 +147,7 @@ public class ExperimentView extends AbstractExperimentView {
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(
+                new ExperimentViewFavoriteSubscriber(this),
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewComparisonExperimentArchivedSubscriber(this));
