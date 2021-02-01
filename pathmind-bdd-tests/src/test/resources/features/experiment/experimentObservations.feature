@@ -237,12 +237,13 @@ Feature: Experiment observations
     When Click new experiment page observation checkbox 'retailerExpected'
     When Click project page new experiment button
     When Wait a bit 3000 ms
+    When Wait for loading bar disappear
     Then Check experiment page observation 'retailerI' is selected 'true'
     Then Check experiment page observation 'retailerDemandsSize' is selected 'true'
     Then Check experiment page observation 'retailerExpected' is selected 'true'
     Then Check experiment page observation 'retailerBacklog' is selected 'true'
     Then Check experiment page observation 'wholesalerI' is selected 'true'
-    Then Check experiment page observation 'wholesalerOrdersSize' is selected 'true'
+    Then Check experiment page observation 'wholesalerOrdersSize' is selected 'false'
     Then Check experiment page observation 'wholesalerExpected' is selected 'true'
     Then Check experiment page observation 'wholesalerBacklog' is selected 'true'
     Then Check experiment page observation 'factoryI' is selected 'true'
@@ -273,18 +274,19 @@ Feature: Experiment observations
     When Click project start run button
     When Click project page new experiment button
     When Wait a bit 3000 ms
-    Then Check experiment page observation 'retailerI' is selected 'true'
-    Then Check experiment page observation 'retailerDemandsSize' is selected 'true'
-    Then Check experiment page observation 'retailerExpected' is selected 'true'
-    Then Check experiment page observation 'retailerBacklog' is selected 'true'
-    Then Check experiment page observation 'wholesalerI' is selected 'true'
-    Then Check experiment page observation 'wholesalerOrdersSize' is selected 'false'
-    Then Check experiment page observation 'wholesalerExpected' is selected 'true'
-    Then Check experiment page observation 'wholesalerBacklog' is selected 'true'
-    Then Check experiment page observation 'factoryI' is selected 'true'
-    Then Check experiment page observation 'factoryOrdersSize' is selected 'true'
-    Then Check experiment page observation 'factoryBacklog' is selected 'true'
-    Then Check experiment page observation 'simTime' is selected 'true'
+    When Wait for loading bar disappear
+    Then Check experiment page observation 'retailerI' is selected 'false'
+    Then Check experiment page observation 'retailerDemandsSize' is selected 'false'
+    Then Check experiment page observation 'retailerExpected' is selected 'false'
+    Then Check experiment page observation 'retailerBacklog' is selected 'false'
+    Then Check experiment page observation 'wholesalerI' is selected 'false'
+    Then Check experiment page observation 'wholesalerOrdersSize' is selected 'true'
+    Then Check experiment page observation 'wholesalerExpected' is selected 'false'
+    Then Check experiment page observation 'wholesalerBacklog' is selected 'false'
+    Then Check experiment page observation 'factoryI' is selected 'false'
+    Then Check experiment page observation 'factoryOrdersSize' is selected 'false'
+    Then Check experiment page observation 'factoryBacklog' is selected 'false'
+    Then Check experiment page observation 'simTime' is selected 'false'
     When Click side bar experiment Experiment #1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
