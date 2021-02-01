@@ -15,6 +15,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -37,6 +38,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
 
     private Experiment experiment;
     private ExperimentPanelTitle experimentPanelTitle;
+    private FavoriteStar favoriteStar;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -76,11 +78,14 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         Component[] buttons = createButtons(isExportPolicyButtonOnly);
 
         experimentPanelTitle = new ExperimentPanelTitle();
+        favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
+
+        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
 
         HorizontalLayout titleBarWrapper = new HorizontalLayout(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        experimentPanelTitle, archivedLabel, sharedWithSupportLabel),
+                        titleWithStar, archivedLabel, sharedWithSupportLabel),
                         trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
@@ -131,6 +136,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        favoriteStar.setValue(experiment.isFavorite());
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
         downloadModelAlpLink.setExperiment(experiment);
