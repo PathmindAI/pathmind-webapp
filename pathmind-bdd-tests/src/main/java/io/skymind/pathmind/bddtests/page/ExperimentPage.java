@@ -45,7 +45,7 @@ public class ExperimentPage extends PageObject {
     private By notesSaveBtn = By.cssSelector("#save");
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
-        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8)));
+        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8).replaceAll("\r", "")));
     }
 
     public void addNoteToTheExperimentPage(String note) {
