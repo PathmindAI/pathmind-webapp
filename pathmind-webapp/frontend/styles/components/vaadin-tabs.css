@@ -3,7 +3,7 @@
 }
 
 :host(:not([orientation="vertical"])) {
-  box-shadow: inset 0 -2px 0 0 var(--pm-grey-color-lighter);
+  box-shadow: inset 0 -2px 0 0 var(--lumo-primary-color-20pct);
 }
 
 :host([theme~="small"]),
