@@ -24,6 +24,7 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.security.UserService;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -51,6 +52,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
+    private FavoriteStar favoriteStar;
     private Span unsavedChanges;
     private Span notesSavedHint;
     private Button unarchiveExperimentButton;
@@ -100,10 +102,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         mainPanel.setSpacing(true);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
+        favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
+        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar.setSpacing(false);
+        titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
+
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
                 WrapperUtils.wrapWidthFullHorizontal(
-                        experimentPanelTitle,
+                        titleWithStar,
                         downloadModelAlpLink
                 ),
                 LabelFactory.createLabel(
@@ -239,6 +246,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
+        favoriteStar.setValue(experiment.isFavorite());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(isNeedsSaving);
@@ -250,6 +258,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         });
         // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
+        favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
     }
 

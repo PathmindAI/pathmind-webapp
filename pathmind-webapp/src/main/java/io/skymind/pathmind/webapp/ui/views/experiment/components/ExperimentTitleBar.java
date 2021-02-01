@@ -8,6 +8,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -82,6 +83,8 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar.setSpacing(false);
+        titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
 
         HorizontalLayout titleBarWrapper = new HorizontalLayout(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
