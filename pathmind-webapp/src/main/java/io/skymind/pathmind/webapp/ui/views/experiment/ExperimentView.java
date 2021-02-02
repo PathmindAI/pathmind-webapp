@@ -224,7 +224,7 @@ public class ExperimentView extends AbstractExperimentView {
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                         experimentObservationsPanel,
-                        60),
+                        70),
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
