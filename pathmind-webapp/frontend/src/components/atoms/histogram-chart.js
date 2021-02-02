@@ -82,7 +82,6 @@ class HistogramChart extends PolymerElement {
                 "titleTextStyle": {"italic": false},
                 "textPosition": haxistitle ? "out" : "none",
                 "ticks": haxistitle ? "auto" : [],
-                "format": "0",
                 "baselineColor": haxistitle ? "black" : "#FFF",
                 "gridlineColor": haxistitle ? "#CCC" : "#FFF"
             },

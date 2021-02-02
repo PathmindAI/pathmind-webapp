@@ -51,7 +51,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setChartEmpty() {
-        this.setupChart("value", "frequency", List.of("navy"), null);
+        this.setupChart("Value", "Count", List.of("navy"), null);
         getElement().callJsFunction("setChartEmpty");
         redraw();
     }
@@ -82,7 +82,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
                 .map(r -> colors.get(r.getArrayIndex() % 10))
                 .collect(Collectors.toList());
 
-            this.setupChart("value", "frequency", selectedColors, null);
+            this.setupChart("Value", "Count", selectedColors, null);
             this.setData(cols, rows);
         } else {
             this.setChartEmpty();
