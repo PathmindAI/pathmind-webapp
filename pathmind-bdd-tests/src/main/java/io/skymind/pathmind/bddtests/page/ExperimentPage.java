@@ -270,7 +270,7 @@ public class ExperimentPage extends PageObject {
             }
         }
         resetImplicitTimeout();
-        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Variable Name"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Metric"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));

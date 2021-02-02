@@ -58,14 +58,14 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
         redraw();
     }
 
-    public void setHistogramData(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+    public void setHistogramData(List<RewardVariable> selectedRewardVariables, Policy bestPolicy, Boolean showDetails) {
         this.selectedRewardVariables = selectedRewardVariables;
         this.bestPolicy = bestPolicy;
 
-        updateData();
+        updateData(showDetails);
     }
 
-    private void updateData() {
+    private void updateData(Boolean showDetails) {
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
         List<MetricsRaw> metricsRawList = bestPolicy.getMetricsRaws();
 
@@ -84,7 +84,11 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
                 .map(r -> colors.get(r.getArrayIndex() % 10))
                 .collect(Collectors.toList());
 
-            this.setupChart(selectedRewardVariables.get(0).getName(), "Value", "Count", selectedColors, null);
+            if (showDetails) {
+                this.setupChart(null, "Value", "Count", selectedColors, null);
+            } else {
+                this.setupChart(null, null, null, selectedColors, null);
+            }
             this.setData(cols, rows);
         } else {
             this.setChartEmpty();

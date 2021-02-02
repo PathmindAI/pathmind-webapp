@@ -34,7 +34,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
 
 
     private static final String SIM_METRICS_LABEL = "Simulation Metrics";
-    private static final String SIM_METRICS_HEADER_ROW = "Variable Name";
+    private static final String SIM_METRICS_HEADER_ROW = "Metric";
     private static final String OBSERVATIONS_LABEL = "Observations";
     private static final String REWARD_FUNCTION_LABEL = "Reward Function";
 

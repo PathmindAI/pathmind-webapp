@@ -26,7 +26,7 @@ public class HistogramChartPanel extends VerticalLayout implements ExperimentCom
     public void updateChart() {
         Optional<Policy> opt = PolicyUtils.selectBestPolicy(this.experiment);
         if (opt.isPresent()) {
-            chart.setHistogramData(new ArrayList<>(experiment.getSelectedRewardVariables()), opt.get());
+            chart.setHistogramData(new ArrayList<>(experiment.getSelectedRewardVariables()), opt.get(), true);
         } else {
             chart.setChartEmpty();
         }

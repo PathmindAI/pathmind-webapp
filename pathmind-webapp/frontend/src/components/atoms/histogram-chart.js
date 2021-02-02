@@ -82,6 +82,9 @@ class HistogramChart extends PolymerElement {
     _computeOptions(title, haxistitle, vaxistitle, colors, bucketsize) {
         return {
             "title": title || null,
+            "legend": {
+                "position": !vaxistitle && !haxistitle ? "none" : "top"
+            },
             "hAxis": {
                 "title": haxistitle,
                 "titleTextStyle": {"italic": false},
@@ -107,9 +110,11 @@ class HistogramChart extends PolymerElement {
             "colors": colors,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
-                "top": title ? "10%" : 0, 
+                "top": "10%", 
+                "width": !vaxistitle && !haxistitle ? "100%" : "85%",
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
-            }
+            },
+            "enableInteractivity": !(!vaxistitle && !haxistitle)
         };
     }
 

@@ -14,6 +14,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
@@ -27,12 +28,14 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
     private VerticalLayout metricsWrapper;
     private VerticalLayout sparklinesWrapper;
+    private VerticalLayout histogramsWrapper;
 
     private RewardVariablesTable rewardVariablesTable;
 
     private Experiment experiment;
     private List<Span> metricSpans = new ArrayList<>();
     private List<SparklineChart> sparklineCharts = new ArrayList<>();
+    private List<HistogramChart> histogramCharts = new ArrayList<>();
 
     public SimulationMetricsPanel(ExperimentView experimentView) {
 
@@ -63,20 +66,34 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         sparklineHeader.addClassName("header");
         sparklinesWrapper.add(sparklineHeader);
 
+        histogramsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        histogramsWrapper.addClassName("histograms-wrapper");
+        Div histogramHeader = new Div(new Span("Spread"), new SimulationMetricsInfoLink());
+        histogramHeader.addClassName("header");
+        histogramsWrapper.add(histogramHeader);
+
         IntStream.range(0, experiment.getRewardVariables().size())
                 .forEach(index -> {
                     Span metricSpan = new Span();
                     SparklineChart sparkline = new SparklineChart();
+                    HistogramChart histogram = new HistogramChart();
                     metricSpans.add(metricSpan);
                     sparklineCharts.add(sparkline);
+                    histogramCharts.add(histogram);
 
                     VerticalLayout sparkLineWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                             sparkline
                     );
                     sparkLineWrapper.addClassName("sparkline");
 
+                    VerticalLayout histogramWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                            histogram
+                    );
+                    histogramWrapper.addClassName("histogram");
+
                     metricsWrapper.add(metricSpan);
                     sparklinesWrapper.add(sparkLineWrapper);
+                    histogramsWrapper.add(histogramWrapper);
                 });
 
         showMetricValuesAndSparklines(false);
@@ -85,6 +102,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     private void showMetricValuesAndSparklines(Boolean show) {
         metricsWrapper.setVisible(show);
         sparklinesWrapper.setVisible(show);
+        histogramsWrapper.setVisible(show);
     }
 
     public Experiment getExperiment() {
@@ -97,7 +115,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         // If it hasn't been rendered yet then render the simulation metrics components as they are dependent on the rewardvariables of the experiment.
         if (metricsWrapper == null) {
             createSimulationMetricsSpansAndSparklines();
-            add(metricsWrapper, sparklinesWrapper);
+            add(metricsWrapper, sparklinesWrapper, histogramsWrapper);
         }
 
         // TODO -> REFACTOR -> Why are we resetting the reward variables here? Why are there are two RewardVariableTables?
@@ -131,6 +149,9 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
                     }
                     sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false, index);
                     metricSpans.get(index).setText(metricValue);
+                    List<RewardVariable> histogramRewardVarList = new ArrayList<>();
+                    histogramRewardVarList.add(rewardVariable);
+                    histogramCharts.get(index).setHistogramData(histogramRewardVarList, bestPolicy, false);
                 });
 
         showMetricValuesAndSparklines(true);
