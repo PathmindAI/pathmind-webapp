@@ -33,11 +33,13 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setupChart(
+            String title,
             String hAxisTitle,
             String vAxisTitle,
             List<String> colors,
             JsonObject viewWindow
     ) {
+        getModel().setTitle(title);
         getModel().setHaxistitle(hAxisTitle);
         getModel().setVaxistitle(vAxisTitle);
         getModel().setColors(colors);
@@ -51,7 +53,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setChartEmpty() {
-        this.setupChart("Value", "Count", List.of("navy"), null);
+        this.setupChart("", "Value", "Count", List.of("navy"), null);
         getElement().callJsFunction("setChartEmpty");
         redraw();
     }
@@ -82,7 +84,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
                 .map(r -> colors.get(r.getArrayIndex() % 10))
                 .collect(Collectors.toList());
 
-            this.setupChart("Value", "Count", selectedColors, null);
+            this.setupChart(selectedRewardVariables.get(0).getName(), "Value", "Count", selectedColors, null);
             this.setData(cols, rows);
         } else {
             this.setChartEmpty();
@@ -131,6 +133,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public interface Model extends TemplateModel {
+        void setTitle(String title);
 
         void setHaxistitle(String hAxisTitle);
 

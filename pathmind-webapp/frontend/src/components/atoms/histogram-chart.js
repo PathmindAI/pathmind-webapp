@@ -9,6 +9,9 @@ class HistogramChart extends PolymerElement {
 
     static get properties() {
         return {
+            title: {
+                type: String,
+            },
             haxistitle: {
                 type: String,
             },
@@ -34,6 +37,7 @@ class HistogramChart extends PolymerElement {
             options: {
                 type: Object,
                 computed: `_computeOptions(
+                                title,
                                 haxistitle, 
                                 vaxistitle, 
                                 colors,
@@ -75,8 +79,9 @@ class HistogramChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(haxistitle, vaxistitle, colors, bucketsize) {
+    _computeOptions(title, haxistitle, vaxistitle, colors, bucketsize) {
         return {
+            "title": title || null,
             "hAxis": {
                 "title": haxistitle,
                 "titleTextStyle": {"italic": false},
@@ -95,7 +100,6 @@ class HistogramChart extends PolymerElement {
                     "gridlineColor": vaxistitle ? "#CCC" : "#FFF",
                 }
             ],
-            "bar": { "gap": 0 },
             "histogram": {
                 "bucketSize": bucketsize || "auto",
             },
@@ -103,7 +107,7 @@ class HistogramChart extends PolymerElement {
             "colors": colors,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
-                "top": !vaxistitle && !haxistitle ? 0 : "5%", 
+                "top": title ? "10%" : 0, 
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
             }
         };
