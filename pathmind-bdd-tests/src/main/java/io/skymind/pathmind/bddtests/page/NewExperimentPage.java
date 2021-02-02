@@ -192,14 +192,14 @@ public class NewExperimentPage extends PageObject {
     public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
         waitABit(4000);
         if (btnStatus) {
-            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")));
-            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")));
-            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@aria-disabled='true')]")).size(), is(not(0)));
-            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and not(@disabled)]")).size(), is(not(0)));
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[not(@aria-disabled='true')]")));
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[not(@disabled)]")));
+            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[not(@aria-disabled='true')]")).size(), is(not(0)));
+            assertThat(getDriver().findElements(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[not(@disabled)]")).size(), is(not(0)));
         } else {
-            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[@theme='primary' and @aria-disabled='true' and @disabled]")));
-            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("aria-disabled"), is("true"));
-            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/vaadin-button[1]")).getAttribute("disabled"), is("true"));
+            waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[@aria-disabled='true' and @disabled]")));
+            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[1]")).getAttribute("aria-disabled"), is("true"));
+            assertThat(getDriver().findElement(By.xpath("//*[@class='panel-title']/following-sibling::vaadin-horizontal-layout/descendant::vaadin-button[1]")).getAttribute("disabled"), is("true"));
         }
     }
 
