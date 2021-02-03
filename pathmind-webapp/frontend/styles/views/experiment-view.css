@@ -36,6 +36,10 @@
     --iron-icon-height: var(--lumo-font-size-s);
 }
 
+.experiment-view .simulation-metrics-panel-header .helper-icon:hover {
+    color: var(--pm-secondary-text-color);
+}
+
 .experiment-view .section-title-label ~ tag-label {
     margin: var(--lumo-space-xs) 0;
 }
