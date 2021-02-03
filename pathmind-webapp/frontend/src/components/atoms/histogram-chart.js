@@ -40,8 +40,7 @@ class HistogramChart extends PolymerElement {
                                 title,
                                 haxistitle, 
                                 vaxistitle, 
-                                colors,
-                                bucketsize)`,
+                                colors)`,
             },
         }
     }
@@ -55,6 +54,11 @@ class HistogramChart extends PolymerElement {
                 :host {
                     width: 100% !important;
                     height: 100% !important;
+                }
+                div[dir="ltr"] {
+                    width: 100% !important;
+                    height: 0 !important;
+                    padding-bottom: 40.8%;
                 }
                 .google-visualization-tooltip div {
                     line-height: 1.2;
@@ -79,11 +83,11 @@ class HistogramChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(title, haxistitle, vaxistitle, colors, bucketsize) {
+    _computeOptions(title, haxistitle, vaxistitle, colors) {
         return {
             "title": title || null,
             "legend": {
-                "position": !vaxistitle && !haxistitle ? "none" : "top"
+                "position": "none"
             },
             "hAxis": {
                 "title": haxistitle,
@@ -104,9 +108,8 @@ class HistogramChart extends PolymerElement {
                 }
             ],
             "histogram": {
-                "bucketSize": bucketsize || "auto",
+                "hideBucketItems": true
             },
-            "interpolateNulls": false,
             "colors": colors,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 

@@ -36,8 +36,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
             String title,
             String hAxisTitle,
             String vAxisTitle,
-            List<String> colors,
-            JsonObject viewWindow
+            List<String> colors
     ) {
         getModel().setTitle(title);
         getModel().setHaxistitle(hAxisTitle);
@@ -85,9 +84,9 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
                 .collect(Collectors.toList());
 
             if (showDetails) {
-                this.setupChart(null, "Value", "Count", selectedColors, null);
+                this.setupChart(null, "Value", "Count", selectedColors);
             } else {
-                this.setupChart(null, null, null, selectedColors, null);
+                this.setupChart(null, null, null, selectedColors);
             }
             this.setData(cols, rows);
         } else {
