@@ -192,7 +192,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatSimulationMetricsBlockIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
     }
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
