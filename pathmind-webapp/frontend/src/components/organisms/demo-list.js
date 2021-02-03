@@ -132,7 +132,7 @@ class DemoList extends PolymerElement {
                     <div class="demo-img-wrapper"><img src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"/></div>
                     <p class="description">[[_getDataItem(demoDataList, '0', 'description')]]</p>
                     <p class="result"><b>Result:</b> [[_getDataItem(demoDataList, '0', 'result')]]</p>
-                    <vaadin-button theme="primary" data-item$="[[_getDataItem(demoDataList, '0', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
+                    <vaadin-button theme="primary" name$="[[_getDataItem(demoDataList, '0', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
                         <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
                         <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
                     </vaadin-button>
@@ -142,7 +142,7 @@ class DemoList extends PolymerElement {
                     <div class="demo-img-wrapper"><img src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"/></div>
                     <p class="description">[[_getDataItem(demoDataList, '1', 'description')]]</p>
                     <p class="result"><b>Result:</b> [[_getDataItem(demoDataList, '1', 'result')]]</p>
-                    <vaadin-button theme="primary" data-item$="[[_getDataItem(demoDataList, '1', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
+                    <vaadin-button theme="primary" name$="[[_getDataItem(demoDataList, '1', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
                         <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
                         <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
                     </vaadin-button>
