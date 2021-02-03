@@ -233,8 +233,20 @@
 }
 
 .experiment-view .histogram-chart-mean {
-    font-size: var(--lumo-font-size-s);
+    font-size: var(--lumo-font-size-xs);
     margin: var(--lumo-space-m) var(--lumo-space-xxl) 0;
+}
+
+.experiment-view .color-box {
+    display: inline-flex;
+    align-self: center;
+    width: var(--lumo-space-s);
+    height: var(--lumo-space-s);
+}
+
+.experiment-view .color-box + span {
+    font-size: var(--lumo-font-size-s);
+    margin-left: var(--lumo-space-xs);
 }
 
 .metric-chart-panel {

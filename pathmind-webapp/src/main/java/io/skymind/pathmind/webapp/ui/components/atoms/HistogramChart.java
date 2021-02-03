@@ -52,7 +52,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setChartEmpty() {
-        this.setupChart("", "Value", "Count", List.of("navy"), null);
+        this.setupChart("", "Value", "Count", List.of("navy"));
         getElement().callJsFunction("setChartEmpty");
         redraw();
     }
