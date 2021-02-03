@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
