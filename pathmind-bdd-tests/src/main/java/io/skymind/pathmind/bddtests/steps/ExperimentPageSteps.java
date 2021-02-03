@@ -219,4 +219,9 @@ public class ExperimentPageSteps {
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
         experimentPage.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
     }
+
+    @Step
+    public void checkLearningProgressBlockTabs(String tabs) {
+        experimentPage.checkLearningProgressBlockTabs(tabs);
+    }
 }

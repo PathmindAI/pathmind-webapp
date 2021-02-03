@@ -12,6 +12,7 @@ public class SegmentTrackingEvents {
     public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
     public static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
     public static final String EVENT_CREATE_PROJECT = "Project Created";
+    public static final String EVENT_CREATE_PROJECT_FROM_EXAMPLE = "Project Created from Example Project";
     public static final String EVENT_START_TRAINING = "Training Started";
     public static final String EVENT_TRAINING_COMPLETED = "Training Completed";
     public static final String EVENT_STOP_TRAINING = "Training Stopped";

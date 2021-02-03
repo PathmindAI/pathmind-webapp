@@ -30,13 +30,11 @@ class RewardScoreRepository {
     }
 
     protected static Map<Long, List<RewardScore>> getRewardScoresForPolicies(DSLContext ctx, List<Long> policyIds) {
-        return ctx.select(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT, REWARD_SCORE.POLICY_ID)
+        return ctx.select(REWARD_SCORE.MEAN, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT, REWARD_SCORE.POLICY_ID)
                 .from(REWARD_SCORE)
                 .where(REWARD_SCORE.POLICY_ID.in(policyIds))
                 .orderBy(REWARD_SCORE.POLICY_ID, REWARD_SCORE.ITERATION)
                 .fetchGroups(REWARD_SCORE.POLICY_ID, record -> new RewardScore(
-                        JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MAX)),
-                        JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MIN)),
                         JooqUtils.getSafeDouble(record.get(REWARD_SCORE.MEAN)),
                         record.get(REWARD_SCORE.ITERATION),
                         record.get(REWARD_SCORE.EPISODE_COUNT)));
@@ -70,10 +68,8 @@ class RewardScoreRepository {
         rewardScoresByPolicyId.forEach((policyId, rewardScores) -> {
             List<Query> insertQueriesForPolicyId = rewardScores.stream().map(rewardScore ->
                     ctx.insertInto(REWARD_SCORE)
-                            .columns(REWARD_SCORE.MIN, REWARD_SCORE.MEAN, REWARD_SCORE.MAX, REWARD_SCORE.ITERATION, REWARD_SCORE.POLICY_ID, REWARD_SCORE.EPISODE_COUNT)
-                            .values(JooqUtils.getSafeBigDecimal(rewardScore.getMin()),
-                                    JooqUtils.getSafeBigDecimal(rewardScore.getMean()),
-                                    JooqUtils.getSafeBigDecimal(rewardScore.getMax()),
+                            .columns(REWARD_SCORE.MEAN, REWARD_SCORE.ITERATION, REWARD_SCORE.POLICY_ID, REWARD_SCORE.EPISODE_COUNT)
+                            .values(JooqUtils.getSafeBigDecimal(rewardScore.getMean()),
                                     rewardScore.getIteration(),
                                     policyId,
                                     rewardScore.getEpisodeCount())).collect(Collectors.toList());

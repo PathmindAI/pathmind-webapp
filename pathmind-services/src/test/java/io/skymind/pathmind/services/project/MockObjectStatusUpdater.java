@@ -19,4 +19,16 @@ public class MockObjectStatusUpdater implements StatusUpdater<Object> {
     public void fileSuccessfullyVerified(Object result) {
         log.info("File successfully verified:");
     }
+
+    @Override
+    public Object getResult() {
+        log.info("getResult");
+        return null;
+    }
+
+    @Override
+    public String getError() {
+        log.info("getError");
+        return "Error";
+    }
 }

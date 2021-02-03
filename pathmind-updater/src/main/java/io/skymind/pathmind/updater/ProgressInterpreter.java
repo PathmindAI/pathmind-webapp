@@ -140,14 +140,10 @@ public class ProgressInterpreter {
             final Integer iteration = record.getInt(RAY_PROGRESS.TRAINING_ITERATION);
 
             if (iteration > lastIteration) {
-                final String max = record.getString(RAY_PROGRESS.EPISODE_REWARD_MAX);
-                final String min = record.getString(RAY_PROGRESS.EPISODE_REWARD_MIN);
                 final String mean = record.getString(RAY_PROGRESS.EPISODE_REWARD_MEAN);
                 final Integer episodeCount = record.getInt(RAY_PROGRESS.EPISODES_THIS_ITER);
 
                 scores.add(new RewardScore(
-                        convertValidDouble(max),
-                        convertValidDouble(min),
                         convertValidDouble(mean),
                         iteration,
                         episodeCount

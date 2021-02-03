@@ -24,8 +24,6 @@ Feature: E2E
     #Check Simulation Metrics block
     Then Check that 1 metrics are shown for reward variables
     Then Check variable 'goalReached' is chosen 'true'
-    When Click in 'goalReached' button
-    Then Check variable 'goalReached' is chosen 'false'
     Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
@@ -54,17 +52,25 @@ Feature: E2E
     #    ------------------------
     #Check Learning Progress block
     Then Check learning progress block title 'Learning Progress'
+    Then Check learning progress block tabs 'Metrics,Histogram,Mean Reward Score'
     Then Check learning progress block selected tab 'true' name is 'Metrics'
+    Then Check learning progress block selected tab 'false' name is 'Histogram'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
     Then Check learning progress block metrics hint 'Select any two metrics on the simulation metric names above for comparison.'
     Then Check learning progress block metrics data-chart is shown
     When Click in 'Mean Reward Score' button
     Then Check learning progress block selected tab 'false' name is 'Metrics'
+    Then Check learning progress block selected tab 'false' name is 'Histogram'
     Then Check learning progress block selected tab 'true' name is 'Mean Reward Score'
     Then Check learning progress block mean reward score data-chart is shown
     When Click in 'Metrics' button
     Then Check learning progress block selected tab 'true' name is 'Metrics'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
+    Then Check learning progress block selected tab 'false' name is 'Histogram'
+    When Click in 'Histogram' button
+    Then Check learning progress block selected tab 'true' name is 'Histogram'
+    Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
+    Then Check learning progress block selected tab 'false' name is 'Metrics'
     #    ------------------------
     #Check export policy
     When Click in 'Export Policy' button

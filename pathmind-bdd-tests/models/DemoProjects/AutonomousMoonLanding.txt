@@ -1,0 +1,12 @@
+reward += after.fuelRemaining - before.fuelRemaining;
+reward += Math.abs(before.distanceToX) - Math.abs(after.distanceToX);
+reward += Math.abs(before.distanceToY) - Math.abs(after.distanceToY);
+reward += before.distanceToZ - after.distanceToZ;
+
+reward += after.landed == 1 ? 3 : 0;
+reward -= after.crashed == 1 ? 0.3 : 0;
+reward -= after.gotAway == 1 ? 1 : 0;
+
+reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedX) > 200 ? 0.01 : 0;
+reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedY) > 200 ? 0.01 : 0;
+reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedZ) > 200 ? 0.01 : 0;

@@ -5,8 +5,10 @@ import java.util.function.Consumer;
 
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.templatemodel.TemplateModel;
@@ -14,6 +16,8 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 @Tag("notes-field")
 @JsModule("./src/components/molecules/notes-field.js")
 public class NotesField extends PolymerTemplate<NotesField.Model> {
+    @Id("save")
+	public Button save;
 
     private static final int MAX_NOTES_SIZE = 1000;
 

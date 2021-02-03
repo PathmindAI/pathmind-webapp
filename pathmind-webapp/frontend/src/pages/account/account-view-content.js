@@ -133,7 +133,7 @@ class AccountViewContent extends PolymerElement {
                             <div class="data">{{subscription}}</div>
                             <div class="data small">{{subscriptionCancellationNote}}</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="upgradeBtn">
+                        <vaadin-button id="upgradeBtn" theme="small">
                             Upgrade
                         </vaadin-button>
                         <vaadin-button id="cancelSubscriptionBtn" theme="error">

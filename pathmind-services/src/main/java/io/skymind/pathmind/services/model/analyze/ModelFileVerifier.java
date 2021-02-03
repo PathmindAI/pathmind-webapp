@@ -1,11 +1,5 @@
 package io.skymind.pathmind.services.model.analyze;
 
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
-import io.skymind.pathmind.shared.utils.ModelUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +13,11 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import io.skymind.pathmind.shared.utils.ModelUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

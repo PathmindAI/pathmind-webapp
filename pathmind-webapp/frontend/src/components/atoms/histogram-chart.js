@@ -126,7 +126,10 @@ class HistogramChart extends PolymerElement {
                 {"label":"Iteration", "type":"number"},
                 {"label":"line", "type":"number"},
             ]
+        } else {
+            this.cols = [{"label":"Metrics", "type":"number"}];
         }
+
         this.rows = [];
         this.redraw();
     }

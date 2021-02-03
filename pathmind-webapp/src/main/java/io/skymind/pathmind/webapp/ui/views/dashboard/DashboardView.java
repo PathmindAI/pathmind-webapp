@@ -2,16 +2,13 @@ package io.skymind.pathmind.webapp.ui.views.dashboard;
 
 import java.util.List;
 
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -43,7 +40,7 @@ import io.skymind.pathmind.webapp.ui.views.dashboard.utils.Stage;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.DASHBOARD_URL, layout = MainLayout.class)
+@Route(value = Routes.DASHBOARD, layout = MainLayout.class)
 public class DashboardView extends PathMindDefaultView {
     @Autowired
     private DashboardDataProvider dataProvider;
@@ -172,11 +169,6 @@ public class DashboardView extends PathMindDefaultView {
     protected void addEventBusSubscribers() {
         EventBus.subscribe(this, () -> getUI(),
                 new DashboardViewRunUpdateSubscriber(this));
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
     }
 
     public void refreshExperiment(long experimentId) {

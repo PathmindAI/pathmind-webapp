@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,8 +7,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.services.RewardValidationService;
-import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -22,7 +19,6 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created as it's own component so that we can easily swap in AceEditor later
@@ -41,8 +37,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     private JuicyAceEditor rewardFunctionJuicyAceEditor;
 
     private Binder<Experiment> binder;
-
-    private String rewardFunction = "";
 
     public RewardFunctionEditor(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
@@ -85,8 +79,9 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > Experiment.REWARD_FUNCTION_MAX_LENGTH);
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(rewardFunctionJuicyAceEditor.getValue(), experiment.getRewardVariables());
             rewardFunctionErrorPanel.showErrors(rewardFunctionErrors);
-            if (!rewardFunction.equals(changeEvent.getValue())) {
-                rewardFunction = changeEvent.getValue();
+            if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
+                // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
+                experiment.setRewardFunction(changeEvent.getValue());
                 // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
                 // reused in multiple parts of the code.
                 NeedsSavingAction.setNeedsSaving(newExperimentView);
@@ -132,52 +127,13 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
-        rewardFunction = StringUtils.defaultIfEmpty(experiment.getRewardFunction(), generateRewardFunction());
         binder.setBean(experiment);
         setVariableNames(experiment.getRewardVariables());
-        rewardFunctionJuicyAceEditor.setValue(rewardFunction);
+        rewardFunctionJuicyAceEditor.setValue(experiment.getRewardFunction());
     }
 
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    private String generateRewardFunction() {
-        StringBuilder sb = new StringBuilder();
-        if (experiment.isHasGoals()) {
-            sb.append("// Here's a suggested reward function to get started\n");
-            for (RewardVariable rv : experiment.getRewardVariables()) {
-                GoalConditionType goal = rv.getGoalConditionTypeEnum();
-                if (goal != null) {
-                    RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
-                    switch (rv.getDataType()) {
-                        case "boolean": {
-                            sb.append(
-                                    MessageFormat.format(
-                                            "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
-                                            rv.getName(), // 0
-                                            functionComponent.getMathOperation(), // 1
-                                            functionComponent.getComment() // 2
-                                    )
-                            );
-                            break;
-                        }
-                        default: {
-                            sb.append(
-                                    MessageFormat.format(
-                                            "reward {1}= after.{0} - before.{0}; // {2} {0}",
-                                            rv.getName(), // 0
-                                            functionComponent.getMathOperation(), // 1
-                                            functionComponent.getComment() // 2
-                                    )
-                            );
-                        }
-                    }
-                    sb.append("\n");
-                }
-            }
-        }
-        return sb.toString();
     }
 
     @Override

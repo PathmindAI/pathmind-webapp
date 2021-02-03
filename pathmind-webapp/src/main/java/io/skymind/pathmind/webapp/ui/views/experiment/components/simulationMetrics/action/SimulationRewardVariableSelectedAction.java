@@ -43,6 +43,7 @@ public class SimulationRewardVariableSelectedAction {
     private static boolean canSelect(ExperimentView experimentView) {
         return experimentView.getExperiment().getSelectedRewardVariables().size() < RewardVariable.MAX_SELECTED_REWARD_VARIABLES;
     }
+
     private static boolean canDeselect(ExperimentView experimentView) {
         return experimentView.getExperiment().getSelectedRewardVariables().size() > RewardVariable.MIN_SELECTED_REWARD_VARIABLES;
     }

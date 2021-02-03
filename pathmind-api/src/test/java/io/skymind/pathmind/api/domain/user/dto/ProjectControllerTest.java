@@ -1,14 +1,9 @@
 package io.skymind.pathmind.api.domain.user.dto;
 
 import io.skymind.pathmind.api.domain.project.ProjectController;
-import io.skymind.pathmind.api.domain.project.service.ProjectService;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
+import io.skymind.pathmind.services.experiment.ExperimentService;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +15,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static io.skymind.pathmind.api.conf.security.PathmindApiAuthenticationProcessingFilter.HEADER_API_TOKEN_NAME;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 
@@ -60,36 +57,16 @@ public class ProjectControllerTest {
     @TestConfiguration
     public static class TestConfig {
         @Bean
-        public ProjectService projectService() {
-            return mock(ProjectService.class);
+        public ExperimentService experimentService() {
+            return mock(ExperimentService.class);
         }
         @Bean
         public ProjectDAO projectDAO() {
             return mock(ProjectDAO.class);
         }
         @Bean
-        public ModelDAO modelDAO() {
-            return mock(ModelDAO.class);
-        }
-        @Bean
-        public ModelService modelService() {
-            return mock(ModelService.class);
-        }
-        @Bean
-        public RewardVariableDAO rewardVariableDAO() {
-            return mock(RewardVariableDAO.class);
-        }
-        @Bean
-        public ObservationDAO observationDAO() {
-            return mock(ObservationDAO.class);
-        }
-        @Bean
         public ModelAnalyzerApiClient maClient() {
             return mock(ModelAnalyzerApiClient.class);
-        }
-        @Bean
-        public ModelFileVerifier modelFileVerifier() {
-            return mock(ModelFileVerifier.class);
         }
     }
 
