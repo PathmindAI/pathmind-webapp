@@ -26,6 +26,16 @@
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
+.experiment-view .simulation-metrics-panel-header {
+    background: var(--pm-app-bg-color);
+    padding-right: var(--lumo-space-xs);
+}
+
+.experiment-view .simulation-metrics-panel-header iron-icon {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
+}
+
 .experiment-view .section-title-label ~ tag-label {
     margin: var(--lumo-space-xs) 0;
 }
@@ -109,19 +119,6 @@
     justify-content: flex-end;
 }
 
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icon {
-    flex-shrink: 0;
-    margin-left: var(--lumo-space-xxs);
-}
-
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icon:hover {
-    color: var(--pm-secondary-text-color);
-}
-
-.experiment-view .simulation-metrics-table-wrapper .header iron-icon {
-    --iron-icon-width: var(--lumo-font-size-s);
-    --iron-icon-height: var(--lumo-font-size-s);
-}
 .experiment-view .reward-variables-table .goal-display-span {
     display: none;
 }

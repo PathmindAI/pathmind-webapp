@@ -19,7 +19,6 @@ import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesT
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,19 +55,19 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
     private void createSimulationMetricsSpansAndSparklines() {
         metricsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         metricsWrapper.addClassName("metrics-wrapper");
-        Div metricsHeader = new Div(new Span("Value"), new SimulationMetricsInfoLink());
+        Div metricsHeader = new Div(new Span("Value"));
         metricsHeader.addClassName("header");
         metricsWrapper.add(metricsHeader);
 
         sparklinesWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         sparklinesWrapper.addClassName("sparklines-wrapper");
-        Div sparklineHeader = new Div(new Span("Overview"), new SimulationMetricsInfoLink());
+        Div sparklineHeader = new Div(new Span("Overview"));
         sparklineHeader.addClassName("header");
         sparklinesWrapper.add(sparklineHeader);
 
         histogramsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         histogramsWrapper.addClassName("histograms-wrapper");
-        Div histogramHeader = new Div(new Span("Spread"), new SimulationMetricsInfoLink());
+        Div histogramHeader = new Div(new Span("Spread"));
         histogramHeader.addClassName("header");
         histogramsWrapper.add(histogramHeader);
 
