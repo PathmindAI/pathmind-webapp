@@ -40,6 +40,8 @@ ingress:
       paths: [/:8080:jenkins]
     - host: grafana.dev.devpathmind.com
       paths: [/:80:prometheus-operator-grafana]
+    - host: prometheus.dev.devpathmind.com
+      paths: [/:9090:prometheus-operator-prometheus]
     - host: kibana.dev.devpathmind.com
       paths: [/:5601:kibana-kb-http]
     - host: pgadmin.dev.devpathmind.com
@@ -66,6 +68,8 @@ ingress:
       paths: [/:8501:policy-server-simple-scheduling]
     - host: rail-drl.devpathmind.com
       paths: [/:8080:policy-server-rail-drl]
+    - host: deploy-test.devpathmind.com
+      paths: [/:8000:policy-server-deploy-test-swagger]
     - host: api.dev.devpathmind.com
       paths: [/:8081:pathmind-api-dev]
     - host: api.test.devpathmind.com
@@ -85,6 +89,7 @@ ingress:
         - staging.devpathmind.com
         - pgadmin.dev.devpathmind.com
         - grafana.dev.devpathmind.com
+        - prometheus.dev.devpathmind.com
         - kibana.dev.devpathmind.com
         - jenkins.dev.devpathmind.com
         - admin.dev.devpathmind.com
@@ -98,10 +103,11 @@ ingress:
         - product-delivery.devpathmind.com
         - simple-scheduling.devpathmind.com
         - rail-drl.devpathmind.com
+        - delpoy-test.devpathmind.com
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
         - api.staging.devpathmind.com
-        - api.pathmind.com
+          #- api.pathmind.com
         - selenium.dev.devpathmind.com
 
 resources: {}
