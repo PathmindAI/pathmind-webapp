@@ -76,6 +76,18 @@ class CodeViewer extends PolymerElement {
     static get template() {
         return html`
             <style>
+                /* Customized Scrollbar for WebKit Browsers */
+                ::-webkit-scrollbar {
+                    width: 6px;
+                }
+                
+                ::-webkit-scrollbar-track {
+                background-color: var(--pm-app-bg-color);
+                }
+                
+                ::-webkit-scrollbar-thumb {
+                background-color: var(--pm-grey-color-light);
+                }
                 :host {
                     position: relative;
                     box-sizing: border-box;
