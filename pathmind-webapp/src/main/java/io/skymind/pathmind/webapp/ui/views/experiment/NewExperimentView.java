@@ -151,7 +151,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         actionButtons.add(saveDraftButton);
         SplitButton splitButton = new SplitButton(actionButtons);
         splitButton.addThemeName("new-experiment-split-button");
-        splitButton.setMainButton(startRunButton.getText());
         return splitButton;
     }
 
