@@ -4,11 +4,8 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
@@ -28,7 +25,7 @@ public class DemoProjectsView extends PageObject {
     @FindBy(xpath = "//h2")
     private WebElement demoPopupTitle;
     @FindBy(xpath = "//demo-list")
-    private WebElement demoListShadow;
+    private WebElement demoList;
 
     private static final String DEMO_POPUP_TITLE = "Get started with a pre-configured simulation";
     private static final String FIRST_DEMO_TITLE = "Automated Guided Vehicles (AGV)";
@@ -61,8 +58,6 @@ public class DemoProjectsView extends PageObject {
     }
 
     public void checkDemoPopupElements() {
-        WebElement demoList = utils.expandRootElement(demoListShadow);
-
         assertThat(demoPopupTitle.getText(), is(DEMO_POPUP_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > h4")).getText(), is(FIRST_DEMO_TITLE));
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(1) > div > img")).getAttribute("src"), is(FIRST_DEMO_URL));
@@ -87,7 +82,6 @@ public class DemoProjectsView extends PageObject {
     }
 
     public void clickDemoPopupGetStartedBtn(String model) {
-        WebElement demoList = utils.expandRootElement(demoListShadow);
         String btnNumber= "";
         switch (model) {
             case "Automated Guided Vehicles (AGV)":
