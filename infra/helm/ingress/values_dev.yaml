@@ -103,7 +103,7 @@ ingress:
         - product-delivery.devpathmind.com
         - simple-scheduling.devpathmind.com
         - rail-drl.devpathmind.com
-        - delpoy-test.devpathmind.com
+        - deploy-test.devpathmind.com
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
         - api.staging.devpathmind.com
