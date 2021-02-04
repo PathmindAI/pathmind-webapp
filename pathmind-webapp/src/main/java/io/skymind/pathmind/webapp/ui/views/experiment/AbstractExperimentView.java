@@ -8,6 +8,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Location;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -26,7 +28,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.E
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public abstract class AbstractExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
 
     protected abstract void createExperimentComponents();
     protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
@@ -87,8 +89,11 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     @Override
-    public void setParameter(BeforeEvent event, Long experimentId) {
-        this.experimentId = experimentId;
+    public void setParameter(BeforeEvent event, String parameter) {
+        Location location = event.getLocation();
+        Long experimentIdFromParam = Long.parseLong(parameter.replaceAll(location.getQueryParameters().toString(), ""));
+        System.out.println("experimentIdFromParam: "+experimentIdFromParam);
+        this.experimentId = experimentIdFromParam;
     }
 
     public long getExperimentId() {

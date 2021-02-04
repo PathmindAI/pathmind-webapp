@@ -154,9 +154,9 @@ public class SearchResultItem extends VerticalLayout {
         Long experimentId = searchResult.getItemId();
         Experiment experiment = experimentDAO.getExperimentWithRuns(experimentId).get();
         if (experiment.isDraft()) {
-            link.setRoute(NewExperimentView.class, experimentId);
+            link.setRoute(NewExperimentView.class, ""+experimentId);
         } else {
-            link.setRoute(ExperimentView.class, experimentId);
+            link.setRoute(ExperimentView.class, ""+experimentId);
         }
     }
 
