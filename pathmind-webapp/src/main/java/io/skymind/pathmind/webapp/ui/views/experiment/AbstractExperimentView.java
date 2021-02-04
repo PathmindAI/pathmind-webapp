@@ -92,7 +92,6 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     public void setParameter(BeforeEvent event, String parameter) {
         Location location = event.getLocation();
         Long experimentIdFromParam = Long.parseLong(parameter.replaceAll(location.getQueryParameters().toString(), ""));
-        System.out.println("experimentIdFromParam: "+experimentIdFromParam);
         this.experimentId = experimentIdFromParam;
     }
 
