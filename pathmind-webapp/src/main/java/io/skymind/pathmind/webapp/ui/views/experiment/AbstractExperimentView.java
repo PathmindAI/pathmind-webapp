@@ -17,6 +17,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -69,7 +70,7 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     protected void createComponents() {
         createSharedComponents();
         createExperimentComponents();
-   }
+    }
 
     private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
@@ -120,6 +121,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
                 updateComponents();
             }
         }
+    }
+
+    public void onFavoriteToggled(Boolean newIsFavorite, Experiment experiment) {
+        ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
     }
 
     /**

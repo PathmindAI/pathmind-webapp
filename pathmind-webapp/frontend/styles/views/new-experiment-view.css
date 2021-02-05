@@ -27,7 +27,6 @@
 
 .new-experiment-view .section-title-label {
     line-height: 1;
-    margin-bottom: var(--lumo-space-xs);
 }
 
 .new-experiment-view .reward-function-wrapper {
