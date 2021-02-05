@@ -26,6 +26,7 @@ class CopyField extends PolymerElement {
                     -webkit-user-select: all;
                     user-select: all;
                     flex: 1 0 auto;
+                    font-size: var(--lumo-font-size-s);
                     padding: var(--lumo-space-xxxs) 0 var(--lumo-space-xxxs) var(--lumo-space-xxs);
                 }
                 vaadin-button {
