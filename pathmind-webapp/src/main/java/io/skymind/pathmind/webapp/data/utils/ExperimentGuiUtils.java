@@ -55,7 +55,7 @@ public class ExperimentGuiUtils {
     }
 
     private static void navigateToExperiment(UI ui, Experiment experiment) {
-        ui.navigate(experiment.isDraft() ? NewExperimentView.class : ExperimentView.class, experiment.getId());
+        ui.navigate(experiment.isDraft() ? NewExperimentView.class : ExperimentView.class, ""+experiment.getId());
     }
 
     public static void navigateToFirstUnarchivedOrModel(Supplier<Optional<UI>> getUISupplier, List<Experiment> experiments) {

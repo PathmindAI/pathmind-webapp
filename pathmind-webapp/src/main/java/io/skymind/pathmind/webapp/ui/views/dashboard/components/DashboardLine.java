@@ -110,11 +110,11 @@ public class DashboardLine extends HorizontalLayout {
                     // ExperimentUtils.createAndNavigateToNewExperiment(ui,
                     // experimentDAO, item.getModel().getId()));
                 } else {
-                    projectTitle.setRoute(NewExperimentView.class, item.getExperiment().getId());
+                    projectTitle.setRoute(NewExperimentView.class, ""+item.getExperiment().getId());
                 }
                 break;
             default:
-                projectTitle.setRoute(ExperimentView.class, item.getExperiment().getId());
+                projectTitle.setRoute(ExperimentView.class, ""+item.getExperiment().getId());
                 break;
         }
     }
