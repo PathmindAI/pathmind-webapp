@@ -17,13 +17,14 @@ import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.security.UserService;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -39,6 +40,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Star
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.NewExperimentViewFavoriteSubscriber;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -51,6 +54,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
+    private FavoriteStar favoriteStar;
     private Span unsavedChanges;
     private Span notesSavedHint;
     private Button unarchiveExperimentButton;
@@ -61,8 +65,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     private final int allowedRunsNoVerified;
 
-    @Autowired
-    private ObservationDAO observationDAO;
     @Autowired
     private RewardValidationService rewardValidationService;
     @Autowired
@@ -87,6 +89,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return mainContent;
     }
 
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
+    }
+
     private HorizontalLayout createMainPanel() {
 
         createButtons();
@@ -100,10 +107,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         mainPanel.setSpacing(true);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
+        favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
+        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar.setSpacing(false);
+        titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
+
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
                 WrapperUtils.wrapWidthFullHorizontal(
-                        experimentPanelTitle,
+                        titleWithStar,
                         downloadModelAlpLink
                 ),
                 LabelFactory.createLabel(
@@ -239,6 +251,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
+        favoriteStar.setValue(experiment.isFavorite());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(isNeedsSaving);
@@ -250,7 +263,12 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         });
         // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
+        favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
     }
 
     public void disableSaveNeeded() {

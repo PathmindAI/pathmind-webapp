@@ -287,7 +287,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
         experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
-        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experimentId));
+        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, ""+experimentId));
     }
 
     private void handleUploadWizardClicked(ModelBytes modelBytes) {
