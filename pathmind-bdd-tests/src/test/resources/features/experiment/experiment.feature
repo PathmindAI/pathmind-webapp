@@ -131,6 +131,11 @@ Feature: Experiment page
     When Click side bar experiment Experiment #5
     Then Check experiment notes is Experiment 5 Note
     When Click side bar experiment Experiment #3
+    When Add note Experiment 3 Note to the experiment page
+    When Click side bar experiment Experiment #5
+    Then Check experiment notes is Experiment 5 Note
+    When Click side bar experiment Experiment #3
+    Then Check experiment notes is Experiment 3 Note
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button

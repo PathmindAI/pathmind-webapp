@@ -28,7 +28,7 @@ public class ExperimentViewBottomPanel extends PageObject {
     private String learningProgressTabOneLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[1]";
     private String learningProgressTabTwoLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[2]";
     private String learningProgressTabThreeLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[3]";
-    private String rewardFunctionXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::code-viewer";
+    private String rewardFunctionXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::code-viewer";
 
     private static final String LEARNING_PROGRESS_LABEL = "Learning Progress";
     private static final String LEARNING_PROGRESS_TAB_ONE_LABEL = "Metrics";
