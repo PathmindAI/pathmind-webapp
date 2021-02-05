@@ -1,12 +1,14 @@
 package io.skymind.pathmind.webapp.ui.views.demo;
 
 import java.util.List;
+import java.util.Map;
 
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
@@ -17,6 +19,7 @@ import io.skymind.pathmind.services.project.demo.DemoProjectService;
 import io.skymind.pathmind.services.project.demo.ExperimentManifest;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
@@ -42,7 +45,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     }
 
     @EventHandler
-    private void buttonClickedHandler(@EventData("event.model.item.name") String demoName) {
+    private void buttonClickedHandler(@EventData("event.target.getAttribute('name')") String demoName) {
         if (!createdDemoProject) {
             createdDemoProject = true;
             try {
@@ -53,7 +56,8 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                     segmentIntegrator.createProjectFromExample(demoName);
                     if (targetDemo != null) {
                         Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
-                        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+                        QueryParameters queryParam = QueryParameters.simple(Map.of("productTour",targetDemo.getName().replaceAll(" ", "").toLowerCase()));
+                        getUI().ifPresent(ui -> ui.navigate(Routes.NEW_EXPERIMENT+"/"+experiment.getId(), queryParam));
                     }
                 }
             } catch (Exception e) {

@@ -27,7 +27,7 @@ public class NavBarNotificationExperimentStartTrainingSubscriber extends Experim
                 getUiSupplier(),
                 "Training Started",
                 "The experiment training started.",
-                ui -> ui.navigate(ExperimentView.class, event.getExperiment().getId()));
+                ui -> ui.navigate(ExperimentView.class, ""+event.getExperiment().getId()));
     }
 
     @Override

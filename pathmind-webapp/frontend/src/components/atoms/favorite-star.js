@@ -28,7 +28,6 @@ class FavoriteStar extends PolymerElement {
                     color: var(--pm-gold-color);
                 }
                 iron-icon {
-                    vertical-align: text-top;
                     width: var(--lumo-font-size-m);
                     height: var(--lumo-font-size-m);
                     padding: 0;
