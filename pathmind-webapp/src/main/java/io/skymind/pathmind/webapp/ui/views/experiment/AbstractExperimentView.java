@@ -194,9 +194,17 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     /**
-     * Helper method because a ton of actions need this and this significantly simplifies the paramters.
+     * Helper method because a ton of actions need this and this significantly simplifies the parameters.
      */
     public ExperimentDAO getExperimentDAO() {
         return experimentDAO;
+    }
+
+    public RunDAO getRunDAO() {
+        return runDAO;
+    }
+
+    public TrainingService getTrainingService() {
+        return trainingService;
     }
 }

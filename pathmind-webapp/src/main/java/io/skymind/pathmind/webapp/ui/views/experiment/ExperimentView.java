@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout.SplitterDragendEvent;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -41,8 +43,10 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 @Slf4j
 public class ExperimentView extends AbstractExperimentView {
 
-    // Similar to DefaultExperimentView in that we have to use a lock object rather than the (comparison) experiment because we are changing it's reference which
-    // makes it not thread safe. As well we cannot lock on this because part of the synchronization is in the eventbus listener in a subclass (which is also
+    // Similar to DefaultExperimentView in that we have to use a lock object rather
+    // than the (comparison) experiment because we are changing it's reference which
+    // makes it not thread safe. As well we cannot lock on this because part of the
+    // synchronization is in the eventbus listener in a subclass (which is also
     // why we can't use synchronize on the method).
     private final Object comparisonExperimentLock = new Object();
 
@@ -53,6 +57,9 @@ public class ExperimentView extends AbstractExperimentView {
 
     // Experiment Components
     private ExperimentTitleBar experimentTitleBar;
+    private SplitLayout panelsSplitWrapper;
+    private SplitLayout middlePanel;
+    private SplitLayout bottomPanel;
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
@@ -76,7 +83,9 @@ public class ExperimentView extends AbstractExperimentView {
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
 
-    // Although this is really only for the experiment view it's a lot simpler to put it at the parent level otherwise a lot of methods would have to be overriden in ExperimentView.
+    // Although this is really only for the experiment view it's a lot simpler to
+    // put it at the parent level otherwise a lot of methods would have to be
+    // overriden in ExperimentView.
     protected List<ExperimentComponent> comparisonExperimentComponents = new ArrayList<>();
 
     private Experiment comparisonExperiment;
@@ -99,15 +108,22 @@ public class ExperimentView extends AbstractExperimentView {
         this.comparisonExperiment = comparisonExperiment;
         isComparisonMode = true;
         addClassName("comparison-mode");
+        panelsSplitWrapper.addThemeName("comparison-mode");
+        middlePanel.addThemeName("comparison-mode");
+        bottomPanel.addThemeName("comparison-mode");
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
+        resizeChart();
     }
 
     public void leaveComparisonMode() {
         isComparisonMode = false;
         removeClassName("comparison-mode");
+        panelsSplitWrapper.removeThemeName("comparison-mode");
+        middlePanel.removeThemeName("comparison-mode");
+        bottomPanel.removeThemeName("comparison-mode");
         showCompareExperimentComponents(isComparisonMode);
-        getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+        resizeChart();
     }
 
     public boolean isComparisonMode() {
@@ -119,13 +135,13 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     public void updateComparisonComponents() {
-        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent.setExperiment(this.comparisonExperiment));
+        comparisonExperimentComponents.forEach(comparisonExperimentComponent -> comparisonExperimentComponent
+                .setExperiment(this.comparisonExperiment));
     }
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(),
-                getViewSubscribers());
+        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
     }
 
     protected List<EventBusSubscriber> getViewSubscribers() {
@@ -141,17 +157,21 @@ public class ExperimentView extends AbstractExperimentView {
 
         compareExperimentVerticalLayout = getComparisonExperimentPanel();
 
+        middlePanel = getMiddlePanel();
+        bottomPanel = getBottomPanel();
+        panelsSplitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+                middlePanel, bottomPanel, 40);
+
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                     stoppedTrainingNotification,
                     experimentTitleBar,
-                    getMiddlePanel(),
-                    getBottomPanel()),
+                    panelsSplitWrapper),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
-        experimentContent.addSplitterDragendListener(dragend -> {
-            getElement().executeJs("window.dispatchEvent(new Event('resize'))");
-        });
+        experimentContent.addSplitterDragendListener(resizeChartOnDrag());
+        panelsSplitWrapper.addSplitterDragendListener(resizeChartOnDrag());
+        bottomPanel.addSplitterDragendListener(resizeChartOnDrag());
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
@@ -170,6 +190,7 @@ public class ExperimentView extends AbstractExperimentView {
     private VerticalLayout getComparisonExperimentPanel() {
         FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
             leaveComparisonMode();
+            resizeChart();
         });
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -198,17 +219,15 @@ public class ExperimentView extends AbstractExperimentView {
         return true;
     }
 
-    private HorizontalLayout getMiddlePanel() {
-        HorizontalLayout middlePanel = WrapperUtils.wrapWidthFullHorizontal();
-        middlePanel.add(
+    private SplitLayout getMiddlePanel() {
+        SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                         experimentObservationsPanel,
                         60),
-                generateRewardFunctionGroup(experimentCodeViewer));
+                generateRewardFunctionGroup(experimentCodeViewer),
+                40);
         middlePanel.addClassName("middle-panel");
-        middlePanel.setPadding(false);
-        middlePanel.setSpacing(false);
         return middlePanel;
     }
 
@@ -226,6 +245,14 @@ public class ExperimentView extends AbstractExperimentView {
         );
     }
 
+    private void resizeChart() {
+        getElement().executeJs("window.dispatchEvent(new Event('resize'))");
+    }
+
+    private ComponentEventListener<SplitterDragendEvent<SplitLayout>> resizeChartOnDrag() {
+        return dragend -> resizeChart();
+    }
+
     public Object getComparisonExperimentLock() {
         return comparisonExperimentLock;
     }
@@ -241,13 +268,12 @@ public class ExperimentView extends AbstractExperimentView {
         return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
     }
 
-    private HorizontalLayout getBottomPanel() {
-        HorizontalLayout bottomPanel = WrapperUtils.wrapWidthFullHorizontal(
+    private SplitLayout getBottomPanel() {
+        SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 experimentChartsPanel,
-                experimentNotesField);
+                experimentNotesField,
+                70);
         bottomPanel.addClassName("bottom-panel");
-        bottomPanel.setPadding(false);
-        bottomPanel.setSpacing(false);
         return bottomPanel;
     }
 
