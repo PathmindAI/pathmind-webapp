@@ -18,7 +18,7 @@ public class DemoProjectsView extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//vaadin-dialog-overlay/descendant::vaadin-button")
+    @FindBy(xpath = "//vaadin-dialog-overlay/descendant::*[@class='demo-view-content']/following-sibling::vaadin-button")
     private WebElement closePopUpBtn;
     @FindBy(id = "overlay")
     private List<WebElement> overlay;
