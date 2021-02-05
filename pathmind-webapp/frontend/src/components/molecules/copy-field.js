@@ -17,6 +17,7 @@ class CopyField extends PolymerElement {
         return html`
             <style include="shared-styles">
                 :host {
+                    box-sizing: border-box;
                     display: flex;
                     max-width: 400px;
                     width: 100%;
@@ -27,7 +28,7 @@ class CopyField extends PolymerElement {
                     user-select: all;
                     flex: 1 0 auto;
                     font-size: var(--lumo-font-size-s);
-                    padding: var(--lumo-space-xxxs) 0 var(--lumo-space-xxxs) var(--lumo-space-xxs);
+                    padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
                 }
                 vaadin-button {
                     padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
