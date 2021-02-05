@@ -26,7 +26,7 @@
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
-.experiment-view .section-title-label ~ tag-label {
+.experiment-view tag-label {
     margin: var(--lumo-space-xs) 0;
 }
 

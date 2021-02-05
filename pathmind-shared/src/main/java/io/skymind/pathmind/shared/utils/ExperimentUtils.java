@@ -252,6 +252,10 @@ public class ExperimentUtils {
                 });
     }
 
+    public static void updateIsFavorite(Experiment experiment, boolean isFavorite) {
+        experiment.setFavorite(isFavorite);
+    }
+
     private static String firstLine(String message) {
         return message.split("\\n", 2)[0];
     }
