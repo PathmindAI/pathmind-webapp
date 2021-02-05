@@ -29,13 +29,13 @@ public class NavBarItemSelectExperimentAction {
                 abstractExperimentView.setExperiment(experiment);
             }
         } else {
-            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, ""+experiment.getId()));
         }
     }
 
     private static void selectExperimentFromExperimentView(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         if (experiment.isDraft()) {
-            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, experiment.getId()));
+            abstractExperimentView.getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, ""+experiment.getId()));
         } else {
             abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.EXPERIMENT + "/" + experiment.getId()));
             synchronized (abstractExperimentView.getExperimentLock()) {

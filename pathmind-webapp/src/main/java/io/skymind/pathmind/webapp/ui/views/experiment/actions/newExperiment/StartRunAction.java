@@ -28,6 +28,6 @@ public class StartRunAction {
 
         // Remove the isNeedsSaving toggle in the NewExperimentView so that the automatic saving mechanism from beforeLeave is not triggered.
         newExperimentView.removeNeedsSaving();
-        newExperimentView.getUISupplier().get().ifPresent(ui -> ui.navigate(ExperimentView.class, newExperimentView.getExperiment().getId()));
+        newExperimentView.getUISupplier().get().ifPresent(ui -> ui.navigate(ExperimentView.class, ""+newExperimentView.getExperiment().getId()));
     }
 }

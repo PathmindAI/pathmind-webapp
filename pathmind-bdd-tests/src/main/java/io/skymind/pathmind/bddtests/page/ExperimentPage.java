@@ -256,7 +256,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageArchivedTagIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::tag-label")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label")).getText(), is("Archived"));
     }
 
     public void checkSimulationMetricsColumnsTitles() {
@@ -350,7 +350,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNameTagLabel(String label) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/descendant::span[@class='section-title-label']/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
+        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
     }
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
