@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -18,6 +20,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -25,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
@@ -40,12 +44,14 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
     private Experiment experiment;
     private ExperimentPanelTitle experimentPanelTitle;
     private FavoriteStar favoriteStar;
+    private ActionDropdown actionDropdown;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 
     private Button exportPolicyButton;
     private Button stopTrainingButton;
+    private Button archiveButton;
     private Button unarchiveButton;
     private DownloadModelAlpLink downloadModelAlpLink;
     private Button shareButton;
@@ -82,7 +88,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar, actionDropdown);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
 
@@ -101,6 +107,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
         shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentView, getExperimentSupplier, sharedWithSupportLabel, shareButton));
+        archiveButton = GuiUtils.getPrimaryButton("Archive", VaadinIcon.ARCHIVE.create(), click -> ArchiveExperimentAction.archive(experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -109,10 +116,15 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         downloadModelAlpLink = new DownloadModelAlpLink(modelService, experimentView.getSegmentIntegrator(), false);
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
-        if(isExportPolicyButtonOnly) {
+        if (isExportPolicyButtonOnly) {
             return new Component[] {exportPolicyButton};
         } else {
-            return new Component[] {stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
+            List<Button> actionButtons = new ArrayList<Button>();
+            actionButtons.add(shareButton);
+            actionButtons.add(archiveButton);
+            actionButtons.add(unarchiveButton);
+            actionDropdown = new ActionDropdown(actionButtons);
+            return new Component[] {stopTrainingButton, exportPolicyButton, downloadModelAlpLink};
         }
     }
 
@@ -148,10 +160,6 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
     
     public Experiment getExperiment() {
         return experiment;
-    }
-
-    @Override
-    public void updateExperiment() {
     }
 
 }

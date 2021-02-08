@@ -108,6 +108,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
         setExperiment(experiment, true);
     }
 
+    public List<Experiment> getNavbarExperiments() {
+        return experimentsNavbar.getExperiments();
+    }
+
     /**
      * In cases such as NarBarItemSelectExperimentAction where we want to delay updating the components as there
      * may be additional actions and logic going on. The default is set to true, that is render when experiment is set.

@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.action;
+package io.skymind.pathmind.webapp.ui.views.experiment.actions.shared;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
@@ -6,10 +6,10 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
-public class NavBarItemArchiveExperimentAction {
-    public static void archiveExperiment(Experiment experiment, ExperimentsNavBar experimentsNavBar, AbstractExperimentView abstractExperimentView) {
+public class ArchiveExperimentAction {
+    public static void archive(AbstractExperimentView abstractExperimentView) {
+        Experiment experiment = abstractExperimentView.getExperiment();
         ConfirmationUtils.archive("Experiment #" + experiment.getName(), () -> {
             synchronized (abstractExperimentView.getExperimentLock()) {
 
@@ -17,12 +17,8 @@ public class NavBarItemArchiveExperimentAction {
                 ExperimentGuiUtils.archiveExperiment(abstractExperimentView.getExperimentDAO(), experiment, true);
                 abstractExperimentView.getSegmentIntegrator().archived(Experiment.class, true);
 
-                // If it's the same then navigate to next unarchived otherwise update the navbar.
-                if(ExperimentUtils.isSameExperiment(experiment, abstractExperimentView.getExperiment())) {
-                    ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(abstractExperimentView.getUISupplier(), experimentsNavBar.getExperiments());
-                } else {
-                    experimentsNavBar.updateExperiment(experiment);
-                }
+                // Navigate to next unarchived experiment.
+                ExperimentGuiUtils.navigateToFirstUnarchivedOrModel(abstractExperimentView.getUISupplier(), abstractExperimentView.getNavbarExperiments());
 
                 // Test to see if it's a comparison experiment and if so close the comparison panel.
                 if(abstractExperimentView instanceof ExperimentView &&
