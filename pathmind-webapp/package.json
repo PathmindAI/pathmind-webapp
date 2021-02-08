@@ -46,8 +46,7 @@
     "lit-element": "^2.2.1",
     "lodash": "^4.17.20",
     "to-string-loader": "^1.1.6",
-    "timeago.js": "4.0.2",
-    "multiselect-combo-box": "2.4.2"
+    "timeago.js": "4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",
@@ -131,6 +130,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.11.0"
     },
-    "hash": "fb5c154d6371bd96c1e18d0054d5d9b228d0fe69aa597a8336fcadc0f3427541"
+    "hash": "3a664b35a3b5090e97065be033f99e63242900526b9bc6c147365b1a1bf6a2a0"
   }
 }

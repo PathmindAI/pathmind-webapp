@@ -42,7 +42,6 @@ dependencies:
   highlight.js: 9.18.3
   lit-element: 2.4.0
   lodash: 4.17.20
-  multiselect-combo-box: 2.4.2
   timeago.js: 4.0.2
   to-string-loader: 1.1.6
 devDependencies:
@@ -6949,18 +6948,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-ji6J5enbMyGRHIAkAOu3WdV8nggqviKCEKtXcOqfphZZtQrmHKycfynJ2V7eVPUA4NhJ6V7Wf4TmGbTwKE9B6g==
-  /multiselect-combo-box/2.4.2:
-    dependencies:
-      '@polymer/polymer': 3.2.0
-      '@vaadin/vaadin-combo-box': 5.4.6
-      '@vaadin/vaadin-control-state-mixin': 2.2.4
-      '@vaadin/vaadin-lumo-styles': 1.6.1
-      '@vaadin/vaadin-material-styles': 1.3.2
-      '@vaadin/vaadin-text-field': 2.8.1
-      '@vaadin/vaadin-themable-mixin': 1.6.1
-    dev: false
-    resolution:
-      integrity: sha512-1DktGvAkmoG4ANtKrCFUXazgQN4Ya43AAOFl1EG8y4+xYOa/Gi49sa4Q3/unWZgoU26HCmeSDTJuf2ZJXgJCFw==
   /mute-stream/0.0.7:
     dev: true
     resolution:
@@ -9976,7 +9963,6 @@ specifiers:
   highlight.js: ^9.13.1
   lit-element: ^2.2.1
   lodash: ^4.17.20
-  multiselect-combo-box: 2.4.2
   polymer-webpack-loader: ^2.0.3
   raw-loader: 3.1.0
   terser: 4.6.7
