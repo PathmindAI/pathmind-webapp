@@ -60,3 +60,24 @@
     color: var(--lumo-body-text-color);
     background-color: var(--pm-grey-color-lightest);
 }
+
+:host([theme~="split-button"]) [part="input-field"] ::slotted([part="value"]) {
+    display: none;
+}
+
+:host([theme~="split-button"]) .vaadin-text-field-container {
+    width: auto;
+}
+
+:host([theme~="split-button"]) [part="input-field"] {
+    height: 1.8rem;
+    background: var(--lumo-primary-color);
+    border: none;
+    border-left: 1px solid var(--pm-grey-color-light);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+:host([theme~="split-button"]) [part="value"] {
+    display: none;
+}

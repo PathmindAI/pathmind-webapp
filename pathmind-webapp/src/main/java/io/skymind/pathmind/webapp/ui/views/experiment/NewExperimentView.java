@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
@@ -27,6 +28,7 @@ import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
@@ -55,11 +57,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private FavoriteStar favoriteStar;
-    private Span unsavedChanges;
-    private Span notesSavedHint;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
+    private SplitButton splitButton;
     private Anchor downloadModelAlpLink;
     private boolean isNeedsSaving = false;
 
@@ -124,11 +125,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         CssPathmindStyles.SECTION_SUBTITLE_LABEL));
         panelTitle.setClassName("panel-title");
 
-        unsavedChanges = LabelFactory.createLabel("Unsaved changes!", "hint-label");
-        unsavedChanges.setVisible(false);
-        notesSavedHint = LabelFactory.createLabel("Notes saved!", "fade-out-hint-label");
-        notesSavedHint.setVisible(false);
-
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
 
         VerticalLayout rewardVariablesPanel = WrapperUtils
@@ -147,10 +143,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 notesField);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
-        VerticalLayout saveButtonAndHintsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(saveDraftButton,
-                unsavedChanges, notesSavedHint);
-        saveButtonAndHintsWrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-        HorizontalLayout buttonsWrapper = new HorizontalLayout(saveButtonAndHintsWrapper, startRunButton,
+        splitButton = createSplitButton();
+        HorizontalLayout buttonsWrapper = new HorizontalLayout(
+                splitButton,
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
 
@@ -161,6 +156,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
         panelsWrapper.setSpacing(false);
         return panelsWrapper;
+    }
+
+    private SplitButton createSplitButton() {
+        List<Button> actionButtons = new ArrayList<Button>();
+        actionButtons.add(startRunButton);
+        actionButtons.add(saveDraftButton);
+        SplitButton splitButton = new SplitButton(actionButtons);
+        splitButton.addThemeName("new-experiment-split-button");
+        return splitButton;
     }
 
     private void createAndSetupNotesField() {
@@ -175,8 +179,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private void createButtons() {
         // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
-        startRunButton = GuiUtils.getPrimaryButton("Train Policy", VaadinIcon.PLAY.create(), click -> StartRunAction.startRun(this, rewardFunctionEditor));
-        saveDraftButton = new Button("Save", click -> handleSaveDraftClicked(() -> {
+        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor));
+        saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
         }));
     }
 
@@ -201,13 +205,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
-        unsavedChanges.setVisible(true);
         saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
         startRunButton.setEnabled(canStartTraining());
+        splitButton.enableMainButton(canStartTraining());
     }
 
-    public void setUnsavedChangesLabel(boolean isVisible) {
-        unsavedChanges.setVisible(isVisible);
+    public Experiment getUpdatedExperiment() {
+        experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
+        experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
+        return experiment;
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {
@@ -251,10 +257,12 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
+        splitButton.setVisible(!experiment.isArchived());
         favoriteStar.setValue(experiment.isFavorite());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
-        startRunButton.setEnabled(canStartTraining());
         saveDraftButton.setEnabled(isNeedsSaving);
+        startRunButton.setEnabled(canStartTraining());
+        splitButton.enableMainButton(canStartTraining());
     }
 
     @Override
@@ -273,8 +281,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void disableSaveNeeded() {
         saveDraftButton.setEnabled(false);
-        unsavedChanges.setVisible(false);
-        notesSavedHint.setVisible(false);
         isNeedsSaving = false;
     }
 
