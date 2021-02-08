@@ -74,10 +74,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, abstractExperimentView);
     }
 
-    @EventHandler
-    private void onArchiveButtonClicked() {
-        NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, abstractExperimentView);
-    }
+    // @EventHandler
+    // private void onArchiveButtonClicked() {
+    //     NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, abstractExperimentView);
+    // }
 
     @EventHandler
     private void onCompareButtonClicked() {
