@@ -39,7 +39,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.
  * In other words what adds to the complexity is that the button actions set/get different values based on which experiment this component is for. Meaning we
  * need to be a lot smarter then we probably want to be. If it wasn't for the actions on the buttons this class would again be a lot simpler.
  */
-public class ExperimentTitleBar extends VerticalLayout implements ExperimentComponent {
+public class ExperimentTitleBar extends HorizontalLayout implements ExperimentComponent {
 
     private Experiment experiment;
     private ExperimentPanelTitle experimentPanelTitle;
@@ -92,10 +92,10 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        HorizontalLayout titleBarWrapper = new HorizontalLayout(
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        titleWithStar, archivedLabel, sharedWithSupportLabel),
-                        trainingStatusDetailsPanel);
+        VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                titleWithStar,
+                new HorizontalLayout(archivedLabel, sharedWithSupportLabel),
+                trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
         addClassName("experiment-header");

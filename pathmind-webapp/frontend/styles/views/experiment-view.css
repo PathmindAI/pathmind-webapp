@@ -26,8 +26,12 @@
     border-bottom: 1px solid var(--pm-grey-color-lightest);
 }
 
-.experiment-view tag-label {
-    margin: var(--lumo-space-xs) 0;
+.experiment-view .experiment-header tag-label {
+    margin: var(--lumo-space-xs);
+}
+
+.experiment-view .experiment-header tag-label:first-child {
+    margin-left: var(--lumo-space-m);
 }
 
 .experiment-view .view-section {
@@ -50,6 +54,7 @@
 
 .experiment-view .experiment-header {
     position: relative;
+    align-items: space-between;
 }
 
 .experiment-view .middle-panel {
@@ -316,6 +321,10 @@
     line-height: 1;
 }
 
+.training-status-details-panel {
+    align-items: flex-end;
+}
+
 .training-status-details-panel vaadin-vertical-layout {
     width: auto !important;
     margin-left: var(--lumo-space-l);
@@ -325,6 +334,11 @@
 .experiment-view elapsed-timer {
     font-size: var(--lumo-font-size-xs);
     line-height: 1.2;
+}
+
+.training-status-details-panel .status-wrapper > *,
+.training-status-details-panel .elapsed-time-wrapper > * {
+    margin-right: var(--lumo-space-xs);
 }
 
 .experiment-view elapsed-time {
@@ -361,10 +375,6 @@
 
 .experiment-view.comparison-mode .reason-why-the-training-stopped {
     display: none;
-}
-
-.experiment-view .training-status-details-panel {
-    height: 3rem;
 }
 
 .experiment-view .tag.error-label {
