@@ -138,6 +138,13 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archivedLabel.setVisible(experiment.isArchived());
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
 
+        actionDropdown.setItemEnabledProvider(item -> {
+            if (experiment.isArchived()) {
+                return !archiveButton.getText().equals(item);
+            }
+            return !unarchiveButton.getText().equals(item);      
+        });
+
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
         stopTrainingButton.setVisible(experiment.isTrainingRunning());

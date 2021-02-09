@@ -54,7 +54,7 @@
 
 .experiment-view .experiment-header {
     position: relative;
-    align-items: space-between;
+    justify-content: space-between;
 }
 
 .experiment-view .middle-panel {
