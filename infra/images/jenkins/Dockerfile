@@ -80,6 +80,8 @@ COPY junit/* /usr/bin/
 #crontab
 COPY crontab /tmp/crontab
 RUN crontab /tmp/crontab
+RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "service cron start"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh
 
 RUN chmod +x /usr/bin/flaky.py  
 RUN chmod +x /usr/bin/xml2json.py
+
