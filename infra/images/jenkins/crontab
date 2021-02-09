@@ -1,0 +1,2 @@
+0 0 * * * find /var/jenkins_home/ -maxdepth 1 -mtime +3 -type d | grep '/native' | xargs -I {} rm -rf {}
+0 0 * * * find /var/jenkins_home/ -maxdepth 1 -mtime +3 -type d | grep '/[0-9]' | xargs -I {} rm -rf {}

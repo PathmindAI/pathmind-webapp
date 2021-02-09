@@ -24,6 +24,7 @@ RUN chmod +x /usr/bin/clean_test_s3.sh
 RUN apt update && \
         apt-get install postgresql-client -y && \
         apt-get install maven -y && \
+        apt-get install cron -y && \
         apt-get install jq -y && \
         apt-get install -y unzip xvfb libxi6 libgconf-2-4 && \
         apt install python-pip -y && \
@@ -75,6 +76,10 @@ RUN apt-get update && \
 
 #Junit
 COPY junit/* /usr/bin/
+
+#crontab
+COPY crontab /tmp/crontab
+RUN crontab /tmp/crontab
 
 RUN chmod +x /usr/bin/flaky.py  
 RUN chmod +x /usr/bin/xml2json.py
