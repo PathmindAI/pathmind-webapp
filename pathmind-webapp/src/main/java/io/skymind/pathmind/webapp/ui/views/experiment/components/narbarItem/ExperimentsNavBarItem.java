@@ -78,7 +78,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void onCompareButtonClicked() {
         ExperimentView experimentView = (ExperimentView) abstractExperimentView;
         if (experimentView.isComparisonMode() && ExperimentUtils.isSameExperiment(experiment, experimentView.getComparisonExperiment())) {
-            experimentView.getComparisonModeCloseButton().click();
+            experimentView.leaveComparisonMode();
             setIsCurrentComparison(false);
         } else {
             NavBarItemCompareExperimentAction.compare(experiment, experimentView);

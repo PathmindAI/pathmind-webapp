@@ -141,10 +141,6 @@ public class ExperimentView extends AbstractExperimentView {
                 .setExperiment(this.comparisonExperiment));
     }
 
-    public FloatingCloseButton getComparisonModeCloseButton() {
-        return comparisonModeCloseButton;
-    }
-
     @Override
     protected void addEventBusSubscribers() {
         EventBus.subscribe(this, getUISupplier(), getViewSubscribers());

@@ -30,10 +30,6 @@ public class FloatingCloseButton extends PolymerTemplate<FloatingCloseButton.Mod
         handleClick = clickHandler;
     }
 
-    public void click() {
-        getElement().callJsFunction("click");
-    }
-
     @EventHandler
     private void onClick() {
         handleClick.execute();

@@ -27,10 +27,10 @@
 }
 
 .experiment-view .experiment-header tag-label {
-    margin: var(--lumo-space-xs);
+    margin: var(--lumo-space-xs) 0 var(--lumo-space-xs) var(--lumo-space-m);
 }
 
-.experiment-view .experiment-header tag-label:first-child {
+.experiment-view .experiment-header tag-label:not([hidden]):first-of-type {
     margin-left: var(--lumo-space-m);
 }
 

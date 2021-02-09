@@ -107,7 +107,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
         shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentView, getExperimentSupplier, sharedWithSupportLabel, shareButton));
-        archiveButton = GuiUtils.getPrimaryButton("Archive", VaadinIcon.ARCHIVE.create(), click -> ArchiveExperimentAction.archive(experimentView));
+        archiveButton = GuiUtils.getPrimaryButton("Archive", VaadinIcon.ARCHIVE.create(), click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
