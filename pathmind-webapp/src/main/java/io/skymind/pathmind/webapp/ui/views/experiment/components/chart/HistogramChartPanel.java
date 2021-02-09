@@ -6,6 +6,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -36,21 +37,26 @@ public class HistogramChartPanel extends VerticalLayout implements ExperimentCom
         metricMeanValue.removeAll();
         if (opt.isPresent()) {
             List<RewardVariable> selectedRewardVars = experiment.getSelectedRewardVariables();
-            chart.setHistogramData(new ArrayList<>(selectedRewardVars), opt.get(), true);
-            selectedRewardVars.forEach(rewardVar -> {
-                Span colorBox = new Span();
-                colorBox.addClassName("color-box");
-                colorBox.addClassName("variable-color-"+rewardVar.getArrayIndex() % 10);
-                metricMeanValue.add(
-                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                        new HorizontalLayout(
-                            colorBox,
-                            new Span(rewardVar.getName())
-                        ),
-                        new Span("mean: "+opt.get().getUncertainty().get(rewardVar.getArrayIndex()))
-                    )
-                );
-            });
+            if (!selectedRewardVars.isEmpty()) {
+                chart.setHistogramData(new ArrayList<>(selectedRewardVars), opt.get(), true);
+                selectedRewardVars.forEach(rewardVar -> {
+                    String meanValue = opt.get().getUncertainty() != null && !opt.get().getUncertainty().isEmpty()
+                            ? opt.get().getUncertainty().get(rewardVar.getArrayIndex())
+                            : PathmindNumberUtils.formatNumber(opt.get().getSimulationMetrics().get(rewardVar.getArrayIndex()));
+                    Span colorBox = new Span();
+                    colorBox.addClassName("color-box");
+                    colorBox.addClassName("variable-color-"+rewardVar.getArrayIndex() % 10);
+                    metricMeanValue.add(
+                        WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                            new HorizontalLayout(
+                                colorBox,
+                                new Span(rewardVar.getName())
+                            ),
+                            new Span("mean: "+meanValue)
+                        )
+                    );
+                });
+            }
         } else {
             chart.setChartEmpty();
         }
