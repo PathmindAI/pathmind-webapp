@@ -272,13 +272,12 @@ public class ExperimentPage extends PageObject {
         resetImplicitTimeout();
         assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Metric"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
     }
 
     public void clickSimulationMetricsValueIcon() {
-        getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).click();
+        getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).click();
     }
 
     public void clickSimulationMetricsOverviewIcon() {
@@ -373,5 +372,10 @@ public class ExperimentPage extends PageObject {
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[2]")).getText(), is(metric));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[3]")).getText(), is(value));
     }
 }
