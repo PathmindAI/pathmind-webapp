@@ -46,6 +46,10 @@ class FloatingCloseButton extends PolymerElement {
         this.addEventListener("click", this.onClick);
     }
 
+    click() {
+        this.dispatchEvent(new CustomEvent("click"));
+    }
+
     static get properties() {
         return {
             text: {

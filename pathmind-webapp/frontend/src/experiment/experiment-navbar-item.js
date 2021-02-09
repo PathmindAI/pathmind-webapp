@@ -56,6 +56,9 @@ class ExperimentNavbarItem extends PolymerElement {
                     height: var(--lumo-font-size-s);
                     padding: 0;
                 }
+                :host([is-current-comparison-experiment]) vaadin-button[title="Compare"].action-button iron-icon {
+                    color: var(--lumo-primary-color);
+                }
                 :host([is-draft]) vaadin-button[title="Compare"],
                 :host([is-current]) vaadin-button[title="Compare"] {
                     display: none;
@@ -94,6 +97,11 @@ class ExperimentNavbarItem extends PolymerElement {
                 type: Boolean,
                 value: false,
                 notify: true,
+                reflectToAttribute: true,
+            },
+            isCurrentComparisonExperiment: {
+                type: Boolean,
+                value: false,
                 reflectToAttribute: true,
             },
             isDraft: {

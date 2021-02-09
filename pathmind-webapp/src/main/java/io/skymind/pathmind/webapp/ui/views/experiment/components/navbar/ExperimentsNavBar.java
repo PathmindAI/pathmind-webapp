@@ -116,6 +116,10 @@ public class ExperimentsNavBar extends VerticalLayout {
         return experiments;
     }
 
+    public List<ExperimentsNavBarItem> getExperimentsNavBarItems() {
+        return experimentsNavBarItems;
+    }
+
     public Experiment getSelectedExperiment() {
         return selectedExperiment;
     }

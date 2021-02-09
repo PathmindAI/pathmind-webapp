@@ -13,6 +13,7 @@ import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
@@ -73,14 +74,20 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, abstractExperimentView);
     }
 
-    // @EventHandler
-    // private void onArchiveButtonClicked() {
-    //     NavBarItemArchiveExperimentAction.archiveExperiment(experiment, experimentsNavbar, abstractExperimentView);
-    // }
-
     @EventHandler
     private void onCompareButtonClicked() {
-        NavBarItemCompareExperimentAction.compare(experiment, (ExperimentView) abstractExperimentView);
+        ExperimentView experimentView = (ExperimentView) abstractExperimentView;
+        if (experimentView.isComparisonMode() && ExperimentUtils.isSameExperiment(experiment, experimentView.getComparisonExperiment())) {
+            experimentView.getComparisonModeCloseButton().click();
+            setIsCurrentComparison(false);
+        } else {
+            NavBarItemCompareExperimentAction.compare(experiment, experimentView);
+            experimentsNavbar.getExperimentsNavBarItems()
+                    .stream()
+                    .filter(navbarItem -> !ExperimentUtils.isSameExperiment(navbarItem.getExperiment(), experiment))
+                    .forEach(navbarItem -> navbarItem.setIsCurrentComparison(false));
+            setIsCurrentComparison(true);
+        }
     }
 
     private void setExperimentDetails(Experiment experiment) {
@@ -123,6 +130,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsCurrent(false);
     }
 
+    public void setIsCurrentComparison(boolean isCurrentComparisonExperiment) {
+        getModel().setIsCurrentComparisonExperiment(isCurrentComparisonExperiment);
+    }
+
     public void setIsOnDraftExperimentView(boolean isOnDraftExperimentView) {
         getModel().setIsOnDraftExperimentView(isOnDraftExperimentView);
     }
@@ -156,6 +167,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         void setExperimentName(String experimentName);
 
         void setIsCurrent(boolean isCurrent);
+
+        void setIsCurrentComparisonExperiment(boolean isCurrentComparisonExperiment);
 
         void setIsDraft(boolean isDraft);
 
