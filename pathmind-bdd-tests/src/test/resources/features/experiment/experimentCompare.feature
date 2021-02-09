@@ -149,6 +149,7 @@ Feature: Experiment page compare feature
     When Click project start run button
     When Click in 'Share with support' button
     When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
     When Experiment page 'primary' slot click reward variable 'successfulCustomers'
     When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'true'
