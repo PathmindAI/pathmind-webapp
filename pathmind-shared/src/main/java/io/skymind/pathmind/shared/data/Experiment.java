@@ -107,15 +107,10 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     }
 
     public void toggleSelectedVariable(RewardVariable rewardVariable) {
-        for (Iterator<RewardVariable> iterator = selectedRewardVariables.iterator(); iterator.hasNext();) {
-            RewardVariable selectedRewardVar = iterator.next();
-            if (!selectedRewardVar.equals(rewardVariable)) {
-                iterator.remove();
-            }
-        }
-        if (!selectedRewardVariables.contains(rewardVariable)) {
-            selectedRewardVariables.add(rewardVariable);
-        }
+        // NB:  https://github.com/SkymindIO/pathmind-webapp/issues/2814
+        // only one reward variable is selected on toggle
+        selectedRewardVariables.clear();
+        selectedRewardVariables.add(rewardVariable);
     }
 
     @Override
