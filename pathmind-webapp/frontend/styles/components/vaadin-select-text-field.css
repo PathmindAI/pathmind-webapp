@@ -83,7 +83,9 @@
     border-bottom-left-radius: 0;
 }
 
-:host([theme~="action-dropdown"]) [part="value"],
-:host([theme~="split-button"]) [part="value"] {
+:host([theme~="action-dropdown"]) [part~="value"],
+:host([theme~="split-button"]) [part~="value"],
+:host([theme~="action-dropdown"]) ::slotted([part~="value"]),
+:host([theme~="split-button"]) ::slotted([part~="value"]) {
     display: none;
 }
