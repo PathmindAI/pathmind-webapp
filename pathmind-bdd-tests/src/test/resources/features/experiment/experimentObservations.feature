@@ -24,7 +24,7 @@ Feature: Experiment observations
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains moduleXYZ
 
     Examples:
       | project name    | model                       | reward function file                      | observations                   |
@@ -56,7 +56,7 @@ Feature: Experiment observations
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains payBillQueueSize,orderQueueSize
 
     Examples:
       | project name    | model                     | reward function file                    | observations                                                                       |
@@ -87,7 +87,7 @@ Feature: Experiment observations
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains freeVehicles
 
     Examples:
       | project name    | model                               | reward function file                              | observations                        |
@@ -114,7 +114,7 @@ Feature: Experiment observations
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains delayTime2
 
     Examples:
       | project name    | model                   | reward function file                  | observations          |
@@ -158,7 +158,7 @@ Feature: Experiment observations
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains retailerDemandsSize,wholesalerI,wholesalerExpected,factoryOrdersSize
 
     Examples:
       | project name    | model                       | reward function file                      | observations                                                                                                                                                                           |
@@ -178,7 +178,7 @@ Feature: Experiment observations
     Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     When Click model breadcrumb btn
-    Then Check observations list contains <observations>
+    Then Check experiment '1' observations list contains stateChartState
 
     Examples:
       | project name    | model                                 | reward function file                                | observations    |
