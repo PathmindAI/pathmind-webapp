@@ -2,6 +2,7 @@ package io.skymind.pathmind.shared.data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -99,19 +100,19 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     }
 
     public void addSelectedRewardVariable(RewardVariable rewardVariable) {
-        if(selectedRewardVariables == null) {
+        if (selectedRewardVariables == null) {
             selectedRewardVariables = new ArrayList<>();
         }
         selectedRewardVariables.add(rewardVariable);
     }
 
     public void toggleSelectedVariable(RewardVariable rewardVariable) {
-        if(selectedRewardVariables.contains(rewardVariable)) {
-            selectedRewardVariables.remove(rewardVariable);
-        } else {
-            selectedRewardVariables.add(rewardVariable);
-        }
+        // NB:  https://github.com/SkymindIO/pathmind-webapp/issues/2814
+        // only one reward variable is selected on toggle
+        selectedRewardVariables.clear();
+        selectedRewardVariables.add(rewardVariable);
     }
+
     @Override
     public Experiment shallowClone() {
         return super.shallowClone(Experiment.builder()
