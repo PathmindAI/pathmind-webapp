@@ -23,11 +23,11 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private String simMetricsHeaderRowXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/descendant::*[@class='header-row']";
     private String observationsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='secondary']/span";
     private String rewardFunctionLabelXpath = "(//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout/span[@class='bold-label'])[3]";
-    private String rewardVariablesListXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name']";
-    private String simulationMetricChosenXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and @chosen]";
-    private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
-    private String observationCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='true']";
-    private String observationNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='false']";
+    private String rewardVariablesListXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name']";
+    private String simulationMetricChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and @chosen]";
+    private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
+    private String observationCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='true']";
+    private String observationNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='false']";
     private String rewardVariableXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s']";
     private String rewardVariableCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and @chosen]";
     private String rewardVariableNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
