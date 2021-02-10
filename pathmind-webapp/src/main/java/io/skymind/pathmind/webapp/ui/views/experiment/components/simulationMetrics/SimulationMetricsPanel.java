@@ -102,7 +102,12 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         metricsWrapper.setVisible(show);
         sparklinesWrapper.setVisible(show);
         if (show) {
-            histogramsWrapper.setVisible(experiment.getBestPolicy() != null && experiment.getBestPolicy().getUncertainty() != null && !experiment.getBestPolicy().getUncertainty().isEmpty());
+            boolean isBestPolicyUncertaintyEmpty = Optional.ofNullable(experiment)
+                    .map(Experiment::getBestPolicy)
+                    .map(Policy::getUncertainty)
+                    .map(CollectionUtils::isEmpty)
+                    .orElse(true);
+            histogramsWrapper.setVisible(!isBestPolicyUncertaintyEmpty);
         } else {
             histogramsWrapper.setVisible(false);
         }
