@@ -24,6 +24,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitleBar;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.SimulationMetricsInfoLink;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.ExperimentChartsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
@@ -227,7 +228,7 @@ public class ExperimentView extends AbstractExperimentView {
                 WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                         generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                         experimentObservationsPanel,
-                        60),
+                        70),
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
@@ -243,9 +244,12 @@ public class ExperimentView extends AbstractExperimentView {
 
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
         String simulationMetricsHeaderText = "Simulation Metrics";
+        HorizontalLayout simulationMetricsHeader = WrapperUtils.wrapWidthFullBetweenHorizontal(
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), 
+                new SimulationMetricsInfoLink());
+        simulationMetricsHeader.addClassName("simulation-metrics-panel-header");
         return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), simulationMetricsPanel
-        );
+                simulationMetricsHeader, simulationMetricsPanel);
     }
 
     private void resizeChart() {

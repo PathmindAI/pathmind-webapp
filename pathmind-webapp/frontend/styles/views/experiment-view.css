@@ -34,6 +34,24 @@
     margin-left: var(--lumo-space-m);
 }
 
+.experiment-view .simulation-metrics-panel-header {
+    background: var(--pm-app-bg-color);
+    padding-right: var(--lumo-space-xs);
+}
+
+.experiment-view .simulation-metrics-panel-header iron-icon {
+    --iron-icon-width: var(--lumo-font-size-s);
+    --iron-icon-height: var(--lumo-font-size-s);
+}
+
+.experiment-view .simulation-metrics-panel-header .helper-icon:hover {
+    color: var(--pm-secondary-text-color);
+}
+
+.experiment-view tag-label {
+    margin: var(--lumo-space-xs) 0;
+}
+
 .experiment-view .view-section {
     box-sizing: border-box;
     width: 100%;
@@ -114,19 +132,6 @@
     justify-content: flex-end;
 }
 
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icon {
-    flex-shrink: 0;
-    margin-left: var(--lumo-space-xxs);
-}
-
-.experiment-view .simulation-metrics-table-wrapper .header .helper-icon:hover {
-    color: var(--pm-secondary-text-color);
-}
-
-.experiment-view .simulation-metrics-table-wrapper .header iron-icon {
-    --iron-icon-width: var(--lumo-font-size-s);
-    --iron-icon-height: var(--lumo-font-size-s);
-}
 .experiment-view .reward-variables-table .goal-display-span {
     display: none;
 }
@@ -159,12 +164,14 @@
 }
 
 .experiment-view .metrics-wrapper,
-.experiment-view .sparklines-wrapper {
+.experiment-view .sparklines-wrapper,
+.experiment-view .histograms-wrapper {
     flex: 1 0 0;
     line-height: 2rem;
 }
 
-.experiment-view .sparklines-wrapper .sparkline {
+.experiment-view .sparklines-wrapper .sparkline,
+.experiment-view .histograms-wrapper .histogram {
     position: relative;
     width: 100px;
     height: 2rem !important;
@@ -172,7 +179,8 @@
     margin-left: var(--lumo-space-s);
 }
 
-.experiment-view .sparklines-wrapper .sparkline data-chart {
+.experiment-view .sparklines-wrapper .sparkline data-chart,
+.experiment-view .histograms-wrapper .histogram histogram-chart {
     width: 100%;
     height: 100%;
 }
@@ -231,6 +239,23 @@
 
 .experiment-view vaadin-tabs {
     box-shadow: inset 0 -1px 0 0 var(--lumo-contrast-10pct);
+}
+
+.experiment-view .histogram-chart-mean {
+    font-size: var(--lumo-font-size-xs);
+    margin: var(--lumo-space-m) var(--lumo-space-xxl) 0;
+}
+
+.experiment-view .color-box {
+    display: inline-flex;
+    align-self: center;
+    width: var(--lumo-space-s);
+    height: var(--lumo-space-s);
+}
+
+.experiment-view .color-box + span {
+    font-size: var(--lumo-font-size-s);
+    margin-left: var(--lumo-space-xs);
 }
 
 .metric-chart-panel {
