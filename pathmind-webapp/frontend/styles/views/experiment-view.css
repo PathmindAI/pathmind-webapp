@@ -430,3 +430,20 @@
     top: var(--lumo-space-xs);
     right: var(--lumo-space-xs);
 }
+
+.share-with-support-instructions {
+    position: relative;
+}
+
+.share-with-support-instructions h3 {
+    margin-top: 0;
+}
+
+.share-with-support-instructions ~ vaadin-button {
+    position: absolute;
+    width: var(--lumo-button-size);
+    height: var(--lumo-button-size);
+    top: var(--lumo-space-s);
+    right: var(--lumo-space-s);
+    margin: 0;
+}

@@ -86,7 +86,7 @@ public class Breadcrumbs extends HorizontalLayout {
             }
         }
         if (experiment != null) {
-            items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, experiment.getId()));
+            items.add(new BreadcrumbItem("Experiment #" + experiment.getName(), ExperimentView.class, ""+experiment.getId()));
         }
 
         if (stepName != null) {
