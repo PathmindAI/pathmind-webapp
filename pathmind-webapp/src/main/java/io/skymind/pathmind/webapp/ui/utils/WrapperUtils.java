@@ -47,13 +47,6 @@ public class WrapperUtils {
         return verticalLayout;
     }
 
-    public static VerticalLayout wrapCenterVertical(String width, Component... components) {
-        VerticalLayout verticalLayout = new VerticalLayout(components);
-        verticalLayout.setWidth(width);
-        verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-        return verticalLayout;
-    }
-
     public static HorizontalLayout wrapWidthFullHorizontal(Component... components) {
         HorizontalLayout wrapper = new HorizontalLayout(components);
         wrapper.setWidthFull();

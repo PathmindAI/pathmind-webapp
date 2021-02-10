@@ -14,7 +14,6 @@ import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -46,7 +45,7 @@ public class ExperimentPage extends PageObject {
     private By notesSaveBtn = By.cssSelector("#save");
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
-        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8)));
+        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8).replaceAll("\r", "")));
     }
 
     public void addNoteToTheExperimentPage(String note) {
@@ -62,6 +61,10 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         WebElement button = utils.expandRootElement(archiveButton);
         button.findElement(By.cssSelector("button")).click();
+
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -120,8 +123,24 @@ public class ExperimentPage extends PageObject {
 
     public void clickSideNavArchiveButtonFor(String experimentName) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "vaadin-button"));
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
         element.findElement(By.cssSelector("button")).click();
+    }
+
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        waitABit(3500);
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, "#small-menu"));
+        element.findElement(By.cssSelector("button")).click();
+        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
+        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
+        switch (btn) {
+            case ("Archive"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
+                break;
+            case ("Compare"):
+                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(2) > span")).click();
+                break;
+        }
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -173,7 +192,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatSimulationMetricsBlockIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
     }
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
@@ -237,7 +256,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageArchivedTagIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']/following-sibling::tag-label")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label")).getText(), is("Archived"));
     }
 
     public void checkSimulationMetricsColumnsTitles() {
@@ -251,15 +270,14 @@ public class ExperimentPage extends PageObject {
             }
         }
         resetImplicitTimeout();
-        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Variable Name"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Metric"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
     }
 
     public void clickSimulationMetricsValueIcon() {
-        getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).click();
+        getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).click();
     }
 
     public void clickSimulationMetricsOverviewIcon() {
@@ -287,10 +305,10 @@ public class ExperimentPage extends PageObject {
         assertThat(exportViewPolicy.findElement(By.cssSelector(".filename")).getText(), containsString(model));
         assertThat(exportViewPolicy.findElement(By.cssSelector("h4")).getText(), is("To use your policy:"));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > ol")).getText(), is("Download this file.\n" +
-                "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
-                "Change the 'Mode' to 'Use Policy'.\n" +
-                "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
-                "Run the simulation to see the policy in action."));
+            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
+            "Change the 'Mode' to 'Use Policy'.\n" +
+            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
+            "Run the simulation to see the policy in action."));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getText(), is("Learn how to validate your policy"));
         assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
         waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]"))));
@@ -306,7 +324,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "']")).getText(), is(tab));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='"+selected+"' and text()='"+tab+"']")).size(), is(not(0)));
     }
 
     public void checkLearningProgressBlockMetricsHint(String hint) {
@@ -331,7 +349,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNameTagLabel(String label) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='view-section']/descendant::span[@class='section-title-label']/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
+        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
     }
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
@@ -340,5 +358,24 @@ public class ExperimentPage extends PageObject {
 
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         assertThat(utils.getExperimentNavbarItemByExperimentName(experiment, "#experimentLink > div > p:nth-child(2)").getText(), is(date));
+    }
+
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
+    }
+
+    public void checkLearningProgressBlockTabs(String tabs) {
+        List<String> items = Arrays.asList(tabs.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[2]")).getText(), is(metric));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[3]")).getText(), is(value));
     }
 }

@@ -1,5 +1,6 @@
 html {
     /* pathmind-colors */
+    --pm-primary-color-dark: #2f779a;
     --pm-primary-color: #4f97aa;
     --pm-primary-color-bright: #38a9c1;
     --pm-text-color: #1a2949;
@@ -7,7 +8,6 @@ html {
     --pm-app-bg-color: #f6f8fa;
     --pm-highlight-light: rgba(240, 241, 246, 0.25);
     --pm-highlight-medium: rgba(240, 241, 246, 0.5);
-    --pm-highlight-strong: rgba(240, 241, 246, 0.5);
     --pm-friendly-color: #3a966b;
     --pm-friendly-color-bright: #b2ea17;
     --pm-danger-color: #d80947;
@@ -22,12 +22,10 @@ html {
     --pm-grey-color-light: #d0d0d0;
     --pm-grey-color-lighter: #dee3ed;
     --pm-grey-color-lightest: #eaeeef;
-    --pm-blue-color-darkest: #1a2949;
-    --pm-blue-color-darkest-50pct: rgba(26, 41, 73, 0.5);
-    --pm-blue-color-darkest-25pct: rgba(26, 41, 73, 0.25);
-    --pm-blue-color: #1900ff;
     --pm-green-color: #00a60b;
     --pm-yellow-color: #fff51f;
+    --pm-blue-color-dark: #1a49a9;
+    --pm-blue-color-light: #e0eafb;
 
     /* pathmind reward variable colors */
     --variable-color-0: #17a747;
@@ -89,6 +87,7 @@ html {
     --lumo-primary-color-75pct: rgba(79, 151, 170, 0.75);
     --lumo-primary-color-50pct: rgba(79, 151, 170, 0.5);
     --lumo-primary-color-25pct: rgba(79, 151, 170, 0.25);
+    --lumo-primary-color-20pct: rgba(79, 151, 170, 0.2);
     --lumo-primary-color-10pct: rgba(79, 151, 170, 0.1);
     --lumo-primary-color: var(--pm-primary-color);
     --lumo-border-radius: 6px;
@@ -130,37 +129,54 @@ background-color: var(--pm-app-bg-color);
 background-color: var(--pm-grey-color-light);
 }
 
-.row-2-of-3 {
-    width: calc(100% * 2 / 3) !important;
+.variable-color-0 {
+    color: #000;
+    background-color: var(--variable-color-0);
+}
+.variable-color-1 {
+    color: #fff;
+    background-color: var(--variable-color-1);
+}
+.variable-color-2 {
+    color: #000;
+    background-color: var(--variable-color-2);
+}
+.variable-color-3 {
+    color: #fff;
+    background-color: var(--variable-color-3);
+}
+.variable-color-4 {
+    color: #000;
+    background-color: var(--variable-color-4);
+}
+.variable-color-5 {
+    color: #000;
+    background-color: var(--variable-color-5);
+}
+.variable-color-6 {
+    color: #000;
+    background-color: var(--variable-color-6);
+}
+.variable-color-7 {
+    color: #fff;
+    background-color: var(--variable-color-7);
+}
+.variable-color-8 {
+    color: #fff;
+    background-color: var(--variable-color-8);
+}
+.variable-color-9 {
+    color: #000;
+    background-color: var(--variable-color-9);
 }
 
-.text-algin-right {
-    text-align: right;
+.row-2-of-3 {
+    width: calc(100% * 2 / 3) !important;
 }
 
 .internal-banner {
     color: var(--lumo-body-text-color);
     background-color: var(--pm-gold-color);
-}
-
-[tooltip-content] {
-    position: relative;
-}
-
-[tooltip-content]:hover::after {
-    content: attr(tooltip-content);
-    position: absolute;
-    top: calc(-0.8 * var(--lumo-space-xs));
-    left: 0;
-    line-height: 1;
-    background-color: white;
-    padding: 0.14em 0.16em;
-    z-index: 1;
-}
-
-[tooltip-content] span {
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 [icon="vaadin:star"] {
@@ -355,6 +371,21 @@ background-color: var(--pm-grey-color-light);
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
+.projects-view .demo-dialog {
+    width: 40rem;
+    height: 40rem;
+}
+
+.demo-view-content + vaadin-button {
+    position: absolute;
+    top: var(--lumo-space-m);
+    right: var(--lumo-space-m);
+}
+
+vaadin-dialog-overlay .demo-view-content {
+    padding: var(--lumo-space-xs);
+}
+
 .projects-view .project-name-column {
     align-items: center;
 }
@@ -370,11 +401,15 @@ background-color: var(--pm-grey-color-light);
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,
-.projects-view .page-content,
 .project-view .page-content,
 .model-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
+}
+
+.projects-view .page-content {
+    box-sizing: border-box;
+    flex: 1 0 auto;
 }
 
 .projects-view .view-section,
@@ -467,6 +502,7 @@ change-password-view-content {
 account-view-content .panel-wrapper,
 account-edit-view-content .panel-wrapper,
 change-password-view-content .panel-wrapper {
+    flex: 1 0 auto;
     min-height: auto;
     overflow: visible;
 }
@@ -516,6 +552,10 @@ change-password-view-content .inner-content {
 
 .projects-view .page-title {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
+}
+
+.projects-view .demoMessage {
+    margin: 0;
 }
 
 .create-project-button {
@@ -673,4 +713,17 @@ h4 {
     margin-top: var(--lumo-space-l);
     padding: var(--lumo-space-xs) var(--lumo-space-l);
     background-color: var(--lumo-contrast-5pct);
+}
+
+.demo-view-content {
+    padding: var(--lumo-space-xl);
+    align-items: center;
+}
+
+.projects-view .page-content > .demo-view-content {
+    padding: var(--lumo-space-m);
+}
+
+.demo-view-content h2 {
+    text-align: center;
 }

@@ -1,11 +1,11 @@
 package io.skymind.pathmind.shared.utils;
 
+import io.skymind.pathmind.shared.data.DeepCloneableInterface;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 
 public class CloneUtils {
 

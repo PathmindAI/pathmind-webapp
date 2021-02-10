@@ -1,7 +1,6 @@
 package io.skymind.pathmind.shared.data;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,6 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RewardVariable extends Data implements DeepCloneableInterface<RewardVariable> {
+
+    public static final int DEFAULT_SELECTED_REWARD_VARIABLES = 1;
+    public static final int MIN_SELECTED_REWARD_VARIABLES = 1;
+    public static final int MAX_SELECTED_REWARD_VARIABLES = 2;
 
     private static final long serialVersionUID = 1963529929934242024L;
     private long modelId;

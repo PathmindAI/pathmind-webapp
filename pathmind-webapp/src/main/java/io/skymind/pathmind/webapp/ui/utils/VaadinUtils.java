@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.dom.Element;
 import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.server.InitialPageSettings;
@@ -19,15 +18,6 @@ import io.skymind.pathmind.webapp.utils.CookieUtils;
 
 public class VaadinUtils {
     private VaadinUtils() {
-    }
-
-    public static NumberField generateNumberField(long min, long max, long value) {
-        NumberField numberField = new NumberField();
-        numberField.setHasControls(true);
-        numberField.setMin(min);
-        numberField.setMax(max);
-        numberField.setValue((double) value);
-        return numberField;
     }
 
     /**
@@ -55,7 +45,7 @@ public class VaadinUtils {
             ui.getSession().getSession().invalidate();
             ui.getPage().reload();
         } else {
-            ui.getPage().setLocation(Routes.LOGOUT_URL);
+            ui.getPage().setLocation(Routes.LOGOUT);
         }
     }
 

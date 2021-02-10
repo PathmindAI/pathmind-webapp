@@ -68,6 +68,13 @@ class RunRepository {
                 .fetchGroups(RUN.EXPERIMENT_ID, Run.class);
     }
 
+    protected static int getNumberOfRunsForExperiment(DSLContext ctx, Long experimentId) {
+        return ctx.select(count().as("numberOfRuns"))
+                .from(RUN)
+                .where(RUN.EXPERIMENT_ID.equal(experimentId))
+                .fetchOne(0, int.class);
+    }
+
     protected static List<Run> getRunsForExperiment(DSLContext ctx, Long experimentId) {
         return ctx.select(Tables.RUN.asterisk())
                 .from(RUN)
@@ -199,6 +206,16 @@ class RunRepository {
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(RUN.ID.eq(runId))
+                .fetchOne(0, long.class);
+    }
+
+    public static long numberOfRunsByUser(DSLContext ctx, long userId) {
+        return ctx.select(count().as("num_runs"))
+                .from(RUN)
+                .innerJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
+                .innerJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .innerJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
                 .fetchOne(0, long.class);
     }
 }

@@ -9,7 +9,6 @@ import org.jooq.Query;
 
 import static io.skymind.pathmind.db.jooq.tables.RewardVariable.REWARD_VARIABLE;
 
-
 class RewardVariableRepository {
     private RewardVariableRepository() {
     }
@@ -36,6 +35,7 @@ class RewardVariableRepository {
         return ctx.select(REWARD_VARIABLE.asterisk())
                 .from(REWARD_VARIABLE)
                 .where(REWARD_VARIABLE.MODEL_ID.eq(modelId))
+                .orderBy(REWARD_VARIABLE.ARRAY_INDEX)
                 .fetchInto(RewardVariable.class);
     }
 }

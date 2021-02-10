@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -106,7 +107,7 @@ public class SecurityConfiguration {
 
         @Bean
         public static ErrorPageRegistrar securityErrorPageRegistrar() {
-            return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT_URL));
+            return registry -> registry.addErrorPages(new ErrorPage(RequestRejectedException.class, "/" + Routes.LOGOUT));
         }
 
         /**
@@ -134,11 +135,11 @@ public class SecurityConfiguration {
                     .and().authorizeRequests()
 
                     // Allow access to sign-up view (disabled for public beta https://github.com/SkymindIO/pathmind-webapp/issues/356)
-                    .antMatchers("/" + Routes.LOGIN_URL + Routes.WITH_PARAMETER).permitAll()
-                    .antMatchers("/" + Routes.SIGN_UP_URL).permitAll()
-                    .antMatchers("/" + Routes.RESET_PASSWORD_URL + Routes.WITH_PARAMETER).permitAll()
-                    .antMatchers("/" + Routes.EMAIL_VERIFICATION_URL + Routes.WITH_PARAMETER).permitAll()
-                    .antMatchers("/" + Routes.VERIFICATION_EMAIL_SENT_URL).permitAll()
+                    .antMatchers("/" + Routes.LOGIN + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.SIGN_UP).permitAll()
+                    .antMatchers("/" + Routes.RESET_PASSWORD + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.EMAIL_VERIFICATION + Routes.WITH_PARAMETER).permitAll()
+                    .antMatchers("/" + Routes.VERIFICATION_EMAIL_SENT).permitAll()
 
                     // Allow all flow internal requests.
                     .requestMatchers(VaadinSecurityUtils::isFrameworkInternalRequest).permitAll()
@@ -147,7 +148,7 @@ public class SecurityConfiguration {
                     .anyRequest().authenticated()
 
                     // Configure the login page.
-                    .and().formLogin().loginPage("/" + Routes.LOGIN_URL).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING_URL)
+                    .and().formLogin().loginPage("/" + Routes.LOGIN).permitAll().loginProcessingUrl("/" + Routes.LOGIN_PROCESSING)
                     .failureHandler(getFailureHandler())
 
                     // Register the success handler that redirects users to the page they last tried
@@ -155,14 +156,14 @@ public class SecurityConfiguration {
                     .successHandler(new SavedRequestAwareAuthenticationSuccessHandler())
 
                     // Configure logout
-                    .and().logout().logoutUrl("/" + Routes.LOGOUT_URL).logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS_URL);
+                    .and().logout().logoutUrl("/" + Routes.LOGOUT).logoutSuccessUrl("/" + Routes.LOGOUT_SUCCESS);
         }
 
         private AuthenticationFailureHandler getFailureHandler() {
             Map<String, String> failureUrlMap = new HashMap();
-            failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN_URL + "/" + Routes.BAD_CREDENTIALS);
+            failureUrlMap.put(BadCredentialsException.class.getName(), "/" + Routes.LOGIN + "/" + Routes.BAD_CREDENTIALS);
             failureUrlMap.put(InternalAuthenticationServiceException.class.getName(),
-                    "/" + Routes.LOGIN_URL + "/" + Routes.EMAIL_VERIFICATION_FAILED);
+                    "/" + Routes.LOGIN + "/" + Routes.EMAIL_VERIFICATION_FAILED);
 
             PathmindAuthenticationFailureHandler handler = new PathmindAuthenticationFailureHandler();
             handler.setExceptionMappings(failureUrlMap);
@@ -200,5 +201,12 @@ public class SecurityConfiguration {
                     // (production mode) static resources
                     "/frontend-es5/**", "/frontend-es6/**");
         }
+
+        @Bean
+        @Override
+        public AuthenticationManager authenticationManagerBean() throws Exception {
+            return super.authenticationManagerBean();
+        }
+
     }
 }

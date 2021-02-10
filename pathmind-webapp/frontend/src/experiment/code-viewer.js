@@ -76,6 +76,18 @@ class CodeViewer extends PolymerElement {
     static get template() {
         return html`
             <style>
+                /* Customized Scrollbar for WebKit Browsers */
+                ::-webkit-scrollbar {
+                    width: 6px;
+                }
+                
+                ::-webkit-scrollbar-track {
+                background-color: var(--pm-app-bg-color);
+                }
+                
+                ::-webkit-scrollbar-thumb {
+                background-color: var(--pm-grey-color-light);
+                }
                 :host {
                     position: relative;
                     box-sizing: border-box;
@@ -83,7 +95,6 @@ class CodeViewer extends PolymerElement {
                     width: 100%;
                     font-size: 0.8125rem;
                     border: 1px solid var(--pm-grey-color);
-                    border-radius: var(--lumo-border-radius);
                 }
                 code {
                     box-sizing: border-box;
@@ -91,7 +102,7 @@ class CodeViewer extends PolymerElement {
                     width: 100%;
                     max-height: calc(1.8em * 20);
                     height: 100%;
-                    white-space: pre;
+                    white-space: pre-wrap;
                     font-family: var(--code-font-family);
                     line-height: 1.8;
                     padding: var(--lumo-space-xs) var(--lumo-space-s);
@@ -107,7 +118,7 @@ class CodeViewer extends PolymerElement {
                     right: -1px;
                     padding: 0;
                     background-color: rgba(200,200,200,0.6);
-                    border-radius: 0 var(--lumo-border-radius) 0 0;
+                    border-radius: 0;
                     margin: 0;
                 }
                 iron-icon {

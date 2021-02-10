@@ -1887,4 +1887,21 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="2340-01" author="alexander.makarov@toptal.com">
+        <delete tableName="pathmind_user">
+            <where>firstname='Evgeniy' and lastname='Autotest'</where>
+        </delete>
+    </changeSet>
+
+    <changeSet id="2709-01" author="steph@followsteph.com">
+        <dropColumn tableName="REWARD_SCORE" columnName="MIN"/>
+        <dropColumn tableName="REWARD_SCORE" columnName="MAX"/>
+    </changeSet>
+
+    <changeSet id="2709-02" author="steph@followsteph.com" runInTransaction="false">
+        <sql>
+            VACUUM FULL;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

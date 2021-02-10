@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import io.skymind.pathmind.shared.constants.UserRole;
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

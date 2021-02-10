@@ -88,7 +88,7 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
 
         if (isEmailChanged) {
             emailNotificationService.sendVerificationEmail(user, user.getNewEmailToVerify(), false);
-            ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT_URL)));
+            ConfirmationUtils.emailUpdated(() -> getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.LOGOUT)));
         } else {
             getUI().ifPresent(ui -> ui.navigate(AccountView.class));
         }

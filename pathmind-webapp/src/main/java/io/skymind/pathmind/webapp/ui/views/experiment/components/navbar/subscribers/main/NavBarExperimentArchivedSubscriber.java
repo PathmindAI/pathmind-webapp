@@ -1,8 +1,8 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.subscribers.main;
 
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
 import io.skymind.pathmind.webapp.bus.subscribers.main.ExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
 public class NavBarExperimentArchivedSubscriber extends ExperimentArchivedSubscriber {
@@ -17,11 +17,7 @@ public class NavBarExperimentArchivedSubscriber extends ExperimentArchivedSubscr
     // We can ignore this code for archived experiments since the navbar is not visible for archived experiments.
     @Override
     public void handleBusEvent(ExperimentArchivedBusEvent event) {
-        if (event.getExperiment().isArchived()) {
-            experimentsNavBar.removeExperiment(event.getExperiment());
-        } else {
-            experimentsNavBar.addExperiment(event.getExperiment());
-        }
+        experimentsNavBar.updateExperiment(event.getExperiment());
     }
 
     @Override

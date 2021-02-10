@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
@@ -16,12 +17,15 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
-import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.services.project.demo.DemoProjectService;
+import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
 import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -35,13 +39,15 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
+import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = Routes.PROJECTS_URL, layout = MainLayout.class)
+@Route(value = Routes.PROJECTS, layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ProjectsView extends PathMindDefaultView {
+
     @Autowired
     private ProjectDAO projectDAO;
     @Autowired
@@ -49,14 +55,26 @@ public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
+    @Autowired
+    private DemoProjectService demoProjectService;
+
+    @Autowired
+    private ExperimentManifestRepository experimentManifestRepository;
+
     private List<Project> projects;
     private Grid<Project> projectGrid;
 
     private FlexLayout gridWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
+    private DemoViewContent demoViewContent;
+    private Dialog demoDialog;
 
-    public ProjectsView() {
+    private FeatureManager featureManager;
+
+    public ProjectsView(FeatureManager featureManager) {
         super();
+        this.featureManager = featureManager;
+
     }
 
     protected Component getMainContent() {
@@ -66,9 +84,14 @@ public class ProjectsView extends PathMindDefaultView {
         addClassName("projects-view");
 
         Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
+        Button showDemosButton = showDemosButton();
 
-        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle, new NewProjectButton());
+        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle,
+                WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton(), showDemosButton));
         headerWrapper.addClassName("page-content-header");
+
+        demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
+        setupDemoDialog();
 
         gridWrapper = new ViewSection(
                 headerWrapper,
@@ -76,7 +99,49 @@ public class ProjectsView extends PathMindDefaultView {
                 projectGrid);
         gridWrapper.addClassName("page-content");
 
+        if (projects.isEmpty()) {
+            gridWrapper.add(demoViewContent);
+            archivesTabPanel.setVisible(false);
+            projectGrid.setVisible(false);
+            if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
+                showDemosButton.setVisible(false);
+                demoViewContent.setVisible(true);
+            } else {
+                demoViewContent.setVisible(false);
+                showDemosButton.setVisible(false);
+            }
+        } else {
+            showDemosButton.setVisible(featureManager.isEnabled(Feature.EXAMPLE_PROJECTS));
+        }
+
         return gridWrapper;
+    }
+
+    private void setupDemoDialog() {
+        demoDialog = new Dialog();
+        demoDialog.getElement().getClassList().add("demo-dialog");
+        demoDialog.addOpenedChangeListener(openedChangedEvent -> {
+            if (openedChangedEvent.isOpened()) {
+                demoDialog.removeAll();
+                Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+                closeButton.addClickListener(event -> demoDialog.close());
+                // demoViewContent has to be re-initiated here every time
+                // otherwise it will be empty from the 2nd time onwards
+                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
+                demoViewContent.setOnChooseDemoHandler(() -> demoDialog.close());
+                demoDialog.add(demoViewContent, closeButton);
+            }
+        });
+    }
+
+    private Button showDemosButton() {
+        Button showDemosButton = new Button("Example Projects");
+        showDemosButton.addClickListener(click -> {
+            if (!projects.isEmpty()) {
+                demoDialog.open();
+            }
+        });
+        return showDemosButton;
     }
 
     private void setupTabbedPanel() {
@@ -88,7 +153,8 @@ public class ProjectsView extends PathMindDefaultView {
                     projectDAO.archive(project.getId(), isArchive);
                     project.setArchived(isArchive);
                     segmentIntegrator.archived(Project.class, isArchive);
-                });
+                },
+                getUISupplier());
     }
 
     private void setupProjectGrid() {
@@ -101,7 +167,7 @@ public class ProjectsView extends PathMindDefaultView {
             renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             renameProjectButton.addClassName("action-button");
             HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                new Span(projectName), renameProjectButton);
+                    new Span(projectName), renameProjectButton);
             projectNameColumn.addClassName("project-name-column");
             return projectNameColumn;
         })
@@ -118,7 +184,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setResizable(true)
                 .setSortable(true);
 
-        projectGrid.addComponentColumn(project -> 
+        projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getDateCreated())
         )
                 .setComparator(Comparator.comparing(Project::getDateCreated))
@@ -128,7 +194,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setFlexGrow(0)
                 .setResizable(true);
 
-        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project -> 
+        Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getLastActivityDate())
         )
                 .setComparator(Comparator.comparing(Project::getLastActivityDate))
@@ -161,8 +227,7 @@ public class ProjectsView extends PathMindDefaultView {
         RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
             projectGrid.getDataProvider().refreshItem(project);
             // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-            // After recalculating the column widths, some tooltips may not be needed so they need to be removed
-            projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); $0.querySelectorAll('[tooltip-content]').forEach(el => {if (el.querySelector('span').scrollWidth === el.querySelector('span').clientWidth) { el.removeAttribute('tooltip-content'); } })}, 0)");
+            projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); }, 0)");
         });
         dialog.open();
     }
@@ -190,13 +255,13 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initScreen(BeforeEnterEvent event) {
-        VaadinDateAndTimeUtils.withUserTimeZoneId(event.getUI(), timeZoneId -> {
+    protected void initComponents() {
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             projectGrid.setItems(projects);
         });
-        archivesTabPanel.initData(event.getUI());
+        archivesTabPanel.initData();
 
-        recalculateGridColumnWidth(event.getUI().getPage(), projectGrid);
+        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), projectGrid);
     }
 }

@@ -17,7 +17,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.shared.utils.PathmindStringUtils;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -70,7 +70,7 @@ public class SearchResultItem extends VerticalLayout {
             Experiment experiment = experimentDAO.getExperiment(searchResult.getItemId()).orElse(null);
             if (experiment != null) {
                 tags.add(new FavoriteStar(experiment.isFavorite(), newIsFavorite ->
-                        ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
+                        ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite)));
             }
         }
         tags.add(new TagLabel(searchResultType.getName(), true, "small"));
@@ -153,10 +153,10 @@ public class SearchResultItem extends VerticalLayout {
     private void setExperimentLinkRouterTarget(RouterLink link) {
         Long experimentId = searchResult.getItemId();
         Experiment experiment = experimentDAO.getExperimentWithRuns(experimentId).get();
-        if (ExperimentUtils.isDraftRunType(experiment)) {
-            link.setRoute(NewExperimentView.class, experimentId);
+        if (experiment.isDraft()) {
+            link.setRoute(NewExperimentView.class, ""+experimentId);
         } else {
-            link.setRoute(ExperimentView.class, experimentId);
+            link.setRoute(ExperimentView.class, ""+experimentId);
         }
     }
 

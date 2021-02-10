@@ -8,14 +8,7 @@ image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
   tag: staging
   pullPolicy: Always
-  command: ["java"]
-  args:
-    - "-Xmx4096m"
-    - "-XX:+UseG1GC"
-    - "-Dvaadin.productionMode"
-    - "-jar"
-    - "/app/pathmind-webapp/target/pathmind-webapp-0.0.1-SNAPSHOT.jar"
-    - "--server.port=80"
+  command: ["/app/entrypoint.sh"]
 
 service:
   type: NodePort
@@ -28,7 +21,7 @@ env:
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
   ENVIRONMENT: staging
-  SQS_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-training-queue.fifo
+  SQS_URL: https://queue.amazonaws.com/839270835622/staging-training-queue.fifo
   S3_BUCKET: staging-training-dynamic-files.pathmind.com
   S3_BUCKET_STATIC: dev-training-static-files.pathmind.com
   DB_SECRET_NAME: dburl

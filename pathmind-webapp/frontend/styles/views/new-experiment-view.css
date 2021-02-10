@@ -16,9 +16,17 @@
     height: 6.3rem;
 }
 
+.new-experiment-view .warning-label {
+    line-height: 1;
+    background: rgba(254, 193, 65, 0.7);
+    padding: var(--lumo-space-xs);
+    border: 1px solid var(--pm-gold-color);
+    border-radius: var(--lumo-border-radius);
+    margin: var(--lumo-space-xs) 0 var(--lumo-space-m);
+}
+
 .new-experiment-view .section-title-label {
     line-height: 1;
-    margin-bottom: var(--lumo-space-xs);
 }
 
 .new-experiment-view .reward-function-wrapper {
@@ -66,6 +74,7 @@
 }
 
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
+    flex: 1 0 auto;
     justify-content: space-between;
     margin-bottom: var(--lumo-space-xxs);
 }
@@ -143,7 +152,6 @@
     margin-top: 0px;
 }
 
-
 .new-experiment-view .error-label {
     box-sizing: border-box;
     width: 100%;
@@ -151,4 +159,9 @@
 
 .new-experiment-view .download-alp-link {
     align-self: center;
+}
+
+.new-experiment-view .new-experiment-split-button {
+    align-items: flex-start;
+    height: auto;
 }

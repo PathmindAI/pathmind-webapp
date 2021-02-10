@@ -18,7 +18,8 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
@@ -56,7 +57,7 @@ public class DashboardLine extends HorizontalLayout {
         breadcrumb = new Breadcrumbs(item.getProject(), item.getModel(), experiment, false);
         if (experiment != null) {
             favoriteStar = new FavoriteStar(experiment.isFavorite(), newIsFavorite ->
-                    ExperimentUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite));
+                    ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite));
         }
         timestamp = new Span();
 
@@ -109,11 +110,11 @@ public class DashboardLine extends HorizontalLayout {
                     // ExperimentUtils.createAndNavigateToNewExperiment(ui,
                     // experimentDAO, item.getModel().getId()));
                 } else {
-                    projectTitle.setRoute(NewExperimentView.class, item.getExperiment().getId());
+                    projectTitle.setRoute(NewExperimentView.class, ""+item.getExperiment().getId());
                 }
                 break;
             default:
-                projectTitle.setRoute(ExperimentView.class, item.getExperiment().getId());
+                projectTitle.setRoute(ExperimentView.class, ""+item.getExperiment().getId());
                 break;
         }
     }
@@ -167,7 +168,7 @@ public class DashboardLine extends HorizontalLayout {
         }
         if (stage.equals(Stage.TrainPolicy)) {
             Experiment experiment = dashboardItem.getExperiment();
-            if (experiment != null && experiment.isHasGoals() && !ExperimentUtils.isDraftRunType(experiment)) {
+            if (experiment != null && experiment.isHasGoals() && !experiment.isDraft()) {
                 GoalsReachedStatus goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
                 goalStatusComponent.setSize("large");
                 item.add(goalStatusComponent);

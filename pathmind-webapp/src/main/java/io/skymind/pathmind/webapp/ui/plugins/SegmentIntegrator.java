@@ -25,6 +25,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CAN
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHANGE_PW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_FIRST_PROJECT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT_FROM_EXAMPLE;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_DOWNLOAD_MODEL_ALP;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EDIT_INFO;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ERROR_PAGE;
@@ -32,10 +33,10 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXP
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_MARKETING_SITE_LEAD;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_RESTART_TRAINING;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SEARCHED_SITE;
@@ -69,6 +70,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
                              @Value("${skymind.segment.enabled}") Boolean enabled) {
         this.sourceKey = key;
         this.enabled = enabled;
+    }
+
+    public void marketingSiteLead(String plan) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("plan", plan);
+        track(EVENT_MARKETING_SITE_LEAD, additionalInfo);
     }
 
     public void userLoggedIn() {
@@ -109,6 +116,12 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void onboardingZipDownloaded() {
         track(EVENT_ONBOARDING_ZIP);
+    }
+
+    public void createProjectFromExample(String demoName) {
+        JsonObject additionalInfo = Json.createObject();
+        additionalInfo.put("demo", demoName);
+        track(EVENT_CREATE_PROJECT_FROM_EXAMPLE, additionalInfo);
     }
 
     public void createFirstProject() {
@@ -185,10 +198,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void stopTraining() {
         track(EVENT_STOP_TRAINING);
-    }
-
-    public void restartTraining() {
-        track(EVENT_RESTART_TRAINING);
     }
 
     public void downloadedALP() {

@@ -209,4 +209,24 @@ public class ExperimentPageSteps {
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         experimentPage.checkSideBarExperimentDateIs(experiment, date);
     }
+
+    @Step
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        experimentPage.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
+    }
+
+    @Step
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPage.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
+    }
+
+    @Step
+    public void checkLearningProgressBlockTabs(String tabs) {
+        experimentPage.checkLearningProgressBlockTabs(tabs);
+    }
+
+    @Step
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        experimentPage.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
+    }
 }

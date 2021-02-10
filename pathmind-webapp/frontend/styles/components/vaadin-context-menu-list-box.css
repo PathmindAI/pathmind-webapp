@@ -1,5 +1,12 @@
-[part="items"] ::slotted(.vaadin-menu-item) {
+[part="items"] ::slotted(.vaadin-menu-item),
+[part="items"] ::slotted(vaadin-context-menu-item),
+[part="items"] ::slotted(vaadin-item) {
   cursor: pointer;
+  outline: none;
+}
+
+[part="items"] ::slotted(vaadin-item) {
+  padding: var(--lumo-space-xs) var(--lumo-space-m);
 }
 
 [part="items"] ::slotted([focus-ring]:not([disabled])) {

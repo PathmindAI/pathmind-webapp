@@ -10,24 +10,39 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.server.Command;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-
-import static io.skymind.pathmind.webapp.ui.utils.UIConstants.MAX_SELECTED_METRICS_FOR_CHART;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 @CssImport(value = "./styles/components/reward-variables-table.css")
-public class RewardVariablesTable extends VerticalLayout {
+public class RewardVariablesTable extends VerticalLayout implements ExperimentComponent {
+
+    private static final String DISABLE_SELECTION_CLASS_NAME = "disable-selection";
 
     private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
     private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
-    private Integer selectedRewardVariables;
+    // Yes the experiment can be had from the ExperimentView but that is more for the actions for now.
+    private ExperimentView experimentView;
+    private Experiment experiment;
 
+    /**
+     * This constructor is used by the NewExperimentView and has no selection logic.
+     */
     public RewardVariablesTable() {
-        this(() -> {
-        });
+        this(() -> {});
+    }
+
+    /**
+     * This constructor is used by the ExperimentView and the selection logic.
+     */
+    public RewardVariablesTable(ExperimentView experimentView) {
+        this(() -> {});
+        this.experimentView = experimentView;
     }
 
     public RewardVariablesTable(Command goalFieldValueChangeHandler) {
@@ -62,7 +77,7 @@ public class RewardVariablesTable extends VerticalLayout {
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
         container.removeAll();
         rewardVariableNameFields.clear();
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Variable Name"), new Span("Goal"));
+        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"));
 
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
@@ -71,7 +86,7 @@ public class RewardVariablesTable extends VerticalLayout {
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, actAsMultiSelect, this);
+            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, experimentView, actAsMultiSelect);
             container.add(row);
             rewardVariableNameFields.add(row);
         });
@@ -81,17 +96,27 @@ public class RewardVariablesTable extends VerticalLayout {
         return rewardVariableNameFields.stream().allMatch(row -> row.isValid());
     }
 
-    public void setNumberOfSelectedRewardVariables(int num) {
-        String disableSelectionClassName = "disable-selection";
-        selectedRewardVariables = num;
-        if (num >= MAX_SELECTED_METRICS_FOR_CHART) {
-            container.addClassName(disableSelectionClassName);
+    public void updateSelectionClassForComponent() {
+        if (experiment.getSelectedRewardVariables().size() >= RewardVariable.MAX_SELECTED_REWARD_VARIABLES) {
+            container.addClassName(DISABLE_SELECTION_CLASS_NAME);
         } else {
-            container.removeClassName(disableSelectionClassName);
+            container.removeClassName(DISABLE_SELECTION_CLASS_NAME);
         }
     }
 
-    public int getNumberOfSelectedRewardVariables() {
-        return selectedRewardVariables;
+    @Override
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+        setRewardVariables(experiment.getRewardVariables());
+        if(actAsMultiSelect) {
+            selectSelectedRewardVariables(experiment);
+            updateSelectionClassForComponent();
+        }
+    }
+
+    private void selectSelectedRewardVariables(Experiment experiment) {
+        rewardVariableNameFields.stream()
+                .filter(rewardVariablesRowField -> experiment.getSelectedRewardVariables().contains(rewardVariablesRowField.getRewardVariable()))
+                .forEach(rewardVariablesRowField ->  rewardVariablesRowField.setSelected(true));
     }
 }

@@ -35,7 +35,7 @@ public class ConfigureUIServiceInitListener implements VaadinServiceInitListener
         event.getSource().setSystemMessagesProvider(systemMessagesInfo -> {
             CustomizedSystemMessages msgs = new CustomizedSystemMessages();
             msgs.setSessionExpiredNotificationEnabled(false);
-            msgs.setSessionExpiredURL(String.format("/%s/%s", Routes.LOGIN_URL, Routes.SESSION_EXPIRED));
+            msgs.setSessionExpiredURL(String.format("/%s/%s", Routes.LOGIN, Routes.SESSION_EXPIRED));
             return msgs;
         });
     }

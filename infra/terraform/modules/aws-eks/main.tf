@@ -178,6 +178,7 @@ module "cluster" {
       instance_type        = var.instance_type
       asg_max_size         = var.asg_max_size
       asg_desired_capacity = 1
+      root_volume_size     = 300
       subnets = data.aws_subnet_ids.selected_us_east_1a.ids
       kubelet_extra_args      = "--node-labels=dedicated=jenkins --register-with-taints=dedicated=jenkins:NoSchedule"
       tags = [

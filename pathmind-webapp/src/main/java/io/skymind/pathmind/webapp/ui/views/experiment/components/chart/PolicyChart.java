@@ -93,7 +93,6 @@ public class PolicyChart extends DataChart {
         if (experiment.getPolicies() == null) {
             return Collections.emptyMap();
         }
-        Policy bestPolicy = PolicyUtils.selectBestPolicy(experiment.getPolicies()).orElse(null);
 
         List<List<RewardScore>> allRewardScoresLists = new ArrayList<>();
         Map<Integer, List<RewardScore>> allLinesData = new LinkedHashMap<>();
@@ -104,7 +103,7 @@ public class PolicyChart extends DataChart {
                     .filter(score -> !Double.isNaN(score.getMean()))
                     .collect(Collectors.toList());
             allRewardScoresLists.add(rewardScoresList);
-            if (bestPolicy != null && policy.getId() == bestPolicy.getId()) {
+            if (experiment.getBestPolicy() != null && policy.getId() == experiment.getBestPolicy().getId()) {
                 bestPolicySeriesNumber = allRewardScoresLists.size() - 1;
             }
             iterationNumbers.add(rewardScoresList.size());

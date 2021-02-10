@@ -3,7 +3,6 @@ package io.skymind.pathmind.shared.data;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import io.skymind.pathmind.shared.data.user.DeepCloneableInterface;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,6 +35,7 @@ public class Project extends ArchivableData implements DeepCloneableInterface<Pr
                 .lastActivityDate(lastActivityDate)
                 .userNotes(userNotes)
                 .pathmindUserId(pathmindUserId)
+                .modelCount(modelCount)
                 .build());
     }
 

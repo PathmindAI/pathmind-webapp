@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardScore;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
@@ -31,24 +29,6 @@ public class PolicyDAO {
         optionalPolicy
                 .ifPresent(policy -> policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId)));
         return optionalPolicy;
-    }
-
-    public List<Policy> getPoliciesForExperiment(DSLContext context, long experimentId) {
-        List<Policy> policies = PolicyRepository.getPoliciesForExperiment(context, experimentId);
-        Map<Long, List<RewardScore>> rewardScores = RewardScoreRepository.getRewardScoresForPolicies(context, DataUtils.convertToIds(policies));
-        Map<Long, List<Metrics>> metricsMap = MetricsRepository.getMetricsForPolicies(context, DataUtils.convertToIds(policies));
-        Map<Long, List<MetricsRaw>> metricsRawMap = MetricsRawRepository.getMetricsRawForPolicies(context, DataUtils.convertToIds(policies));
-        policies.forEach(policy -> {
-            long id = policy.getId();
-            policy.setScores(rewardScores.get(id));
-            policy.setMetrics(metricsMap.get(id));
-            policy.setMetricsRaws(metricsRawMap.get(id));
-        });
-        return policies;
-    }
-
-    public List<Policy> getPoliciesForExperiment(long experimentId) {
-        return getPoliciesForExperiment(ctx, experimentId);
     }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {

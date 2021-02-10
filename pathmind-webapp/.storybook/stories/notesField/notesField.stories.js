@@ -10,7 +10,7 @@ storiesOf('Inputs', module)
 .add('Notes Field', () => `
     <h1>Notes Field</h1>
     <div class="block-wrapper">
-        <p>This is a customized component from Pathmind.</p>
+        <p>This is a custom component from Pathmind.</p>
     </div>
     <h2>Customization</h2>
     <div class="block-wrapper">

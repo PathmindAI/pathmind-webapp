@@ -138,6 +138,7 @@ public class Utils extends PageObject {
 
     public void waitForLoadingBar() {
         try {
+            waitABit(4000);
             waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;' and not(@role)]")));
         }catch (org.openqa.selenium.NoSuchElementException ex){
             ex.printStackTrace();

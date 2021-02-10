@@ -5,30 +5,25 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.data.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.view.TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.subscribers.main.TrainingStatusDetailsPanelRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
 import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.isRunning;
 
-public class TrainingStatusDetailsPanel extends HorizontalLayout {
+public class TrainingStatusDetailsPanel extends HorizontalLayout implements ExperimentComponent {
 
     private Span statusLabel = LabelFactory.createLabel(RunStatus.NotStarted.toString());
     /**
@@ -53,32 +48,12 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
         setPadding(false);
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, getUISupplier,
-                new TrainingStatusDetailsPanelRunUpdateSubscriber(this),
-                new TrainingStatusDetailsPanelPolicyUpdateSubscriber(this),
-                new TrainingStatusDetailsPanelExperimentSwitchedViewSubscriber(this));
-
-        // This is required because ui.navigate() has a different lifecycle and so calls onAttach() before the
-        // experiment has loaded unlike a page refresh
-        if (experiment != null) {
-            updateProgressRow();
-        }
-    }
-
-    @Override
-    protected void onDetach(DetachEvent detachEvent) {
-        EventBus.unsubscribe(this);
-    }
-
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         update();
     }
 
     public void update() {
-        experiment.updateTrainingStatus();
         statusLabel.setText(experiment.getTrainingStatusEnum().toString());
         updateElapsedTimer();
         updateProgressRow();
@@ -92,7 +67,7 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout {
         if (experiment.getTrainingStatusEnum().equals(Running)) {
             updateProgressBar(experiment);
         } else if (experiment.getTrainingStatusEnum().equals(Completed)) {
-            getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
+            getUISupplier.get().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
                 LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
                 final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
                 completedTimeLabel.setText(formattedTrainingCompletedTime);

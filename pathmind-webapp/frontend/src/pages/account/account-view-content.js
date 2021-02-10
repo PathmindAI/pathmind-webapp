@@ -102,11 +102,11 @@ class AccountViewContent extends PolymerElement {
                                 <div id="apiExpiryDate">{{apiKeyExpiresPhrase}}</div>
                                 <vaadin-context-menu id="rotateApiMenu">
                                     <template>
-                                        <vaadin-list-box>
+                                        <vaadin-context-menu-list-box>
                                             <vaadin-item on-click="triggerRotateBtn">
                                                 Rotate
                                             </vaadin-item>
-                                        </vaadin-list-box>
+                                        </vaadin-context-menu-list-box>
                                     </template>
                                     <vaadin-button id="rotateApiKeyBtn" theme="small"></vaadin-button>
                                     <vaadin-button id="small-menu" theme="tertiary small">
@@ -133,7 +133,7 @@ class AccountViewContent extends PolymerElement {
                             <div class="data">{{subscription}}</div>
                             <div class="data small">{{subscriptionCancellationNote}}</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="upgradeBtn">
+                        <vaadin-button id="upgradeBtn" theme="small">
                             Upgrade
                         </vaadin-button>
                         <vaadin-button id="cancelSubscriptionBtn" theme="error">
@@ -166,6 +166,17 @@ class AccountViewContent extends PolymerElement {
     ready() {
         super.ready();
         document.getElementById("rotateApiMenu")._setProperty("openOn", "click");
+
+        document.getElementById("accessToken").addEventListener("copy", event => {
+            // This will handle the clipboard data to eliminate extra linebreak at the end of the string
+            const selection = document.getElementById("accessToken").innerHTML.replace(/\s/g, '');
+            if (event.clipboardData) {
+                event.clipboardData.setData("text/plain", selection);
+            } else {
+                window.clipboardData.setData("text", selection);
+            }
+            event.preventDefault();
+        });
     }
 
     triggerRotateBtn() {

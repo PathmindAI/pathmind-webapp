@@ -219,4 +219,24 @@ public class ExperimentStepDefinitions {
     public void checkSideBarExperimentDateIs(String experiment, String date) {
         experimentPageSteps.checkSideBarExperimentDateIs(experiment, date);
     }
+
+    @Then("^Click side nav '(.*)' button from navbarItemMenu for '(.*)'$")
+    public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
+        experimentPageSteps.clickSideNavButtonFromNavbarItemMenuFor(btn, experiment);
+    }
+
+    @When("^Experiment page check number of the experiments is '(.*)' in the left sidebar$")
+    public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
+        experimentPageSteps.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
+    }
+
+    @Then("^Check learning progress block tabs '(.*)'$")
+    public void checkLearningProgressBlockTabs(String tabs) {
+        experimentPageSteps.checkLearningProgressBlockTabs(tabs);
+    }
+
+    @Then("^Check learning progress block histogram simulation metric is '(.*)' and '(.*)'$")
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        experimentPageSteps.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
+    }
 }
