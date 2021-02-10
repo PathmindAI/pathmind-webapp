@@ -279,6 +279,11 @@
     z-index: 1;
 }
 
+.experiment-view .bottom-panel histogram-chart,
+.experiment-view .bottom-panel data-chart {
+    flex: 1 0 100%;
+}
+
 .experiment-view.comparison-mode .bottom-panel,
 .experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
     max-height: none;
