@@ -19,10 +19,10 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private GenericPage genericPage;
 
     private String middlePanelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']";
-    private String simMetricsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/span";
+    private String simMetricsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/descendant::span";
     private String simMetricsHeaderRowXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/descendant::*[@class='header-row']";
-    private String observationsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='secondary']/span";
-    private String rewardFunctionLabelXpath = "(//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout/span[@class='bold-label'])[3]";
+    private String observationsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='secondary']/descendant::span";
+    private String rewardFunctionLabelXpath = "(//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout/descendant::span[@class='bold-label'])[3]";
     private String rewardVariablesListXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name']";
     private String simulationMetricChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and @chosen]";
     private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
@@ -34,7 +34,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
 
 
     private static final String SIM_METRICS_LABEL = "Simulation Metrics";
-    private static final String SIM_METRICS_HEADER_ROW = "Variable Name";
+    private static final String SIM_METRICS_HEADER_ROW = "Metric";
     private static final String OBSERVATIONS_LABEL = "Observations";
     private static final String REWARD_FUNCTION_LABEL = "Reward Function";
 

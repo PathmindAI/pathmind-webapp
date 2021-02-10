@@ -33,11 +33,12 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setupChart(
+            String title,
             String hAxisTitle,
             String vAxisTitle,
-            List<String> colors,
-            JsonObject viewWindow
+            List<String> colors
     ) {
+        getModel().setTitle(title);
         getModel().setHaxistitle(hAxisTitle);
         getModel().setVaxistitle(vAxisTitle);
         getModel().setColors(colors);
@@ -51,19 +52,19 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public void setChartEmpty() {
-        this.setupChart("value", "frequency", List.of("navy"), null);
+        this.setupChart("", "Value", "Count", List.of("navy"));
         getElement().callJsFunction("setChartEmpty");
         redraw();
     }
 
-    public void setHistogramData(List<RewardVariable> selectedRewardVariables, Policy bestPolicy) {
+    public void setHistogramData(List<RewardVariable> selectedRewardVariables, Policy bestPolicy, Boolean showDetails) {
         this.selectedRewardVariables = selectedRewardVariables;
         this.bestPolicy = bestPolicy;
 
-        updateData();
+        updateData(showDetails);
     }
 
-    private void updateData() {
+    private void updateData(Boolean showDetails) {
         PolicyUtils.updateSimulationMetricsData(bestPolicy);
         List<MetricsRaw> metricsRawList = bestPolicy.getMetricsRaws();
 
@@ -82,7 +83,11 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
                 .map(r -> colors.get(r.getArrayIndex() % 10))
                 .collect(Collectors.toList());
 
-            this.setupChart("value", "frequency", selectedColors, null);
+            if (showDetails) {
+                this.setupChart(null, "Value", "Count", selectedColors);
+            } else {
+                this.setupChart(null, null, null, selectedColors);
+            }
             this.setData(cols, rows);
         } else {
             this.setChartEmpty();
@@ -131,6 +136,7 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
     }
 
     public interface Model extends TemplateModel {
+        void setTitle(String title);
 
         void setHaxistitle(String hAxisTitle);
 

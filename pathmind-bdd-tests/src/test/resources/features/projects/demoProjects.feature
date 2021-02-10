@@ -24,6 +24,7 @@ Feature: Demo projects
     Then Check experiment page reward variables is <reward vars>
     When Check experiment page observations list <new experiment observations>
     Then Click project start run button
+    When Wait a bit 5000 ms
     When Check experiment page observations list <experiment observations>
     Then Check experiment page simulation metrics <reward vars>
     Then Check experiment page reward function <reward function>

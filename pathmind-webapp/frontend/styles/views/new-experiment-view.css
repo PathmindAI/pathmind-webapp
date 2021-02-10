@@ -1,7 +1,17 @@
+.default-view.new-experiment-view {
+    height: auto;
+    flex: 1 0 100%;
+}
+
 .new-experiment-view .view-section {
+    height: calc(100vh - 5rem);
     padding: var(--lumo-space-m);
     border-radius: 0;
-    overflow: visible;
+    overflow: auto;
+}
+
+.new-experiment-view .view-section > vaadin-horizontal-layout:first-child {
+    flex: 0 0 auto;
 }
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
@@ -30,7 +40,7 @@
 }
 
 .new-experiment-view .reward-function-wrapper {
-    flex: 2 0 auto;
+    flex: 0 0 auto;
     margin-top: 0;
 }
 
@@ -152,7 +162,6 @@
     margin-top: 0px;
 }
 
-
 .new-experiment-view .error-label {
     box-sizing: border-box;
     width: 100%;
@@ -160,4 +169,9 @@
 
 .new-experiment-view .download-alp-link {
     align-self: center;
+}
+
+.new-experiment-view .new-experiment-split-button {
+    align-items: flex-start;
+    height: auto;
 }
