@@ -1,0 +1,7 @@
+[part="token"] {
+    background-color: var(--lumo-primary-color-25pct);
+}
+
+[part="input-field"] {
+    min-width: 22rem;
+}
