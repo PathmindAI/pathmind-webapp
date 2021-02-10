@@ -118,7 +118,7 @@ hr {
 
 /* Customized Scrollbar for WebKit Browsers */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -391,6 +391,7 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .projects-view .project-name-column vaadin-button {
+    height: auto;
     visibility: hidden;
 }
 

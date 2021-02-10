@@ -18,10 +18,12 @@ class StatusIcon extends PolymerElement {
                 }
                 iron-icon[icon="vaadin:check-circle"] {
                     --iron-icon-width: var(--lumo-font-size-l);
+                    --iron-icon-height: var(--lumo-font-size-l);
                     color: var(--pm-green-color);
                 }
                 iron-icon[icon="vaadin:exclamation-circle-o"] {
                     --iron-icon-width: var(--lumo-font-size-l);
+                    --iron-icon-height: var(--lumo-font-size-l);
                     color: var(--pm-danger-color);
                 }
             </style>
