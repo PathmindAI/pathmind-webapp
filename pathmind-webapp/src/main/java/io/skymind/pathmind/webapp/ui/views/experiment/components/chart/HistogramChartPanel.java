@@ -38,14 +38,17 @@ public class HistogramChartPanel extends VerticalLayout implements ExperimentCom
         if (opt.isPresent()) {
             List<RewardVariable> selectedRewardVars = experiment.getSelectedRewardVariables();
             if (!selectedRewardVars.isEmpty()) {
-                chart.setHistogramData(new ArrayList<>(selectedRewardVars), opt.get(), true);
+                final Policy bestPolicy = opt.get();
+                chart.setHistogramData(new ArrayList<>(selectedRewardVars), bestPolicy, true);
+                List<String> uncertainty = bestPolicy.getUncertainty();
                 selectedRewardVars.forEach(rewardVar -> {
-                    String meanValue = opt.get().getUncertainty() != null && !opt.get().getUncertainty().isEmpty()
-                            ? opt.get().getUncertainty().get(rewardVar.getArrayIndex())
-                            : PathmindNumberUtils.formatNumber(opt.get().getSimulationMetrics().get(rewardVar.getArrayIndex()));
+                    int arrayIndex = rewardVar.getArrayIndex();
+                    String meanValue = uncertainty.size() > arrayIndex
+                            ? uncertainty.get(arrayIndex)
+                            : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(arrayIndex));
                     Span colorBox = new Span();
                     colorBox.addClassName("color-box");
-                    colorBox.addClassName("variable-color-"+rewardVar.getArrayIndex() % 10);
+                    colorBox.addClassName("variable-color-"+ arrayIndex % 10);
                     metricMeanValue.add(
                         WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                             new HorizontalLayout(
