@@ -59,11 +59,7 @@ public class ModelDetailsPage extends PageObject {
         resetImplicitTimeout();
     }
 
-    public void checkObservationsListContains(String variableName) {
-        List<String> variables = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.cssSelector(".observation-label"))) {
-            variables.add(webElement.getText());
-        }
-        assertThat(variables, hasItem(variableName));
+    public void checkObservationsListContains(String experiment, String variableName) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[3]")).getText(), containsString(variableName));
     }
 }
