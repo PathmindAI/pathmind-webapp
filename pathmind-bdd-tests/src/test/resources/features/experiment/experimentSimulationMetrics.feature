@@ -39,7 +39,7 @@ Feature: Experiment page Simulation Metrics
     Given Login to the pathmind
     When Create new CoffeeShop project with 4 variables reward function
     When Click project start run button
-    Then Click archive button for 'Experiment #1'
+    Then Click archive button for current experiment
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
     When Click the experiment name 1

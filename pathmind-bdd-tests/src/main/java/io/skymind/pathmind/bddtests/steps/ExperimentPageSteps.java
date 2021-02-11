@@ -51,11 +51,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void clickSideNavArchiveButtonFor(String experimentName) {
-        experimentPage.clickSideNavArchiveButtonFor(experimentName);
-    }
-
-    @Step
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
     }

@@ -56,7 +56,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        WebElement splitButton = getDriver().findElement(By.xpath("//vaadin-select[theme='split-button']"));
+        WebElement splitButton = getDriver().findElement(By.cssSelector("vaadin-select[theme~='split-button']"));
         splitButton.click();
         waitABit(300);
         WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
@@ -120,12 +120,6 @@ public class ExperimentPage extends PageObject {
         waitABit(3500);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(variableName);
         inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
-    }
-
-    public void clickSideNavArchiveButtonFor(String experimentName) {
-        waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
-        element.findElement(By.cssSelector("button")).click();
     }
 
     public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {

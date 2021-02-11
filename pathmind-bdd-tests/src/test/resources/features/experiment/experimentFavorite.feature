@@ -76,7 +76,7 @@ Feature: Experiment favorite feature
     When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Click experiment page Experiment #1 star button
-    When Click archive button for 'Experiment #1'
+    When Click archive button for current experiment
     When In confirmation dialog click in 'Archive' button
     When Click in 'Model #1 (coffeeshop)' button
     When Open projects/model/experiment archived tab
