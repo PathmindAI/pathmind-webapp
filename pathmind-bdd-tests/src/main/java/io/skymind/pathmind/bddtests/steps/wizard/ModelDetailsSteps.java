@@ -28,9 +28,9 @@ public class ModelDetailsSteps {
     }
 
     @Step
-    public void checkObservationsListContains(String[] observations) {
+    public void checkObservationsListContains(String experiment, String[] observations) {
         for (int i = 0; i < observations.length; i++) {
-            modelDetailsPage.checkObservationsListContains(observations[i]);
+            modelDetailsPage.checkObservationsListContains(experiment, observations[i]);
         }
     }
 }

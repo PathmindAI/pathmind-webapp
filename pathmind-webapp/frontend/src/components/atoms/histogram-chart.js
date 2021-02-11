@@ -68,13 +68,16 @@ class HistogramChart extends PolymerElement {
             if (isInit) {
                 isInit = false;
                 setTimeout(() => {
+                    const is_safari = navigator.userAgent.indexOf("Safari") > -1;
+                    const waitingTime = is_safari ? 1000 : 200;
                     // This is to ensure the tooltips are rendered
                     this.chartready = true;
                     this.$.chart.redraw();
-
+                    
                     setTimeout(() => {
                         this.style.opacity = 1;
-                    }, 200);
+                        this.$.chart.redraw();
+                    }, waitingTime);
                 }, 0);
             }
         });
