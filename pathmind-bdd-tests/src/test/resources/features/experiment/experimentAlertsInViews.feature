@@ -27,7 +27,7 @@ Feature: Experiment page alerts in multiple views
     When Create new CoffeeShop project with single reward function
     When Click project save draft btn
     When Duplicate current tab
-    When Click side nav archive button for 'Experiment #1'
+    When Click archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
     When Check that confirmation dialog is shown false
     When Open tab 0
@@ -61,7 +61,7 @@ Feature: Experiment page alerts in multiple views
     When Click project start run button
     When Check that confirmation dialog is shown false
     When Duplicate current tab
-    When Click side nav archive button for 'Experiment #1'
+    When Click archive button for 'Experiment #1'
     When In confirmation dialog click in 'Archive' button
     When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown false
@@ -146,7 +146,7 @@ Feature: Experiment page alerts in multiple views
     When Click project save draft btn
     When Duplicate current tab
     When Click in 'New Experiment' button
-    When Click side nav archive button for 'Experiment #2'
+    When Click archive button for 'Experiment #2'
     When In confirmation dialog click in 'Archive' button
     When Open tab 0
     Then Check that 'Experiment #2' NOT exist on the experiment page

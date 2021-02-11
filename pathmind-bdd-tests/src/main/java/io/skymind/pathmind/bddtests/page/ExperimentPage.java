@@ -56,11 +56,12 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
-        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        WebElement splitButton = getDriver().findElement(By.xpath("//vaadin-select[theme='split-button']"));
+        splitButton.click();
+        waitABit(300);
+        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        WebElement button = utils.expandRootElement(archiveButton);
-        button.findElement(By.cssSelector("button")).click();
+        archiveButton.click();
 
         WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
         WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
