@@ -33,4 +33,24 @@ public class ModelDetailsSteps {
             modelDetailsPage.checkObservationsListContains(experiment, observations[i]);
         }
     }
+
+    @Step
+    public void clickModelsPageMetricsDropdown() {
+        modelDetailsPage.clickModelsPageMetricsDropdown();
+    }
+
+    @Step
+    public void checkModelPageMetricsVariables(String metrics) {
+        modelDetailsPage.checkMetrics(metrics);
+    }
+
+    @Step
+    public void modelPageChooseMetricFromDropdown(String metric) {
+        modelDetailsPage.modelPageChooseMetricFromDropdown(metric);
+    }
+
+    @Step
+    public void modelPageCheckExperimentColumnValueIs(String experiment, String column, String value) {
+        modelDetailsPage.modelPageCheckExperimentColumnValueIs(experiment, column, value);
+    }
 }

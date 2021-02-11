@@ -8,6 +8,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -61,5 +62,35 @@ public class ModelDetailsPage extends PageObject {
 
     public void checkObservationsListContains(String experiment, String variableName) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[3]")).getText(), containsString(variableName));
+    }
+
+    public void clickModelsPageMetricsDropdown() {
+        getDriver().findElement(By.xpath("//span[text()='Metrics']/following-sibling::multiselect-combo-box")).click();
+    }
+
+    public void checkMetrics(String commaSeparatedMetrics) {
+        WebElement comboBox = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-combo-box-overlay")));
+        WebElement content = utils.expandRootElement(comboBox.findElement(By.cssSelector("#content")));
+        List<String> actualMetrics = new ArrayList<>();
+        for (WebElement element : content.findElements(By.cssSelector("vaadin-combo-box-item"))) {
+            WebElement item = utils.expandRootElement(element);
+            actualMetrics.add(item.findElement(By.cssSelector("div")).getText());
+        }
+        assertThat(actualMetrics, containsInAnyOrder(Arrays.asList(commaSeparatedMetrics.split(",")).toArray()));
+    }
+
+    public void modelPageChooseMetricFromDropdown(String metric) {
+        WebElement comboBox = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-combo-box-overlay")));
+        WebElement content = utils.expandRootElement(comboBox.findElement(By.cssSelector("#content")));
+        for (WebElement element : content.findElements(By.cssSelector("vaadin-combo-box-item"))) {
+            WebElement item = utils.expandRootElement(element);
+            if(item.findElement(By.cssSelector("div")).getText().equals(metric)){
+                element.click();
+            }
+        }
+    }
+
+    public void modelPageCheckExperimentColumnValueIs(String experiment, String column, String value) {
+        assertThat(getDriver().findElement(By.cssSelector("#pathmind-app-layout > vaadin-vertical-layout > div > vaadin-horizontal-layout:nth-child(2) > vaadin-vertical-layout.model-wrapper > vaadin-grid > vaadin-grid-cell-content:nth-child(50)")).getText(), is(value));
     }
 }
