@@ -140,6 +140,10 @@ public class ExperimentUtils {
         return experiment != null && experiment.getModelId() == modelId;
     }
 
+    public static boolean isSameModel(List<Long> experimentIdList, long experimentId) {
+        return experimentIdList.contains(experimentId);
+    }
+
     public static boolean isSameExperiment(Experiment experiment, Experiment secondExperiment) {
         return experiment != null && experiment.getId() == secondExperiment.getId();
     }

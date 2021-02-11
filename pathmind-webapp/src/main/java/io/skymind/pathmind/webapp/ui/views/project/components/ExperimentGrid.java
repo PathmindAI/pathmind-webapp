@@ -33,9 +33,7 @@ public class ExperimentGrid extends Grid<Experiment> {
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-            Experiment refreshedExperiment = experiment;
-            experiment.setFavorite(newIsFavorite);
-            getDataProvider().refreshItem(refreshedExperiment);
+            getDataProvider().refreshItem(experiment);
         }))
                 .setHeader(new Icon(VaadinIcon.STAR))
                 .setAutoWidth(true)
