@@ -19,7 +19,9 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -189,9 +191,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     // REFACTOR -> The logic should really be in ExperimentUtils because it's business logic rather than GUI logic but for now we'll just leave it here.
     private boolean canStartTraining() {
         PathmindUser currentUser = userService.getCurrentUser();
-        return ModelUtils.isValidModel(experiment.getModel())
-                && rewardFunctionEditor.isValidForTraining()
-                && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
+        Model model = experiment.getModel();
+        boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType()));
+        return ModelUtils.isValidModel(model)
+                && (isPyModel || rewardFunctionEditor.isValidForTraining())
+                && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
                 && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
     }
