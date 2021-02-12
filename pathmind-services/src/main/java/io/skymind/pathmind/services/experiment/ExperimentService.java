@@ -104,7 +104,9 @@ public class ExperimentService {
             FileUtils.writeByteArrayToFile(tempFile, model.getFile());
             HyperparametersDTO analysisResult =
                 projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
-            log.info("kepricondebug result : {}", ObjectMapperHolder.getJsonMapper().writeValueAsString(analysisResult));
+            if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
+                throw new ModelCheckException(analysisResult.getFailedSteps());
+            }
             model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
             model.setPackageName(environment);
             modelService.addDraftModelToProject(model, project.getId(), "");
