@@ -31,10 +31,10 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewComparisonExperimentArchivedSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewFavoriteSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewPolicyUpdateSubscriber;
-import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment.ExperimentViewRunUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewComparisonExperimentArchivedSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

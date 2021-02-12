@@ -34,6 +34,8 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -54,6 +56,7 @@ import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
+import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -290,11 +293,28 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return selectedModel != null ? new Breadcrumbs(project, selectedModel) : new Breadcrumbs(project);
     }
 
+    public List<Experiment> getExperimentList() {
+        return experiments;
+    }
+
+    public ExperimentGrid getExperimentGrid() {
+        return experimentGrid;
+    }
+
     @Override
     protected Component getTitlePanel() {
         pageBreadcrumbs = createBreadcrumbs();
         titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
         return titlePanel;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
+    }
+
+    protected List<EventBusSubscriber> getViewSubscribers() {
+        return List.of(new ProjectViewFavoriteSubscriber(this));
     }
 
     @Override
