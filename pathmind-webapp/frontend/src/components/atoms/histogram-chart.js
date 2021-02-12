@@ -9,6 +9,9 @@ class HistogramChart extends PolymerElement {
 
     static get properties() {
         return {
+            title: {
+                type: String,
+            },
             haxistitle: {
                 type: String,
             },
@@ -34,10 +37,10 @@ class HistogramChart extends PolymerElement {
             options: {
                 type: Object,
                 computed: `_computeOptions(
+                                title,
                                 haxistitle, 
                                 vaxistitle, 
-                                colors,
-                                bucketsize)`,
+                                colors)`,
             },
         }
     }
@@ -52,6 +55,11 @@ class HistogramChart extends PolymerElement {
                     width: 100% !important;
                     height: 100% !important;
                 }
+                div[dir="ltr"] {
+                    width: 100% !important;
+                    height: 0 !important;
+                    padding-bottom: 40.8%;
+                }
                 .google-visualization-tooltip div {
                     line-height: 1.2;
                     padding: var(--lumo-space-xxs);
@@ -60,13 +68,16 @@ class HistogramChart extends PolymerElement {
             if (isInit) {
                 isInit = false;
                 setTimeout(() => {
+                    const is_safari = navigator.userAgent.indexOf("Safari") > -1;
+                    const waitingTime = is_safari ? 1000 : 200;
                     // This is to ensure the tooltips are rendered
                     this.chartready = true;
                     this.$.chart.redraw();
-
+                    
                     setTimeout(() => {
                         this.style.opacity = 1;
-                    }, 200);
+                        this.$.chart.redraw();
+                    }, waitingTime);
                 }, 0);
             }
         });
@@ -75,14 +86,17 @@ class HistogramChart extends PolymerElement {
         }, 300));
     }
 
-    _computeOptions(haxistitle, vaxistitle, colors, bucketsize) {
+    _computeOptions(title, haxistitle, vaxistitle, colors) {
         return {
+            "title": title || null,
+            "legend": {
+                "position": "none"
+            },
             "hAxis": {
                 "title": haxistitle,
                 "titleTextStyle": {"italic": false},
                 "textPosition": haxistitle ? "out" : "none",
                 "ticks": haxistitle ? "auto" : [],
-                "format": "0",
                 "baselineColor": haxistitle ? "black" : "#FFF",
                 "gridlineColor": haxistitle ? "#CCC" : "#FFF"
             },
@@ -96,17 +110,17 @@ class HistogramChart extends PolymerElement {
                     "gridlineColor": vaxistitle ? "#CCC" : "#FFF",
                 }
             ],
-            "bar": { "gap": 0 },
             "histogram": {
-                "bucketSize": bucketsize || "auto",
+                "hideBucketItems": true
             },
-            "interpolateNulls": false,
             "colors": colors,
             "chartArea": {
                 "left": !vaxistitle && !haxistitle ? 0 : "10%", 
-                "top": !vaxistitle && !haxistitle ? 0 : "5%", 
+                "top": "10%", 
+                "width": !vaxistitle && !haxistitle ? "100%" : "85%",
                 "height": !vaxistitle && !haxistitle ? "100%" : "80%"
-            }
+            },
+            "enableInteractivity": !(!vaxistitle && !haxistitle)
         };
     }
 

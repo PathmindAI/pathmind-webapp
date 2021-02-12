@@ -34,12 +34,6 @@ Feature: E2E
     Then Check page url is https://help.pathmind.com/en/articles/4305404-simulation-metrics
     When Close browser tab
     When Open tab 0
-    Then Click simulation metrics overview icon
-    When Open tab 1
-    Then Check page title tag text is Simulation Metrics | Pathmind Knowledge Base
-    Then Check page url is https://help.pathmind.com/en/articles/4305404-simulation-metrics
-    When Close browser tab
-    When Open tab 0
     #    ------------------------
     #Check observations block
     Then Check experiment page observations list stateChartState
@@ -71,6 +65,7 @@ Feature: E2E
     Then Check learning progress block selected tab 'true' name is 'Histogram'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
     Then Check learning progress block selected tab 'false' name is 'Metrics'
+    Then Check learning progress block histogram simulation metric is 'goalReached' and 'mean: 1.0⠀±⠀0.0'
     #    ------------------------
     #Check export policy
     When Click in 'Export Policy' button
