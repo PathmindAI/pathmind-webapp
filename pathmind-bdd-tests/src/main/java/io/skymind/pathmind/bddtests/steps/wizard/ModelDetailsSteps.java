@@ -53,4 +53,19 @@ public class ModelDetailsSteps {
     public void modelPageCheckExperimentColumnValueIs(String experiment, String column, String value) {
         modelDetailsPage.modelPageCheckExperimentColumnValueIs(experiment, column, value);
     }
+
+    @Step
+    public void checkModelPageColumnsMultiselect(String columns) {
+        modelDetailsPage.checkModelPageColumnsMultiselect(columns);
+    }
+
+    @Step
+    public void modelPageDisableFavoriteColumn(String column) {
+        modelDetailsPage.modelPageDisableFavoriteColumn(column);
+    }
+
+    @Step
+    public void clickModelsPageColumnsDropdown() {
+        modelDetailsPage.clickModelsPageColumnsDropdown();
+    }
 }

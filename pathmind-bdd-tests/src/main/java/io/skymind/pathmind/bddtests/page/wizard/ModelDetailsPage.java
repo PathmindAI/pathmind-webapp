@@ -3,6 +3,7 @@ package io.skymind.pathmind.bddtests.page.wizard;
 import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -84,7 +85,7 @@ public class ModelDetailsPage extends PageObject {
         WebElement content = utils.expandRootElement(comboBox.findElement(By.cssSelector("#content")));
         for (WebElement element : content.findElements(By.cssSelector("vaadin-combo-box-item"))) {
             WebElement item = utils.expandRootElement(element);
-            if(item.findElement(By.cssSelector("div")).getText().equals(metric)){
+            if (item.findElement(By.cssSelector("div")).getText().equals(metric)) {
                 element.click();
             }
         }
@@ -92,5 +93,26 @@ public class ModelDetailsPage extends PageObject {
 
     public void modelPageCheckExperimentColumnValueIs(String experiment, String column, String value) {
         assertThat(getDriver().findElement(By.cssSelector("#pathmind-app-layout > vaadin-vertical-layout > div > vaadin-horizontal-layout:nth-child(2) > vaadin-vertical-layout.model-wrapper > vaadin-grid > vaadin-grid-cell-content:nth-child(50)")).getText(), is(value));
+    }
+
+    public void checkModelPageColumnsMultiselect(String columns) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='column-selection-row']/multiselect-combo-box")).getAttribute("title"), is(columns));
+    }
+
+    public void modelPageDisableFavoriteColumn(String column) {
+        WebElement multiSelect = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='column-selection-row']/multiselect-combo-box")));
+        WebElement multiSelectInput = utils.expandRootElement(multiSelect.findElement(By.cssSelector("multiselect-combo-box-input")));
+        for (WebElement element : multiSelectInput.findElements(By.cssSelector("div[part='token-remove-button']"))) {
+            if (element.getText().equals(column)) {
+                waitABit(3000);
+                JavascriptExecutor executor = (JavascriptExecutor) getDriver();
+                executor.executeScript("arguments[0].click();", element);
+                waitABit(3000);
+            }
+        }
+    }
+
+    public void clickModelsPageColumnsDropdown() {
+        getDriver().findElement(By.xpath("//span[text()='Columns']/following-sibling::multiselect-combo-box")).click();
     }
 }

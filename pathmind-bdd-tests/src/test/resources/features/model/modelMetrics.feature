@@ -24,3 +24,17 @@ Feature: Model page metrics
       | AutotestProject | SimpleStochastic/SimpleStochastic.zip | goalReached                                                                                                                                                         |
       | AutotestProject | ProductDelivery/ProductDelivery.zip   | avgWaitTime,avgDistanceKM                                                                                                                                           |
       | AutotestProject | Warehouse/Warehouse.zip               | profitableDeliveries,unprofitableDeliveries                                                                                                                         |
+
+  Scenario: Check model page columns dropdown
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model SimpleStochastic/SimpleStochastic.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Click model breadcrumb btn
+    Then Check model page columns multiselect 'Favorite, Status, Selected Observations, Reward Function, Id #, Notes, Created'
