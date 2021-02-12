@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.project;
 
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
+import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
 import io.skymind.pathmind.shared.data.Model;
@@ -22,6 +23,7 @@ public class ProjectFileCheckService {
     public static final String INVALID_MODEL_ERROR_MESSAGE_WITH_INSTRUCTIONS = INVALID_MODEL_ERROR_MESSAGE_WO_INSTRUCTIONS + " Please read <a target='_blank' href='%s'>this article</a> or contact Pathmind support.";
 
     private final ExecutorService checkerExecutorService;
+    @Getter
     private final ModelAnalyzerApiClient client;
 
     @Getter
@@ -34,7 +36,7 @@ public class ProjectFileCheckService {
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
-    public Future<?> checkFile(StatusUpdater statusUpdater, Model model) {
+    public Future<?> checkFile(StatusUpdater statusUpdater, Model model, AnalyzeRequestDTO.ModelType type) {
         Runnable runnable = () -> {
             try {
                 statusUpdater.updateStatus(0);
@@ -54,7 +56,7 @@ public class ProjectFileCheckService {
                         String reqId = "project_" + model.getProjectId();
 
                         HyperparametersDTO analysisResult =
-                            client.analyze(tempFile, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+                            client.analyze(tempFile, type, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
 
                         Optional<String> optionalError = verifyAnalysisResult(analysisResult);
                         if (optionalError.isPresent()) {
