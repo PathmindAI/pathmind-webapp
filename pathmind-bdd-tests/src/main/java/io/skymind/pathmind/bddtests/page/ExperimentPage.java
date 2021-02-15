@@ -56,16 +56,17 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        WebElement splitButton = getDriver().findElement(By.cssSelector("vaadin-select[theme~='split-button']"));
-        splitButton.click();
-        waitABit(300);
+        getDriver().findElement(By.xpath("//*[@theme='action-dropdown align-center']")).click();
         WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
         archiveButton.click();
+    }
 
-        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
-        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
-        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
+    public void clickArchiveButtonForCurrentDraftExperiment() {
+        getDriver().findElement(By.xpath("//*[@theme='split-button align-center new-experiment-split-button']")).click();
+        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        archiveButton.click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -124,8 +125,9 @@ public class ExperimentPage extends PageObject {
 
     public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, "#small-menu"));
-        element.findElement(By.cssSelector("button")).click();
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, null));
+        waitABit(4000);
+        element.findElement(By.cssSelector("#compareButton")).click();
         WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
         WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
         switch (btn) {

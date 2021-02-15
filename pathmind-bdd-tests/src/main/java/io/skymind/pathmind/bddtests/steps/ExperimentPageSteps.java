@@ -224,4 +224,9 @@ public class ExperimentPageSteps {
     public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
         experimentPage.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
     }
+
+    @Step
+    public void clickArchiveButtonForCurrentDraftExperiment() {
+        experimentPage.clickArchiveButtonForCurrentDraftExperiment();
+    }
 }

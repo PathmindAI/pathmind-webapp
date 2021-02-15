@@ -1,6 +1,6 @@
 @experiment
 Feature: Experiment page compare feature
-
+@debug
   Scenario: Check compare feature check elements of two running experiments
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
