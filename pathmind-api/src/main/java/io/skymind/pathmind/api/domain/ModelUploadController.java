@@ -54,7 +54,7 @@ public class ModelUploadController {
     curl -i -XPOST -H "X-PM-API-TOKEN: 1d83d812-f79a-497c-a437-ec78957d294a" -F 'file=@/Users/malex/Downloads/PathmindAPIUsage.zip' http://localhost:8081/al/upload
 
     upload model to existing project:
-    curl -i -XPOST -H "X-PM-API-TOKEN: af26c5e1-8838-4c41-b490-e5dc7de3aeef" -F 'file=@/home/kepricon/rescale/work_python4/tests.zip' -F 'projectId=496' http://localhost:8081/py/upload
+    curl -i -XPOST -H "X-PM-API-TOKEN: 42461663-29c4-44a3-9b2e-39563c7b2a4a" -F 'file=@/Users/malex/Downloads/CoffeeShopPathmindDemoExported.zip' -F 'projectId=40303' http://localhost:8081/al/upload
      */
     @PostMapping("/al/upload")
     public ResponseEntity<?> handleALFileUpload(@RequestParam("file") MultipartFile file,
