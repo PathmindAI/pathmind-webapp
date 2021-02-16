@@ -36,6 +36,14 @@ public enum ModelType {
     }
 
     public static ModelType fromName(String name) {
+        // todo this is temporary code for support previous MA
+        switch (name) {
+            case "single":
+                return AL_SINGLE;
+            case "multi":
+                return AL_MULTI;
+        }
+
         return Arrays.stream(values())
                 .filter(it -> it.name.equals(name))
                 .findAny()
