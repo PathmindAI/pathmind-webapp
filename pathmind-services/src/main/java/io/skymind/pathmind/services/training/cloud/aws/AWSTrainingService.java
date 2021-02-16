@@ -64,7 +64,7 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                false, //model.getModelType() == ModelType.MULTI.getValue(),
+                ModelType.isMultiModel(ModelType.fromValue(model.getModelType())),
                 false,
                 25,
                 false,

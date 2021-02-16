@@ -14,6 +14,7 @@ public enum ModelType {
 
     private static final EnumSet<ModelType> AL_TYPES = EnumSet.of(AL_SINGLE, AL_MULTI);
     private static final EnumSet<ModelType> PY_TYPES = EnumSet.of(PY_SINGLE, PY_MULTI);
+    private static final EnumSet<ModelType> MULTI_TYPES = EnumSet.of(AL_MULTI, PY_MULTI);
 
     ModelType(int id, String name) {
         this.id = id;
@@ -56,5 +57,9 @@ public enum ModelType {
 
     public static boolean isPythonModel(ModelType type) {
         return PY_TYPES.contains(type);
+    }
+
+    public static boolean isMultiModel(ModelType type) {
+        return MULTI_TYPES.contains(type);
     }
 }
