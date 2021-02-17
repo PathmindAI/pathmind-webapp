@@ -45,7 +45,7 @@ public class ExperimentPage extends PageObject {
     private By notesSaveBtn = By.cssSelector("#save");
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
-        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8)));
+        assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8).replaceAll("\r", "")));
     }
 
     public void addNoteToTheExperimentPage(String note) {
@@ -192,7 +192,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatSimulationMetricsBlockIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
+        assertThat(getDriver().findElement(By.xpath("//span[text()='Simulation Metrics']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout")).isDisplayed(), is(true));
     }
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
@@ -270,15 +270,14 @@ public class ExperimentPage extends PageObject {
             }
         }
         resetImplicitTimeout();
-        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Variable Name"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='header-row']/span[1]")).getText(), is("Metric"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/span")).getText(), is("Value"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/span")).getText(), is("Overview"));
-        assertThat(getDriver().findElement(By.xpath("//*[@class='sparklines-wrapper']/div/a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/4305404-simulation-metrics"));
     }
 
     public void clickSimulationMetricsValueIcon() {
-        getDriver().findElement(By.xpath("//*[@class='metrics-wrapper']/div/a")).click();
+        getDriver().findElement(By.xpath("//*[@class='simulation-metrics-panel-header']/a")).click();
     }
 
     public void clickSimulationMetricsOverviewIcon() {
@@ -373,5 +372,10 @@ public class ExperimentPage extends PageObject {
         }
 
         assertThat(actual, containsInRelativeOrder(items.toArray()));
+    }
+
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[2]")).getText(), is(metric));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[3]")).getText(), is(value));
     }
 }

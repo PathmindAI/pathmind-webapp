@@ -1,18 +1,19 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -22,14 +23,12 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.security.Routes;
@@ -53,16 +52,15 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
-import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.gatanaso.MultiselectComboBox;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PANEL_TITLE_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 @Route(value = Routes.PROJECT, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
@@ -80,8 +78,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private RewardVariableDAO rewardVariableDAO;
     @Autowired
-    private ObservationDAO observationDAO;
-    @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private ModelCheckerService modelCheckerService;
@@ -94,12 +90,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Model> models;
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
-    private List<Observation> modelObservations = new ArrayList<>();
     private String pageTitle;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
-    private Grid<Experiment> experimentGrid;
+    private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
     private Span projectName;
@@ -111,10 +106,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
-    private RewardVariablesTable rewardVariablesTable;
-    private ObservationsPanel observationsPanel;
     private NotesField modelNotesField;
-    private SplitLayout modelWrapper;
+    private VerticalLayout modelWrapper;
 
     private ScreenTitlePanel titlePanel;
 
@@ -126,97 +119,114 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
         addClassName("project-view");
 
-        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
+        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
+                CssPathmindStyles.PROJECT_TITLE);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         NotesField projectNotesField = createNotesField();
         Button edit = new Button("Rename", evt -> renameProject());
         edit.setClassName("no-shrink");
 
-        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.PROJECT_TITLE);
+        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
+                CssPathmindStyles.PROJECT_TITLE);
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
         if (selectedModel != null) {
             setupGrid();
             setupArchivesTabPanel();
-            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
+            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
+                    segmentIntegrator);
             modelNotesField = createModelNotesField();
-            rewardVariablesTable = new RewardVariablesTable();
-            rewardVariablesTable.setRewardVariables(rewardVariables);
-            observationsPanel = new ObservationsPanel(modelObservations);
-            observationsPanel.addClassName("observations-panel-wrapper");
 
-            modelsNavbar = new ModelsNavbar(
-                    modelDAO,
-                    selectedModel,
-                    models,
-                    segmentIntegrator
-            );
+            modelsNavbar = new ModelsNavbar(modelDAO, selectedModel, models, segmentIntegrator);
         }
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(projectName, edit),
-                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)
-                ),
-                projectNotesField
-        );
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)),
+                projectNotesField);
         headerWrapper.addClassName("page-content-header");
 
         HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal();
         modelHeaderWrapper.addClassName("page-content-header");
 
         if (selectedModel != null) {
-            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService, segmentIntegrator);
-            modelHeaderWrapper.add(
-                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName),
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadAlpLink
-                    ),
-                    modelNotesField
-            );
-            VerticalLayout rightPanel = createRightPanel();
+            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService,
+                    segmentIntegrator);
+            modelHeaderWrapper
+                    .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
+                                    .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
+                            downloadAlpLink), modelNotesField);
 
-            HorizontalLayout experimentGridHeader = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    archivesTabPanel, newExperimentButton
-            );
+            HorizontalLayout experimentGridHeader = WrapperUtils
+                    .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
-            modelWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            modelHeaderWrapper, experimentGridHeader, experimentGrid
-                    ),
-                    rightPanel,
-                    70);
+            // To be moved to separate methods later
+            HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                    LabelFactory.createLabel("Metrics", BOLD_LABEL), createMetricSelectionGroup());
+            metricSelectionRow.addClassName("metric-selection-row");
+
+            HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                    LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
+            columnSelectionRow.addClassName("column-selection-row");
+
+            Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+
+            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
+                    experimentGridHeader, metricSelectionRow, columnSelectionRow,
+                    experimentGrid);
             modelWrapper.addClassName("model-wrapper");
         }
 
         FlexLayout gridWrapper = new ViewSection(headerWrapper);
         if (selectedModel != null) {
-            gridWrapper.add(
-                    WrapperUtils.wrapSizeFullBetweenHorizontal(
-                            modelsNavbar,
-                            modelWrapper
-                    )
-            );
+            gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
         }
         gridWrapper.addClassName("page-content");
 
         return gridWrapper;
     }
 
-    private VerticalLayout createRightPanel() {
-        Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+    private MultiselectComboBox<String> createColumnSelectionGroup() {
+        MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
+        Map<String, Column> experimentGridColumns = experimentGrid.getColumnList();
+        Set<String> columnList = experimentGridColumns.keySet();
+        multiSelectGroup.setPlaceholder("Customize your table columns");
+        multiSelectGroup.setItems(columnList);
+        multiSelectGroup.setValue(columnList);
+        multiSelectGroup.addSelectionListener(event -> {
+            String addedSelection = String.join("", event.getAddedSelection());
+            if (!addedSelection.isEmpty()) {
+                experimentGridColumns.get(addedSelection).setVisible(true);
+            }
+            String removedSelection = String.join("", event.getRemovedSelection());
+            if (!removedSelection.isEmpty()) {
+                experimentGridColumns.get(removedSelection).setVisible(false);
+            }
+        });
+        return multiSelectGroup;
+    }
 
-        VerticalLayout rightPanelCard = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                errorMessage,
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        LabelFactory.createLabel("Simulation Metrics", PANEL_TITLE_LABEL),
-                        rewardVariablesTable
-                ),
-                observationsPanel);
-
-        return rightPanelCard;
+    private MultiselectComboBox<RewardVariable> createMetricSelectionGroup() {
+        MultiselectComboBox<RewardVariable> multiSelectGroup = new MultiselectComboBox<>();
+        Map<String, Column> experimentGridAdditionalColumns = experimentGrid.getAdditionalColumnList();
+        multiSelectGroup.setRenderer(TemplateRenderer.<RewardVariable>of("[[item.name]]").withProperty("name", RewardVariable::getName));
+        multiSelectGroup.setItemLabelGenerator(rewardVariable -> rewardVariable.getName());
+        multiSelectGroup.setItems(rewardVariables);
+        multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
+        multiSelectGroup.addSelectionListener(event -> {
+            RewardVariable addedSelection = event.getAddedSelection().stream().findFirst().orElse(null);
+            if (addedSelection != null) {
+                experimentGrid.addOrShowColumn(addedSelection);
+            }
+            RewardVariable removedSelection = event.getRemovedSelection().stream().findFirst().orElse(null);
+            if (removedSelection != null) {
+                experimentGridAdditionalColumns.get(removedSelection.getName()).setVisible(false);
+            }
+        });
+        return multiSelectGroup;
     }
 
     private NotesField createNotesField() {
@@ -310,7 +320,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelId = selectedModel != null ? selectedModel.getId() : null;
             experiments = experimentDAO.getExperimentsForModel(modelId);
             rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-            modelObservations = observationDAO.getObservationsForModel(modelId);
         }
     }
 

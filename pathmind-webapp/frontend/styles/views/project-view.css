@@ -109,6 +109,22 @@
     top: 0;
 }
 
+.project-view .metric-selection-row,
+.project-view .column-selection-row {
+    padding: 0 var(--lumo-space-s);
+}
+
+.project-view .metric-selection-row .bold-label,
+.project-view .column-selection-row .bold-label {
+    flex: 0 0 7rem;
+    width: 7rem;
+    font-size: var(--lumo-font-size-s);
+}
+
+.project-view vaadin-list-box {
+    width: calc(100% - 7rem);
+}
+
 .project-view .reward-variables-table {
     flex-direction: row;
     flex-wrap: wrap;

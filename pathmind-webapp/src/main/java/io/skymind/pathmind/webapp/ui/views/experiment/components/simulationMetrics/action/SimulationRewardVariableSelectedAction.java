@@ -25,7 +25,7 @@ public class SimulationRewardVariableSelectedAction {
 
     private static void toggleComparisonExperiment(RewardVariable rewardVariable, ExperimentView experimentView) {
         // Only toggle the comparison experiment is showing, meaning it's not null.
-        if(experimentView.getComparisonExperiment() != null) {
+        if (experimentView.getComparisonExperiment() != null) {
             synchronized (experimentView.getComparisonExperimentLock()) {
                 experimentView.getComparisonExperiment().toggleSelectedVariable(rewardVariable);
                 experimentView.updateComparisonComponents();
