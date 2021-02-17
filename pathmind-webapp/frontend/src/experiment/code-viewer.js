@@ -44,14 +44,15 @@ class CodeViewer extends PolymerElement {
         });
     }
 
-    setValue(codeSnippet, rewardVariables = {}) {
+    renderCode() {
         const codeElement = this.shadowRoot.querySelector("code");
         const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?!\/)\/(?![\/\*]|\*(?![\/]))/g;
         const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/.+)/g;
         const indexNumberRe = /\[[0-9]+\]/g;
+        let codeSnippet = this.codeSnippet;
         codeSnippet = renderToken(operatorRe, "operator");
         codeSnippet = renderToken(commentRe, "comment");
-        codeSnippet = renderVariableToken(indexNumberRe, "index", rewardVariables);
+        codeSnippet = renderVariableToken(indexNumberRe, "index", this.rewardVariables);
         codeElement.innerHTML = codeSnippet;
         function renderToken(regexCondition, className) {
             return codeSnippet.replace(regexCondition, `<span class="token-${className}">$&</span>`);
@@ -71,7 +72,29 @@ class CodeViewer extends PolymerElement {
         }
     }
 
-    static get properties() {}
+    static get properties() {
+        return {
+            codeSnippet: {
+                type: String,
+                value: "",
+                observer: "renderCode"
+            },
+            rewardVariables: {
+                type: String,
+                value: "",
+            },
+            showCopyButton: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+            },
+            showBorder: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+            },
+        };
+    }
 
     static get template() {
         return html`
@@ -94,6 +117,8 @@ class CodeViewer extends PolymerElement {
                     flex: 1;
                     width: 100%;
                     font-size: 0.8125rem;
+                }
+                :host([show-border]) {
                     border: 1px solid var(--pm-grey-color);
                 }
                 code {
@@ -110,6 +135,7 @@ class CodeViewer extends PolymerElement {
                     overflow: auto;
                 }
                 vaadin-button {
+                    display: none;
                     position: absolute;
                     width: 28px;
                     min-width: auto;
@@ -120,6 +146,9 @@ class CodeViewer extends PolymerElement {
                     background-color: rgba(200,200,200,0.6);
                     border-radius: 0;
                     margin: 0;
+                }
+                :host([show-copy-button]) vaadin-button {
+                    display: block;
                 }
                 iron-icon {
                     position: absolute;

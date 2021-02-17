@@ -1,11 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
@@ -14,13 +10,21 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 
 @Tag("code-viewer")
 @JsModule("./src/experiment/code-viewer.js")
-public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasStyle, ExperimentComponent {
+public class CodeViewer extends PolymerTemplate<CodeViewer.Model> implements HasStyle, ExperimentComponent {
 
-    private Supplier<Optional<UI>> getUISupplier;
-
-    public CodeViewer(Supplier<Optional<UI>> getUISupplier) {
+    public CodeViewer() {
         super();
-        this.getUISupplier = getUISupplier;
+    }
+
+    public CodeViewer(Experiment experiment) {
+        this(experiment, false, true);
+    }
+
+    public CodeViewer(Experiment experiment, Boolean showCopyButton, Boolean showBorder) {
+        super();
+        setExperiment(experiment);
+        getModel().setShowCopyButton(showCopyButton);
+        getModel().setShowBorder(showBorder);
     }
 
     public void setExperiment(Experiment experiment) {
@@ -28,6 +32,14 @@ public class CodeViewer extends PolymerTemplate<TemplateModel> implements HasSty
     }
 
     public void setValue(String rewardFunction) {
-        getElement().callJsFunction("setValue", rewardFunction);
+        getModel().setCodeSnippet(rewardFunction);
+    }
+
+    public interface Model extends TemplateModel {
+        void setCodeSnippet(String codeSnippet);
+
+        void setShowCopyButton(Boolean showCopyButton);
+
+        void setShowBorder(Boolean showBorder);
     }
 }
