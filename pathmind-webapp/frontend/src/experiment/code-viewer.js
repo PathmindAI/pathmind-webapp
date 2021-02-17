@@ -120,6 +120,8 @@ class CodeViewer extends PolymerElement {
                     line-height: 1.8;
                     padding: var(--lumo-space-xs) var(--lumo-space-s);
                     margin: 0;
+                }
+                :host([show-border]) code {
                     overflow: auto;
                 }
                 vaadin-button {
