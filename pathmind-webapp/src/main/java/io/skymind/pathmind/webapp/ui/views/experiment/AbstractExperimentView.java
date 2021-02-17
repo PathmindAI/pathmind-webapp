@@ -108,10 +108,6 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
         setExperiment(experiment, true);
     }
 
-    public List<Experiment> getNavbarExperiments() {
-        return experimentsNavbar.getExperiments();
-    }
-
     public ExperimentsNavBar getExperimentsNavbar() {
         return experimentsNavbar;
     }
