@@ -229,4 +229,9 @@ public class ExperimentPageSteps {
     public void clickArchiveButtonForCurrentDraftExperiment() {
         experimentPage.clickArchiveButtonForCurrentDraftExperiment();
     }
+
+    @Step
+    public void clickExperimentPageShareWithSupportBtn() {
+        experimentPage.clickExperimentPageShareWithSupportBtn();
+    }
 }

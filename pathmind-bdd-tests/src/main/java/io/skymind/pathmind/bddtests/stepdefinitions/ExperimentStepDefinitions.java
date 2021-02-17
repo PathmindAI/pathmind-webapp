@@ -239,4 +239,9 @@ public class ExperimentStepDefinitions {
     public void clickArchiveButtonForCurrentDraftExperiment() {
         experimentPageSteps.clickArchiveButtonForCurrentDraftExperiment();
     }
+
+    @When("^Click experiment page share with support btn$")
+    public void clickExperimentPageShareWithSupportBtn() {
+        experimentPageSteps.clickExperimentPageShareWithSupportBtn();
+    }
 }

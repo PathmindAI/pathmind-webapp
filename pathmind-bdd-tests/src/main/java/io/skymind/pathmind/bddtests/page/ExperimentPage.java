@@ -127,17 +127,8 @@ public class ExperimentPage extends PageObject {
         waitABit(3500);
         WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, null));
         waitABit(4000);
-        element.findElement(By.cssSelector("#compareButton")).click();
-        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
-        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
-        switch (btn) {
-            case ("Archive"):
-                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
-                break;
-            case ("Compare"):
-                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(2) > span")).click();
-                break;
-        }
+        WebElement compareBtn = utils.expandRootElement(element.findElement(By.cssSelector("#compareButton")));
+        compareBtn.findElement(By.id("button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -346,7 +337,8 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNameTagLabel(String label) {
-        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
+        waitABit(3000);
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).getText(), is(label));
     }
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
@@ -374,5 +366,12 @@ public class ExperimentPage extends PageObject {
     public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[2]")).getText(), is(metric));
         assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[3]")).getText(), is(value));
+    }
+
+    public void clickExperimentPageShareWithSupportBtn() {
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-item[text()='Share with support']")).click();
     }
 }

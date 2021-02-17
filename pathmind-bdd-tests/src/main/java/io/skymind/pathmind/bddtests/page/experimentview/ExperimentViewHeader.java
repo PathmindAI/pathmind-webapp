@@ -4,6 +4,9 @@ import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -19,9 +22,10 @@ public class ExperimentViewHeader extends PageObject {
     private String elapsedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-horizontal-layout[@class='training-status-details-panel']/descendant::span[4]";
     private String stopTrainingBtnXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[1]";
     private String getStopTrainingBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Stop Training']";
-    private String shareSupportBtnXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[2]";
+    private String shareSupportBtnXpath = "//vaadin-item[text()='Share with support']";
     private String shareSupportBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Share with support']";
     private String shareSupportLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::tag-label[not(@hidden='true')]";
+    private String dropDownBtn = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-select";
 
     private static final String STATUS_LABEL = "Status";
     private static final String ELAPSED_LABEL = "Elapsed";
@@ -32,22 +36,25 @@ public class ExperimentViewHeader extends PageObject {
     public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel) {
         assertThat(getDriver().findElement(By.xpath(String.format(titleLabelXpath, slot))).getText(), is(header));
         assertThat(getDriver().findElement(By.xpath(String.format(statusLabelXpath, slot))).getText(), is(STATUS_LABEL));
-        if (status.equals("Starting Cluster")){
+        if (status.equals("Starting Cluster")) {
             assertThat(getDriver().findElement(By.xpath(String.format(statusXpath, slot))).getText(), anyOf(is(status), is("Running")));
-        }else {
+        } else {
             assertThat(getDriver().findElement(By.xpath(String.format(statusXpath, slot))).getText(), anyOf(is(status), is("Stopped")));
         }
         assertThat(getDriver().findElement(By.xpath(String.format(elapsedXpath, slot))).getText(), is(ELAPSED_LABEL));
-        if (stopTrainingBtn){
+        if (stopTrainingBtn) {
             genericPage.checkElement(stopTrainingBtn, String.format(stopTrainingBtnXpath, slot), STOP_TRAINING_BTN_LABEL);
         } else {
             assertThat(getDriver().findElement(By.xpath(String.format(stopTrainingBtnXpath, slot))).getAttribute("hidden"), is("true"));
         }
-        if (shareWithSpBtn){
-            genericPage.checkElement(shareWithSpBtn, String.format(shareSupportBtnXpath, slot), SHARE_SUPPORT_BTN_LABEL);
-        } else {
-            assertThat(getDriver().findElement(By.xpath(String.format(shareSupportBtnXpath, slot))).getAttribute("hidden"), is("true"));
-        }
+
+        WebElement dropdownBtn = getDriver().findElement(By.xpath(String.format(dropDownBtn, slot)));
+        Actions actions = new Actions(getDriver());
+        actions.moveToElement(dropdownBtn).build().perform();
+        waitABit(2500);
+        actions.click(dropdownBtn).build().perform();
+        genericPage.checkElement(shareWithSpBtn, String.format(shareSupportBtnXpath, slot), SHARE_SUPPORT_BTN_LABEL);
+
         genericPage.checkElement(shareWithSpLabel, String.format(shareSupportLabelXpath, slot), SHARE_SUPPORT_LABEL);
     }
 }
