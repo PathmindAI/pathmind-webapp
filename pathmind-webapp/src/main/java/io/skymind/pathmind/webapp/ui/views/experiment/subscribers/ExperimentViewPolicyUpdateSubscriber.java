@@ -1,27 +1,25 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.bus.events.main.RunUpdateBusEvent;
-import io.skymind.pathmind.webapp.bus.subscribers.main.RunUpdateSubscriber;
+import io.skymind.pathmind.webapp.bus.events.main.PolicyUpdateBusEvent;
+import io.skymind.pathmind.webapp.bus.subscribers.main.PolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
+public class ExperimentViewPolicyUpdateSubscriber extends PolicyUpdateSubscriber {
 
     private ExperimentView experimentView;
     private ExperimentDAO experimentDAO;
 
-    public ExperimentViewRunUpdateSubscriber(ExperimentView experimentView, ExperimentDAO experimentDAO) {
+    public ExperimentViewPolicyUpdateSubscriber(ExperimentView experimentView, ExperimentDAO experimentDAO) {
         super();
         this.experimentView = experimentView;
         this.experimentDAO = experimentDAO;
     }
 
     @Override
-    public void handleBusEvent(RunUpdateBusEvent event) {
+    public void handleBusEvent(PolicyUpdateBusEvent event) {
         if(ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment())) {
             synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
@@ -35,19 +33,17 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
         }
     }
 
-    private void updateExperimentInternalValues(RunUpdateBusEvent event, Experiment experiment) {
+    private void updateExperimentInternalValues(PolicyUpdateBusEvent event, Experiment experiment) {
         // REFACTOR -> This should all be done in a single ExperimentUtils method as it will have to be replicated
         //  elsewhere. This is still done this way because the trainingErrorMessage needs to be done after the update.
-        experiment.setTrainingStatusEnum(event.getExperiment().getTrainingStatusEnum());
-        ExperimentUtils.addOrUpdateRuns(experiment, event.getRuns());
-        ExperimentUtils.updatedRunsForPolicies(experiment, event.getRuns());
+        ExperimentUtils.addOrUpdatePolicies(experiment, event.getPolicies());
         ExperimentUtils.updateExperimentInternals(experiment);
         experimentDAO.updateTrainingErrorAndMessage(experiment);
         ExperimentUtils.updateEarlyStopReason(experiment);
     }
 
     @Override
-    public boolean filterBusEvent(RunUpdateBusEvent event) {
+    public boolean filterBusEvent(PolicyUpdateBusEvent event) {
         return ExperimentUtils.isSameExperiment(experimentView.getExperiment(), event.getExperiment()) ||
                 ExperimentUtils.isSameExperiment(experimentView.getComparisonExperiment(), event.getExperiment());
     }
