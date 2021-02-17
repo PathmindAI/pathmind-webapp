@@ -234,4 +234,9 @@ public class ExperimentPageSteps {
     public void clickExperimentPageShareWithSupportBtn() {
         experimentPage.clickExperimentPageShareWithSupportBtn();
     }
+
+    @Step
+    public void clickExperimentPageActionsBtn(String btn) {
+        experimentPage.clickExperimentPageActionsBtn(btn);
+    }
 }

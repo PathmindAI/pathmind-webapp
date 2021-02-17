@@ -244,7 +244,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageArchivedTagIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).getText(), is("Archived"));
     }
 
     public void checkSimulationMetricsColumnsTitles() {
@@ -312,7 +312,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
-        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='"+selected+"' and text()='"+tab+"']")).size(), is(not(0)));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "' and text()='" + tab + "']")).size(), is(not(0)));
     }
 
     public void checkLearningProgressBlockMetricsHint(String hint) {
@@ -373,5 +373,12 @@ public class ExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
         waitABit(3000);
         getDriver().findElement(By.xpath("//vaadin-item[text()='Share with support']")).click();
+    }
+
+    public void clickExperimentPageActionsBtn(String btn) {
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
     }
 }

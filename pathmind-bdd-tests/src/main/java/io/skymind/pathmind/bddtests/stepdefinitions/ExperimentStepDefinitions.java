@@ -244,4 +244,9 @@ public class ExperimentStepDefinitions {
     public void clickExperimentPageShareWithSupportBtn() {
         experimentPageSteps.clickExperimentPageShareWithSupportBtn();
     }
+
+    @When("^Click experiment page actions '(.*)' btn$")
+    public void clickExperimentPageActionsBtn(String btn) {
+        experimentPageSteps.clickExperimentPageActionsBtn(btn);
+    }
 }

@@ -74,7 +74,7 @@ Feature: Experiment page alerts in multiple views
     When Open tab 1
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
-    When Click in 'Unarchive' button
+    When Click experiment page actions 'Unarchive' btn
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
     When Open tab 0
