@@ -20,6 +20,10 @@ spec:
       labels:
         {{- include "selenium-node.selectorLabels" . | nindent 8 }}
     spec:
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -34,9 +38,10 @@ spec:
           image: "{{ .Values.image_node.repository }}:{{ .Values.image_node.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image_node.pullPolicy }}
           ports:
-            - name: http
-              containerPort: 4444
-              protocol: TCP
+            - containerPort: 5555
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
           env:
             - name: HUB_HOST
               value: "selenium-hub"
