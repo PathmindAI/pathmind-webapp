@@ -8,13 +8,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class AnalyzeRequestDTO {
+    public enum ModelType {
+        ANY_LOGIC,
+        PYTHON
+    }
+
     private String id;
+    private ModelType type;
     private String mainAgent;
     private String experimentClass;
     private String experimentType;
     private String pathmindHelperClass;
+    private String environment;
 
-    public AnalyzeRequestDTO(String id) {
+    public AnalyzeRequestDTO(String id, ModelType type, String mainAgent, String experimentClass, String experimentType, String pathmindHelperClass) {
         this.id = id;
+        this.type = type;
+        this.mainAgent = mainAgent;
+        this.experimentClass = experimentClass;
+        this.experimentType = experimentType;
+        this.pathmindHelperClass = pathmindHelperClass;
+    }
+
+    public AnalyzeRequestDTO(String id, ModelType type, String environment) {
+        this.id = id;
+        this.type = type;
+        this.environment = environment;
     }
 }

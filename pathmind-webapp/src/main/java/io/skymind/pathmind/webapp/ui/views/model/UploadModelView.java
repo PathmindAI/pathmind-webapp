@@ -34,6 +34,7 @@ import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.Hyperparams;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
+import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
@@ -294,7 +295,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         byte[] file = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
         model.setFile(file);
         uploadModelWizardPanel.showFileCheckPanel();
-        projectFileCheckService.checkFile(this, model);
+        projectFileCheckService.checkFile(this, model, AnalyzeRequestDTO.ModelType.ANY_LOGIC);
     }
 
     private void setVisibleWizardPanel(Component wizardPanel) {
