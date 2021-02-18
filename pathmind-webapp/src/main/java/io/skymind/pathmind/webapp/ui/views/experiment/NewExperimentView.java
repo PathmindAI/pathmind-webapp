@@ -32,7 +32,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -53,7 +52,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
     protected ExperimentNotesField notesField;
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
@@ -209,7 +207,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
-        saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
+        saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
     }
@@ -234,28 +232,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     // STEPH -> TODO -> Clean this up so that it's consistent with the rest.
     public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
-            if (saveDraftButton.isEnabled()) {
-                handleSaveDraftClicked(afterClickedCallback);
-            } else {
-                errorPopup(afterClickedCallback);
-            }
+            handleSaveDraftClicked(afterClickedCallback);
         } else {
             afterClickedCallback.execute();
         }
-    }
-
-    // STEPH -> TODO -> Should be moved to a component rather than here in the view.
-    private void errorPopup(Command afterClickedCallback) {
-        String header = "Before you leave....";
-        String text = "";
-        if (rewardFunctionEditor.isRewardFunctionMoreThanMaxLength()) {
-            text += "Your changes in the reward function cannot be saved because it has exceeded " + REWARD_FUNCTION_MAX_LENGTH + " characters. ";
-        }
-        text += "Please check and fix the errors.";
-        ConfirmPopup popup = new ConfirmPopup(header, text);
-        popup.setConfirmButtonText("Stay");
-        popup.setCancelButton("Leave", afterClickedCallback);
-        popup.open();
     }
 
     @Override
@@ -290,11 +270,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
-        if (experimentDAO.isDraftExperiment(experimentId)) {
+        if (experiment.isDraft()) {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.EXPERIMENT, experimentId);
+            event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
             return false;
         }
     }
