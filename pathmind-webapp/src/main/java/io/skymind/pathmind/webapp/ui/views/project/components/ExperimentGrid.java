@@ -23,6 +23,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
@@ -91,7 +92,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         //         .setFlexGrow(0)
         //         .setResizable(true)
         //         .setSortable(true);
-        Grid.Column<Experiment> rewardFunctionColumn = addColumn(experiment -> experiment.getRewardFunction())
+        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
                 .setFlexGrow(1)
