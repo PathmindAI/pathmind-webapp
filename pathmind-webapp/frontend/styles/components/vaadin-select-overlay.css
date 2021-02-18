@@ -1,0 +1,8 @@
+:host([theme~="split-button"]) {
+    --vaadin-select-text-field-width: 10rem !important;
+}
+
+:host([theme~="new-experiment-split-button"]) {
+    left: auto !important;
+    right: var(--lumo-space-m) !important;
+}

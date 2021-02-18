@@ -8,6 +8,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.Location;
+
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -15,6 +17,7 @@ import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -26,7 +29,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.E
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractExperimentView extends PathMindDefaultView implements HasUrlParameter<Long> {
+public abstract class AbstractExperimentView extends PathMindDefaultView implements HasUrlParameter<String> {
 
     protected abstract void createExperimentComponents();
     protected abstract boolean isValidViewForExperiment(BeforeEnterEvent event);
@@ -67,7 +70,7 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     protected void createComponents() {
         createSharedComponents();
         createExperimentComponents();
-   }
+    }
 
     private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
@@ -87,8 +90,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     @Override
-    public void setParameter(BeforeEvent event, Long experimentId) {
-        this.experimentId = experimentId;
+    public void setParameter(BeforeEvent event, String parameter) {
+        Location location = event.getLocation();
+        Long experimentIdFromParam = Long.parseLong(parameter.replaceAll(location.getQueryParameters().toString(), ""));
+        this.experimentId = experimentIdFromParam;
     }
 
     public long getExperimentId() {
@@ -100,12 +105,26 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     public void setExperiment(Experiment experiment) {
+        setExperiment(experiment, true);
+    }
+
+    /**
+     * In cases such as NarBarItemSelectExperimentAction where we want to delay updating the components as there
+     * may be additional actions and logic going on. The default is set to true, that is render when experiment is set.
+     */
+    public void setExperiment(Experiment experiment, boolean isUpdateComponent) {
         synchronized (experimentLock) {
             this.experiment = experiment;
             this.experimentId = experiment.getId();
             loadFullExperimentData();
-            updateComponents();
+            if(isUpdateComponent) {
+                updateComponents();
+            }
         }
+    }
+
+    public void onFavoriteToggled(Boolean newIsFavorite, Experiment experiment) {
+        ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
     }
 
     /**
@@ -184,9 +203,17 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     /**
-     * Helper method because a ton of actions need this and this significantly simplifies the paramters.
+     * Helper method because a ton of actions need this and this significantly simplifies the parameters.
      */
     public ExperimentDAO getExperimentDAO() {
         return experimentDAO;
+    }
+
+    public RunDAO getRunDAO() {
+        return runDAO;
+    }
+
+    public TrainingService getTrainingService() {
+        return trainingService;
     }
 }

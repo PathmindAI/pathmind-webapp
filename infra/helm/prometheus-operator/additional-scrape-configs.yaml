@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  additional-scrape-configs.yaml: LSBqb2JfbmFtZTogInByb21ldGhldXMiCiAgc3RhdGljX2NvbmZpZ3M6CiAgLSB0YXJnZXRzOiBbInBvbGljeS1zZXJ2ZXItZGVwbG95LXRlc3QtcHJvbWV0aGV1czo4MDgwIl0K
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: prometheus-operator-prometheus-scrape-confg

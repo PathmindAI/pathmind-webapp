@@ -48,3 +48,27 @@ Feature: Experiment page Simulation Metrics
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check that simulation metrics are clickable
+    Given Login to the pathmind
+    When Create new CoffeeShop project with 4 variables reward function
+    When Click project start run button
+    When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'true'
+    When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'false'
+    When Experiment page 'primary' slot click reward variable 'successfulCustomers'
+    When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'true'
+    When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'false'
+    When Experiment page 'primary' slot click reward variable 'balkedCustomers'
+    When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'true'
+    When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'false'
+    When Experiment page 'primary' slot click reward variable 'avgServiceTime'
+    When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'false'
+    When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'true'

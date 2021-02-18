@@ -1,4 +1,4 @@
-package io.skymind.pathmind.bddtests.model;
+package io.skymind.pathmind.bddtests.projects;
 
 import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         plugin = {"pretty", "html:target/cucumber"},
         glue = "io.skymind.pathmind.bddtests.stepdefinitions",
-        features = "src/test/resources/features/model/modelDetailsRewardVarsFields.feature"
+        features = "src/test/resources/features/projects/demoProjects.feature"
 )
-public class ModelDetailsRewardVarsFieldsFeature {
+public class DemoProjectsFeature {
 }

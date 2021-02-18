@@ -229,4 +229,14 @@ public class ExperimentStepDefinitions {
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
         experimentPageSteps.checkNumberOfTheExperimentsIsInTheLeftSidebar(experimentsNumber);
     }
+
+    @Then("^Check learning progress block tabs '(.*)'$")
+    public void checkLearningProgressBlockTabs(String tabs) {
+        experimentPageSteps.checkLearningProgressBlockTabs(tabs);
+    }
+
+    @Then("^Check learning progress block histogram simulation metric is '(.*)' and '(.*)'$")
+    public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
+        experimentPageSteps.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
+    }
 }

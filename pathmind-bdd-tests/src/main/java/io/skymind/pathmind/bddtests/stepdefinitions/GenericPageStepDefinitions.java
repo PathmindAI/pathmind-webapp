@@ -5,11 +5,14 @@ import java.util.Date;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 
 public class GenericPageStepDefinitions {
+
+    private Utils utils;
 
     @Steps
     private GenericPageSteps genericPageSteps;
@@ -183,5 +186,10 @@ public class GenericPageStepDefinitions {
     @When("^Open url from the variable '(.*)'$")
     public void openUrlFromTheVariable(String url) {
         genericPageSteps.openUrlFromTheVariable(url);
+    }
+
+    @When("^Wait for loading bar disappear$")
+    public void waitForLoadingBarDisappear() {
+        utils.waitForLoadingBar();
     }
 }

@@ -12,4 +12,8 @@ public interface StatusUpdater<FileCheckResult> {
 
     void fileSuccessfullyVerified(FileCheckResult result);
 
+    FileCheckResult getResult();
+
+    String getError();
+
 }

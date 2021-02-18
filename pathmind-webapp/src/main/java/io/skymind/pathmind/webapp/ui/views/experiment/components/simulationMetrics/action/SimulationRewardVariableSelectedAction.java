@@ -25,7 +25,7 @@ public class SimulationRewardVariableSelectedAction {
 
     private static void toggleComparisonExperiment(RewardVariable rewardVariable, ExperimentView experimentView) {
         // Only toggle the comparison experiment is showing, meaning it's not null.
-        if(experimentView.getComparisonExperiment() != null) {
+        if (experimentView.getComparisonExperiment() != null) {
             synchronized (experimentView.getComparisonExperimentLock()) {
                 experimentView.getComparisonExperiment().toggleSelectedVariable(rewardVariable);
                 experimentView.updateComparisonComponents();
@@ -43,6 +43,7 @@ public class SimulationRewardVariableSelectedAction {
     private static boolean canSelect(ExperimentView experimentView) {
         return experimentView.getExperiment().getSelectedRewardVariables().size() < RewardVariable.MAX_SELECTED_REWARD_VARIABLES;
     }
+
     private static boolean canDeselect(ExperimentView experimentView) {
         return experimentView.getExperiment().getSelectedRewardVariables().size() > RewardVariable.MIN_SELECTED_REWARD_VARIABLES;
     }

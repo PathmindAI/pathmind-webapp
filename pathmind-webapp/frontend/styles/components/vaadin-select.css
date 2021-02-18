@@ -15,3 +15,9 @@
 :host([theme~="goals"]) {
     width: 100%;
 }
+
+:host([theme~="split-button"]) [part="toggle-button"],
+:host([theme~="split-button"]:hover:not([readonly]):not([disabled])) [part="toggle-button"] {
+    color: white;
+    cursor: pointer;
+}

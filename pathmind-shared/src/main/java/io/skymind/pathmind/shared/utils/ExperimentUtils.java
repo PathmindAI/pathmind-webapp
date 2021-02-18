@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.utils;
 
+import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -137,6 +140,10 @@ public class ExperimentUtils {
         return experiment != null && experiment.getModelId() == modelId;
     }
 
+    public static boolean isSameModel(List<Long> experimentIdList, long experimentId) {
+        return experimentIdList.contains(experimentId);
+    }
+
     public static boolean isSameExperiment(Experiment experiment, Experiment secondExperiment) {
         return experiment != null && experiment.getId() == secondExperiment.getId();
     }
@@ -249,6 +256,10 @@ public class ExperimentUtils {
                 });
     }
 
+    public static void updateIsFavorite(Experiment experiment, boolean isFavorite) {
+        experiment.setFavorite(isFavorite);
+    }
+
     private static String firstLine(String message) {
         return message.split("\\n", 2)[0];
     }
@@ -296,5 +307,44 @@ public class ExperimentUtils {
                 .filter(rewardVariable -> rewardVariable.getArrayIndex() < RewardVariable.DEFAULT_SELECTED_REWARD_VARIABLES)
                 .forEach(rewardVariable -> experiment.addSelectedRewardVariable(rewardVariable));
         Collections.sort(experiment.getSelectedRewardVariables(), Comparator.comparing(RewardVariable::getArrayIndex));
+    }
+
+    public static String generateRewardFunction(Experiment experiment) {
+        if (!experiment.isHasGoals())
+            return "";
+
+        StringBuilder sb = new StringBuilder("// Here's a suggested reward function to get started\n");
+
+        for (RewardVariable rv : experiment.getRewardVariables()) {
+            GoalConditionType goal = rv.getGoalConditionTypeEnum();
+            if (goal != null) {
+                RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
+                switch (rv.getDataType()) {
+                    case "boolean": {
+                        sb.append(
+                                MessageFormat.format(
+                                        "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
+                                        rv.getName(), // 0
+                                        functionComponent.getMathOperation(), // 1
+                                        functionComponent.getComment() // 2
+                                )
+                        );
+                        break;
+                    }
+                    default: {
+                        sb.append(
+                                MessageFormat.format(
+                                        "reward {1}= after.{0} - before.{0}; // {2} {0}",
+                                        rv.getName(), // 0
+                                        functionComponent.getMathOperation(), // 1
+                                        functionComponent.getComment() // 2
+                                )
+                        );
+                    }
+                }
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
     }
 }
