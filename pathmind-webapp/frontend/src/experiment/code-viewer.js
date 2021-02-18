@@ -44,34 +44,45 @@ class CodeViewer extends PolymerElement {
         });
     }
 
-    setValue(codeSnippet, rewardVariables = {}) {
+    renderCode() {
         const codeElement = this.shadowRoot.querySelector("code");
         const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?!\/)\/(?![\/\*]|\*(?![\/]))/g;
         const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/.+)/g;
-        const indexNumberRe = /\[[0-9]+\]/g;
+        const numberRe = /[0-9]+/g;
+        let codeSnippet = this.codeSnippet;
         codeSnippet = renderToken(operatorRe, "operator");
         codeSnippet = renderToken(commentRe, "comment");
-        codeSnippet = renderVariableToken(indexNumberRe, "index", rewardVariables);
+        codeSnippet = renderToken(numberRe, "number");
         codeElement.innerHTML = codeSnippet;
+
         function renderToken(regexCondition, className) {
             return codeSnippet.replace(regexCondition, `<span class="token-${className}">$&</span>`);
         }
-
-        function renderVariableToken(regexCondition, className, varList) {
-            return codeSnippet.replace(regexCondition, function(matchedIndex) {
-                return matchedIndex.replace(/[0-9]+/, function(indexNumber) {
-                    const rewardVarName = Object.keys(varList).length > 0 && varList[indexNumber];
-                    if (rewardVarName) {
-                        return `<span class="token-${className}">${indexNumber}</span><span class="variable-color-${indexNumber %
-                            10}" data-content="${rewardVarName}"></span>`;
-                    }
-                    return `<span class="token-${className}">${indexNumber}</span>`;
-                });
-            });
-        }
     }
 
-    static get properties() {}
+    static get properties() {
+        return {
+            codeSnippet: {
+                type: String,
+                value: "",
+                observer: "renderCode"
+            },
+            rewardVariables: {
+                type: String,
+                value: "",
+            },
+            showCopyButton: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+            },
+            showBorder: {
+                type: Boolean,
+                value: true,
+                reflectToAttribute: true,
+            },
+        };
+    }
 
     static get template() {
         return html`
@@ -94,6 +105,8 @@ class CodeViewer extends PolymerElement {
                     flex: 1;
                     width: 100%;
                     font-size: 0.8125rem;
+                }
+                :host([show-border]) {
                     border: 1px solid var(--pm-grey-color);
                 }
                 code {
@@ -107,9 +120,12 @@ class CodeViewer extends PolymerElement {
                     line-height: 1.8;
                     padding: var(--lumo-space-xs) var(--lumo-space-s);
                     margin: 0;
+                }
+                :host([show-border]) code {
                     overflow: auto;
                 }
                 vaadin-button {
+                    display: none;
                     position: absolute;
                     width: 28px;
                     min-width: auto;
@@ -120,6 +136,9 @@ class CodeViewer extends PolymerElement {
                     background-color: rgba(200,200,200,0.6);
                     border-radius: 0;
                     margin: 0;
+                }
+                :host([show-copy-button]) vaadin-button {
+                    display: block;
                 }
                 iron-icon {
                     position: absolute;
@@ -136,64 +155,12 @@ class CodeViewer extends PolymerElement {
                 .token-operator {
                     color: rgb(127, 0, 85);
                 }
-                .token-index {
-                    color: var(--pm-blue-color);
+                .token-number {
+                    color: var(--pm-blue-color-dark);
                 }
                 .token-comment,
                 .token-comment * {
                     color: rgb(113, 150, 130);
-                }
-                span[class|="variable-color"] {
-                    -webkit-user-select: none;
-                    -ms-user-select: none;
-                    user-select: none;
-                    padding: 0.12em 0.3em;
-                    border-radius: var(--lumo-border-radius-s);
-                    margin: 0 0 0 0.285em;
-                    cursor: default;
-                }
-                span[class|="variable-color"]::before {
-                    content: attr(data-content);
-                }
-                .variable-color-0 {
-                    color: #000;
-                    background-color: var(--variable-color-0);
-                }
-                .variable-color-1 {
-                    color: #fff;
-                    background-color: var(--variable-color-1);
-                }
-                .variable-color-2 {
-                    color: #000;
-                    background-color: var(--variable-color-2);
-                }
-                .variable-color-3 {
-                    color: #fff;
-                    background-color: var(--variable-color-3);
-                }
-                .variable-color-4 {
-                    color: #000;
-                    background-color: var(--variable-color-4);
-                }
-                .variable-color-5 {
-                    color: #000;
-                    background-color: var(--variable-color-5);
-                }
-                .variable-color-6 {
-                    color: #000;
-                    background-color: var(--variable-color-6);
-                }
-                .variable-color-7 {
-                    color: #fff;
-                    background-color: var(--variable-color-7);
-                }
-                .variable-color-8 {
-                    color: #fff;
-                    background-color: var(--variable-color-8);
-                }
-                .variable-color-9 {
-                    color: #000;
-                    background-color: var(--variable-color-9);
                 }
             </style>
             <code></code>

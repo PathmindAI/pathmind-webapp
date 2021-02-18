@@ -305,7 +305,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentNotesField.setSecondaryStyle(true);
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
         experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
-        experimentCodeViewer = new CodeViewer(getUISupplier());
+        experimentCodeViewer = new CodeViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
@@ -330,7 +330,7 @@ public class ExperimentView extends AbstractExperimentView {
         comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
         comparisonNotesField.setSecondaryStyle(true);
         comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
-        comparisonCodeViewer = new CodeViewer(getUISupplier());
+        comparisonCodeViewer = new CodeViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
