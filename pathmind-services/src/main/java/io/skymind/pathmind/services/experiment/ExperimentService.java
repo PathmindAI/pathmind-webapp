@@ -65,7 +65,6 @@ public class ExperimentService {
                                                      Supplier<Project> projectSupplier,
                                                      AnalyzeRequestDTO.ModelType type,
                                                      String environment) throws Exception {
-        Project project = projectSupplier.get();
         Model model = new Model();
 
         if (type.equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
@@ -92,7 +91,7 @@ public class ExperimentService {
             model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
             model.setNumberOfAgents(alResult.getNumberOfAgents());
 
-            modelService.addDraftModelToProject(model, project.getId(), "");
+            modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
             log.info("created model {}", model.getId());
             RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
             rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
@@ -109,7 +108,8 @@ public class ExperimentService {
             }
             model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
             model.setPackageName(environment);
-            modelService.addDraftModelToProject(model, project.getId(), "");
+
+            modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
             log.info("created model {}", model.getId());
         }
 
