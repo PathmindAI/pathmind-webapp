@@ -30,7 +30,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
