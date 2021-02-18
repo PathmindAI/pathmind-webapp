@@ -23,6 +23,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
@@ -142,16 +143,16 @@ public class ExperimentGrid extends Grid<Experiment> {
                         if (experiment.getBestPolicy() != null) {
                             Policy bestPolicy = experiment.getBestPolicy();
                             // First conditional value is with uncertainty, second value is without uncertainty
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
+                            return CollectionUtils.isNotEmpty(bestPolicy.getUncertainty())
                                     ? bestPolicy.getUncertainty().get(rewardVarIndex)
                                     : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex));
                         }
                         return "—";
                     })
                     .setComparator(Comparator.comparingDouble(experiment -> {
-                        if (((Experiment) experiment).getBestPolicy() != null) {
-                            Policy bestPolicy = ((Experiment) experiment).getBestPolicy();
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
+                        if (experiment.getBestPolicy() != null) {
+                            Policy bestPolicy = experiment.getBestPolicy();
+                            return CollectionUtils.isNotEmpty(bestPolicy.getUncertainty())
                                     ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
                                     : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
                         }
