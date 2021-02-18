@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.project;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.constants.InvalidModelType;
 import io.skymind.pathmind.shared.data.Model;
 import lombok.Getter;
@@ -25,70 +26,77 @@ public class ProjectFileCheckService {
     private final ExecutorService checkerExecutorService;
     @Getter
     private final ModelAnalyzerApiClient client;
+    private final AWSApiClient awsApiClient;
 
     @Getter
     private final String convertModelsToSupportLatestVersionURL;
 
-    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLatestVersionURL) {
+    public ProjectFileCheckService(ExecutorService checkerExecutorService, ModelAnalyzerApiClient client, String convertModelsToSupportLatestVersionURL, AWSApiClient awsApiClient) {
         this.checkerExecutorService = checkerExecutorService;
         this.client = client;
         this.convertModelsToSupportLatestVersionURL = convertModelsToSupportLatestVersionURL;
+        this.awsApiClient = awsApiClient;
     }
 
     /* Creating temporary folder, extracting the zip file , File checking and deleting temporary folder*/
     public Future<?> checkFile(StatusUpdater statusUpdater, Model model, AnalyzeRequestDTO.ModelType type) {
         Runnable runnable = () -> {
+            boolean uploadSuccess = false;
+            File tempFile = null;
             try {
                 statusUpdater.updateStatus(0);
-                File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+                tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
-                try {
-                    FileUtils.writeByteArrayToFile(tempFile, model.getFile());
-                    AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
-                    //File check result.
-                    final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
-                    if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
-                        AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
-                        String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
-                        String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
-                        String expTypeName = modelInfo.getExperimentType().toString();
-                        String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
-                        String reqId = "project_" + model.getProjectId();
+                FileUtils.writeByteArrayToFile(tempFile, model.getFile());
+                AnylogicFileChecker anylogicfileChecker = new AnylogicFileChecker();
+                //File check result.
+                final FileCheckResult<Hyperparams> result = anylogicfileChecker.performFileCheck(statusUpdater, tempFile);
+                if (result.isFileCheckComplete() && result.isFileCheckSuccessful()) {
+                    AnyLogicModelInfo modelInfo = ((AnylogicFileCheckResult)result).getPriorityModelInfo();
+                    String mainAgentName = AnyLogicModelInfo.getNameFromClass(modelInfo.getMainAgentClass());
+                    String expClassName = AnyLogicModelInfo.getNameFromClass(modelInfo.getExperimentClass());
+                    String expTypeName = modelInfo.getExperimentType().toString();
+                    String pmHelperName = result.getDefinedHelpers().get(0).split("##")[1];
+                    String reqId = "project_" + model.getProjectId();
 
-                        HyperparametersDTO analysisResult =
-                            client.analyze(tempFile, type, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
+                    HyperparametersDTO analysisResult =
+                        client.analyze(tempFile, type, reqId, mainAgentName, expClassName, expTypeName, pmHelperName);
 
-                        Optional<String> optionalError = verifyAnalysisResult(analysisResult);
-                        if (optionalError.isPresent()) {
-                            statusUpdater.updateError(optionalError.get());
-                        } else {
-                            Hyperparams hyperparams = buildHyperparams(analysisResult);
-                            result.setParams(hyperparams);
-                            model.setPathmindHelper(pmHelperName);
-                            model.setMainAgent(mainAgentName);
-                            model.setExperimentClass(expClassName);
-                            model.setExperimentType(expTypeName);
-                            statusUpdater.fileSuccessfullyVerified(result);
-                        }
+                    Optional<String> optionalError = verifyAnalysisResult(analysisResult);
+                    if (optionalError.isPresent()) {
+                        statusUpdater.updateError(optionalError.get());
                     } else {
-                        if (!result.isHelperPresent()) {
-                            statusUpdater.updateError("You need to add PathmindHelper in your model.");
-                        } else if (!result.isHelperUnique()) {
-                            statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
-                        } else if (!result.isValidRLPlatform()) {
-                            statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
-                        } else {
-                            statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
-                        }
+                        Hyperparams hyperparams = buildHyperparams(analysisResult);
+                        result.setParams(hyperparams);
+                        model.setPathmindHelper(pmHelperName);
+                        model.setMainAgent(mainAgentName);
+                        model.setExperimentClass(expClassName);
+                        model.setExperimentType(expTypeName);
+                        statusUpdater.fileSuccessfullyVerified(result);
+                        uploadSuccess = true;
                     }
-                } finally {
-                    FileUtils.deleteQuietly(tempFile);
+                } else {
+                    if (!result.isHelperPresent()) {
+                        statusUpdater.updateError("You need to add PathmindHelper in your model.");
+                    } else if (!result.isHelperUnique()) {
+                        statusUpdater.updateError("Only one PathmindHelper per model is currently supported.: " + result.getDefinedHelpers());
+                    } else if (!result.isValidRLPlatform()) {
+                        statusUpdater.updateError("Invalid model. Please use the exported model for Pathmind.");
+                    } else {
+                        statusUpdater.updateError("The uploaded file is invalid, check it and upload again.");
+                    }
                 }
 
             } catch (Exception e) {
                 log.error("File check interrupted.", e);
                 statusUpdater.updateError("File check interrupted.");
             } finally {
+                if (!uploadSuccess) {
+                    String s3Path = String.format("model_failed/%d_model_%d.zip", model.getProjectId(), System.currentTimeMillis());
+                    awsApiClient.fileUpload(s3Path, tempFile);
+                    log.info("failed model is uploaded to {}/{}", awsApiClient.getBucketName(), s3Path);
+                }
+                FileUtils.deleteQuietly(tempFile);
                 log.info("Checking : completed");
             }
         };

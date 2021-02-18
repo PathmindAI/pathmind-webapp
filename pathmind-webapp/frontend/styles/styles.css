@@ -118,7 +118,7 @@ hr {
 
 /* Customized Scrollbar for WebKit Browsers */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -127,6 +127,47 @@ background-color: var(--pm-app-bg-color);
 
 ::-webkit-scrollbar-thumb {
 background-color: var(--pm-grey-color-light);
+}
+
+.variable-color-0 {
+    color: #000;
+    background-color: var(--variable-color-0);
+}
+.variable-color-1 {
+    color: #fff;
+    background-color: var(--variable-color-1);
+}
+.variable-color-2 {
+    color: #000;
+    background-color: var(--variable-color-2);
+}
+.variable-color-3 {
+    color: #fff;
+    background-color: var(--variable-color-3);
+}
+.variable-color-4 {
+    color: #000;
+    background-color: var(--variable-color-4);
+}
+.variable-color-5 {
+    color: #000;
+    background-color: var(--variable-color-5);
+}
+.variable-color-6 {
+    color: #000;
+    background-color: var(--variable-color-6);
+}
+.variable-color-7 {
+    color: #fff;
+    background-color: var(--variable-color-7);
+}
+.variable-color-8 {
+    color: #fff;
+    background-color: var(--variable-color-8);
+}
+.variable-color-9 {
+    color: #000;
+    background-color: var(--variable-color-9);
 }
 
 .row-2-of-3 {
@@ -350,6 +391,7 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .projects-view .project-name-column vaadin-button {
+    height: auto;
     visibility: hidden;
 }
 

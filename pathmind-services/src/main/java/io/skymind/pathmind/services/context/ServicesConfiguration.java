@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -32,8 +33,9 @@ public class ServicesConfiguration {
 
     @Bean
     public ProjectFileCheckService projectFileCheckService(ExecutorService executorService, ModelAnalyzerApiClient modelAnalyzerApiClient,
-                                                           @Value("${pathmind.convert-models-to-latest-version.url}") String convertModelsToSupportLastestVersionURL) {
-        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportLastestVersionURL);
+                                                           @Value("${pathmind.convert-models-to-latest-version.url}") String convertModelsToSupportLastestVersionURL,
+                                                           AWSApiClient awsApiClient) {
+        return new ProjectFileCheckService(executorService, modelAnalyzerApiClient, convertModelsToSupportLastestVersionURL, awsApiClient);
     }
 
     @Primary

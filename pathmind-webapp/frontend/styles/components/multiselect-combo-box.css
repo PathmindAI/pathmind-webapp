@@ -1,0 +1,4 @@
+:host [part~="input-field"] {
+    background-color: var(--pm-grey-color-lightest);
+    border: 1px solid var(--pm-grey-color);
+}
