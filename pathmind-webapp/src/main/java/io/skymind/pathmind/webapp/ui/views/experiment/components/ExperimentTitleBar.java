@@ -88,9 +88,12 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar, actionDropdown);
+        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
+        if (!isExportPolicyButtonOnly) {
+            titleWithStar.add(actionDropdown);
+        }
 
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
@@ -138,12 +141,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archivedLabel.setVisible(experiment.isArchived());
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
 
-        actionDropdown.setItemEnabledProvider(item -> {
-            if (experiment.isArchived()) {
-                return !archiveButton.getText().equals(item);
-            }
-            return !unarchiveButton.getText().equals(item);      
-        });
+        if (actionDropdown != null) {
+            actionDropdown.setItemEnabledProvider(item -> {
+                if (experiment.isArchived()) {
+                    return !archiveButton.getText().equals(item);
+                }
+                return !unarchiveButton.getText().equals(item);      
+            });
+        }
 
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
