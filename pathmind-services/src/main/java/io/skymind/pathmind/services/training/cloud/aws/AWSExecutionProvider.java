@@ -507,6 +507,14 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType())
         ));
+
+        if (job.getEnvironment() != null) {
+            instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
+            instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
+            instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+        }
+
+
     }
 
     private void runTraining(List<String> instructions) {

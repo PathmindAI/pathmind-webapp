@@ -23,6 +23,7 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
@@ -33,9 +34,7 @@ public class ExperimentGrid extends Grid<Experiment> {
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-            Experiment refreshedExperiment = experiment;
-            experiment.setFavorite(newIsFavorite);
-            getDataProvider().refreshItem(refreshedExperiment);
+            getDataProvider().refreshItem(experiment);
         }))
                 .setHeader(new Icon(VaadinIcon.STAR))
                 .setAutoWidth(true)
@@ -93,7 +92,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         //         .setFlexGrow(0)
         //         .setResizable(true)
         //         .setSortable(true);
-        Grid.Column<Experiment> rewardFunctionColumn = addColumn(experiment -> experiment.getRewardFunction())
+        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
                 .setFlexGrow(1)

@@ -65,7 +65,7 @@ vaadin-grid-cell-content vaadin-grid-sorter[direction] {
 
 .grid-reward-fn-column[part~="cell"] ::slotted(vaadin-grid-cell-content) {
     max-height: 8rem;
-    white-space: pre-wrap;
+    padding: 0 !important;
     overflow: auto;
 }
 

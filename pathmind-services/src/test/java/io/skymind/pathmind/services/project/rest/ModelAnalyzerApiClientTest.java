@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
 import org.junit.Ignore;
@@ -27,7 +28,7 @@ public class ModelAnalyzerApiClientTest {
                 WebClient.builder());
 
         File model = new ClassPathResource("model/call_center.zip").getFile();
-        HyperparametersDTO hyperparametersDTO = client.analyze(model);
+        HyperparametersDTO hyperparametersDTO = client.analyze(model, AnalyzeRequestDTO.ModelType.ANY_LOGIC);
 
         assertEquals(hyperparametersDTO.getObservations(), "70");
         assertEquals(hyperparametersDTO.getRewardFunction(), "new double[]{this.getReward()}");

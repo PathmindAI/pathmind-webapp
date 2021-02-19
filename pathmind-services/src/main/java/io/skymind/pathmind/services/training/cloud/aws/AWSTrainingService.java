@@ -64,7 +64,7 @@ public class AWSTrainingService extends TrainingService {
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
-                model.getModelType() == ModelType.MULTI.getValue(),
+                ModelType.isMultiModel(ModelType.fromValue(model.getModelType())),
                 false,
                 25,
                 false,
@@ -72,7 +72,9 @@ public class AWSTrainingService extends TrainingService {
                 true,
                 StringUtils.defaultString(model.getMainAgent()),
                 StringUtils.defaultString(model.getExperimentClass()),
-                StringUtils.defaultString(model.getExperimentType())
+                StringUtils.defaultString(model.getExperimentType()),
+                // doesn't need to pass package name for AL model, only need for PY model
+                (ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) ? model.getPackageName() : null)
         );
 
         return executionProvider.execute(spec);

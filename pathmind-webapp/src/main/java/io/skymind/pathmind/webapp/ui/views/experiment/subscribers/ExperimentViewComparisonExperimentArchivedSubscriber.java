@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.views.experiment.subscribers.main.experiment;
+package io.skymind.pathmind.webapp.ui.views.experiment.subscribers;
 
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentArchivedBusEvent;
