@@ -83,11 +83,6 @@ public class NewExperimentStepDefinition {
         projectsPageSteps.checkNewExperimentPageRewardVariableErrorIsShown(error);
     }
 
-    @Then("^Check that Before you leave\\.\\.\\.\\. pop-up is shown with error (.*)$")
-    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        newExperimentSteps.checkThatBeforeYouLeavePopUpIsShownWithError(error);
-    }
-
     @When("^Click side bar experiment (.*)$")
     public void clickSideBarExperiment(String experimentName) {
         newExperimentSteps.clickSideBarExperiment(experimentName);

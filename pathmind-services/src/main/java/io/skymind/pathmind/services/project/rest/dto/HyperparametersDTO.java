@@ -42,4 +42,6 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "mode(modelType) cannot be blank")
     private String mode;
+
+    private String failedSteps;
 }

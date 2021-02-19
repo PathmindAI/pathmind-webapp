@@ -143,12 +143,6 @@ public class NewExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
 
-    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        WebElement popupShadowRoot = utils.expandRootElement(confirmPopup);
-        assertThat(popupShadowRoot.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
-        assertThat(popupShadowRoot.findElement(By.cssSelector(".message")).getText(), is(error));
-    }
-
     public void clickSideBarExperiment(String experimentName) {
         waitABit(2000);
         utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();

@@ -5,13 +5,16 @@ import java.util.Optional;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 @Service
+@Slf4j
 class AwsModelServiceImpl implements ModelService {
 
     public static final String MODEL_FILES = "model_file/";
@@ -29,7 +32,9 @@ class AwsModelServiceImpl implements ModelService {
     public void addDraftModelToProject(Model model, long id, String userNotes) {
         Assert.notNull(model, "Model should be provided");
         model.setDraft(true);
-        ModelUtils.extractAndSetPackageName(model);
+        if (ModelType.isALModel(ModelType.fromValue(model.getModelType()))) {
+            ModelUtils.extractAndSetPackageName(model);
+        }
         modelDAO.addDraftModelToProject(model, id, userNotes);
         saveModelFile(model.getId(), model.getFile());
     }

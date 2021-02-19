@@ -70,7 +70,7 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
 
     private void setupEditorErrorLabel() {
         rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Reward Function must not exceed " + Experiment.REWARD_FUNCTION_MAX_LENGTH + " characters", "reward-editor-error");
+                "Max. " + Experiment.REWARD_FUNCTION_MAX_LENGTH + " characters. Extra characters will not be saved.", "reward-editor-error");
         rewardEditorErrorLabel.setVisible(false);
     }
 
