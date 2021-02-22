@@ -91,14 +91,13 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     public void removeExperiment(Experiment experiment) {
-        ExperimentsNavBarItem toRemoveNavBarItem = experimentsNavBarItems.stream()
+        experimentsNavBarItems.stream()
                 .filter(experimentsNavBarItem -> ExperimentUtils.isSameExperiment(experimentsNavBarItem.getExperiment(), experiment))
                 .findFirst()
-                .orElse(null);
-        if (toRemoveNavBarItem != null) {
-            experimentsNavBarItems.remove(toRemoveNavBarItem);
-            rowsWrapper.remove(toRemoveNavBarItem);
-        }
+                .ifPresent(exp -> {
+                    experimentsNavBarItems.remove(exp);
+                    rowsWrapper.remove(exp);
+                });
     }
 
     public void addExperiment(Experiment experiment) {
@@ -120,14 +119,11 @@ public class ExperimentsNavBar extends VerticalLayout {
     }
 
     public void setExperiment(Experiment experiment) {
-        Experiment targetExperimentInList = experiments
+        experiments
                 .stream()
                 .filter(exp -> ExperimentUtils.isSameExperiment(exp, experiment))
                 .findFirst()
-                .orElse(null);
-        if (targetExperimentInList != null) {
-            experiments.set(experiments.indexOf(targetExperimentInList), experiment);
-        }
+                .ifPresent(exp -> experiments.set(experiments.indexOf(exp), experiment));
     }
 
     public List<ExperimentsNavBarItem> getExperimentsNavBarItems() {
