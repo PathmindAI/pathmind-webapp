@@ -24,7 +24,9 @@ public class Utils extends PageObject {
     public WebElement expandRootElement(WebElement element) {
         return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].shadowRoot", element);
     }
-
+    public WebElement expandDocumentElement(WebElement element) {
+        return (WebElement) ((JavascriptExecutor) getDriver()).executeScript("return arguments[0].documentFragment", element);
+    }
     public void deleteAllCookies() {
         getDriver().manage().deleteAllCookies();
     }
