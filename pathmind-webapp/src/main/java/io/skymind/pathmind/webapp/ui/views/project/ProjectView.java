@@ -52,7 +52,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
@@ -94,6 +94,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
+    private boolean isPythonModel = false;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
@@ -105,7 +106,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private Span modelName;
     private Span modelCreatedDate;
-    private Anchor downloadAlpLink;
+    private Anchor downloadLink;
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
@@ -155,13 +156,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelHeaderWrapper.addClassName("page-content-header");
 
         if (selectedModel != null) {
-            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService,
-                    segmentIntegrator);
+            downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
+                    segmentIntegrator, false, isPythonModel);
             modelHeaderWrapper
                     .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                             WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
                                     .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadAlpLink), modelNotesField);
+                            downloadLink), modelNotesField);
 
             HorizontalLayout experimentGridHeader = WrapperUtils
                     .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);

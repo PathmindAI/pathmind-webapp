@@ -17,7 +17,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -47,8 +47,9 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button unarchiveButton;
-    private DownloadModelAlpLink downloadModelAlpLink;
+    private DownloadModelLink downloadModelLink;
     private Button shareButton;
+    private boolean isPythonModel = false;
 
     private ExperimentView experimentView;
     private TrainingService trainingService;
@@ -106,13 +107,13 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
-        downloadModelAlpLink = new DownloadModelAlpLink(modelService, experimentView.getSegmentIntegrator(), false);
+        downloadModelLink = new DownloadModelLink(modelService, experimentView.getSegmentIntegrator(), true, isPythonModel);
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
         if(isExportPolicyButtonOnly) {
             return new Component[] {exportPolicyButton};
         } else {
-            return new Component[] {stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelAlpLink};
+            return new Component[] {stopTrainingButton, shareButton, unarchiveButton, exportPolicyButton, downloadModelLink};
         }
     }
 
@@ -142,7 +143,7 @@ public class ExperimentTitleBar extends VerticalLayout implements ExperimentComp
         favoriteStar.setValue(experiment.isFavorite());
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
-        downloadModelAlpLink.setExperiment(experiment);
+        downloadModelLink.setExperiment(experiment);
         updateComponentEnablements();
     }
     

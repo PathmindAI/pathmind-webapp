@@ -29,7 +29,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
@@ -61,8 +61,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private Button saveDraftButton;
     private Button startRunButton;
     private SplitButton splitButton;
-    private Anchor downloadModelAlpLink;
+    private Anchor downloadModelLink;
     private boolean isNeedsSaving = false;
+    private boolean isPythonModel = false;
 
     private final int allowedRunsNoVerified;
 
@@ -102,7 +103,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
-        downloadModelAlpLink = new DownloadModelAlpLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator);
+        downloadModelLink = new DownloadModelLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator, false, isPythonModel);
 
         VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         mainPanel.setSpacing(true);
@@ -117,7 +118,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 verifyEmailReminder,
                 WrapperUtils.wrapWidthFullHorizontal(
                         titleWithStar,
-                        downloadModelAlpLink
+                        downloadModelLink
                 ),
                 LabelFactory.createLabel(
                         "To judge if an action is a good one, we calculate a reward score. "

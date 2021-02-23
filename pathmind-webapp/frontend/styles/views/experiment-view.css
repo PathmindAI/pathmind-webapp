@@ -324,7 +324,7 @@
 }
 
 .experiment-view .buttons-wrapper .download-alp-link {
-    margin-left: var(--lumo-space-s);
+    margin-left: -1px;
 }
 
 .experiment-view juicy-ace-editor {
