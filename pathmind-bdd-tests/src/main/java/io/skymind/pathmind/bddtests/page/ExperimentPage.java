@@ -56,15 +56,17 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
-        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("vaadin-button"));
+        getDriver().findElement(By.xpath("//*[@theme='action-dropdown align-center']")).click();
+        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
         waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        WebElement button = utils.expandRootElement(archiveButton);
-        button.findElement(By.cssSelector("button")).click();
+        archiveButton.click();
+    }
 
-        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
-        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
-        content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
+    public void clickArchiveButtonForCurrentDraftExperiment() {
+        getDriver().findElement(By.xpath("//*[@theme='split-button align-center new-experiment-split-button']")).click();
+        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
+        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
+        archiveButton.click();
     }
 
     public void checkExperimentNotesIs(String note) {
@@ -121,26 +123,12 @@ public class ExperimentPage extends PageObject {
         inputShadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
     }
 
-    public void clickSideNavArchiveButtonFor(String experimentName) {
-        waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experimentName, "#archiveButton"));
-        element.findElement(By.cssSelector("button")).click();
-    }
-
     public void clickSideNavButtonFromNavbarItemMenuFor(String btn, String experiment) {
         waitABit(3500);
-        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, "#small-menu"));
-        element.findElement(By.cssSelector("button")).click();
-        WebElement contextMenuOverlay = utils.expandRootElement(getDriver().findElement(By.id("overlay")));
-        WebElement content = utils.expandRootElement(contextMenuOverlay.findElement(By.id("content")));
-        switch (btn) {
-            case ("Archive"):
-                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(1) > span")).click();
-                break;
-            case ("Compare"):
-                content.findElement(By.cssSelector("vaadin-context-menu-list-box > vaadin-context-menu-item:nth-child(2) > span")).click();
-                break;
-        }
+        WebElement element = utils.expandRootElement(utils.getExperimentNavbarItemByExperimentName(experiment, null));
+        waitABit(4000);
+        WebElement compareBtn = utils.expandRootElement(element.findElement(By.cssSelector("#compareButton")));
+        compareBtn.findElement(By.id("button")).click();
     }
 
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
@@ -256,7 +244,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageArchivedTagIsShown() {
-        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).getText(), is("Archived"));
     }
 
     public void checkSimulationMetricsColumnsTitles() {
@@ -324,7 +312,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkLearningProgressBlockSelectedTabNameIs(String selected, String tab) {
-        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='"+selected+"' and text()='"+tab+"']")).size(), is(not(0)));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/descendant::vaadin-tab[@aria-selected='" + selected + "' and text()='" + tab + "']")).size(), is(not(0)));
     }
 
     public void checkLearningProgressBlockMetricsHint(String hint) {
@@ -349,7 +337,8 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkExperimentNameTagLabel(String label) {
-        assertThat(getDriver().findElement(By.xpath("//*[span[@class='section-title-label']]/following-sibling::tag-label[not(@hidden)]")).getText(), is(label));
+        waitABit(3000);
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).getText(), is(label));
     }
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
@@ -377,5 +366,19 @@ public class ExperimentPage extends PageObject {
     public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
         assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[2]")).getText(), is(metric));
         assertThat(getDriver().findElement(By.xpath("//*[@class='histogram-chart-mean']/descendant::span[3]")).getText(), is(value));
+    }
+
+    public void clickExperimentPageShareWithSupportBtn() {
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-item[text()='Share with support']")).click();
+    }
+
+    public void clickExperimentPageActionsBtn(String btn) {
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
+        waitABit(3000);
+        getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
     }
 }

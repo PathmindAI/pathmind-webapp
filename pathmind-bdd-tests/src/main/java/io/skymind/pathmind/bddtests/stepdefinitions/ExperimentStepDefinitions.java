@@ -45,7 +45,7 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkThatTheExperimentStatusIs(status);
     }
 
-    @Then("^Click side nav archive button for current experiment$")
+    @Then("^Click archive button for current experiment$")
     public void clickCurrentExperimentArchiveButton() {
         experimentPageSteps.clickCurrentExperimentArchiveButton();
     }
@@ -53,11 +53,6 @@ public class ExperimentStepDefinitions {
     @When("^Change reward variable on experiment view '(.*)' to '(.*)'$")
     public void changeRewardVariableOnExperimentView(String variableNumber, String variableName) {
         experimentPageSteps.changeRewardVariableOnExperimentView(variableNumber, variableName);
-    }
-
-    @Then("^Click side nav archive button for '(.*)'$")
-    public void clickSideNavArchiveButtonFor(String experimentName) {
-        experimentPageSteps.clickSideNavArchiveButtonFor(experimentName);
     }
 
     @Then("^Check experiment page reward variables is (.*)$")
@@ -238,5 +233,20 @@ public class ExperimentStepDefinitions {
     @Then("^Check learning progress block histogram simulation metric is '(.*)' and '(.*)'$")
     public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
         experimentPageSteps.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
+    }
+
+    @When("^Click archive button for current draft experiment$")
+    public void clickArchiveButtonForCurrentDraftExperiment() {
+        experimentPageSteps.clickArchiveButtonForCurrentDraftExperiment();
+    }
+
+    @When("^Click experiment page share with support btn$")
+    public void clickExperimentPageShareWithSupportBtn() {
+        experimentPageSteps.clickExperimentPageShareWithSupportBtn();
+    }
+
+    @When("^Click experiment page actions '(.*)' btn$")
+    public void clickExperimentPageActionsBtn(String btn) {
+        experimentPageSteps.clickExperimentPageActionsBtn(btn);
     }
 }

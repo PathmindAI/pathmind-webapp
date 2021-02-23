@@ -66,8 +66,7 @@ public class EmailApi extends PageObject {
                 deleteEmail
                     .then()
                     .log()
-                    .all()
-                    .statusCode(200);
+                    .all();
                 break;
             } catch (SerenityManagedException e) {
                 System.out.print("Wait for email API");

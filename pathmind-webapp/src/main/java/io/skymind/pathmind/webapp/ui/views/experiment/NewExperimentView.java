@@ -40,6 +40,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.SaveDraftAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
@@ -60,6 +61,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
+    private Button archiveButton;
     private SplitButton splitButton;
     private Anchor downloadModelAlpLink;
     private boolean isNeedsSaving = false;
@@ -162,6 +164,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         List<Button> actionButtons = new ArrayList<Button>();
         actionButtons.add(startRunButton);
         actionButtons.add(saveDraftButton);
+        actionButtons.add(archiveButton);
         SplitButton splitButton = new SplitButton(actionButtons);
         splitButton.addThemeName("new-experiment-split-button");
         return splitButton;
@@ -182,6 +185,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor));
         saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
         }));
+        archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
     }
 
     /************************************** UI element creations are above this line **************************************/
