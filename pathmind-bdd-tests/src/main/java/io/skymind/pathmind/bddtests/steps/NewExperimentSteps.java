@@ -94,11 +94,6 @@ public class NewExperimentSteps {
     }
 
     @Step
-    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
-        newExperimentPage.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
-    }
-
-    @Step
     public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
         newExperimentPage.checkNewExperimentPageTrainPolicyBtn(btnStatus);
     }

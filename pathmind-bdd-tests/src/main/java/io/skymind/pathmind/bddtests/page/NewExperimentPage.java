@@ -175,14 +175,6 @@ public class NewExperimentPage extends PageObject {
         assertThat(favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).getAttribute("title"), is(tooltip));
     }
 
-    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
-        waitABit(3500);
-        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
-        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("#archiveButton"));
-        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        assertThat(archiveButton.getAttribute("title"), is(tooltip));
-    }
-
     public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
         waitABit(4000);
         if (btnStatus) {
