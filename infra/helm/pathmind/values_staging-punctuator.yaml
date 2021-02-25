@@ -2,57 +2,52 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: dev
+  tag: staging
   pullPolicy: Always
-  command: ["/app/entrypoint.sh"]
+  command: ["java"]
+  args:
+    - "-Xmx4096m"
+    - "-XX:+UseG1GC"
+    - "-jar"
+    - "/app/pathmind-updater/punctuator/target/pathmind-punctuator-0.0.1-SNAPSHOT.jar"
 
 service:
   type: NodePort
   port: 80
 
 env:
-  APPLICATION_URL: https://dev.devpathmind.com
+  APPLICATION_URL: https://staging.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: dev
-  SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
-  S3_BUCKET: dev-training-dynamic-files.pathmind.com
+  ENVIRONMENT: staging
+  SQS_URL: https://queue.amazonaws.com/839270835622/staging-training-queue.fifo
+  S3_BUCKET: staging-training-dynamic-files.pathmind.com
   S3_BUCKET_STATIC: dev-training-static-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
   MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
   JOB_MOCK_CYCLE: 0
   JOB_MOCK_MAX_MIN: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/dev-updater-queue
-  SNS_UPDATER_SQS_FILTER_ATTR: dev
-  NEW_RUN_DAILY_LIMIT: 200
-  NEW_RUN_MONTHLY_LIMIT: 4000
-  SQS_UPDATER_PUNCTUATOR_QUEUE: ""
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/staging-updater-queue
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:staging-updater-topic
+  SNS_UPDATER_SQS_FILTER_ATTR: staging
+  NEW_RUN_DAILY_LIMIT: 100
+  NEW_RUN_MONTHLY_LIMIT: 2000
+  SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/staging-punctuator.fifo
 
-readinessprobe:
-  httpGet:
-    path: /
-    port: 80
-  initialDelaySeconds: 15
-  periodSeconds: 10
-  failureThreshold: 10
+readinessprobe: {}
 
-livenessprobe:
-  httpGet:
-    path: /
-    port: 80
-  initialDelaySeconds: 30
-  periodSeconds: 15
+livenessprobe: {}
 
-name: pathmind  
+name: pathmind-updater
 
-namespace: dev
+namespace: staging
 
 ingress:
   enabled: false
@@ -68,7 +63,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: 
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -87,17 +82,4 @@ tolerations: []
 
 affinity: {}
 
-probes:
-  readinessProbe:
-    httpGet:
-      path: /
-      port: 80
-    initialDelaySeconds: 15
-    periodSeconds: 10
-    failureThreshold: 10
-  livenessProbe:
-    httpGet:
-      path: /
-      port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 15
+probes: {}
