@@ -139,4 +139,9 @@ public class NewExperimentStepDefinition {
     public void clickNewExperimentPageObservationCheckbox(String observation) {
         newExperimentSteps.clickNewExperimentPageObservationCheckbox(observation);
     }
+
+    @Then("^Check new experiment observations list contains '(.*)'$")
+    public void checkNewExperimentObservationsListContains(String observations) {
+        newExperimentSteps.checkNewExperimentObservationsListContains(observations);
+    }
 }
