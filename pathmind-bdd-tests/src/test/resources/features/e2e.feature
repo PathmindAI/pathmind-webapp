@@ -23,8 +23,8 @@ Feature: E2E
     #    ------------------------
     #Check Simulation Metrics block
     Then Check that 1 metrics are shown for reward variables
-    Then Check variable 'goalReached' is chosen 'true'
-    Then Check variable 'goalReached' simulation metric value '1.0⠀±⠀0.0'
+    Then Check variable '<variable>' is chosen 'true'
+    Then Check variable '<variable>' simulation metric value '1.0⠀±⠀0.0'
     Then Check that 1 sparklines are shown for reward variables
     Then Check Simulation Metrics columns titles
     Then Check that unexpected error alert is Not shown
@@ -73,6 +73,11 @@ Feature: E2E
     When Click experiment breadcrumb btn
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
+    When Click model breadcrumb btn
+    When Click models page metrics dropdown
+    Then Check model page metrics <variable>
+    When Model page choose metric '<variable>' from dropdown
+    When Model page check experiment '1' column '<variable>' value is '1.0⠀±⠀0.0'
     Then Check that unexpected error alert is Not shown
 
     Examples:

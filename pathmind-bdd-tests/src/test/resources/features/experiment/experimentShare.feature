@@ -14,8 +14,9 @@ Feature: Experiment share
     Then Check that user <First Name> <Last Name> successfully logged in
     When Create new CoffeeShop project with single reward function
     When Click project start run button
-    When Click in 'Share with support' button
+    When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
     Then Check experiment name tag label 'Shared with Support'
     When Save experiment url into the variable 'sharedExperimentUrl'
     When Delete all cookies
@@ -32,8 +33,9 @@ Feature: Experiment share
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     When Click project start run button
-    When Click in 'Share with support' button
+    When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
     Then Check experiment name tag label 'Shared with Support'
     When Save experiment url into the variable 'sharedExperimentUrl'
     When Delete all cookies
@@ -58,7 +60,6 @@ Feature: Experiment share
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     When Click project start run button
-    When Click in 'Share with support' button
     When Save experiment url into the variable 'sharedExperimentUrl'
     When Delete all cookies
     Given Open page sign-up

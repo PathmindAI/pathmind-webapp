@@ -83,11 +83,6 @@ public class NewExperimentStepDefinition {
         projectsPageSteps.checkNewExperimentPageRewardVariableErrorIsShown(error);
     }
 
-    @Then("^Check that Before you leave\\.\\.\\.\\. pop-up is shown with error (.*)$")
-    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        newExperimentSteps.checkThatBeforeYouLeavePopUpIsShownWithError(error);
-    }
-
     @When("^Click side bar experiment (.*)$")
     public void clickSideBarExperiment(String experimentName) {
         newExperimentSteps.clickSideBarExperiment(experimentName);
@@ -117,11 +112,6 @@ public class NewExperimentStepDefinition {
     @Then("^Check side bar current experiment star btn tooltip is '(.*)'$")
     public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
         newExperimentSteps.checkSideBarStarBtnTooltipIsFavorite(tooltip);
-    }
-
-    @Then("^Check side bar current experiment archive btn tooltip is '(.*)'$")
-    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
-        newExperimentSteps.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
     }
 
     @When("^Check new experiment page train policy btn enabled '(.*)'$")

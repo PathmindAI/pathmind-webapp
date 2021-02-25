@@ -8,10 +8,8 @@ import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -25,8 +23,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -73,15 +69,23 @@ public class ModelAnalyzerApiClient {
         return result;
     }
 
-    public HyperparametersDTO analyze(File file) {
-        return analyze(file);
+    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO.ModelType type) {
+        return analyze(file, type, "", "", "", "", "");
     }
 
-    public HyperparametersDTO analyze(File file, String message, String mainAgentName, String experimentClass, String experimentType, String pmHelperName) {
+    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO.ModelType type, String message, String environment) {
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(buildMsgId(message), type, environment);
+        return analyze(file, req);
+    }
+
+    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO.ModelType type, String message, String mainAgentName, String experimentClass, String experimentType, String pmHelperName) {
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(buildMsgId(message), type, mainAgentName, experimentClass, experimentType, pmHelperName);
+        return analyze(file, req);
+    }
+
+    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO req) {
         final HttpPost post = new HttpPost(this.url + "/api/v1/extract-hyperparameters");
 
-        String messageId = message + "_" + UUID.randomUUID().toString();
-        AnalyzeRequestDTO req = new AnalyzeRequestDTO(messageId, mainAgentName, experimentClass, experimentType, pmHelperName);
         StringBody requestBody = null;
         try {
             requestBody = new StringBody(ObjectMapperHolder.getJsonMapper().writeValueAsString(req), ContentType.MULTIPART_FORM_DATA);
@@ -94,15 +98,18 @@ public class ModelAnalyzerApiClient {
             .addBinaryBody("file", file, ContentType.MULTIPART_FORM_DATA, file.getName())
             .build());
 
-
         try (final CloseableHttpClient client = getCloseableHttpClient();
              final CloseableHttpResponse resp = client.execute(post)) {
-            log.info(String.format("Analyze Request %s is sent", messageId));
+            log.info(String.format("Analyze Request %s is sent", req.getId()));
             return objectMapper.readValue(resp.getEntity().getContent(), HyperparametersDTO.class);
         } catch (Exception e) {
             log.warn(e.getMessage());
             return null;
         }
+    }
+
+    private String buildMsgId(String msg) {
+        return msg + "_" + UUID.randomUUID().toString();
     }
 
 

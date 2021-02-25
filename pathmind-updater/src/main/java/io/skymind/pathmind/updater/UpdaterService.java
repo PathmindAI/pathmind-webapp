@@ -269,7 +269,6 @@ public class UpdaterService {
             out.writeObject(data);
             out.flush();
             byte[] bytes = bos.toByteArray();
-            log.info("kepricondebug fire event : " + data.getId() + ", " + type);
             fireEventUpdate(type, data.getId(), bytes);
         } catch (IOException e) {
             log.error("Failed to file event: {} {}", type, data.getId(), e);

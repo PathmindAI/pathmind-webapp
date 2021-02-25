@@ -40,9 +40,13 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
 
     public TrainingStatusDetailsPanel(Supplier<Optional<UI>> getUISupplier) {
         this.getUISupplier = getUISupplier;
-        add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Status"), statusLabel, completedTimeLabel),
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(new Span("Elapsed"), elapsedTimeLabel),
-                trainingProgress);
+        HorizontalLayout statusWrapper = new HorizontalLayout(new Span("Status"), statusLabel, completedTimeLabel);
+        statusWrapper.addClassName("status-wrapper");
+        statusWrapper.setSpacing(false);
+        HorizontalLayout elapsedTimeWrapper = new HorizontalLayout(new Span("Elapsed"), elapsedTimeLabel);
+        elapsedTimeWrapper.addClassName("elapsed-time-wrapper");
+        elapsedTimeWrapper.setSpacing(false);
+        add(statusWrapper, elapsedTimeWrapper, trainingProgress);
         addClassName("training-status-details-panel");
         setWidthFull();
         setPadding(false);

@@ -2,3 +2,6 @@ awscli==1.16.314
 boto3==1.10.50
 sh==1.12.14
 ray[debug]==1.0.0
+pandas==1.1.3
+gym==0.18.0
+numpy==1.19.2

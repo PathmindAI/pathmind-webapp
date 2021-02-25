@@ -65,11 +65,6 @@ public class NewExperimentSteps {
     }
 
     @Step
-    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        newExperimentPage.checkThatBeforeYouLeavePopUpIsShownWithError(error);
-    }
-
-    @Step
     public void clickSideBarExperiment(String experimentName) {
         newExperimentPage.clickSideBarExperiment(experimentName);
     }
@@ -96,11 +91,6 @@ public class NewExperimentSteps {
 
     public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
         newExperimentPage.checkSideBarStarBtnTooltipIsFavorite(tooltip);
-    }
-
-    @Step
-    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
-        newExperimentPage.checkSideBarCurrentExperimentArchiveBtnTooltipIs(tooltip);
     }
 
     @Step
