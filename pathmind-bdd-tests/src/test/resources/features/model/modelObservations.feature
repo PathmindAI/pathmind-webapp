@@ -1,7 +1,6 @@
 @experiment
 Feature: Model observations
 
-  @debug
   Scenario Outline: Check model page observations list
     Given Login to the pathmind
     When Open projects page
@@ -16,13 +15,8 @@ Feature: Model observations
     Then Check that new experiment <project name> page is opened
     Then Input from file reward function <reward function file>
     Then Check new experiment observations list contains '<observations>'
-
-#    When Click new experiment page observation checkbox 'powerXYZ'
-#    When Click new experiment page observation checkbox 'distanceXYZ'
-#    Then Click project start run button
-#    Then Check experiment page observation 'powerXYZ' is selected 'false'
-#    Then Check experiment page observation 'moduleXYZ' is selected 'true'
-#    Then Check experiment page observation 'distanceXYZ' is selected 'false'
+    When Click model breadcrumb btn
+    Then Check model page experiment name '1' selected observations is '<observations>'
 
     Examples:
       | project name    | model                               | reward function file                              | observations                                                                                                                                                                           |

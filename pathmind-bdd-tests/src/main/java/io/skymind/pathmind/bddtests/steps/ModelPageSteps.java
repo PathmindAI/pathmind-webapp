@@ -143,4 +143,8 @@ public class ModelPageSteps {
         modelPage.checkModelNoteOnTheProjectPage(note);
     }
 
+    @Step
+    public void checkModelPageExperimentNameSelectedObservationsIs(String experiment, String observations) {
+        modelPage.checkModelPageExperimentNameSelectedObservationsIs(experiment, observations);
+    }
 }
