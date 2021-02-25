@@ -56,13 +56,14 @@ Feature: Experiment page compare feature
     When Click new experiment page observation checkbox 'collectQueueSize'
     When Click new experiment page observation checkbox 'kitchenCleanlinessLevel'
     When Click project start run button
-    When Click in 'Share with support' button
+    When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
-    Then Experiment page Check 'primary' experiment-header 'Experiment #2', 'Stopping', Stop Training btn shown 'false', Share with support btn shown 'false', Share with support label shown 'true'
+    Then Experiment page Check 'primary' experiment-header 'Experiment #2', 'Stopping', Stop Training btn shown 'false', Share with support btn shown 'true', Share with support label shown 'true'
     Then Experiment page Check 'secondary' experiment-header 'Experiment #1', 'Stopping', Stop Training btn shown 'false', Share with support btn shown 'true', Share with support label shown 'false'
 
     Then Experiment page Check 'primary' middle panel
@@ -97,8 +98,9 @@ Feature: Experiment page compare feature
     When Click new experiment page observation checkbox 'orderQueueSize'
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
-    When Click in 'Share with support' button
+    When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
     When Click in 'New Experiment' button
     When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click new experiment page observation checkbox 'collectQueueSize'
@@ -109,7 +111,7 @@ Feature: Experiment page compare feature
     When In confirmation dialog click in 'Stop Training' button
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
     Then Experiment page Check 'primary' experiment-header 'Experiment #2', 'Stopping', Stop Training btn shown 'false', Share with support btn shown 'true', Share with support label shown 'false'
-    Then Experiment page Check 'secondary' experiment-header 'Experiment #1', 'Starting Cluster', Stop Training btn shown 'true', Share with support btn shown 'false', Share with support label shown 'true'
+    Then Experiment page Check 'secondary' experiment-header 'Experiment #1', 'Starting Cluster', Stop Training btn shown 'true', Share with support btn shown 'true', Share with support label shown 'true'
 
     Then Experiment page Check 'primary' middle panel
     Then Experiment page Check 'secondary' middle panel
@@ -147,7 +149,7 @@ Feature: Experiment page compare feature
     When Click in 'New Experiment' button
     When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click project start run button
-    When Click in 'Share with support' button
+    When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
     When Click pop-up dialog close btn
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'

@@ -77,6 +77,7 @@ public class ExperimentView extends AbstractExperimentView {
     private ObservationsPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
+    private FloatingCloseButton comparisonModeCloseButton;
 
     @Autowired
     private ModelCheckerService modelCheckerService;
@@ -191,7 +192,7 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
-        FloatingCloseButton comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
+        comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
             leaveComparisonMode();
             resizeChart();
         });

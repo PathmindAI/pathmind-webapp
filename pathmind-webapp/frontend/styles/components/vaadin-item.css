@@ -1,3 +1,7 @@
 :host([value=""]) {
     display: none;
 }
+
+:host([disabled]) {
+    display: none;
+}

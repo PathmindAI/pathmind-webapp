@@ -21,3 +21,7 @@
     color: white;
     cursor: pointer;
 }
+
+:host([theme~="action-dropdown"]) {
+    margin-left: var(--lumo-space-xs);
+}
