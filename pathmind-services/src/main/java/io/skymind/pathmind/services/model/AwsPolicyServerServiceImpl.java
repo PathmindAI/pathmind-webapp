@@ -2,6 +2,9 @@ package io.skymind.pathmind.services.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.PolicyServerService;
@@ -27,6 +30,8 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     private final AWSApiClient awsApiClient;
 
+    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+
     @Autowired
     public AwsPolicyServerServiceImpl(
             PolicyServerFilesCreator filesCreator, ObservationDAO observationDAO, AWSApiClient awsApiClient) {
@@ -43,11 +48,22 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public void saveSchemaYamlFile(long modelId, byte[] schemaYaml) {
-        awsApiClient.fileUpload(SCHEMAS_PATH + modelId, schemaYaml);
+        awsApiClient.fileUpload(SCHEMAS_PATH + modelId + "/schema.yaml", schemaYaml);
+    }
+
+    @Override
+    public void saveSchemaYamlFile(long modelId, PolicyServerSchema schema) {
+        try {
+            byte[] yamlString = yamlMapper.writeValueAsBytes(schema);
+            log.debug("Generated schema.yaml : \n {}", yamlString);
+            this.saveSchemaYamlFile(modelId, yamlString);
+        } catch (Exception e) {
+            log.error("Failed to save schema.yaml");
+        }
     }
 
     @Override
     public byte[] getSchemaYamlFile(long modelId) {
-        return awsApiClient.fileContents(SCHEMAS_PATH + modelId, true);
+        return awsApiClient.fileContents(SCHEMAS_PATH + modelId + "/schema.yaml", true);
     }
 }

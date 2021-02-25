@@ -5,9 +5,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.PolicyServerService;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.RunUtils;
@@ -16,6 +20,8 @@ import io.skymind.pathmind.updater.UpdaterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
 
 @Service
 @Slf4j
@@ -26,8 +32,10 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final UpdaterService updaterService;
     private final int updateCompletingAttemptsLimit;
     private final SegmentTrackerService segmentTrackerService;
+    private final PolicyServerService policyServerService;
+    private final UserDAO userDAO;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO,
+    public AWSExecutionProgressUpdater(RunDAO runDAO, PolicyServerService policyServerService, UserDAO userDAO,
                                        @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService,
@@ -37,6 +45,8 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         this.updaterService = updaterService;
         this.updateCompletingAttemptsLimit = completingAttempts;
         this.segmentTrackerService = segmentTrackerService;
+        this.policyServerService = policyServerService;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -57,12 +67,34 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             try {
                 ProviderJobStatus providerJobStatus =
                         updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNamesForRuns);
+                policyServerForRun(run);
                 sendNotificationMail(providerJobStatus.getRunStatus(), run);
                 trackCompletedTrainingInSegment(run, providerJobStatus);
             } catch (Exception e) {
                 log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
             }
         });
+    }
+
+    private void policyServerForRun(Run run) {
+        final boolean generateSchemaYaml =
+                Completed == run.getStatusEnum()
+                        && ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()));
+        if (generateSchemaYaml) {
+            long userId = run.getProject().getPathmindUserId();
+            PathmindUser user = userDAO.findById(userId);
+
+            PolicyServerService.PolicyServerSchema schema = PolicyServerService.PolicyServerSchema.builder()
+                    .parameters(
+                            PolicyServerService.PolicyServerSchema.Parameters.builder()
+                                    .discrete(true)
+                                    .tuple(false)
+                                    .apiKey(user.getApiKey())
+                            .build()
+                    )
+                    .build();
+            policyServerService.saveSchemaYamlFile(run.getModel().getId(), schema);
+        }
     }
 
     private void trackCompletedTrainingInSegment(Run run, ProviderJobStatus providerJobStatus) {
