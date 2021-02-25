@@ -10,6 +10,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 
 public class ModelsNavbar extends VerticalLayout {
     private List<Model> models;
@@ -20,13 +21,15 @@ public class ModelsNavbar extends VerticalLayout {
     private VerticalLayout rowsWrapper;
     private UploadModelButton newModelButton;
     private SegmentIntegrator segmentIntegrator;
+    private ProjectView projectView;
 
     private ModelDAO modelDAO;
 
-    public ModelsNavbar(ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
+    public ModelsNavbar(ProjectView projectView, ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.models = models;
         this.selectedModel = selectedModel;
+        this.projectView = projectView;
         this.segmentIntegrator = segmentIntegrator;
 
         rowsWrapper = new VerticalLayout();
@@ -93,7 +96,18 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, modelDAO, model, segmentIntegrator);
+        return new ModelsNavbarItem(this, projectView, modelDAO, model, segmentIntegrator);
+    }
+
+    public void setCurrentModel(Model newCurrentModel) {
+        selectedModel = newCurrentModel;
+        
+        modelsNavbarItems.stream().forEach(modelsNavBarItem -> {
+            modelsNavBarItem.removeAsCurrent();
+            if (modelsNavBarItem.getItemModel().equals(newCurrentModel)) {
+                modelsNavBarItem.setAsCurrent();
+            }
+        });
     }
 
 }

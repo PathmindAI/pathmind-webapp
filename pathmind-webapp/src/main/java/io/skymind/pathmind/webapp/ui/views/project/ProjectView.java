@@ -70,6 +70,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int MODEL_ID_SEGMENT = 2;
 
+    private final Object modelLock = new Object();
+
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -141,7 +143,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                     segmentIntegrator);
             modelNotesField = createModelNotesField();
 
-            modelsNavbar = new ModelsNavbar(modelDAO, selectedModel, models, segmentIntegrator);
+            modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
         }
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
@@ -301,26 +303,20 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return experimentGrid;
     }
 
-    @Override
-    protected Component getTitlePanel() {
-        pageBreadcrumbs = createBreadcrumbs();
-        titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
-        return titlePanel;
+    public void setModel(Model model) {
+        synchronized (modelLock) {
+            this.modelId = model.getId();
+            loadModelData();
+        }
     }
 
-    @Override
-    protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
+    public Object getModelLock() {
+        return modelLock;
     }
 
-    protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(new ProjectViewFavoriteSubscriber(this));
-    }
-
-    @Override
-    protected void initLoadData() {
+    public void loadModelData() {
         project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
+            .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
         models = modelDAO.getModelsForProject(projectId);
         project.setModels(models);
         pageTitle = "Pathmind | " + project.getName();
@@ -340,6 +336,29 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelId = selectedModel != null ? selectedModel.getId() : null;
             experiments = experimentDAO.getExperimentsForModel(modelId);
             rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+        }
+    }
+
+    @Override
+    protected Component getTitlePanel() {
+        pageBreadcrumbs = createBreadcrumbs();
+        titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
+        return titlePanel;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
+    }
+
+    protected List<EventBusSubscriber> getViewSubscribers() {
+        return List.of(new ProjectViewFavoriteSubscriber(this));
+    }
+
+    @Override
+    protected void initLoadData() {
+        synchronized (modelLock) {
+            loadModelData();
         }
     }
 

@@ -14,6 +14,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.project.ModelNavigationUtils;
+import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
 @Tag("models-navbar-item")
@@ -23,14 +24,22 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     private Model model;
     private ModelsNavbar modelsNavbar;
     private SegmentIntegrator segmentIntegrator;
+    private ProjectView projectView;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ProjectView projectView, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
         this.modelDAO = modelDAO;
         this.model = model;
         this.modelsNavbar = modelsNavbar;
+        this.projectView = projectView;
         this.segmentIntegrator = segmentIntegrator;
 
         setModelDetails(model);
+    }
+
+    @EventHandler
+    private void handleRowClicked() {
+        modelsNavbar.setCurrentModel(model);
+        NavBarItemSelectModelAction.selectModel(model, projectView);
     }
 
     @EventHandler
@@ -55,6 +64,10 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
     public void setAsCurrent() {
         getModel().setIsCurrent(true);
+    }
+
+    public void removeAsCurrent() {
+        getModel().setIsCurrent(false);
     }
 
     public Model getItemModel() {
