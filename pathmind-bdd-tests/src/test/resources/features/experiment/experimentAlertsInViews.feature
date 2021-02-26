@@ -27,7 +27,7 @@ Feature: Experiment page alerts in multiple views
     When Create new CoffeeShop project with single reward function
     When Click project save draft btn
     When Duplicate current tab
-    When Click side nav archive button for 'Experiment #1'
+    When Click archive button for current draft experiment
     When In confirmation dialog click in 'Archive' button
     When Check that confirmation dialog is shown false
     When Open tab 0
@@ -54,14 +54,14 @@ Feature: Experiment page alerts in multiple views
     Then Check that 'Experiment #1' exist on the experiment page
 
   @otherView
-  Scenario: Check experiment side bar when an running experiment is archived in other tab
+  Scenario: Check experiment side bar when a running experiment is archived in other tab
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     When Click project save draft btn
     When Click project start run button
     When Check that confirmation dialog is shown false
     When Duplicate current tab
-    When Click side nav archive button for 'Experiment #1'
+    When Click archive button for current experiment
     When In confirmation dialog click in 'Archive' button
     When Check that unexpected error alert is Not shown
     When Check that confirmation dialog is shown false
@@ -74,7 +74,7 @@ Feature: Experiment page alerts in multiple views
     When Open tab 1
     When Open projects/model/experiment archived tab
     When Click the experiment name 1
-    When Click in 'Unarchive' button
+    When Click experiment page actions 'Unarchive' btn
     When In confirmation dialog click in 'Unarchive' button
     When Check that confirmation dialog is shown false
     When Open tab 0
@@ -146,7 +146,8 @@ Feature: Experiment page alerts in multiple views
     When Click project save draft btn
     When Duplicate current tab
     When Click in 'New Experiment' button
-    When Click side nav archive button for 'Experiment #2'
+    When Wait for loading bar disappear
+    When Click archive button for current draft experiment
     When In confirmation dialog click in 'Archive' button
     When Open tab 0
     Then Check that 'Experiment #2' NOT exist on the experiment page

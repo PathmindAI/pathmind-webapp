@@ -163,10 +163,10 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
     void populateHelpersToResult(List<File> unZippedJars, AnylogicFileCheckResult anylogicFileCheckResult) {
         log.info("{} :- checkHelpers Started", uuid);
 
-        unZippedJars.forEach(unZippedJar -> {
+        if (unZippedJars.size() > 0) {
             try {
-                File unJarred = unpackJar(unZippedJar);
-                List<String> listOfFiles = FileUtils.listFiles(unJarred.toString());
+                unZippedJars.forEach(this::unpackJar);
+                List<String> listOfFiles = FileUtils.listFiles(unZippedJars.get(0).getParentFile().toString());
                 ByteCodeAnalyzer byteCodeAnalyzer = new ByteCodeAnalyzer(listOfFiles);
                 byteCodeAnalyzer.byteParser();
                 anylogicFileCheckResult.getDefinedHelpers().addAll(byteCodeAnalyzer.getPathmindHelperClasses());
@@ -175,7 +175,7 @@ public class AnylogicFileChecker implements FileChecker<Hyperparams> {
             } catch (IOException ioe) {
                 log.error("Error unJarred jar file", ioe);
             }
-        });
+        }
 
         log.info("{} :- checkHelpers Completed", uuid);
     }

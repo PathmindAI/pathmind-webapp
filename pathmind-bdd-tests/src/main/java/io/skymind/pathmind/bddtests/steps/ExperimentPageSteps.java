@@ -51,11 +51,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void clickSideNavArchiveButtonFor(String experimentName) {
-        experimentPage.clickSideNavArchiveButtonFor(experimentName);
-    }
-
-    @Step
     public void checkExperimentPageRewardVariablesIs(String commaSeparatedVariableNames) {
         experimentPage.checkExperimentPageRewardVariablesIs(commaSeparatedVariableNames);
     }
@@ -228,5 +223,20 @@ public class ExperimentPageSteps {
     @Step
     public void checkLearningProgressBlockHistogramSimulationMetricIs(String metric, String value) {
         experimentPage.checkLearningProgressBlockHistogramSimulationMetricIs(metric, value);
+    }
+
+    @Step
+    public void clickArchiveButtonForCurrentDraftExperiment() {
+        experimentPage.clickArchiveButtonForCurrentDraftExperiment();
+    }
+
+    @Step
+    public void clickExperimentPageShareWithSupportBtn() {
+        experimentPage.clickExperimentPageShareWithSupportBtn();
+    }
+
+    @Step
+    public void clickExperimentPageActionsBtn(String btn) {
+        experimentPage.clickExperimentPageActionsBtn(btn);
     }
 }
