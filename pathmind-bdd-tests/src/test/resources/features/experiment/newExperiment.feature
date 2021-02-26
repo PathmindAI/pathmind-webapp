@@ -120,3 +120,9 @@ Feature: New experiment page
     Then Check experiment notes is Experiment 1 Note
     When Click side bar experiment Experiment #2
     Then Check experiment notes is Experiment 2 Note
+
+  Scenario: Check experiment autocomplete for commented line
+    Given Login to the pathmind
+    When Open projects page
+    When Create new CoffeeShop project with draft experiment
+    When Check new experiment reward function commented text not autocompleted

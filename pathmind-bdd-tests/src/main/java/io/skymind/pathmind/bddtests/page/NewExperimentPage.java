@@ -209,4 +209,12 @@ public class NewExperimentPage extends PageObject {
     public void clickNewExperimentPageObservationCheckbox(String observation) {
         utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
     }
+
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted() {
+        rewardField.click();
+        utils.sendKeysCarefully("//convey", rewardField);
+        setImplicitTimeout(3, SECONDS);
+        assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete')]")).size(), is(0));
+        resetImplicitTimeout();
+    }
 }
