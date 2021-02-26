@@ -53,7 +53,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.project.components.ModelComponent;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
@@ -98,6 +98,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
+    private boolean isPythonModel = false;
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
@@ -109,7 +110,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private Span modelName;
     private Span modelCreatedDate;
-    private DownloadModelAlpLink downloadAlpLink;
+    private DownloadModelLink downloadLink;
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
@@ -160,13 +161,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelHeaderWrapper.addClassName("page-content-header");
 
         if (selectedModel != null) {
-            downloadAlpLink = new DownloadModelAlpLink(project.getName(), selectedModel, modelService,
-                    segmentIntegrator);
+            downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
+                    segmentIntegrator, false, isPythonModel);
             modelHeaderWrapper
                     .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                             WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
                                     .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadAlpLink), modelNotesField);
+                            downloadLink), modelNotesField);
 
             HorizontalLayout experimentGridHeader = WrapperUtils
                     .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
@@ -363,8 +364,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
             }
         });
-        if (downloadAlpLink != null && !experiments.isEmpty()) {
-            downloadAlpLink.setExperiment(experiments.get(0));
+        if (downloadLink != null && !experiments.isEmpty()) {
+            downloadLink.setExperiment(experiments.get(0));
         }
         archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);

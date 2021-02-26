@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.components.alp;
+package io.skymind.pathmind.webapp.ui.components;
 
 import java.io.ByteArrayInputStream;
 
@@ -17,7 +17,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
-public class DownloadModelAlpLink extends Anchor {
+public class DownloadModelLink extends Anchor {
 
     private String projectName;
     private long modelId;
@@ -27,42 +27,27 @@ public class DownloadModelAlpLink extends Anchor {
     private ModelService modelService;
     private SegmentIntegrator segmentIntegrator;
     private boolean buttonMode;
+    private boolean isPythonModel = false;
     private boolean isAlreadyRendered;
 
-    public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator) {
-        this(projectName, model, modelService, segmentIntegrator, false);
-    }
-
-    public DownloadModelAlpLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode) {
+    public DownloadModelLink(String projectName, Model model, ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode, boolean isPythonModel) {
+        this.projectName = projectName;
         this.modelId = model.getId();
         this.modelName = model.getName();
         this.modelPackageName = model.getPackageName();
-        this.projectName = projectName;
-
-        Button downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
-        if (!buttonMode) {
-            downloadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        }
-
-        getElement().setAttribute("download", true);
-        getElement().addEventListener("click", event -> {
-            segmentIntegrator.downloadedALP();
-        });
-        addClassName("download-alp-link");
-        if (modelService.hasModelAlp(modelId)) {
-            modelService.getModelAlp(modelId).ifPresent(resource -> {
-                getElement().setAttribute("href", getResourceStream(resource));
-            });
-            add(downloadButton);
-        } else {
-            setVisible(false);
-        }
-    }
-
-    public DownloadModelAlpLink(ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode) {
         this.modelService = modelService;
         this.segmentIntegrator = segmentIntegrator;
         this.buttonMode = buttonMode;
+        this.isPythonModel = isPythonModel;
+
+        setupButton();
+    }
+
+    public DownloadModelLink(ModelService modelService, SegmentIntegrator segmentIntegrator, boolean buttonMode, boolean isPythonModel) {
+        this.modelService = modelService;
+        this.segmentIntegrator = segmentIntegrator;
+        this.buttonMode = buttonMode;
+        this.isPythonModel = isPythonModel;
     }
 
     public void setExperiment(Experiment experiment) {
@@ -71,10 +56,16 @@ public class DownloadModelAlpLink extends Anchor {
         this.modelPackageName = experiment.getModel().getPackageName();
         this.projectName = experiment.getProject().getName();
 
-        if(isAlreadyRendered) {
+        if (isAlreadyRendered) {
             return;
         }
 
+        setupButton();
+
+        isAlreadyRendered = true;
+    }
+
+    private void setupButton() {
         Button downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
         if (!buttonMode) {
             downloadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
@@ -85,16 +76,18 @@ public class DownloadModelAlpLink extends Anchor {
             segmentIntegrator.downloadedALP();
         });
         addClassName("download-alp-link");
-        if (modelService.hasModelAlp(modelId)) {
+        if (!isPythonModel && modelService.hasModelAlp(modelId)) {
             modelService.getModelAlp(modelId).ifPresent(resource -> {
                 getElement().setAttribute("href", getResourceStream(resource));
             });
             add(downloadButton);
+        } else if (isPythonModel) {
+            getElement().setAttribute("href", "pythonURL"); // TODO: to be changed when we actually have it
+            downloadButton.setText("Model");
+            add(downloadButton);
         } else {
             setVisible(false);
         }
-
-        isAlreadyRendered = true;
     }
 
     private String generateFileName() {
