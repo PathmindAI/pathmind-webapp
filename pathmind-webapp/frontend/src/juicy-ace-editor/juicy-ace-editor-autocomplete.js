@@ -90,20 +90,24 @@ window.Pathmind.autocomplete = {
         var variablesCompleter = {
                 identifierRegexps: [/[a-zA-Z_0-9\.\$]/],
                 getCompletions: function(editor, session, pos, prefix, callback) {
+                    const currentLineText = editor.session.getLine(pos.row);
                     if (autocompleteData) {
                         autocompleteData.forEach(function(autocompleteSuggestion) {
                             let captionText = autocompleteSuggestion.caption;
                             if (captionText.includes("after.") || captionText.includes("before.")) {
                                 const rewardVarName = captionText.split(/after\.|before\./)[1];
-                                if (editor.session.getLine(pos.row).includes(rewardVarName)) {
+                                if (currentLineText.includes(rewardVarName)) {
                                     autocompleteSuggestion.score = 10;
                                 } else {
                                     autocompleteSuggestion.score = 0;
                                 }
                             }
                         });
+                        if (currentLineText.includes("//")) {
+                            return;
+                        }
+                        callback(null, autocompleteData);
                     }
-                    callback(null, autocompleteData);
                 }
             };
 
