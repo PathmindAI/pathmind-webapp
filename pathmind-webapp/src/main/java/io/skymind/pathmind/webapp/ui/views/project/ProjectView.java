@@ -102,6 +102,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
+    private MultiselectComboBox<RewardVariable> metricMultiSelect;
     private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -173,8 +174,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                     .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
             // To be moved to separate methods later
+            metricMultiSelect = createMetricSelectionGroup();
             HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Metrics", BOLD_LABEL), createMetricSelectionGroup());
+                    LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
             metricSelectionRow.addClassName("metric-selection-row");
 
             HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -309,7 +311,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void setModel(Model model) {
         synchronized (modelLock) {
-            this.modelId = model.getId();
+            selectedModel = model;
             loadModelData();
             updateComponents();
         }
@@ -320,28 +322,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     public void loadModelData() {
-        project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
-            .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
-        models = modelDAO.getModelsForProject(projectId);
-        project.setModels(models);
-        pageTitle = "Pathmind | " + project.getName();
-        if (models.size() > 0) {
-            if (modelId == null) {
-                if (models.size() > 1) {
-                    selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
-                } else {
-                    selectedModel = models.get(0);
-                }
-            } else {
-                selectedModel = models.stream()
-                        .filter(model -> modelId.equals(model.getId()))
-                        .findFirst()
-                        .orElse(models.get(0));
-            }
-            modelId = selectedModel != null ? selectedModel.getId() : null;
-            experiments = experimentDAO.getExperimentsForModel(modelId);
-            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
-        }
+        modelId = selectedModel != null ? selectedModel.getId() : null;
+        experiments = experimentDAO.getExperimentsForModel(modelId);
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 
     private void updateComponents() {
@@ -364,8 +347,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
             }
         });
-        if (downloadLink != null && !experiments.isEmpty()) {
-            downloadLink.setExperiment(experiments.get(0));
+        if (downloadLink != null) {
+            downloadLink.setModel(selectedModel);
+        }
+        if (metricMultiSelect != null) {
+            metricMultiSelect.setItems(rewardVariables);
         }
         archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
@@ -393,7 +379,27 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     protected void initLoadData() {
         synchronized (modelLock) {
-            loadModelData();
+            project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
+                .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
+            models = modelDAO.getModelsForProject(projectId);
+            project.setModels(models);
+            pageTitle = "Pathmind | " + project.getName();
+            
+            if (models.size() > 0) {
+                if (modelId == null) {
+                    if (models.size() > 1) {
+                        selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
+                    } else {
+                        selectedModel = models.get(0);
+                    }
+                } else {
+                    selectedModel = models.stream()
+                            .filter(model -> modelId.equals(model.getId()))
+                            .findFirst()
+                            .orElse(models.get(0));
+                }
+                loadModelData();
+            }
         }
     }
 
