@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +55,7 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
+import io.skymind.pathmind.webapp.ui.views.project.components.ModelComponent;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
@@ -107,12 +109,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private Span modelName;
     private Span modelCreatedDate;
-    private Anchor downloadAlpLink;
+    private DownloadModelAlpLink downloadAlpLink;
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
     private NotesField modelNotesField;
     private VerticalLayout modelWrapper;
+    protected List<ModelComponent> modelComponentList = new ArrayList<>();
 
     private ScreenTitlePanel titlePanel;
 
@@ -307,6 +310,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         synchronized (modelLock) {
             this.modelId = model.getId();
             loadModelData();
+            updateComponents();
         }
     }
 
@@ -339,6 +343,33 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         }
     }
 
+    private void updateComponents() {
+        String modelNameText = "";
+        modelNameText = "Model #" + selectedModel.getName();
+        if (selectedModel.getPackageName() != null) {
+            modelNameText += " (" + selectedModel.getPackageName() + ")";
+        }
+        modelArchivedLabel.setVisible(selectedModel.isArchived());
+        projectName.setText(project.getName());
+        archivedLabel.setVisible(project.isArchived());
+        modelName.setText(modelNameText);
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
+            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            if (experimentGrid != null) {
+                experimentGrid.setItems(experiments);
+            }
+            createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
+            if (selectedModel != null) {
+                modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
+            }
+        });
+        if (downloadAlpLink != null && !experiments.isEmpty()) {
+            downloadAlpLink.setExperiment(experiments.get(0));
+        }
+        archivesTabPanel.initData();
+        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
+    }
+
     @Override
     protected Component getTitlePanel() {
         pageBreadcrumbs = createBreadcrumbs();
@@ -353,6 +384,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(new ProjectViewFavoriteSubscriber(this));
+    }
+
+    private void createModelComponents() {
     }
 
     @Override
@@ -380,27 +414,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void initComponents() {
-        String modelNameText = "";
-        modelNameText = "Model #" + selectedModel.getName();
-        if (selectedModel.getPackageName() != null) {
-            modelNameText += " (" + selectedModel.getPackageName() + ")";
-        }
-        modelArchivedLabel.setVisible(selectedModel.isArchived());
-        projectName.setText(project.getName());
-        archivedLabel.setVisible(project.isArchived());
-        modelName.setText(modelNameText);
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
-            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            if (experimentGrid != null) {
-                experimentGrid.setItems(experiments);
-            }
-            createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
-            if (selectedModel != null) {
-                modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
-            }
-        });
-        archivesTabPanel.initData();
-        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
+        updateComponents();
     }
 
     @Override
