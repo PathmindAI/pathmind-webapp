@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid.Column;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -333,10 +332,17 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (selectedModel.getPackageName() != null) {
             modelNameText += " (" + selectedModel.getPackageName() + ")";
         }
+        pageBreadcrumbs.setText(2, modelNameText);
         modelArchivedLabel.setVisible(selectedModel.isArchived());
         projectName.setText(project.getName());
         archivedLabel.setVisible(project.isArchived());
         modelName.setText(modelNameText);
+        modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId()).ifPresent(model -> {
+            // the selectedModel on the navbar is referencing the model item with the old notes
+            // this is to get the most updated notes
+            modelNotesField.setNotesText(model.getUserNotes());
+        });
+        newExperimentButton.setModelId(selectedModel.getId());
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
@@ -371,9 +377,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     protected List<EventBusSubscriber> getViewSubscribers() {
         return List.of(new ProjectViewFavoriteSubscriber(this));
-    }
-
-    private void createModelComponents() {
     }
 
     @Override
