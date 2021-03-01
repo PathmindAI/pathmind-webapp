@@ -50,6 +50,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 
     private Button exportPolicyButton;
+    private Button servePolicyButton;
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
@@ -113,6 +114,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
+        servePolicyButton = new Button("Serve Policy", click -> {});
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
@@ -120,14 +122,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
         if (isExportPolicyButtonOnly) {
-            return new Component[] {exportPolicyButton};
+            return new Component[] {exportPolicyButton, servePolicyButton};
         } else {
             List<Button> actionButtons = new ArrayList<Button>();
             actionButtons.add(shareButton);
             actionButtons.add(archiveButton);
             actionButtons.add(unarchiveButton);
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[] {stopTrainingButton, exportPolicyButton, downloadModelAlpLink};
+            return new Component[] {stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelAlpLink};
         }
     }
 
@@ -152,6 +154,8 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+        // TODO: need to add a condition to servePolicyButton to check for Python model
+        servePolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
         archivedLabel.setVisible(experiment.isArchived());
