@@ -91,6 +91,7 @@ window.Pathmind.autocomplete = {
                 identifierRegexps: [/[a-zA-Z_0-9\.\$]/],
                 getCompletions: function(editor, session, pos, prefix, callback) {
                     const currentLineText = editor.session.getLine(pos.row);
+                    const isFullLineCommented = currentLineText[0] == "/" && currentLineText[1] == "/";
                     if (autocompleteData) {
                         autocompleteData.forEach(function(autocompleteSuggestion) {
                             let captionText = autocompleteSuggestion.caption;
@@ -103,7 +104,10 @@ window.Pathmind.autocomplete = {
                                 }
                             }
                         });
-                        if (currentLineText.includes("//")) {
+                        if (isFullLineCommented ||
+                            (!isFullLineCommented && currentLineText.includes("//") && currentLineText.indexOf("//") < pos.column)) {
+                            // second case disables autocomplete when user starts typing a comment at the end of the line
+                            // but the autocomplete will still be enabled when user types in the uncommented part of the same line
                             return;
                         }
                         callback(null, autocompleteData);
