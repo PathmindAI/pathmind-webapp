@@ -210,11 +210,15 @@ public class NewExperimentPage extends PageObject {
         utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
     }
 
-    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted() {
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
         rewardField.click();
-        utils.sendKeysCarefully("//convey", rewardField);
+        utils.sendKeysCarefully(reward, rewardField);
         setImplicitTimeout(3, SECONDS);
-        assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete')]")).size(), is(0));
+        if (shown) {
+            assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete') and not(contains(@style,'display: none'))]")).size(), is(1));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete') and not(contains(@style,'display: none'))]")).size(), is(0));
+        }
         resetImplicitTimeout();
     }
 }

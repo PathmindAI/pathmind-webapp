@@ -121,8 +121,19 @@ Feature: New experiment page
     When Click side bar experiment Experiment #2
     Then Check experiment notes is Experiment 2 Note
 
-  Scenario: Check experiment autocomplete for commented line
+  Scenario Outline: Check experiment autocomplete for commented line not shown
     Given Login to the pathmind
     When Open projects page
     When Create new CoffeeShop project with draft experiment
-    When Check new experiment reward function commented text not autocompleted
+    When Check new experiment reward function '<reward function>' autocomplete is shown 'false'
+
+    Examples:
+      | reward function                         |
+      | after.foo - before.foo; // minimize foo |
+      | //convey                                |
+
+  Scenario: Check experiment autocomplete is shown
+    Given Login to the pathmind
+    When Open projects page
+    When Create new CoffeeShop project with draft experiment
+    When Check new experiment reward function 'after.' autocomplete is shown 'true'

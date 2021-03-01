@@ -140,8 +140,8 @@ public class NewExperimentStepDefinition {
         newExperimentSteps.clickNewExperimentPageObservationCheckbox(observation);
     }
 
-    @When("^Check new experiment reward function commented text not autocompleted$")
-    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted() {
-        newExperimentSteps.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted();
+    @When("^Check new experiment reward function '(.*)' autocomplete is shown '(.*)'$")
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        newExperimentSteps.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
     }
 }

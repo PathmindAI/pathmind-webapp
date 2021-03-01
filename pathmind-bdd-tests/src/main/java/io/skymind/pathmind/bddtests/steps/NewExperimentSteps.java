@@ -119,7 +119,7 @@ public class NewExperimentSteps {
     }
 
     @Step
-    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted() {
-        newExperimentPage.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted();
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        newExperimentPage.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
     }
 }
