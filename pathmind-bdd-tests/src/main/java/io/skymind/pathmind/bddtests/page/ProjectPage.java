@@ -57,7 +57,7 @@ public class ProjectPage extends PageObject {
 
     public void checkThatProjectNameDetailsOnProjectPage(String name) {
         waitABit(3500);
-        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label project-title-label']")).getText(), is(name));
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is(name));
     }
 
     public void checkThatProjectNameBreadcrumbOnProjectPage(String name) {
