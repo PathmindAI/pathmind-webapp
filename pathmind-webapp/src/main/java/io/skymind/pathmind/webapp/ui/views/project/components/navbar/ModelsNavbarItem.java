@@ -1,10 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.vaadin.flow.component.Tag;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
@@ -13,7 +9,6 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
-import io.skymind.pathmind.webapp.ui.views.project.ModelNavigationUtils;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
@@ -44,26 +39,28 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
     @EventHandler
     private void onArchiveButtonClicked() {
-        modelDAO.archive(model.getId(), true);
-        segmentIntegrator.archived(Model.class, true);
-        getModel().setIsArchived(true);
-        reloadCurrentModelView();
+        archiveOrUnarchiveEventHandler(true);
     }
 
     @EventHandler
     private void onUnarchiveButtonClicked() {
-        modelDAO.archive(model.getId(), false);
-        segmentIntegrator.archived(Model.class, false);
-        getModel().setIsArchived(false);
-        reloadCurrentModelView();
+        archiveOrUnarchiveEventHandler(false);
     }
 
-    private void reloadCurrentModelView() {
-        ModelNavigationUtils.navigateToModel(getUI(), modelsNavbar.getSelectedModel());
+    private void archiveOrUnarchiveEventHandler(Boolean isArchive) {
+        modelDAO.archive(model.getId(), isArchive);
+        segmentIntegrator.archived(Model.class, isArchive);
+        getModel().setIsArchived(isArchive);
+        model.setArchived(isArchive);
+        modelsNavbar.setCurrentCategory();
     }
 
     public void setAsCurrent() {
         getModel().setIsCurrent(true);
+    }
+
+    public Boolean getIsCurrent() {
+        return getModel().getIsCurrent();
     }
 
     public void removeAsCurrent() {
@@ -95,6 +92,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
         void setModelLink(String modelLink);
 
+        Boolean getIsCurrent();
         void setIsCurrent(boolean isCurrent);
 
         void setIsDraft(boolean isDraft);

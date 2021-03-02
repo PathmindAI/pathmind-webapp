@@ -302,6 +302,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 
+    public void setModelArchiveLabelVisible() {
+        modelArchivedLabel.setVisible(selectedModel.isArchived());
+    }
+
     private void updateComponents() {
         String modelNameText = "";
         modelNameText = "Model #" + selectedModel.getName();

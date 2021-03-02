@@ -144,8 +144,6 @@ class ModelsNavbarItem extends PolymerElement {
 
     handleRowClicked(event) {
         event.preventDefault();
-        // history.pushState(window.location.href, `Model #${this.modelName}`, this.modelLink);
-        // this.isCurrent = true;
     }
 
     onArchiveButtonClicked(event) {
