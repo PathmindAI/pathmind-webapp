@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +53,6 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
-import io.skymind.pathmind.webapp.ui.views.project.components.ModelComponent;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
@@ -116,8 +114,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Model selectedModel;
     private NotesField modelNotesField;
     private VerticalLayout modelWrapper;
-    protected List<ModelComponent> modelComponentList = new ArrayList<>();
-
     private ScreenTitlePanel titlePanel;
 
     public ProjectView() {
@@ -128,27 +124,21 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
         addClassName("project-view");
 
-        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
-                CssPathmindStyles.PROJECT_TITLE);
+        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         NotesField projectNotesField = createNotesField();
         Button edit = new Button("Rename", evt -> renameProject());
-        edit.setClassName("no-shrink");
 
-        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
-                CssPathmindStyles.PROJECT_TITLE);
+        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
-        if (selectedModel != null) {
-            setupGrid();
-            setupArchivesTabPanel();
-            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
-                    segmentIntegrator);
-            modelNotesField = createModelNotesField();
-
-            modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
-        }
+        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        setupArchivesTabPanel();
+        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
+                segmentIntegrator);
+        modelNotesField = createModelNotesField();
+        modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -160,41 +150,35 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal();
         modelHeaderWrapper.addClassName("page-content-header");
 
-        if (selectedModel != null) {
-            downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
-                    segmentIntegrator, false, isPythonModel);
-            modelHeaderWrapper
-                    .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
-                                    .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadLink), modelNotesField);
+        downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
+                segmentIntegrator, false, isPythonModel);
+        modelHeaderWrapper
+                .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
+                                .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
+                        downloadLink), modelNotesField);
 
-            HorizontalLayout experimentGridHeader = WrapperUtils
-                    .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
+        HorizontalLayout experimentGridHeader = WrapperUtils
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
-            // To be moved to separate methods later
-            metricMultiSelect = createMetricSelectionGroup();
-            HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
-            metricSelectionRow.addClassName("metric-selection-row");
+        metricMultiSelect = createMetricSelectionGroup();
+        HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
+        metricSelectionRow.addClassName("metric-selection-row");
 
-            HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
-            columnSelectionRow.addClassName("column-selection-row");
+        HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
+        columnSelectionRow.addClassName("column-selection-row");
 
-            Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+        Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
-            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
-                    experimentGridHeader, metricSelectionRow, columnSelectionRow,
-                    experimentGrid);
-            modelWrapper.addClassName("model-wrapper");
-        }
+        modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
+                experimentGridHeader, metricSelectionRow, columnSelectionRow,
+                experimentGrid);
+        modelWrapper.addClassName("model-wrapper");
 
         FlexLayout gridWrapper = new ViewSection(headerWrapper);
-        if (selectedModel != null) {
-            gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
-        }
-        gridWrapper.addClassName("page-content");
+        gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
 
         return gridWrapper;
     }
@@ -284,20 +268,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 getUISupplier());
     }
 
-    private void setupGrid() {
-        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
-    }
-
     public List<Model> getModels() {
         return project.getModels();
     }
 
     public List<Experiment> getExperiments() {
         return experiments;
-    }
-
-    private Breadcrumbs createBreadcrumbs() {
-        return selectedModel != null ? new Breadcrumbs(project, selectedModel) : new Breadcrumbs(project);
     }
 
     public List<Experiment> getExperimentList() {
@@ -365,7 +341,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected Component getTitlePanel() {
-        pageBreadcrumbs = createBreadcrumbs();
+        pageBreadcrumbs = new Breadcrumbs(project, selectedModel);
         titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
         return titlePanel;
     }
