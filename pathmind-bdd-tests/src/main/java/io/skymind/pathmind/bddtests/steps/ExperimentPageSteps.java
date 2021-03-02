@@ -239,4 +239,9 @@ public class ExperimentPageSteps {
     public void clickExperimentPageActionsBtn(String btn) {
         experimentPage.clickExperimentPageActionsBtn(btn);
     }
+
+    @Step
+    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
+        experimentPage.checkExperimentPageServePolicyIsShown(shown);
+    }
 }
