@@ -209,4 +209,16 @@ public class NewExperimentPage extends PageObject {
     public void clickNewExperimentPageObservationCheckbox(String observation) {
         utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
     }
+
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        rewardField.click();
+        utils.sendKeysCarefully(reward, rewardField);
+        setImplicitTimeout(3, SECONDS);
+        if (shown) {
+            assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete') and not(contains(@style,'display: none'))]")).size(), is(1));
+        } else {
+            assertThat(getDriver().findElements(By.xpath("//div[contains(@class,'ace_autocomplete') and not(contains(@style,'display: none'))]")).size(), is(0));
+        }
+        resetImplicitTimeout();
+    }
 }
