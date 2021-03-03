@@ -207,7 +207,7 @@
 }
 
 .experiment-view code-viewer {
-    height: 100%;
+    height: calc(100% - 1.68rem);
     border: none;
     border-radius: 0;
 }
