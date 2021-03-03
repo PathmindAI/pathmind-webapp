@@ -90,20 +90,28 @@ window.Pathmind.autocomplete = {
         var variablesCompleter = {
                 identifierRegexps: [/[a-zA-Z_0-9\.\$]/],
                 getCompletions: function(editor, session, pos, prefix, callback) {
+                    const currentLineText = editor.session.getLine(pos.row);
+                    const isFullLineCommented = currentLineText[0] == "/" && currentLineText[1] == "/";
                     if (autocompleteData) {
                         autocompleteData.forEach(function(autocompleteSuggestion) {
                             let captionText = autocompleteSuggestion.caption;
                             if (captionText.includes("after.") || captionText.includes("before.")) {
                                 const rewardVarName = captionText.split(/after\.|before\./)[1];
-                                if (editor.session.getLine(pos.row).includes(rewardVarName)) {
+                                if (currentLineText.includes(rewardVarName)) {
                                     autocompleteSuggestion.score = 10;
                                 } else {
                                     autocompleteSuggestion.score = 0;
                                 }
                             }
                         });
+                        if (isFullLineCommented ||
+                            (!isFullLineCommented && currentLineText.includes("//") && currentLineText.indexOf("//") < pos.column)) {
+                            // second case disables autocomplete when user starts typing a comment at the end of the line
+                            // but the autocomplete will still be enabled when user types in the uncommented part of the same line
+                            return;
+                        }
+                        callback(null, autocompleteData);
                     }
-                    callback(null, autocompleteData);
                 }
             };
 
