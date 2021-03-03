@@ -106,6 +106,8 @@ spec:
               value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"
             - name: SNS_UPDATER_SQS_FILTER_ATTR
               value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
+            - name: SQS_UPDATER_PUNCTUATOR_QUEUE
+              value: "{{ .Values.env.SQS_UPDATER_PUNCTUATOR_QUEUE }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
