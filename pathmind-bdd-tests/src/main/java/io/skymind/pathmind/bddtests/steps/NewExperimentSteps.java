@@ -122,4 +122,9 @@ public class NewExperimentSteps {
     public void checkNewExperimentObservationsListContains(String observations) {
         newExperimentPage.checkNewExperimentObservationsListContains(observations);
     }
+
+    @Step
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        newExperimentPage.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
+    }
 }

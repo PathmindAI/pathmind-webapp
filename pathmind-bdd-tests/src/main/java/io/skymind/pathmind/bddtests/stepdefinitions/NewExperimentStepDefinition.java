@@ -144,4 +144,9 @@ public class NewExperimentStepDefinition {
     public void checkNewExperimentObservationsListContains(String observations) {
         newExperimentSteps.checkNewExperimentObservationsListContains(observations);
     }
+
+    @When("^Check new experiment reward function '(.*)' autocomplete is shown '(.*)'$")
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        newExperimentSteps.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
+    }
 }
