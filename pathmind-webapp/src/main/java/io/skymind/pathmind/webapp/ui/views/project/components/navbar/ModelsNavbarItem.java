@@ -9,6 +9,7 @@ import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
@@ -36,6 +37,7 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         long modelId = model.getId();
         getModel().setIsDraft(model.isDraft());
         getModel().setIsArchived(model.isArchived());
+        getModel().setIsCurrent(false);
         getModel().setModelName(model.getName());
         getModel().setModelPackageName(model.getPackageName());
         String target = model.isDraft() ?
@@ -47,6 +49,9 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
     @EventHandler
     private void handleRowClicked() {
+        if (model.isDraft()) {
+            navigateToUploadModelView();
+        }
         modelsNavbar.setCurrentModel(model);
         NavBarItemSelectModelAction.selectModel(model, projectView);
     }
@@ -59,6 +64,11 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
     @EventHandler
     private void onUnarchiveButtonClicked() {
         archiveOrUnarchiveEventHandler(false);
+    }
+
+    private void navigateToUploadModelView() {
+        String target = PathmindUtils.getResumeUploadModelPath(projectView.getProjectId(), model.getId());
+        projectView.getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, target));
     }
 
     private void archiveOrUnarchiveEventHandler(Boolean isArchive) {

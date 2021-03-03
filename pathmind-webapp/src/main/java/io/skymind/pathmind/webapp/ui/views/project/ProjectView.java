@@ -9,7 +9,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -302,6 +301,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void setModelArchiveLabelVisible() {
         modelArchivedLabel.setVisible(selectedModel.isArchived());
+    }
+
+    public long getProjectId() {
+        return projectId;
     }
 
     private void updateComponents() {
