@@ -6,40 +6,40 @@ replicaCount: 1
 
 image:
   repository: 839270835622.dkr.ecr.us-east-1.amazonaws.com/pathmind
-  tag: test
+  tag: dev
   pullPolicy: Always
   command: ["java"]
   args:
     - "-Xmx4096m"
     - "-XX:+UseG1GC"
     - "-jar"
-    - "/app/pathmind-updater/updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar"
+    - "/app/pathmind-updater/punctuator/target/pathmind-punctuator-0.0.1-SNAPSHOT.jar"
 
 service:
   type: NodePort
   port: 80
 
 env:
-  APPLICATION_URL: https://test.devpathmind.com
+  APPLICATION_URL: https://dev.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
   SCM_COMMAND_IDLE_TIMEOUT: 1800
-  ENVIRONMENT: test
-  SQS_URL: https://queue.amazonaws.com/839270835622/test-training-queue.fifo
-  S3_BUCKET: test-training-dynamic-files.pathmind.com
-  S3_BUCKET_STATIC: test-training-static-files.pathmind.com
+  ENVIRONMENT: dev
+  SQS_URL: https://queue.amazonaws.com/839270835622/dev-training-queue.fifo
+  S3_BUCKET: dev-training-dynamic-files.pathmind.com
+  S3_BUCKET_STATIC: dev-training-static-files.pathmind.com
   DB_SECRET_NAME: dburl
   DB_SECRET_KEY: DB_URL
-  MODEL_ANALYZER_URL: https://ma.test.devpathmind.com
+  MODEL_ANALYZER_URL: https://ma.dev.devpathmind.com
   JOB_MOCK_CYCLE: 0
   JOB_MOCK_MAX_MIN: 0
-  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/test-updater-queue
-  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:test-updater-topic
-  SNS_UPDATER_SQS_FILTER_ATTR: test
+  SQS_UPDATER_URL: https://sqs.us-east-1.amazonaws.com/839270835622/dev-updater-queue
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:dev-updater-topic
+  SNS_UPDATER_SQS_FILTER_ATTR: dev
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
-  SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/test-punctuator
+  SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/dev-punctuator
 
 readinessprobe: {}
 
@@ -47,7 +47,7 @@ livenessprobe: {}
 
 name: pathmind-updater
 
-namespace: test
+namespace: dev
 
 ingress:
   enabled: false

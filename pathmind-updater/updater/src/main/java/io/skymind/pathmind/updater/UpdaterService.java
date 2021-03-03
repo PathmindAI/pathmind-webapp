@@ -87,10 +87,8 @@ public class UpdaterService {
         this.sqsFilter = sqsFilter;
     }
 
-    public ProviderJobStatus updateRunInformation(Run run, int updateCompletingAttemptsLimit, Map<Long, List<String>> stoppedPoliciesNamesForRuns) {
+    public ProviderJobStatus updateRunInformation(Run run, int updateCompletingAttemptsLimit, List<String> stoppedPoliciesNames) {
         final String jobHandle = run.getJobId();
-
-        List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns.getOrDefault(run.getId(), Collections.emptyList());
 
         ProviderJobStatus providerJobStatus = provider.status(jobHandle);
         if (providerJobStatus.getRunStatus().equals(RunStatus.Completing)) {
@@ -106,9 +104,7 @@ public class UpdaterService {
         }
         ExperimentState experimentState = providerJobStatus.getExperimentState();
 
-        final List<Policy> policies = getPoliciesFromProgressProvider(
-                stoppedPoliciesNamesForRuns, run.getId(), jobHandle, experimentState, false
-        );
+        final List<Policy> policies = getPoliciesFromProgressProvider(stoppedPoliciesNames, run.getId(), jobHandle, experimentState, false);
 
         setStoppedAtForFinishedPolicies(policies, experimentState);
         setEventualInformationAboutWhyTheRunEnded(run, providerJobStatus);
@@ -139,7 +135,7 @@ public class UpdaterService {
     private List<Policy> ensurePolicyDataIfRunIsCompleted(Run run, ProviderJobStatus providerJobStatus) {
         if (run.getStatusEnum() == Completed) {
             log.debug("final DB updates for " + run.getJobId());
-            List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyMap(), run.getId(),
+            List<Policy> policies = getPoliciesFromProgressProvider(Collections.emptyList(), run.getId(),
                     run.getJobId(), providerJobStatus.getExperimentState(), true);
             setStoppedAtForFinishedPolicies(policies, providerJobStatus.getExperimentState());
             runDAO.updatePolicyData(run, policies);
@@ -181,7 +177,7 @@ public class UpdaterService {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(Map<Long, List<String>> stoppedPoliciesNamesForRuns, Long runId,
+    private List<Policy> getPoliciesFromProgressProvider(List<String> stoppedPoliciesNamesForRuns, Long runId,
                                                          String jobHandle, ExperimentState experimentState, boolean isFinalUpdate) {
         if (experimentState == null) {
             return Collections.emptyList();
@@ -189,7 +185,7 @@ public class UpdaterService {
 
         List<String> validExternalIds = experimentState.getCheckpoints().stream()
                 .map(CheckPoint::getId)
-                .filter(id -> !stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList()).contains(id))
+                .filter(id -> !stoppedPoliciesNamesForRuns.contains(id))
                 .collect(Collectors.toList());
 
         final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
