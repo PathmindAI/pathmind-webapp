@@ -45,7 +45,7 @@ readinessprobe: {}
 
 livenessprobe: {}
 
-name: pathmind-updater
+name: pathmind-punctuator
 
 namespace: staging
 
