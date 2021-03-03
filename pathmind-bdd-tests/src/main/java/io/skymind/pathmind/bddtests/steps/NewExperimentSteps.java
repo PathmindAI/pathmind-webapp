@@ -117,4 +117,9 @@ public class NewExperimentSteps {
     public void clickNewExperimentPageObservationCheckbox(String observation) {
         newExperimentPage.clickNewExperimentPageObservationCheckbox(observation);
     }
+
+    @Step
+    public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
+        newExperimentPage.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
+    }
 }
