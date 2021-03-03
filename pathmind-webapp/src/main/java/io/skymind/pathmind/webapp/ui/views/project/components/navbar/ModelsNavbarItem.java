@@ -31,6 +31,20 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
         setModelDetails(model);
     }
 
+    private void setModelDetails(Model model) {
+        long projectId = model.getProjectId();
+        long modelId = model.getId();
+        getModel().setIsDraft(model.isDraft());
+        getModel().setIsArchived(model.isArchived());
+        getModel().setModelName(model.getName());
+        getModel().setModelPackageName(model.getPackageName());
+        String target = model.isDraft() ?
+                "/uploadModel/" + PathmindUtils.getResumeUploadModelPath(projectId, modelId)
+                : PathmindUtils.getProjectModelPath(projectId, modelId);
+        getModel().setModelLink(target);
+        getElement().appendChild(new DatetimeDisplay(model.getDateCreated()).getElement());
+    }
+
     @EventHandler
     private void handleRowClicked() {
         modelsNavbar.setCurrentModel(model);
@@ -69,20 +83,6 @@ public class ModelsNavbarItem extends PolymerTemplate<ModelsNavbarItem.PolymerMo
 
     public Model getItemModel() {
         return model;
-    }
-
-    private void setModelDetails(Model model) {
-        long projectId = model.getProjectId();
-        long modelId = model.getId();
-        getModel().setIsDraft(model.isDraft());
-        getModel().setIsArchived(model.isArchived());
-        getModel().setModelName(model.getName());
-        getModel().setModelPackageName(model.getPackageName());
-        String target = model.isDraft() ?
-                "/uploadModel/" + PathmindUtils.getResumeUploadModelPath(projectId, modelId)
-                : PathmindUtils.getProjectModelPath(projectId, modelId);
-        getModel().setModelLink(target);
-        getElement().appendChild(new DatetimeDisplay(model.getDateCreated()).getElement());
     }
 
     public interface PolymerModel extends TemplateModel {

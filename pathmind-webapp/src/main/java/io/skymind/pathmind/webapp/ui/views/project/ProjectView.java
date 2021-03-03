@@ -361,18 +361,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             pageTitle = "Pathmind | " + project.getName();
             
             if (models.size() > 0) {
-                if (modelId == null) {
-                    if (models.size() > 1) {
-                        selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
-                    } else {
-                        selectedModel = models.get(0);
-                    }
-                } else {
-                    selectedModel = models.stream()
-                            .filter(model -> modelId.equals(model.getId()))
-                            .findFirst()
-                            .orElse(models.get(0));
-                }
+                selectedModel = models.stream()
+                    .filter(model -> modelId == null ? !model.isDraft() : modelId.equals(model.getId()))
+                    .findFirst()
+                    .orElse(models.get(0));
                 loadModelData();
             }
         }

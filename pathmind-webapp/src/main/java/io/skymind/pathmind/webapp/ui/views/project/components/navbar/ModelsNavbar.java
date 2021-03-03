@@ -45,23 +45,9 @@ public class ModelsNavbar extends VerticalLayout {
         setPadding(false);
         setSpacing(false);
         setWidth("auto");
-        add(newModelButton);
-        add(categorySelect);
-        add(rowsWrapper);
+        add(newModelButton, categorySelect, rowsWrapper);
         addClassName("models-navbar");
         addModelsToNavbar();
-    }
-
-    public List<Model> getModels() {
-        return models;
-    }
-
-    public void setSelectedModel(Model selectedModel) {
-        this.selectedModel = selectedModel;
-    }
-
-    public Model getSelectedModel() {
-        return selectedModel;
     }
 
     private void createCategorySelect() {
@@ -87,19 +73,15 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private void addModelsToNavbar() {
-        rowsWrapper.removeAll();
-        modelsNavbarItems.clear();
         models.sort(Comparator.comparing(Model::getDateCreated, Comparator.reverseOrder()));
-
-        models.stream()
-                .forEach(model -> {
-                    ModelsNavbarItem navBarItem = createModelsNavbarItem(model);
-                    modelsNavbarItems.add(navBarItem);
-                    if (model.equals(selectedModel)) {
-                        navBarItem.setAsCurrent();
-                    }
-                    rowsWrapper.add(navBarItem);
-                });
+        models.stream().forEach(model -> {
+                ModelsNavbarItem navBarItem = createModelsNavbarItem(model);
+                modelsNavbarItems.add(navBarItem);
+                if (model.equals(selectedModel)) {
+                    navBarItem.setAsCurrent();
+                }
+                rowsWrapper.add(navBarItem);
+        });
         setCurrentCategory();
     }
 
@@ -109,7 +91,7 @@ public class ModelsNavbar extends VerticalLayout {
 
     public void setCurrentModel(Model newCurrentModel) {
         selectedModel = newCurrentModel;
-        
+
         modelsNavbarItems.stream()
             .filter(item -> item.getIsCurrent())
             .findFirst()
