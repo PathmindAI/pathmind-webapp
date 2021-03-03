@@ -114,7 +114,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Model selectedModel;
     private NotesField modelNotesField;
     private VerticalLayout modelWrapper;
-    private ScreenTitlePanel titlePanel;
 
     public ProjectView() {
         super();
@@ -177,10 +176,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 experimentGrid);
         modelWrapper.addClassName("model-wrapper");
 
-        FlexLayout gridWrapper = new ViewSection(headerWrapper);
-        gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
-
-        return gridWrapper;
+        return new ViewSection(
+                headerWrapper,
+                WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
     }
 
     private MultiselectComboBox<String> createColumnSelectionGroup() {
@@ -307,8 +305,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     private void updateComponents() {
-        String modelNameText = "";
-        modelNameText = "Model #" + selectedModel.getName();
+        String modelNameText = "Model #" + selectedModel.getName();
         if (selectedModel.getPackageName() != null) {
             modelNameText += " (" + selectedModel.getPackageName() + ")";
         }
@@ -346,17 +343,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     protected Component getTitlePanel() {
         pageBreadcrumbs = new Breadcrumbs(project, selectedModel);
-        titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
-        return titlePanel;
+        return new ScreenTitlePanel(pageBreadcrumbs);
     }
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
-    }
-
-    protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(new ProjectViewFavoriteSubscriber(this));
+        EventBus.subscribe(this, getUISupplier(), List.of(new ProjectViewFavoriteSubscriber(this)));
     }
 
     @Override
