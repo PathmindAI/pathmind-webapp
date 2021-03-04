@@ -19,4 +19,9 @@ public class DemoViewContent extends VerticalLayout {
         addClassName("demo-view-content");
     }
 
+    public void setIsVertical(Boolean isVertical) {
+        demoList.setIsVertical(isVertical);
+        addClassName("is-vertical");
+    }
+
 }

@@ -81,9 +81,17 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
         getElement().callJsFunction("setData", demoDataList);
     }
 
+    public void setIsVertical(Boolean isVertical) {
+        getModel().setIsVertical(isVertical);
+    }
+
     public interface Model extends TemplateModel {
+
         String getName();
         void setName(String name);
+
+        void setIsVertical(Boolean isVertical);
+
     }
 
 }

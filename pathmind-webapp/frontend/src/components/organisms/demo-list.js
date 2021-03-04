@@ -19,10 +19,19 @@ class DemoList extends PolymerElement {
                     width: 100%;
                     padding: 0 var(--lumo-space-m);
                 }
+                demo-list[is-vertical] {
+                    padding: 0;
+                }
                 demo-list vaadin-horizontal-layout {
                     flex-wrap: wrap;
                     justify-content: center;
                     align-items: stretch;
+                }
+                demo-list[is-vertical] vaadin-horizontal-layout {
+                    flex-direction: column;
+                }
+                demo-list[is-vertical] .demo-item {
+                    margin: 0 0 var(--lumo-space-l);
                 }
                 demo-list .demo-item {
                     flex: 0 1 calc(33% - var(--lumo-space-l)*2);
@@ -52,6 +61,9 @@ class DemoList extends PolymerElement {
                     height: 8rem;
                     object-fit: cover;
                 }
+                demo-list[is-vertical] img {
+                    height: 7.6rem;
+                }
                 demo-list .demo-item[loading] > img,
                 demo-list .demo-item:not([loading]) > .loading-wrapper {
                     display: none;
@@ -64,6 +76,8 @@ class DemoList extends PolymerElement {
                     height: 8rem;
                 }
                 demo-list loading-spinner {
+                    --icon-size: 4rem;
+                    --border-size: 4px;
                     display: inline-block;
                     margin-right: var(--lumo-space-xs);
                 }
@@ -78,7 +92,7 @@ class DemoList extends PolymerElement {
                     <span>[[_getDataItem(demoDataList, '0', 'name')]]</span>
                     <img src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"/>
                     <div class="loading-wrapper">
-                        <loading-spinner></loading-spinner>Loading...
+                        <loading-spinner></loading-spinner>
                     </div>
                 </vaadin-vertical-layout>
                 <vaadin-vertical-layout
@@ -90,7 +104,7 @@ class DemoList extends PolymerElement {
                     <span>[[_getDataItem(demoDataList, '1', 'name')]]</span>
                     <img src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"/>
                     <div class="loading-wrapper">
-                        <loading-spinner></loading-spinner>Loading...
+                        <loading-spinner></loading-spinner>
                     </div>
                 </vaadin-vertical-layout>
                 <vaadin-vertical-layout
@@ -102,7 +116,7 @@ class DemoList extends PolymerElement {
                     <span>[[_getDataItem(demoDataList, '2', 'name')]]</span>
                     <img src="[[_getDataItem(demoDataList, '2', 'imageUrl')]]"/>
                     <div class="loading-wrapper">
-                        <loading-spinner></loading-spinner>Loading...
+                        <loading-spinner></loading-spinner>
                     </div>
                 </vaadin-vertical-layout>
             </vaadin-horizontal-layout>
@@ -158,6 +172,11 @@ class DemoList extends PolymerElement {
         name: {
             type: String,
         },
+        isVertical: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true,
+        }
       };
     }
 }

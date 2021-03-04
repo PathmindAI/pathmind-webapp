@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -64,8 +65,9 @@ public class ProjectsView extends PathMindDefaultView {
     private List<Project> projects;
     private Grid<Project> projectGrid;
 
-    private FlexLayout gridWrapper;
+    private FlexLayout pageWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
+    private VerticalLayout gridWrapper;
     private DemoViewContent demoViewContent;
     private Dialog demoDialog;
 
@@ -92,17 +94,22 @@ public class ProjectsView extends PathMindDefaultView {
 
         demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
 
-        gridWrapper = new ViewSection(
-                headerWrapper,
-                demoViewContent,
-                archivesTabPanel,
-                projectGrid);
-        gridWrapper.addClassName("page-content");
+        gridWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            archivesTabPanel,
+            projectGrid);
+
+        HorizontalLayout contentWrapper = WrapperUtils.wrapWidthFullHorizontal(
+            gridWrapper, demoViewContent
+        );
+        contentWrapper.addClassName("content-wrapper");
+
+        pageWrapper = new ViewSection(headerWrapper, contentWrapper);
+        pageWrapper.addClassName("page-content");
 
         if (projects.isEmpty()) {
-            archivesTabPanel.setVisible(false);
-            projectGrid.setVisible(false);
+            gridWrapper.setVisible(false);
         } else {
+            demoViewContent.setIsVertical(true);
             showDemosButton.setVisible(featureManager.isEnabled(Feature.EXAMPLE_PROJECTS));
         }
         if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
@@ -113,7 +120,7 @@ public class ProjectsView extends PathMindDefaultView {
             showDemosButton.setVisible(false);
         }
 
-        return gridWrapper;
+        return pageWrapper;
     }
 
     private Button showDemosButton() {
