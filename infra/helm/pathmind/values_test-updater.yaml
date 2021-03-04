@@ -13,7 +13,7 @@ image:
     - "-Xmx4096m"
     - "-XX:+UseG1GC"
     - "-jar"
-    - "/app/pathmind-updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar"
+    - "/app/pathmind-updater/updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar"
 
 service:
   type: NodePort
@@ -39,6 +39,7 @@ env:
   SNS_UPDATER_SQS_FILTER_ATTR: test
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
+  SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/test-punctuator
 
 readinessprobe: {}
 

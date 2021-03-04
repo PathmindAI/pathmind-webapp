@@ -9,7 +9,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -19,7 +18,7 @@ import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -54,8 +53,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
-    private DownloadModelAlpLink downloadModelAlpLink;
+    private DownloadModelLink downloadModelLink;
     private Button shareButton;
+    private boolean isPythonModel = false;
 
     private ExperimentView experimentView;
     private TrainingService trainingService;
@@ -118,7 +118,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
-        downloadModelAlpLink = new DownloadModelAlpLink(modelService, experimentView.getSegmentIntegrator(), false);
+        downloadModelLink = new DownloadModelLink(modelService, experimentView.getSegmentIntegrator(), true, isPythonModel);
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
         if (isExportPolicyButtonOnly) {
@@ -129,7 +129,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
             actionButtons.add(archiveButton);
             actionButtons.add(unarchiveButton);
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[] {stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelAlpLink};
+            return new Component[] {stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
 
@@ -170,7 +170,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         favoriteStar.setValue(experiment.isFavorite());
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
-        downloadModelAlpLink.setExperiment(experiment);
+        downloadModelLink.setExperiment(experiment);
         updateComponentEnablements();
     }
     

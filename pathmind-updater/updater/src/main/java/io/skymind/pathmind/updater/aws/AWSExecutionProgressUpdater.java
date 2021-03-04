@@ -1,14 +1,17 @@
 package io.skymind.pathmind.updater.aws;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyServerService;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
+import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -34,13 +37,19 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final SegmentTrackerService segmentTrackerService;
     private final PolicyServerService policyServerService;
     private final UserDAO userDAO;
+    private final AwsApiClientSQS sqsClient;
+    private final String punctuatorQueueUrl;
 
-    public AWSExecutionProgressUpdater(RunDAO runDAO, PolicyServerService policyServerService, UserDAO userDAO,
+    public AWSExecutionProgressUpdater(RunDAO runDAO, AwsApiClientSQS sqsClient,
+                                       PolicyServerService policyServerService, UserDAO userDAO,
+                                       @Value("${pathmind.aws.sqs.updater_punctuator_queue_url}") String punctuatorQueueUrl,
                                        @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
                                        UpdaterService updaterService,
                                        SegmentTrackerService segmentTrackerService) {
         this.runDAO = runDAO;
+        this.sqsClient = sqsClient;
+        this.punctuatorQueueUrl = punctuatorQueueUrl;
         this.emailNotificationService = emailNotificationService;
         this.updaterService = updaterService;
         this.updateCompletingAttemptsLimit = completingAttempts;
@@ -50,30 +59,35 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     @Override
-    public void update() {
-        // Getting all these values beforehand in single database calls rather than in loops of database calls.
-        // Notice that runs that are completed but doesn't have such info in the db yet will be returned by this call.
-        // This means that errors after the info is saved in AWS but before the info is saved in DB won't cause the
-        // system to be in an inconsistent state.
-        // Also, completed runs that doesn't have policy file information in the db will be returned by this call.
-        final List<Run> runs = runDAO.getExecutingRuns(updateCompletingAttemptsLimit);
-        final List<Long> runIds = runs.stream().map(Run::getId).collect(Collectors.toList());
-        final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(runIds);
-        final List<Run> runsWithAwsJobs = runs.stream().filter(this::hasJobId).collect(Collectors.toList());
+    public void run() {
+        log.info("Launching updater");
+        do {
+            log.debug("pulling next message");
+            ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(punctuatorQueueUrl)
+//                .withMessageAttributeNames("All")
+                    .withWaitTimeSeconds(20)
+                    .withMaxNumberOfMessages(1);
 
-        log.info("Updater is dealing with: {}", runIds);
+            List<Message> sqsMessages = sqsClient.getSqsClient().receiveMessage(receiveMessageRequest).getMessages();
 
-        runsWithAwsJobs.parallelStream().forEach(run -> {
-            try {
-                ProviderJobStatus providerJobStatus =
-                        updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNamesForRuns);
-                policyServerForRun(run);
-                sendNotificationMail(providerJobStatus.getRunStatus(), run);
-                trackCompletedTrainingInSegment(run, providerJobStatus);
-            } catch (Exception e) {
-                log.error("Error for run: " + run.getId() + " : " + e.getMessage(), e);
+            if (!sqsMessages.isEmpty()) {
+                Message message = sqsMessages.get(0);
+                try {
+                    long runId = Long.parseLong(message.getBody());
+                    log.info("Updater is dealing with: {}", runId);
+                    Run run = runDAO.getRun(runId);
+                    final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(List.of(runId));
+                    List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList());
+                    ProviderJobStatus providerJobStatus =
+                            updaterService.updateRunInformation(run, updateCompletingAttemptsLimit, stoppedPoliciesNames);
+                    sendNotificationMail(providerJobStatus.getRunStatus(), run);
+                    trackCompletedTrainingInSegment(run, providerJobStatus);
+                    policyServerForRun(run);
+                } catch (Exception e) {
+                    log.error("Error process message {}", message, e);
+                }
             }
-        });
+        } while (true);
     }
 
     private void policyServerForRun(Run run) {
