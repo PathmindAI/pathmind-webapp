@@ -91,47 +91,29 @@ public class ProjectsView extends PathMindDefaultView {
         headerWrapper.addClassName("page-content-header");
 
         demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
-        setupDemoDialog();
 
         gridWrapper = new ViewSection(
                 headerWrapper,
+                demoViewContent,
                 archivesTabPanel,
                 projectGrid);
         gridWrapper.addClassName("page-content");
 
         if (projects.isEmpty()) {
-            gridWrapper.add(demoViewContent);
             archivesTabPanel.setVisible(false);
             projectGrid.setVisible(false);
-            if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
-                showDemosButton.setVisible(false);
-                demoViewContent.setVisible(true);
-            } else {
-                demoViewContent.setVisible(false);
-                showDemosButton.setVisible(false);
-            }
         } else {
             showDemosButton.setVisible(featureManager.isEnabled(Feature.EXAMPLE_PROJECTS));
         }
+        if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
+            showDemosButton.setVisible(false);
+            demoViewContent.setVisible(true);
+        } else {
+            demoViewContent.setVisible(false);
+            showDemosButton.setVisible(false);
+        }
 
         return gridWrapper;
-    }
-
-    private void setupDemoDialog() {
-        demoDialog = new Dialog();
-        demoDialog.getElement().getClassList().add("demo-dialog");
-        demoDialog.addOpenedChangeListener(openedChangedEvent -> {
-            if (openedChangedEvent.isOpened()) {
-                demoDialog.removeAll();
-                Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-                closeButton.addClickListener(event -> demoDialog.close());
-                // demoViewContent has to be re-initiated here every time
-                // otherwise it will be empty from the 2nd time onwards
-                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
-                demoViewContent.setOnChooseDemoHandler(() -> demoDialog.close());
-                demoDialog.add(demoViewContent, closeButton);
-            }
-        });
     }
 
     private Button showDemosButton() {
