@@ -197,6 +197,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public Map<String, String> progress(String jobHandle) {
         return client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> !it.getKey().contains("/freezing/"))
                 .filter(it -> it.getKey().endsWith("progress.csv"))
                 .map(it -> {
                     final String key = new File(it.getKey()).getParentFile().getName();
@@ -264,6 +265,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private ExperimentState getExperimentState(String jobHandle) {
         Optional<ExperimentState> expOpt = client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> !it.getKey().contains("/freezing/"))
                 .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
                 .map(S3ObjectSummary::getKey)
                 .sorted(Comparator.reverseOrder())
@@ -283,6 +285,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public String getRLlibError(String jobHandle) {
         return client.listObjects(jobHandle + "/output/")
                         .getObjectSummaries().parallelStream()
+                        .filter(it -> !it.getKey().contains("/freezing/"))
                         .map(S3ObjectSummary::getKey)
                         .filter(ERROR_KEY_MATCH)
                         .map(it -> {
@@ -506,7 +509,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
-                var("EXPERIMENT_TYPE", job.getExpClassType())
+                var("EXPERIMENT_TYPE", job.getExpClassType()),
+                var("FREEZING", String.valueOf(Boolean.TRUE))
         ));
 
         if (job.getEnvironment() != null) {
