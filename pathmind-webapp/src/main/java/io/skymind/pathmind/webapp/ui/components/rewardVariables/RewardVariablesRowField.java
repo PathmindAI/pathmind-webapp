@@ -130,4 +130,8 @@ public class RewardVariablesRowField extends HorizontalLayout {
     public RewardVariable getRewardVariable() {
         return rewardVariable;
     }
+
+    public void setRewardVariable(RewardVariable rewardVariable) {
+        this.rewardVariable = rewardVariable;
+    }
 }
