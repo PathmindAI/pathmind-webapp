@@ -75,13 +75,9 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     }
 
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
-        container.removeAll();
-        rewardVariableNameFields.clear();
         HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"));
-
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
-
         container.add(headerRow);
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
@@ -107,8 +103,10 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     @Override
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-        setRewardVariables(experiment.getRewardVariables());
-        if(actAsMultiSelect) {
+        if (rewardVariableNameFields.isEmpty()) { // during initialization
+            setRewardVariables(experiment.getRewardVariables());
+        }
+        if (actAsMultiSelect) {
             selectSelectedRewardVariables(experiment);
             updateSelectionClassForComponent();
         }
