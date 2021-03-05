@@ -7,7 +7,6 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.Json;
 import elemental.json.JsonArray;
-import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
