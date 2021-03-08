@@ -286,13 +286,12 @@ public class ExperimentView extends AbstractExperimentView {
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
-        if(!experimentDAO.isDraftExperiment(experimentId)) {
+        if (!experimentDAO.isDraftExperiment(experimentId)) {
             return true;
-        } else {
-            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.NEW_EXPERIMENT, experimentId);
-            return false;
         }
+        // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
+        event.forwardTo(Routes.NEW_EXPERIMENT, experimentId);
+        return false;
     }
 
     public void showCompareExperimentComponents(boolean isCompareVisible) {
