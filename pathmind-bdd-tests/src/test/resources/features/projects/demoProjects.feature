@@ -1,19 +1,10 @@
 @projectsPage
 Feature: Demo projects
 
-  Scenario: Check demo projects popup elements
+  Scenario: Check demo projects list elements
     Given Login to the pathmind
     When Open projects page
-    When Click in 'Example Projects' button
-    When Check demo popup elements
-
-  Scenario: Check demo projects close btn
-    Given Login to the pathmind
-    When Open projects page
-    When Click in 'Example Projects' button
-    When Check that demo projects popup is shown 'true'
-    When Close demo projects pop-up
-    When Check that demo projects popup is shown 'false'
+    When Check demo list elements
 
   Scenario Outline: Check demo projects create demo project
     Given Login to the pathmind
