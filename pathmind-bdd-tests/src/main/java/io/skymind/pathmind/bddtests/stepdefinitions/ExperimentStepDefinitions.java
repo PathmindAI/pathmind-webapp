@@ -249,4 +249,9 @@ public class ExperimentStepDefinitions {
     public void clickExperimentPageActionsBtn(String btn) {
         experimentPageSteps.clickExperimentPageActionsBtn(btn);
     }
+
+    @Then("^Check experiment page serve policy is shown '(.*)'$")
+    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
+        experimentPageSteps.checkExperimentPageServePolicyIsShown(shown);
+    }
 }

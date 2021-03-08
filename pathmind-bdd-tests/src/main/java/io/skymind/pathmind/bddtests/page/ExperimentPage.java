@@ -381,4 +381,12 @@ public class ExperimentPage extends PageObject {
         waitABit(3000);
         getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
     }
+
+    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
+        if (shown) {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-button[text()='Serve Policy']")).isDisplayed(), is(true));
+        } else {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-button[text()='Serve Policy']")).isDisplayed(), is(false));
+        }
+    }
 }
