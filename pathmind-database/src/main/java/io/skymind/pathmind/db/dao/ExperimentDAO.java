@@ -165,6 +165,10 @@ public class ExperimentDAO {
         return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
     }
 
+    public int countExperimentsInModel(long modelId) {
+        return ExperimentRepository.getExperimentCount(ctx, modelId);
+    }
+
     public Experiment createNewExperiment(long modelId) {
         return ctx.transactionResult(conf -> {
             DSLContext transactionCtx = DSL.using(conf);

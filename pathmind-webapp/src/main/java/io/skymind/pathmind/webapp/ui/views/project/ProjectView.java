@@ -56,6 +56,7 @@ import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
+import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ExperimentGridDataProvider;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
@@ -96,6 +97,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private String pageTitle;
     private boolean isPythonModel = false;
 
+    private ExperimentGridDataProvider dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private ExperimentGrid experimentGrid;
@@ -374,7 +376,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
-                experimentGrid.setItems(experiments);
+                dataProvider = new ExperimentGridDataProvider(modelId);
+                // experimentGrid.setDataProvider(dataProvider);
+                // experimentGrid.setItems(experiments);
             }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
