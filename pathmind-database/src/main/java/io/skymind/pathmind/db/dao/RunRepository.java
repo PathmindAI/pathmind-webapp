@@ -14,6 +14,7 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Table;
@@ -218,4 +219,19 @@ class RunRepository {
                 .where(PROJECT.PATHMIND_USER_ID.eq(userId))
                 .fetchOne(0, long.class);
     }
+
+    public static void updatePolicyServerStatus(DSLContext ctx, long runId, PolicyServerService.DeploymentStatus deploymentStatusCode) {
+        ctx.update(RUN)
+                .set(RUN.POLICY_SERVER_STATUS, deploymentStatusCode)
+                .where(RUN.ID.eq(runId))
+                .execute();
+    }
+
+    public static PolicyServerService.DeploymentStatus fetchPolicyServerStatus(DSLContext ctx, long runId) {
+        return ctx.select(Tables.RUN.POLICY_SERVER_STATUS)
+                .from(RUN)
+                .where(RUN.ID.eq(runId))
+                .fetchOne(Tables.RUN.POLICY_SERVER_STATUS);
+    }
+
 }

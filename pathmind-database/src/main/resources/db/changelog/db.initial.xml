@@ -1903,5 +1903,14 @@
             VACUUM FULL;
         </sql>
     </changeSet>
+    
+    <changeSet id="2847-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="RUN">
+            <column name="POLICY_SERVER_STATUS" type="INT" defaultValue="0"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_STATUS"/>
+        </rollback>
+    </changeSet>
 
 </databaseChangeLog>

@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +47,7 @@ public class AWSApiClient {
 
     private final int mockCycle;
     private final int mockMaxMin;
+    private final String policyServerQueueUrl;
 
     public AWSApiClient(
             AwsApiClientS3 s3,
@@ -53,6 +55,7 @@ public class AWSApiClient {
             AwsApiClientSQS sqs,
             @Value("${pathmind.aws.sqs.url}") String queueUrl,
             @Value("${pathmind.aws.sqs.updater_url}") String updaterQueueUrl,
+            @Value("${pathmind.aws.sqs.policy_server_url}") String policyServerQueueUrl,
             ObjectMapper objectMapper,
             @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
             @Value("${pathmind.aws.mock_max_min:0}") int mockMaxMin) {
@@ -63,6 +66,7 @@ public class AWSApiClient {
         this.sqsClient = sqs.getSqsClient();
         this.queueUrl = queueUrl;
         this.updaterQueueUrl = updaterQueueUrl;
+        this.policyServerQueueUrl = policyServerQueueUrl;
 
         this.objectMapper = objectMapper;
 
@@ -183,6 +187,20 @@ public class AWSApiClient {
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
                 .withMessageGroupId("training")
+                .withMessageBody(objectMapper.writeValueAsString(job));
+
+        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        return result.getMessageId();
+    }
+
+
+    @SneakyThrows
+    public String deployPolicyServer(String jobId) {
+        Job job = new Job(bucketName, jobId, false, 0);
+
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(policyServerQueueUrl)
+                .withMessageGroupId("policy")
                 .withMessageBody(objectMapper.writeValueAsString(job));
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);

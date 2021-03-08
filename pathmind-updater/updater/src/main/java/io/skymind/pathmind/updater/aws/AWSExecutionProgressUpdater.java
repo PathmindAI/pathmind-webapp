@@ -8,7 +8,7 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.services.PolicyServerService;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
@@ -107,7 +107,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                             .build()
                     )
                     .build();
-            policyServerService.saveSchemaYamlFile(run.getModel().getId(), schema);
+            policyServerService.saveSchemaYamlFile(run.getJobId(), schema);
         }
     }
 

@@ -22,6 +22,7 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -363,5 +364,14 @@ public class RunDAO {
 
     public long getUserIdForRun(long runId) {
         return RunRepository.getUserIdForRun(ctx, runId);
+    }
+
+    public PolicyServerService.DeploymentStatus policyServerDeployedStatus(long experimentId, PolicyServerService.DeploymentStatus deploymentStatus) {
+        RunRepository.updatePolicyServerStatus(ctx, experimentId, deploymentStatus);
+        return deploymentStatus;
+    }
+
+    public PolicyServerService.DeploymentStatus policyServerDeployedStatus(long experimentId) {
+        return RunRepository.fetchPolicyServerStatus(ctx, experimentId);
     }
 }

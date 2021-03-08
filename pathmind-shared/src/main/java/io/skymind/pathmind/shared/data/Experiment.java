@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -140,4 +142,12 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
         return experiment;
     }
+
+    public Optional<Run> bestPolicyRun() {
+        return Optional.of(this)
+                .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
+                .map(Experiment::getBestPolicy)
+                .map(Policy::getRun);
+    }
+
 }
