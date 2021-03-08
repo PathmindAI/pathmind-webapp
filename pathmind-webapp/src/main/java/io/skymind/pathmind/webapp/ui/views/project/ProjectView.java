@@ -328,7 +328,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
-                experimentGrid.setItems(experiments);
+                dataProvider = new ExperimentGridDataProvider(modelId);
+                experimentGrid.setDataProvider(dataProvider);
+                // experimentGrid.setItems(experiments);
             }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {

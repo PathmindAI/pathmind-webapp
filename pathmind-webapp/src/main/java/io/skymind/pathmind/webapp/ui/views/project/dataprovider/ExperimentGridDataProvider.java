@@ -30,7 +30,7 @@ public class ExperimentGridDataProvider extends AbstractBackEndDataProvider<Expe
 
     @Override
     protected Stream<Experiment> fetchFromBackEnd(Query<Experiment, Void> query) {
-        return null;
+        return Stream.empty();
     }
 
     @Override
