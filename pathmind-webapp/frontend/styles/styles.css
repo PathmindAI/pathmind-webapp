@@ -385,12 +385,12 @@ vaadin-dialog-overlay .demo-view-content {
     width: 15.8rem;
 }
 
-.projects-view .content-wrapper {
-    flex: 1 0 auto;
+.projects-view .page-content-header {
+    margin-bottom: 0;
 }
 
-.projects-view .project-name-column {
-    align-items: center;
+.projects-view .content-wrapper {
+    flex: 1 0 auto;
 }
 
 .projects-view .project-name-column vaadin-button {

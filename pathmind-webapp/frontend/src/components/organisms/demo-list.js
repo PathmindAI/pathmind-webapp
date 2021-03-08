@@ -62,7 +62,7 @@ class DemoList extends PolymerElement {
                     object-fit: cover;
                 }
                 demo-list[is-vertical] img {
-                    height: 7.6rem;
+                    height: 13.5vh;
                 }
                 demo-list .demo-item[loading] > img,
                 demo-list .demo-item:not([loading]) > .loading-wrapper {
