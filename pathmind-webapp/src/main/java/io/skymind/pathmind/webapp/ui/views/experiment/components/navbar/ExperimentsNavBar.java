@@ -166,7 +166,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         setVisible(!newCurrentExperiment.isArchived());
 
         // There's no need processing any further if archived as the navbar is not visible.
-        if(newCurrentExperiment.isArchived()) {
+        if (newCurrentExperiment.isArchived()) {
             return;
         }
 

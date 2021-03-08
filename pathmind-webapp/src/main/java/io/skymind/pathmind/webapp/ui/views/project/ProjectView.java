@@ -8,9 +8,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid.Column;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -71,6 +69,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int MODEL_ID_SEGMENT = 2;
 
+    private final Object modelLock = new Object();
+
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -100,6 +100,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ExperimentGridDataProvider dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
+    private MultiselectComboBox<RewardVariable> metricMultiSelect;
     private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -108,14 +109,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private Span modelName;
     private Span modelCreatedDate;
-    private Anchor downloadLink;
+    private DownloadModelLink downloadLink;
     private TagLabel modelArchivedLabel = new TagLabel("Archived", false, "small");
     private ModelsNavbar modelsNavbar;
     private Model selectedModel;
     private NotesField modelNotesField;
     private VerticalLayout modelWrapper;
-
-    private ScreenTitlePanel titlePanel;
 
     public ProjectView() {
         super();
@@ -125,27 +124,21 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
         addClassName("project-view");
 
-        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
-                CssPathmindStyles.PROJECT_TITLE);
+        projectName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         createdDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         NotesField projectNotesField = createNotesField();
         Button edit = new Button("Rename", evt -> renameProject());
-        edit.setClassName("no-shrink");
 
-        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL,
-                CssPathmindStyles.PROJECT_TITLE);
+        modelName = LabelFactory.createLabel("", CssPathmindStyles.SECTION_TITLE_LABEL);
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
-        if (selectedModel != null) {
-            setupGrid();
-            setupArchivesTabPanel();
-            newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
-                    segmentIntegrator);
-            modelNotesField = createModelNotesField();
-
-            modelsNavbar = new ModelsNavbar(modelDAO, selectedModel, models, segmentIntegrator);
-        }
+        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        setupArchivesTabPanel();
+        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
+                segmentIntegrator);
+        modelNotesField = createModelNotesField();
+        modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
 
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -157,42 +150,36 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         HorizontalLayout modelHeaderWrapper = WrapperUtils.wrapWidthFullHorizontal();
         modelHeaderWrapper.addClassName("page-content-header");
 
-        if (selectedModel != null) {
-            downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
-                    segmentIntegrator, false, isPythonModel);
-            modelHeaderWrapper
-                    .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                            WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
-                                    .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
-                            downloadLink), modelNotesField);
+        downloadLink = new DownloadModelLink(project.getName(), selectedModel, modelService,
+                segmentIntegrator, false, isPythonModel);
+        modelHeaderWrapper
+                .add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(modelName), WrapperUtils
+                                .wrapWidthFullHorizontalNoSpacingAlignCenter(modelCreatedDate, modelArchivedLabel),
+                        downloadLink), modelNotesField);
 
-            HorizontalLayout experimentGridHeader = WrapperUtils
-                    .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
+        HorizontalLayout experimentGridHeader = WrapperUtils
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
-            // To be moved to separate methods later
-            HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Metrics", BOLD_LABEL), createMetricSelectionGroup());
-            metricSelectionRow.addClassName("metric-selection-row");
+        metricMultiSelect = createMetricSelectionGroup();
+        HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
+        metricSelectionRow.addClassName("metric-selection-row");
 
-            HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
-            columnSelectionRow.addClassName("column-selection-row");
+        HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
+                LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
+        columnSelectionRow.addClassName("column-selection-row");
 
-            Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
+        Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
 
-            modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
-                    experimentGridHeader, metricSelectionRow, columnSelectionRow,
-                    experimentGrid);
-            modelWrapper.addClassName("model-wrapper");
-        }
+        modelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(errorMessage, modelHeaderWrapper,
+                experimentGridHeader, metricSelectionRow, columnSelectionRow,
+                experimentGrid);
+        modelWrapper.addClassName("model-wrapper");
 
-        FlexLayout gridWrapper = new ViewSection(headerWrapper);
-        if (selectedModel != null) {
-            gridWrapper.add(WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
-        }
-        gridWrapper.addClassName("page-content");
-
-        return gridWrapper;
+        return new ViewSection(
+                headerWrapper,
+                WrapperUtils.wrapSizeFullBetweenHorizontal(modelsNavbar, modelWrapper));
     }
 
     private MultiselectComboBox<String> createColumnSelectionGroup() {
@@ -280,20 +267,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 getUISupplier());
     }
 
-    private void setupGrid() {
-        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
-    }
-
     public List<Model> getModels() {
         return project.getModels();
     }
 
     public List<Experiment> getExperiments() {
         return experiments;
-    }
-
-    private Breadcrumbs createBreadcrumbs() {
-        return selectedModel != null ? new Breadcrumbs(project, selectedModel) : new Breadcrumbs(project);
     }
 
     public List<Experiment> getExperimentList() {
@@ -304,45 +283,95 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return experimentGrid;
     }
 
+    public void setModel(Model model) {
+        synchronized (modelLock) {
+            selectedModel = model;
+            loadModelData();
+            updateComponents();
+        }
+    }
+
+    public Object getModelLock() {
+        return modelLock;
+    }
+
+    public void loadModelData() {
+        modelId = selectedModel != null ? selectedModel.getId() : null;
+        experiments = experimentDAO.getExperimentsForModel(modelId);
+        rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+    }
+
+    public void setModelArchiveLabelVisible() {
+        modelArchivedLabel.setVisible(selectedModel.isArchived());
+    }
+
+    public long getProjectId() {
+        return projectId;
+    }
+
+    private void updateComponents() {
+        String modelNameText = "Model #" + selectedModel.getName();
+        if (selectedModel.getPackageName() != null) {
+            modelNameText += " (" + selectedModel.getPackageName() + ")";
+        }
+        pageBreadcrumbs.setText(2, modelNameText);
+        modelArchivedLabel.setVisible(selectedModel.isArchived());
+        projectName.setText(project.getName());
+        archivedLabel.setVisible(project.isArchived());
+        modelName.setText(modelNameText);
+        modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId()).ifPresent(model -> {
+            // the selectedModel on the navbar is referencing the model item with the old notes
+            // this is to get the most updated notes
+            modelNotesField.setNotesText(model.getUserNotes());
+        });
+        newExperimentButton.setModelId(selectedModel.getId());
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
+            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
+            if (experimentGrid != null) {
+                experimentGrid.setItems(experiments);
+            }
+            createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
+            if (selectedModel != null) {
+                modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
+            }
+        });
+        if (downloadLink != null) {
+            downloadLink.setModel(selectedModel);
+        }
+        if (metricMultiSelect != null) {
+            metricMultiSelect.setItems(rewardVariables);
+        }
+        archivesTabPanel.initData();
+        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
+    }
+
     @Override
     protected Component getTitlePanel() {
-        pageBreadcrumbs = createBreadcrumbs();
-        titlePanel = new ScreenTitlePanel(pageBreadcrumbs);
-        return titlePanel;
+        pageBreadcrumbs = new Breadcrumbs(project, selectedModel);
+        return new ScreenTitlePanel(pageBreadcrumbs);
     }
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), getViewSubscribers());
-    }
-
-    protected List<EventBusSubscriber> getViewSubscribers() {
-        return List.of(new ProjectViewFavoriteSubscriber(this));
+        EventBus.subscribe(this, getUISupplier(), List.of(new ProjectViewFavoriteSubscriber(this)));
     }
 
     @Override
     protected void initLoadData() {
-        project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
+        synchronized (modelLock) {
+            project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
-        models = modelDAO.getModelsForProject(projectId);
-        project.setModels(models);
-        pageTitle = "Pathmind | " + project.getName();
-        if (models.size() > 0) {
-            if (modelId == null) {
-                if (models.size() > 1) {
-                    selectedModel = models.stream().filter(model -> !model.isDraft()).findFirst().orElse(null);
-                } else {
-                    selectedModel = models.get(0);
-                }
-            } else {
+            models = modelDAO.getModelsForProject(projectId);
+            project.setModels(models);
+            pageTitle = "Pathmind | " + project.getName();
+            
+            if (models.size() > 0) {
                 selectedModel = models.stream()
-                        .filter(model -> modelId.equals(model.getId()))
-                        .findFirst()
-                        .orElse(models.get(0));
+                    .filter(model -> modelId == null ? !model.isDraft() : modelId.equals(model.getId()))
+                    .findFirst()
+                    .orElse(models.get(0));
+                loadModelData();
             }
-            modelId = selectedModel != null ? selectedModel.getId() : null;
-            experiments = experimentDAO.getExperimentsForModel(modelId);
-            rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
         }
     }
 
@@ -364,29 +393,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void initComponents() {
-        String modelNameText = "";
-        modelNameText = "Model #" + selectedModel.getName();
-        if (selectedModel.getPackageName() != null) {
-            modelNameText += " (" + selectedModel.getPackageName() + ")";
-        }
-        modelArchivedLabel.setVisible(selectedModel.isArchived());
-        projectName.setText(project.getName());
-        archivedLabel.setVisible(project.isArchived());
-        modelName.setText(modelNameText);
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
-            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            if (experimentGrid != null) {
-                dataProvider = new ExperimentGridDataProvider(modelId);
-                // experimentGrid.setDataProvider(dataProvider);
-                // experimentGrid.setItems(experiments);
-            }
-            createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
-            if (selectedModel != null) {
-                modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
-            }
-        });
-        archivesTabPanel.initData();
-        recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
+        updateComponents();
     }
 
     @Override
