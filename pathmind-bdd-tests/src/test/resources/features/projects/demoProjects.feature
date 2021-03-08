@@ -10,7 +10,7 @@ Feature: Demo projects
     Given Login to the pathmind
     When Open projects page
     When Click in 'Example Projects' button
-    When Click demo popup '<demo model>' get started btn
+    When Click demo list '<demo model>'
     When Check that experiment page is opened
     Then Check experiment page reward variables is <reward vars>
     When Check experiment page observations list <new experiment observations>
