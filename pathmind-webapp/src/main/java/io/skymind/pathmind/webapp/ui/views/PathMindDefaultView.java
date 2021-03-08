@@ -14,6 +14,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -35,6 +36,9 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     @Autowired
     private AWSApiClient awsApiClient;
+
+    @Autowired
+    protected FeatureManager featureManager;
 
     private int previousWindowWidth = 0;
 

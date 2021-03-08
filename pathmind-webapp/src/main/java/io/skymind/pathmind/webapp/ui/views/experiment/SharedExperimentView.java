@@ -46,7 +46,7 @@ public class SharedExperimentView extends ExperimentView {
 
     @Override
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), runDAO, trainingService, modelService, getUISupplier(), true);
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, trainingService, modelService, true);
     }
 
     @Override

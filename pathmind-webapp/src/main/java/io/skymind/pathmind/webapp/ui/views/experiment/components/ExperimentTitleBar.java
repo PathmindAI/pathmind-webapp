@@ -17,6 +17,8 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
@@ -64,17 +66,26 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Supplier<Object> getLockSupplier;
     private Supplier<Optional<UI>> getUISupplier;
 
+    private final FeatureManager featureManager;
+
     // This is for the action classes so that it's easier to read the code in the createButtons() method (it's not needed as per say).
     private Supplier<Experiment> getExperimentSupplier;
 
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, runDAO, trainingService, modelService, getUISupplier, false);
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
+                              Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager,
+                              TrainingService trainingService, ModelService modelService) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, trainingService, modelService, false);
     }
 
     /**
      * Extra constructor is needed for the support shared experiment view.
      */
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier, boolean isExportPolicyButtonOnly) {
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
+                              Supplier<Object> getLockSupplier,  Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager,
+                              TrainingService trainingService, ModelService modelService,
+                              boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
         this.getExperimentSupplier = () -> getExperiment();
         this.updateExperimentViewRunnable = updateExperimentViewRunnable;
@@ -82,6 +93,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.trainingService = trainingService;
         this.modelService = modelService;
         this.getUISupplier = getUISupplier;
+        this.featureManager = featureManager;
 
         Component[] buttons = createButtons(isExportPolicyButtonOnly);
 
@@ -154,8 +166,10 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
-        // TODO: need to add a condition to servePolicyButton to check for Python model
-        servePolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+        if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
+            // TODO: need to add a condition to servePolicyButton to check for Python model
+            servePolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+        }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
         archivedLabel.setVisible(experiment.isArchived());

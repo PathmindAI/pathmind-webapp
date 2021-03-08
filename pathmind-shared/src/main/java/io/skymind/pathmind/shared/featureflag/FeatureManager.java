@@ -12,11 +12,14 @@ public class FeatureManager {
 
     private final boolean simulationMetrics;
     private final boolean exampleProjects;
+    private final boolean policyServing;
 
     public FeatureManager(
+            @Value("${pathmind.toggle.policy-serving:false}") boolean policyServing,
             @Value("${pathmind.toggle.simulation-metrics:true}") boolean simulationMetrics,
             @Value("${pathmind.toggle.example-projects:false}") boolean exampleProjects
     ) {
+        this.policyServing = policyServing;
         this.simulationMetrics = simulationMetrics;
         this.exampleProjects = exampleProjects;
 
@@ -33,6 +36,8 @@ public class FeatureManager {
                 return simulationMetrics;
             case EXAMPLE_PROJECTS:
                 return exampleProjects;
+            case POLICY_SERVING:
+                return policyServing;
             default:
                 return true;
         }
