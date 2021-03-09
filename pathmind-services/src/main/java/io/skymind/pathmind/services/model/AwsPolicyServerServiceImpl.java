@@ -11,6 +11,7 @@ import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -88,6 +89,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
         experiment.bestPolicyRun()
+                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
                 .ifPresent(run -> {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
@@ -101,6 +103,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     @Override
     public String getPolicyServerUrl(Experiment experiment) {
         return experiment.bestPolicyRun()
+                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
                 .map(run -> {
                     if (run.getPolicyServerStatus() != DeploymentStatus.DEPLOYED) {
                         DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
