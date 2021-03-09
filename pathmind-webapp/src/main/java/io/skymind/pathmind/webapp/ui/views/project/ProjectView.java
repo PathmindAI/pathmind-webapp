@@ -33,7 +33,6 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -134,7 +133,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelArchivedLabel.setVisible(false);
 
         experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
-        setupArchivesTabPanel();
+        // setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
         modelNotesField = createModelNotesField();
@@ -159,7 +158,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(newExperimentButton);//archivesTabPanel, newExperimentButton);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -343,7 +342,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (metricMultiSelect != null) {
             metricMultiSelect.setItems(rewardVariables);
         }
-        archivesTabPanel.initData();
+        // archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
     }
 
