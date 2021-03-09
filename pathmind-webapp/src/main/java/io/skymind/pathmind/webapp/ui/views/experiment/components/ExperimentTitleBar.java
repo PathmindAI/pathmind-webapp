@@ -28,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ServePolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
@@ -127,7 +128,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
-        servePolicyButton = new Button("Serve Policy", click -> {});
+        servePolicyButton = new Button("Serve Policy", click -> ServePolicyAction.servePolicy(getExperimentSupplier));
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
