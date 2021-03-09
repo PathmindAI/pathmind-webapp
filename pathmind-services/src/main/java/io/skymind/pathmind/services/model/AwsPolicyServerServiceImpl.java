@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -10,7 +11,10 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,12 +86,12 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
-        experiment.bestPolicyRun()
-                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
-                .ifPresent(run -> {
+        bestPythonPolicy(experiment)
+                .ifPresent(policy -> {
+                    final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
-                        awsApiClient.deployPolicyServer(run.getJobId());
+                        awsApiClient.deployPolicyServer(policy.getExternalId(), run.getJobId());
                         deploymentStatus = runDAO.policyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
                     }
                     run.setPolicyServerStatus(deploymentStatus);
@@ -96,11 +100,11 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public String getPolicyServerUrl(Experiment experiment) {
-        return experiment.bestPolicyRun()
-                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
+        return bestPythonPolicy(experiment)
+                .map(Policy::getRun)
                 .map(run -> {
                     if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
-                        String  host = run.getJobId() + "." + applicationHost;
+                        String host = run.getJobId() + "." + applicationHost;
                         UriComponents uriComponents = this.urlBuilder.cloneBuilder().host(host).build();
                         return uriComponents.toUriString();
                     }
@@ -110,12 +114,20 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public DeploymentStatus getPolicyServerStatus(Experiment experiment) {
-        return experiment.bestPolicyRun()
-                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
+        return bestPythonPolicy(experiment)
+                .map(Policy::getRun)
                 .map(run -> {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     run.setPolicyServerStatus(deploymentStatus);
                     return deploymentStatus;
                 }).orElse(DeploymentStatus.NOT_DEPLOYED);
     }
+
+    private static Optional<Policy> bestPythonPolicy(Experiment experiment) {
+        return Optional.of(experiment)
+                .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
+                .map(Experiment::getBestPolicy)
+                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(policy.getModel().getModelType())));
+    }
+
 }

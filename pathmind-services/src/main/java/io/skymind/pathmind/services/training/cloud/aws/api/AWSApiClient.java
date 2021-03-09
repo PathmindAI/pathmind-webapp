@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training.cloud.aws.api;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientS3;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
@@ -195,8 +197,13 @@ public class AWSApiClient {
 
 
     @SneakyThrows
-    public String deployPolicyServer(String jobId) {
-        Job job = new Job(bucketName, jobId, false, 0);
+    public String deployPolicyServer(String policyExternalId, String jobId) {
+        DeploymentMessage job = DeploymentMessage.builder()
+                .s3Bucket(bucketName)
+                .s3ModelPath(MessageFormat.format("{0}/output/{1}/policy_{1}.zip", jobId, policyExternalId))
+                .s3SchemaPath(MessageFormat.format("{0}/schema.yaml", jobId))
+                .jobId(jobId)
+                .build();
 
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(policyServerQueueUrl)

@@ -143,11 +143,4 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         return experiment;
     }
 
-    public Optional<Run> bestPolicyRun() {
-        return Optional.of(this)
-                .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
-                .map(Experiment::getBestPolicy)
-                .map(Policy::getRun);
-    }
-
 }
