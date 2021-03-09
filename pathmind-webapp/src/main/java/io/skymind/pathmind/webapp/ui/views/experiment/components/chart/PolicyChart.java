@@ -14,7 +14,6 @@ import elemental.json.JsonObject;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.DataChart;
 import org.springframework.util.CollectionUtils;
 
