@@ -197,18 +197,12 @@ public class AWSApiClient {
 
 
     @SneakyThrows
-    public String deployPolicyServer(String policyExternalId, String jobId) {
-        DeploymentMessage job = DeploymentMessage.builder()
-                .s3Bucket(bucketName)
-                .s3ModelPath(MessageFormat.format("{0}/output/{1}/policy_{1}.zip", jobId, policyExternalId))
-                .s3SchemaPath(MessageFormat.format("{0}/schema.yaml", jobId))
-                .jobId(jobId)
-                .build();
-
+    public String deployPolicyServer(DeploymentMessage deploymentMessage) {
+        deploymentMessage.setS3Bucket(bucketName);
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(policyServerQueueUrl)
                 .withMessageGroupId("policy")
-                .withMessageBody(objectMapper.writeValueAsString(job));
+                .withMessageBody(objectMapper.writeValueAsString(deploymentMessage));
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();

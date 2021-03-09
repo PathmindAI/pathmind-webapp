@@ -2,6 +2,7 @@ package io.skymind.pathmind.services.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +11,7 @@ import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -91,7 +93,15 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                     final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
-                        awsApiClient.deployPolicyServer(policy.getExternalId(), run.getJobId());
+
+                        final String policyFile = MessageFormat.format("{0}/output/{1}/policy_{1}.zip", run.getJobId(), policy.getExternalId());
+                        // TODO: final String policyFile = AwsPolicyFileServiceImpl.POLICY_FILE + policy.getId();
+                        DeploymentMessage message = DeploymentMessage.builder()
+                                .s3ModelPath(policyFile)
+                                .s3SchemaPath(run.getJobId() + "/schema.yaml")
+                                .build();
+
+                        awsApiClient.deployPolicyServer(message);
                         deploymentStatus = runDAO.policyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
                     }
                     run.setPolicyServerStatus(deploymentStatus);
