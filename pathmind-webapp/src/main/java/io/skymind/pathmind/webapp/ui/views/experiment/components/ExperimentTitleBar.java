@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -57,7 +58,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button unarchiveButton;
     private DownloadModelLink downloadModelLink;
     private Button shareButton;
-    private boolean isPythonModel = false;
+    private boolean isPythonModel;
 
     private ExperimentView experimentView;
     private TrainingService trainingService;
@@ -167,8 +168,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         unarchiveButton.setVisible(experiment.isArchived());
         exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
-            // TODO: need to add a condition to servePolicyButton to check for Python model
-            servePolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+            servePolicyButton.setVisible(isPythonModel && experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
         }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
@@ -181,6 +181,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        isPythonModel = ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType()));
         favoriteStar.setValue(experiment.isFavorite());
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
