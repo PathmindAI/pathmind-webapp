@@ -145,7 +145,7 @@ class DemoList extends PolymerElement {
 
     buttonClickedHandler(event) {
         const targetTagName = "vaadin-vertical-layout";
-        let targetElement;
+        let targetElement = event.target;
         if (event.target.tagName != targetTagName) {
             targetElement = this._findParent(event.target, targetTagName);
         }

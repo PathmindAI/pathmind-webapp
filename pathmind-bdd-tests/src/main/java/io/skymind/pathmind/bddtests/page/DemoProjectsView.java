@@ -60,7 +60,7 @@ public class DemoProjectsView extends PageObject {
                 btnNumber = "3";
                 break;
         }
-        WebElement btn = utils.expandRootElement(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(" + btnNumber + ")")));
+        WebElement btn = demoList.findElement(By.cssSelector(".demo-item:nth-child(" + btnNumber + ")"));
         btn.click();
         setImplicitTimeout(600, SECONDS);
         utils.waitForLoadingBar();
