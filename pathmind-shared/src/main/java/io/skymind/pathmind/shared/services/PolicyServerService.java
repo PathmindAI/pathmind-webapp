@@ -20,6 +20,8 @@ public interface PolicyServerService {
 
     String getPolicyServerUrl(Experiment experiment);
 
+    DeploymentStatus getPolicyServerStatus(Experiment experiment);
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

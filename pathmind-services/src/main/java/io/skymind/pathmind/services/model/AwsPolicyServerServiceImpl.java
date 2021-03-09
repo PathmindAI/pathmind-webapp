@@ -2,22 +2,16 @@ package io.skymind.pathmind.services.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.constants.ModelType;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
-import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -118,4 +112,14 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 }).orElse(null);
     }
 
+    @Override
+    public DeploymentStatus getPolicyServerStatus(Experiment experiment) {
+        return experiment.bestPolicyRun()
+                .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
+                .map(run -> {
+                    DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
+                    run.setPolicyServerStatus(deploymentStatus);
+                    return deploymentStatus;
+                }).orElse(DeploymentStatus.NOT_DEPLOYED);
+    }
 }
