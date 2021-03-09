@@ -99,11 +99,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
         return experiment.bestPolicyRun()
                 .filter(run -> ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()))) // only PY
                 .map(run -> {
-                    if (run.getPolicyServerStatus() != DeploymentStatus.DEPLOYED) {
-                        DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
-                        run.setPolicyServerStatus(deploymentStatus);
-                    }
-                    if (run.getPolicyServerStatus() == DeploymentStatus.DEPLOYED) {
+                    if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
                         String  host = run.getJobId() + "." + applicationHost;
                         UriComponents uriComponents = this.urlBuilder.cloneBuilder().host(host).build();
                         return uriComponents.toUriString();
