@@ -9,7 +9,6 @@ Feature: Demo projects
   Scenario Outline: Check demo projects create demo project
     Given Login to the pathmind
     When Open projects page
-    When Click in 'Example Projects' button
     When Click demo list '<demo model>'
     When Check that experiment page is opened
     Then Check experiment page reward variables is <reward vars>
