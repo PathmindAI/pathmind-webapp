@@ -412,6 +412,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+            case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
@@ -512,6 +513,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
             instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
             instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+            //todo if we need to validate requirements, we'd rather create another script to check it. the current script is just install requirements.txt
+            instructions.add("if [[ ! -z \"$ENVIRONMENT_NAME\" ]]; then find . -maxdepth 1 -name requirements.txt -exec pip install -r '{}' \\; 2>/dev/null ; fi");
         }
 
 

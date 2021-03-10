@@ -13,9 +13,9 @@ import java.util.List;
 public class NavBarItemSelectExperimentAction {
     public static void selectExperiment(Experiment experiment, AbstractExperimentView abstractExperimentView) {
         // IMPORTANT -> Here we have to be a lot smarter because the action has to changed based on the view.
-        if(abstractExperimentView instanceof ExperimentView) {
+        if (abstractExperimentView instanceof ExperimentView) {
             selectExperimentFromExperimentView(experiment, abstractExperimentView);
-        } else if(abstractExperimentView instanceof NewExperimentView) {
+        } else if (abstractExperimentView instanceof NewExperimentView) {
             selectExperimentFromNewExperimentView(experiment, abstractExperimentView);
         } else {
             throw new RuntimeException("I can't happen.");
@@ -23,7 +23,7 @@ public class NavBarItemSelectExperimentAction {
     }
 
     private static void selectExperimentFromNewExperimentView(Experiment experiment, AbstractExperimentView abstractExperimentView) {
-        if(experiment.isDraft()) {
+        if (experiment.isDraft()) {
             abstractExperimentView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.NEW_EXPERIMENT + "/" + experiment.getId()));
             synchronized (abstractExperimentView.getExperimentLock()) {
                 abstractExperimentView.setExperiment(experiment);

@@ -140,4 +140,8 @@ public class ModelStepDefinitions {
         modelPageSteps.checkModelNoteOnTheProjectPage(note);
     }
 
+    @Then("^Check model page experiment name '(.*)' selected observations is '(.*)'$")
+    public void checkModelPageExperimentNameSelectedObservationsIs(String experiment, String observations) {
+        modelPageSteps.checkModelPageExperimentNameSelectedObservationsIs(experiment, observations);
+    }
 }
