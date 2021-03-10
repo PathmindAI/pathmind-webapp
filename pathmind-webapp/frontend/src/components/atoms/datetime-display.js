@@ -1,5 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import { format, register } from "timeago.js";
+import { render, register } from "timeago.js";
 
 class DatetimeDisplay extends PolymerElement {
     static get is() {
@@ -22,7 +22,7 @@ class DatetimeDisplay extends PolymerElement {
             },
             displaytext: {
                 type: String,
-                computed: `_computeDisplayText(datetimeWithTimezone)`,
+                value: "",
             },
             serverTimeZoneOffsetFromUTC: {
                 type: String,
@@ -32,7 +32,7 @@ class DatetimeDisplay extends PolymerElement {
     }
 
     static get template() {
-        return html`{{displaytext}}`;
+        return html`<span datetime$="{{datetimeWithTimezone}}">{{displaytext}}</span>`;
     }
     
     localeFunc(number, index, totalSec) {
@@ -59,8 +59,18 @@ class DatetimeDisplay extends PolymerElement {
         register('my-locale', this.localeFunc);
     }
 
-    _computeDate(dateTimeWithTimezone) {
-        return new Date(dateTimeWithTimezone).toLocaleDateString(window.navigator.language, { 
+    ready() {
+        super.ready();
+        const datetimeAsDate = new Date(this.datetimeWithTimezone);
+        if (datetimeAsDate > new Date().setDate(new Date().getDate()-30)) {
+            render(this.shadowRoot.querySelector("span"), 'my-locale');
+        } else {
+            this.displaytext = this.date;
+        }
+    }
+
+    _computeDate(datetimeWithTimezone) {
+        return new Date(datetimeWithTimezone).toLocaleDateString(window.navigator.language, { 
             year: 'numeric', 
             month: 'short', 
             day: 'numeric', 
@@ -85,10 +95,6 @@ class DatetimeDisplay extends PolymerElement {
         return datetime+timezone;
     }
 
-    _computeDisplayText(dateTimeWithTimezone) {
-        const datetimeAsDate = new Date(dateTimeWithTimezone);
-        return datetimeAsDate <= new Date().setDate(new Date().getDate()-30) ? this.date : format(datetimeAsDate.getTime(), 'my-locale');
-    }
 }
 
 customElements.define(DatetimeDisplay.is, DatetimeDisplay);
