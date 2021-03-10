@@ -2,7 +2,7 @@
 
 HOSTNAME=$(hostname)
 aws sqs create-queue --queue-name ${HOSTNAME}-updater-queue --attributes "{\"MessageRetentionPeriod\":\"60\"}"
-cat ./infra/sqs_policy.json | sed "s/BUILD_ID/${HOSTNAME}/g" > /tmp/${HOSTNAME}-sqs_policy.json
+cat ./infra/sqs_policy.json | sed "s/BUILD_ID/${HOSTNAME}/g" | sed "s/ENVIRONMENT/${ENVIRONMENT}/g" > /tmp/${HOSTNAME}-sqs_policy.json
 aws sqs set-queue-attributes --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${HOSTNAME}-updater-queue --attributes file:///tmp/${HOSTNAME}-sqs_policy.json
 aws sns subscribe --topic-arn arn:aws:sns:us-east-1:839270835622:${ENVIRONMENT}-updater-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:839270835622:${HOSTNAME}-updater-queue --attributes "{\"RawMessageDelivery\":\"true\"}"
 
