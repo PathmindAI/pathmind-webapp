@@ -10,6 +10,7 @@ class LoadingSpinner extends PolymerElement {
             <style>
                 :host {
                     --icon-size: var(--lumo-font-size-l);
+                    --border-size: 2px;
                     display: block;
                     position: relative;
                     width: var(--icon-size);
@@ -23,9 +24,9 @@ class LoadingSpinner extends PolymerElement {
                     height: var(--icon-size);
                     top: 0;
                     left: 0;
-                    border: 2px solid var(--pm-grey-color-light);
+                    border: var(--border-size) solid var(--pm-grey-color-light);
                     border-radius: 50%;
-                    border-top: 2px solid var(--pm-primary-color);
+                    border-top: var(--border-size) solid var(--pm-primary-color);
                     -webkit-animation: spin 2s linear infinite; /* Safari */
                     animation: spin 2s linear infinite;
                 }
