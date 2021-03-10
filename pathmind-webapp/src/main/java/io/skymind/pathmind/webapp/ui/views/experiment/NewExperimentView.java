@@ -19,7 +19,9 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.utils.ModelUtils;
@@ -30,7 +32,6 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -39,6 +40,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.SaveDraftAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
@@ -51,7 +53,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Route(value = Routes.NEW_EXPERIMENT, layout = MainLayout.class)
 public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
-    private final int REWARD_FUNCTION_MAX_LENGTH = 65535;
     protected ExperimentNotesField notesField;
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
@@ -60,6 +61,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
+    private Button archiveButton;
     private SplitButton splitButton;
     private Anchor downloadModelAlpLink;
     private boolean isNeedsSaving = false;
@@ -162,6 +164,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         List<Button> actionButtons = new ArrayList<Button>();
         actionButtons.add(startRunButton);
         actionButtons.add(saveDraftButton);
+        actionButtons.add(archiveButton);
         SplitButton splitButton = new SplitButton(actionButtons);
         splitButton.addThemeName("new-experiment-split-button");
         return splitButton;
@@ -182,6 +185,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor));
         saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
         }));
+        archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
     }
 
     /************************************** UI element creations are above this line **************************************/
@@ -189,9 +193,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     // REFACTOR -> The logic should really be in ExperimentUtils because it's business logic rather than GUI logic but for now we'll just leave it here.
     private boolean canStartTraining() {
         PathmindUser currentUser = userService.getCurrentUser();
-        return ModelUtils.isValidModel(experiment.getModel())
-                && rewardFunctionEditor.isValidForTraining()
-                && observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()
+        Model model = experiment.getModel();
+        boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType()));
+        return ModelUtils.isValidModel(model)
+                && (isPyModel || rewardFunctionEditor.isValidForTraining())
+                && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
                 && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
     }
@@ -205,7 +211,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
-        saveDraftButton.setEnabled(rewardFunctionEditor.isRewardFunctionLessThanMaxLength());
+        saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
     }
@@ -230,28 +236,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     // STEPH -> TODO -> Clean this up so that it's consistent with the rest.
     public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
-            if (saveDraftButton.isEnabled()) {
-                handleSaveDraftClicked(afterClickedCallback);
-            } else {
-                errorPopup(afterClickedCallback);
-            }
+            handleSaveDraftClicked(afterClickedCallback);
         } else {
             afterClickedCallback.execute();
         }
-    }
-
-    // STEPH -> TODO -> Should be moved to a component rather than here in the view.
-    private void errorPopup(Command afterClickedCallback) {
-        String header = "Before you leave....";
-        String text = "";
-        if (rewardFunctionEditor.isRewardFunctionMoreThanMaxLength()) {
-            text += "Your changes in the reward function cannot be saved because it has exceeded " + REWARD_FUNCTION_MAX_LENGTH + " characters. ";
-        }
-        text += "Please check and fix the errors.";
-        ConfirmPopup popup = new ConfirmPopup(header, text);
-        popup.setConfirmButtonText("Stay");
-        popup.setCancelButton("Leave", afterClickedCallback);
-        popup.open();
     }
 
     @Override
@@ -286,11 +274,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
-        if (experimentDAO.isDraftExperiment(experimentId)) {
+        if (experiment.isDraft()) {
             return true;
         } else {
             // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.EXPERIMENT, experimentId);
+            event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
             return false;
         }
     }

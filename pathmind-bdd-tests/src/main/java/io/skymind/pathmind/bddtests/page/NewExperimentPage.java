@@ -143,12 +143,6 @@ public class NewExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//span[text()='Notes saved!' and @class='fade-out-hint-label fade-in']")).isDisplayed(), is(true));
     }
 
-    public void checkThatBeforeYouLeavePopUpIsShownWithError(String error) {
-        WebElement popupShadowRoot = utils.expandRootElement(confirmPopup);
-        assertThat(popupShadowRoot.findElement(By.cssSelector("h3")).getText(), is("Before you leave...."));
-        assertThat(popupShadowRoot.findElement(By.cssSelector(".message")).getText(), is(error));
-    }
-
     public void clickSideBarExperiment(String experimentName) {
         waitABit(2000);
         utils.getExperimentNavbarItemByExperimentName(experimentName, null).click();
@@ -179,14 +173,6 @@ public class NewExperimentPage extends PageObject {
         WebElement favoriteStarShadow = utils.expandRootElement(experimentNavBarItemShadow.findElement(By.cssSelector("favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         assertThat(favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).getAttribute("title"), is(tooltip));
-    }
-
-    public void checkSideBarCurrentExperimentArchiveBtnTooltipIs(String tooltip) {
-        waitABit(3500);
-        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
-        WebElement archiveButton = experimentNavBarItemShadow.findElement(By.cssSelector("#archiveButton"));
-        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        assertThat(archiveButton.getAttribute("title"), is(tooltip));
     }
 
     public void checkNewExperimentPageTrainPolicyBtn(Boolean btnStatus) {
