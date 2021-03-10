@@ -78,25 +78,17 @@ def process_message(message):
     S3ModelPath=body['S3ModelPath']
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
-    helm_name="policy_"+job_id
+    helm_name="policy_"+JobId
     ReceiptHandle=message['ReceiptHandle']
 
     #jobs is done so destroy the spot instance and the pod
     if 'destroy' in body:
-        app_logger.info('Destroying s3://{s3bucket}/{s3path}'\
+        app_logger.info('Destroying s3://{s3bucket}/{JobId}'\
                 .format(s3bucket=s3bucket,
-                        s3path=s3path))
-        sql_script="""
-                update public.trainer_job
-                set status=6,
-                ec2_end_date=NOW(),
-                update_date=NOW()
-                where job_id='{job_id}'
-        """.format(job_id=job_id)
-        execute_psql(sql_script)
+                        JobId=JobId))
         try:
             app_logger.info('Deleting helm {helm_name}'.format(helm_name=helm_name))
-            sh.helm('delete',helm_name,´'-n',NAMESPACE)
+            sh.helm('delete',helm_name,'-n',NAMESPACE)
         except Exception as e:
             app_logger.error(traceback.format_exc())
     else:
@@ -124,36 +116,7 @@ def process_message(message):
             app_logger.error(traceback.format_exc())
 
         #insert the status to trainer_job
-        sql_script="""
-            INSERT INTO public.trainer_job (
-            job_id,
-            sqs_url,
-            s3path,
-            s3bucket,
-            receipthandle,
-            ec2_instance_type,
-            ec2_max_price,
-            status,
-            description)
-            VALUES (
-            '{job_id}',
-            '{SQS_URL}',
-            '{s3path}',
-            '{s3bucket}',
-            '{ReceiptHandle}',
-            'N/A',
-            'N/A',
-            {status},
-            'pathmind training job')
-        """.format(
-            job_id=job_id,
-            SQS_URL=SQS_URL,
-            s3path=s3path,
-            s3bucket=s3bucket,
-            ReceiptHandle=ReceiptHandle,
-            ec2_instance_type=ec2_instance_type,
-            ec2_max_price=ec2_max_price,
-            status=1)
+#        sql_script=""" """.format()
 #        execute_psql(sql_script)
 
     #Delete message

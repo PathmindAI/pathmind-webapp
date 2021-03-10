@@ -14,14 +14,8 @@ image:
 #  port: 80
 
 env:
-  SQS_URL: https://queue.amazonaws.com/839270835622/test-training-queue.fifo
+  SQS_URL: https://queue.amazonaws.com/839270835622/test-policy-server.fifo
   ENVIRONMENT: test
-  NAME: dev-pathmind.k8s.local
-  KOPS_STATE_STORE: s3://dev-pathmind-kops-state/k8s.dev-pathmind.k8s.local
-  RL_IMAGE: 839270835622.dkr.ecr.us-east-1.amazonaws.com/rl_training:test
-  S3_BUCKET_STATIC: test-training-static-files.pathmind.com
-
-  
 
 ingress:
   enabled: false
@@ -37,22 +31,17 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: 
+resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 2
-    memory: 1024Mi
   requests:
-    cpu: 1
-    memory: 512Mi
-
+    cpu: 250mi
+    memory: 256Mi
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-

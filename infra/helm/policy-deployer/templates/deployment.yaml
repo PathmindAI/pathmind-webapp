@@ -46,14 +46,6 @@ spec:
             value: "{{ .Values.env.ENVIRONMENT }}"
           - name: SQS_URL
             value: "{{ .Values.env.SQS_URL }}"
-          - name: NAME
-            value: "{{ .Values.env.NAME }}"
-          - name: KOPS_STATE_STORE
-            value: "{{ .Values.env.KOPS_STATE_STORE }}"
-          - name: RL_IMAGE
-            value: "{{ .Values.env.RL_IMAGE }}"
-          - name: S3_BUCKET_STATIC
-            value: "{{ .Values.env.S3_BUCKET_STATIC }}"
           - name: DB_URL_CLI
             valueFrom:
               secretKeyRef:
