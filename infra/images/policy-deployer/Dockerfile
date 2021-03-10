@@ -5,9 +5,9 @@ WORKDIR /app
 
 #Copy files
 COPY trigger.py .
+COPY build_and_push.sh .
 COPY LoggerInit.py .
 COPY requirements.txt .
-COPY rl_training_deployment*.yaml ./
 
 #env
 ENV DEBIAN_FRONTEND=noninteractive
@@ -26,5 +26,5 @@ RUN apt-get update && \
 	chmod +x ./kubectl && \
 	mv ./kubectl /usr/local/bin/kubectl 
 
-CMD ["python3","trigger.py"]
-#CMD ["bash","-c","sleep 10000000"]
+#CMD ["python3","trigger.py"]
+CMD ["bash","-c","sleep 10000000"]

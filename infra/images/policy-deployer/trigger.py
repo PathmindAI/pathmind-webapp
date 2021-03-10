@@ -75,8 +75,9 @@ def process_message(message):
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
-    s3path=body['S3Path']
-    job_id=s3path
+    S3ModelPath=body['S3ModelPath']
+    S3SchemaPath=body['S3SchemaPath']
+    JobId=body['JobId']
     helm_name="policy_"+job_id
     ReceiptHandle=message['ReceiptHandle']
 
@@ -100,8 +101,25 @@ def process_message(message):
             app_logger.error(traceback.format_exc())
     else:
         try:
+            app_logger.info('Clonning repository')
+            sh.mkdir('-p','policy-server')
+            sh.rm('-rf','policy-server')
+            sh.git('clone','git@github.com:SkymindIO/policy-server.git')
             app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-            sh.helm('upgrade','--install',helm_name,´'-n',NAMESPACE)
+            sh.bash('build_and_push.sh'\
+                ,'policy-server'\
+                ,'policy-server'\
+                ,'{ENVRIONMENT}{JobId}'.format(ENVRIONMENT=ENVRIONMENT,JobId=JobId)\
+                ,'\'--build-arg S3BUCKET="{s3bucket}" \
+                --build-arg S3MODELPATH="{S3ModelPath}" \
+                --build-arg S3SCHEMAPATH="{S3SchemaPath}"\''\
+                .format(s3bucket=s3bucket,S3ModelPath=S3ModelPath,S3SchemaPath=S3SchemaPath))
+            app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
+            sh.helm('upgrade'\
+                ,'--install'\
+                ,helm_name\
+                ,'"--set image.tag={ENVRIONMENT}{JobId}"'.format(ENVRIONMENT=ENVRIONMENT,JobId=JobId)\
+                ,'-n',NAMESPACE)
         except Exception as e:
             app_logger.error(traceback.format_exc())
 
