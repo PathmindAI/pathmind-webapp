@@ -21,7 +21,7 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.components.alp.DownloadModelAlpLink;
+import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @CssImport("./styles/styles.css")
@@ -38,8 +38,9 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
 
     private final ExportPolicyViewContent exportPolicyViewContent;
     private ExportPolicyButton exportButton;
-    private Anchor downloadModelAlpLink;
-
+    private Anchor downloadModelLink;
+    
+    private boolean isPythonModel = false;
     private long policyId;
     private Policy policy;
 
@@ -58,14 +59,14 @@ public class ExportPolicyView extends PathMindDefaultView implements HasUrlParam
     protected Component getMainContent() {
         exportButton = new ExportPolicyButton(segmentIntegrator, policyFileService, policyDAO, () -> policy);
 
-        downloadModelAlpLink = new DownloadModelAlpLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true);
+        downloadModelLink = new DownloadModelLink(policy.getProject().getName(), policy.getModel(), modelService, segmentIntegrator, true, isPythonModel);
 
         exportPolicyViewContent.setFilename(exportButton.getPolicyFilename());
 
         VerticalLayout exportPolicyViewContentAndButtons = WrapperUtils.wrapFormCenterVertical(
             exportPolicyViewContent,
             exportButton,
-            downloadModelAlpLink
+            downloadModelLink
         );
 
         return exportPolicyViewContentAndButtons;

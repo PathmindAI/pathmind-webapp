@@ -9,23 +9,13 @@ public class DemoProjectsStepDefinitions {
     @Steps
     private DemoProjectsSteps demoProjectsSteps;
 
-    @When("^Close demo projects pop-up$")
-    public void closeDemoProjectsPopUp() {
-        demoProjectsSteps.closeDemoProjectsPopUp();
+    @When("^Check demo list elements$")
+    public void checkDemoListElements() {
+        demoProjectsSteps.checkDemoListElements();
     }
 
-    @When("^Check that demo projects popup is shown '(.*)'$")
-    public void checkThatDemoProjectsPopupIsShown(boolean shown) {
-        demoProjectsSteps.checkThatDemoProjectsPopupIsShown(shown);
-    }
-
-    @When("^Check demo popup elements$")
-    public void checkDemoPopupElements() {
-        demoProjectsSteps.checkDemoPopupElements();
-    }
-
-    @When("^Click demo popup '(.*)' get started btn$")
-    public void clickDemoPopupGetStartedBtn(String model) {
-        demoProjectsSteps.clickDemoPopupGetStartedBtn(model);
+    @When("^Click demo list '(.*)'$")
+    public void clickDemoListItem(String model) {
+        demoProjectsSteps.clickDemoListItem(model);
     }
 }
