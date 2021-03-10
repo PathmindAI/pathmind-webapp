@@ -19,7 +19,7 @@ import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsViewOnlyPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
@@ -65,7 +65,7 @@ public class ExperimentView extends AbstractExperimentView {
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
     private ExperimentChartsPanel experimentChartsPanel;
-    private ObservationsPanel experimentObservationsPanel;
+    private ObservationsViewOnlyPanel experimentObservationsPanel;
     private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
     private SimulationMetricsPanel experimentSimulationMetricsPanel;
 
@@ -74,7 +74,7 @@ public class ExperimentView extends AbstractExperimentView {
     private ExperimentTitleBar comparisonTitleBar;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
-    private ObservationsPanel comparisonObservationsPanel;
+    private ObservationsViewOnlyPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
     private FloatingCloseButton comparisonModeCloseButton;
@@ -308,7 +308,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentCodeViewer = new CodeViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
-        experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
+        experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
         experimentComponentList.addAll(List.of(
@@ -333,7 +333,7 @@ public class ExperimentView extends AbstractExperimentView {
         comparisonCodeViewer = new CodeViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
-        comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
+        comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
 
         comparisonExperimentComponents.addAll(List.of(
