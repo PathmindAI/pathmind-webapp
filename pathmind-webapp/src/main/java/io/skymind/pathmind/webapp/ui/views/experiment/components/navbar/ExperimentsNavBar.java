@@ -82,6 +82,13 @@ public class ExperimentsNavBar extends VerticalLayout {
         return modelId;
     }
 
+    public void unpinExperiments() {
+        experimentsNavBarItems.stream()
+                .filter(experimentsNavBarItem -> experimentsNavBarItem.isCurrentComparison())
+                .findFirst()
+                .ifPresent(item -> item.setIsCurrentComparison(false));
+    }
+
     public void updateExperiment(Experiment experiment) {
         if (experiment.isArchived()) {
             removeExperiment(experiment);
