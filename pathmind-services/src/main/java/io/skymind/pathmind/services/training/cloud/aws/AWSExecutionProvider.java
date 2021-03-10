@@ -224,7 +224,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        Optional<byte[]> optional = getFile(jobHandle, "policy_" + trainingRun + ".zip");
+        Optional<byte[]> optional;
+        if (trainingRun.equals("freezing")) {
+            optional = getFile(jobHandle, "policy_" + trainingRun + ".zip", null);
+        } else {
+            optional = getFile(jobHandle, "policy_" + trainingRun + ".zip");
+        }
         return optional.isPresent() ? optional.get() : null;
     }
 
