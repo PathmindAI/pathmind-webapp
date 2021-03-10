@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage;
@@ -37,6 +38,8 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     private final AWSApiClient awsApiClient;
 
+    private final PolicyFileService policyFileService;
+
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
     private final UriComponentsBuilder urlBuilder;
@@ -46,12 +49,13 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     public AwsPolicyServerServiceImpl(RunDAO runDAO, ObservationDAO observationDAO,
                                       @Value("${pathmind.application.url}") String applicationURL,
                                       @Value("${pathmind.application.environment}") String environment,
-                                      AWSApiClient awsApiClient,
+                                      AWSApiClient awsApiClient, PolicyFileService policyFileService,
                                       PolicyServerFilesCreator filesCreator) throws MalformedURLException {
         this.filesCreator = filesCreator;
         this.observationDAO = observationDAO;
         this.runDAO = runDAO;
         this.awsApiClient = awsApiClient;
+        this.policyFileService = policyFileService;
 
         URL url = new URL(applicationURL);
         this.applicationHost = environment + "." + url.getHost();
@@ -94,8 +98,8 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
 
-                        final String policyFile = MessageFormat.format("{0}/output/{1}/policy_{1}.zip", run.getJobId(), policy.getExternalId());
-                        // TODO: final String policyFile = AwsPolicyFileServiceImpl.POLICY_FILE + policy.getId();
+//                        final String policyFile = MessageFormat.format("{0}/output/{1}/policy_{1}.zip", run.getJobId(), policy.getExternalId());
+                        final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
                                 .s3ModelPath(policyFile)
                                 .s3SchemaPath(run.getJobId() + "/schema.yaml")

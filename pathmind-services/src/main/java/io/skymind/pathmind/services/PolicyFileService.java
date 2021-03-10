@@ -7,6 +7,8 @@ public interface PolicyFileService {
 
     byte[] getPolicyFile(long policyId);
 
+    String getPolicyFileLocation(long policyId);
+
     void savePolicyFile(Long policyId, byte[] policyFile);
 
     void savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile);
