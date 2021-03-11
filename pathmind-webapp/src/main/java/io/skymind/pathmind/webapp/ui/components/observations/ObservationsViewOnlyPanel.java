@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.components.observations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -18,7 +19,7 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
     private Experiment experiment;
     private List<Observation> modelObservations;
     private List<Observation> selectedObservations;
-    private List<Observation> comparisonModeExpOneSelectedObservations;
+    private List<Observation> comparisonModeTheOtherSelectedObservations;
     private List<Checkbox> checkboxList = new ArrayList<>();
 
     public ObservationsViewOnlyPanel(List<Observation> modelObservations) {
@@ -51,10 +52,39 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
                 .findFirst()
                 .ifPresent(checkbox -> checkbox.setValue(true));
         });
-    } 
+    }
 
-    public void setComparisonModeExpOneSelectedObservations(List<Observation> comparisonModeExpOneSelectedObservations) {
-        this.comparisonModeExpOneSelectedObservations = comparisonModeExpOneSelectedObservations;
+    public void highlightDiff() {
+        String highlightClassName = "highlight-label";
+        if (selectedObservations != null && comparisonModeTheOtherSelectedObservations != null) {
+            List<Observation> differentStatusObs;
+            List<Observation> secondSelectedObsList;
+            if (selectedObservations.size() >= comparisonModeTheOtherSelectedObservations.size()) {
+                differentStatusObs = new ArrayList<>(selectedObservations);
+                secondSelectedObsList = new ArrayList<>(comparisonModeTheOtherSelectedObservations);
+                secondSelectedObsList.removeAll(differentStatusObs);
+                differentStatusObs.removeAll(comparisonModeTheOtherSelectedObservations);
+            } else {
+                differentStatusObs = new ArrayList<>(comparisonModeTheOtherSelectedObservations);
+                secondSelectedObsList = new ArrayList<>(selectedObservations);
+                secondSelectedObsList.removeAll(differentStatusObs);
+                differentStatusObs.removeAll(selectedObservations);
+            }
+            differentStatusObs.addAll(secondSelectedObsList);
+            checkboxList.forEach(checkbox -> checkbox.removeClassName(highlightClassName));
+            differentStatusObs.forEach(obs -> {
+                checkboxList
+                    .stream()
+                    .filter(checkbox -> checkbox.getLabel().equals(obs.getVariable()))
+                    .findFirst()
+                    .ifPresent(checkbox -> checkbox.addClassName(highlightClassName));
+            });
+        }
+    }
+
+    public void setComparisonModeTheOtherSelectedObservations(List<Observation> comparisonModeTheOtherSelectedObservations) {
+        this.comparisonModeTheOtherSelectedObservations = comparisonModeTheOtherSelectedObservations;
+        highlightDiff();
     }
 
     @Override
@@ -62,6 +92,7 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
         this.experiment = experiment;
         this.selectedObservations = experiment.getSelectedObservations();
         setSelectedCheckboxes();
+        highlightDiff();
     }
 
     @Override

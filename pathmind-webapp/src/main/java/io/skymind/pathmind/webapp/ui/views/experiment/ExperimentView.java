@@ -114,6 +114,8 @@ public class ExperimentView extends AbstractExperimentView {
         panelsSplitWrapper.addThemeName("comparison-mode");
         middlePanel.addThemeName("comparison-mode");
         bottomPanel.addThemeName("comparison-mode");
+        experimentObservationsPanel.setComparisonModeTheOtherSelectedObservations(
+                comparisonExperiment.getSelectedObservations());
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -296,6 +298,14 @@ public class ExperimentView extends AbstractExperimentView {
 
     public void showCompareExperimentComponents(boolean isCompareVisible) {
         compareExperimentVerticalLayout.setVisible(isCompareVisible);
+    }
+
+    @Override
+    public void updateComponents() {
+        experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
+        experimentsNavbar.setVisible(!experiment.isArchived());
+        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(
+                experiment.getSelectedObservations());
     }
 
     @Override
