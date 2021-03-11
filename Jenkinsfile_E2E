@@ -60,7 +60,7 @@ def publishDockerImage(image_name, DOCKER_TAG) {
     sh "aws ecr create-repository --repository-name ${image_name}"
     echo "Tagging and pushing the pathmind Docker Image"
     sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
-    sh "docker push ${DOCKER_REG}/${image_name}"
+    sh "docker push ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 }
 
 /*
