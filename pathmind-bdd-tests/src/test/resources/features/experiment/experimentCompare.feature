@@ -225,3 +225,15 @@ Feature: Experiment page compare feature
     When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
     When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'false'
     When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'true'
+
+  Scenario: Check comparison pin is unpinned
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click new experiment page observation checkbox 'orderQueueSize'
+    When Click new experiment page observation checkbox 'timeOfDay'
+    When Click project start run button
+    When Click in 'New Experiment' button
+    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    When Click project start run button
+    When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
+    When Experiment page click comparison floating close btn
