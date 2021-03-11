@@ -70,6 +70,8 @@ ingress:
       paths: [/:8080:policy-server-rail-drl]
     - host: deploy-test.devpathmind.com
       paths: [/:8000:policy-server-deploy-test-swagger]
+    - host: stock.devpathmind.com
+      paths: [/:8000:policy-server-stock-swagger]
     - host: api.dev.devpathmind.com
       paths: [/:8081:pathmind-api-dev]
     - host: api.test.devpathmind.com
@@ -104,6 +106,7 @@ ingress:
         - simple-scheduling.devpathmind.com
         - rail-drl.devpathmind.com
         - deploy-test.devpathmind.com
+        - stock.devpathmind.com
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
         - api.staging.devpathmind.com
