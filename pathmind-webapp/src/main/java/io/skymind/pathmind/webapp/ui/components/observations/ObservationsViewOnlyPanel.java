@@ -10,23 +10,28 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 public class ObservationsViewOnlyPanel extends VerticalLayout implements ExperimentComponent {
 
-    private Experiment experiment;
     private List<Observation> modelObservations;
     private List<Observation> selectedObservations;
     private List<Observation> comparisonModeTheOtherSelectedObservations;
     private List<Checkbox> checkboxList = new ArrayList<>();
+    private VerticalLayout checkboxGroupWrapper;
+    private String highlightClassName = "highlight-label";
 
     public ObservationsViewOnlyPanel(List<Observation> modelObservations) {
         this.modelObservations = modelObservations;
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
+        checkboxGroupWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        checkboxGroupWrapper.addClassName("observations-table");
         createCheckboxes();
 
+        add(checkboxGroupWrapper);
         setWidthFull();
         setPadding(false);
         setSpacing(false);
@@ -39,7 +44,7 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
             checkbox.setLabel(obs.getVariable());
             checkbox.setEnabled(false);
             checkboxList.add(checkbox);
-            add(checkbox);
+            checkboxGroupWrapper.add(checkbox);
         });
     }
 
@@ -55,7 +60,6 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
     }
 
     public void highlightDiff() {
-        String highlightClassName = "highlight-label";
         if (selectedObservations != null && comparisonModeTheOtherSelectedObservations != null) {
             List<Observation> differentStatusObs;
             List<Observation> secondSelectedObsList;
@@ -70,8 +74,8 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
                 secondSelectedObsList.removeAll(differentStatusObs);
                 differentStatusObs.removeAll(selectedObservations);
             }
+            unhighlight();
             differentStatusObs.addAll(secondSelectedObsList);
-            checkboxList.forEach(checkbox -> checkbox.removeClassName(highlightClassName));
             differentStatusObs.forEach(obs -> {
                 checkboxList
                     .stream()
@@ -87,9 +91,12 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
         highlightDiff();
     }
 
+    public void unhighlight() {
+        checkboxList.forEach(checkbox -> checkbox.removeClassName(highlightClassName));
+    }
+
     @Override
     public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
         this.selectedObservations = experiment.getSelectedObservations();
         setSelectedCheckboxes();
         highlightDiff();

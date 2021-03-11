@@ -127,6 +127,8 @@ public class ExperimentView extends AbstractExperimentView {
         panelsSplitWrapper.removeThemeName("comparison-mode");
         middlePanel.removeThemeName("comparison-mode");
         bottomPanel.removeThemeName("comparison-mode");
+        experimentObservationsPanel.unhighlight();
+        comparisonObservationsPanel.unhighlight();
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }

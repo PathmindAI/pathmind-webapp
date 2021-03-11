@@ -80,6 +80,11 @@
     height: auto !important;
 }
 
+.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:first-child,
+.experiment-view .comparison-panel > vaadin-split-layout > vaadin-vertical-layout:first-child {
+    max-height: 27rem;
+}
+
 .experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
@@ -222,6 +227,16 @@
     padding: 0;
     border: none;
     border-radius: 0;
+}
+
+.experiment-view .observations-panel .observations-table {
+    padding-top: 0;
+    overflow: auto;
+}
+
+.experiment-view .observations-panel .observations-table > vaadin-checkbox {
+    font-weight: normal;
+    color: var(--lumo-body-text-color);
 }
 
 .experiment-view .observations-panel vaadin-checkbox {
