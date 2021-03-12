@@ -11,7 +11,7 @@ public class ExperimentManifestRepository {
     public List<ExperimentManifest> getAll() {
         return List.of(
                 ExperimentManifest.builder()
-                        .name("Automated Guided Vehicles (AGV)")
+                        .name("Automated Guided Vehicles")
                         .imageUrl(URI.create("https://downloads.intercomcdn.com/i/o/273937963/e33cea1e9b5ac12c5d6de951/image.png"))
                         .description("A fleet of automated guided vehicles (AGVs) optimizes its dispatching routes to maximize product throughput in a manufacturing center. When component parts arrive to be processed, they must be brought to the appropriate machine according to a specific processing sequence.")
                         .result("The reinforcement learning policy outperforms the optimizer by over 20%.")

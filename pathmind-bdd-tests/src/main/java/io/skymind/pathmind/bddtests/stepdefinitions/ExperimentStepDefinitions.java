@@ -250,8 +250,8 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.clickExperimentPageActionsBtn(btn);
     }
 
-    @Then("^Check experiment page serve policy is shown '(.*)'$")
-    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
-        experimentPageSteps.checkExperimentPageServePolicyIsShown(shown);
+    @When("^Experiment page click comparison floating close btn$")
+    public void experimentPageClickComparisonFloatingCloseBtn() {
+        experimentPageSteps.experimentPageClickComparisonFloatingCloseBtn();
     }
 }

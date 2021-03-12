@@ -10,6 +10,7 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import io.skymind.pathmind.shared.data.rllib.ExperimentStateOld;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
@@ -272,8 +273,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
                     try {
                         return objectMapper.readValue(client.fileContents(it), ExperimentState.class);
                     } catch (IOException e) {
-                        log.error(e.getMessage(), e);
-                        return null;
+                        try {
+                            // to support old format(ray 1.0)
+                            log.info("trying to parse OLD style format of ExperimentState.json");
+                            ExperimentStateOld stateOldFormat = objectMapper.readValue(client.fileContents(it), ExperimentStateOld.class);
+                            ExperimentState experimentState = new ExperimentState(stateOldFormat.getCheckpoints());
+                            return experimentState;
+                        } catch (IOException e1) {
+                            log.error(e1.getMessage(), e1);
+                            return null;
+                        }
                     }
                 });
 

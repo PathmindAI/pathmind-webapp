@@ -241,7 +241,7 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
-        experimentPage.checkExperimentPageServePolicyIsShown(shown);
+    public void experimentPageClickComparisonFloatingCloseBtn() {
+        experimentPage.experimentPageClickComparisonFloatingCloseBtn();
     }
 }

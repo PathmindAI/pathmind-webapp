@@ -382,11 +382,8 @@ public class ExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
     }
 
-    public void checkExperimentPageServePolicyIsShown(Boolean shown) {
-        if (shown) {
-            assertThat(getDriver().findElement(By.xpath("//vaadin-button[text()='Serve Policy']")).isDisplayed(), is(true));
-        } else {
-            assertThat(getDriver().findElement(By.xpath("//vaadin-button[text()='Serve Policy']")).isDisplayed(), is(false));
-        }
+    public void experimentPageClickComparisonFloatingCloseBtn() {
+        getDriver().findElement(By.xpath("//floating-close-button")).click();
+        assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
     }
 }
