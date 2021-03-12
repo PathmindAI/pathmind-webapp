@@ -13,6 +13,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 
 public class NewExperimentButton extends Button {
 
+    long modelId;
+
     public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, SegmentIntegrator segmentIntegrator) {
         this(experimentDAO, modelId, ButtonVariant.LUMO_PRIMARY, segmentIntegrator);
     }
@@ -20,16 +22,21 @@ public class NewExperimentButton extends Button {
     public NewExperimentButton(ExperimentDAO experimentDAO, long modelId, ButtonVariant buttonVariant, SegmentIntegrator segmentIntegrator) {
         super("New Experiment");
         setIcon(new Icon(VaadinIcon.PLUS));
+        this.modelId = modelId;
 
         addClickListener(evt -> getUI().ifPresent(ui -> {
             segmentIntegrator.newExperiment();
-            Experiment experiment = experimentDAO.createNewExperiment(modelId);
+            Experiment experiment = experimentDAO.createNewExperiment(this.modelId);
             EventBus.post(new ExperimentCreatedBusEvent(experiment));
             ui.navigate(NewExperimentView.class, ""+experiment.getId());
         }));
 
         addThemeVariants(buttonVariant);
         addClassName("new-experiment-button");
+    }
+
+    public void setModelId(long modelId) {
+        this.modelId = modelId;
     }
 
 }

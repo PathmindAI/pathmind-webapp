@@ -87,7 +87,7 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     protected void setSelected(boolean selected) {
         isSelected = selected;
-        if(isSelected) {
+        if (isSelected) {
             rewardVariableNameSpan.getElement().setAttribute(CLICKED_ATTRIBUTE, true);
         } else {
             rewardVariableNameSpan.getElement().removeAttribute(CLICKED_ATTRIBUTE);
@@ -129,5 +129,9 @@ public class RewardVariablesRowField extends HorizontalLayout {
 
     public RewardVariable getRewardVariable() {
         return rewardVariable;
+    }
+
+    public void setRewardVariable(RewardVariable rewardVariable) {
+        this.rewardVariable = rewardVariable;
     }
 }

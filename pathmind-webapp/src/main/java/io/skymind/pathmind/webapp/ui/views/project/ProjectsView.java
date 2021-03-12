@@ -16,6 +16,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -64,8 +65,9 @@ public class ProjectsView extends PathMindDefaultView {
     private List<Project> projects;
     private Grid<Project> projectGrid;
 
-    private FlexLayout gridWrapper;
+    private FlexLayout pageWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
+    private VerticalLayout gridWrapper;
     private DemoViewContent demoViewContent;
     private Dialog demoDialog;
 
@@ -91,47 +93,34 @@ public class ProjectsView extends PathMindDefaultView {
         headerWrapper.addClassName("page-content-header");
 
         demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
-        setupDemoDialog();
 
-        gridWrapper = new ViewSection(
-                headerWrapper,
-                archivesTabPanel,
-                projectGrid);
-        gridWrapper.addClassName("page-content");
+        gridWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            archivesTabPanel,
+            projectGrid);
+
+        HorizontalLayout contentWrapper = WrapperUtils.wrapWidthFullHorizontal(
+            gridWrapper, demoViewContent
+        );
+        contentWrapper.addClassName("content-wrapper");
+
+        pageWrapper = new ViewSection(headerWrapper, contentWrapper);
+        pageWrapper.addClassName("page-content");
 
         if (projects.isEmpty()) {
-            gridWrapper.add(demoViewContent);
-            archivesTabPanel.setVisible(false);
-            projectGrid.setVisible(false);
-            if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
-                showDemosButton.setVisible(false);
-                demoViewContent.setVisible(true);
-            } else {
-                demoViewContent.setVisible(false);
-                showDemosButton.setVisible(false);
-            }
+            gridWrapper.setVisible(false);
         } else {
+            demoViewContent.setIsVertical(true);
             showDemosButton.setVisible(featureManager.isEnabled(Feature.EXAMPLE_PROJECTS));
         }
+        if (featureManager.isEnabled(Feature.EXAMPLE_PROJECTS)) {
+            showDemosButton.setVisible(false);
+            demoViewContent.setVisible(true);
+        } else {
+            demoViewContent.setVisible(false);
+            showDemosButton.setVisible(false);
+        }
 
-        return gridWrapper;
-    }
-
-    private void setupDemoDialog() {
-        demoDialog = new Dialog();
-        demoDialog.getElement().getClassList().add("demo-dialog");
-        demoDialog.addOpenedChangeListener(openedChangedEvent -> {
-            if (openedChangedEvent.isOpened()) {
-                demoDialog.removeAll();
-                Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-                closeButton.addClickListener(event -> demoDialog.close());
-                // demoViewContent has to be re-initiated here every time
-                // otherwise it will be empty from the 2nd time onwards
-                demoViewContent = new DemoViewContent(demoProjectService, experimentManifestRepository, segmentIntegrator);
-                demoViewContent.setOnChooseDemoHandler(() -> demoDialog.close());
-                demoDialog.add(demoViewContent, closeButton);
-            }
-        });
+        return pageWrapper;
     }
 
     private Button showDemosButton() {
