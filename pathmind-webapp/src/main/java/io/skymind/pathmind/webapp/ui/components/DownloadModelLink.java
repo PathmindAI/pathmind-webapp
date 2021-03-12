@@ -24,6 +24,8 @@ public class DownloadModelLink extends Anchor {
     private String modelName;
     private String modelPackageName;
 
+    private Button downloadButton;
+
     private ModelService modelService;
     private SegmentIntegrator segmentIntegrator;
     private boolean buttonMode;
@@ -50,23 +52,33 @@ public class DownloadModelLink extends Anchor {
         this.isPythonModel = isPythonModel;
     }
 
+    public void setModel(Model model) {
+        this.modelId = model.getId();
+        this.modelName = model.getName();
+        this.modelPackageName = model.getPackageName();
+
+        if (modelService.hasModelAlp(modelId)) {
+            setupButton();
+        } else {
+            setVisible(false);
+        }
+    }
+
     public void setExperiment(Experiment experiment) {
         this.modelId = experiment.getModel().getId();
         this.modelName = experiment.getModel().getName();
         this.modelPackageName = experiment.getModel().getPackageName();
         this.projectName = experiment.getProject().getName();
 
-        if (isAlreadyRendered) {
-            return;
-        }
-
         setupButton();
-
-        isAlreadyRendered = true;
     }
 
     private void setupButton() {
-        Button downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
+        if (isAlreadyRendered) {
+            setModelLink();
+            return;
+        }
+        downloadButton = new Button("Model ALP", new Icon(VaadinIcon.DOWNLOAD_ALT));
         if (!buttonMode) {
             downloadButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         }
@@ -76,17 +88,23 @@ public class DownloadModelLink extends Anchor {
             segmentIntegrator.downloadedALP();
         });
         addClassName("download-alp-link");
+        if (modelService.hasModelAlp(modelId)) {
+            add(downloadButton);
+        } else {
+            setVisible(false);
+        }
+        setModelLink();
+        isAlreadyRendered = true;
+    }
+
+    private void setModelLink() {
         if (!isPythonModel && modelService.hasModelAlp(modelId)) {
             modelService.getModelAlp(modelId).ifPresent(resource -> {
                 getElement().setAttribute("href", getResourceStream(resource));
             });
-            add(downloadButton);
         } else if (isPythonModel) {
             getElement().setAttribute("href", "pythonURL"); // TODO: to be changed when we actually have it
             downloadButton.setText("Model");
-            add(downloadButton);
-        } else {
-            setVisible(false);
         }
     }
 

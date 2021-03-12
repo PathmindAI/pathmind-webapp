@@ -82,6 +82,13 @@ public class ExperimentsNavBar extends VerticalLayout {
         return modelId;
     }
 
+    public void unpinExperiments() {
+        experimentsNavBarItems.stream()
+                .filter(experimentsNavBarItem -> experimentsNavBarItem.isCurrentComparison())
+                .findFirst()
+                .ifPresent(item -> item.setIsCurrentComparison(false));
+    }
+
     public void updateExperiment(Experiment experiment) {
         if (experiment.isArchived()) {
             removeExperiment(experiment);
@@ -166,7 +173,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         setVisible(!newCurrentExperiment.isArchived());
 
         // There's no need processing any further if archived as the navbar is not visible.
-        if(newCurrentExperiment.isArchived()) {
+        if (newCurrentExperiment.isArchived()) {
             return;
         }
 
