@@ -101,7 +101,7 @@ class ModelsNavbarItem extends PolymerElement {
                 display: none;
             }
         </style>
-        <a router-link href=[[modelLink]]>
+        <a on-click="handleRowClicked">
             <div class="model-name">
                 <div>
                     <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
@@ -132,7 +132,6 @@ class ModelsNavbarItem extends PolymerElement {
 
     ready() {
         super.ready();
-        this.addEventListener("click", this.handleItemClicked);
     }
 
     tagLabelDraftText(isDraft) {
@@ -143,9 +142,8 @@ class ModelsNavbarItem extends PolymerElement {
         return modelPackageName ? `(${modelPackageName})` : "";
     }
 
-    handleItemClicked() {
-        history.pushState(window.location.href, `Model #${this.modelName}`, this.modelLink);
-        this.isCurrent = true;
+    handleRowClicked(event) {
+        event.preventDefault();
     }
 
     onArchiveButtonClicked(event) {
