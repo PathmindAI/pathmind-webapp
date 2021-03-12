@@ -26,7 +26,7 @@ def publishDockerImage(image_name, DOCKER_TAG) {
     sh "aws ecr get-login --no-include-email --region us-east-1 | sh"
     echo "Tagging and pushing the pathmind Docker Image"
     sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
-    sh "docker push ${DOCKER_REG}/${image_name}"
+    sh "docker push ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 }
 
 /*
@@ -222,6 +222,8 @@ pipeline {
                             echo "Updating helm chart"
                             sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
                             sh "sleep 90"
+                            echo "Deploying puctuator helm chart"
+                            sh "helm upgrade --install pathmind-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-punctuator.yaml -n ${DOCKER_TAG}"
                             echo "Deploying updater helm chart"
                             sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
                             echo "Wait for webapp to be available"
@@ -289,6 +291,8 @@ pipeline {
                             echo "Updating helm chart"
                             sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
                             sh "sleep 90"
+                            echo "Deploying punctuator helm chart"
+                            sh "helm upgrade --install pathmind-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-punctuator.yaml"
                             echo "Deploying updater helm chart"
                             sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
                         }

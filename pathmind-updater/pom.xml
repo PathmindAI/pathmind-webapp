@@ -8,8 +8,14 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>pathmind-updater</artifactId>
-    <name>Pathmind Updater</name>
+    <artifactId>pathmind-updater-parent</artifactId>
+    <name>Pathmind Updater Parent</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>updater</module>
+        <module>punctuator</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -29,15 +35,5 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
 </project>

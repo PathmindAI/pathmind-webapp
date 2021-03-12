@@ -9,15 +9,6 @@ import java.util.Map;
 
 public class CloneUtils {
 
-    public static <T extends DeepCloneableInterface> List<T> deepCloneList(List<T> originalList) {
-        if (originalList == null) {
-            return null;
-        }
-        ArrayList<T> clonedList = new ArrayList<T>(originalList.size());
-        originalList.stream().forEach(item -> clonedList.add((T) item.deepClone()));
-        return clonedList;
-    }
-
     public static <T extends DeepCloneableInterface> List<T> shallowCloneList(List<T> originalList) {
         if (originalList == null) {
             return null;

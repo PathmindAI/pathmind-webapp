@@ -35,7 +35,7 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
         Tabs chartTabs = createChartTabs();
         compareMetricsChartPanel = new CompareMetricsChartPanel();
         histogramChartPanel = new HistogramChartPanel();
-        policyChartPanel = new PolicyChartPanel(getUISupplier);
+        policyChartPanel = new PolicyChartPanel();
         trainingStartingPlaceholder = new TrainingStartingPlaceholder();
 
         VerticalLayout charts = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(

@@ -22,7 +22,7 @@ public class ExecutionEnvironmentManager {
                 PathmindHelper.VERSION_1_4_0,
                 NativeRL.VERSION_1_5_0,
                 JDK.VERSION_8_222,
-                Conda.VERSION_1_0_0,
+                Conda.VERSION_1_2_0,
                 EC2InstanceType.IT_36CPU_72GB,
                 0,
                 0,
