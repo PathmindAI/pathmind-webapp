@@ -101,7 +101,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             PolicyServerService.PolicyServerSchema schema = PolicyServerService.PolicyServerSchema.builder()
                     .parameters(
                             PolicyServerService.PolicyServerSchema.Parameters.builder()
-                                    .discrete(true)
+                                    .discrete(false)
                                     .tuple(false)
                                     .apiKey(user.getApiKey())
                             .build()
