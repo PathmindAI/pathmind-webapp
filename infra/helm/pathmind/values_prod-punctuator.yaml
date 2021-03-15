@@ -40,6 +40,7 @@ env:
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 1000
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/prod-punctuator
+  SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/prod-policy-server.fifo
 
 readinessprobe: {}
 

@@ -34,6 +34,7 @@ env:
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
   SQS_UPDATER_PUNCTUATOR_QUEUE: ""
+  SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/test-policy-server.fifo
 
 readinessprobe:
   httpGet:
