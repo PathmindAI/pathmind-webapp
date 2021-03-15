@@ -28,6 +28,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
     private String observationCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='true']";
     private String observationNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='false']";
+    private String observationXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s']";
     private String rewardVariableXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s']";
     private String rewardVariableCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and @chosen]";
     private String rewardVariableNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
@@ -81,6 +82,14 @@ public class ExperimentViewMiddlePanel extends PageObject {
             genericPage.checkElement(true, String.format(rewardVariableCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
         } else {
             genericPage.checkElement(true, String.format(rewardVariableNotCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
+        }
+    }
+
+    public void experimentPageCheckObservationIsHighlighted(String slot, String observation, boolean highlighted) {
+        if (highlighted) {
+            assertThat(getDriver().findElement(By.xpath(String.format(observationXpath, slot, genericPage.definePanel(slot), observation))).getAttribute("class"), is("highlight-label"));
+        } else {
+            assertThat(getDriver().findElement(By.xpath(String.format(observationXpath, slot, genericPage.definePanel(slot), observation))).getAttribute("class"), is(""));
         }
     }
 }
