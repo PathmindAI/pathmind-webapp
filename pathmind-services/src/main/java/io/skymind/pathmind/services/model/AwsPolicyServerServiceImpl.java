@@ -141,7 +141,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
         return Optional.of(experiment)
                 .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
                 .map(Experiment::getBestPolicy)
-                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(policy.getModel().getModelType())));
+                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType())));
     }
 
 }

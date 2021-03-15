@@ -12,7 +12,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
@@ -20,8 +19,9 @@ import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
-import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
 import io.skymind.pathmind.webapp.ui.components.atoms.ButtonWithLoading;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
@@ -68,6 +68,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Runnable updateExperimentViewRunnable;
     private Supplier<Object> getLockSupplier;
     private Supplier<Optional<UI>> getUISupplier;
+    private PolicyServerService policyServerService;
 
     private final FeatureManager featureManager;
 
@@ -76,17 +77,17 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
-                              RunDAO runDAO, FeatureManager featureManager,
+                              RunDAO runDAO, FeatureManager featureManager, PolicyServerService policyServerService,
                               TrainingService trainingService, ModelService modelService) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, trainingService, modelService, false);
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyServerService, trainingService, modelService, false);
     }
 
     /**
      * Extra constructor is needed for the support shared experiment view.
      */
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
-                              Supplier<Object> getLockSupplier,  Supplier<Optional<UI>> getUISupplier,
-                              RunDAO runDAO, FeatureManager featureManager,
+                              Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager, PolicyServerService policyServerService,
                               TrainingService trainingService, ModelService modelService,
                               boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
@@ -97,6 +98,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.modelService = modelService;
         this.getUISupplier = getUISupplier;
         this.featureManager = featureManager;
+        this.policyServerService = policyServerService;
 
         Component[] buttons = createButtons(isExportPolicyButtonOnly);
 
@@ -129,7 +131,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
-        servePolicyButton = new ButtonWithLoading("Serve Policy", () -> ServePolicyAction.servePolicy(getExperimentSupplier, servePolicyButton), true);
+        servePolicyButton = new ButtonWithLoading("Serve Policy", () -> ServePolicyAction.servePolicy(getExperimentSupplier, servePolicyButton, policyServerService), true);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
@@ -137,14 +139,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
         if (isExportPolicyButtonOnly) {
-            return new Component[] {exportPolicyButton, servePolicyButton};
+            return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
             List<Button> actionButtons = new ArrayList<Button>();
             actionButtons.add(shareButton);
             actionButtons.add(archiveButton);
             actionButtons.add(unarchiveButton);
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[] {stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
+            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
 
@@ -163,14 +165,18 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 if (experiment.isArchived()) {
                     return !archiveButton.getText().equals(item);
                 }
-                return !unarchiveButton.getText().equals(item);      
+                return !unarchiveButton.getText().equals(item);
             });
         }
 
         unarchiveButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+        boolean isCompletedWithPolicy =
+                experiment.isTrainingCompleted()
+                        && experiment.getBestPolicy() != null
+                        && experiment.getBestPolicy().hasFile();
+        exportPolicyButton.setVisible(isCompletedWithPolicy);
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
-            servePolicyButton.setVisible(isPythonModel && experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+            servePolicyButton.setVisible(isPythonModel && isCompletedWithPolicy);
         }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
@@ -190,7 +196,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         downloadModelLink.setExperiment(experiment);
         updateComponentEnablements();
     }
-    
+
     public Experiment getExperiment() {
         return experiment;
     }
