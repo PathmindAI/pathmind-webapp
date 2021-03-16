@@ -366,7 +366,7 @@ public class RunDAO {
         return RunRepository.getUserIdForRun(ctx, runId);
     }
 
-    public PolicyServerService.DeploymentStatus policyServerDeployedStatus(long experimentId, PolicyServerService.DeploymentStatus deploymentStatus) {
+    public PolicyServerService.DeploymentStatus updatePolicyServerDeployedStatus(long experimentId, PolicyServerService.DeploymentStatus deploymentStatus) {
         RunRepository.updatePolicyServerStatus(ctx, experimentId, deploymentStatus);
         return deploymentStatus;
     }

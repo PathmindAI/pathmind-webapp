@@ -2,7 +2,6 @@ package io.skymind.pathmind.services.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.MessageFormat;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,7 +97,6 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
                     if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
 
-//                        final String policyFile = MessageFormat.format("{0}/output/{1}/policy_{1}.zip", run.getJobId(), policy.getExternalId());
                         final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
                                 .s3ModelPath(policyFile)
@@ -106,7 +104,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                                 .build();
 
                         awsApiClient.deployPolicyServer(message);
-                        deploymentStatus = runDAO.policyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
+                        deploymentStatus = runDAO.updatePolicyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
                     }
                     run.setPolicyServerStatus(deploymentStatus);
                 });
