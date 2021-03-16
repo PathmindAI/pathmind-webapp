@@ -240,7 +240,8 @@ Feature: Experiment page compare feature
 
   Scenario: Check experiments comparison diff
     Given Login to the pathmind
-    When Create new CoffeeShop project with single reward function
+    When Create new CoffeeShop project with draft experiment
+    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click new experiment page observation checkbox 'orderQueueSize'
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
@@ -248,7 +249,7 @@ Feature: Experiment page compare feature
     When In confirmation dialog click in 'Share Training' button
     When Click pop-up dialog close btn
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    When Input reward function reward += after.avgServiceTime - before.balkedCustomers; // Maximize kitchen cleanliness test1
     When Click new experiment page observation checkbox 'collectQueueSize'
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
@@ -263,3 +264,6 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'payBillQueueSize' is highlighted 'false'
     Then Experiment page Check 'secondary' observation 'kitchenCleanlinessLevel' is highlighted 'false'
     Then Experiment page Check 'secondary' observation 'timeOfDay' is highlighted 'true'
+    Then Experiment page Check 'primary' reward variable 'balkedCustomers' is highlighted 'true'
+    Then Experiment page Check 'primary' reward variable 'avgServiceTime' is highlighted 'true'
+    Then Experiment page Check 'secondary' reward variable 'kitchenCleanlinessLevel' is highlighted 'true'

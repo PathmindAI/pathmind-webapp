@@ -62,4 +62,9 @@ public class ExperimentViewSteps {
     public void experimentPageCheckObservationIsHighlighted(String slot, String observation, boolean highlighted) {
         experimentViewMiddlePanel.experimentPageCheckObservationIsHighlighted(slot, observation, highlighted);
     }
+
+    @Step
+    public void experimentPageCheckRewardVariableIsHighlighted(String slot, String observation, boolean highlighted) {
+        experimentViewMiddlePanel.experimentPageCheckRewardVariableIsHighlighted(slot, observation, highlighted);
+    }
 }
