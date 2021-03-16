@@ -30,6 +30,9 @@ RUN apt-get update && \
         chmod 700 get_helm.sh && \
         ./get_helm.sh
 
+# Install Docker
+RUN curl -sSL https://get.docker.com/ | sh
+
 #Github key
 COPY id_rsa .
 RUN chmod 600 id_rsa && \

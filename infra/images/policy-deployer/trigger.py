@@ -101,7 +101,7 @@ def process_message(message):
             sh.bash('build_and_push.sh'\
                 ,'policy-server'\
                 ,'policy-server'\
-                ,'{ENVRIONMENT}{JobId}'.format(ENVRIONMENT=ENVRIONMENT,JobId=JobId)\
+                ,'{ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
                 ,'\'--build-arg S3BUCKET="{s3bucket}" \
                 --build-arg S3MODELPATH="{S3ModelPath}" \
                 --build-arg S3SCHEMAPATH="{S3SchemaPath}"\''\
@@ -110,7 +110,7 @@ def process_message(message):
             sh.helm('upgrade'\
                 ,'--install'\
                 ,helm_name\
-                ,'"--set image.tag={ENVRIONMENT}{JobId}"'.format(ENVRIONMENT=ENVRIONMENT,JobId=JobId)\
+                ,'"--set image.tag={ENVIRONMENT}{JobId}"'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
                 ,'-n',NAMESPACE)
         except Exception as e:
             app_logger.error(traceback.format_exc())
