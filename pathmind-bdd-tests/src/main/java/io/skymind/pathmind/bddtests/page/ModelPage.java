@@ -35,7 +35,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelTitlePackageNameIs(String packageName) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/descendant::span[@class='section-title-label project-title-label'][2]")).getText().split("[()]")[1], is(packageName));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/descendant::span[@class='section-title-label'][2]")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
