@@ -529,7 +529,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
-                var("FREEZING", String.valueOf(Boolean.TRUE))
+                var("FREEZING", String.valueOf(Boolean.FALSE))
         ));
 
         if (job.getEnvironment() != null) {
