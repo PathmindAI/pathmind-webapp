@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -75,6 +76,12 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                 try {
                     long runId = Long.parseLong(message.getBody());
                     log.info("Updater is dealing with: {}", runId);
+
+                    sqsClient.getSqsClient().deleteMessage(
+                            new DeleteMessageRequest()
+                                    .withQueueUrl(punctuatorQueueUrl)
+                                    .withReceiptHandle(message.getReceiptHandle()));
+
                     Run run = runDAO.getRun(runId);
                     final Map<Long, List<String>> stoppedPoliciesNamesForRuns = runDAO.getStoppedPolicyNamesForRuns(List.of(runId));
                     List<String> stoppedPoliciesNames = stoppedPoliciesNamesForRuns.getOrDefault(runId, Collections.emptyList());

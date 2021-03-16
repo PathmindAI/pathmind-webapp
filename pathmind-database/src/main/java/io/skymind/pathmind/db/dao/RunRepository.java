@@ -33,7 +33,7 @@ class RunRepository {
         return ctx
                 .select(RUN.asterisk())
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME)
+                .select(MODEL.ID, MODEL.NAME, MODEL.MODEL_TYPE)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(RUN)
                 .leftJoin(EXPERIMENT).on(EXPERIMENT.ID.eq(RUN.EXPERIMENT_ID))
