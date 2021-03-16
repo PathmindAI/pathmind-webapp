@@ -102,10 +102,11 @@ def process_message(message):
                 ,'policy-server'\
                 ,'policy-server'\
                 ,'{ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
-                ,'\'--build-arg S3BUCKET="{s3bucket}" \
-                --build-arg S3MODELPATH="{S3ModelPath}" \
-                --build-arg S3SCHEMAPATH="{S3SchemaPath}"\''\
-                .format(s3bucket=s3bucket,S3ModelPath=S3ModelPath,S3SchemaPath=S3SchemaPath))
+                ,'--build-arg', 'S3BUCKET={s3bucket}'.format(s3bucket=s3bucket) \
+                ,'--build-arg', 'S3MODELPATH={S3ModelPath}'.format(S3ModelPath=S3ModelPath) \
+                ,'--build-arg', 'S3SCHEMAPATH={S3SchemaPath}'.format(S3SchemaPath=S3SchemaPath) \
+                ,'--build-arg', 'AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}'.format(AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY) \
+                ,'--build-arg', 'AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}'.format(AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID))
             app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
             sh.helm('upgrade'\
                 ,'--install'\
@@ -149,6 +150,8 @@ if __name__ == "__main__":
     #Get env variables
     SQS_URL=os.environ['SQS_URL']
     ENVIRONMENT=os.environ['ENVIRONMENT']
+    AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
+    AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
     if ENVIRONMENT=='prod':
         NAMESPACE='default'
     else:

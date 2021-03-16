@@ -8,7 +8,7 @@
 docker_folder=$1
 image=$2
 tag=$3
-add_args=$4
+add_args=${@:4}
 
 if [ "$docker_folder" == "" ] || [ "$image" == "" ] || [ "$tag" == "" ]
 then
@@ -48,6 +48,5 @@ $(aws ecr get-login --region ${region} --no-include-email)
 # with the full name.
 
 docker build  -t ${image} -f ${docker_folder}/Dockerfile ${add_args} ${docker_folder}/. && \
-	docker tag ${image} ${fullname} 
-	#&& \
-	#docker push ${fullname}
+	docker tag ${image} ${fullname} && \
+	docker push ${fullname}
