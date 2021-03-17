@@ -26,12 +26,17 @@ public class ModelFileVerifier {
     public static final String MODEL = "model.jar";
     public static final List<String> ALLOW_LIST = List.of("database/db.script", "database/db.properties", "database/db.data", "cache/giscache", "cache/giscache.p", "cache/giscache.t");
     public static final Predicate<String> XLS_MATCH = Pattern.compile("^.*\\.xls[x]?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    public static final Predicate<String> TXT_MATCH = Pattern.compile("^.*\\.txt?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    public static final Predicate<String> XSD_MATCH = Pattern.compile("^.*\\.xsd?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+    public static final Predicate<String> XML_MATCH = Pattern.compile("^.*\\.xml?", Pattern.CASE_INSENSITIVE).asMatchPredicate();
 
-//    private final ProjectFileCheckService projectFileCheckService;
+    public static List<Predicate<String>> matchList;
 
-//    public ModelFileVerifier(ProjectFileCheckService projectFileCheckService) {
-//        this.projectFileCheckService = projectFileCheckService;
-//    }
+    static {
+
+        matchList = List.of(XLS_MATCH, TXT_MATCH, XSD_MATCH, XML_MATCH);
+    }
+
 
     public ModelBytes assureModelBytes(ModelBytes modelBytes) {
         try {
@@ -42,13 +47,6 @@ public class ModelFileVerifier {
             // TODO:  return ModelBytes.error(e.getMessage());
         }
     }
-//
-//    public  ModelBytes analyze(ModelBytes modelBytes) {
-//        ModelBytes cleaned = assureModelBytes(modelBytes);
-////        projectFileCheckService.checkFile(this, model);
-//        return new byte[0];
-//    }
-
 
     /**
      * The zip file should only contain model.jar and database folder,
@@ -80,7 +78,7 @@ public class ModelFileVerifier {
                     ZipEntry zipEntry = enu.nextElement();
                     if (zipEntry.getName().length() > rootFolder.length()) {
                         String filename = zipEntry.getName().substring(rootFolder.length());
-                        if (ALLOW_LIST.contains(filename) || XLS_MATCH.test(filename) || ModelUtils.isModelFile(filename)) {
+                        if (isAllowed(filename)) {
                             ZipEntry entry = new ZipEntry(filename);
                             zos.putNextEntry(entry);
                             byte[] entryBytes = zipFile.getInputStream(zipEntry).readAllBytes();
@@ -97,5 +95,14 @@ public class ModelFileVerifier {
         zos.close();
         return baos.toByteArray();
     }
+
+    private static boolean isAllowed(String filename) {
+        return ALLOW_LIST.contains(filename) || ModelUtils.isModelFile(filename) || checkMatchList(filename);
+    }
+
+    private static boolean checkMatchList(String filename) {
+        return matchList.stream().filter(m -> m.test(filename)).findFirst().isPresent();
+    }
+
 
 }

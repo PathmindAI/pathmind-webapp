@@ -446,10 +446,6 @@ vaadin-dialog-overlay .demo-view-content {
     color: var(--lumo-secondary-text-color);
 }
 
-.no-shrink {
-    flex-shrink: 0;
-}
-
 .default-view.upload-model-view {
     height: auto;
     min-height: 100%;

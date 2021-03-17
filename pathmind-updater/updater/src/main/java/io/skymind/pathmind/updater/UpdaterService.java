@@ -120,7 +120,8 @@ public class UpdaterService {
     }
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
-
+        // dont' need to update database for freezing policy
+        policiesUpdateInfo = policiesUpdateInfo.stream().filter(p -> !p.getName().equals("freezing")).collect(Collectors.toList());
         List<Policy> policiesToRaiseUpdateEvent = runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
         policiesToRaiseUpdateEvent.addAll(ensurePolicyDataIfRunIsCompleted(run, providerJobStatus));
 
@@ -331,6 +332,17 @@ public class UpdaterService {
                             .map(Optional::get)
                             .collect(Collectors.toList())
             );
+
+            // todo we should uncomment below code later. this is only for temporarily support ray 1.0.0
+//            if (policiesInfo.size() > 0) {
+//                final byte[] policyFile = provider.policy(jobHandle, "freezing");
+//                if (policiesInfo != null) {
+//                    PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
+//                    policyUpdateInfo.setName("freezing");
+//                    policyUpdateInfo.setPolicyFile(policyFile);
+//                    policiesInfo.add(policyUpdateInfo);
+//                }
+//            }
         }
         return policiesInfo;
     }

@@ -249,4 +249,9 @@ public class ExperimentStepDefinitions {
     public void clickExperimentPageActionsBtn(String btn) {
         experimentPageSteps.clickExperimentPageActionsBtn(btn);
     }
+
+    @When("^Experiment page click comparison floating close btn$")
+    public void experimentPageClickComparisonFloatingCloseBtn() {
+        experimentPageSteps.experimentPageClickComparisonFloatingCloseBtn();
+    }
 }

@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import * as diff from "diff";
 
 class CodeViewer extends PolymerElement {
     static get is() {
@@ -50,7 +51,22 @@ class CodeViewer extends PolymerElement {
         const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/.+)/g;
         const numberRe = /[0-9]+/g;
         let codeSnippet = this.codeSnippet;
+
         codeSnippet = renderToken(operatorRe, "operator");
+
+        if (this.codeSnippet && this.comparisonCodeSnippet) {
+            const codeDiff = diff.diffWords(this.codeSnippet, this.comparisonCodeSnippet);
+            let processedCodeSnippet = "";
+            codeDiff.forEach(part => {
+                if (part.removed) {
+                    processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
+                } else if (!part.added) {
+                    processedCodeSnippet += part.value;
+                }
+            });
+            codeSnippet = processedCodeSnippet;
+        }
+
         codeSnippet = renderToken(commentRe, "comment");
         codeSnippet = renderToken(numberRe, "number");
         codeElement.innerHTML = codeSnippet;
@@ -65,7 +81,11 @@ class CodeViewer extends PolymerElement {
             codeSnippet: {
                 type: String,
                 value: "",
-                observer: "renderCode"
+                observer: "renderCode",
+            },
+            comparisonCodeSnippet: {
+                type: String,
+                observer: "renderCode",
             },
             rewardVariables: {
                 type: String,
@@ -161,6 +181,9 @@ class CodeViewer extends PolymerElement {
                 .token-comment,
                 .token-comment * {
                     color: rgb(113, 150, 130);
+                }
+                .highlight-label {
+                    background-color: var(--pm-yellow-color);
                 }
             </style>
             <code></code>
