@@ -92,13 +92,19 @@ def process_message(message):
         except Exception as e:
             app_logger.error(traceback.format_exc())
     else:
+        policyServerStatus=2
         try:
+            #insert the status to run
+            sql_script=""" 
+                update public.run set policyServerStatus=1 where job_id='{JobId}'
+            """.format(JobId=JobId)
+            execute_psql(sql_script)
             app_logger.info('Clonning repository')
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
             sh.git('clone','git@github.com:SkymindIO/policy-server.git')
             app_logger.info('Creating container')
-            sh.bash('build_and_push.sh'\
+            output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
                 ,'policy-server'\
                 ,'{ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
@@ -107,19 +113,27 @@ def process_message(message):
                 ,'--build-arg', 'S3SCHEMAPATH={S3SchemaPath}'.format(S3SchemaPath=S3SchemaPath) \
                 ,'--build-arg', 'AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}'.format(AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY) \
                 ,'--build-arg', 'AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}'.format(AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID))
-            app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-            sh.helm('upgrade' \
-                ,'--install' \
-                ,helm_name \
-                ,'policy-server/helm/policy-server/' \
-                ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
-                ,'-n',NAMESPACE)
-        except Exception as e:
-            app_logger.error(traceback.format_exc())
+            if output.exit_code != 0:
+                policyServerStatus=3
+            else:
+                app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
+                output=sh.helm('upgrade' \
+                    ,'--install' \
+                    ,helm_name \
+                    ,'policy-server/helm/policy-server/' \
+                    ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
+                    ,'-n',NAMESPACE)
+                if output.exit_code != 0:
+                    policyServerStatus=3
+            except Exception as e:
+                policyServerStatus=3
+                app_logger.error(traceback.format_exc())
 
-        #insert the status to trainer_job
-#        sql_script=""" """.format()
-#        execute_psql(sql_script)
+        #insert the status to run
+        sql_script=""" 
+            update public.run set policyServerStatus={policyServerStatus} where job_id='{JobId}'
+        """.format(JobId=JobId,policyServerStatus=policyServerStatus)
+        execute_psql(sql_script)
 
     try:
         #Delete message
