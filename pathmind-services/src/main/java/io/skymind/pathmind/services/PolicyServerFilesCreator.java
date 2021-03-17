@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
+@Deprecated // TODO: rewrite with Jackson and YAMLFactory
 public class PolicyServerFilesCreator {
 
     public String createSchemaYaml(List<Observation> observations) {
@@ -98,6 +99,7 @@ public class PolicyServerFilesCreator {
         }
     }
 
+    @Deprecated // TODO: extend PolicyServerService.PolicyServerSchema and use it with Jackson and YAMLFactory
     private static class YamlObject {
         private Map<String, Object> data = new LinkedHashMap<>();
 

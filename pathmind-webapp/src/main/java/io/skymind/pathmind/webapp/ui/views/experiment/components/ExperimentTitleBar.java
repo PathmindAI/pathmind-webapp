@@ -12,19 +12,24 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.TrainingService;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.shared.featureflag.Feature;
+import io.skymind.pathmind.shared.featureflag.FeatureManager;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
+import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
+import io.skymind.pathmind.webapp.ui.components.atoms.ButtonWithLoading;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ExportPolicyAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ServePolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
@@ -48,13 +53,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 
+    private ButtonWithLoading servePolicyButton;
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
     private DownloadModelLink downloadModelLink;
     private Button shareButton;
-    private boolean isPythonModel = false;
+    private boolean isPythonModel;
 
     private ExperimentView experimentView;
     private TrainingService trainingService;
@@ -62,18 +68,28 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Runnable updateExperimentViewRunnable;
     private Supplier<Object> getLockSupplier;
     private Supplier<Optional<UI>> getUISupplier;
+    private PolicyServerService policyServerService;
+
+    private final FeatureManager featureManager;
 
     // This is for the action classes so that it's easier to read the code in the createButtons() method (it's not needed as per say).
     private Supplier<Experiment> getExperimentSupplier;
 
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, runDAO, trainingService, modelService, getUISupplier, false);
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
+                              Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager, PolicyServerService policyServerService,
+                              TrainingService trainingService, ModelService modelService) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyServerService, trainingService, modelService, false);
     }
 
     /**
      * Extra constructor is needed for the support shared experiment view.
      */
-    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable, Supplier<Object> getLockSupplier, RunDAO runDAO, TrainingService trainingService, ModelService modelService, Supplier<Optional<UI>> getUISupplier, boolean isExportPolicyButtonOnly) {
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
+                              Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager, PolicyServerService policyServerService,
+                              TrainingService trainingService, ModelService modelService,
+                              boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
         this.getExperimentSupplier = () -> getExperiment();
         this.updateExperimentViewRunnable = updateExperimentViewRunnable;
@@ -81,6 +97,8 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.trainingService = trainingService;
         this.modelService = modelService;
         this.getUISupplier = getUISupplier;
+        this.featureManager = featureManager;
+        this.policyServerService = policyServerService;
 
         Component[] buttons = createButtons(isExportPolicyButtonOnly);
 
@@ -113,6 +131,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
+        servePolicyButton = new ButtonWithLoading("Serve Policy", () -> ServePolicyAction.servePolicy(getExperimentSupplier, servePolicyButton, policyServerService), true);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
@@ -120,14 +139,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
         if (isExportPolicyButtonOnly) {
-            return new Component[] {exportPolicyButton};
+            return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
             List<Button> actionButtons = new ArrayList<Button>();
             actionButtons.add(shareButton);
             actionButtons.add(archiveButton);
             actionButtons.add(unarchiveButton);
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[] {stopTrainingButton, exportPolicyButton, downloadModelLink};
+            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
 
@@ -146,12 +165,19 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 if (experiment.isArchived()) {
                     return !archiveButton.getText().equals(item);
                 }
-                return !unarchiveButton.getText().equals(item);      
+                return !unarchiveButton.getText().equals(item);
             });
         }
 
         unarchiveButton.setVisible(experiment.isArchived());
-        exportPolicyButton.setVisible(experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile());
+        boolean isCompletedWithPolicy =
+                experiment.isTrainingCompleted()
+                        && experiment.getBestPolicy() != null
+                        && experiment.getBestPolicy().hasFile();
+        exportPolicyButton.setVisible(isCompletedWithPolicy);
+        if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
+            servePolicyButton.setVisible(isPythonModel && isCompletedWithPolicy);
+        }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
         archivedLabel.setVisible(experiment.isArchived());
@@ -163,13 +189,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        isPythonModel = ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType()));
         favoriteStar.setValue(experiment.isFavorite());
         experimentPanelTitle.setExperiment(experiment);
         trainingStatusDetailsPanel.setExperiment(experiment);
         downloadModelLink.setExperiment(experiment);
         updateComponentEnablements();
     }
-    
+
     public Experiment getExperiment() {
         return experiment;
     }

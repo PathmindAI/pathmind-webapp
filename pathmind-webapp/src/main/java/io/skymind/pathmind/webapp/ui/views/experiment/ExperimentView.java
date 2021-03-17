@@ -275,11 +275,11 @@ public class ExperimentView extends AbstractExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, () -> updateComponents(), () -> getExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, () -> updateComparisonComponents(), () -> getComparisonExperimentLock(), runDAO, trainingService, modelService, getUISupplier());
+        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
     }
 
     private SplitLayout getBottomPanel() {

@@ -47,8 +47,8 @@
     "lit-element": "^2.2.1",
     "lodash": "^4.17.20",
     "multiselect-combo-box": "2.4.2",
-    "timeago.js": "4.0.2",
-    "to-string-loader": "^1.1.6"
+    "to-string-loader": "^1.1.6",
+    "timeago.js": "4.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",

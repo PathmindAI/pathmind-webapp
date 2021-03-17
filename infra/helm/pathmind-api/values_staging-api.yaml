@@ -42,6 +42,7 @@ env:
   API_WEBAPP_URL: https://staging.devpathmind.com/
   API_FILE_SIZE: 500MB
   API_REQUEST_SIZE: 500MB
+  SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/staging-policy-server.fifo
 
 readinessprobe: {}
 
