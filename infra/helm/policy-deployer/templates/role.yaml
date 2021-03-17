@@ -4,5 +4,5 @@ metadata:
   name: {{ include "policy-deployer.fullname" . }}
 rules:
 - apiGroups: ["extensions", "apps", ""] # "" indicates the core API group
-  resources: ["deployments","replicasets","pods"]
+  resources: ["deployments","replicasets","pods","secrets","services"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]

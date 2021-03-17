@@ -78,7 +78,7 @@ def process_message(message):
     S3ModelPath=body['S3ModelPath']
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
-    helm_name="policy_"+JobId
+    helm_name="policy-"+JobId
     ReceiptHandle=message['ReceiptHandle']
 
     #jobs is done so destroy the spot instance and the pod
@@ -97,7 +97,7 @@ def process_message(message):
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
             sh.git('clone','git@github.com:SkymindIO/policy-server.git')
-            app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
+            app_logger.info('Creating container')
             sh.bash('build_and_push.sh'\
                 ,'policy-server'\
                 ,'policy-server'\
@@ -108,10 +108,11 @@ def process_message(message):
                 ,'--build-arg', 'AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}'.format(AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY) \
                 ,'--build-arg', 'AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}'.format(AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID))
             app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-            sh.helm('upgrade'\
-                ,'--install'\
-                ,helm_name\
-                ,'"--set image.tag={ENVIRONMENT}{JobId}"'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
+            sh.helm('upgrade' \
+                ,'--install' \
+                ,helm_name \
+                ,'policy-server/helm/policy-server/' \
+                ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
                 ,'-n',NAMESPACE)
         except Exception as e:
             app_logger.error(traceback.format_exc())
@@ -120,12 +121,15 @@ def process_message(message):
 #        sql_script=""" """.format()
 #        execute_psql(sql_script)
 
-    #Delete message
-    sqs = boto3.client('sqs')
-    response = sqs.delete_message(
-        QueueUrl=SQS_URL,
-        ReceiptHandle=ReceiptHandle
-    )
+    try:
+        #Delete message
+        sqs = boto3.client('sqs')
+        response = sqs.delete_message(
+            QueueUrl=SQS_URL,
+            ReceiptHandle=ReceiptHandle
+        )
+    except Exception as e:
+        app_logger.error(traceback.format_exc())
 
 def main():
     """
