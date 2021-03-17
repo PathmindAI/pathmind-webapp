@@ -40,5 +40,5 @@ RUN chmod 600 id_rsa && \
     mv id_rsa ~/.ssh && \
     ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
 
-#CMD ["python3","trigger.py"]
-CMD ["bash","-c","sleep 10000000"]
+CMD ["python3","trigger.py"]
+#CMD ["bash","-c","sleep 10000000"]
