@@ -6,5 +6,8 @@ export const ALLOW_LIST = [
   "^cache/giscache\\.p",
   "^cache/giscache\\.t",
   "^.*\\.xls[x]?",
+  "^.*\\.txt",
+  "^.*\\.xml",
+  "^.*\\.xsd",
   "^(lib/)?model[0-9]?\\.jar"
 ];
