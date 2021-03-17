@@ -9,6 +9,8 @@ public interface PolicyFileService {
 
     byte[] getPolicyFile(long policyId);
 
+    String getPolicyFileLocation(long policyId);
+
     byte[] getFreezingPolicyFile(long runId);
 
     void savePolicyFile(Long policyId, byte[] policyFile);

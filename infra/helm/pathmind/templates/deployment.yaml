@@ -108,6 +108,8 @@ spec:
               value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
             - name: SQS_UPDATER_PUNCTUATOR_QUEUE
               value: "{{ .Values.env.SQS_UPDATER_PUNCTUATOR_QUEUE }}"
+            - name: SQS_POLICY_SERVER_URL
+              value: "{{ .Values.env.SQS_POLICY_SERVER_URL }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.training.cloud.aws.api;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -18,11 +19,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientS3;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
+import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.Job;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,6 +49,7 @@ public class AWSApiClient {
 
     private final int mockCycle;
     private final int mockMaxMin;
+    private final String policyServerQueueUrl;
 
     public AWSApiClient(
             AwsApiClientS3 s3,
@@ -53,6 +57,7 @@ public class AWSApiClient {
             AwsApiClientSQS sqs,
             @Value("${pathmind.aws.sqs.url}") String queueUrl,
             @Value("${pathmind.aws.sqs.updater_url}") String updaterQueueUrl,
+            @Value("${pathmind.aws.sqs.policy_server_url}") String policyServerQueueUrl,
             ObjectMapper objectMapper,
             @Value("${pathmind.aws.mock_cycle:0}") int mockCycle,
             @Value("${pathmind.aws.mock_max_min:0}") int mockMaxMin) {
@@ -63,6 +68,7 @@ public class AWSApiClient {
         this.sqsClient = sqs.getSqsClient();
         this.queueUrl = queueUrl;
         this.updaterQueueUrl = updaterQueueUrl;
+        this.policyServerQueueUrl = policyServerQueueUrl;
 
         this.objectMapper = objectMapper;
 
@@ -184,6 +190,19 @@ public class AWSApiClient {
                 .withQueueUrl(queueUrl)
                 .withMessageGroupId("training")
                 .withMessageBody(objectMapper.writeValueAsString(job));
+
+        SendMessageResult result = sqsClient.sendMessage(send_msg_request);
+        return result.getMessageId();
+    }
+
+
+    @SneakyThrows
+    public String deployPolicyServer(DeploymentMessage deploymentMessage) {
+        deploymentMessage.setS3Bucket(bucketName);
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(policyServerQueueUrl)
+                .withMessageGroupId("policy")
+                .withMessageBody(objectMapper.writeValueAsString(deploymentMessage));
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();

@@ -93,6 +93,17 @@
                             <javaTimeTypes>true</javaTimeTypes>
                         </generate>
                         <database>
+                            <forcedTypes>
+                                <forcedType>
+                                    <!-- Specify the Java type of your custom type. This corresponds to the Converter's <U> type. -->
+                                    <userType>io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus</userType>
+                                    <!-- Apply the built in org.jooq.impl.EnumConverter. -->
+                                    <enumConverter>true</enumConverter>
+                                    <!-- These are the same as for type rewriting -->
+                                    <includeExpression>.*\.POLICY_SERVER_STATUS</includeExpression>
+                                    <includeTypes>.*</includeTypes>
+                                </forcedType>
+                            </forcedTypes>
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
                             <excludes>Databasechangelog.*</excludes>
