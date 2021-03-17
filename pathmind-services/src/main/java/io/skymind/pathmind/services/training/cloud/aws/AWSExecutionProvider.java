@@ -442,6 +442,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "tar xf ../rllibpack.tar.gz > /dev/null",
                         "rm ../rllibpack.tar.gz",
                         "source bin/activate",
+                        "aws s3 cp s3://public-pathmind.com/ray_fix/simple_list_collector.py ./lib/python3.7/site-packages/ray/rllib/evaluation/collectors/ > /dev/null",
                         "cd .."
                 ));
 
