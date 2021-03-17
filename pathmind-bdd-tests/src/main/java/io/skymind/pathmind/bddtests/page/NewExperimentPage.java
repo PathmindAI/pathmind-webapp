@@ -70,7 +70,9 @@ public class NewExperimentPage extends PageObject {
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
         waitFor(ExpectedConditions.elementToBeClickable(startDiscoveryRunBtn));
         waitABit(2500);
-        startDiscoveryRunBtn.click();
+//        startDiscoveryRunBtn.click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']"));
+
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and contains(text(),'Experiment')]")));
         waitABit(3500);
     }
