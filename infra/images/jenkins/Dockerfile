@@ -68,7 +68,6 @@ RUN apt-get update && \
     apt-get install -y wget vim && \
     apt-get install gnupg -y && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc |  apt-key add - && \
-    apt-get install lsb-core -y && \
     RELEASE=$(lsb_release -cs) && \
     echo "deb http://apt.postgresql.org/pub/repos/apt/ ${RELEASE}"-pgdg main |  tee  /etc/apt/sources.list.d/pgdg.list && \
     apt-get update && \
@@ -78,6 +77,7 @@ RUN apt-get update && \
 COPY junit/* /usr/bin/
 
 #crontab
+COPY selenium_cleanup.sh /tmp/selenium_cleanup.sh
 COPY crontab /tmp/crontab
 RUN crontab /tmp/crontab
 RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "service cron start"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh

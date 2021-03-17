@@ -80,6 +80,11 @@
     height: auto !important;
 }
 
+.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:first-child,
+.experiment-view .comparison-panel > vaadin-split-layout > vaadin-vertical-layout:first-child {
+    max-height: 27rem;
+}
+
 .experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
@@ -207,7 +212,7 @@
 }
 
 .experiment-view code-viewer {
-    height: 100%;
+    height: calc(100% - 1.68rem);
     border: none;
     border-radius: 0;
 }
@@ -218,16 +223,28 @@
 
 .experiment-view .observations-panel {
     max-height: 27rem;
+    font-size: var(--lumo-font-size-s);
+    padding: 0;
     border: none;
     border-radius: 0;
 }
 
-.experiment-view .observations-table {
+.experiment-view .observations-panel .observations-table {
     padding-top: 0;
+    overflow: auto;
 }
 
-.experiment-view .observations-table vaadin-checkbox-group {
-    font-size: var(--lumo-font-size-xs);
+.experiment-view .observations-panel .observations-table > vaadin-checkbox {
+    font-weight: normal;
+    color: var(--lumo-body-text-color);
+}
+
+.experiment-view .observations-panel vaadin-checkbox {
+    margin: 1px var(--lumo-space-xxs);
+}
+
+.experiment-view .observations-panel vaadin-checkbox:first-of-type {
+    margin-top: var(--lumo-space-xxs);
 }
 
 .experiment-view .bold-label + data-chart {
@@ -333,7 +350,7 @@
 }
 
 .experiment-view .buttons-wrapper .download-alp-link {
-    margin-left: var(--lumo-space-s);
+    margin-left: -1px;
 }
 
 .experiment-view juicy-ace-editor {

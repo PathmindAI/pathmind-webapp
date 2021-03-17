@@ -20,17 +20,12 @@ public class RewardVariablesPanel extends VerticalLayout {
     private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
     private RewardVariablesTable rewardVariablesTable;
 
-    private Button nextStepButton;
+    private Button nextStepButton = UploadModelView.createNextStepButton();
 
     public RewardVariablesPanel() {
         setupForm();
-        nextStepButton = UploadModelView.createNextStepButton();
 
-        HorizontalLayout rewardVariablesNameLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL));
-        rewardVariablesNameLine.getStyle().set("align-items", "center");
-
-        add(rewardVariablesNameLine,
+        add(WrapperUtils.wrapWidthFullBetweenHorizontal(LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL)),
                 GuiUtils.getFullWidthHr(),
                 new Paragraph("Set the goals for the training by choosing which metrics you want to minimize or maximize."),
                 formPanel,

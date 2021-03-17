@@ -1,6 +1,5 @@
 package io.skymind.pathmind.shared.data;
 
-
 public class TrainingError {
     private long id;
     private String keyword;

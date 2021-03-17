@@ -130,6 +130,10 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsCurrent(false);
     }
 
+    public Boolean isCurrentComparison() {
+        return getModel().getIsCurrentComparisonExperiment();
+    }
+
     public void setIsCurrentComparison(boolean isCurrentComparisonExperiment) {
         getModel().setIsCurrentComparisonExperiment(isCurrentComparisonExperiment);
     }
@@ -168,6 +172,7 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
         void setIsCurrent(boolean isCurrent);
 
+        Boolean getIsCurrentComparisonExperiment();
         void setIsCurrentComparisonExperiment(boolean isCurrentComparisonExperiment);
 
         void setIsDraft(boolean isDraft);

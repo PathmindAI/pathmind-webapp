@@ -12,6 +12,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     public static final String POLICY_FILE = "policy_file/";
     public static final String POLICY_CHECKPOINT = "policy_checkpoint/";
+    public static final String POLICY_FILE_FREEZING = "policy_file_freezing/";
 
     private final AWSApiClient awsApiClient;
     private final PolicyDAO policyDAO;
@@ -27,8 +28,18 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     }
 
     @Override
+    public boolean hasFreezingPolicyFile(long runId) {
+        return awsApiClient.fileExists(POLICY_FILE_FREEZING + runId);
+    }
+
+    @Override
     public byte[] getPolicyFile(long policyId) {
         return awsApiClient.fileContents(POLICY_FILE + policyId, true);
+    }
+
+    @Override
+    public byte[] getFreezingPolicyFile(long runId) {
+        return awsApiClient.fileContents(POLICY_FILE_FREEZING + runId, true);
     }
 
     @Override
@@ -38,8 +49,17 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     @Override
     public void savePolicyFile(Long runId, String finishPolicyName, byte[] policyFile) {
-        Long policyId = policyDAO.assurePolicyId(runId, finishPolicyName);
-        savePolicyFile(policyId, policyFile);
+        if (finishPolicyName.equals("freezing")) {
+            saveFreezingPolicyFile(runId, policyFile);
+        } else {
+            Long policyId = policyDAO.assurePolicyId(runId, finishPolicyName);
+            savePolicyFile(policyId, policyFile);
+        }
+    }
+
+    @Override
+    public void saveFreezingPolicyFile(Long runId, byte[] policyFile) {
+        awsApiClient.fileUpload(POLICY_FILE_FREEZING + runId, policyFile);
     }
 
     @Override

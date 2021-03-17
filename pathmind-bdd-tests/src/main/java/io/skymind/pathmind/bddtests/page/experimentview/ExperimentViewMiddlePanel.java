@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.page.experimentview;
 
+import io.skymind.pathmind.bddtests.Utils;
 import io.skymind.pathmind.bddtests.page.GenericPage;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.*;
 public class ExperimentViewMiddlePanel extends PageObject {
 
     private GenericPage genericPage;
+    private Utils utils;
 
     private String middlePanelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']";
     private String simMetricsLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-vertical-layout[@slot='primary']/descendant::span";
@@ -28,6 +30,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
     private String simulationMetricNotChosenXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::*[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
     private String observationCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='true']";
     private String observationNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s' and @aria-checked='false']";
+    private String observationXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::vaadin-checkbox[not(@hidden) and text()='%s']";
     private String rewardVariableXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s']";
     private String rewardVariableCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and @chosen]";
     private String rewardVariableNotCheckedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::span[@class='reward-variable-name' and text()='%s' and not(@chosen)]";
@@ -81,6 +84,29 @@ public class ExperimentViewMiddlePanel extends PageObject {
             genericPage.checkElement(true, String.format(rewardVariableCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
         } else {
             genericPage.checkElement(true, String.format(rewardVariableNotCheckedXpath, slot, genericPage.definePanel(slot), rewardVar), rewardVar);
+        }
+    }
+
+    public void experimentPageCheckObservationIsHighlighted(String slot, String observation, boolean highlighted) {
+        if (highlighted) {
+            assertThat(getDriver().findElement(By.xpath(String.format(observationXpath, slot, genericPage.definePanel(slot), observation))).getAttribute("class"), is("highlight-label"));
+        } else {
+            assertThat(getDriver().findElement(By.xpath(String.format(observationXpath, slot, genericPage.definePanel(slot), observation))).getAttribute("class"), is(""));
+        }
+    }
+
+    public void experimentPageCheckRewardVariableIsHighlighted(String slot, String rewardFunction, boolean highlighted) {
+        String codeBlock = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::code-viewer";
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath(String.format(codeBlock, slot, genericPage.definePanel(slot)))));
+
+        if (highlighted) {
+            List<String> functions = new ArrayList<>();
+            for (WebElement webElement : e.findElements(By.cssSelector(".highlight-label"))) {
+                functions.add(webElement.getText());
+            }
+            assertThat(functions, hasItem(rewardFunction));
+        } else {
+            assertThat(getDriver().findElement(By.xpath(String.format(rewardFunction, slot, genericPage.definePanel(slot)))).getAttribute("class"), is(""));
         }
     }
 }

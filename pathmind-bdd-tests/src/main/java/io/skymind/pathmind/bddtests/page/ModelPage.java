@@ -35,7 +35,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkModelPageModelTitlePackageNameIs(String packageName) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/descendant::span[@class='section-title-label project-title-label'][2]")).getText().split("[()]")[1], is(packageName));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/descendant::span[@class='section-title-label'][2]")).getText().split("[()]")[1], is(packageName));
     }
 
     public void checkModelPageModelDetailsActionsIs(String actions) {
@@ -195,4 +195,7 @@ public class ModelPage extends PageObject {
         assertThat(notesShadow.findElement(By.cssSelector("#textarea")).getAttribute("value"), is(note));
     }
 
+    public void checkModelPageExperimentNameSelectedObservationsIs(String experiment, String observations) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='"+experiment+" ']/following-sibling::vaadin-grid-cell-content[3]")).getText().replaceAll(" ",""), is(observations));
+    }
 }

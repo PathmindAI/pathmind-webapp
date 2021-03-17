@@ -10,6 +10,7 @@ import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import io.skymind.pathmind.shared.data.rllib.ExperimentStateOld;
 import io.skymind.pathmind.shared.exception.PathMindException;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
@@ -197,6 +198,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     @Override
     public Map<String, String> progress(String jobHandle) {
         return client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> !it.getKey().contains("/freezing/"))
                 .filter(it -> it.getKey().endsWith("progress.csv"))
                 .map(it -> {
                     final String key = new File(it.getKey()).getParentFile().getName();
@@ -223,7 +225,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     @Override
     public byte[] policy(String jobHandle, String trainingRun) {
-        Optional<byte[]> optional = getFile(jobHandle, "policy_" + trainingRun + ".zip");
+        Optional<byte[]> optional;
+        if (trainingRun.equals("freezing")) {
+            optional = getFile(jobHandle, "policy_" + trainingRun + ".zip", null);
+        } else {
+            optional = getFile(jobHandle, "policy_" + trainingRun + ".zip");
+        }
         return optional.isPresent() ? optional.get() : null;
     }
 
@@ -239,10 +246,15 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     public Optional<byte[]> getFile(String jobHandle, String fileName) {
+        return getFile(jobHandle, fileName, "/freezing/");
+    }
+
+    private Optional<byte[]> getFile(String jobHandle, String fileName, String exclude) {
         return client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
-                .filter(it -> it.getKey().endsWith(fileName))
-                .findAny()
-                .map(it -> client.fileContents(it.getKey()));
+            .filter(it -> exclude == null || !it.getKey().contains(exclude))
+            .filter(it -> it.getKey().endsWith(fileName))
+            .findAny()
+            .map(it -> client.fileContents(it.getKey()));
     }
 
     public boolean outputExist(String jobHandle) {
@@ -264,6 +276,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
     private ExperimentState getExperimentState(String jobHandle) {
         Optional<ExperimentState> expOpt = client.listObjects(jobHandle + "/output/").getObjectSummaries().parallelStream()
+                .filter(it -> !it.getKey().contains("/freezing/"))
                 .filter(it -> it.getKey().endsWith(".json") && it.getKey().contains("experiment_state-"))
                 .map(S3ObjectSummary::getKey)
                 .sorted(Comparator.reverseOrder())
@@ -272,8 +285,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
                     try {
                         return objectMapper.readValue(client.fileContents(it), ExperimentState.class);
                     } catch (IOException e) {
-                        log.error(e.getMessage(), e);
-                        return null;
+                        try {
+                            // to support old format(ray 1.0)
+                            log.info("trying to parse OLD style format of ExperimentState.json");
+                            ExperimentStateOld stateOldFormat = objectMapper.readValue(client.fileContents(it), ExperimentStateOld.class);
+                            ExperimentState experimentState = new ExperimentState(stateOldFormat.getCheckpoints());
+                            return experimentState;
+                        } catch (IOException e1) {
+                            log.error(e1.getMessage(), e1);
+                            return null;
+                        }
                     }
                 });
 
@@ -283,6 +304,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public String getRLlibError(String jobHandle) {
         return client.listObjects(jobHandle + "/output/")
                         .getObjectSummaries().parallelStream()
+                        .filter(it -> !it.getKey().contains("/freezing/"))
                         .map(S3ObjectSummary::getKey)
                         .filter(ERROR_KEY_MATCH)
                         .map(it -> {
@@ -412,6 +434,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+            case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
                         "mkdir -p conda",
@@ -505,13 +528,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
-                var("EXPERIMENT_TYPE", job.getExpClassType())
+                var("EXPERIMENT_TYPE", job.getExpClassType()),
+                var("FREEZING", String.valueOf(Boolean.FALSE))
         ));
 
         if (job.getEnvironment() != null) {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
             instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
             instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+            //todo if we need to validate requirements, we'd rather create another script to check it. the current script is just install requirements.txt
+            instructions.add("if [[ ! -z \"$ENVIRONMENT_NAME\" ]]; then find . -maxdepth 1 -name requirements.txt -exec pip install -r '{}' \\; 2>/dev/null ; fi");
         }
 
 
