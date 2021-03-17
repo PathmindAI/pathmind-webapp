@@ -125,9 +125,9 @@ def process_message(message):
                     ,'-n',NAMESPACE)
                 if output.exit_code != 0:
                     policyServerStatus=3
-            except Exception as e:
-                policyServerStatus=3
-                app_logger.error(traceback.format_exc())
+        except Exception as e:
+            policyServerStatus=3
+            app_logger.error(traceback.format_exc())
 
         #insert the status to run
         sql_script=""" 
