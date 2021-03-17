@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "policy-deployer.fullname" . }}
+  labels:
+{{ include "policy-deployer.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "policy-deployer.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        timestamp: "{{ date "20060102150405" .Release.Time }}"
+        iam.amazonaws.com/role: eks
+      labels:
+        app.kubernetes.io/name: {{ include "policy-deployer.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ include "policy-deployer.fullname" . }}
+      volumes:
+        - name: docker-graph-storage
+          emptyDir: {}
+      containers:
+        - name: dind-daemon
+          image: "docker:18.02.0-dind"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: 20m
+              memory: 512Mi
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: docker-graph-storage
+            mountPath: /var/lib/docker
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: DOCKER_HOST
+            value: tcp://localhost:2375
+          - name: AWS_DEFAULT_REGION
+            value: "us-east-1"
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: awsaccesskey
+                key: AWS_ACCESS_KEY_ID
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: awssecretaccesskey
+                key: AWS_SECRET_ACCESS_KEY
+          - name: ENVIRONMENT
+            value: "{{ .Values.env.ENVIRONMENT }}"
+          - name: SQS_URL
+            value: "{{ .Values.env.SQS_URL }}"
+          - name: DB_URL_CLI
+            valueFrom:
+              secretKeyRef:
+                name: dburlcli
+                key: DB_URL_CLI
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

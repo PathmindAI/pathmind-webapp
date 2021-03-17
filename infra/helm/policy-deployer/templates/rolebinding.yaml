@@ -1,0 +1,12 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "policy-deployer.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "policy-deployer.fullname" . }}
+  namespace: {{.Release.Namespace}}
+roleRef:
+  kind: Role
+  name: {{ include "policy-deployer.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

@@ -171,6 +171,11 @@ pipeline {
                         buildDockerImage("rl_training", "Dockerfile", "${WORKSPACE}/infra/images/rl_training/")
                     }
                 }
+                stage('Build policy deployer image') {
+                    steps {
+                        buildDockerImage("policy-deployer", "Dockerfile", "${WORKSPACE}/infra/images/policy-deployer/")
+                    }
+                }
             }
         }
 
@@ -197,6 +202,11 @@ pipeline {
                 stage('Publish rl_training image') {
                     steps {
                         publishDockerImage("rl_training", "${DOCKER_TAG}")
+                    }
+                }
+                stage('Publish policy-deployer image') {
+                    steps {
+                        publishDockerImage("policy-deployer", "${DOCKER_TAG}")
                     }
                 }
             }
@@ -243,6 +253,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying policy-deployer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
@@ -309,6 +326,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml"
+                        }
+                    }
+                }
+                stage('Deploying policy-deployer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml"
                         }
                     }
                 }
