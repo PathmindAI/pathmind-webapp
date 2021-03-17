@@ -333,16 +333,15 @@ public class UpdaterService {
                             .collect(Collectors.toList())
             );
 
-            // todo we should uncomment below code later. this is only for temporarily support ray 1.0.0
-//            if (policiesInfo.size() > 0) {
-//                final byte[] policyFile = provider.policy(jobHandle, "freezing");
-//                if (policiesInfo != null) {
-//                    PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
-//                    policyUpdateInfo.setName("freezing");
-//                    policyUpdateInfo.setPolicyFile(policyFile);
-//                    policiesInfo.add(policyUpdateInfo);
-//                }
-//            }
+            if (policiesInfo.size() > 0) {
+                final byte[] policyFile = provider.policy(jobHandle, "freezing");
+                if (policiesInfo != null) {
+                    PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
+                    policyUpdateInfo.setName("freezing");
+                    policyUpdateInfo.setPolicyFile(policyFile);
+                    policiesInfo.add(policyUpdateInfo);
+                }
+            }
         }
         return policiesInfo;
     }
