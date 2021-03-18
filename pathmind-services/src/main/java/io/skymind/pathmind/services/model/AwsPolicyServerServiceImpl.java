@@ -99,6 +99,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
                         final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
+                                .jobId(run.getJobId())
                                 .s3ModelPath(policyFile)
                                 .s3SchemaPath(run.getJobId() + "/schema.yaml")
                                 .build();
