@@ -19,7 +19,7 @@ public class ExecutionEnvironmentManager {
 
     private ExecutionEnvironment defaultEnvironment() {
         return new ExecutionEnvironment(AnyLogic.VERSION_8_7_0,
-                PathmindHelper.VERSION_1_4_0,
+                PathmindHelper.VERSION_1_5_0,
                 NativeRL.VERSION_1_5_0,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_2_0,
