@@ -58,8 +58,6 @@ ingress:
       paths: [/:8080:pathmind-ma-test]
     - host: ma.staging.devpathmind.com
       paths: [/:8080:pathmind-ma-staging]
-    - host: zinc-factory.devpathmind.com
-      paths: [/:8000:policy-server-zinc-factory-swagger]
     - host: leuphana.devpathmind.com
       paths: [/:8080:policy-server-leuphana]
     - host: product-delivery.devpathmind.com
@@ -100,7 +98,6 @@ ingress:
         - ma.dev.devpathmind.com
         - ma.test.devpathmind.com
         - ma.staging.devpathmind.com
-        - zinc-factory.devpathmind.com
         - leuphana.devpathmind.com
         - product-delivery.devpathmind.com
         - simple-scheduling.devpathmind.com

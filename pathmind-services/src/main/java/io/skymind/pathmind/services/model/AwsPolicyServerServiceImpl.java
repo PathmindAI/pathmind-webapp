@@ -46,7 +46,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Autowired
     public AwsPolicyServerServiceImpl(RunDAO runDAO, ObservationDAO observationDAO,
-                                      @Value("${pathmind.application.url}") String applicationURL,
+                                      @Value("${pathmind.policyserver.url}") String policyServerBaseUrl,
                                       @Value("${pathmind.application.environment}") String environment,
                                       AWSApiClient awsApiClient, PolicyFileService policyFileService,
                                       PolicyServerFilesCreator filesCreator) throws MalformedURLException {
@@ -56,9 +56,9 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
         this.awsApiClient = awsApiClient;
         this.policyFileService = policyFileService;
 
-        URL url = new URL(applicationURL);
+        URL url = new URL(policyServerBaseUrl);
         this.applicationHost = environment + "." + url.getHost();
-        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(applicationURL);
+        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(policyServerBaseUrl);
     }
 
 //    @Override
@@ -99,6 +99,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
                         final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
+                                .jobId(run.getJobId())
                                 .s3ModelPath(policyFile)
                                 .s3SchemaPath(run.getJobId() + "/schema.yaml")
                                 .build();

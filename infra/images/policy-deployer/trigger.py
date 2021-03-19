@@ -79,7 +79,9 @@ def process_message(message):
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
     helm_name="policy-"+JobId
+    domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
+    tag=ENVIRONMENT+JobId
 
     #jobs is done so destroy the spot instance and the pod
     if 'destroy' in body:
@@ -107,7 +109,7 @@ def process_message(message):
             output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
                 ,'policy-server'\
-                ,'{ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId)\
+                ,'{tag}'.format(tag=tag)\
                 ,'--build-arg', 'S3BUCKET={s3bucket}'.format(s3bucket=s3bucket) \
                 ,'--build-arg', 'S3MODELPATH={S3ModelPath}'.format(S3ModelPath=S3ModelPath) \
                 ,'--build-arg', 'S3SCHEMAPATH={S3SchemaPath}'.format(S3SchemaPath=S3SchemaPath) \
@@ -122,12 +124,16 @@ def process_message(message):
                     ,helm_name \
                     ,'policy-server/helm/policy-server/' \
                     ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
+                    ,'--set', '\'ingress.hosts[0].host\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
+                    ,'--set', '\'ingress.hosts[0].paths[0]\'=\'/\'' \
+                    ,'--set', '\'ingress.tls[0].hosts[0]\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
+                    ,'--set', '\'ingress.tls[0].secretName\'=\'letsencrypt-{ENVIRONMENT}\''.format(ENVIRONMENT=ENVIRONMENT) \
                     ,'-n',NAMESPACE)
                 if output.exit_code != 0:
                     policyServerStatus=3
-            except Exception as e:
-                policyServerStatus=3
-                app_logger.error(traceback.format_exc())
+        except Exception as e:
+            policyServerStatus=3
+            app_logger.error(traceback.format_exc())
 
         #insert the status to run
         sql_script=""" 
