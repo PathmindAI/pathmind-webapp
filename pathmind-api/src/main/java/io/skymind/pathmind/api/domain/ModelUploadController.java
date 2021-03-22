@@ -60,24 +60,30 @@ public class ModelUploadController {
     public ResponseEntity<?> handleALFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
-        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.ANY_LOGIC, null);
+        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.ANY_LOGIC, null, null, null, null);
     }
 
 
     /*
-    upload model to existing project:
+    upload gym model to existing project:
     curl -i -XPOST -H "X-PM-API-TOKEN: af26c5e1-8838-4c41-b490-e5dc7de3aeef" -F 'file=@/home/kepricon/Downloads/tests.zip' -F 'projectId=496' -F 'env=tests.factory.environments.FactoryEnv' http://localhost:8081/py/upload
+    upload pathmind simulation to existing project
+    curl -i -XPOST -H "X-PM-API-TOKEN: 11202253-5709-4eb7-9102-f87122314464" -F 'file=@/home/kepricon/pathmind/model.zip' -F 'projectId=496' -F 'env=tests.mouse.mouse_env_pathmind.MouseAndCheese' -F 'is_pathmind_simulation=TRUE' -F 'obs_selection=tests/mouse/obs.yaml' -F 'rew_fct_name=tests.mouse.reward.reward_function' http://localhost:8081/py/upload
      */
     @PostMapping("/py/upload")
     public ResponseEntity<?> handlePYFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("env") String environment,
+                                                @RequestParam(value = "is_pathmind_simulation", required = false, defaultValue = "false") Boolean isPathmindSimulation,
+                                                @RequestParam(value = "obs_selection", required = false) String obsSelection,
+                                                @RequestParam(value = "rew_fct_name", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
-        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.PYTHON, environment);
+        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.PYTHON, environment, isPathmindSimulation, obsSelection, rewFctName);
     }
 
     private ResponseEntity<?> handleFileUpload(MultipartFile file, Long projectId, PathmindApiUser pmUser,
-                                               AnalyzeRequestDTO.ModelType type, String environment) {
+                                               AnalyzeRequestDTO.ModelType type, String environment,
+                                               Boolean isPathmindSimulation, String obsSelection, String rewFctName) {
         UriComponentsBuilder builder = experimentUriBuilder.cloneBuilder();
         log.debug("saving file {}", file.getOriginalFilename());
         try {
@@ -108,7 +114,16 @@ public class ModelUploadController {
             });
 
             ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
-            Experiment experiment = experimentService.createExperimentFromModelBytes(modelBytes, projectSupplier, type, environment);
+            Experiment experiment =
+                experimentService.createExperimentFromModelBytes(
+                    modelBytes,
+                    projectSupplier,
+                    type,
+                    environment,
+                    isPathmindSimulation,
+                    obsSelection,
+                    rewFctName
+                );
 
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
