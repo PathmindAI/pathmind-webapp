@@ -119,16 +119,7 @@ def process_message(message):
                 policy_server_status=3
             else:
                 app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-                output=sh.helm('upgrade' \
-                    ,'--install' \
-                    ,helm_name \
-                    ,'policy-server/helm/policy-server/' \
-                    ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
-                    ,'--set', '\'ingress.hosts[0].host\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
-                    ,'--set', '\'ingress.hosts[0].paths[0]\'=/' \
-                    ,'--set', '\'ingress.tls[0].hosts[0]\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
-                    ,'--set', '\'ingress.tls[0].secretName\'=\'letsencrypt-{ENVIRONMENT}\''.format(ENVIRONMENT=ENVIRONMENT) \
-                    ,'-n',NAMESPACE)
+                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,NAMESPACE)
                 if output.exit_code != 0:
                     policy_server_status=3
         except Exception as e:
