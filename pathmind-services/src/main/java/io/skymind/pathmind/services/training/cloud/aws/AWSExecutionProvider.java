@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
@@ -534,10 +535,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("FREEZING", String.valueOf(Boolean.TRUE))
         ));
 
-        if (job.getEnvironment() != null) {
+        if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
             instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
-            instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+            instructions.add(var("IS_GYM", Boolean.valueOf(ModelType.isPythonModel(job.getModelType())).toString()));
+            instructions.add(var("IS_PATHMIND_SIMULATION", Boolean.valueOf(ModelType.isPathmindModel(job.getModelType())).toString()));
+            if (job.getObsSelection() != null) {
+                instructions.add(var("OBS_SELECTION", job.getObsSelection()));
+            }
+            if (job.getRewFctName() != null) {
+                instructions.add(var("REW_FCT_NAME", job.getRewFctName()));
+            }
             //todo if we need to validate requirements, we'd rather create another script to check it. the current script is just install requirements.txt
             instructions.add("if [[ ! -z \"$ENVIRONMENT_NAME\" ]]; then find . -maxdepth 1 -name requirements.txt -exec pip install -r '{}' \\; 2>/dev/null ; fi");
         }

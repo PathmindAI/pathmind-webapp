@@ -52,19 +52,22 @@ public class ExperimentService {
     private final ProjectFileCheckService projectFileCheckService;
 
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
-        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC, null);
+        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC,
+            null, null, null, null);
     }
 
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier,
-                                                     AnalyzeRequestDTO.ModelType type, String environment) throws Exception {
-        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment);
+                                                     AnalyzeRequestDTO.ModelType type, String environment,
+                                                     Boolean isPathmindSimulation, String obsSelection, String rewFctName) throws Exception {
+        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment,
+            isPathmindSimulation, obsSelection, rewFctName);
     }
 
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes,
                                                      StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
                                                      Supplier<Project> projectSupplier,
                                                      AnalyzeRequestDTO.ModelType type,
-                                                     String environment) throws Exception {
+                                                     String environment, Boolean isPathmindSimulation, String obsSelection, String rewFctName) throws Exception {
         Model model = new Model();
 
         if (type.equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
@@ -106,8 +109,12 @@ public class ExperimentService {
             if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
                 throw new ModelCheckException(analysisResult.getFailedSteps());
             }
-            model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
-            model.setPackageName(environment);
+            if (isPathmindSimulation) {
+                model.setModelType(ModelType.PM_SINGLE.getValue());
+            } else {
+                model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
+            }
+            model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
 
             modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
             log.info("created model {}", model.getId());
