@@ -42,11 +42,10 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
     private final UriComponentsBuilder urlBuilder;
-    private final String applicationHost;
 
     @Autowired
     public AwsPolicyServerServiceImpl(RunDAO runDAO, ObservationDAO observationDAO,
-                                      @Value("${pathmind.policyserver.url}") String policyServerBaseUrl,
+                                      @Value("${pathmind.application.url}") String applicationUrl,
                                       @Value("${pathmind.application.environment}") String environment,
                                       AWSApiClient awsApiClient, PolicyFileService policyFileService,
                                       PolicyServerFilesCreator filesCreator) throws MalformedURLException {
@@ -56,9 +55,15 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
         this.awsApiClient = awsApiClient;
         this.policyFileService = policyFileService;
 
-        URL url = new URL(policyServerBaseUrl);
-        this.applicationHost = environment + "." + url.getHost();
-        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(policyServerBaseUrl);
+        final URL url = new URL(applicationUrl);
+        String policyServerURI;
+        if (environment.equalsIgnoreCase("prod")) {
+            policyServerURI = url.getHost().replaceFirst("app", "api");
+        } else {
+            policyServerURI = "api." + url.getHost();
+        }
+        log.debug("Serve policy at {}", policyServerURI);
+        this.urlBuilder = UriComponentsBuilder.fromPath(policyServerURI).scheme(url.getProtocol());
     }
 
 //    @Override
@@ -117,8 +122,9 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 .map(Policy::getRun)
                 .map(run -> {
                     if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
-                        String host = run.getJobId() + "." + applicationHost;
-                        UriComponents uriComponents = this.urlBuilder.cloneBuilder().host(host).build();
+                        UriComponents uriComponents = this.urlBuilder.cloneBuilder()
+                                .pathSegment("policy", run.getJobId())
+                                .build();
                         return uriComponents.toUriString();
                     }
                     return null;
