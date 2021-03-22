@@ -6,6 +6,7 @@ WORKDIR /app
 #Copy files
 COPY trigger.py .
 COPY build_and_push.sh .
+COPY run_helm.sh .
 COPY LoggerInit.py .
 COPY requirements.txt .
 
