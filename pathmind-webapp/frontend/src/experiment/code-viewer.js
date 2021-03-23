@@ -48,7 +48,7 @@ class CodeViewer extends PolymerElement {
     renderCode() {
         const codeElement = this.shadowRoot.querySelector("code");
         const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?!\/)\/(?![\/\*]|\*(?![\/]))/g;
-        const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/.+)/g;
+        const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)/g;
         const numberRe = /[0-9]+/g;
         let codeSnippet = this.codeSnippet;
 
