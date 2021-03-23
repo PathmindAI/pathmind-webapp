@@ -63,7 +63,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
             policyServerURI = "api." + url.getHost();
         }
         log.debug("Serve policy at {}", policyServerURI);
-        this.urlBuilder = UriComponentsBuilder.fromPath(policyServerURI).scheme(url.getProtocol());
+        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(applicationUrl).host(policyServerURI);
     }
 
 //    @Override
