@@ -23,7 +23,6 @@ import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
-import io.skymind.pathmind.webapp.ui.components.atoms.ButtonWithLoading;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -53,7 +52,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
 
-    private ButtonWithLoading servePolicyButton;
+    private Button servePolicyButton;
     private Button exportPolicyButton;
     private Button stopTrainingButton;
     private Button archiveButton;
@@ -131,7 +130,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = GuiUtils.getPrimaryButton("Export Policy", click -> ExportPolicyAction.exportPolicy(getExperimentSupplier, getUISupplier), false);
-        servePolicyButton = new ButtonWithLoading("Serve Policy", () -> ServePolicyAction.servePolicy(getExperimentSupplier, servePolicyButton, policyServerService), true);
+        servePolicyButton = new Button("Serve Policy", click -> ServePolicyAction.servePolicy(getExperimentSupplier, policyServerService));
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
