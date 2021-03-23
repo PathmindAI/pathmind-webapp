@@ -36,6 +36,7 @@ Vagrant.configure("2") do |config|
     sudo -u postgres psql -c "CREATE USER skynet WITH PASSWORD 'skynetskynet123';"
     sudo -u postgres psql -c "CREATE DATABASE pathmind;"
     sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE pathmind to skynet;"
+    sudo -u postgres psql -c "ALTER USER skynet WITH superuser;" # questionable. This is to install uuid-ossp
 
     echo "-------------------- Setting up .bash_profile"
     sudo echo ". /vagrant/vagrant-user-env.sh;\n cd /vagrant" > /home/vagrant/.bash_profile
