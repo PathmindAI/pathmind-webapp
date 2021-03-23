@@ -68,14 +68,14 @@ public class ModelUploadController {
     upload gym model to existing project:
     curl -i -XPOST -H "X-PM-API-TOKEN: af26c5e1-8838-4c41-b490-e5dc7de3aeef" -F 'file=@/home/kepricon/Downloads/tests.zip' -F 'projectId=496' -F 'env=tests.factory.environments.FactoryEnv' http://localhost:8081/py/upload
     upload pathmind simulation to existing project
-    curl -i -XPOST -H "X-PM-API-TOKEN: 11202253-5709-4eb7-9102-f87122314464" -F 'file=@/home/kepricon/pathmind/model.zip' -F 'projectId=496' -F 'env=tests.mouse.mouse_env_pathmind.MouseAndCheese' -F 'is_pathmind_simulation=TRUE' -F 'obs_selection=tests/mouse/obs.yaml' -F 'rew_fct_name=tests.mouse.reward.reward_function' http://localhost:8081/py/upload
+    curl -i -XPOST -H "X-PM-API-TOKEN: 11202253-5709-4eb7-9102-f87122314464" -F 'file=@/home/kepricon/pathmind/model.zip' -F 'projectId=496' -F 'env=tests.mouse.mouse_env_pathmind.MouseAndCheese' -F 'isPathmindSimulation=TRUE' -F 'obsSelection=tests/mouse/obs.yaml' -F 'rewFctName=tests.mouse.reward.reward_function' http://localhost:8081/py/upload
      */
     @PostMapping("/py/upload")
     public ResponseEntity<?> handlePYFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("env") String environment,
-                                                @RequestParam(value = "is_pathmind_simulation", required = false, defaultValue = "false") Boolean isPathmindSimulation,
-                                                @RequestParam(value = "obs_selection", required = false) String obsSelection,
-                                                @RequestParam(value = "rew_fct_name", required = false) String rewFctName,
+                                                @RequestParam(value = "isPathmindSimulation", required = false, defaultValue = "false") Boolean isPathmindSimulation,
+                                                @RequestParam(value = "obsSelection", required = false) String obsSelection,
+                                                @RequestParam(value = "rewFctName", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
         return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.PYTHON, environment, isPathmindSimulation, obsSelection, rewFctName);
