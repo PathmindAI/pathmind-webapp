@@ -175,7 +175,23 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                         && experiment.getBestPolicy().hasFile();
         exportPolicyButton.setVisible(isCompletedWithPolicy);
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
+            PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
             servePolicyButton.setVisible(isPythonModel && isCompletedWithPolicy);
+            switch(deploymentStatus) {
+                case FAILED:
+                    servePolicyButton.setText("Deployment Failed");
+                    break;
+                case DEPLOYED:
+                    servePolicyButton.setText("Policy Server Live");
+                    break;
+                case NOT_DEPLOYED:
+                    // fallthrough
+                case PENDING:
+                    servePolicyButton.setText("Policy Server Deploying");
+                    break;
+                default:
+                    servePolicyButton.setText("Start Policy Server");
+            } 
         }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
