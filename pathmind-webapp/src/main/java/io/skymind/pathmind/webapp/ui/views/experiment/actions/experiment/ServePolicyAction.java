@@ -20,8 +20,8 @@ import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 public class ServePolicyAction {
 
     public static void servePolicy(Supplier<Experiment> getExperimentSupplier, PolicyServerService policyServerService) {
-        PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
         Experiment experiment = getExperimentSupplier.get();
+        PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
         Dialog dialog = new Dialog();
         Div dialogContent = new Div();
         ProgressBar progressBar = new ProgressBar(0, 100);
