@@ -45,12 +45,11 @@ public class ServePolicyAction {
             case DEPLOYED: {
                 final String url = policyServerService.getPolicyServerUrl(experiment);
                 dialogContent.add(
-                        new H3("Policy Serving"),
-                        new Paragraph("This is the serving endpoint for the experiment's best policy."),
+                        new H3("The Policy is Live"),
+                        new Paragraph("The policy is being served at this URL:"),
                         new CopyField(url),
-                        new Paragraph(new Span("Read the "),
-                                new Anchor("link", url + "/redoc"),
-                                new Span(" to learn more about its usage."))
+                        new Paragraph(new Span("Read the docs for more details:"),
+                                new Anchor("link", url + "/docs"))
                 );
                 break;
             }
@@ -59,13 +58,11 @@ public class ServePolicyAction {
                 // intentional fallthrough to PENDING state
             }
             case PENDING: {
-                progressBar.setValue(42); // need to get updated according to deployment progress
+                progressBar.setIndeterminate(true);
                 dialogContent.add(
                         new H3("Deploying Policy Server"),
                         new Paragraph(
-                            new Span("The policy server may take up to an hour to be ready."),
-                            new Html("<br/>"),
-                            new Span("We’ll send you an email once it’s complete.")
+                            new Span("Your policy will be available in about five minutes.")
                         ),
                         progressBar
                 );
