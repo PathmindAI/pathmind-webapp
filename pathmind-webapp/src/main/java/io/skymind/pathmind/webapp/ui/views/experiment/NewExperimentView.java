@@ -195,7 +195,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private boolean canStartTraining() {
         PathmindUser currentUser = userService.getCurrentUser();
         Model model = experiment.getModel();
-        boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType()));
+        boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
         return ModelUtils.isValidModel(model)
                 && (isPyModel || rewardFunctionEditor.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
