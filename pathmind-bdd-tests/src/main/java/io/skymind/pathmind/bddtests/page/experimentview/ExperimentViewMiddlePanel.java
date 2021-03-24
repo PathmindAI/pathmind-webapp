@@ -102,7 +102,7 @@ public class ExperimentViewMiddlePanel extends PageObject {
         if (highlighted) {
             List<String> functions = new ArrayList<>();
             for (WebElement webElement : e.findElements(By.cssSelector(".highlight-label"))) {
-                functions.add(webElement.getText());
+                functions.add(webElement.getText().replaceAll("\\n", " "));
             }
             assertThat(functions, hasItem(rewardFunction));
         } else {
