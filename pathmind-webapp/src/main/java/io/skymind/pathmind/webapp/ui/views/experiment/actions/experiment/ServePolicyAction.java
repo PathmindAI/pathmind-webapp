@@ -24,7 +24,6 @@ public class ServePolicyAction {
         PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
         Dialog dialog = new Dialog();
         Div dialogContent = new Div();
-        ProgressBar progressBar = new ProgressBar(0, 100);
         Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         closeButton.addClickListener(event -> {
             dialog.close();
@@ -46,10 +45,11 @@ public class ServePolicyAction {
                 final String url = policyServerService.getPolicyServerUrl(experiment);
                 dialogContent.add(
                         new H3("The Policy is Live"),
-                        new Paragraph("The policy is being served at this URL:"),
+                        new Span("The policy is being served at this URL:"),
                         new CopyField(url),
                         new Paragraph(new Span("Read the docs for more details:"),
-                                new Anchor("link", url + "/docs"))
+                                new Html("<br/>"),
+                                new Anchor(url + "/docs", url + "/docs"))
                 );
                 break;
             }
@@ -58,11 +58,12 @@ public class ServePolicyAction {
                 // intentional fallthrough to PENDING state
             }
             case PENDING: {
+                ProgressBar progressBar = new ProgressBar(0, 100);
                 progressBar.setIndeterminate(true);
                 dialogContent.add(
                         new H3("Deploying Policy Server"),
                         new Paragraph(
-                            new Span("Your policy will be available in about five minutes.")
+                            "Your policy will be available in about five minutes."
                         ),
                         progressBar
                 );
