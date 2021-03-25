@@ -76,13 +76,8 @@
 }
 
 .experiment-view .middle-panel {
-    flex: 1 1 auto;
-    height: auto !important;
-}
-
-.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:first-child,
-.experiment-view .comparison-panel > vaadin-split-layout > vaadin-vertical-layout:first-child {
-    max-height: 27rem;
+    flex: 0 1 auto;
+    height: 40vh !important;
 }
 
 .experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
@@ -222,7 +217,6 @@
 }
 
 .experiment-view .observations-panel {
-    max-height: 27rem;
     font-size: var(--lumo-font-size-s);
     padding: 0;
     border: none;
@@ -307,7 +301,7 @@
 
 .experiment-view .bottom-panel histogram-chart,
 .experiment-view .bottom-panel data-chart {
-    flex: 1 0 100%;
+    flex: 1 1 100%;
 }
 
 .experiment-view.comparison-mode .bottom-panel,

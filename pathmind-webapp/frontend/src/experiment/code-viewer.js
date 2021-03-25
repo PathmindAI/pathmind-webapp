@@ -133,7 +133,6 @@ class CodeViewer extends PolymerElement {
                     box-sizing: border-box;
                     display: block;
                     width: 100%;
-                    max-height: calc(1.8em * 20);
                     height: 100%;
                     white-space: pre-wrap;
                     font-family: var(--code-font-family);
