@@ -222,4 +222,13 @@ public class HomePage extends PageObject {
     public void clickUserMenuBtn(String btn) {
         getDriver().findElement(By.cssSelector(".vaadin-menu-item")).click();
     }
+
+    public void clickRequestOnboardingServiceBtn() {
+        assertThat(getDriver().findElement(By.xpath("//request-onboarding-service-button/vaadin-button")).getText(), containsString("Request Onboarding Service"));
+        getDriver().findElement(By.xpath("//request-onboarding-service-button/vaadin-button")).click();
+    }
+
+    public void clickRequestOnboardingServiceBackBtn() {
+        getDriver().findElement(By.xpath("//a[@title='Pathmind Inc.']")).click();
+    }
 }
