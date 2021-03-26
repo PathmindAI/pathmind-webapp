@@ -10,6 +10,9 @@ import com.vaadin.flow.server.PageConfigurator;
 import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
@@ -50,10 +53,10 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 public class MainLayout extends AppLayout implements PageConfigurator {
     private AccountHeaderPanel accountHeaderPanel;
 
-    public MainLayout(CurrentUser user, FeatureManager featureManager) {
+    public MainLayout(CurrentUser user, FeatureManager featureManager, @Value("${pathmind.stripe.public.key}") String publicKey) {
         setId("pathmind-app-layout");
         boolean hasLoginUser = user != null && user.getUser() != null;
-        addToNavbar(new SectionsHeaderPanel(hasLoginUser));
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey));
         if (hasLoginUser) {
             accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
             addToNavbar(accountHeaderPanel);
