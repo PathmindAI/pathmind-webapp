@@ -1903,13 +1903,24 @@
             VACUUM FULL;
         </sql>
     </changeSet>
-    
+
     <changeSet id="2847-01" author="alexander.makarov@toptal.com">
         <addColumn tableName="RUN">
             <column name="POLICY_SERVER_STATUS" type="INT" defaultValue="0"/>
         </addColumn>
         <rollback>
             <dropColumn tableName="RUN" columnName="POLICY_SERVER_STATUS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2992-01" author="daehyun@pathmind.com">
+        <addColumn tableName="RUN">
+            <column name="POLICY_SERVER_MESSAGE" type="TEXT"/>
+            <column name="POLICY_SERVER_URL" type="VARCHAR(255)"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_MESSAGE"/>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_URL"/>
         </rollback>
     </changeSet>
 
