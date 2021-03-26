@@ -41,18 +41,18 @@ public class StripeAPIService {
             SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(webappDomainUrl + "/success.html")
-                .setCancelUrl(webappDomainUrl + "/cancel.html")
+                .setSuccessUrl(webappDomainUrl + "/onboarding-payment-success")
+                .setCancelUrl(webappDomainUrl)
                 .addLineItem(
                 SessionCreateParams.LineItem.builder()
                     .setQuantity(1L)
                     .setPriceData(
                     SessionCreateParams.LineItem.PriceData.builder()
                         .setCurrency("usd")
-                        .setUnitAmount(2000L)
+                        .setUnitAmount(50000L)
                         .setProductData(
                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Stubborn Attachments")
+                            .setName("Exclusive Onboarding Service")
                             .build())
                         .build())
                     .build())
