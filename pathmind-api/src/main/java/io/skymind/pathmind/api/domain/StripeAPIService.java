@@ -2,29 +2,34 @@ package io.skymind.pathmind.api.domain;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.stripe.Stripe;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Charge;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
 
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
+import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.analytics.SegmentTrackerService;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -40,7 +45,14 @@ public class StripeAPIService {
     @Value("${pathmind.stripe.secret.key}")
     private String secretKey;
 
+    // TODO -> This is currently Fionna's local webhook secret key for her own stripe ac
     private String stripeWebhookSecret = "whsec_WfPcjszxi6AvNU1mzMThbJkuGbbHYHl3";
+
+    @Autowired
+    private SegmentTrackerService segmentTrackerService;
+
+    @Autowired
+    private UserDAO userDAO;
 
     @PostConstruct
     public void init() {
@@ -100,34 +112,44 @@ public class StripeAPIService {
                 return "";
             } catch (SignatureVerificationException e) {
                 System.out.println("Invalid signature");
-                System.out.println(e);
                 response.setStatus(400);
                 return "";
             }
 
-            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-            StripeObject stripeObject = null;
-            if (dataObjectDeserializer.getObject().isPresent()) {      
-                stripeObject = dataObjectDeserializer.getObject().get();
-                System.out.println("Checkout session completed");
-                System.out.println(stripeObject);
-            } else {
-            // Handle absent data object with `deserializeUnsafe` or `deserializeUnsafeWith`.
-            // Please see the usage details in java doc on the class `EventDataObjectDeserializer`.
-            }
-
             switch (event.getType()) {
                 case "payment_intent.succeeded":
-                    PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
                     System.out.println("PaymentIntent was successful!");
                     break;
-                case "charge.refunded":
-                    Gson gson = new Gson();
-                    Charge charge = gson.fromJson(event.getData().getObject().toJson(), Charge.class);
-                    // Call your service here with your Charge object.
-                    break;
                 case "checkout.session.completed":
-                    System.out.println("checkout.session.completed");
+                    EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+                    StripeObject stripeObject = null;
+                    if (dataObjectDeserializer.getObject().isPresent()) {      
+                        stripeObject = dataObjectDeserializer.getObject().get();
+                    } else {
+                        // Handle absent data object with `deserializeUnsafe` or `deserializeUnsafeWith`.
+                        // Please see the usage details in java doc on the class `EventDataObjectDeserializer`.
+                        try {
+                            stripeObject = dataObjectDeserializer.deserializeUnsafe();
+                        } catch (EventDataObjectDeserializationException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    System.out.println("Checkout session completed");
+                    JsonObject obj = JsonParser.parseString(stripeObject.toJson()).getAsJsonObject();
+                    String customerEmail = obj.get("customer_details").getAsJsonObject().get("email").toString();
+                    if (customerEmail != null) {
+                        PathmindUser user = userDAO.findByEmailIgnoreCase(customerEmail);
+                        String paymentStatus = obj.get("payment_status").toString();
+                        System.out.println(user);
+                        Map<String, String> properties = new HashMap<>();
+                        properties.put("payment_status", paymentStatus);
+                        if (user != null) {
+                            segmentTrackerService.onboardingServicePaid(user.getId(), properties);
+                        } else {
+                            System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
+                        }
+                    }
                     break;
                 default:
                     System.out.println("Unhandled event type: " + event.getType());
