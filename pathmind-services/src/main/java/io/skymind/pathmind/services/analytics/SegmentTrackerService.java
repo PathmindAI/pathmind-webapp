@@ -28,7 +28,7 @@ public class SegmentTrackerService {
 	private final Analytics analytics;
 	private final boolean enabled;
 	
-	public SegmentTrackerService(@Value("${skymind.segment.server.source.key}") String key, @Value("${skymind.segment.enabled}") Boolean enabled) {
+	public SegmentTrackerService(@Value("${pathmind.segment.server.source.key}") String key, @Value("${skymind.segment.enabled}") Boolean enabled) {
 		analytics = Analytics.builder(key).build();
 		this.enabled = enabled;
 	}

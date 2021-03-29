@@ -66,8 +66,8 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     private boolean enabled;
     private PathmindUserDetails user;
 
-    public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
-                             @Value("${skymind.segment.enabled}") Boolean enabled) {
+    public SegmentIntegrator(@Value("${pathmind.segment.website.source.key}") String key,
+                             @Value("${pathmind.segment.enabled}") Boolean enabled) {
         this.sourceKey = key;
         this.enabled = enabled;
     }
