@@ -187,4 +187,14 @@ public class HomePageStepDefinitions {
         homePageSteps.openUserDropdown();
         homePageSteps.clickUserMenuBtn(btn);
     }
+
+    @When("^Click Request Onboarding Service btn$")
+    public void clickRequestOnboardingServiceBtn() {
+        homePageSteps.clickRequestOnboardingServiceBtn();
+    }
+
+    @When("^Click Request Onboarding Service back btn$")
+    public void clickRequestOnboardingServiceBackBtn() {
+        homePageSteps.clickRequestOnboardingServiceBackBtn();
+    }
 }
