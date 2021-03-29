@@ -1918,9 +1918,11 @@
             <column name="POLICY_SERVER_MESSAGE" type="TEXT"/>
             <column name="POLICY_SERVER_URL" type="VARCHAR(255)"/>
         </addColumn>
+        <addUniqueConstraint tableName="RUN" columnNames="POLICY_SERVER_URL" constraintName="POLICY_SERVER_URL_UNIQUE"/>
         <rollback>
             <dropColumn tableName="RUN" columnName="POLICY_SERVER_MESSAGE"/>
             <dropColumn tableName="RUN" columnName="POLICY_SERVER_URL"/>
+            <dropUniqueConstraint tableName="RUN" uniqueColumns="POLICY_SERVER_URL" constraintName="POLICY_SERVER_URL_UNIQUE"/>
         </rollback>
     </changeSet>
 

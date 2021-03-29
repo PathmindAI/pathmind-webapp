@@ -71,6 +71,7 @@ public class Indexes {
     public static final Index REWARD_VARIABLE_MODEL_FK_INDEX = Indexes0.REWARD_VARIABLE_MODEL_FK_INDEX;
     public static final Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Indexes0.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY;
     public static final Index REWARD_VARIABLE_PKEY = Indexes0.REWARD_VARIABLE_PKEY;
+    public static final Index POLICY_SERVER_URL_UNIQUE = Indexes0.POLICY_SERVER_URL_UNIQUE;
     public static final Index RUN_EXPERIMENT_FK_INDEX = Indexes0.RUN_EXPERIMENT_FK_INDEX;
     public static final Index RUN_PKEY = Indexes0.RUN_PKEY;
     public static final Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Indexes0.PM_RUN_ADMIN_NOTES_RUN_ID_UNQ;
@@ -110,6 +111,7 @@ public class Indexes {
         public static Index REWARD_VARIABLE_MODEL_FK_INDEX = Internal.createIndex("reward_variable_model_fk_index", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID }, false);
         public static Index REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createIndex("reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX }, true);
         public static Index REWARD_VARIABLE_PKEY = Internal.createIndex("reward_variable_pkey", RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.ID }, true);
+        public static Index POLICY_SERVER_URL_UNIQUE = Internal.createIndex("policy_server_url_unique", Run.RUN, new OrderField[] { Run.RUN.POLICY_SERVER_URL }, true);
         public static Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex("run_experiment_fk_index", Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
         public static Index PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createIndex("pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE, new OrderField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, true);

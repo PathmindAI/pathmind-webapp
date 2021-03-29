@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 381545578;
+    private static final long serialVersionUID = -1388851522;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -189,7 +189,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
+        return Arrays.<Index>asList(Indexes.POLICY_SERVER_URL_UNIQUE, Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
     }
 
     @Override
@@ -204,7 +204,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<UniqueKey<RunRecord>> getKeys() {
-        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY);
+        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY, Keys.POLICY_SERVER_URL_UNIQUE);
     }
 
     @Override
