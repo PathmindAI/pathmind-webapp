@@ -436,6 +436,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+                instructions.addAll(Arrays.asList(
+                    // Setup Anaconda
+                    "mkdir -p conda",
+                    "cd conda",
+                    "tar xf ../rllibpack.tar.gz > /dev/null",
+                    "rm ../rllibpack.tar.gz",
+                    "source bin/activate",
+                    "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
             case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
