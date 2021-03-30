@@ -46,7 +46,6 @@ class RequestOnboardingServiceButton extends PolymerElement {
   }
 
   handleClick() {
-      console.log('this stripe: ', this.stripe)
     fetch("http://localhost:8081/create-checkout-session", {
         method: "POST",
         headers: {
@@ -54,10 +53,9 @@ class RequestOnboardingServiceButton extends PolymerElement {
         },
       })
         .then(response => {
-          console.log(`%cresponse:`, "background-color: yellow")
-          console.log(response)
-
-          // TODO: add error handler
+          if (!response.ok) {
+            throw new Error(response.error);
+          }
           return response.json();
         })
         .then(session => 
@@ -73,6 +71,7 @@ class RequestOnboardingServiceButton extends PolymerElement {
         })
         .catch(error => {
           console.error("Error:", error);
+          window.location = "http://localhost:8080/page-not-found";
         });
   }
 
