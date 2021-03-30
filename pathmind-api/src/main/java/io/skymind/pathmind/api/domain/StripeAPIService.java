@@ -26,6 +26,7 @@ import io.skymind.pathmind.api.conf.security.PathmindApiUser;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.utils.PathmindStringUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
@@ -45,10 +46,10 @@ public class StripeAPIService {
     @Value("${pathmind.stripe.secret.key}")
     private String secretKey;
 
-    // TODO -> This is currently Fionna's local webhook secret key for her own stripe ac
-    private String stripeWebhookSecret = "whsec_WfPcjszxi6AvNU1mzMThbJkuGbbHYHl3";
+    @Value("${pathmind.stripe.webhook.signing.secret}")
+    private String stripeWebhookSecret;
 
-    @Autowired
+    @Autowired(required = false)
     private SegmentTrackerService segmentTrackerService;
 
     @Autowired
@@ -103,7 +104,7 @@ public class StripeAPIService {
             String payload = IOUtils.toString(request.getInputStream(), "UTF-8");
             String sigHeader = request.getHeader("Stripe-Signature");
             Event event = null;
-            
+
             try {
                 event = Webhook.constructEvent(payload, sigHeader, stripeWebhookSecret);
             } catch (JsonSyntaxException e) {
@@ -116,38 +117,52 @@ public class StripeAPIService {
                 return "";
             }
 
+            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+            StripeObject stripeObject = null;
+            if (dataObjectDeserializer.getObject().isPresent()) {      
+                stripeObject = dataObjectDeserializer.getObject().get();
+            } else {
+                // Handle absent data object with `deserializeUnsafe` or `deserializeUnsafeWith`.
+                // Please see the usage details in java doc on the class `EventDataObjectDeserializer`.
+                try {
+                    stripeObject = dataObjectDeserializer.deserializeUnsafe();
+                } catch (EventDataObjectDeserializationException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            JsonObject obj = JsonParser.parseString(stripeObject.toJson()).getAsJsonObject();
+            String customerEmail;
+            PathmindUser user;
+
             switch (event.getType()) {
                 case "payment_intent.succeeded":
                     System.out.println("PaymentIntent was successful!");
                     break;
+                case "customer.created":
+                    System.out.println("Customer created");
+                    customerEmail = PathmindStringUtils.removeQuotes(obj.get("email").toString());
+                    user = userDAO.findByEmailIgnoreCase(customerEmail);
+                    String customerId = PathmindStringUtils.removeQuotes(obj.get("id").toString());
+                    user.setStripeCustomerId(customerId);
+                    userDAO.update(user);
+                    break;
                 case "checkout.session.completed":
-                    EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-                    StripeObject stripeObject = null;
-                    if (dataObjectDeserializer.getObject().isPresent()) {      
-                        stripeObject = dataObjectDeserializer.getObject().get();
-                    } else {
-                        // Handle absent data object with `deserializeUnsafe` or `deserializeUnsafeWith`.
-                        // Please see the usage details in java doc on the class `EventDataObjectDeserializer`.
-                        try {
-                            stripeObject = dataObjectDeserializer.deserializeUnsafe();
-                        } catch (EventDataObjectDeserializationException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
                     System.out.println("Checkout session completed");
-                    JsonObject obj = JsonParser.parseString(stripeObject.toJson()).getAsJsonObject();
-                    String customerEmail = obj.get("customer_details").getAsJsonObject().get("email").toString();
+                    customerEmail = PathmindStringUtils.removeQuotes(obj.get("customer_details").getAsJsonObject().get("email").toString());
                     if (customerEmail != null) {
-                        PathmindUser user = userDAO.findByEmailIgnoreCase(customerEmail);
+                        user = userDAO.findByEmailIgnoreCase(customerEmail);
                         String paymentStatus = obj.get("payment_status").toString();
-                        System.out.println(user);
                         Map<String, String> properties = new HashMap<>();
                         properties.put("payment_status", paymentStatus);
-                        if (user != null) {
-                            segmentTrackerService.onboardingServicePaid(user.getId(), properties);
+                        if (paymentStatus == "paid") {
+                            if (user != null) {
+                                segmentTrackerService.onboardingServicePaid(user.getId(), properties);
+                            } else {
+                                System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
+                            }
                         } else {
-                            System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
+                            System.out.println("User "+customerEmail+" tried to pay for onboarding service with email but failed.");
                         }
                     }
                     break;
