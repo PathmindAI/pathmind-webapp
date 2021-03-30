@@ -66,12 +66,15 @@ public class StripeAPIService {
 
     @PostMapping(path = "/create-checkout-session", produces = MediaType.APPLICATION_JSON_VALUE)
     public HashMap<String, String> CreateCheckoutSession(@AuthenticationPrincipal PathmindApiUser pmUser) {
+        PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(webappDomainUrl + "/onboarding-payment-success")
                 .setCancelUrl(webappDomainUrl)
+                .setCustomerEmail(user.getStripeCustomerId() != null ? null : user.getEmail())
+                .setCustomer(user.getStripeCustomerId())
                 .addLineItem(
                 SessionCreateParams.LineItem.builder()
                     .setQuantity(1L)
@@ -137,7 +140,8 @@ public class StripeAPIService {
 
             switch (event.getType()) {
                 case "payment_intent.succeeded":
-                    System.out.println("PaymentIntent was successful!");
+                    System.out.println("PaymentIntent was successful");
+                    response.setStatus(200);
                     break;
                 case "customer.created":
                     System.out.println("Customer created");
@@ -146,6 +150,7 @@ public class StripeAPIService {
                     String customerId = PathmindStringUtils.removeQuotes(obj.get("id").toString());
                     user.setStripeCustomerId(customerId);
                     userDAO.update(user);
+                    response.setStatus(200);
                     break;
                 case "checkout.session.completed":
                     System.out.println("Checkout session completed");
@@ -155,22 +160,24 @@ public class StripeAPIService {
                         String paymentStatus = obj.get("payment_status").toString();
                         Map<String, String> properties = new HashMap<>();
                         properties.put("payment_status", paymentStatus);
-                        if (paymentStatus == "paid") {
-                            if (user != null) {
-                                segmentTrackerService.onboardingServicePaid(user.getId(), properties);
-                            } else {
-                                System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
-                            }
+                        if (user != null) {
+                            segmentTrackerService.onboardingServicePaid(user.getId(), properties);
                         } else {
-                            System.out.println("User "+customerEmail+" tried to pay for onboarding service with email but failed.");
+                            System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
                         }
+                        response.setStatus(200);
+                    } else {
+                        response.setStatus(400);
                     }
+                    break;
+                case "charge.succeeded":
+                    System.out.println("Charge succeeded");
+                    response.setStatus(200);
                     break;
                 default:
                     System.out.println("Unhandled event type: " + event.getType());
+                    response.setStatus(200);
             }
-
-            response.setStatus(200);
         } catch (IOException e) {
             System.out.println("IOException");
             response.setStatus(400);
