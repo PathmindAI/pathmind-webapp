@@ -52,7 +52,7 @@ public class SegmentTrackerService {
 
 	private void track(String event, String userId, Map<String, String> properties) {
 		if (enabled) {
-			analytics.enqueue(TrackMessage.builder(EVENT_TRAINING_COMPLETED)
+			analytics.enqueue(TrackMessage.builder(event)
 					.userId(userId)
 					.properties(properties));
 			analytics.flush();
