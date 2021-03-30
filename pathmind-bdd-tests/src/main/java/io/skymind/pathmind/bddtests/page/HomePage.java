@@ -231,4 +231,31 @@ public class HomePage extends PageObject {
     public void clickRequestOnboardingServiceBackBtn() {
         getDriver().findElement(By.xpath("//a[@title='Pathmind Inc.']")).click();
     }
+
+    public void checkRequestOnboardingServicePage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[1]")).getText(), is("Exclusive Onboarding Service"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[2]")).getText(), is("$500.00"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[3]")).getText(), is("We will assign a Customer Success Specialist to help with configuring your simulation model for Pathmind. If you would like an in-depth walkthrough, sign up now!"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='PaymentHeader']/div")).getText(), is("Pay with card"));
+        assertThat(getDriver().findElement(By.xpath("//dl[@class='PrefilledInfo']/div")).getText(), is("Email\nevegeniy@skymind.io"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='SubmitButton-TextContainer']/span[1]")).getText(), is("Pay $500.00"));
+    }
+
+    public void fillRequestOnboardingServicePaymentForm() {
+        getDriver().findElement(By.id("cardNumber")).sendKeys("4242424242424242");
+        getDriver().findElement(By.id("cardExpiry")).sendKeys("1221");
+        getDriver().findElement(By.id("cardCvc")).sendKeys("123");
+        getDriver().findElement(By.id("billingName")).sendKeys("Evgeniy Ivanchenko");
+    }
+
+    public void clickRequestOnboardingServicePayBtn() {
+        getDriver().findElement(By.xpath("//button[@type='submit']")).click();
+    }
+
+    public void checkOnboardingSuccessPage() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='welcome-text']")).getText(), is("Welcome to"));
+        assertThat(getDriver().findElement(By.xpath("//img[@class='logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
+        assertThat(getDriver().findElement(By.xpath("//h3")).getText(), is("You have paid for the onboarding service"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/p")).getText(), is("You should have received the payment receipt email. Our Customer Success Specialist will contact you shortly. If you have any questions, do not hesitate to message us."));
+    }
 }
