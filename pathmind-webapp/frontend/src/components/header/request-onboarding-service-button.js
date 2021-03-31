@@ -46,7 +46,10 @@ class RequestOnboardingServiceButton extends PolymerElement {
   }
 
   handleClick() {
-    fetch("http://localhost:8081/create-checkout-session", {
+    const apiDomain = window.location.host.indexOf(".com") > -1 ? 
+            `https://api.${window.location.host}`
+            : "http://localhost:8081";
+    fetch(`${apiDomain}/create-checkout-session`, {
         method: "POST",
         headers: {
           'X-PM-API-TOKEN': this.userAPIKey
@@ -71,7 +74,7 @@ class RequestOnboardingServiceButton extends PolymerElement {
         })
         .catch(error => {
           console.error("Error:", error);
-          window.location = "http://localhost:8080/page-not-found";
+          window.location.pathname = "/page-not-found";
         });
   }
 
