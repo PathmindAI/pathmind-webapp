@@ -84,8 +84,8 @@ public class StripeAPIService {
                         .setUnitAmount(50000L)
                         .setProductData(
                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Exclusive Onboarding Service")
-                            .setDescription("We will assign a Customer Success Specialist to help with configuring your simulation model for Pathmind. If you would like an in-depth walkthrough, sign up now!")
+                            .setName("Concierge Onboarding Service")
+                            .setDescription("A dedicated Pathmind Engineer to help retrofit your existing simulation for reinforcement learning.")
                             .build())
                         .build())
                     .build())
