@@ -233,9 +233,9 @@ public class HomePage extends PageObject {
     }
 
     public void checkRequestOnboardingServicePage() {
-        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[1]")).getText(), is("Exclusive Onboarding Service"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[1]")).getText(), is("Concierge Onboarding Service"));
         assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[2]")).getText(), is("$500.00"));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[3]")).getText(), is("We will assign a Customer Success Specialist to help with configuring your simulation model for Pathmind. If you would like an in-depth walkthrough, sign up now!"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[3]")).getText(), is("A dedicated Pathmind Engineer to help retrofit your existing simulation for reinforcement learning."));
         assertThat(getDriver().findElement(By.xpath("//div[@class='PaymentHeader']/div")).getText(), is("Pay with card"));
         assertThat(getDriver().findElement(By.xpath("//dl[@class='PrefilledInfo']/div")).getText(), is("Email\nevegeniy@skymind.io"));
         assertThat(getDriver().findElement(By.xpath("//div[@class='SubmitButton-TextContainer']/span[1]")).getText(), is("Pay $500.00"));
