@@ -338,7 +338,7 @@ public class UpdaterService {
 
             if (policiesInfo.size() > 0) {
                 final byte[] policyFile = provider.policy(jobHandle, "freezing");
-                if (policiesInfo != null) {
+                if (policyFile != null) {
                     PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
                     policyUpdateInfo.setName("freezing");
                     policyUpdateInfo.setPolicyFile(policyFile);
