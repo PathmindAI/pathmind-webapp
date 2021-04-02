@@ -335,6 +335,16 @@ public class UpdaterService {
                             .map(Optional::get)
                             .collect(Collectors.toList())
             );
+
+            if (policiesInfo.size() > 0) {
+                final byte[] policyFile = provider.policy(jobHandle, "freezing");
+                if (policyFile != null) {
+                    PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
+                    policyUpdateInfo.setName("freezing");
+                    policyUpdateInfo.setPolicyFile(policyFile);
+                    policiesInfo.add(policyUpdateInfo);
+                }
+            }
         }
         return policiesInfo;
     }
