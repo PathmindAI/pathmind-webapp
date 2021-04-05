@@ -30,7 +30,7 @@ public class WebDriverManagerSource implements DriverSource {
         DriverType _driverType = DriverType.valueOf(_browserName);
         switch (_driverType) {
             case CHROME:
-                WebDriverManager.chromedriver().version(chromeVersion).setup();
+                WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions();
 //                Map<String, Object> prefs = new HashMap<>();
                 // LoggingPreferences logPrefs = new LoggingPreferences();

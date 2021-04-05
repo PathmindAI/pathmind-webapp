@@ -66,4 +66,9 @@ public class ExperimentViewStepDefinitions {
     public void experimentPageCheckRewardVariableIsHighlighted(String slot, String observation, boolean highlighted) {
         experimentViewSteps.experimentPageCheckRewardVariableIsHighlighted(slot, observation, highlighted);
     }
+
+    @Then("^Check reward variable is commented '(.*)'$")
+    public void checkRewardVariableIs(String rewardFunction) {
+        experimentViewSteps.checkRewardVariableIs(rewardFunction);
+    }
 }
