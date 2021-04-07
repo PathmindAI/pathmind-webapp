@@ -53,10 +53,13 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 public class MainLayout extends AppLayout implements PageConfigurator {
     private AccountHeaderPanel accountHeaderPanel;
 
-    public MainLayout(CurrentUser user, FeatureManager featureManager, @Value("${pathmind.stripe.public.key}") String publicKey) {
+    public MainLayout(CurrentUser user,
+            FeatureManager featureManager,
+            @Value("${pathmind.stripe.public.key}") String publicKey,
+            @Value("${pathmind.pathmind-api.url}") String pathmindApiUrl) {
         setId("pathmind-app-layout");
         boolean hasLoginUser = user != null && user.getUser() != null;
-        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey));
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey, pathmindApiUrl));
         if (hasLoginUser) {
             accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
             addToNavbar(accountHeaderPanel);

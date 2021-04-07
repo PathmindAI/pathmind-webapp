@@ -16,15 +16,11 @@ import org.springframework.context.annotation.Scope;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class RequestOnboardingServiceButton extends PolymerTemplate<RequestOnboardingServiceButton.Model> {
 
-    private String publicKey;
-
-    private PathmindUser user;
-
-    public RequestOnboardingServiceButton(CurrentUser currentUser, String stripePublicKey) {
-        this.publicKey = stripePublicKey;
-        user = currentUser.getUser();
+    public RequestOnboardingServiceButton(CurrentUser currentUser, String stripePublicKey, String pathmindApiUrl) {
+        PathmindUser user = currentUser.getUser();
         getModel().setUserAPIKey(user.getApiKey());
-        getModel().setKey(publicKey);
+        getModel().setKey(stripePublicKey);
+        getModel().setApiUrl(pathmindApiUrl);
     }
 
     public interface Model extends TemplateModel {
@@ -32,6 +28,8 @@ public class RequestOnboardingServiceButton extends PolymerTemplate<RequestOnboa
         void setUserAPIKey(String key);
 
         void setKey(String key);
+
+        void setApiUrl(String apiUrl);
 
     }
 }

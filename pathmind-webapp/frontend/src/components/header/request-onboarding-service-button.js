@@ -46,10 +46,7 @@ class RequestOnboardingServiceButton extends PolymerElement {
   }
 
   handleClick() {
-    const apiDomain = window.location.host.indexOf(".com") > -1 ? 
-            `https://api.${window.location.host}`
-            : "http://localhost:8081";
-    fetch(`${apiDomain}/create-checkout-session`, {
+    fetch(`${this.apiUrl}/create-checkout-session`, {
         method: "POST",
         headers: {
           'X-PM-API-TOKEN': this.userAPIKey

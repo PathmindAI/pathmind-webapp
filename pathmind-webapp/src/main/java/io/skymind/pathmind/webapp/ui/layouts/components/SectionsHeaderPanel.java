@@ -13,12 +13,15 @@ public class SectionsHeaderPanel extends HorizontalLayout {
 
     private String stripePublicKey;
 
+    private String pathmindApiUrl;
+
     private CurrentUser currentUser;
 
-    public SectionsHeaderPanel(boolean hasLoginUser, CurrentUser currentUser, String stripePublicKey) {
+    public SectionsHeaderPanel(boolean hasLoginUser, CurrentUser currentUser, String stripePublicKey, String pathmindApiUrl) {
         HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
         this.currentUser = currentUser;
         this.stripePublicKey = stripePublicKey;
+        this.pathmindApiUrl = pathmindApiUrl;
         sectionsHorizontalLayout.add(linkedLogo());
         if (hasLoginUser) {
             RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
@@ -57,7 +60,7 @@ public class SectionsHeaderPanel extends HorizontalLayout {
     }
 
     private RequestOnboardingServiceButton getRequestOnboardingServiceButton() {
-        return new RequestOnboardingServiceButton(currentUser, stripePublicKey);
+        return new RequestOnboardingServiceButton(currentUser, stripePublicKey, pathmindApiUrl);
     }
 
     private Anchor getAnchor(String url, String text) {
