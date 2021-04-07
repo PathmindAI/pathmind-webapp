@@ -91,7 +91,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     trackCompletedTrainingInSegment(run, providerJobStatus);
                     policyServerForRun(run);
                 } catch (Exception e) {
-                    log.error("Error process message {}", message, e);
+                    log.error("Error process message : " + message, e);
                 }
             }
         } while (true);
