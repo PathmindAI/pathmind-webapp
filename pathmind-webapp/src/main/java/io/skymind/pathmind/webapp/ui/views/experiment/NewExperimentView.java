@@ -50,6 +50,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Star
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionBuilder;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
@@ -62,6 +63,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
     protected ExperimentNotesField notesField;
+    private RewardFunctionBuilder rewardFunctionBuilder;
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private SimulationParametersPanel simulationParametersPanel;
@@ -155,6 +157,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditor,
+                rewardFunctionBuilder,
                 rewardVariablesPanel,
                 70);
         rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
@@ -377,6 +380,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected void createExperimentComponents() {
         createAndSetupNotesField();
         rewardFunctionEditor = new RewardFunctionEditor(this, rewardValidationService);
+        rewardFunctionBuilder = new RewardFunctionBuilder(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         rewardVariablesTable = new RewardVariablesTable();
@@ -385,6 +389,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         experimentComponentList.addAll(List.of(
                 notesField,
                 rewardFunctionEditor,
+                rewardFunctionBuilder,
                 observationsPanel,
                 rewardVariablesTable,
                 simulationParametersPanel));
