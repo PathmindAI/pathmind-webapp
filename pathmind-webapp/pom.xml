@@ -130,6 +130,11 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
+            <groupId>org.vaadin.jchristophe</groupId>
+            <artifactId>sortable-layout</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jooq</artifactId>
         </dependency>
