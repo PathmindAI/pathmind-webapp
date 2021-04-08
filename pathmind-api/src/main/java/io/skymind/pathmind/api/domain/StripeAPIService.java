@@ -1,6 +1,7 @@
 package io.skymind.pathmind.api.domain;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +66,7 @@ public class StripeAPIService {
     }
 
     @PostMapping(path = "/create-checkout-session", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HashMap<String, String> CreateCheckoutSession(@AuthenticationPrincipal PathmindApiUser pmUser) {
+    public HashMap<String, String> createCheckoutSession(@AuthenticationPrincipal PathmindApiUser pmUser) {
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
@@ -96,26 +97,26 @@ public class StripeAPIService {
             session = Session.create(params);
             responseData.put("id", session.getId());
         } catch (StripeException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return responseData;
     }
 
     @PostMapping(path = "/stripe-webhook")
-    public String StripeWebhook(HttpServletRequest request, HttpServletResponse response) {
+    public String stripeWebhook(HttpServletRequest request, HttpServletResponse response) {
         try {
-            String payload = IOUtils.toString(request.getInputStream(), "UTF-8");
+            String payload = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8);
             String sigHeader = request.getHeader("Stripe-Signature");
             Event event = null;
 
             try {
                 event = Webhook.constructEvent(payload, sigHeader, stripeWebhookSecret);
             } catch (JsonSyntaxException e) {
-                System.out.println("Invalid payload");
+                log.error("Invalid payload");
                 response.setStatus(400);
                 return "";
             } catch (SignatureVerificationException e) {
-                System.out.println("Invalid signature");
+                log.error("Invalid signature");
                 response.setStatus(400);
                 return "";
             }
@@ -130,8 +131,7 @@ public class StripeAPIService {
                 try {
                     stripeObject = dataObjectDeserializer.deserializeUnsafe();
                 } catch (EventDataObjectDeserializationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
             }
             JsonObject obj = JsonParser.parseString(stripeObject.toJson()).getAsJsonObject();
@@ -140,11 +140,11 @@ public class StripeAPIService {
 
             switch (event.getType()) {
                 case "payment_intent.succeeded":
-                    System.out.println("PaymentIntent was successful");
+                    log.info("PaymentIntent was successful");
                     response.setStatus(200);
                     break;
                 case "customer.created":
-                    System.out.println("Customer created");
+                    log.info("Customer created");
                     customerEmail = PathmindStringUtils.removeQuotes(obj.get("email").toString());
                     user = userDAO.findByEmailIgnoreCase(customerEmail);
                     String customerId = PathmindStringUtils.removeQuotes(obj.get("id").toString());
@@ -153,7 +153,7 @@ public class StripeAPIService {
                     response.setStatus(200);
                     break;
                 case "checkout.session.completed":
-                    System.out.println("Checkout session completed");
+                    log.info("Checkout session completed");
                     customerEmail = PathmindStringUtils.removeQuotes(obj.get("customer_details").getAsJsonObject().get("email").toString());
                     if (customerEmail != null) {
                         user = userDAO.findByEmailIgnoreCase(customerEmail);
@@ -163,7 +163,7 @@ public class StripeAPIService {
                         if (user != null) {
                             segmentTrackerService.onboardingServicePaid(user.getId(), properties);
                         } else {
-                            System.out.println("User who paid for onboarding service with email "+customerEmail+" is not found.");
+                            log.error("User who paid for onboarding service with email "+customerEmail+" is not found.");
                         }
                         response.setStatus(200);
                     } else {
@@ -171,15 +171,15 @@ public class StripeAPIService {
                     }
                     break;
                 case "charge.succeeded":
-                    System.out.println("Charge succeeded");
+                    log.info("Charge succeeded");
                     response.setStatus(200);
                     break;
                 default:
-                    System.out.println("Unhandled event type: " + event.getType());
+                    log.warn("Unhandled event type {}", event.getType());
                     response.setStatus(200);
             }
         } catch (IOException e) {
-            System.out.println("IOException");
+            log.error("Failed to process event", e);
             response.setStatus(400);
         }
         return "";
