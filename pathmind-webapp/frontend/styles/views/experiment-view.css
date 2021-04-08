@@ -85,6 +85,10 @@
     max-height: 27rem;
 }
 
+.experiment-view .middle-panel > vaadin-split-layout {
+    height: auto !important;
+}
+
 .experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
