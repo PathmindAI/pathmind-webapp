@@ -142,11 +142,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 verifyEmailReminder,
                 upgradeBannerExpCt,
                 upgradeBannerActMask,
-                titlePanel,
-                LabelFactory.createLabel(
-                        "To judge if an action is a good one, we calculate a reward score. "
-                                + "The reward score is based on the reward function.",
-                        CssPathmindStyles.SECTION_SUBTITLE_LABEL));
+                titlePanel);
         panelTitle.setClassName("panel-title");
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
