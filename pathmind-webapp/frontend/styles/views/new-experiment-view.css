@@ -268,3 +268,25 @@
 .new-experiment-view settings-view-content iron-icon {
     display: inline-block;
 }
+
+.new-experiment-view sortable vaadin-vertical-layout {
+  counter-reset: number;
+}
+
+.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper {
+  counter-increment: number;
+  position: relative;
+}
+
+.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper > *:first-child::before {
+  content: counter(number);
+  position: absolute;
+  top: 50%;
+  left: .3rem;
+  color: var(--pm-grey-color);
+  transform: translateY(-50%);
+}
+
+.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover > *:first-child::before {
+  display: none;
+}
