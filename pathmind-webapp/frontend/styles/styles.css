@@ -697,3 +697,7 @@ h4 {
     font-size: var(--lumo-font-size-m);
     margin-top: 2.6rem;
 }
+
+sortable-row-wrapper + sortable-row-wrapper {
+  margin-top: -1px;
+}

@@ -1,14 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
+
+import org.vaadin.jchristophe.SortableConfig;
+import org.vaadin.jchristophe.SortableLayout;
+
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
@@ -29,11 +36,17 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
+    private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
+
     private Span rewardEditorErrorLabel;
 
     private JuicyAceEditor rewardFunctionJuicyAceEditor;
 
     private Binder<Experiment> binder;
+
+    private SortableLayout sortableLayout;
+
+    private VerticalLayout rowsWrapper;
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView) {
         super();
@@ -45,13 +58,37 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         setPadding(false);
         setSpacing(false);
 
+        rowsWrapper = new VerticalLayout(new SortableRowWrapper(rewardFunctionJuicyAceEditor));
+        rowsWrapper.setSpacing(false);
+        rowsWrapper.setPadding(false);
+
+        SortableConfig sortableConfig = new SortableConfig();
+        sortableConfig.setAnimation(300);
+
+        sortableLayout = new SortableLayout(rowsWrapper, sortableConfig);
+        sortableLayout.setHandle("draggable-icon");
+
         add(WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
                 rewardEditorErrorLabel));
-        add(rewardFunctionJuicyAceEditor);
+        add(sortableLayout);
 
         addClassName("reward-fn-editor-panel");
 
+    }
+
+    private void setRewardVariables(List<RewardVariable> rewardVariables) {
+        Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
+        rewardVariables.forEach(rewardVariable -> {
+            if (rewardFunctionRows.size() < rewardVariables.size()) {
+                RewardFunctionRow row = new RewardFunctionRow(rewardVariable);
+                rowsWrapper.add(new SortableRowWrapper(row));
+                rewardFunctionRows.add(row);
+            } else {
+                RewardFunctionRow row = rewardFunctionRows.get(rewardVariable.getArrayIndex());
+                row.setRewardVariable(rewardVariable);
+            }
+        });
     }
 
     private void setupRewardFunctionJuicyAceEditor() {
@@ -117,6 +154,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         this.experiment = experiment;
         // binder.setBean(experiment);
         setVariableNames(experiment.getRewardVariables());
+        setRewardVariables(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(experiment.getRewardFunction());
     }
 
