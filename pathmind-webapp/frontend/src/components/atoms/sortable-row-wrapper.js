@@ -4,6 +4,7 @@ class SortableRowWrapper extends LitElement {
   static get styles() {
     return css`
       :host {
+        box-sizing: border-box;
         display: flex;
         align-items: center;
         width: 100%;

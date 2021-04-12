@@ -43,6 +43,7 @@ public class RewardFunctionRow extends HorizontalLayout {
         conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
 
         goalField = new NumberField();
+        goalField.setPlaceholder("Weight");
         goalField.addClassName("goal-field");
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
         goalField.addValueChangeListener(event -> {});
@@ -61,7 +62,7 @@ public class RewardFunctionRow extends HorizontalLayout {
     private void initBinder(RewardVariable rv) {
         binder = new Binder<>();
         binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
-        goalValueBinding = binder.forField(goalField).asRequired("Enter a goal value").bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
+        goalValueBinding = binder.forField(goalField).bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
         binder.setBean(rv);
     }
 
@@ -71,13 +72,8 @@ public class RewardFunctionRow extends HorizontalLayout {
         } else {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         }
-        goalValueBinding.setAsRequiredEnabled(conditionType.getValue() != null);
         goalField.setVisible(conditionType.getValue() != null);
         goalField.setEnabled(conditionType.getValue() != null);
-    }
-
-    public boolean isValid() {
-        return binder.validate().isOk();
     }
 
     public void setEditable(boolean editable) {

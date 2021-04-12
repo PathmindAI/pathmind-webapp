@@ -156,7 +156,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionEditor,
+                // rewardFunctionEditor,
                 rewardFunctionBuilder,
                 rewardVariablesPanel,
                 70);

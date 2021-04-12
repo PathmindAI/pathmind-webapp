@@ -58,7 +58,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         setPadding(false);
         setSpacing(false);
 
-        rowsWrapper = new VerticalLayout(new SortableRowWrapper(rewardFunctionJuicyAceEditor));
+        rowsWrapper = new VerticalLayout();
         rowsWrapper.setSpacing(false);
         rowsWrapper.setPadding(false);
 
@@ -89,6 +89,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 row.setRewardVariable(rewardVariable);
             }
         });
+        rowsWrapper.add(new SortableRowWrapper(rewardFunctionJuicyAceEditor));
     }
 
     private void setupRewardFunctionJuicyAceEditor() {
@@ -136,18 +137,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     public boolean isRewardFunctionMoreThanMaxLength() {
         return !isRewardFunctionLessThanMaxLength();
     }
-
-    // private void setupBinder() {
-    //     binder = new Binder<>(Experiment.class);
-    //     // To allow saving when the reward function editor is empty,
-    //     // the field is not set to forField(...).asRequired().bind(...)
-    //     binder.forField(rewardFunctionJuicyAceEditor).bind(Experiment::getRewardFunction,
-    //             Experiment::setRewardFunction);
-    // }
-
-    // public boolean validateBinder() {
-    //     return FormUtils.isValidForm(binder, experiment);
-    // }
 
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
