@@ -112,6 +112,7 @@
 }
 
 .experiment-view .reward-variables-table {
+    width: auto !important;
     font-size: var(--lumo-font-size-xs);
 }
 
@@ -176,6 +177,7 @@
 .experiment-view .sparklines-wrapper,
 .experiment-view .histograms-wrapper {
     flex: 1 0 0;
+    width: auto !important;
     line-height: 2rem;
 }
 
@@ -233,9 +235,16 @@
     border-radius: 0;
 }
 
+.experiment-view .observations-panel span {
+    width: auto;
+    min-width: 100%;
+}
+
 .experiment-view .observations-panel .observations-table {
+    width: auto !important;
     padding-top: 0;
-    overflow: auto;
+    overflow-x: visible;
+    overflow-y: auto;
 }
 
 .experiment-view .observations-panel .observations-table > vaadin-checkbox {
