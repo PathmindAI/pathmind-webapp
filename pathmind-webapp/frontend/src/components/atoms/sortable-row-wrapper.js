@@ -76,7 +76,6 @@ class SortableRowWrapper extends LitElement {
   }
   render() {
     return html`
-      <span class="item-number"></span>
       <span class="draggable-icon"></span>
       <slot></slot>
     `;

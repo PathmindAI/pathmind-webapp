@@ -269,6 +269,10 @@
     display: inline-block;
 }
 
+.new-experiment-view sortable {
+  width: 100%;
+}
+
 .new-experiment-view sortable vaadin-vertical-layout {
   counter-reset: number;
 }
@@ -289,4 +293,8 @@
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover > *:first-child::before {
   display: none;
+}
+
+.new-experiment-view sortable-row-wrapper juicy-ace-editor {
+  min-height: 8em;
 }
