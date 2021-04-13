@@ -22,7 +22,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row16;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -44,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 1723788526;
+    private static final long serialVersionUID = -1388851522;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -140,6 +140,16 @@ public class Run extends TableImpl<RunRecord> {
     public final TableField<RunRecord, DeploymentStatus> POLICY_SERVER_STATUS = createField(DSL.name("policy_server_status"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "", new org.jooq.impl.EnumConverter<java.lang.Integer, io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus>(java.lang.Integer.class, io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus.class));
 
     /**
+     * The column <code>public.run.policy_server_message</code>.
+     */
+    public final TableField<RunRecord, String> POLICY_SERVER_MESSAGE = createField(DSL.name("policy_server_message"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.run.policy_server_url</code>.
+     */
+    public final TableField<RunRecord, String> POLICY_SERVER_URL = createField(DSL.name("policy_server_url"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
      * Create a <code>public.run</code> table reference
      */
     public Run() {
@@ -179,7 +189,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
+        return Arrays.<Index>asList(Indexes.POLICY_SERVER_URL_UNIQUE, Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
     }
 
     @Override
@@ -194,7 +204,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<UniqueKey<RunRecord>> getKeys() {
-        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY);
+        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY, Keys.POLICY_SERVER_URL_UNIQUE);
     }
 
     @Override
@@ -237,11 +247,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row16 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row16<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String, Integer, DeploymentStatus> fieldsRow() {
-        return (Row16) super.fieldsRow();
+    public Row18<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String, Integer, DeploymentStatus, String, String> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }
