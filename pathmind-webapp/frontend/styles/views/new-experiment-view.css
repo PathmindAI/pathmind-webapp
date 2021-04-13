@@ -307,6 +307,7 @@
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
   min-height: 8em;
+  margin: -1px 0;
 }
 
 .new-experiment-view .goal-fields-wrapper {

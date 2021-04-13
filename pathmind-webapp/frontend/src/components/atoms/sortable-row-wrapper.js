@@ -44,6 +44,16 @@ class SortableRowWrapper extends LitElement {
             4px 8px 0 var(--pm-grey-color), 0 12px 0 var(--pm-grey-color), 
             4px 12px 0 var(--pm-grey-color);
       }
+      iron-icon {
+        width: 14px;
+        height: 14px;
+        color: var(--pm-grey-color);
+        margin: 0 var(--lumo-space-s);
+        cursor: pointer;
+      }
+      iron-icon:hover {
+        color: var(--lumo-primary-color);
+      }
     `;
   }
   constructor() {
@@ -75,10 +85,14 @@ class SortableRowWrapper extends LitElement {
       });
     }
   }
+  _removeRow() {
+    this.parentNode.removeChild(this);
+  }
   render() {
     return html`
       <span class="draggable-icon"></span>
       <slot></slot>
+      <iron-icon icon="vaadin:close-big" @click="${this._removeRow}"></iron-icon>
     `;
   }
 }
