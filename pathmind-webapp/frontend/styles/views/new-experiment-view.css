@@ -301,10 +301,27 @@
   margin: -1px -1px -1px 0;
 }
 
+.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-select {
+  width: 14rem;
+}
+
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
   min-height: 8em;
 }
 
 .new-experiment-view .goal-fields-wrapper {
-  width: 18rem !important;
+  width: 21rem !important;
+}
+
+.new-experiment-view .goal-fields-wrapper vaadin-select + span {
+  display: none;
+}
+
+.new-experiment-view .goal-fields-wrapper vaadin-select[theme~="not-none"] + span {
+  display: inline-block;
+  margin: 0 var(--lumo-space-m);
+}
+
+.new-experiment-view .goal-fields-wrapper vaadin-number-field {
+  flex: 1 0 auto;
 }

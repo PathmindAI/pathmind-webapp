@@ -1,5 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
+import java.util.List;
+
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -14,56 +16,61 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class RewardFunctionRow extends HorizontalLayout {
 
-    private Span rewardVariableNameSpan;
-
     private NumberField goalField;
+    private Select<RewardVariable> rewardVariableSelect;
     private Select<GoalConditionType> conditionType;
     private HorizontalLayout goalFieldsWrapper;
 
     private Binder<RewardVariable> binder;
-    private Binder.Binding<RewardVariable, Double> goalValueBinding;
-    private String goalOperatorSelectThemeNames = "goals small align-center";
+    private String goalOperatorSelectThemeNames = "small align-center";
 
     private RewardVariable rewardVariable;
 
-    protected RewardFunctionRow(RewardVariable rv) {
-        this.rewardVariable = rv;
+    protected RewardFunctionRow(List<RewardVariable> rvars) {
         setAlignItems(Alignment.CENTER);
-        rewardVariableNameSpan = LabelFactory.createLabel(rewardVariable.getName(), "reward-variable-name");
+        rewardVariableSelect = new Select<>();
+        rewardVariableSelect.setPlaceholder("Choose a reward variable");
+        rewardVariableSelect.setItems(rvars);
+        rewardVariableSelect.setItemLabelGenerator(rv -> rv.getName());
+        rewardVariableSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
+        rewardVariableSelect.addValueChangeListener(event -> {
+            rewardVariable = event.getValue();
+            if (binder != null) {
+                binder.removeBean();
+            }
+            initBinder();
+        });
 
         conditionType = new Select<>();
         conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
-        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "None");
+        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "Ignore");
         // The item label generator did not add "None" to the dropdown
         // It only shows if the empty item is selected
         conditionType.setEmptySelectionAllowed(true);
         // This is for the item label on the dropdown
-        conditionType.setEmptySelectionCaption("None");
+        conditionType.setEmptySelectionCaption("Ignore");
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
 
         goalField = new NumberField();
         goalField.setPlaceholder("Weight");
-        goalField.addClassName("goal-field");
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
         goalField.addValueChangeListener(event -> {});
 
-        goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, goalField);
+        goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, new Span("x"), goalField);
         goalFieldsWrapper.addClassName("goal-fields-wrapper");
         GuiUtils.removeMarginsPaddingAndSpacing(goalFieldsWrapper);
 
-        add(rewardVariableNameSpan, goalFieldsWrapper);
+        add(rewardVariableSelect, goalFieldsWrapper);
         setWidthFull();
         GuiUtils.removeMarginsPaddingAndSpacing(this);
-        initBinder(rv);
         setGoalFieldVisibility();
     }
 
-    private void initBinder(RewardVariable rv) {
+    private void initBinder() {
         binder = new Binder<>();
         binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
-        goalValueBinding = binder.forField(goalField).bind(RewardVariable::getGoalValue, RewardVariable::setGoalValue);
-        binder.setBean(rv);
+        binder.setBean(rewardVariable);
     }
 
     private void setGoalFieldVisibility() {

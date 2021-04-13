@@ -1,7 +1,7 @@
-:host([value=""]:not([label="None"])) {
-    display: none;
+:host([value=""]:not([label="None"]):not([label="Ignore"])) {
+  display: none;
 }
 
 :host([disabled]) {
-    display: none;
+  display: none;
 }

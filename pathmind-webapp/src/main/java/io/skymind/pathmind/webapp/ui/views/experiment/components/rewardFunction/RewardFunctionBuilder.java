@@ -5,7 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 
@@ -33,30 +37,34 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
-
     private List<String> rewardFunctionErrors = new ArrayList<>();
-
+    private List<RewardVariable> rewardVariables;
     private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
-
+    private NewExperimentView newExperimentView;
     private Span rewardEditorErrorLabel;
-
-    private JuicyAceEditor rewardFunctionJuicyAceEditor;
-
+    private List<JuicyAceEditor> rewardFunctionJuicyAceEditors;
     private Binder<Experiment> binder;
-
     private SortableLayout sortableLayout;
-
     private VerticalLayout rowsWrapper;
+    private Button newRVrowButton;
+    private Button newBoxButton;
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView) {
         super();
+        this.newExperimentView = newExperimentView;
 
-        setupRewardFunctionJuicyAceEditor();
-        setupValueChangeListener(newExperimentView);
         setupEditorErrorLabel();
 
         setPadding(false);
         setSpacing(false);
+
+        newRVrowButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewRVrow());
+        newRVrowButton.setIconAfterText(false);
+        newRVrowButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+
+        newBoxButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewBoxRow());
+        newBoxButton.setIconAfterText(false);
+        newBoxButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
         rowsWrapper = new VerticalLayout();
         rowsWrapper.setSpacing(false);
@@ -72,32 +80,38 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
                 rewardEditorErrorLabel));
         add(sortableLayout);
+        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+            newRVrowButton, newBoxButton
+        ));
 
         addClassName("reward-fn-editor-panel");
 
     }
 
-    private void setRewardVariables(List<RewardVariable> rewardVariables) {
-        Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
-        rewardVariables.forEach(rewardVariable -> {
-            if (rewardFunctionRows.size() < rewardVariables.size()) {
-                RewardFunctionRow row = new RewardFunctionRow(rewardVariable);
-                rowsWrapper.add(new SortableRowWrapper(row));
-                rewardFunctionRows.add(row);
-            } else {
-                RewardFunctionRow row = rewardFunctionRows.get(rewardVariable.getArrayIndex());
-                row.setRewardVariable(rewardVariable);
-            }
-        });
-        rowsWrapper.add(new SortableRowWrapper(rewardFunctionJuicyAceEditor));
+    private void createNewRVrow() {
+        RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
+        rowsWrapper.add(new SortableRowWrapper(row));
     }
 
-    private void setupRewardFunctionJuicyAceEditor() {
-        rewardFunctionJuicyAceEditor = new JuicyAceEditor();
+    private void createNewBoxRow() {
+        rowsWrapper.add(new SortableRowWrapper(setupRewardFunctionJuicyAceEditor()));
+    }
+
+    private void setRewardVariables(List<RewardVariable> rewardVariables) {
+        this.rewardVariables = rewardVariables;
+        Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
+        createNewRVrow();
+        createNewBoxRow();
+    }
+
+    private JuicyAceEditor setupRewardFunctionJuicyAceEditor() {
+        JuicyAceEditor rewardFunctionJuicyAceEditor = new JuicyAceEditor();
+        setupValueChangeListener(rewardFunctionJuicyAceEditor, newExperimentView);
         rewardFunctionJuicyAceEditor.setSizeFull();
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
+        return rewardFunctionJuicyAceEditor;
     }
 
     private void setupEditorErrorLabel() {
@@ -106,8 +120,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardEditorErrorLabel.setVisible(false);
     }
 
-    private void setupValueChangeListener(NewExperimentView newExperimentView) {
-        rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
+    private void setupValueChangeListener(JuicyAceEditor editor, NewExperimentView newExperimentView) {
+        editor.addValueChangeListener(changeEvent -> {
             rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > Experiment.REWARD_FUNCTION_MAX_LENGTH);
             if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
                 // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
@@ -120,22 +134,24 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public void setVariableNames(List<RewardVariable> rewardVariables) {
-        rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
+        // rewardFunctionJuicyAceEditors.forEach(editor -> {
+            // editor.setAutoComplete(rewardVariables);
+        // });
     }
 
-    public boolean isValidForTraining() {
+    public boolean isValidForTraining(JuicyAceEditor rewardFunctionJuicyAceEditor) {
         return rewardFunctionJuicyAceEditor.getOptionalValue().isPresent()
                 && !rewardFunctionJuicyAceEditor.getValue().isEmpty()
-                && rewardFunctionErrors.size() == 0
-                && isRewardFunctionLessThanMaxLength();
+                && rewardFunctionErrors.size() == 0;
+                // && isRewardFunctionLessThanMaxLength();
     }
 
-    public boolean isRewardFunctionLessThanMaxLength() {
+    public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
         return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
     public boolean isRewardFunctionMoreThanMaxLength() {
-        return !isRewardFunctionLessThanMaxLength();
+        return false; //!isRewardFunctionLessThanMaxLength();
     }
 
     public void setExperiment(Experiment experiment) {
@@ -144,7 +160,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         // binder.setBean(experiment);
         setVariableNames(experiment.getRewardVariables());
         setRewardVariables(experiment.getRewardVariables());
-        rewardFunctionJuicyAceEditor.setValue(experiment.getRewardFunction());
+        // TODO -> need to set reward function rows value
     }
 
     public Experiment getExperiment() {
@@ -153,6 +169,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     @Override
     public void updateExperiment() {
-        experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
+        // experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
     }
 }
