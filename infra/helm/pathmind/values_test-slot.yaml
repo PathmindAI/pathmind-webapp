@@ -35,6 +35,7 @@ env:
   NEW_RUN_MONTHLY_LIMIT: 2000
   SQS_UPDATER_PUNCTUATOR_QUEUE: ""
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/test-policy-server.fifo
+  PATHMIND_STRIPE_PUBLIC_KEY: pk_test_52b1olVNNEYJ3425191xXgxl00FNHDa3KY
 
 readinessprobe:
   httpGet:
