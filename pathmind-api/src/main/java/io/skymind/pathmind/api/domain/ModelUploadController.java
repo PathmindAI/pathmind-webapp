@@ -140,7 +140,7 @@ public class ModelUploadController {
                 builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
             }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
         }
     }
 
