@@ -3,10 +3,14 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -37,13 +41,14 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
  * with minimal code impact. I extended it so that binding code etc, would work
  * as expected and be consistent with other components.
  */
-public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
+public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry<String, Number>>> implements ExperimentComponent {
 
     private Experiment experiment;
     private List<String> rewardFunctionErrors = new ArrayList<>();
     private List<RewardVariable> rewardVariables;
     private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
     private NewExperimentView newExperimentView;
+    private VerticalLayout rootWrapper;
     private Span rewardEditorErrorLabel;
     private List<JuicyAceEditor> rewardFunctionJuicyAceEditors = new ArrayList<>();
     private Binder<Experiment> binder;
@@ -58,8 +63,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         setupEditorErrorLabel();
 
-        setPadding(false);
-        setSpacing(false);
+        rootWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 
         newRVrowButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewRVrow());
         newRVrowButton.setIconAfterText(false);
@@ -79,16 +83,17 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         sortableLayout = new SortableLayout(rowsWrapper, sortableConfig);
         sortableLayout.setHandle("draggable-icon");
 
-        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+        rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
                 rewardEditorErrorLabel));
-        add(sortableLayout);
-        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+        rootWrapper.add(sortableLayout);
+        rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
             newRVrowButton, newBoxButton
         ));
 
-        addClassName("reward-fn-editor-panel");
+        rootWrapper.addClassName("reward-fn-editor-panel");
 
+        add(rootWrapper);
     }
 
     private void createNewRVrow() {
@@ -98,6 +103,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private void createNewBoxRow() {
         rowsWrapper.add(new SortableRowWrapper(setupRewardFunctionJuicyAceEditor()));
+    }
+
+    private void createOrSetRows() {
+        // TODO -> need to get reward function rows in DB,
+        // compare with current view,
+        // then create/remove/set reward function rows value,
+        // right now row data are not saved into the DB
+        createNewRVrow();
+        createNewBoxRow();
     }
 
     private void setRewardVariables(List<RewardVariable> rewardVariables) {
@@ -141,6 +155,20 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         });
     }
 
+    @Override
+    protected Map<RewardVariable, Entry<String, Number>> generateModelValue() {
+        Map<RewardVariable, Entry<String, Number>> modelValue = new HashMap();
+        // TODO -> get value of row fields
+        return modelValue;
+    }
+
+    @Override
+    protected void setPresentationValue(Map<RewardVariable, Entry<String, Number>> newPresentationValue) {
+        if (newPresentationValue == null) {
+            // TODO -> set presentation value when the field values are changed
+        }
+    }
+
     public void setVariableNames(List<RewardVariable> rewardVariables) {
         rewardFunctionJuicyAceEditors.forEach(editor -> {
             editor.setAutoComplete(rewardVariables);
@@ -168,9 +196,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         // binder.setBean(experiment);
         setRewardVariables(experiment.getRewardVariables());
         setVariableNames(experiment.getRewardVariables());
-        // TODO -> need to set reward function rows value
-        createNewRVrow();
-        createNewBoxRow();
+        createOrSetRows();
     }
 
     public Experiment getExperiment() {
