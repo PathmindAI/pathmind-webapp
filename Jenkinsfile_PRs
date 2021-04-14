@@ -29,7 +29,7 @@ def createSecrets() {
     sh """
     set +x
     kubectl create secret generic dburl --from-literal DB_URL='jdbc:postgresql://postgres/pathminddb?user=pathminddb&password=Asdf1234' -n ${env.BUILD_NUMBER}
-    kubectl create -f /tmp//tmp/secrets_pr.yaml -n ${env.BUILD_NUMBER}
+    kubectl create -f /tmp/secrets_pr.yaml -n ${env.BUILD_NUMBER}
     """
 }
 
