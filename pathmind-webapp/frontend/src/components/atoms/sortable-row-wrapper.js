@@ -6,7 +6,6 @@ class SortableRowWrapper extends LitElement {
       :host {
         box-sizing: border-box;
         display: flex;
-        align-items: center;
         width: 100%;
         font-size: var(--lumo-font-size-s);
         border: 1px solid transparent;
@@ -22,7 +21,7 @@ class SortableRowWrapper extends LitElement {
         position: relative;
         width: 6px;
         height: 14px;
-        margin: var(--lumo-space-xxs) var(--lumo-space-s) var(--lumo-space-xxs) var(--lumo-space-xs);
+        margin: 7px var(--lumo-space-s) 7px var(--lumo-space-xs);
         cursor: pointer;
         opacity: 0;
       }
@@ -48,7 +47,7 @@ class SortableRowWrapper extends LitElement {
         width: 14px;
         height: 14px;
         color: var(--pm-grey-color);
-        margin: 0 var(--lumo-space-s);
+        margin: 7px var(--lumo-space-s);
         cursor: pointer;
       }
       iron-icon:hover {

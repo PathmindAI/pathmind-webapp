@@ -74,12 +74,19 @@ public class RewardFunctionRow extends HorizontalLayout {
     }
 
     private void setGoalFieldVisibility() {
+        String ignoreClassName = "ignore";
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
         } else {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         }
-        goalField.setVisible(conditionType.getValue() != null);
+        if (conditionType.getValue() != null) {
+            if (goalFieldsWrapper.hasClassName(ignoreClassName)) {
+                goalFieldsWrapper.removeClassName(ignoreClassName);
+            }
+        } else {
+            goalFieldsWrapper.addClassName(ignoreClassName);
+        }
         goalField.setEnabled(conditionType.getValue() != null);
     }
 

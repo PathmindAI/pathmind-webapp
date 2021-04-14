@@ -10,7 +10,10 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 
 import org.vaadin.jchristophe.SortableConfig;
@@ -62,7 +65,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         newRVrowButton.setIconAfterText(false);
         newRVrowButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-        newBoxButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewBoxRow());
+        newBoxButton = new Button("New Code Editor Row", new Icon(VaadinIcon.PLUS), click -> createNewBoxRow());
         newBoxButton.setIconAfterText(false);
         newBoxButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
@@ -104,14 +107,20 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         createNewBoxRow();
     }
 
-    private JuicyAceEditor setupRewardFunctionJuicyAceEditor() {
+    private HorizontalLayout setupRewardFunctionJuicyAceEditor() {
         JuicyAceEditor rewardFunctionJuicyAceEditor = new JuicyAceEditor();
         setupValueChangeListener(rewardFunctionJuicyAceEditor, newExperimentView);
         rewardFunctionJuicyAceEditor.setSizeFull();
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
-        return rewardFunctionJuicyAceEditor;
+        NumberField weightField = new NumberField();
+        weightField.setPlaceholder("Weight");
+        weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
+        weightField.addValueChangeListener(event -> {});
+        HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontal(rewardFunctionJuicyAceEditor, new Span("x"), weightField);
+        wrapper.setSpacing(false);
+        return wrapper;
     }
 
     private void setupEditorErrorLabel() {

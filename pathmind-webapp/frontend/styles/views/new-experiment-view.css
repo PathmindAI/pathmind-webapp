@@ -280,20 +280,23 @@
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper {
   counter-increment: number;
   position: relative;
-  margin: 2px 0;
+  margin: var(--lumo-space-xs) 0;
 }
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper > *:first-child::before {
   content: counter(number);
   position: absolute;
-  top: 50%;
+  top: 0;
   left: .3rem;
   color: var(--pm-grey-color);
-  transform: translateY(-50%);
 }
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover > *:first-child::before {
   display: none;
+}
+
+.new-experiment-view sortable + vaadin-horizontal-layout {
+  margin-top: var(--lumo-space-s);
 }
 
 .new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
@@ -311,18 +314,20 @@
 }
 
 .new-experiment-view .goal-fields-wrapper {
+  justify-content: flex-end;
   width: 21rem !important;
 }
 
-.new-experiment-view .goal-fields-wrapper vaadin-select + span {
-  display: none;
+.new-experiment-view .goal-fields-wrapper.ignore vaadin-number-field {
+  visibility: hidden;
 }
 
-.new-experiment-view .goal-fields-wrapper vaadin-select[theme~="not-none"] + span {
+.new-experiment-view .goal-fields-wrapper.ignore vaadin-select + span {
   display: inline-block;
-  margin: 0 var(--lumo-space-m);
+  visibility: hidden;
 }
 
-.new-experiment-view .goal-fields-wrapper vaadin-number-field {
-  flex: 1 0 auto;
+.new-experiment-view .goal-fields-wrapper vaadin-select + span,
+.new-experiment-view juicy-ace-editor + span {
+  margin: 0 var(--lumo-space-m);
 }
