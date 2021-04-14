@@ -47,7 +47,7 @@
 }
 
 .new-experiment-view .section-title-label {
-    line-height: 1;
+  line-height: 1;
 }
 
 .new-experiment-view .bold-label {
@@ -76,8 +76,16 @@
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
+  flex: 2;
+}
+
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel + vaadin-vertical-layout {
+  flex: 1;
+}
+
 .new-experiment-view .reward-fn-panel-container {
-    flex: 2;
+  flex: 2;
 }
 
 .new-experiment-view .reward-variables-panel .reward-function-wrapper .reward-variables-table {
@@ -310,7 +318,6 @@
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
   min-height: 8em;
-  margin: -1px 0;
 }
 
 .new-experiment-view .goal-fields-wrapper {
