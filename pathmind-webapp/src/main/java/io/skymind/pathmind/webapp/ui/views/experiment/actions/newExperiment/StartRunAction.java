@@ -10,11 +10,11 @@ import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVe
 
 public class StartRunAction {
 
-    public static void startRun(NewExperimentView newExperimentView, RewardFunctionEditor rewardFunctionEditor) {
+    public static void startRun(NewExperimentView newExperimentView) {
 
-        if (!rewardFunctionEditor.validateBinder()) {
-            return;
-        }
+        // if (!rewardFunctionEditor.validateBinder()) {
+        //     return;
+        // }
         if (!ExperimentCapLimitVerifier.isUserWithinCapLimits(newExperimentView.getRunDAO(), newExperimentView.getUserCaps(), newExperimentView.getSegmentIntegrator())) {
             return;
         }

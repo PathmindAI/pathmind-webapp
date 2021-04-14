@@ -45,7 +45,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
     private NewExperimentView newExperimentView;
     private Span rewardEditorErrorLabel;
-    private List<JuicyAceEditor> rewardFunctionJuicyAceEditors;
+    private List<JuicyAceEditor> rewardFunctionJuicyAceEditors = new ArrayList<>();
     private Binder<Experiment> binder;
     private SortableLayout sortableLayout;
     private VerticalLayout rowsWrapper;
@@ -101,10 +101,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void setRewardVariables(List<RewardVariable> rewardVariables) {
-        this.rewardVariables = rewardVariables;
+        this.rewardVariables = experiment.getRewardVariables();
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
-        createNewRVrow();
-        createNewBoxRow();
     }
 
     private HorizontalLayout setupRewardFunctionJuicyAceEditor() {
@@ -120,6 +118,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         weightField.addValueChangeListener(event -> {});
         HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontal(rewardFunctionJuicyAceEditor, new Span("x"), weightField);
         wrapper.setSpacing(false);
+        rewardFunctionJuicyAceEditors.add(rewardFunctionJuicyAceEditor);
         return wrapper;
     }
 
@@ -143,9 +142,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public void setVariableNames(List<RewardVariable> rewardVariables) {
-        // rewardFunctionJuicyAceEditors.forEach(editor -> {
-            // editor.setAutoComplete(rewardVariables);
-        // });
+        rewardFunctionJuicyAceEditors.forEach(editor -> {
+            editor.setAutoComplete(rewardVariables);
+        });
     }
 
     public boolean isValidForTraining(JuicyAceEditor rewardFunctionJuicyAceEditor) {
@@ -167,9 +166,11 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
         // binder.setBean(experiment);
-        setVariableNames(experiment.getRewardVariables());
         setRewardVariables(experiment.getRewardVariables());
+        setVariableNames(experiment.getRewardVariables());
         // TODO -> need to set reward function rows value
+        createNewRVrow();
+        createNewBoxRow();
     }
 
     public Experiment getExperiment() {
@@ -178,6 +179,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     @Override
     public void updateExperiment() {
+        // TODO -> set reward function rows value
         // experiment.setRewardFunction(rewardFunctionJuicyAceEditor.getValue());
     }
 }

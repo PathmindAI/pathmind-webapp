@@ -51,7 +51,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExpe
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionBuilder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
 
@@ -64,9 +64,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected ExperimentNotesField notesField;
     private RewardFunctionBuilder rewardFunctionBuilder;
-    private RewardFunctionEditor rewardFunctionEditor;
+    // private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private SimulationParametersPanel simulationParametersPanel;
+    private RewardFunctionErrorPanel rewardFunctionErrorPanel;
     private ObservationsPanel observationsPanel;
     private SettingsViewContent settingsPanel;
     private FavoriteStar favoriteStar;
@@ -156,29 +157,29 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                // rewardFunctionEditor,
                 rewardFunctionBuilder,
                 rewardVariablesPanel,
                 70);
-        rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        // rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         
         SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationParametersPanel,
                 observationsPanel,
                 50);
-        simulationParametersAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        // simulationParametersAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         
         SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditorWrapper,
                 simulationParametersAndObservationsWrapper,
                 60);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
-        rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        // rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
 
         settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
+        rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
         SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionEditor.getRewardFunctionErrorPanel(),
+                rewardFunctionErrorPanel,
                 notesField,
                 70);
         errorAndNotesContainer.setClassName("error-and-notes-container");
@@ -203,7 +204,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
             ),
             bottomPanel,
             60);
-        splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
+        // splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
 
         mainPanel.add(splitWrapper);
         mainPanel.setClassName("view-section");
@@ -262,7 +263,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private void createButtons() {
         // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
-        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor));
+        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this));
         saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
         }));
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
@@ -278,7 +279,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return ModelUtils.isValidModel(model)
                 && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
                 && (!isBasicPlanUser || (isBasicPlanUser && !model.isActionmask()))
-                && (isPyModel || rewardFunctionEditor.isValidForTraining())
+                && (isPyModel) //|| rewardFunctionEditor.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
                 && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
@@ -299,7 +300,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     }
 
     public Experiment getUpdatedExperiment() {
-        experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
+        // TODO -> set new reward function rows
         experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
         return experiment;
     }
@@ -379,7 +380,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected void createExperimentComponents() {
         createAndSetupNotesField();
-        rewardFunctionEditor = new RewardFunctionEditor(this, rewardValidationService);
         rewardFunctionBuilder = new RewardFunctionBuilder(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
@@ -388,7 +388,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         experimentComponentList.addAll(List.of(
                 notesField,
-                rewardFunctionEditor,
                 rewardFunctionBuilder,
                 observationsPanel,
                 rewardVariablesTable,
