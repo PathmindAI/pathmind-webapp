@@ -1,14 +1,5 @@
 package io.skymind.pathmind.api.domain;
 
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.experiment.ExperimentService;
@@ -31,6 +22,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 @RestController
@@ -140,7 +140,7 @@ public class ModelUploadController {
                 builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
             }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
-            return ResponseEntity.status(HttpStatus.CREATED).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
         }
     }
 
