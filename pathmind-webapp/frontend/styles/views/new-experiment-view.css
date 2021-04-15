@@ -76,11 +76,11 @@
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
-.new-experiment-view .reward-function-wrapper vaadin-custom-field {
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
   flex: 2;
 }
 
-.new-experiment-view .reward-function-wrapper vaadin-custom-field + vaadin-vertical-layout {
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel + vaadin-vertical-layout {
   flex: 1;
 }
 
@@ -335,7 +335,10 @@
   visibility: hidden;
 }
 
-.new-experiment-view .goal-fields-wrapper vaadin-select + span,
-.new-experiment-view juicy-ace-editor + span {
+.new-experiment-view .goal-fields-wrapper vaadin-select + span {
   margin: 0 var(--lumo-space-m);
+}
+
+.new-experiment-view juicy-ace-editor + span {
+  margin: 7px var(--lumo-space-m);
 }

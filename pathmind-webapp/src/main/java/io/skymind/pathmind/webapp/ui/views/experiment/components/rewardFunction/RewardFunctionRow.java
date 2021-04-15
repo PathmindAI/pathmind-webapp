@@ -86,10 +86,6 @@ public class RewardFunctionRow extends HorizontalLayout {
         goalField.setEnabled(conditionType.getValue() != null);
     }
 
-    public void setEditable(boolean editable) {
-        goalFieldsWrapper.setVisible(editable);
-    }
-
     public RewardVariable getRewardVariable() {
         return rewardVariable;
     }

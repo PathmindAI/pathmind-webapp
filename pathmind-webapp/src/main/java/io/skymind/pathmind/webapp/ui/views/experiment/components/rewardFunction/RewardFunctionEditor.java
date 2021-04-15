@@ -112,10 +112,6 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
-    public boolean isRewardFunctionMoreThanMaxLength() {
-        return !isRewardFunctionLessThanMaxLength();
-    }
-
     private void setupBinder() {
         binder = new Binder<>(Experiment.class);
         // To allow saving when the reward function editor is empty,

@@ -3,14 +3,10 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -41,15 +37,14 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
  * with minimal code impact. I extended it so that binding code etc, would work
  * as expected and be consistent with other components.
  */
-public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry<String, Number>>> implements ExperimentComponent {
+public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
     private List<String> rewardFunctionErrors = new ArrayList<>();
     private List<RewardVariable> rewardVariables;
     private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
-    private NewExperimentView newExperimentView;
-    private VerticalLayout rootWrapper;
     private List<JuicyAceEditor> rewardFunctionJuicyAceEditors = new ArrayList<>();
+    private NewExperimentView newExperimentView;
     private Binder<Experiment> binder;
     private SortableLayout sortableLayout;
     private VerticalLayout rowsWrapper;
@@ -60,7 +55,8 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         super();
         this.newExperimentView = newExperimentView;
 
-        rootWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        setSpacing(false);
+        setPadding(false);
 
         newRVrowButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewRVrow());
         newRVrowButton.setIconAfterText(false);
@@ -80,16 +76,14 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         sortableLayout = new SortableLayout(rowsWrapper, sortableConfig);
         sortableLayout.setHandle("draggable-icon");
 
-        rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL)));
-        rootWrapper.add(sortableLayout);
-        rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+        add(sortableLayout);
+        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
             newRVrowButton, newBoxButton
         ));
 
-        rootWrapper.addClassName("reward-fn-editor-panel");
-
-        add(rootWrapper);
+        addClassName("reward-fn-editor-panel");
     }
 
     private void createNewRVrow() {
@@ -99,7 +93,7 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row);
         sortableRowWrapper.setRemoveRowCallback(() -> {
             System.out.print("before: "+rewardFunctionRows);
-            rewardFunctionJuicyAceEditors.remove(newIndexOfRow);
+            rewardFunctionRows.remove(newIndexOfRow);
             System.out.print("after: "+rewardFunctionRows);
         });
         rowsWrapper.add(sortableRowWrapper);
@@ -146,6 +140,7 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
+        rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
         return rewardFunctionJuicyAceEditor;
     }
 
@@ -161,26 +156,6 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         });
     }
 
-    @Override
-    protected Map<RewardVariable, Entry<String, Number>> generateModelValue() {
-        Map<RewardVariable, Entry<String, Number>> modelValue = new HashMap();
-        // TODO -> get value of row fields
-        return modelValue;
-    }
-
-    @Override
-    protected void setPresentationValue(Map<RewardVariable, Entry<String, Number>> newPresentationValue) {
-        if (newPresentationValue == null) {
-            // TODO -> set presentation value when the field values are changed
-        }
-    }
-
-    public void setVariableNames(List<RewardVariable> rewardVariables) {
-        rewardFunctionJuicyAceEditors.forEach(editor -> {
-            editor.setAutoComplete(rewardVariables);
-        });
-    }
-
     public boolean isValidForTraining(JuicyAceEditor rewardFunctionJuicyAceEditor) {
         return rewardFunctionJuicyAceEditor.getOptionalValue().isPresent()
                 && !rewardFunctionJuicyAceEditor.getValue().isEmpty()
@@ -192,16 +167,11 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
-    public boolean isRewardFunctionMoreThanMaxLength() {
-        return false; //!isRewardFunctionLessThanMaxLength();
-    }
-
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
         // binder.setBean(experiment);
         setRewardVariables(experiment.getRewardVariables());
-        setVariableNames(experiment.getRewardVariables());
         createOrSetRows();
     }
 
