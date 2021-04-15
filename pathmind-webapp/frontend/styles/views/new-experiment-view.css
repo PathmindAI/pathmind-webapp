@@ -76,11 +76,11 @@
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
+.new-experiment-view .reward-function-wrapper vaadin-custom-field {
   flex: 2;
 }
 
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel + vaadin-vertical-layout {
+.new-experiment-view .reward-function-wrapper vaadin-custom-field + vaadin-vertical-layout {
   flex: 1;
 }
 
@@ -138,7 +138,8 @@
     padding: var(--lumo-space-xs) 0;
 }
 
-.new-experiment-view .bottom-panel {
+.new-experiment-view .bottom-panel,
+.new-experiment-view .error-and-notes-container {
     flex: 0 0 18rem;
     overflow: auto;
 }

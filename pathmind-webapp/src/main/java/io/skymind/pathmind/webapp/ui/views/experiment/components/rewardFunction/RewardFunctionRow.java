@@ -43,12 +43,8 @@ public class RewardFunctionRow extends HorizontalLayout {
 
         conditionType = new Select<>();
         conditionType.setItems(GoalConditionType.LESS_THAN_OR_EQUAL, GoalConditionType.GREATER_THAN_OR_EQUAL);
-        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "Ignore");
-        // The item label generator did not add "None" to the dropdown
-        // It only shows if the empty item is selected
-        conditionType.setEmptySelectionAllowed(true);
-        // This is for the item label on the dropdown
-        conditionType.setEmptySelectionCaption("Ignore");
+        conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "");
+        conditionType.setPlaceholder("Choose goal");
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
 

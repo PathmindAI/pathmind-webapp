@@ -1,4 +1,4 @@
-:host([value=""]:not([label="None"]):not([label="Ignore"])) {
+:host([value=""]:not([label="None"])) {
   display: none;
 }
 
