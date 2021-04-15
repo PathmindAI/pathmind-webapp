@@ -49,7 +49,6 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
     private List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
     private NewExperimentView newExperimentView;
     private VerticalLayout rootWrapper;
-    private Span rewardEditorErrorLabel;
     private List<JuicyAceEditor> rewardFunctionJuicyAceEditors = new ArrayList<>();
     private Binder<Experiment> binder;
     private SortableLayout sortableLayout;
@@ -60,8 +59,6 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
     public RewardFunctionBuilder(NewExperimentView newExperimentView) {
         super();
         this.newExperimentView = newExperimentView;
-
-        setupEditorErrorLabel();
 
         rootWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
 
@@ -84,8 +81,7 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         sortableLayout.setHandle("draggable-icon");
 
         rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
-                rewardEditorErrorLabel));
+                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL)));
         rootWrapper.add(sortableLayout);
         rootWrapper.add(WrapperUtils.wrapWidthFullBetweenHorizontal(
             newRVrowButton, newBoxButton
@@ -98,11 +94,35 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
 
     private void createNewRVrow() {
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
-        rowsWrapper.add(new SortableRowWrapper(row));
+        int newIndexOfRow = rewardFunctionRows.size();
+        rewardFunctionRows.add(newIndexOfRow, row);
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row);
+        sortableRowWrapper.setRemoveRowCallback(() -> {
+            System.out.print("before: "+rewardFunctionRows);
+            rewardFunctionJuicyAceEditors.remove(newIndexOfRow);
+            System.out.print("after: "+rewardFunctionRows);
+        });
+        rowsWrapper.add(sortableRowWrapper);
     }
 
     private void createNewBoxRow() {
-        rowsWrapper.add(new SortableRowWrapper(setupRewardFunctionJuicyAceEditor()));
+        JuicyAceEditor rewardFunctionEditor = setupRewardFunctionJuicyAceEditor();
+        int newIndexOfEditor = rewardFunctionJuicyAceEditors.size();
+        rewardFunctionJuicyAceEditors.add(newIndexOfEditor, rewardFunctionEditor);
+        NumberField weightField = new NumberField();
+        weightField.setPlaceholder("Weight");
+        weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
+        weightField.addValueChangeListener(event -> {});
+        HorizontalLayout boxRowWrapper = WrapperUtils.wrapWidthFullHorizontal(
+                rewardFunctionEditor, new Span("x"), weightField);
+        boxRowWrapper.setSpacing(false);
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(boxRowWrapper);
+        sortableRowWrapper.setRemoveRowCallback(() -> {
+            System.out.print("before: "+rewardFunctionJuicyAceEditors);
+            rewardFunctionJuicyAceEditors.remove(newIndexOfEditor);
+            System.out.print("after: "+rewardFunctionJuicyAceEditors);
+        });
+        rowsWrapper.add(sortableRowWrapper);
     }
 
     private void createOrSetRows() {
@@ -119,32 +139,18 @@ public class RewardFunctionBuilder extends CustomField<Map<RewardVariable, Entry
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
     }
 
-    private HorizontalLayout setupRewardFunctionJuicyAceEditor() {
+    private JuicyAceEditor setupRewardFunctionJuicyAceEditor() {
         JuicyAceEditor rewardFunctionJuicyAceEditor = new JuicyAceEditor();
         setupValueChangeListener(rewardFunctionJuicyAceEditor, newExperimentView);
         rewardFunctionJuicyAceEditor.setSizeFull();
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
-        NumberField weightField = new NumberField();
-        weightField.setPlaceholder("Weight");
-        weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
-        weightField.addValueChangeListener(event -> {});
-        HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontal(rewardFunctionJuicyAceEditor, new Span("x"), weightField);
-        wrapper.setSpacing(false);
-        rewardFunctionJuicyAceEditors.add(rewardFunctionJuicyAceEditor);
-        return wrapper;
-    }
-
-    private void setupEditorErrorLabel() {
-        rewardEditorErrorLabel = LabelFactory.createLabel(
-                "Max. " + Experiment.REWARD_FUNCTION_MAX_LENGTH + " characters. Extra characters will not be saved.", "reward-editor-error");
-        rewardEditorErrorLabel.setVisible(false);
+        return rewardFunctionJuicyAceEditor;
     }
 
     private void setupValueChangeListener(JuicyAceEditor editor, NewExperimentView newExperimentView) {
         editor.addValueChangeListener(changeEvent -> {
-            rewardEditorErrorLabel.setVisible(changeEvent.getValue().length() > Experiment.REWARD_FUNCTION_MAX_LENGTH);
             if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
                 // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
                 experiment.setRewardFunction(changeEvent.getValue());

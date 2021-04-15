@@ -84,14 +84,11 @@ class SortableRowWrapper extends LitElement {
       });
     }
   }
-  _removeRow() {
-    this.parentNode.removeChild(this);
-  }
   render() {
     return html`
       <span class="draggable-icon"></span>
       <slot></slot>
-      <iron-icon icon="vaadin:close-big" @click="${this._removeRow}"></iron-icon>
+      <iron-icon icon="vaadin:close-big" @click="${e => this.$server.removeRow()}"></iron-icon>
     `;
   }
 }
