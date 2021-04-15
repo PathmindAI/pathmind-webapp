@@ -1,14 +1,5 @@
 package io.skymind.pathmind.api.domain;
 
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.experiment.ExperimentService;
@@ -26,12 +17,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 @Slf4j
 @RestController
@@ -49,14 +48,6 @@ public class ModelUploadController {
     @Autowired
     private ExperimentService experimentService;
 
-    /*
-    health check including token validity check
-    curl -i -XGET -H "X-PM-API-TOKEN: 11202253-5709-4eb7-9102-f87122314464" http://localhost:8081/health
-     */
-    @GetMapping("/health")
-    public ResponseEntity<?> healthCheck() {
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 
     /*
     create new project and upload model:
