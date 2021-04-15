@@ -44,6 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationFailureHandlerEntryPoint)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/stripe-webhook").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic().disable()

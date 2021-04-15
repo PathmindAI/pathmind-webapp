@@ -12,10 +12,10 @@ import com.segment.analytics.messages.TrackMessage;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_TRAINING_COMPLETED;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_SERVICE_PAID;
 
 /**
  * SegmentTrackerService is server side counter part of <code>SegmentIntegrator</code>
@@ -28,10 +28,15 @@ public class SegmentTrackerService {
 	private final Analytics analytics;
 	private final boolean enabled;
 	
-	public SegmentTrackerService(@Value("${skymind.segment.server.source.key}") String key, @Value("${skymind.segment.enabled}") Boolean enabled) {
+	public SegmentTrackerService(@Value("${pathmind.segment.server.source.key}") String key, @Value("${pathmind.segment.enabled}") Boolean enabled) {
 		analytics = Analytics.builder(key).build();
 		this.enabled = enabled;
 	}
+
+    public void onboardingServicePaid(long userId, Map<String, String> properties) {
+        track(EVENT_ONBOARDING_SERVICE_PAID, Long.toString(userId), properties);
+    }
+
     public void trainingCompleted(long userId, Run run) {
 	    trainingCompleted(userId, run.getExperimentId(), run.getRunTypeEnum(), run.getStatusEnum());
     }
@@ -47,7 +52,7 @@ public class SegmentTrackerService {
 
 	private void track(String event, String userId, Map<String, String> properties) {
 		if (enabled) {
-			analytics.enqueue(TrackMessage.builder(EVENT_TRAINING_COMPLETED)
+			analytics.enqueue(TrackMessage.builder(event)
 					.userId(userId)
 					.properties(properties));
 			analytics.flush();
