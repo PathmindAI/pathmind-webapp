@@ -87,6 +87,7 @@ public class Keys {
     public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_PKEY = UniqueKeys0.REWARD_VARIABLE_PKEY;
     public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = UniqueKeys0.REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY;
     public static final UniqueKey<RunRecord> RUN_PKEY = UniqueKeys0.RUN_PKEY;
+    public static final UniqueKey<RunRecord> POLICY_SERVER_URL_UNIQUE = UniqueKeys0.POLICY_SERVER_URL_UNIQUE;
     public static final UniqueKey<RunAdminNoteRecord> PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = UniqueKeys0.PM_RUN_ADMIN_NOTES_RUN_ID_UNQ;
     public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = UniqueKeys0.TRAINER_JOB_PKEY;
     public static final UniqueKey<TrainerJobRecord> UNIQUE_JOB_ID_S3BUCKET = UniqueKeys0.UNIQUE_JOB_ID_S3BUCKET;
@@ -140,6 +141,7 @@ public class Keys {
         public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_PKEY = Internal.createUniqueKey(RewardVariable.REWARD_VARIABLE, "reward_variable_pkey", RewardVariable.REWARD_VARIABLE.ID);
         public static final UniqueKey<RewardVariableRecord> REWARD_VARIABLE_MODEL_ID_ARRAY_INDEX_KEY = Internal.createUniqueKey(RewardVariable.REWARD_VARIABLE, "reward_variable_model_id_array_index_key", RewardVariable.REWARD_VARIABLE.MODEL_ID, RewardVariable.REWARD_VARIABLE.ARRAY_INDEX);
         public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, "run_pkey", Run.RUN.ID);
+        public static final UniqueKey<RunRecord> POLICY_SERVER_URL_UNIQUE = Internal.createUniqueKey(Run.RUN, "policy_server_url_unique", Run.RUN.POLICY_SERVER_URL);
         public static final UniqueKey<RunAdminNoteRecord> PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createUniqueKey(RunAdminNote.RUN_ADMIN_NOTE, "pm_run_admin_notes_run_id_unq", RunAdminNote.RUN_ADMIN_NOTE.RUN_ID);
         public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "trainer_job_pkey", TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET);
         public static final UniqueKey<TrainerJobRecord> UNIQUE_JOB_ID_S3BUCKET = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, "unique_job_id_s3bucket", TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET);
