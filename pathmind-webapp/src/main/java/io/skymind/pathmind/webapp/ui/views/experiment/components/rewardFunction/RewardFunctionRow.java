@@ -10,7 +10,6 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
@@ -73,14 +72,11 @@ public class RewardFunctionRow extends HorizontalLayout {
         String ignoreClassName = "ignore";
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
-        } else {
-            conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-        }
-        if (conditionType.getValue() != null) {
             if (goalFieldsWrapper.hasClassName(ignoreClassName)) {
                 goalFieldsWrapper.removeClassName(ignoreClassName);
             }
         } else {
+            conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
             goalFieldsWrapper.addClassName(ignoreClassName);
         }
         goalField.setEnabled(conditionType.getValue() != null);

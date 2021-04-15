@@ -32,11 +32,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
-/**
- * Created as it's own component so that we can easily swap in AceEditor later
- * with minimal code impact. I extended it so that binding code etc, would work
- * as expected and be consistent with other components.
- */
 public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
