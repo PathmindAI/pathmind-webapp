@@ -109,4 +109,13 @@ public class ExperimentViewMiddlePanel extends PageObject {
             assertThat(getDriver().findElement(By.xpath(String.format(rewardFunction, slot, genericPage.definePanel(slot)))).getAttribute("class"), is(""));
         }
     }
+
+    public void checkRewardVariableIs(String rewardFunction) {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//code-viewer")));
+        List<String> functions = new ArrayList<>();
+        for (WebElement webElement : e.findElements(By.cssSelector(".token-comment"))) {
+            functions.add(webElement.getText());
+        }
+        assertThat(functions, hasItem(rewardFunction));
+    }
 }
