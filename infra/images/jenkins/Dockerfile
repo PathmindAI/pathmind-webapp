@@ -18,6 +18,7 @@ RUN chmod 600 id_rsa && \
 COPY *groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY clean_test_s3.sh /usr/bin/clean_test_s3.sh
 COPY sqs_policy.json /tmp/sqs_policy.json
+COPY secrets_pr.yaml /tmp/secrets_pr.yaml
 RUN chmod +x /usr/bin/clean_test_s3.sh
 
 #Install python packages

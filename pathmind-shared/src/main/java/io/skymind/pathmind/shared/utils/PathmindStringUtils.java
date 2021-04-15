@@ -30,6 +30,10 @@ public class PathmindStringUtils {
         return str.replaceAll("[^a-zA-Z0-9\\-\\.]", "");
     }
 
+    public static String removeQuotes(String str) {
+        return str.replaceAll("\"", "");
+    }
+
     public static String replaceHyphenWithSpace(String str) {
         return str.replaceAll("[-]", " ");
     }
