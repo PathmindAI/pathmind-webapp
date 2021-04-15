@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
@@ -341,6 +342,22 @@ public class AWSExecutionProvider implements ExecutionProvider {
             .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
+    public String getBestFreezingProgress(String jobHandle) {
+        Optional<String> report = getExperimentReport(jobHandle);
+        if (report.isPresent() && report.get().contains("Best Freezing:")) {
+            // example of bestFreezingLine : Best Freezing: /app/work/PPO/freezing/PPO/PPO_PathmindEnvironment_7fd09_00000_0_2021-03-24_23-34-38
+            Optional<String> bestFreezingLine = Arrays.stream(report.get().split("\n")).filter(line -> line.contains("Best Freezing:")).findFirst();
+            if (bestFreezingLine.isPresent()) {
+                String bestFreezingPath = bestFreezingLine.get().split(":")[1];
+                String[] split = bestFreezingPath.split("/");
+                Optional<byte[]> content =  getFile(jobHandle, split[split.length-1] + "/progress.csv", null);
+                return content.isPresent() ? new String(content.get()) : null;
+            }
+        }
+
+        return null;
+    }
+
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
@@ -435,6 +452,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+                instructions.addAll(Arrays.asList(
+                    // Setup Anaconda
+                    "mkdir -p conda",
+                    "cd conda",
+                    "tar xf ../rllibpack.tar.gz > /dev/null",
+                    "rm ../rllibpack.tar.gz",
+                    "source bin/activate",
+                    "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
             case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
@@ -443,6 +472,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                         "tar xf ../rllibpack.tar.gz > /dev/null",
                         "rm ../rllibpack.tar.gz",
                         "source bin/activate",
+                        "aws s3 cp s3://public-pathmind.com/ray_fix/simple_list_collector.py ./lib/python3.7/site-packages/ray/rllib/evaluation/collectors/ > /dev/null",
                         "cd .."
                 ));
 
@@ -460,6 +490,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_2_0:
             case VERSION_1_3_0:
             case VERSION_1_4_0:
+            case VERSION_1_5_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -530,13 +561,21 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
-                var("FREEZING", String.valueOf(Boolean.FALSE))
+                var("FREEZING", String.valueOf(Boolean.TRUE)),
+                var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1")
         ));
 
-        if (job.getEnvironment() != null) {
+        if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
             instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
-            instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+            instructions.add(var("IS_GYM", Boolean.valueOf(ModelType.isPythonModel(job.getModelType())).toString()));
+            instructions.add(var("IS_PATHMIND_SIMULATION", Boolean.valueOf(ModelType.isPathmindModel(job.getModelType())).toString()));
+            if (job.getObsSelection() != null) {
+                instructions.add(var("OBS_SELECTION", job.getObsSelection()));
+            }
+            if (job.getRewFctName() != null) {
+                instructions.add(var("REW_FCT_NAME", job.getRewFctName()));
+            }
             //todo if we need to validate requirements, we'd rather create another script to check it. the current script is just install requirements.txt
             instructions.add("if [[ ! -z \"$ENVIRONMENT_NAME\" ]]; then find . -maxdepth 1 -name requirements.txt -exec pip install -r '{}' \\; 2>/dev/null ; fi");
         }

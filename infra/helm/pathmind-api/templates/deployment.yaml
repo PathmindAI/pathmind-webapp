@@ -106,6 +106,8 @@ spec:
               value: "{{ .Values.env.API_FILE_SIZE }}"
             - name: API_REQUEST_SIZE
               value: "{{ .Values.env.API_REQUEST_SIZE }}"
+            - name: SQS_POLICY_SERVER_URL
+              value: "{{ .Values.env.SQS_POLICY_SERVER_URL }}"
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

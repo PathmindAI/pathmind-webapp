@@ -50,26 +50,14 @@ ingress:
       paths: [/:80:pathmind-admin-client]
     - host: admin-server.dev.devpathmind.com
       paths: [/:9091:pathmind-admin-server]
-    - host: zalenium.dev.devpathmind.com
-      paths: [/:80:zalenium]
     - host: ma.dev.devpathmind.com
       paths: [/:8080:pathmind-ma-dev]
     - host: ma.test.devpathmind.com
       paths: [/:8080:pathmind-ma-test]
     - host: ma.staging.devpathmind.com
       paths: [/:8080:pathmind-ma-staging]
-    - host: zinc-factory.devpathmind.com
-      paths: [/:8080:policy-server-zinc-factory]
     - host: leuphana.devpathmind.com
       paths: [/:8080:policy-server-leuphana]
-    - host: product-delivery.devpathmind.com
-      paths: [/:8501:policy-server-product-delivery]
-    - host: simple-scheduling.devpathmind.com
-      paths: [/:8501:policy-server-simple-scheduling]
-    - host: rail-drl.devpathmind.com
-      paths: [/:8080:policy-server-rail-drl]
-    - host: deploy-test.devpathmind.com
-      paths: [/:8000:policy-server-deploy-test-swagger]
     - host: stock.devpathmind.com
       paths: [/:8000:policy-server-stock-swagger]
     - host: api.dev.devpathmind.com
@@ -78,10 +66,6 @@ ingress:
       paths: [/:8081:pathmind-api-test]
     - host: api.staging.devpathmind.com
       paths: [/:8081:pathmind-api-staging]
-    - host: api.pathmind.com
-      paths: [/:8081:pathmind-api-dev]
-    - host: selenium.dev.devpathmind.com
-      paths: [/:4444:selenium-hub]
 
   tls: 
     - secretName: letsencrypt-dev
@@ -96,22 +80,14 @@ ingress:
         - jenkins.dev.devpathmind.com
         - admin.dev.devpathmind.com
         - admin-server.dev.devpathmind.com
-        - zalenium.dev.devpathmind.com
         - ma.dev.devpathmind.com
         - ma.test.devpathmind.com
         - ma.staging.devpathmind.com
-        - zinc-factory.devpathmind.com
         - leuphana.devpathmind.com
-        - product-delivery.devpathmind.com
-        - simple-scheduling.devpathmind.com
-        - rail-drl.devpathmind.com
-        - deploy-test.devpathmind.com
         - stock.devpathmind.com
         - api.dev.devpathmind.com
         - api.test.devpathmind.com
         - api.staging.devpathmind.com
-          #- api.pathmind.com
-        - selenium.dev.devpathmind.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

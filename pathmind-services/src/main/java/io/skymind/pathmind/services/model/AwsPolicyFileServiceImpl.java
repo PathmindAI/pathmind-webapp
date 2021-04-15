@@ -24,7 +24,12 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     @Override
     public boolean hasPolicyFile(long policyId) {
-        return awsApiClient.fileExists(POLICY_FILE + policyId);
+        return awsApiClient.fileExists(getPolicyFileLocation(policyId));
+    }
+
+    @Override
+    public String getPolicyFileLocation(long policyId) {
+        return POLICY_FILE + policyId;
     }
 
     @Override
@@ -34,7 +39,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     @Override
     public byte[] getPolicyFile(long policyId) {
-        return awsApiClient.fileContents(POLICY_FILE + policyId, true);
+        return awsApiClient.fileContents(getPolicyFileLocation(policyId), true);
     }
 
     @Override
@@ -70,7 +75,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
 
     @Override
     public void savePolicyFile(Long policyId, byte[] policyFile) {
-        awsApiClient.fileUpload(POLICY_FILE + policyId, policyFile);
+        awsApiClient.fileUpload(getPolicyFileLocation(policyId), policyFile);
     }
 
     @Override

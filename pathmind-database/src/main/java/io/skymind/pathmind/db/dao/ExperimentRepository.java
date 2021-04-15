@@ -1,17 +1,29 @@
 package io.skymind.pathmind.db.dao;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.shared.constants.UserRole;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.DashboardItem;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Project;
+import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.*;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Record8;
+import org.jooq.Result;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.db.jooq.Tables.POLICY;
@@ -359,4 +371,5 @@ class ExperimentRepository {
                 .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
+
 }

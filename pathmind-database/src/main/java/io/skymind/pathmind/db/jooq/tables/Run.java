@@ -8,6 +8,7 @@ import io.skymind.pathmind.db.jooq.Indexes;
 import io.skymind.pathmind.db.jooq.Keys;
 import io.skymind.pathmind.db.jooq.Public;
 import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
+import io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -21,7 +22,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row18;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +44,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1684928371;
+    private static final long serialVersionUID = -1388851522;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -134,6 +135,21 @@ public class Run extends TableImpl<RunRecord> {
     public final TableField<RunRecord, Integer> COMPLETING_UPDATES_ATTEMPTS = createField(DSL.name("completing_updates_attempts"), org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
+     * The column <code>public.run.policy_server_status</code>.
+     */
+    public final TableField<RunRecord, DeploymentStatus> POLICY_SERVER_STATUS = createField(DSL.name("policy_server_status"), org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "", new org.jooq.impl.EnumConverter<java.lang.Integer, io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus>(java.lang.Integer.class, io.skymind.pathmind.shared.services.PolicyServerService.DeploymentStatus.class));
+
+    /**
+     * The column <code>public.run.policy_server_message</code>.
+     */
+    public final TableField<RunRecord, String> POLICY_SERVER_MESSAGE = createField(DSL.name("policy_server_message"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.run.policy_server_url</code>.
+     */
+    public final TableField<RunRecord, String> POLICY_SERVER_URL = createField(DSL.name("policy_server_url"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
      * Create a <code>public.run</code> table reference
      */
     public Run() {
@@ -173,7 +189,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
+        return Arrays.<Index>asList(Indexes.POLICY_SERVER_URL_UNIQUE, Indexes.RUN_EXPERIMENT_FK_INDEX, Indexes.RUN_PKEY);
     }
 
     @Override
@@ -188,7 +204,7 @@ public class Run extends TableImpl<RunRecord> {
 
     @Override
     public List<UniqueKey<RunRecord>> getKeys() {
-        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY);
+        return Arrays.<UniqueKey<RunRecord>>asList(Keys.RUN_PKEY, Keys.POLICY_SERVER_URL_UNIQUE);
     }
 
     @Override
@@ -231,11 +247,11 @@ public class Run extends TableImpl<RunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row18 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String, Integer> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row18<Long, Long, String, Integer, LocalDateTime, LocalDateTime, Integer, LocalDateTime, Long, String, String, LocalDateTime, String, String, Integer, DeploymentStatus, String, String> fieldsRow() {
+        return (Row18) super.fieldsRow();
     }
 }

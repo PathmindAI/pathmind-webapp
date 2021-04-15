@@ -5,14 +5,6 @@ class TagLabel extends PolymerElement {
         return "tag-label";
     }
 
-    constructor() {
-        super();
-    }
-
-    ready() {
-        super.ready();
-    }
-
     static get properties() {
         return {
             text: {
