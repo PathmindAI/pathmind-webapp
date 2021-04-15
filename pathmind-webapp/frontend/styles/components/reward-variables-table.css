@@ -66,6 +66,7 @@
     padding: .3em;
     border-radius: var(--lumo-border-radius-s);
     box-shadow: none;
+    word-break: keep-all;
 }
 .reward-variables-table vaadin-text-field {
     height: 2em;
