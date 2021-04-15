@@ -10,7 +10,7 @@ Feature: Nav bar buttons
     When Click learn btn
     Then Check that learn page https://help.pathmind.com/en/ opened
     Then Close browser tab
-
+  @disabled
   Scenario: Check Request Onboarding Service page elements
     Given Login to the pathmind
     When Click Request Onboarding Service btn
@@ -19,7 +19,7 @@ Feature: Nav bar buttons
     Then Check request onboarding service page
     When Click Request Onboarding Service back btn
     Then Check that projects page opened
-
+  @disabled
   Scenario: Check Request Onboarding Service payment
     Given Login to the pathmind
     When Click Request Onboarding Service btn
