@@ -47,6 +47,8 @@ spec:
           env:
             - name: APPLICATION_URL
               value: "{{ .Values.env.APPLICATION_URL }}"
+            - name: PATHMIND_API_URL
+              value: "{{ .Values.env.PATHMIND_API_URL }}"
             - name: DB_URL
               valueFrom:
                 secretKeyRef:
