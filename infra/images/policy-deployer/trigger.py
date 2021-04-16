@@ -78,6 +78,10 @@ def process_message(message):
     S3ModelPath=body['S3ModelPath']
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
+    if 'UrlPath' not in body:
+        UrlPath=JobId
+    else:
+        UrlPath=body['UrlPath']
     helm_name="policy-"+JobId
     domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
@@ -98,8 +102,8 @@ def process_message(message):
         try:
             #insert the status to run
             sql_script=""" 
-                update public.run set policy_server_status=1 where job_id='{JobId}'
-            """.format(JobId=JobId)
+                update public.run set policy_server_status=1,policy_server_url='{UrlPath}' where job_id='{JobId}'
+            """.format(JobId=JobId,UrlPath=UrlPath)
             execute_psql(sql_script)
             app_logger.info('Clonning repository')
             sh.mkdir('-p','policy-server')
@@ -119,7 +123,7 @@ def process_message(message):
                 policy_server_status=3
             else:
                 app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,NAMESPACE)
+                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,UrlPath,NAMESPACE)
                 if output.exit_code != 0:
                     policy_server_status=3
         except Exception as e:

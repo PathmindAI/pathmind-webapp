@@ -342,6 +342,22 @@ public class AWSExecutionProvider implements ExecutionProvider {
             .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
+    public String getBestFreezingProgress(String jobHandle) {
+        Optional<String> report = getExperimentReport(jobHandle);
+        if (report.isPresent() && report.get().contains("Best Freezing:")) {
+            // example of bestFreezingLine : Best Freezing: /app/work/PPO/freezing/PPO/PPO_PathmindEnvironment_7fd09_00000_0_2021-03-24_23-34-38
+            Optional<String> bestFreezingLine = Arrays.stream(report.get().split("\n")).filter(line -> line.contains("Best Freezing:")).findFirst();
+            if (bestFreezingLine.isPresent()) {
+                String bestFreezingPath = bestFreezingLine.get().split(":")[1];
+                String[] split = bestFreezingPath.split("/");
+                Optional<byte[]> content =  getFile(jobHandle, split[split.length-1] + "/progress.csv", null);
+                return content.isPresent() ? new String(content.get()) : null;
+            }
+        }
+
+        return null;
+    }
+
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
@@ -391,6 +407,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_6_0:
             case VERSION_8_6_1:
             case VERSION_8_7_0:
+            case VERSION_8_7_3:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -435,6 +452,18 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+                instructions.addAll(Arrays.asList(
+                    // Setup Anaconda
+                    "mkdir -p conda",
+                    "cd conda",
+                    "tar xf ../rllibpack.tar.gz > /dev/null",
+                    "rm ../rllibpack.tar.gz",
+                    "source bin/activate",
+                    "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
             case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
@@ -532,7 +561,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
-                var("FREEZING", String.valueOf(Boolean.TRUE))
+                var("FREEZING", String.valueOf(Boolean.TRUE)),
+                var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1")
         ));
 
         if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {

@@ -73,16 +73,16 @@ Feature: Wizard page
     When Create new CoffeeShop project with draft model
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
-    When Input reward variable 'kitchenCleanlinessLevel' goal 'minimize'
-    When Input reward variable 'successfulCustomers' goal 'maximize'
-    When Input reward variable 'balkedCustomers' goal 'maximize'
-    When Input reward variable 'avgServiceTime' goal 'minimize'
+    When Input reward variable 'kitchenCleanlinessLevel' goal 'Minimize'
+    When Input reward variable 'successfulCustomers' goal 'Maximize'
+    When Input reward variable 'balkedCustomers' goal 'Maximize'
+    When Input reward variable 'avgServiceTime' goal 'Minimize'
     When Click wizard reward variables next btn
     Then Check that new experiment AutotestProject page is opened
-    Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'minimize'
-    Then Check that new experiment reward variable 'successfulCustomers' goal is 'maximize'
-    Then Check that new experiment reward variable 'balkedCustomers' goal is 'maximize'
-    Then Check that new experiment reward variable 'avgServiceTime' goal is 'minimize'
+    Then Check that new experiment reward variable 'kitchenCleanlinessLevel' goal is 'Minimize'
+    Then Check that new experiment reward variable 'successfulCustomers' goal is 'Maximize'
+    Then Check that new experiment reward variable 'balkedCustomers' goal is 'Maximize'
+    Then Check that new experiment reward variable 'avgServiceTime' goal is 'Minimize'
 
   Scenario: Check upload model AnyLogic link
     Given Login to the pathmind
