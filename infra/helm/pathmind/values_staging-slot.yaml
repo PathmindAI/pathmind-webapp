@@ -16,6 +16,7 @@ service:
 
 env:
   APPLICATION_URL: https://staging.devpathmind.com
+  PATHMIND_API_URL: https://api.staging.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
