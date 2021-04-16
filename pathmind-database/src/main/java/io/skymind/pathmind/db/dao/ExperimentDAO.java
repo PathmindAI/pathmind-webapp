@@ -95,7 +95,6 @@ public class ExperimentDAO {
         List<Experiment> experiments = getExperimentsForModel(modelId, true);
         experiments.forEach(experiment -> {
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
-            updateExperimentInternalValues(experiment);
         });
         return experiments;
     }
