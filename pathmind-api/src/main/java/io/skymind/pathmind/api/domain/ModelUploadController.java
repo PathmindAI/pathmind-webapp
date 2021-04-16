@@ -1,13 +1,26 @@
 package io.skymind.pathmind.api.domain;
 
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import io.skymind.pathmind.api.conf.security.PathmindApiUser;
 import io.skymind.pathmind.db.dao.ProjectDAO;
+import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.experiment.ExperimentService;
 import io.skymind.pathmind.services.experiment.ModelCheckException;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Project;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 @Slf4j
 @RestController
@@ -48,6 +52,9 @@ public class ModelUploadController {
     @Autowired
     private ExperimentService experimentService;
 
+    @Autowired
+    private TrainingService trainingService;
+
 
     /*
     create new project and upload model:
@@ -60,7 +67,14 @@ public class ModelUploadController {
     public ResponseEntity<?> handleALFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
-        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.ANY_LOGIC, null, null, null, null);
+        return handleFileUpload(
+                UploadRequest.builder()
+                        .file(file)
+                        .projectId(projectId)
+                        .type(AnalyzeRequestDTO.ModelType.ANY_LOGIC)
+                        .pmUser(pmUser)
+                        .build()
+        );
     }
 
 
@@ -77,20 +91,34 @@ public class ModelUploadController {
                                                 @RequestParam(value = "obsSelection", required = false) String obsSelection,
                                                 @RequestParam(value = "rewFctName", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
+                                                @RequestParam(value = "start", required = false) boolean startOnUpload,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
-        return handleFileUpload(file, projectId, pmUser, AnalyzeRequestDTO.ModelType.PYTHON, environment, isPathmindSimulation, obsSelection, rewFctName);
+        return handleFileUpload(
+                UploadRequest.builder()
+                        .file(file)
+                        .projectId(projectId)
+                        .pmUser(pmUser)
+                        .type(AnalyzeRequestDTO.ModelType.PYTHON)
+                        .environment(environment)
+                        .isPathmindSimulation(isPathmindSimulation)
+                        .obsSelection(obsSelection)
+                        .rewFctName(rewFctName)
+                        .startOnUpload(startOnUpload)
+                        .build()
+        );
     }
 
-    private ResponseEntity<?> handleFileUpload(MultipartFile file, Long projectId, PathmindApiUser pmUser,
-                                               AnalyzeRequestDTO.ModelType type, String environment,
-                                               Boolean isPathmindSimulation, String obsSelection, String rewFctName) {
+    private ResponseEntity<?> handleFileUpload(UploadRequest request) {
         UriComponentsBuilder builder = experimentUriBuilder.cloneBuilder();
+        MultipartFile file = request.getFile();
         log.debug("saving file {}", file.getOriginalFilename());
         try {
             Path tempFile = Files.createTempFile("pm-upload", file.getOriginalFilename());
             file.transferTo(tempFile.toFile());
             log.debug("saved file {} to temp location {}", file.getOriginalFilename(), tempFile);
 
+            PathmindApiUser pmUser = request.getPmUser();
+            Long projectId = request.getProjectId();
             Project prj = null;
             if (projectId != null) {
                 prj = projectDAO.getProjectIfAllowed(projectId, pmUser.getUserId())
@@ -104,7 +132,7 @@ public class ModelUploadController {
             Supplier<Project> projectSupplier =  () -> project.orElseGet(() -> {
                 final LocalDateTime now = LocalDateTime.now();
                 Project newProject = new Project();
-                String simpleType = type.equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC) ? "AL" : "PY";
+                String simpleType = request.getType().equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC) ? "AL" : "PY";
                 newProject.setName(simpleType + "-Upload-" + DateTimeFormatter.ISO_DATE_TIME.format(now));
                 newProject.setPathmindUserId(pmUser.getUserId());
                 long newProjectId = projectDAO.createNewProject(newProject);
@@ -118,11 +146,11 @@ public class ModelUploadController {
                 experimentService.createExperimentFromModelBytes(
                     modelBytes,
                     projectSupplier,
-                    type,
-                    environment,
-                    isPathmindSimulation,
-                    obsSelection,
-                    rewFctName
+                    request.getType(),
+                    request.getEnvironment(),
+                    request.getIsPathmindSimulation(),
+                    request.getObsSelection(),
+                    request.getRewFctName()
                 );
 
             Long experimentId = experiment.getId();
@@ -132,9 +160,13 @@ public class ModelUploadController {
                 .buildAndExpand(Map.of("experimentId", experimentId))
                 .toUri();
 
+            if (request.isStartOnUpload() && StringUtils.isNoneEmpty(request.getObsSelection()) && StringUtils.isNoneEmpty(request.getRewFctName())) {
+                trainingService.startRunAsync(experiment); // todo: should we do it synced. may request time out while running?
+            }
+
             return ResponseEntity.status(HttpStatus.CREATED).location(experimentUri).build();
         } catch (Exception e) {
-            log.error("failed to get file from {}", type, e);
+            log.error("failed to get file from {}", request, e);
             builder.path("uploadModelError");
             if (e instanceof ModelCheckException) {
                 builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
@@ -142,6 +174,21 @@ public class ModelUploadController {
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
         }
+    }
+
+    @Builder
+    @Getter
+    @ToString
+    private static class UploadRequest {
+        private final MultipartFile file;
+        private final String environment;
+        private final AnalyzeRequestDTO.ModelType type;
+        private final Boolean isPathmindSimulation;
+        private final String obsSelection;
+        private final String rewFctName;
+        private final Long projectId;
+        private final boolean startOnUpload;
+        private final PathmindApiUser pmUser;
     }
 
 }

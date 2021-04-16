@@ -19,6 +19,7 @@ import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.springframework.scheduling.annotation.Async;
 
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
@@ -50,6 +51,11 @@ public abstract class TrainingService {
         this.experimentDAO = experimentDAO;
         this.ctx = ctx;
 
+    }
+
+    @Async
+    public void startRunAsync(Experiment exp){
+        this.startRun(exp);
     }
 
     public void startRun(Experiment exp){
