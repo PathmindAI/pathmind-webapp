@@ -242,4 +242,8 @@ public class ExperimentDAO {
         });
     }
 
+    public void setDeployPolicyOnSuccess(long id, boolean value) {
+        ExperimentRepository.setDeployPolicyOnSuccess(ctx, id, value);
+    }
+
 }

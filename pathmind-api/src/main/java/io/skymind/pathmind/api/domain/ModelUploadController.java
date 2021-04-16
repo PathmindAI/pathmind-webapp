@@ -92,6 +92,7 @@ public class ModelUploadController {
                                                 @RequestParam(value = "rewFctName", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @RequestParam(value = "start", required = false) boolean startOnUpload,
+                                                @RequestParam(value = "deploy", required = false) boolean deployOnSuccess,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
         return handleFileUpload(
                 UploadRequest.builder()
@@ -104,6 +105,7 @@ public class ModelUploadController {
                         .obsSelection(obsSelection)
                         .rewFctName(rewFctName)
                         .startOnUpload(startOnUpload)
+                        .startOnUpload(deployOnSuccess)
                         .build()
         );
     }
@@ -144,13 +146,14 @@ public class ModelUploadController {
             ModelBytes modelBytes = ModelBytes.of(Files.readAllBytes(tempFile.toAbsolutePath()));
             Experiment experiment =
                 experimentService.createExperimentFromModelBytes(
-                    modelBytes,
-                    projectSupplier,
-                    request.getType(),
-                    request.getEnvironment(),
-                    request.getIsPathmindSimulation(),
-                    request.getObsSelection(),
-                    request.getRewFctName()
+                        modelBytes,
+                        projectSupplier,
+                        request.getType(),
+                        request.getEnvironment(),
+                        request.getIsPathmindSimulation(),
+                        request.getObsSelection(),
+                        request.getRewFctName(),
+                        request.isDeployOnSuccess()
                 );
 
             Long experimentId = experiment.getId();
@@ -188,6 +191,7 @@ public class ModelUploadController {
         private final String rewFctName;
         private final Long projectId;
         private final boolean startOnUpload;
+        private final boolean deployOnSuccess;
         private final PathmindApiUser pmUser;
     }
 

@@ -3,6 +3,7 @@ package io.skymind.pathmind.api.domain.user.dto;
 import io.skymind.pathmind.api.domain.project.ProjectController;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.services.experiment.ExperimentService;
 import io.skymind.pathmind.services.project.rest.ModelAnalyzerApiClient;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,10 @@ public class ProjectControllerTest {
         @Bean
         public ModelAnalyzerApiClient maClient() {
             return mock(ModelAnalyzerApiClient.class);
+        }
+        @Bean
+        public TrainingService trainingService() {
+            return mock(TrainingService.class);
         }
     }
 
