@@ -48,7 +48,7 @@ class CodeViewer extends PolymerElement {
   renderCode() {
     const codeElement = this.shadowRoot.querySelector("code");
     const commentedLinesRe = /\/\*(.|[\r\n])*?\*\/|^(\/\/).+/gm;
-    const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|(?<!\/)\/(?![\/\*]|\*(?![\/]))/g;
+    const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|\//g;
     const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)/g;
     const numberRe = /[0-9]+/g;
     let codeSnippet = this.codeSnippet;
@@ -56,7 +56,10 @@ class CodeViewer extends PolymerElement {
     nonCommentedLines.replace(commentedLinesRe, "")
       .split("\n")
       .forEach(line => {
-        codeSnippet = codeSnippet.replace(line, renderToken(line.slice(), operatorRe, "operator"));
+        const endOfLineCommentRe = /\/\/.+/g;
+        const lineWithoutComment = line.split(endOfLineCommentRe)[0];
+        const endOfLineComment = line.match(endOfLineCommentRe) ?　line.match(endOfLineCommentRe) : "";
+        codeSnippet = codeSnippet.replace(line, renderToken(lineWithoutComment.slice(), operatorRe, "operator") + endOfLineComment);
       });
 
     if (this.codeSnippet && this.comparisonCodeSnippet) {
@@ -138,7 +141,6 @@ class CodeViewer extends PolymerElement {
             box-sizing: border-box;
             display: block;
             width: 100%;
-            max-height: calc(1.8em * 20);
             height: 100%;
             white-space: pre-wrap;
             font-family: var(--code-font-family);
@@ -196,7 +198,6 @@ class CodeViewer extends PolymerElement {
           <iron-icon icon="vaadin:copy-o" active></iron-icon>
           <iron-icon icon="vaadin:check"></iron-icon>
       </vaadin-button>
-      </div>
     `;
   }
 }
