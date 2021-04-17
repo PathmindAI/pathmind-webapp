@@ -76,13 +76,8 @@
 }
 
 .experiment-view .middle-panel {
-    flex: 1 1 auto;
-    height: auto !important;
-}
-
-.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:first-child,
-.experiment-view .comparison-panel > vaadin-split-layout > vaadin-vertical-layout:first-child {
-    max-height: 27rem;
+    flex: 0 1 auto;
+    height: 40vh !important;
 }
 
 .experiment-view .middle-panel > vaadin-split-layout {
@@ -232,7 +227,6 @@
 }
 
 .experiment-view .observations-panel {
-    max-height: 27rem;
     font-size: var(--lumo-font-size-s);
     padding: 0;
     border: none;
@@ -311,9 +305,17 @@
     margin: 0;
 }
 
-.experiment-view .bottom-panel,
-.experiment-view .row-2-of-3 vaadin-vertical-layout {
-    flex: 1 1 auto;
+.experiment-view:not(.comparison-mode) .bottom-panel {
+    flex: 0 0 48vh !important;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 {
+    flex: 0 0 auto;
+    overflow: initial;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 vaadin-vertical-layout {
+    flex: 0 0 40vh;
 }
 
 .experiment-view .bottom-panel .row-2-of-3 .bold-label {
@@ -324,12 +326,7 @@
 
 .experiment-view .bottom-panel histogram-chart,
 .experiment-view .bottom-panel data-chart {
-    flex: 1 0 100%;
-}
-
-.experiment-view.comparison-mode .bottom-panel,
-.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
-    max-height: none;
+    flex: 0 0 100%;
 }
 
 .experiment-view vaadin-tabs {
@@ -497,6 +494,10 @@
 
 .experiment-view.comparison-mode .middle-panel > vaadin-split-layout {
     width: 100% !important;
+}
+
+.experiment-view.comparison-mode .row.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout-2-of-3 {
+    flex: 1 1 auto;
 }
 
 .experiment-view.comparison-mode {
