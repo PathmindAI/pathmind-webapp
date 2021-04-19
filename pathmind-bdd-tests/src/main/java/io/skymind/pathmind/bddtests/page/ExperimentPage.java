@@ -338,7 +338,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentNameTagLabel(String label) {
         waitABit(3000);
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).getText(), is(label));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-horizontal-layout[@class='experiment-header']/descendant::tag-label[not(@hidden)]")).get(0).getText(), is(label));
     }
 
     public void checkExperimentPageObservationIsSelected(String observation, String isSelected) {
