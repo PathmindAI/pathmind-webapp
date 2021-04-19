@@ -91,10 +91,16 @@ public class ExperimentDAO {
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
+    /**
+     * This is for Project/Model page to show experiments with metric values and observations
+     * @param modelId
+     * @return experiments
+     */
     public List<Experiment> getExperimentsForModel(long modelId) {
         List<Experiment> experiments = getExperimentsForModel(modelId, true);
         experiments.forEach(experiment -> {
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
+            updateExperimentInternalValues(experiment);
         });
         return experiments;
     }
