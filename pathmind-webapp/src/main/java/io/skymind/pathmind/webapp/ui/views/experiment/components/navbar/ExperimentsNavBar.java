@@ -146,7 +146,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         rowsWrapper.removeAll();
         experimentsNavBarItems.clear();
 
-        experiments = experimentDAO.getExperimentsForModel(modelId, true).stream()
+        experiments = experimentDAO.getExperimentsForModel(modelId, false).stream()
                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         experiments.stream()
