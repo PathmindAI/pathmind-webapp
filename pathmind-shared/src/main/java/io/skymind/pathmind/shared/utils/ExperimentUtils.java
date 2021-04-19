@@ -77,15 +77,13 @@ public class ExperimentUtils {
      * Returns null if any policy has not finished yet.
      */
     public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
-        final var stoppedTimes = experiment.getRuns().stream()
-                .map(Run::getStoppedAt)
-                .collect(Collectors.toList());
-
-        if (isAnyNotFinished(stoppedTimes)) {
+        if (RunStatus.isRunning(experiment.getTrainingStatusEnum())) {
             return null;
         }
 
-        return stoppedTimes.stream()
+        return experiment.getRuns().stream()
+                .map(Run::getStoppedAt)
+                .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.now());
     }
@@ -115,10 +113,6 @@ public class ExperimentUtils {
 
     private static double calculateTrainingSecondsLeft(long totalSeconds, double progress) {
         return totalSeconds * (100 - progress) / progress;
-    }
-
-    private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
-        return stoppedTimes.stream().anyMatch(Objects::isNull);
     }
 
     public static double calculateProgressByExperiment(Experiment experiment) {
