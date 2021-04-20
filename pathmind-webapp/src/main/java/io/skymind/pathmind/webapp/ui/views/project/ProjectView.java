@@ -71,6 +71,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private final Object modelLock = new Object();
 
     @Autowired
+    private ExperimentGridDataProvider dataProvider;
+    @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
     private PolicyDAO policyDAO;
@@ -96,7 +98,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private String pageTitle;
     private boolean isPythonModel = false;
 
-    private ExperimentGridDataProvider dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
@@ -327,7 +328,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
-                dataProvider = new ExperimentGridDataProvider(modelId);
+                dataProvider.setModelId(modelId);
                 experimentGrid.setDataProvider(dataProvider);
                 // experimentGrid.setItems(experiments);
             }

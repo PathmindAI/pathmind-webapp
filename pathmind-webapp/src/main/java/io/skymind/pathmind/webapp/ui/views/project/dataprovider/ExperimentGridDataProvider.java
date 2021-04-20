@@ -7,10 +7,7 @@ import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.services.DashboardItemService;
 import io.skymind.pathmind.services.project.ExperimentGridService;
-import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +21,13 @@ public class ExperimentGridDataProvider extends AbstractBackEndDataProvider<Expe
 
     private Long modelId;
 
-    public ExperimentGridDataProvider(Long modelId) {
+    public void setModelId(Long modelId) {
         this.modelId = modelId;
     }
 
     @Override
     protected Stream<Experiment> fetchFromBackEnd(Query<Experiment, Void> query) {
-        return Stream.empty();
+        return service.getExperimentsInModelForUser(SecurityUtils.getUserId(), modelId, query.getOffset(), query.getLimit()).stream();
     }
 
     @Override

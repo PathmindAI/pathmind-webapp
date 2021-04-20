@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -98,6 +99,22 @@ public class ExperimentDAO {
      */
     public List<Experiment> getExperimentsForModel(long modelId) {
         List<Experiment> experiments = getExperimentsForModel(modelId, true);
+        return setSelectedObservationsAndMetricsValues(experiments);
+    }
+
+    @MonitorExecutionTime
+    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, int offset, int limit) {
+        var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
+                .userId(userId)
+                .modelId(modelId)
+                .limit(limit)
+                .offset(offset)
+                .build();
+        List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
+        return setSelectedObservationsAndMetricsValues(experiments);
+    }
+
+    private List<Experiment> setSelectedObservationsAndMetricsValues(List<Experiment> experiments) {
         experiments.forEach(experiment -> {
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
             updateExperimentInternalValues(experiment);

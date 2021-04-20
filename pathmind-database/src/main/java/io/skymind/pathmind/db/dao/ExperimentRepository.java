@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
+import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -114,6 +115,29 @@ class ExperimentRepository {
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(condition)
                 .orderBy(EXPERIMENT.DATE_CREATED.desc())
+                .fetch();
+
+        return result.stream().map(record -> {
+            Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+            addParentDataModelObjects(record, experiment);
+            return experiment;
+        }).collect(Collectors.toList());
+    }
+
+    protected static List<Experiment> getExperimentsInModelForUser(DSLContext ctx, ModelExperimentsQueryParams modelExperimentsQueryParams) {
+        Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
+
+        Result<?> result = ctx
+                .select(EXPERIMENT.asterisk())
+                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE)
+                .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(condition)
+                .orderBy(EXPERIMENT.DATE_CREATED.desc())
+                .offset(modelExperimentsQueryParams.getOffset())
+                .limit(modelExperimentsQueryParams.getLimit())
                 .fetch();
 
         return result.stream().map(record -> {
