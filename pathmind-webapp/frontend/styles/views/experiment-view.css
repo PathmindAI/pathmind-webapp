@@ -76,7 +76,11 @@
 }
 
 .experiment-view .middle-panel {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
+    height: 40vh !important;
+}
+
+.experiment-view .middle-panel > vaadin-split-layout {
     height: auto !important;
 }
 
@@ -102,7 +106,12 @@
     overflow: auto;
 }
 
+.experiment-view .simulation-metrics-table-wrapper .with-container-border {
+    width: auto !important;
+}
+
 .experiment-view .reward-variables-table {
+    width: auto !important;
     font-size: var(--lumo-font-size-xs);
 }
 
@@ -167,6 +176,7 @@
 .experiment-view .sparklines-wrapper,
 .experiment-view .histograms-wrapper {
     flex: 1 0 0;
+    width: auto !important;
     line-height: 2rem;
 }
 
@@ -217,17 +227,35 @@
 }
 
 .experiment-view .observations-panel {
-    max-height: 27rem;
+    font-size: var(--lumo-font-size-s);
+    padding: 0;
     border: none;
     border-radius: 0;
 }
 
-.experiment-view .observations-table {
-    padding-top: 0;
+.experiment-view .observations-panel span {
+    width: auto;
+    min-width: 100%;
 }
 
-.experiment-view .observations-table vaadin-checkbox-group {
-    font-size: var(--lumo-font-size-xs);
+.experiment-view .observations-panel .observations-table {
+    width: auto !important;
+    padding-top: 0;
+    overflow-x: visible;
+    overflow-y: auto;
+}
+
+.experiment-view .observations-panel .observations-table > vaadin-checkbox {
+    font-weight: normal;
+    color: var(--lumo-body-text-color);
+}
+
+.experiment-view .observations-panel vaadin-checkbox {
+    margin: 1px var(--lumo-space-xxs);
+}
+
+.experiment-view .observations-panel vaadin-checkbox:first-of-type {
+    margin-top: var(--lumo-space-xxs);
 }
 
 .experiment-view .bold-label + data-chart {
@@ -277,9 +305,17 @@
     margin: 0;
 }
 
-.experiment-view .bottom-panel,
-.experiment-view .row-2-of-3 vaadin-vertical-layout {
-    flex: 1 1 auto;
+.experiment-view:not(.comparison-mode) .bottom-panel {
+    flex: 0 0 48vh !important;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 {
+    flex: 0 0 auto;
+    overflow: initial;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 vaadin-vertical-layout {
+    flex: 0 0 40vh;
 }
 
 .experiment-view .bottom-panel .row-2-of-3 .bold-label {
@@ -290,12 +326,7 @@
 
 .experiment-view .bottom-panel histogram-chart,
 .experiment-view .bottom-panel data-chart {
-    flex: 1 0 100%;
-}
-
-.experiment-view.comparison-mode .bottom-panel,
-.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
-    max-height: none;
+    flex: 0 0 100%;
 }
 
 .experiment-view vaadin-tabs {
@@ -318,6 +349,10 @@
     position: absolute;
     bottom: 0;
     right: 0;
+}
+
+.experiment-view .buttons-wrapper button-with-loading {
+    display: inline-block;
 }
 
 .experiment-view .buttons-wrapper vaadin-button {
@@ -461,6 +496,10 @@
     width: 100% !important;
 }
 
+.experiment-view.comparison-mode .row.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout-2-of-3 {
+    flex: 1 1 auto;
+}
+
 .experiment-view.comparison-mode {
     height: calc(100vh - 5rem) !important;
 }
@@ -471,15 +510,22 @@
     right: var(--lumo-space-xs);
 }
 
-.share-with-support-instructions {
+.serve-policy-instructions copy-field {
+    max-width: 100%;
+}
+
+.share-with-support-instructions,
+.serve-policy-instructions {
     position: relative;
 }
 
-.share-with-support-instructions h3 {
+.share-with-support-instructions h3,
+.serve-policy-instructions h3 {
     margin-top: 0;
 }
 
-.share-with-support-instructions ~ vaadin-button {
+.share-with-support-instructions ~ vaadin-button,
+.serve-policy-instructions ~ vaadin-button {
     position: absolute;
     width: var(--lumo-button-size);
     height: var(--lumo-button-size);

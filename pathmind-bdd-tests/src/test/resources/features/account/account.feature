@@ -129,4 +129,4 @@ Feature: User accounts tests
     Given Login to the pathmind
     When Open page account
     Then Click access token rotate btn and check that token changed
-    Then Account page access token check token expires 'Expires in 89 days'
+    Then Account page access token check token expires 'Expires in 899 days'

@@ -57,4 +57,19 @@ public class ExperimentViewSteps {
     public void experimentPageSlotCheckRewardVariableIsChosen(String slot, String rewardVar, boolean chosen) {
         experimentViewMiddlePanel.experimentPageSlotCheckRewardVariableIsChosen(slot, rewardVar, chosen);
     }
+
+    @Step
+    public void experimentPageCheckObservationIsHighlighted(String slot, String observation, boolean highlighted) {
+        experimentViewMiddlePanel.experimentPageCheckObservationIsHighlighted(slot, observation, highlighted);
+    }
+
+    @Step
+    public void experimentPageCheckRewardVariableIsHighlighted(String slot, String observation, boolean highlighted) {
+        experimentViewMiddlePanel.experimentPageCheckRewardVariableIsHighlighted(slot, observation, highlighted);
+    }
+
+    @Step
+    public void checkRewardVariableIs(String rewardFunction) {
+        experimentViewMiddlePanel.checkRewardVariableIs(rewardFunction);
+    }
 }

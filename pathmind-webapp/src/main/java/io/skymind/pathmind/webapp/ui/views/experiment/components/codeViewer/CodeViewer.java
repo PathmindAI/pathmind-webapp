@@ -31,12 +31,18 @@ public class CodeViewer extends PolymerTemplate<CodeViewer.Model> implements Has
         setValue(experiment.getRewardFunction());
     }
 
+    public void setComparisonModeTheOtherRewardFunction(String comparisonModeTheOtherRewardFunction) {
+        getModel().setComparisonCodeSnippet(comparisonModeTheOtherRewardFunction);
+    }
+
     public void setValue(String rewardFunction) {
         getModel().setCodeSnippet(rewardFunction);
     }
 
     public interface Model extends TemplateModel {
         void setCodeSnippet(String codeSnippet);
+
+        void setComparisonCodeSnippet(String codeSnippet);
 
         void setShowCopyButton(Boolean showCopyButton);
 

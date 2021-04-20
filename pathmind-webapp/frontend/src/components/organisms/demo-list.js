@@ -18,144 +18,106 @@ class DemoList extends PolymerElement {
                     position: relative;
                     width: 100%;
                     padding: 0 var(--lumo-space-m);
-                    margin-bottom: var(--lumo-space-l);
+                }
+                demo-list[is-vertical] {
+                    padding: 0;
                 }
                 demo-list vaadin-horizontal-layout {
                     flex-wrap: wrap;
                     justify-content: center;
                     align-items: stretch;
                 }
-                demo-list ul {
-                    display: flex;
-                    list-style: none;
-                    padding: 0;
-                    margin: 0;
+                demo-list[is-vertical] vaadin-horizontal-layout {
+                    flex-direction: column;
                 }
-                demo-list li {
-                    margin: 0 var(--lumo-space-s);
-                }
-                demo-list h4 {
-                    width: 100%;
-                    font-family: var(--lumo-font-family-header);
-                    text-align: center;
-                    margin: 0 0 var(--lumo-space-s);
-                }
-                demo-list p {
-                    line-height: 1.4;
-                    margin-bottom: 0;
-                }
-                demo-list img {
-                    display: block;
-                    width: 100%;
+                demo-list[is-vertical] .demo-item {
+                    margin: 0 0 var(--lumo-space-l);
                 }
                 demo-list .demo-item {
                     flex: 0 1 calc(33% - var(--lumo-space-l)*2);
                     max-width: 20rem;
                     font-size: var(--lumo-font-size-s);
-                    padding: var(--lumo-space-m);
+                    padding: var(--lumo-space-s);
                     background: var(--pm-grey-color-lightest);
                     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
                     border-radius: var(--lumo-border-radius);
                     margin: 0 var(--lumo-space-l) var(--lumo-space-l);
+                    cursor: pointer;
                 }
-                demo-list[list-view] {
-                    flex-direction: column;
-                    padding: 0;
+                demo-list .demo-item:hover {
+                    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.16);
                 }
-                demo-list[list-view] .demo-item {
-                    align-items: center;
-                    flex-direction: row;
-                    flex: 1 0 100%;
+                demo-list span {
                     width: 100%;
-                    padding: var(--lumo-space-s) var(--lumo-space-m);
-                    box-shadow: none;
-                    border-bottom: 1px solid var(--pm-grey-color-lightest);
+                    font-weight: 500;
+                    font-family: var(--lumo-font-family-header);
+                    line-height: 1.3em;
+                    text-align: center;
+                    margin: 0 0 var(--lumo-space-s);
                 }
-                demo-list[list-view] .demo-item:hover {
-                    background-color: var(--pm-app-bg-color);
-                }
-                demo-list[list-view] .demo-item h4 {
-                    flex: 0 0 20%;
-                    width: 20%;
-                    text-align: left;
-                    margin-right: var(--lumo-space-l);
-                }
-                demo-list[list-view] p {
-                    margin: 0;
-                }
-                demo-list .description {
-                    margin-bottom: var(--lumo-space-m);
-                }
-                demo-list .result {
-                    margin: 0 0 var(--lumo-space-m);
-                }
-                demo-list .arrow-icon {
-                    display: inline-block;
-                    position: relative;
-                    width: .7rem;
-                    height: .7rem;
-                    margin-left: var(--lumo-space-xs);
-                }
-                demo-list .arrow-icon::after {
-                    content: '';
-                    box-sizing: border-box;
+                demo-list img {
                     display: block;
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    top: -2px;
-                    left: -4px;
-                    border-right: 2px solid white;
-                    border-bottom: 2px solid white;
-                    transform: rotate(-45deg) skew(12deg, 12deg);
+                    width: 14rem;
+                    height: 8rem;
+                    object-fit: cover;
                 }
-                demo-list vaadin-button {
-                    width: 100%;
-                    margin-top: auto;
+                demo-list[is-vertical] img {
+                    height: 13.5vh;
                 }
-                demo-list vaadin-button > span {
-                    display: flex;
-                    align-items: center;
-                }
-                demo-list vaadin-button[loading] > span.getStartedText,
-                demo-list vaadin-button:not([loading]) > span.loadingText {
+                demo-list .demo-item[loading] > img,
+                demo-list .demo-item:not([loading]) > .loading-wrapper {
                     display: none;
                 }
+                demo-list .loading-wrapper {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    width: 14rem;
+                    height: 8rem;
+                }
                 demo-list loading-spinner {
+                    --icon-size: 4rem;
+                    --border-size: 4px;
                     display: inline-block;
                     margin-right: var(--lumo-space-xs);
                 }
             </style>
-            <vaadin-horizontal-layout>
-                <vaadin-vertical-layout class="demo-item">
-                    <h4>[[_getDataItem(demoDataList, '0', 'name')]]</h4>
-                    <div class="demo-img-wrapper"><img src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"/></div>
-                    <p class="description">[[_getDataItem(demoDataList, '0', 'description')]]</p>
-                    <p class="result"><b>Result:</b> [[_getDataItem(demoDataList, '0', 'result')]]</p>
-                    <vaadin-button theme="primary" name$="[[_getDataItem(demoDataList, '0', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
-                        <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
-                        <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
-                    </vaadin-button>
+            <vaadin-horizontal-layout name="{{name}}">
+                <vaadin-vertical-layout
+                    class="demo-item"
+                    name$="[[_getDataItem(demoDataList, '0', 'name')]]"
+                    on-click="buttonClickedHandler"
+                    disabled="[[disableButtons]]"
+                >
+                    <span>[[_getDataItem(demoDataList, '0', 'name')]]</span>
+                    <img src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"/>
+                    <div class="loading-wrapper">
+                        <loading-spinner></loading-spinner>
+                    </div>
                 </vaadin-vertical-layout>
-                <vaadin-vertical-layout class="demo-item">
-                    <h4>[[_getDataItem(demoDataList, '1', 'name')]]</h4>
-                    <div class="demo-img-wrapper"><img src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"/></div>
-                    <p class="description">[[_getDataItem(demoDataList, '1', 'description')]]</p>
-                    <p class="result"><b>Result:</b> [[_getDataItem(demoDataList, '1', 'result')]]</p>
-                    <vaadin-button theme="primary" name$="[[_getDataItem(demoDataList, '1', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
-                        <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
-                        <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
-                    </vaadin-button>
+                <vaadin-vertical-layout
+                    class="demo-item"
+                    name$="[[_getDataItem(demoDataList, '1', 'name')]]"
+                    on-click="buttonClickedHandler"
+                    disabled="[[disableButtons]]"
+                >
+                    <span>[[_getDataItem(demoDataList, '1', 'name')]]</span>
+                    <img src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"/>
+                    <div class="loading-wrapper">
+                        <loading-spinner></loading-spinner>
+                    </div>
                 </vaadin-vertical-layout>
-                <vaadin-vertical-layout class="demo-item">
-                    <h4>[[_getDataItem(demoDataList, '2', 'name')]]</h4>
-                    <div class="demo-img-wrapper"><img src="[[_getDataItem(demoDataList, '2', 'imageUrl')]]"/></div>
-                    <p class="description">[[_getDataItem(demoDataList, '2', 'description')]]</p>
-                    <p class="result"><b>Result:</b> [[_getDataItem(demoDataList, '2', 'result')]]</p>
-                    <vaadin-button theme="primary" name$="[[_getDataItem(demoDataList, '2', 'name')]]" on-click="buttonClickedHandler" disabled="[[disableButtons]]">
-                        <span class="getStartedText">Get Started <span class="arrow-icon"></span></span>
-                        <span class="loadingText"><loading-spinner></loading-spinner>Loading...</span>
-                    </vaadin-button>
+                <vaadin-vertical-layout
+                    class="demo-item"
+                    name$="[[_getDataItem(demoDataList, '2', 'name')]]"
+                    on-click="buttonClickedHandler"
+                    disabled="[[disableButtons]]"
+                >
+                    <span>[[_getDataItem(demoDataList, '2', 'name')]]</span>
+                    <img src="[[_getDataItem(demoDataList, '2', 'imageUrl')]]"/>
+                    <div class="loading-wrapper">
+                        <loading-spinner></loading-spinner>
+                    </div>
                 </vaadin-vertical-layout>
             </vaadin-horizontal-layout>
         `;
@@ -170,13 +132,30 @@ class DemoList extends PolymerElement {
         return demoList[index][key];
     }
 
+    _findParent(el, tag) {
+      while (el.parentNode) {
+        el = el.parentNode;
+        return el.tagName.toLowerCase() === tag.toLowerCase() ? el : null;
+      }
+    }
+
     setData(demoDataList) {
         this.demoDataList = demoDataList;
     }
 
     buttonClickedHandler(event) {
+        const targetTagName = "vaadin-vertical-layout";
+        let targetElement = event.target;
+        if (event.target.tagName != targetTagName) {
+            targetElement = this._findParent(event.target, targetTagName);
+        }
+        if (!targetElement) {
+            this.name = null;
+            return;
+        }
         this.disableButtons = true;
-        event.target.setAttribute("loading", true);
+        targetElement.setAttribute("loading", true);
+        this.set("name", targetElement.getAttribute("name"));
     }
 
     static get properties() {
@@ -186,19 +165,18 @@ class DemoList extends PolymerElement {
                 return [];
             }
         },
-        hideImage: {
-            type: Boolean,
-            value: true,
-        },
-        listView: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true,
-        },
         disableButtons: {
             type: Boolean,
             value: false,
         },
+        name: {
+            type: String,
+        },
+        isVertical: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true,
+        }
       };
     }
 }

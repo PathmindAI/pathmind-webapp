@@ -21,6 +21,7 @@ service:
 
 env:
   APPLICATION_URL: https://test.devpathmind.com
+  PATHMIND_API_URL: https://api.test.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
@@ -40,6 +41,7 @@ env:
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/test-punctuator
+  SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/test-policy-server.fifo
 
 readinessprobe: {}
 

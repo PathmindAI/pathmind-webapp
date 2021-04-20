@@ -1,14 +1,5 @@
 Feature: Nav bar buttons
 
-  # Scenario: Click dashboard btn and check that dashboard opened
-  #   Given Login to the pathmind
-  #   When Open projects page
-  #   When Click create new project button
-  #   When Input name of the new project AutotestProject and click Create project button
-  #   When Open projects page
-  #   When Open dashboard page
-  #   Then Check that dashboard page opened
-
   Scenario: Click projects btn and check that projects page opened
     Given Login to the pathmind
     When Open projects page
@@ -19,6 +10,26 @@ Feature: Nav bar buttons
     When Click learn btn
     Then Check that learn page https://help.pathmind.com/en/ opened
     Then Close browser tab
+  @disabled
+  Scenario: Check Request Onboarding Service page elements
+    Given Login to the pathmind
+    When Click Request Onboarding Service btn
+    Then Check page url contains checkout.stripe.com/pay
+    Then Check page title tag text is Pathmind Inc.
+    Then Check request onboarding service page
+    When Click Request Onboarding Service back btn
+    Then Check that projects page opened
+  @disabled
+  Scenario: Check Request Onboarding Service payment
+    Given Login to the pathmind
+    When Click Request Onboarding Service btn
+    Then Check page url contains checkout.stripe.com/pay
+    Then Check page title tag text is Pathmind Inc.
+    Then Fill Request Onboarding Service payment form
+    When Click Request Onboarding Service back btn
+    When Click Request Onboarding Service pay btn
+    Then Check onboarding success page
+    Then Check page url contains onboarding-payment-success
 
   Scenario: Click user account btn and check that account page opened
     Given Login to the pathmind

@@ -187,4 +187,34 @@ public class HomePageStepDefinitions {
         homePageSteps.openUserDropdown();
         homePageSteps.clickUserMenuBtn(btn);
     }
+
+    @When("^Click Request Onboarding Service btn$")
+    public void clickRequestOnboardingServiceBtn() {
+        homePageSteps.clickRequestOnboardingServiceBtn();
+    }
+
+    @When("^Click Request Onboarding Service back btn$")
+    public void clickRequestOnboardingServiceBackBtn() {
+        homePageSteps.clickRequestOnboardingServiceBackBtn();
+    }
+
+    @Then("^Check request onboarding service page$")
+    public void checkRequestOnboardingServicePage() {
+        homePageSteps.checkRequestOnboardingServicePage();
+    }
+
+    @Then("^Fill Request Onboarding Service payment form$")
+    public void fillRequestOnboardingServicePaymentForm() {
+        homePageSteps.fillRequestOnboardingServicePaymentForm();
+    }
+
+    @When("^Click Request Onboarding Service pay btn$")
+    public void clickRequestOnboardingServicePayBtn() {
+        homePageSteps.clickRequestOnboardingServicePayBtn();
+    }
+
+    @Then("^Check onboarding success page$")
+    public void checkOnboardingSuccessPage() {
+        homePageSteps.checkOnboardingSuccessPage();
+    }
 }

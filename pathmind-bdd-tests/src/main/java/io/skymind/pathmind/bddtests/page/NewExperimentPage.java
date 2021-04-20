@@ -3,6 +3,8 @@ package io.skymind.pathmind.bddtests.page;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import io.skymind.pathmind.bddtests.Utils;
@@ -19,9 +21,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 public class NewExperimentPage extends PageObject {
 
@@ -70,7 +70,9 @@ public class NewExperimentPage extends PageObject {
         waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
         waitFor(ExpectedConditions.elementToBeClickable(startDiscoveryRunBtn));
         waitABit(2500);
-        startDiscoveryRunBtn.click();
+//        startDiscoveryRunBtn.click();
+        utils.clickElementRepeatIfStaleException(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']"));
+
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and contains(text(),'Experiment')]")));
         waitABit(3500);
     }
@@ -208,6 +210,16 @@ public class NewExperimentPage extends PageObject {
 
     public void clickNewExperimentPageObservationCheckbox(String observation) {
         utils.clickElementRepeatIfStaleException(By.xpath("//*[@class='observations-panel']/descendant::vaadin-checkbox[text()='" + observation + "']"));
+    }
+
+    public void checkNewExperimentObservationsListContains(String observations) {
+        List<String> items = Arrays.asList(observations.split("\\s*,\\s*"));
+        List<String> actual = new ArrayList<>();
+        for (WebElement webElement : getDriver().findElements(By.xpath("//vaadin-checkbox-group/vaadin-checkbox"))) {
+            actual.add(webElement.getText());
+        }
+
+        assertThat(actual, containsInRelativeOrder(items.toArray()));
     }
 
     public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {

@@ -5,12 +5,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.amazonaws.services.sns.model.MessageAttributeValue;
@@ -120,7 +115,8 @@ public class UpdaterService {
     }
 
     private void updateInfoInDB(Run run, ProviderJobStatus providerJobStatus, List<Policy> policies, List<PolicyUpdateInfo> policiesUpdateInfo) {
-
+        // dont' need to update database for freezing policy
+        policiesUpdateInfo = policiesUpdateInfo.stream().filter(p -> !p.getName().equals("freezing")).collect(Collectors.toList());
         List<Policy> policiesToRaiseUpdateEvent = runDAO.updateRun(run, providerJobStatus, policies, policiesUpdateInfo, getValidExternalIdsIfCompleted(providerJobStatus));
         policiesToRaiseUpdateEvent.addAll(ensurePolicyDataIfRunIsCompleted(run, providerJobStatus));
 
@@ -198,9 +194,17 @@ public class UpdaterService {
                     int numAgents = runDAO.getAgentsNumForRun(runId);
                     Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward, numAgents);
                     if (isFinalUpdate && policy.getMetrics().size() > 0) {
+                        String freezingProgressCsv = provider.getBestFreezingProgress(jobHandle);
                         List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
                         int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
-                        ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, lastIteration - 10, numReward, numAgents);
+                        // we only store the metrics raw data for the last 10 iteration
+                        int startIteration = lastIteration - 10;
+                        if (freezingProgressCsv != null) {
+                            // if the mc_rollout result exist, we will use it instead.
+                            e.setValue(freezingProgressCsv);
+                            startIteration = 0;
+                        }
+                        ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, startIteration, numReward, numAgents);
                     }
 
                     return policy;
@@ -331,6 +335,16 @@ public class UpdaterService {
                             .map(Optional::get)
                             .collect(Collectors.toList())
             );
+
+            if (policiesInfo.size() > 0) {
+                final byte[] policyFile = provider.policy(jobHandle, "freezing");
+                if (policyFile != null) {
+                    PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
+                    policyUpdateInfo.setName("freezing");
+                    policyUpdateInfo.setPolicyFile(policyFile);
+                    policiesInfo.add(policyUpdateInfo);
+                }
+            }
         }
         return policiesInfo;
     }

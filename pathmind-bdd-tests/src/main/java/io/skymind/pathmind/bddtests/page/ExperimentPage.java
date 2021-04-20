@@ -381,4 +381,9 @@ public class ExperimentPage extends PageObject {
         waitABit(3000);
         getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
     }
+
+    public void experimentPageClickComparisonFloatingCloseBtn() {
+        getDriver().findElement(By.xpath("//floating-close-button")).click();
+        assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
+    }
 }

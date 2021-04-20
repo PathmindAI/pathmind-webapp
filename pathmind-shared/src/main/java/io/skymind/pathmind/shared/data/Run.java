@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.constants.RunType;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.CloneUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,9 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
     private Experiment experiment;
     private Model model;
     private Project project;
+
+    @Builder.Default
+    private PolicyServerService.DeploymentStatus policyServerStatus = PolicyServerService.DeploymentStatus.NOT_DEPLOYED;
 
     // TODO -> Convert to a JOOQ converter.
     public void setRunTypeEnum(RunType runTypeEnum) {
@@ -74,6 +78,7 @@ public class Run extends Data implements DeepCloneableInterface<Run> {
                 .successMessage(successMessage)
                 .warningMessage(warningMessage)
                 .completingUpdatesAttempts(completingUpdatesAttempts)
+                .policyServerStatus(policyServerStatus)
                 .build());
     }
 

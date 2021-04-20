@@ -45,11 +45,9 @@ Feature: Broken Models tests
     And Check that error message in model check panel is "<Error Message>"
 
     Examples:
-      | Model File                                      | Error Message                                                                            |
-#      | problematic_models/AModelWithNoActions.zip      | Number of actions found to be zero.                                                      |
-#      | problematic_models/AModelWithNoObservations.zip | Number of observations found to be zero.                                                 |
-      | problematic_models/ProblemModel#1480.zip        | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
-      | problematic_models/NonTupleModel.zip            | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+      | Model File                               | Error Message                                                                                          |
+      | problematic_models/ProblemModel#1480.zip | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+      | problematic_models/NonTupleModel.zip     | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
 
   Scenario: Upload broken model few times
     Given Login to the pathmind

@@ -3,7 +3,9 @@ package io.skymind.pathmind.api;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
 
+@EnableAsync
 @SpringBootApplication(scanBasePackages = "io.skymind.pathmind")
 @PropertySource({"classpath:application.properties", "classpath:shared.properties"})
 public class PathmindApiApplication {

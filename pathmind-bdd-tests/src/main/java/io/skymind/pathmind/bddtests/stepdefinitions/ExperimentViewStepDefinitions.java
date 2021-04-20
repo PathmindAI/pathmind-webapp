@@ -56,4 +56,19 @@ public class ExperimentViewStepDefinitions {
     public void experimentPageSlotCheckRewardVariableIsChosen(String slot, String rewardVar, boolean chosen) {
         experimentViewSteps.experimentPageSlotCheckRewardVariableIsChosen(slot, rewardVar, chosen);
     }
+
+    @Then("^Experiment page Check '(.*)' observation '(.*)' is highlighted '(.*)'$")
+    public void experimentPageCheckObservationIsHighlighted(String slot, String observation, boolean highlighted) {
+        experimentViewSteps.experimentPageCheckObservationIsHighlighted(slot, observation, highlighted);
+    }
+
+    @Then("^Experiment page Check '(.*)' reward variable '(.*)' is highlighted '(.*)'$")
+    public void experimentPageCheckRewardVariableIsHighlighted(String slot, String observation, boolean highlighted) {
+        experimentViewSteps.experimentPageCheckRewardVariableIsHighlighted(slot, observation, highlighted);
+    }
+
+    @Then("^Check reward variable is commented '(.*)'$")
+    public void checkRewardVariableIs(String rewardFunction) {
+        experimentViewSteps.checkRewardVariableIs(rewardFunction);
+    }
 }

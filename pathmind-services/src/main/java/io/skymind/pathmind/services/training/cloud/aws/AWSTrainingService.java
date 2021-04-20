@@ -49,6 +49,16 @@ public class AWSTrainingService extends TrainingService {
         final String modelFileId = modelService.buildModelPath(model.getId());
         List<Observation> observations = observationDAO.getObservationsForExperiment(exp.getId());
 
+        String packageName = model.getPackageName();
+        String[] split = packageName.split(";");
+        String objSelection = null;
+        String rewFctName = null;
+        if (split.length == 3) {
+            packageName = split[0];
+            objSelection = !split[1].equals("null") ? split[1] : null;
+            rewFctName = !split[2].equals("null") ? split[2] : null;
+        }
+
         final JobSpec spec = new JobSpec(
                 exp.getProject().getPathmindUserId(),
                 model.getId(),
@@ -61,6 +71,7 @@ public class AWSTrainingService extends TrainingService {
                 observations,
                 iterations,
                 executionEnvironment,
+                ModelType.fromValue(model.getModelType()),
                 DiscoveryRun,
                 maxTimeInSec,
                 numSamples,
@@ -74,7 +85,9 @@ public class AWSTrainingService extends TrainingService {
                 StringUtils.defaultString(model.getExperimentClass()),
                 StringUtils.defaultString(model.getExperimentType()),
                 // doesn't need to pass package name for AL model, only need for PY model
-                (ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) ? model.getPackageName() : null)
+                packageName,
+                objSelection,
+                rewFctName
         );
 
         return executionProvider.execute(spec);
