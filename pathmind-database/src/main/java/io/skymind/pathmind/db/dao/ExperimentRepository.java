@@ -372,4 +372,10 @@ class ExperimentRepository {
                 .execute();
     }
 
+    protected static void setDeployPolicyOnSuccess(DSLContext ctx, long experimentId, boolean value) {
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.DEPLOY_POLICY_ON_SUCCESS, value)
+                .where(Tables.EXPERIMENT.ID.eq(experimentId))
+                .execute();
+    }
 }
