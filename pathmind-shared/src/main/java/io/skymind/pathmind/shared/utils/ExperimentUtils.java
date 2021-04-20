@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
@@ -21,6 +20,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
@@ -93,7 +93,7 @@ public class ExperimentUtils {
      * It sums up a size of reward list for each policy.
      */
     public static Integer getNumberOfProcessedIterations(Experiment experiment) {
-        return experiment.getPolicies().stream()
+        return CollectionUtils.emptyIfNull(experiment.getPolicies()).stream()
                 .map(Policy::getScores)
                 .map(List::size)
                 .reduce(0, Integer::sum);
