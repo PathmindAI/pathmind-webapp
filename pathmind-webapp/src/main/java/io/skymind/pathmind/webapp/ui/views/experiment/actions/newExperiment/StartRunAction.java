@@ -22,6 +22,9 @@ public class StartRunAction {
         newExperimentView.getExperimentDAO().saveExperiment(newExperimentView.getExperiment());
         newExperimentView.getTrainingService().startRun(newExperimentView.getExperiment());
         newExperimentView.getSegmentIntegrator().startTraining();
+        if (!newExperimentView.getExperiment().getSelectedObservations().equals(newExperimentView.getExperiment().getModelObservations())) {
+            newExperimentView.getSegmentIntegrator().observationsSelected();
+        }
         EventBus.post(new ExperimentStartTrainingBusEvent(newExperimentView.getExperiment()));
 
         // Remove the isNeedsSaving toggle in the NewExperimentView so that the automatic saving mechanism from beforeLeave is not triggered.
