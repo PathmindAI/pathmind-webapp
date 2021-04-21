@@ -134,7 +134,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelArchivedLabel.setVisible(false);
 
         experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
-        // setupArchivesTabPanel();
+        setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
         modelNotesField = createModelNotesField();
@@ -159,7 +159,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(newExperimentButton);//archivesTabPanel, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -330,7 +330,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             if (experimentGrid != null) {
                 dataProvider.setModelId(modelId);
                 experimentGrid.setDataProvider(dataProvider);
-                // experimentGrid.setItems(experiments);
             }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
@@ -343,7 +342,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (metricMultiSelect != null) {
             metricMultiSelect.setItems(rewardVariables);
         }
-        // archivesTabPanel.initData();
+        archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
     }
 
