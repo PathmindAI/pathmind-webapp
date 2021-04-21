@@ -22,7 +22,9 @@ public class StartRunAction {
         newExperimentView.getExperimentDAO().saveExperiment(newExperimentView.getExperiment());
         newExperimentView.getTrainingService().startRun(newExperimentView.getExperiment());
         newExperimentView.getSegmentIntegrator().startTraining();
-        if (!newExperimentView.getExperiment().getSelectedObservations().equals(newExperimentView.getExperiment().getModelObservations())) {
+        if (!org.apache.commons.collections4.CollectionUtils.isEqualCollection(
+                newExperimentView.getExperiment().getModelObservations(),
+                newExperimentView.getExperiment().getSelectedObservations())) {
             newExperimentView.getSegmentIntegrator().observationsSelected();
         }
         EventBus.post(new ExperimentStartTrainingBusEvent(newExperimentView.getExperiment()));
