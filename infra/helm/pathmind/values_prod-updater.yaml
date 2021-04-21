@@ -43,9 +43,20 @@ env:
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/prod-punctuator
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/prod-policy-server.fifo
 
-readinessprobe: {}
+readinessprobe:
+  httpGet:
+    path: /actuator/health
+    port: 9901
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 10
 
-livenessprobe: {}
+livenessprobe:
+  httpGet:
+    path: /actuator/health
+    port: 9901
+  initialDelaySeconds: 30
+  periodSeconds: 15
   
 name: pathmind-updater
 
