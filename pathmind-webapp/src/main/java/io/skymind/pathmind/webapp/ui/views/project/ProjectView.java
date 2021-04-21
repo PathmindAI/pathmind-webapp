@@ -134,6 +134,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelArchivedLabel.setVisible(false);
 
         experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
