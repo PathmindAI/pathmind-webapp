@@ -82,6 +82,7 @@ COPY selenium_cleanup.sh /tmp/selenium_cleanup.sh
 COPY crontab /tmp/crontab
 RUN crontab /tmp/crontab
 RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "service cron start"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh
+RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "bash /tmp/selenium_cleanup.sh &"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh
 
 RUN chmod +x /usr/bin/flaky.py  
 RUN chmod +x /usr/bin/xml2json.py
