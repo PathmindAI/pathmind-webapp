@@ -18,6 +18,7 @@ RUN chmod 600 id_rsa && \
 COPY *groovy /usr/share/jenkins/ref/init.groovy.d/
 COPY clean_test_s3.sh /usr/bin/clean_test_s3.sh
 COPY sqs_policy.json /tmp/sqs_policy.json
+COPY secrets_pr.yaml /tmp/secrets_pr.yaml
 RUN chmod +x /usr/bin/clean_test_s3.sh
 
 #Install python packages
@@ -81,6 +82,7 @@ COPY selenium_cleanup.sh /tmp/selenium_cleanup.sh
 COPY crontab /tmp/crontab
 RUN crontab /tmp/crontab
 RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "service cron start"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh
+RUN cat /usr/local/bin/jenkins.sh | awk 'NR==2 {print "bash /tmp/selenium_cleanup.sh &"} 1' > /tmp/tmp && mv /tmp/tmp /usr/local/bin/jenkins.sh && chmod +x /usr/local/bin/jenkins.sh
 
 RUN chmod +x /usr/bin/flaky.py  
 RUN chmod +x /usr/bin/xml2json.py

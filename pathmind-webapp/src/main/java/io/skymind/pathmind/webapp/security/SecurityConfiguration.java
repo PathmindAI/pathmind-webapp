@@ -140,6 +140,7 @@ public class SecurityConfiguration {
                     .antMatchers("/" + Routes.RESET_PASSWORD + Routes.WITH_PARAMETER).permitAll()
                     .antMatchers("/" + Routes.EMAIL_VERIFICATION + Routes.WITH_PARAMETER).permitAll()
                     .antMatchers("/" + Routes.VERIFICATION_EMAIL_SENT).permitAll()
+                    .antMatchers("/actuator/health").permitAll()
 
                     // Allow all flow internal requests.
                     .requestMatchers(VaadinSecurityUtils::isFrameworkInternalRequest).permitAll()

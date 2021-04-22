@@ -1,0 +1,3 @@
+reward += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchen cleanliness test1
+// reward
+//reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2

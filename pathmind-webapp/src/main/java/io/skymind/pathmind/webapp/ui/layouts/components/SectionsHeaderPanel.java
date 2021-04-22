@@ -4,11 +4,24 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
+
+import io.skymind.pathmind.webapp.security.CurrentUser;
+import io.skymind.pathmind.webapp.ui.views.header.components.RequestOnboardingServiceButton;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout {
-    public SectionsHeaderPanel(boolean hasLoginUser) {
+
+    private String stripePublicKey;
+
+    private String pathmindApiUrl;
+
+    private CurrentUser currentUser;
+
+    public SectionsHeaderPanel(boolean hasLoginUser, CurrentUser currentUser, String stripePublicKey, String pathmindApiUrl) {
         HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
+        this.currentUser = currentUser;
+        this.stripePublicKey = stripePublicKey;
+        this.pathmindApiUrl = pathmindApiUrl;
         sectionsHorizontalLayout.add(linkedLogo());
         if (hasLoginUser) {
             RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
@@ -19,7 +32,8 @@ public class SectionsHeaderPanel extends HorizontalLayout {
                     projectsLink,
                     getTutorialsAnchor(),
                     getFAQAnchor(),
-                    getHelpAnchor());
+                    getHelpAnchor(),
+                    getRequestOnboardingServiceButton());
         }
         add(sectionsHorizontalLayout);
 
@@ -43,6 +57,10 @@ public class SectionsHeaderPanel extends HorizontalLayout {
 
     private Anchor getHelpAnchor() {
         return getAnchor("https://help.pathmind.com/", "Help");
+    }
+
+    private RequestOnboardingServiceButton getRequestOnboardingServiceButton() {
+        return new RequestOnboardingServiceButton(currentUser, stripePublicKey, pathmindApiUrl);
     }
 
     private Anchor getAnchor(String url, String text) {
