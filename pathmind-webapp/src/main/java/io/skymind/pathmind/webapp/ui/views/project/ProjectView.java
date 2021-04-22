@@ -288,7 +288,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         synchronized (modelLock) {
             selectedModel = model;
             loadModelData();
-            updateComponents();
+            updateComponents(false);
         }
     }
 
@@ -310,7 +310,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return projectId;
     }
 
-    private void updateComponents() {
+    private void updateComponents(boolean isInit) {
         String modelNameText = "Model #" + selectedModel.getName();
         if (selectedModel.getPackageName() != null) {
             modelNameText += " (" + selectedModel.getPackageName() + ")";
@@ -331,6 +331,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             if (experimentGrid != null) {
                 dataProvider.setModelId(modelId);
                 experimentGrid.setDataProvider(dataProvider);
+                if (isInit) {
+                    archivesTabPanel.initData();
+                } else {
+                    archivesTabPanel.setToPrimaryTab();
+                }
             }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
@@ -343,7 +348,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (metricMultiSelect != null) {
             metricMultiSelect.setItems(rewardVariables);
         }
-        archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
     }
 
@@ -395,7 +399,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void initComponents() {
-        updateComponents();
+        updateComponents(true);
     }
 
     @Override
