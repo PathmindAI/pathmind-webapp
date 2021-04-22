@@ -162,13 +162,13 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
 
-        // init max memory
+        // init freezing
         List<String> freezings = List.of("TRUE", "FALSE");
 
         freezing.setItems(freezings);
         freezing.setLabel("Enable Freezing");
         freezing.setPlaceholder(String.valueOf(env.isFreezing()));
-        freezing.setValue(String.valueOf(env.isFreezing()));
+        freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
     }
 
     public interface Model extends TemplateModel {
