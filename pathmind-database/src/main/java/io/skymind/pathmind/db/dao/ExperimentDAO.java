@@ -17,7 +17,6 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,17 +92,25 @@ public class ExperimentDAO {
     }
 
     /**
-     * This is for Project/Model page to show experiments with metric values and observations
+     * This is for Project/Model page favorite star subscriber to check for the right experiment to update star status
+     * That's why it doesn't need the observations & metrics
      * @param modelId
      * @return experiments
      */
     public List<Experiment> getExperimentsForModel(long modelId) {
-        List<Experiment> experiments = getExperimentsForModel(modelId, true);
-        return setSelectedObservationsAndMetricsValues(experiments);
+        return getExperimentsForModel(modelId, true);
     }
 
+    /**
+     * This is for Project/Model page to show experiments with metric values and observations
+     * @param userId
+     * @param modelId
+     * @param offset
+     * @param limit
+     * @return experiments
+     */
     @MonitorExecutionTime
-    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, int offset, int limit) {
+    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit) {
         var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
                 .userId(userId)
                 .modelId(modelId)
@@ -190,6 +197,10 @@ public class ExperimentDAO {
 
     public int countExperimentsInModel(long modelId) {
         return ExperimentRepository.getExperimentCount(ctx, modelId);
+    }
+
+    public int countFilteredExperimentsInModel(long modelId, boolean isArchived) {
+        return ExperimentRepository.getFilteredExperimentCount(ctx, modelId, isArchived);
     }
 
     public Experiment createNewExperiment(long modelId) {

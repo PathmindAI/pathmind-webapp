@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
-public class ExperimentGridDataProvider extends AbstractBackEndDataProvider<Experiment, Void> {
+public class ExperimentGridDataProvider extends AbstractBackEndDataProvider<Experiment, Boolean> {
     
     @Autowired
     private ExperimentGridService service;
@@ -26,13 +26,19 @@ public class ExperimentGridDataProvider extends AbstractBackEndDataProvider<Expe
     }
 
     @Override
-    protected Stream<Experiment> fetchFromBackEnd(Query<Experiment, Void> query) {
-        return service.getExperimentsInModelForUser(SecurityUtils.getUserId(), modelId, query.getOffset(), query.getLimit()).stream();
+    protected Stream<Experiment> fetchFromBackEnd(Query<Experiment, Boolean> query) {
+        if (query.getFilter().isPresent()) {
+            return service.getExperimentsInModelForUser(SecurityUtils.getUserId(), modelId, query.getFilter().get(), query.getOffset(), query.getLimit()).stream();
+        }
+        return Stream.empty();
     }
 
     @Override
-    protected int sizeInBackEnd(Query<Experiment, Void> query) {
-        return service.countTotalExperimentsInModel(modelId);
+    protected int sizeInBackEnd(Query<Experiment, Boolean> query) {
+        if (query.getFilter().isPresent()) {
+            return service.countFilteredExperimentsInModel(modelId, query.getFilter().get());
+        }
+        return 0;
     }
 
 }

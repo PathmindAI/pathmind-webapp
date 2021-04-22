@@ -11,6 +11,7 @@ import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -71,7 +72,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private final Object modelLock = new Object();
 
     @Autowired
-    private ExperimentGridDataProvider dataProvider;
+    private ExperimentGridDataProvider experimentGridDataProvider;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -98,6 +99,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private String pageTitle;
     private boolean isPythonModel = false;
 
+    private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
@@ -260,7 +262,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         archivesTabPanel = new ArchivesTabPanel<>(
                 "Experiments",
                 experimentGrid,
-                this::getExperiments,
                 (experiment, isArchivable) -> {
                     ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
                     segmentIntegrator.archived(Experiment.class, isArchivable);
@@ -273,10 +274,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     public List<Experiment> getExperiments() {
-        return experiments;
-    }
-
-    public List<Experiment> getExperimentList() {
         return experiments;
     }
 
@@ -326,15 +323,26 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelNotesField.setNotesText(model.getUserNotes());
         });
         newExperimentButton.setModelId(selectedModel.getId());
+        experimentGridDataProvider.setModelId(modelId);
+        if (dataProvider == null) {
+            dataProvider = experimentGridDataProvider.withConfigurableFilter();
+        }
+        if (isInit) {
+            archivesTabPanel.addTabClickListener(name -> {
+                dataProvider.setFilter(name.equals(archivesTabPanel.getArchivesTabName()));
+                dataProvider.refreshAll();
+            });
+        } else {
+            archivesTabPanel.setToPrimaryTab();
+        }
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
             if (experimentGrid != null) {
-                dataProvider.setModelId(modelId);
-                experimentGrid.setDataProvider(dataProvider);
+                dataProvider.setFilter(false);
                 if (isInit) {
-                    archivesTabPanel.initData();
+                    experimentGrid.setDataProvider(dataProvider);
                 } else {
-                    archivesTabPanel.setToPrimaryTab();
+                    dataProvider.refreshAll();
                 }
             }
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));

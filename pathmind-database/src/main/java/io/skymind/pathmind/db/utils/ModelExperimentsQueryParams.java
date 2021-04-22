@@ -8,6 +8,7 @@ public final class ModelExperimentsQueryParams {
     private long modelId;
     private int limit;
     private int offset;
+    private boolean isArchived;
 
     public long getUserId() {
         return userId;
@@ -39,5 +40,13 @@ public final class ModelExperimentsQueryParams {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public boolean getIsArchived() {
+        return isArchived;
+    }
+
+    public void setIsArchived(boolean isArchived) {
+        this.isArchived = isArchived;
     }
 }

@@ -56,6 +56,25 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel {
         });
     }
 
+    // For ProjectView with custom data provider
+    public ArchivesTabPanel(String tabName, Grid<T> grid, BiConsumer<T, Boolean> archiveDAO, Supplier<Optional<UI>> getUISupplier) {
+        super(tabName, ARCHIVES_TAB);
+
+        this.grid = grid;
+        this.archiveDAO = archiveDAO;
+        this.getUISupplier = getUISupplier;
+
+        setAlignItems(Alignment.START);
+
+        Column<T> archiveColumn = grid.addComponentColumn(data -> getArchivesButton(data)).setHeader("Archive").setSortable(false).setWidth("120px").setFlexGrow(0);
+
+        addTabClickListener(name -> {
+            if (archiveColumn != null) {
+                updateArchiveColumnHeader(archiveColumn, ARCHIVES_TAB.equals(name) ? "Unarchive" : "Archive");
+            }
+        });
+    }
+
     /**
      * This is public because, in case the action column is not created
      * automatically, the parent can still ask ArchievesTabPanel to create the
@@ -83,5 +102,9 @@ public class ArchivesTabPanel<T extends ArchivableData> extends TabPanel {
             // Grid column renderers might be using timeZone to format dates and times. Making sure here that timezone is loaded properly
             grid.setItems(getFilteredModels(getItems.get(), false));
         });
+    }
+
+    public String getArchivesTabName() {
+        return ARCHIVES_TAB;
     }
 }

@@ -126,10 +126,16 @@ class ExperimentRepository {
 
     protected static List<Experiment> getExperimentsInModelForUser(DSLContext ctx, ModelExperimentsQueryParams modelExperimentsQueryParams) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
+        condition = condition.and(PROJECT.PATHMIND_USER_ID.eq(modelExperimentsQueryParams.getUserId()));
+        if (modelExperimentsQueryParams.getIsArchived()) {
+            condition = condition.and(EXPERIMENT.ARCHIVED.isTrue());
+        } else {
+            condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
+        }
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE)
+                .select(MODEL.ID, MODEL.NAME, MODEL.EXPERIMENT_CLASS)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
@@ -145,6 +151,19 @@ class ExperimentRepository {
             addParentDataModelObjects(record, experiment);
             return experiment;
         }).collect(Collectors.toList());
+    }
+
+    protected static int getFilteredExperimentCount(DSLContext ctx, long modelId, boolean isArchived) {
+        Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
+        if (isArchived) {
+            condition = condition.and(EXPERIMENT.ARCHIVED.isTrue());
+        } else {
+            condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
+        }
+        return ctx.selectCount()
+                .from(EXPERIMENT)
+                .where(condition)
+                .fetchOne(0, int.class);
     }
 
     private static void addParentDataModelObjects(Record record, Experiment experiment) {
