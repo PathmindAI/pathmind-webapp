@@ -47,8 +47,20 @@ public class ProjectDAO {
         return ProjectRepository.getProjectsForUser(ctx, userId);
     }
 
+    public List<Project> getFilteredProjectsForUser(long userId, boolean isArchived, int offset, int limit) {
+        return ProjectRepository.getFilteredProjectsForUser(ctx, userId, isArchived, offset, limit);
+    }
+
     public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
         return ProjectRepository.getProjectIfAllowed(ctx, projectId, userId);
+    }
+
+    public int countFilteredProjects(long userId, boolean isArchived) {
+        return ProjectRepository.getFilteredProjectCount(ctx, userId, isArchived);
+    }
+
+    public int countProjects(long userId) {
+        return ProjectRepository.getProjectCount(ctx, userId);
     }
 
 }

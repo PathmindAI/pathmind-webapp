@@ -265,8 +265,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 (experiment, isArchivable) -> {
                     ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
                     segmentIntegrator.archived(Experiment.class, isArchivable);
-                },
-                getUISupplier());
+                });
     }
 
     public List<Model> getModels() {
@@ -335,16 +334,15 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         } else {
             archivesTabPanel.setToPrimaryTab();
         }
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
-            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            if (experimentGrid != null) {
-                dataProvider.setFilter(false);
-                if (isInit) {
-                    experimentGrid.setDataProvider(dataProvider);
-                } else {
-                    dataProvider.refreshAll();
-                }
+        if (experimentGrid != null) {
+            dataProvider.setFilter(false);
+            if (isInit) {
+                experimentGrid.setDataProvider(dataProvider);
+            } else {
+                dataProvider.refreshAll();
             }
+        }
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));

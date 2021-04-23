@@ -8,6 +8,7 @@ import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import io.skymind.pathmind.shared.data.Project;
 import org.jooq.DSLContext;
 
+import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
 
 class ProjectRepository {
@@ -58,4 +59,35 @@ class ProjectRepository {
                 .fetchOneInto(Project.class)
         );
     }
+
+    protected static List<Project> getFilteredProjectsForUser(DSLContext ctx, long userId, boolean isArchived, int offset, int limit) {
+        return ctx.select(PROJECT.asterisk(), 
+                    ctx.selectCount()
+                        .from(MODEL)
+                        .where(MODEL.PROJECT_ID.eq(PROJECT.ID))
+                        .asField("modelCount"))
+                .from(PROJECT)
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .and(PROJECT.ARCHIVED.eq(isArchived))
+                .orderBy(PROJECT.LAST_ACTIVITY_DATE.desc())
+                .offset(offset)
+                .limit(limit)
+                .fetchInto(Project.class);
+    }
+
+    protected static int getFilteredProjectCount(DSLContext ctx, long userId, boolean isArchived) {
+        return ctx.selectCount()
+                .from(PROJECT)
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .and(PROJECT.ARCHIVED.eq(isArchived))
+                .fetchOne(0, int.class);
+    }
+
+    protected static int getProjectCount(DSLContext ctx, long userId) {
+        return ctx.selectCount()
+                .from(PROJECT)
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .fetchOne(0, int.class);
+    }
+
 }

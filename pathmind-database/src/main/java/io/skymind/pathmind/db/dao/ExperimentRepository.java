@@ -150,11 +150,10 @@ class ExperimentRepository {
     }
 
     protected static int getFilteredExperimentCount(DSLContext ctx, long modelId, boolean isArchived) {
-        Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
-        condition = condition.and(EXPERIMENT.ARCHIVED.eq(isArchived));
         return ctx.selectCount()
                 .from(EXPERIMENT)
-                .where(condition)
+                .where(EXPERIMENT.MODEL_ID.eq(modelId))
+                .and(EXPERIMENT.ARCHIVED.eq(isArchived))
                 .fetchOne(0, int.class);
     }
 
