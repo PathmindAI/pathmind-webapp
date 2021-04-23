@@ -14,8 +14,7 @@ public class ExperimentGridService {
     private final ExperimentDAO experimentDAO;
 
     public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit) {
-        final List<Experiment> experimentsInModelForUser = experimentDAO.getExperimentsInModelForUser(userId, modelId, isArchived, offset, limit);
-        return experimentsInModelForUser;
+        return experimentDAO.getExperimentsInModelForUser(userId, modelId, isArchived, offset, limit);
     }
 
     public int countFilteredExperimentsInModel(long modelId, boolean isArchived) {

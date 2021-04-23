@@ -127,11 +127,7 @@ class ExperimentRepository {
     protected static List<Experiment> getExperimentsInModelForUser(DSLContext ctx, ModelExperimentsQueryParams modelExperimentsQueryParams) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
         condition = condition.and(PROJECT.PATHMIND_USER_ID.eq(modelExperimentsQueryParams.getUserId()));
-        if (modelExperimentsQueryParams.getIsArchived()) {
-            condition = condition.and(EXPERIMENT.ARCHIVED.isTrue());
-        } else {
-            condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
-        }
+        condition = condition.and(EXPERIMENT.ARCHIVED.eq(modelExperimentsQueryParams.getIsArchived()));
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
@@ -155,11 +151,7 @@ class ExperimentRepository {
 
     protected static int getFilteredExperimentCount(DSLContext ctx, long modelId, boolean isArchived) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
-        if (isArchived) {
-            condition = condition.and(EXPERIMENT.ARCHIVED.isTrue());
-        } else {
-            condition = condition.and(EXPERIMENT.ARCHIVED.isFalse());
-        }
+        condition = condition.and(EXPERIMENT.ARCHIVED.eq(isArchived));
         return ctx.selectCount()
                 .from(EXPERIMENT)
                 .where(condition)

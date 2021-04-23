@@ -114,6 +114,7 @@ public class ExperimentDAO {
         var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
                 .userId(userId)
                 .modelId(modelId)
+                .isArchived(isArchived)
                 .limit(limit)
                 .offset(offset)
                 .build();
