@@ -381,6 +381,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_3_0:
             case VERSION_1_4_0:
             case VERSION_1_5_0:
+            case VERSION_1_6_0:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -408,6 +409,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_6_1:
             case VERSION_8_7_0:
             case VERSION_8_7_3:
+            case VERSION_8_7_4:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -452,6 +454,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+            case VERSION_1_3_0:
                 instructions.addAll(Arrays.asList(
                     // Setup Anaconda
                     "mkdir -p conda",
@@ -491,6 +494,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_3_0:
             case VERSION_1_4_0:
             case VERSION_1_5_0:
+            case VERSION_1_6_0:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));

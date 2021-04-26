@@ -51,6 +51,8 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
 
+    private boolean deployPolicyOnSuccess;
+
     private List<RewardVariable> rewardVariables;
     private List<RewardVariable> selectedRewardVariables = new ArrayList<>();
 

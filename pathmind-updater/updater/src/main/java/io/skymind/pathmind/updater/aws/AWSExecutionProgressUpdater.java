@@ -115,6 +115,9 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                     )
                     .build();
             policyServerService.saveSchemaYamlFile(run.getJobId(), schema);
+            if (run.getExperiment().isDeployPolicyOnSuccess()) {
+                policyServerService.triggerPolicyServerDeployment(run.getExperiment());
+            }
         }
     }
 

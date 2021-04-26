@@ -47,20 +47,9 @@ class CodeViewer extends PolymerElement {
 
   renderCode() {
     const codeElement = this.shadowRoot.querySelector("code");
-    const commentedLinesRe = /\/\*(.|[\r\n])*?\*\/|^(\/\/).+/gm;
-    const operatorRe = /([\+\-\%\>\<\&\=\!\|]\=?)(?!(.+\*\/))|\//g;
     const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)/g;
     const numberRe = /[0-9]+/g;
     let codeSnippet = this.codeSnippet;
-    let nonCommentedLines = codeSnippet;
-    nonCommentedLines.replace(commentedLinesRe, "")
-      .split("\n")
-      .forEach(line => {
-        const endOfLineCommentRe = /\/\/.+/g;
-        const lineWithoutComment = line.split(endOfLineCommentRe)[0];
-        const endOfLineComment = line.match(endOfLineCommentRe) ?　line.match(endOfLineCommentRe) : "";
-        codeSnippet = codeSnippet.replace(line, renderToken(lineWithoutComment.slice(), operatorRe, "operator") + endOfLineComment);
-      });
 
     if (this.codeSnippet && this.comparisonCodeSnippet) {
       const codeDiff = diff.diffWords(this.codeSnippet, this.comparisonCodeSnippet);

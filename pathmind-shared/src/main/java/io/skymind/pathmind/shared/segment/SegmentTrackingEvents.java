@@ -8,6 +8,7 @@ public class SegmentTrackingEvents {
     public static final String EVENT_VERIFY_EMAIL = "Email Verified";
     public static final String EVENT_LOGIN = "Signed in";
     public static final String EVENT_IMPORT_MODEL = "Model Uploaded";
+    public static final String EVENT_OBSERVATIONS_SELECTED = "Observations Selected Different From Default";
     public static final String EVENT_ONBOARDING_TUTORIAL = "Onboarding Tutorial Link Clicked";
     public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
     public static final String EVENT_ONBOARDING_SERVICE_PAID = "Onboarding Service Paid on Stripe";
