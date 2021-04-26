@@ -179,7 +179,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortProperty("dateCreated");
+                .setSortProperty("date_created");
 
         Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getLastActivityDate())
@@ -189,7 +189,7 @@ public class ProjectsView extends PathMindDefaultView {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortProperty("lastActivityDate");
+                .setSortProperty("last_activity_date");
 
         projectGrid.addColumn(project -> {
             String userNotes = project.getUserNotes();

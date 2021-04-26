@@ -7,6 +7,9 @@ import java.util.Optional;
 import io.skymind.pathmind.db.jooq.tables.records.ProjectRecord;
 import io.skymind.pathmind.shared.data.Project;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.OrderField;
+import org.jooq.SortOrder;
 
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.Tables.PROJECT;
@@ -60,16 +63,38 @@ class ProjectRepository {
         );
     }
 
-    protected static List<Project> getFilteredProjectsForUser(DSLContext ctx, long userId, boolean isArchived, int offset, int limit) {
-        return ctx.select(PROJECT.asterisk(), 
-                    ctx.selectCount()
+    protected static List<Project> getFilteredProjectsForUser(DSLContext ctx, long userId, boolean isArchived, int offset, int limit, String sortBy, boolean isDesc) {
+        Field<Integer> modelCountField = ctx.selectCount()
                         .from(MODEL)
                         .where(MODEL.PROJECT_ID.eq(PROJECT.ID))
-                        .asField("modelCount"))
+                        .asField("modelCount");
+        
+        OrderField<?> orderField = PROJECT.LAST_ACTIVITY_DATE.sort(SortOrder.DESC);
+        if (!sortBy.isEmpty()) {
+            SortOrder fieldSortOrder = isDesc ? SortOrder.DESC : SortOrder.ASC;
+            switch (sortBy.toUpperCase()) {
+                case "NAME":
+                    orderField = PROJECT.NAME.sort(fieldSortOrder);
+                    break;
+                case "MODELS":
+                    orderField = modelCountField.sort(fieldSortOrder);
+                    break;
+                case "DATE_CREATED":
+                    orderField = PROJECT.DATE_CREATED.sort(fieldSortOrder);
+                    break;
+                case "LAST_ACTIVITY_DATE":
+                    orderField = PROJECT.LAST_ACTIVITY_DATE.sort(fieldSortOrder);
+                    break;
+                default:
+                    orderField = PROJECT.LAST_ACTIVITY_DATE.sort(SortOrder.DESC);
+            }
+        }
+        
+        return ctx.select(PROJECT.asterisk(), modelCountField)
                 .from(PROJECT)
                 .where(PROJECT.PATHMIND_USER_ID.eq(userId))
                 .and(PROJECT.ARCHIVED.eq(isArchived))
-                .orderBy(PROJECT.LAST_ACTIVITY_DATE.desc())
+                .orderBy(orderField)
                 .offset(offset)
                 .limit(limit)
                 .fetchInto(Project.class);

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.shared.data.Project;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -47,8 +48,16 @@ public class ProjectDAO {
         return ProjectRepository.getProjectsForUser(ctx, userId);
     }
 
-    public List<Project> getFilteredProjectsForUser(long userId, boolean isArchived, int offset, int limit) {
-        return ProjectRepository.getFilteredProjectsForUser(ctx, userId, isArchived, offset, limit);
+    public List<Project> getFilteredProjectsForUser(long userId, boolean isArchived, int offset, int limit, List<GridSortOrder> sortOrders) {
+        String sortBy = sortOrders.size() > 0 ? sortOrders.get(0).getPropertyName() : "";
+        boolean isDesc = sortOrders.size() > 0 ? sortOrders.get(0).isDescending() : false;
+        return ProjectRepository.getFilteredProjectsForUser(ctx, 
+                    userId,
+                    isArchived,
+                    offset,
+                    limit,
+                    sortBy,
+                    isDesc);
     }
 
     public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
