@@ -3,6 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -113,6 +115,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Model selectedModel;
     private NotesField modelNotesField;
     private VerticalLayout modelWrapper;
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     public ProjectView() {
         super();
@@ -297,6 +301,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelId = selectedModel != null ? selectedModel.getId() : null;
         experiments = experimentDAO.getExperimentsForModel(modelId);
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
+
+        Runnable runnable = () -> {
+            experimentDAO.updateExperimentInternalValues(experiments);
+        };
+
+        executorService.submit(runnable);
     }
 
     public void setModelArchiveLabelVisible() {
