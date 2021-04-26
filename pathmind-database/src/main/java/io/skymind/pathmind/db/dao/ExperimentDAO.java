@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -110,13 +111,17 @@ public class ExperimentDAO {
      * @return experiments
      */
     @MonitorExecutionTime
-    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit) {
+    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit, List<GridSortOrder> sortOrders) {
+        String sortBy = sortOrders.size() > 0 ? sortOrders.get(0).getPropertyName() : "";
+        boolean isDesc = sortOrders.size() > 0 ? sortOrders.get(0).isDescending() : false;
         var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
                 .userId(userId)
                 .modelId(modelId)
                 .isArchived(isArchived)
                 .limit(limit)
                 .offset(offset)
+                .sortBy(sortBy)
+                .descending(isDesc)
                 .build();
         List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
         return setSelectedObservationsAndMetricsValues(experiments);

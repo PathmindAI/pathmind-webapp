@@ -9,6 +9,8 @@ public final class ModelExperimentsQueryParams {
     private int limit;
     private int offset;
     private boolean isArchived;
+    private String sortBy;
+    private boolean descending;
 
     public long getUserId() {
         return userId;
@@ -48,5 +50,21 @@ public final class ModelExperimentsQueryParams {
 
     public void setIsArchived(boolean isArchived) {
         this.isArchived = isArchived;
+    }
+
+    public String getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(String sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    public boolean isDescending() {
+        return descending;
+    }
+
+    public void setDescending(boolean descending) {
+        this.descending = descending;
     }
 }

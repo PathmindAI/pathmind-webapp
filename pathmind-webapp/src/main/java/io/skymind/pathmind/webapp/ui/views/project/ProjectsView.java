@@ -162,34 +162,34 @@ public class ProjectsView extends PathMindDefaultView {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortProperty("name");
 
         projectGrid.addColumn(Project::getModelCount)
                 .setHeader("Models")
                 .setClassNameGenerator(column -> "align-right")
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortProperty("models");
 
         projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getDateCreated())
         )
-                .setComparator(Comparator.comparing(Project::getDateCreated))
                 .setHeader("Created")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true);
+                .setResizable(true)
+                .setSortProperty("dateCreated");
 
         Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getLastActivityDate())
         )
-                .setComparator(Comparator.comparing(Project::getLastActivityDate))
                 .setHeader("Last Activity")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true);
+                .setResizable(true)
+                .setSortProperty("lastActivityDate");
 
         projectGrid.addColumn(project -> {
             String userNotes = project.getUserNotes();

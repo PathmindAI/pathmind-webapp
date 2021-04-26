@@ -43,7 +43,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
                 .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
-                .setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
+                .setSortProperty("name")
                 .setHeader("#")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -51,7 +51,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> createdColumn = addComponentColumn(experiment -> 
                 new DatetimeDisplay(experiment.getDateCreated())
         )
-                .setComparator(Comparator.comparing(Experiment::getDateCreated))
+                .setSortProperty("date_created")
                 .setHeader("Created")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -59,18 +59,17 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setResizable(true);
         Grid.Column<Experiment> statusColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
                 .setHeader("Status")
-                .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
+                .setSortProperty("training_status")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
+                .setResizable(true);
         Grid.Column<Experiment> selectedObsColumn = addColumn(experiment -> 
                 String.join(", ", experiment.getSelectedObservations().stream().map(obs -> obs.getVariable()).collect(Collectors.toList())))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortable(false);
         // addComponentColumn(experiment -> {
         //             Span goalIcons = new Span();
         //             String successClassName = "success-text";
@@ -162,7 +161,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                     .setAutoWidth(true)
                     .setFlexGrow(0)
                     .setResizable(true)
-                    .setSortable(true);
+                    .setSortable(false);
             additionalColumnList.put(rewardVariableName, newColumn);
         } else {
             additionalColumnList.get(rewardVariableName).setVisible(true);

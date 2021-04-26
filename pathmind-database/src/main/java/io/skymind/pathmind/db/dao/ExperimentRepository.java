@@ -19,10 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.OrderField;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Result;
+import org.jooq.SortOrder;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 
@@ -128,6 +130,23 @@ class ExperimentRepository {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
         condition = condition.and(PROJECT.PATHMIND_USER_ID.eq(modelExperimentsQueryParams.getUserId()));
         condition = condition.and(EXPERIMENT.ARCHIVED.eq(modelExperimentsQueryParams.getIsArchived()));
+        OrderField<?> orderField = EXPERIMENT.DATE_CREATED.sort(SortOrder.DESC);
+        if (!modelExperimentsQueryParams.getSortBy().isEmpty()) {
+            SortOrder fieldSortOrder = modelExperimentsQueryParams.isDescending() ? SortOrder.DESC : SortOrder.ASC;
+            switch (modelExperimentsQueryParams.getSortBy().toUpperCase()) {
+                case "NAME":
+                    orderField = EXPERIMENT.NAME.sort(fieldSortOrder);
+                    break;
+                case "DATE_CREATED":
+                    orderField = EXPERIMENT.DATE_CREATED.sort(fieldSortOrder);
+                    break;
+                case "TRAINING_STATUS":
+                    orderField = EXPERIMENT.TRAINING_STATUS.sort(fieldSortOrder);
+                    break;
+                default:
+                    orderField = EXPERIMENT.DATE_CREATED.sort(SortOrder.DESC);
+            }
+        }
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
@@ -137,7 +156,7 @@ class ExperimentRepository {
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(condition)
-                .orderBy(EXPERIMENT.DATE_CREATED.desc())
+                .orderBy(orderField)
                 .offset(modelExperimentsQueryParams.getOffset())
                 .limit(modelExperimentsQueryParams.getLimit())
                 .fetch();
