@@ -326,7 +326,7 @@
 
 .experiment-view .bottom-panel histogram-chart,
 .experiment-view .bottom-panel data-chart {
-    flex: 0 0 100%;
+    flex: 0 1 100%;
 }
 
 .experiment-view vaadin-tabs {
