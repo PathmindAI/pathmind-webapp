@@ -56,7 +56,7 @@ class ConfirmPopup extends PolymerElement {
                     left: 0;
                     background-color: rgba(0,0,0,0.08);
                 }
-                popup {
+                popup-content {
                     box-sizing: border-box;
                     position: relative;
                     max-width: 30rem;
@@ -87,7 +87,7 @@ class ConfirmPopup extends PolymerElement {
                 }
             </style>
             <div id="overlay" on-click="close"></div>
-            <popup>
+            <popup-content>
                 <h3>[[headerText]]</h3>
                 <div class="message">
                     <slot></slot>
@@ -97,7 +97,7 @@ class ConfirmPopup extends PolymerElement {
                     <vaadin-button id="cancel" tabindex="0" role="button" on-click="onCancel" hidden="[[_isEmptyStringOrUnset(cancelText)]]">[[cancelText]]</vaadin-button>
                     <vaadin-button id="confirm" theme="[[confirmButtonThemes]]" tabindex="0" role="button" on-click="onConfirm">[[confirmText]]</vaadin-button>
                 </div>
-            </popup>
+            </popup-content>
         `;
     }
 
