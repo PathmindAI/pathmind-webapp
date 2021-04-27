@@ -43,20 +43,20 @@ env:
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/test-punctuator
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/test-policy-server.fifo
 
-readinessprobe:
-  httpGet:
-    path: /actuator/health
-    port: 9901
-  initialDelaySeconds: 15
-  periodSeconds: 10
-  failureThreshold: 10
-
-livenessprobe:
-  httpGet:
-    path: /actuator/health
-    port: 9901
-  initialDelaySeconds: 30
-  periodSeconds: 15
+probes:
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9902
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 10
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9902
+    initialDelaySeconds: 30
+    periodSeconds: 15
 
 name: pathmind-punctuator
 
@@ -95,4 +95,3 @@ tolerations: []
 
 affinity: {}
 
-probes: {}
