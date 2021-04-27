@@ -306,7 +306,7 @@
 }
 
 .experiment-view:not(.comparison-mode) .bottom-panel {
-    flex: 0 0 48vh !important;
+    flex: 0 0 calc(40vh + 7.2rem) !important;
 }
 
 .experiment-view:not(.comparison-mode) .row-2-of-3 {
@@ -315,7 +315,7 @@
 }
 
 .experiment-view:not(.comparison-mode) .row-2-of-3 vaadin-vertical-layout {
-    flex: 0 0 40vh;
+    flex: 0 0 calc(40vh + 3.7rem);
 }
 
 .experiment-view .bottom-panel .row-2-of-3 .bold-label {
@@ -324,9 +324,12 @@
     z-index: 1;
 }
 
-.experiment-view .bottom-panel histogram-chart,
+.experiment-view .bottom-panel histogram-chart {
+    flex: 0 1 calc(100% - 5.5rem);
+}
+
 .experiment-view .bottom-panel data-chart {
-    flex: 0 1 100%;
+    flex: 0 1 calc(100% - 2rem);
 }
 
 .experiment-view vaadin-tabs {
