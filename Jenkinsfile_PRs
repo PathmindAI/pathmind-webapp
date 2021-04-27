@@ -374,7 +374,7 @@ pipeline {
             echo "Deleting image"
             deleteDockerImage("${RELEASE_ID}")
             echo "Deleting name space ${env.BUILD_NUMBER}"
-            code = sh(returnStdout: true, script: "helm delete postgres -n ${env.BUILD_NUMBER}")
+            "helm delete postgres -n ${env.BUILD_NUMBER} || true"
             //code = sh(returnStdout: true, script: "helm delete ${RELEASE_ID} -n ${env.BUILD_NUMBER}")
             //code = sh(returnStdout: true, script: "helm delete ${RELEASE_ID}-updater -n ${env.BUILD_NUMBER}")
             //code = sh(returnStdout: true, script: "helm delete ${RELEASE_ID}-api -n ${env.BUILD_NUMBER}")
