@@ -135,7 +135,7 @@ class ExperimentRepository {
             SortOrder fieldSortOrder = modelExperimentsQueryParams.isDescending() ? SortOrder.DESC : SortOrder.ASC;
             switch (modelExperimentsQueryParams.getSortBy().toUpperCase()) {
                 case "NAME":
-                    orderField = EXPERIMENT.NAME.sort(fieldSortOrder);
+                    orderField = EXPERIMENT.ID.sort(fieldSortOrder); // NAME is increasing, same as ID
                     break;
                 case "DATE_CREATED":
                     orderField = EXPERIMENT.DATE_CREATED.sort(fieldSortOrder);
