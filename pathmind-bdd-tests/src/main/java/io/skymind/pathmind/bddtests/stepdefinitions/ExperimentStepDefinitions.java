@@ -254,4 +254,9 @@ public class ExperimentStepDefinitions {
     public void experimentPageClickComparisonFloatingCloseBtn() {
         experimentPageSteps.experimentPageClickComparisonFloatingCloseBtn();
     }
+
+    @Then("^Check learning progress block Histogram x axis is shown$")
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        experimentPageSteps.checkLearningProgressBlockHistogramXAxisIsShown();
+    }
 }

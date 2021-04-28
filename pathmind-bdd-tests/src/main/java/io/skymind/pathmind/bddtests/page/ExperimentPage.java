@@ -12,6 +12,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -385,5 +386,11 @@ public class ExperimentPage extends PageObject {
     public void experimentPageClickComparisonFloatingCloseBtn() {
         getDriver().findElement(By.xpath("//floating-close-button")).click();
         assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
+    }
+
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector("histogram-chart")));
+        WebElement chart = utils.expandRootElement(e.findElement(By.cssSelector("google-chart")));
+        assertThat(chart.findElement(By.cssSelector("#chartdiv > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(1) > text")).getText(), is("Value"));
     }
 }
