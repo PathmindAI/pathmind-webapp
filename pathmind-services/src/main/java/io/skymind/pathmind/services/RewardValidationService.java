@@ -20,8 +20,7 @@ import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIn
 public class RewardValidationService {
     public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables) {
         final ArrayList<String> errors = new ArrayList<>();
-        final String commentRe = "\\/\\*(.|[\\r\\n])*?\\*\\/|(\\/\\/).+";
-        if (rewardFunction.matches(commentRe)) {
+        if (containsOnlyComments(rewardFunction)) {
             errors.add("Training cannot be started when the reward function consists of only comments.");
             return errors;
         }
@@ -51,6 +50,16 @@ public class RewardValidationService {
             errors.add("ERROR: Invalid reward function");
         }
         return errors;
+    }
+
+    private static Boolean containsOnlyComments(String rewardFunction) {
+        final String multilineCommentRe = "(?:\\/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+\\/)";
+        final String commentRe = "\\/\\*(.|[\\r\\n])*?\\*\\/|(\\/\\/).+";
+        String processedRewardFunction = rewardFunction;
+        processedRewardFunction = processedRewardFunction.replaceAll(multilineCommentRe, "");
+        processedRewardFunction = processedRewardFunction.replaceAll(commentRe, "");
+        processedRewardFunction = processedRewardFunction.replaceAll("[\\s\\r\\n]", "");
+        return processedRewardFunction.isEmpty();
     }
 
     private static String fillInTemplate(String rewardFunction, List<RewardVariable> rewardVariables){
