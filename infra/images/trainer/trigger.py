@@ -157,13 +157,14 @@ def process_message(message):
         '8cpu_16gb', \
         '8cpu_32gb', \
         '36cpu_72gb', \
+        '72cpu_144gb', \
         '36cpu_72gb_mockup', \
         ]
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
-    hw_type='36cpu_72gb'
+    hw_type='72cpu_144gb'
     if 'hw_type' in body:
         hw_type=body['hw_type']
     if hw_type not in hw_type_list:
