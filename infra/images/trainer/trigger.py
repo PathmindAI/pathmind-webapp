@@ -164,7 +164,7 @@ def process_message(message):
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
     s3path=body['S3Path']
-    hw_type='72cpu_144gb'
+    hw_type='36cpu_72gb'
     if 'hw_type' in body:
         hw_type=body['hw_type']
     if hw_type not in hw_type_list:
