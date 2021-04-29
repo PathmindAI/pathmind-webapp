@@ -268,7 +268,7 @@ public class GenericPage extends PageObject {
 
     public void clickInTheNewTabModelButton(String text) {
         waitABit(2000);
-        WebElement button = getDriver().findElement(By.xpath("//*[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
+        WebElement button = getDriver().findElement(By.xpath("//span[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
         Actions actions = new Actions(getDriver());
         actions.keyDown(Keys.CONTROL).build().perform();
         actions.moveToElement(button).build().perform();

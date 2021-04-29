@@ -196,4 +196,9 @@ public class HomePageSteps {
     public void checkOnboardingSuccessPage() {
         homePage.checkOnboardingSuccessPage();
     }
+
+    @Step
+    public void clickSearchResultResult(String searchResult) {
+        homePage.clickSearchResultResult(searchResult);
+    }
 }
