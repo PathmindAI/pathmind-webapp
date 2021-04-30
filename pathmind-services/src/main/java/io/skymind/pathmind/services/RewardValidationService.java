@@ -20,6 +20,9 @@ import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIn
 public class RewardValidationService {
     public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables) {
         final ArrayList<String> errors = new ArrayList<>();
+        if (rewardFunction.isEmpty()) {
+            return errors;
+        }
         if (containsOnlyComments(rewardFunction)) {
             errors.add("Training cannot be started when the reward function consists of only comments.");
             return errors;
@@ -54,7 +57,7 @@ public class RewardValidationService {
 
     private static Boolean containsOnlyComments(String rewardFunction) {
         final String multilineCommentRe = "(?:\\/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+\\/)";
-        final String commentRe = "\\/\\*(.|[\\r\\n])*?\\*\\/|(\\/\\/).+";
+        final String commentRe = "\\/\\*(.|[\\r\\n])*?\\*\\/|(\\/\\/).*";
         String processedRewardFunction = rewardFunction;
         processedRewardFunction = processedRewardFunction.replaceAll(multilineCommentRe, "");
         processedRewardFunction = processedRewardFunction.replaceAll(commentRe, "");
