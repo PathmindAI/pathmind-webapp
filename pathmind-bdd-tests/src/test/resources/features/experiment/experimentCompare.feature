@@ -225,3 +225,46 @@ Feature: Experiment page compare feature
     When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
     When Experiment page 'primary' slot check reward variable 'balkedCustomers' is chosen 'false'
     When Experiment page 'primary' slot check reward variable 'avgServiceTime' is chosen 'true'
+
+  Scenario: Check comparison pin is unpinned
+    Given Login to the pathmind
+    When Create new CoffeeShop project with single reward function
+    When Click new experiment page observation checkbox 'orderQueueSize'
+    When Click new experiment page observation checkbox 'timeOfDay'
+    When Click project start run button
+    When Click in 'New Experiment' button
+    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    When Click project start run button
+    When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
+    When Experiment page click comparison floating close btn
+
+  Scenario: Check experiments comparison diff
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    When Click new experiment page observation checkbox 'orderQueueSize'
+    When Click new experiment page observation checkbox 'timeOfDay'
+    When Click project start run button
+    When Click experiment page share with support btn
+    When In confirmation dialog click in 'Share Training' button
+    When Click pop-up dialog close btn
+    When Click in 'New Experiment' button
+    When Input reward function reward += after.avgServiceTime - before.balkedCustomers; // Maximize kitchen cleanliness test1
+    When Click new experiment page observation checkbox 'collectQueueSize'
+    When Click new experiment page observation checkbox 'timeOfDay'
+    When Click project start run button
+    When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
+    Then Experiment page Check 'primary' observation 'orderQueueSize' is highlighted 'false'
+    Then Experiment page Check 'primary' observation 'collectQueueSize' is highlighted 'true'
+    Then Experiment page Check 'primary' observation 'payBillQueueSize' is highlighted 'false'
+    Then Experiment page Check 'primary' observation 'kitchenCleanlinessLevel' is highlighted 'false'
+    Then Experiment page Check 'primary' observation 'timeOfDay' is highlighted 'true'
+    Then Experiment page Check 'secondary' observation 'orderQueueSize' is highlighted 'false'
+    Then Experiment page Check 'secondary' observation 'collectQueueSize' is highlighted 'true'
+    Then Experiment page Check 'secondary' observation 'payBillQueueSize' is highlighted 'false'
+    Then Experiment page Check 'secondary' observation 'kitchenCleanlinessLevel' is highlighted 'false'
+    Then Experiment page Check 'secondary' observation 'timeOfDay' is highlighted 'true'
+    Then Experiment page Check 'primary' reward variable 'balkedCustomers' is highlighted 'true'
+    Then Experiment page Check 'primary' reward variable 'avgServiceTime' is highlighted 'true'
+    Then Experiment page Check 'secondary' reward variable 'kitchenCleanlinessLevel' is highlighted 'true'
+    Then Experiment page Check 'secondary' reward variable 'reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2 reward -= after.balkedCustomers - before.balkedCustomers; // Minimize balked customers test3 reward -= after.avgServiceTime - before.avgServiceTime; // Minimize average service time test4' is highlighted 'true'

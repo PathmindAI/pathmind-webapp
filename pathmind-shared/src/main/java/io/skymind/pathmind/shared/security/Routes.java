@@ -17,6 +17,7 @@ public class Routes {
     public static final String RESET_PASSWORD = "reset-password";
     public static final String EMAIL_VERIFICATION = "email-verification";
     public static final String VERIFICATION_EMAIL_SENT = "verification-email-sent";
+    public static final String ONBOARDING_PAYMENT_SUCCESS = "onboarding-payment-success";
 
     public static final String ACCOUNT_EDIT = "account/edit";
     public static final String ACCOUNT = "account";
@@ -26,7 +27,6 @@ public class Routes {
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";
-    public static final String DEMOS_URL = "demos";
     public static final String MODEL_PATH = "/model/";
     public static final String EXPERIMENT = "experiment";
     public static final String NEW_EXPERIMENT = "newExperiment";

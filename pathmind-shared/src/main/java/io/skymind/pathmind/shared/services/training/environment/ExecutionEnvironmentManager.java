@@ -18,16 +18,17 @@ public class ExecutionEnvironmentManager {
     private static Map<Long, ExecutionEnvironment> environmentMap = new HashMap();
 
     private ExecutionEnvironment defaultEnvironment() {
-        return new ExecutionEnvironment(AnyLogic.VERSION_8_7_3,
-                PathmindHelper.VERSION_1_4_0,
-                NativeRL.VERSION_1_5_0,
+        return new ExecutionEnvironment(AnyLogic.VERSION_8_7_4,
+                PathmindHelper.VERSION_1_6_0,
+                NativeRL.VERSION_1_6_0,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_0_0,
                 EC2InstanceType.IT_36CPU_72GB,
                 0,
                 0,
                 0,
-                0);
+                0,
+                false);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

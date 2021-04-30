@@ -1904,4 +1904,32 @@
         </sql>
     </changeSet>
 
+    <changeSet id="2847-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="RUN">
+            <column name="POLICY_SERVER_STATUS" type="INT" defaultValue="0"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_STATUS"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2992-01" author="daehyun@pathmind.com">
+        <addColumn tableName="RUN">
+            <column name="POLICY_SERVER_MESSAGE" type="TEXT"/>
+            <column name="POLICY_SERVER_URL" type="VARCHAR(255)"/>
+        </addColumn>
+        <addUniqueConstraint tableName="RUN" columnNames="POLICY_SERVER_URL" constraintName="POLICY_SERVER_URL_UNIQUE"/>
+        <rollback>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_MESSAGE"/>
+            <dropColumn tableName="RUN" columnName="POLICY_SERVER_URL"/>
+            <dropUniqueConstraint tableName="RUN" uniqueColumns="POLICY_SERVER_URL" constraintName="POLICY_SERVER_URL_UNIQUE"/>
+        </rollback>
+    </changeSet>
+    
+    <changeSet id="2938-1" author="alexander.makarov@toptal.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="DEPLOY_POLICY_ON_SUCCESS" type="BOOLEAN" defaultValue="false" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

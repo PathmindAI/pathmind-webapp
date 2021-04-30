@@ -171,6 +171,11 @@ pipeline {
                         buildDockerImage("rl_training", "Dockerfile", "${WORKSPACE}/infra/images/rl_training/")
                     }
                 }
+                stage('Build policy deployer image') {
+                    steps {
+                        buildDockerImage("policy-deployer", "Dockerfile", "${WORKSPACE}/infra/images/policy-deployer/")
+                    }
+                }
             }
         }
 
@@ -199,6 +204,11 @@ pipeline {
                         publishDockerImage("rl_training", "${DOCKER_TAG}")
                     }
                 }
+                stage('Publish policy-deployer image') {
+                    steps {
+                        publishDockerImage("policy-deployer", "${DOCKER_TAG}")
+                    }
+                }
             }
         }
 
@@ -222,6 +232,8 @@ pipeline {
                             echo "Updating helm chart"
                             sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh ${DOCKER_TAG} ${DOCKER_TAG} ${WORKSPACE}"
                             sh "sleep 90"
+                            echo "Deploying puctuator helm chart"
+                            sh "helm upgrade --install pathmind-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-punctuator.yaml -n ${DOCKER_TAG}"
                             echo "Deploying updater helm chart"
                             sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml -n ${DOCKER_TAG}"
                             echo "Wait for webapp to be available"
@@ -241,6 +253,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying policy-deployer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
@@ -289,6 +308,8 @@ pipeline {
                             echo "Updating helm chart"
                             sh "set +x; bash ${WORKSPACE}/infra/scripts/canary_deploy.sh default ${DOCKER_TAG} ${WORKSPACE}"
                             sh "sleep 90"
+                            echo "Deploying punctuator helm chart"
+                            sh "helm upgrade --install pathmind-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-punctuator.yaml"
                             echo "Deploying updater helm chart"
                             sh "helm upgrade --install pathmind-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/values_${DOCKER_TAG}-updater.yaml"
                         }
@@ -305,6 +326,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install pathmind-api ${WORKSPACE}/infra/helm/pathmind-api -f ${WORKSPACE}/infra/helm/pathmind-api/values_${DOCKER_TAG}-api.yaml"
+                        }
+                    }
+                }
+                stage('Deploying policy-deployer') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml"
                         }
                     }
                 }

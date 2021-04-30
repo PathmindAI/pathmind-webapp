@@ -3,13 +3,10 @@ package io.skymind.pathmind.webapp.ui.views.demo;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.QueryParameters;
-import com.vaadin.flow.server.Command;
 import com.vaadin.flow.templatemodel.TemplateModel;
 
 import elemental.json.Json;
@@ -23,7 +20,6 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,7 +30,6 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     private final SegmentIntegrator segmentIntegrator;
     private final DemoProjectService demoProjectService;
     private final List<ExperimentManifest> manifests;
-    private Command onChooseDemoHandler = () -> {};
     private Boolean createdDemoProject = false;
 
     public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo, SegmentIntegrator segmentIntegrator) {
@@ -42,33 +37,31 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
         this.manifests = repo.getAll();
         this.segmentIntegrator = segmentIntegrator;
         setData();
+        setUpButtonClickedHandler();
     }
 
-    @EventHandler
-    private void buttonClickedHandler(@EventData("event.target.getAttribute('name')") String demoName) {
-        if (!createdDemoProject) {
-            createdDemoProject = true;
-            try {
-                ExperimentManifest targetDemo;
-                onChooseDemoHandler.execute();
-                if (demoName != null) {
-                    targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(demoName)).findFirst().orElse(null);
-                    segmentIntegrator.createProjectFromExample(demoName);
-                    if (targetDemo != null) {
-                        Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
-                        QueryParameters queryParam = QueryParameters.simple(Map.of("productTour",targetDemo.getName().replaceAll(" ", "").toLowerCase()));
-                        getUI().ifPresent(ui -> ui.navigate(Routes.NEW_EXPERIMENT+"/"+experiment.getId(), queryParam));
+    private void setUpButtonClickedHandler() {
+        getElement().addPropertyChangeListener("name", event -> {
+            if (!createdDemoProject) {
+                createdDemoProject = true;
+                try {
+                    ExperimentManifest targetDemo;
+                    String name = getModel().getName();
+                    if (name != null) {
+                        targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(name)).findFirst().orElse(null);
+                        segmentIntegrator.createProjectFromExample(name);
+                        if (targetDemo != null) {
+                            Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
+                            QueryParameters queryParam = QueryParameters.simple(Map.of("productTour",targetDemo.getName().replaceAll(" ", "").toLowerCase()));
+                            getUI().ifPresent(ui -> ui.navigate(Routes.NEW_EXPERIMENT+"/"+experiment.getId(), queryParam));
+                        }
                     }
+                } catch (Exception e) {
+                    log.error("Failed to handle project creation from demo chosen", e);
+                    NotificationUtils.showError("Something went wrong. Please try again or contact Pathmind support.");
                 }
-            } catch (Exception e) {
-                log.error("Failed to handle project creation from demo chosen", e);
-                NotificationUtils.showError("Something went wrong. Please try again or contact Pathmind support.");
             }
-        }
-    }
-
-    public void setOnChooseDemoHandler(Command handler) {
-        onChooseDemoHandler = handler;
+        });
     }
 
     public void setData() {
@@ -88,8 +81,17 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
         getElement().callJsFunction("setData", demoDataList);
     }
 
+    public void setIsVertical(Boolean isVertical) {
+        getModel().setIsVertical(isVertical);
+    }
+
     public interface Model extends TemplateModel {
-        void setHideImage(Boolean hideImage);
+
+        String getName();
+        void setName(String name);
+
+        void setIsVertical(Boolean isVertical);
+
     }
 
 }

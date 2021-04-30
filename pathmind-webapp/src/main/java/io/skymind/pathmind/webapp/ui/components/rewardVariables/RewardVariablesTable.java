@@ -75,20 +75,24 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     }
 
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
-        container.removeAll();
-        rewardVariableNameFields.clear();
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"));
-
-        headerRow.addClassName("header-row");
-        GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
-
-        container.add(headerRow);
+        if (rewardVariableNameFields.isEmpty()) {
+            HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"));
+            headerRow.addClassName("header-row");
+            GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
+            container.add(headerRow);
+        }
 
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
-            RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, experimentView, actAsMultiSelect);
-            container.add(row);
-            rewardVariableNameFields.add(row);
+            if (rewardVariableNameFields.size() < rewardVariables.size()) {
+                RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, experimentView, actAsMultiSelect);
+                    container.add(row);
+                    rewardVariableNameFields.add(row);
+            } else {
+                RewardVariablesRowField row = rewardVariableNameFields.get(rewardVariable.getArrayIndex());
+                row.setSelected(false);
+                row.setRewardVariable(rewardVariable);
+            }
         });
     }
 
@@ -108,7 +112,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setRewardVariables(experiment.getRewardVariables());
-        if(actAsMultiSelect) {
+        if (actAsMultiSelect) {
             selectSelectedRewardVariables(experiment);
             updateSelectionClassForComponent();
         }

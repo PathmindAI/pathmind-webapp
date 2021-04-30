@@ -36,6 +36,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOG
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_MARKETING_SITE_LEAD;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_OBSERVATIONS_SELECTED;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
@@ -66,8 +67,8 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
     private boolean enabled;
     private PathmindUserDetails user;
 
-    public SegmentIntegrator(@Value("${skymind.segment.website.source.key}") String key,
-                             @Value("${skymind.segment.enabled}") Boolean enabled) {
+    public SegmentIntegrator(@Value("${pathmind.segment.website.source.key}") String key,
+                             @Value("${pathmind.segment.enabled}") Boolean enabled) {
         this.sourceKey = key;
         this.enabled = enabled;
     }
@@ -108,6 +109,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         JsonObject additionalInfo = Json.createObject();
         additionalInfo.put("result", result ? "success" : "failed");
         track(EVENT_IMPORT_MODEL, additionalInfo);
+    }
+
+    public void observationsSelected() {
+        track(EVENT_OBSERVATIONS_SELECTED);
     }
 
     public void onboardingTutorialClicked() {

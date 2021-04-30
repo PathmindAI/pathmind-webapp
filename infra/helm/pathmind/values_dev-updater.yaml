@@ -13,7 +13,7 @@ image:
     - "-Xmx4096m"
     - "-XX:+UseG1GC"
     - "-jar"
-    - "/app/pathmind-updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar"
+    - "/app/pathmind-updater/updater/target/pathmind-updater-0.0.1-SNAPSHOT.jar"
 
 service:
   type: NodePort
@@ -21,6 +21,7 @@ service:
 
 env:
   APPLICATION_URL: https://dev.devpathmind.com
+  PATHMIND_API_URL: https://api.dev.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
@@ -39,10 +40,23 @@ env:
   SNS_UPDATER_SQS_FILTER_ATTR: dev
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
+  SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/dev-punctuator
+  SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/dev-policy-server.fifo
 
-readinessprobe: {}
-
-livenessprobe: {}
+probes:
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 10
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 30
+    periodSeconds: 15
 
 name: pathmind-updater
 
@@ -81,4 +95,3 @@ tolerations: []
 
 affinity: {}
 
-probes: {}

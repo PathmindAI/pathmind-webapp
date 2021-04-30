@@ -11,10 +11,10 @@ import lombok.Getter;
 public enum GoalConditionType {
     GREATER_THAN_OR_EQUAL(
             "GTE", "≥",
-            new RewardFunctionComponent("+", "maximize")
+            new RewardFunctionComponent("+", "Maximize")
     ),
     LESS_THAN_OR_EQUAL("LTE", "≤",
-            new RewardFunctionComponent("-", "minimize")
+            new RewardFunctionComponent("-", "Minimize")
     ),
     ;
 

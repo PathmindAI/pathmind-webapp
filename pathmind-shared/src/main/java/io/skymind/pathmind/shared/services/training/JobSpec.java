@@ -2,6 +2,7 @@ package io.skymind.pathmind.shared.services.training;
 
 import java.util.List;
 
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
@@ -29,6 +30,7 @@ public class JobSpec {
 
     private final ExecutionEnvironment env;
 
+    private final ModelType modelType;
     private final RunType type;
 
     private final int maxTimeInSec;
@@ -47,9 +49,14 @@ public class JobSpec {
     private final String expClassType;
 
     private final String environment;
+    private final String obsSelection;
+    private final String rewFctName;
 
-    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward, List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, RunType type, int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog, boolean recordMetricsRaw, boolean namedVariables,
-                   String mainAgentName, String expClassName, String expClassType, String environment) {
+    public JobSpec(long userId, long modelId, long experimentId, long runId, String modelFileId, String variables, String reset, String reward,
+                   List<Observation> selectedObservations, int iterations, ExecutionEnvironment env, ModelType modelType, RunType type,
+                   int maxTimeInSec, int numSamples, boolean multiAgent, boolean resume, int checkpointFrequency, boolean userLog,
+                   boolean recordMetricsRaw, boolean namedVariables,
+                   String mainAgentName, String expClassName, String expClassType, String environment, String obsSelection, String rewFctName) {
         this.userId = userId;
         this.modelId = modelId;
         this.experimentId = experimentId;
@@ -61,6 +68,7 @@ public class JobSpec {
         this.selectedObservations = selectedObservations;
         this.iterations = iterations;
         this.env = env;
+        this.modelType = modelType;
         this.type = type;
         this.maxTimeInSec = maxTimeInSec;
         this.numSamples = numSamples;
@@ -74,5 +82,7 @@ public class JobSpec {
         this.expClassName = expClassName;
         this.expClassType = expClassType;
         this.environment = environment;
+        this.obsSelection = obsSelection;
+        this.rewFctName = rewFctName;
     }
 }

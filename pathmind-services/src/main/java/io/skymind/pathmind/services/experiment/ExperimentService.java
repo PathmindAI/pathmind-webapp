@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.experiment;
 
+import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
@@ -38,8 +39,9 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ExperimentService {
 
-
     private final ModelDAO modelDAO;
+
+    private final ExperimentDAO experimentDAO;
 
     private final ModelService modelService;
 
@@ -52,68 +54,92 @@ public class ExperimentService {
     private final ProjectFileCheckService projectFileCheckService;
 
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
-        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC, null);
+        return createExperimentFromModelBytes(
+                modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC,
+            null, null, null, null, false
+        );
     }
 
-    public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier,
-                                                     AnalyzeRequestDTO.ModelType type, String environment) throws Exception {
-        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment);
+    public Experiment createExperimentFromModelBytes(
+            ModelBytes modelBytes, Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type,
+            String environment, Boolean isPathmindSimulation, String obsSelection, String rewFctName,
+            boolean deployPolicyServerOnSuccess
+    ) throws Exception {
+        return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment,
+            isPathmindSimulation, obsSelection, rewFctName, deployPolicyServerOnSuccess);
     }
 
-    public Experiment createExperimentFromModelBytes(ModelBytes modelBytes,
-                                                     StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
-                                                     Supplier<Project> projectSupplier,
-                                                     AnalyzeRequestDTO.ModelType type,
-                                                     String environment) throws Exception {
+    public Experiment createExperimentFromModelBytes(
+            ModelBytes modelBytes, StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
+            Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type, String environment,
+            Boolean isPathmindSimulation, String obsSelection, String rewFctName,
+            boolean deployPolicyServerOnSuccess
+    ) throws Exception {
         Model model = new Model();
 
-        if (type.equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
-            byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
-            model.setFile(bytes);
+        switch (type) {
+            case ANY_LOGIC: {
+                byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
+                model.setFile(bytes);
 
-            projectFileCheckService.checkFile(status, model, type).get(); // here we need to wait
-            if (StringUtils.isNoneEmpty(status.getError())) {
-                throw new ModelCheckException(status.getError());
+                projectFileCheckService.checkFile(status, model, type).get(); // here we need to wait
+                if (StringUtils.isNoneEmpty(status.getError())) {
+                    throw new ModelCheckException(status.getError());
+                }
+                AnylogicFileCheckResult result = status.getResult();
+                if (result == null) {
+                    throw new ModelCheckException("No validation result");
+                }
+
+                List<RewardVariable> rewardVariables = new ArrayList<>();
+                List<Observation> observationList = new ArrayList<>();
+
+                Hyperparams alResult = result.getParams();
+                rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
+                observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
+                model.setNumberOfObservations(alResult.getNumObservation());
+                model.setRewardVariablesCount(rewardVariables.size());
+                model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
+                model.setNumberOfAgents(alResult.getNumberOfAgents());
+
+                modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
+                log.info("created model {}", model.getId());
+                RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
+                rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
+                observationDAO.updateModelObservations(model.getId(), observationList);
+                break;
             }
-            AnylogicFileCheckResult result = status.getResult();
-            if (result == null) {
-                throw new ModelCheckException("No validation result");
+            case PYTHON: {
+                model.setFile(modelBytes.getBytes());
+                String reqId = "project_" + model.getProjectId();
+                File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
+                FileUtils.writeByteArrayToFile(tempFile, model.getFile());
+                HyperparametersDTO analysisResult =
+                        projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
+                if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
+                    throw new ModelCheckException(analysisResult.getFailedSteps());
+                }
+                if (isPathmindSimulation) {
+                    model.setModelType(ModelType.PM_SINGLE.getValue());
+                } else {
+                    model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
+                }
+                model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
+
+                modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
+                log.info("created model {}", model.getId());
+                break;
             }
-
-            List<RewardVariable> rewardVariables = new ArrayList<>();
-            List<Observation> observationList = new ArrayList<>();
-
-            Hyperparams alResult = result.getParams();
-            rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
-            observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
-            model.setNumberOfObservations(alResult.getNumObservation());
-            model.setRewardVariablesCount(rewardVariables.size());
-            model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
-            model.setNumberOfAgents(alResult.getNumberOfAgents());
-
-            modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
-            log.info("created model {}", model.getId());
-            RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
-            rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
-            observationDAO.updateModelObservations(model.getId(), observationList);
-        } else {
-            model.setFile(modelBytes.getBytes());
-            String reqId = "project_" + model.getProjectId();
-            File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
-            FileUtils.writeByteArrayToFile(tempFile, model.getFile());
-            HyperparametersDTO analysisResult =
-                projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
-            if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
-                throw new ModelCheckException(analysisResult.getFailedSteps());
+            default: {
+                throw new IllegalArgumentException("Unknown type " + type);
             }
-            model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
-            model.setPackageName(environment);
-
-            modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
-            log.info("created model {}", model.getId());
         }
 
         Experiment experiment = modelService.resumeModelCreation(model, "");
+        if (deployPolicyServerOnSuccess && type == AnalyzeRequestDTO.ModelType.PYTHON) {
+            experimentDAO.setDeployPolicyOnSuccess(experiment.getId(), true);
+            experiment.setDeployPolicyOnSuccess(true);
+        }
         return experiment;
     }
 

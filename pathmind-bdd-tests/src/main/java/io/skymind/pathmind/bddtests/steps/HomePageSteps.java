@@ -166,4 +166,34 @@ public class HomePageSteps {
     public void clickUserMenuBtn(String btn) {
         homePage.clickUserMenuBtn(btn);
     }
+
+    @Step
+    public void clickRequestOnboardingServiceBtn() {
+        homePage.clickRequestOnboardingServiceBtn();
+    }
+
+    @Step
+    public void clickRequestOnboardingServiceBackBtn() {
+        homePage.clickRequestOnboardingServiceBackBtn();
+    }
+
+    @Step
+    public void checkRequestOnboardingServicePage() {
+        homePage.checkRequestOnboardingServicePage();
+    }
+
+    @Step
+    public void fillRequestOnboardingServicePaymentForm() {
+        homePage.fillRequestOnboardingServicePaymentForm();
+    }
+
+    @Step
+    public void clickRequestOnboardingServicePayBtn() {
+        homePage.clickRequestOnboardingServicePayBtn();
+    }
+
+    @Step
+    public void checkOnboardingSuccessPage() {
+        homePage.checkOnboardingSuccessPage();
+    }
 }

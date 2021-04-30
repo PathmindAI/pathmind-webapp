@@ -207,7 +207,7 @@ background-color: var(--pm-grey-color-light);
 }
 
 #nav-main-links a:hover {
-    color: var(--lumo-primary-color);
+    color: var(--pm-primary-color);
     text-decoration: none;
 }
 
@@ -232,11 +232,12 @@ background-color: var(--pm-grey-color-light);
     content: '';
     display: block;
     position: absolute;
-    width: 100%;
+    width: 0;
     height: 3px;
-    left: -100%;
+    left: 50%;
     bottom: -1px;
     background-color: var(--lumo-primary-color);
+    transform: translateX(-50%);
     transition: all 0.2s;
 }
 
@@ -244,13 +245,9 @@ background-color: var(--pm-grey-color-light);
     color: var(--lumo-primary-color);
 }
 
+#nav-main-links a:not(.navbar-logo):hover::after,
 #nav-main-links a:not(.navbar-logo)[highlight]::after {
-    left: 0;
-}
-
-#nav-main-links a:not(.navbar-logo):hover::after {
-    background-color: var(--lumo-primary-color-50pct);
-    left: 0;
+    width: 100%;
 }
 
 .nav-account-links {
@@ -371,11 +368,6 @@ background-color: var(--pm-grey-color-light);
     margin: 0 0 0 var(--lumo-space-xxl);
 }
 
-.projects-view .demo-dialog {
-    width: 40rem;
-    height: 40rem;
-}
-
 .demo-view-content + vaadin-button {
     position: absolute;
     top: var(--lumo-space-m);
@@ -386,8 +378,16 @@ vaadin-dialog-overlay .demo-view-content {
     padding: var(--lumo-space-xs);
 }
 
-.projects-view .project-name-column {
-    align-items: center;
+.projects-view vaadin-button[theme~="primary"] {
+    width: 15.8rem;
+}
+
+.projects-view .page-content-header {
+    margin-bottom: 0;
+}
+
+.projects-view .content-wrapper {
+    flex: 1 0 auto;
 }
 
 .projects-view .project-name-column vaadin-button {
@@ -413,7 +413,11 @@ vaadin-dialog-overlay .demo-view-content {
     flex: 1 0 auto;
 }
 
-.projects-view .view-section,
+.projects-view .view-section {
+    padding: var(--lumo-space-m) var(--lumo-space-l) 0;
+    border-radius: 0;
+}
+
 .model-view .view-section {
     padding: var(--lumo-space-m) var(--lumo-space-l);
     border-radius: 0;
@@ -437,10 +441,6 @@ vaadin-dialog-overlay .demo-view-content {
 .project-view .section-subtitle-label,
 .search-results-view .section-subtitle-label {
     color: var(--lumo-secondary-text-color);
-}
-
-.no-shrink {
-    flex-shrink: 0;
 }
 
 .default-view.upload-model-view {
@@ -722,9 +722,20 @@ h4 {
 }
 
 .projects-view .page-content > .demo-view-content {
-    padding: var(--lumo-space-m);
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
-.demo-view-content h2 {
-    text-align: center;
+.demo-view-content.is-vertical {
+    width: auto !important;
+    padding: 0;
+}
+
+.demo-view-content h3 {
+    font-weight: normal;
+    margin-top: 0;
+}
+
+.demo-view-content.is-vertical h3 {
+    font-size: var(--lumo-font-size-m);
+    margin-top: 2.6rem;
 }

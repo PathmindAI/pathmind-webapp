@@ -33,21 +33,6 @@ public class PolicyUtils {
     private PolicyUtils() {
     }
 
-    public static RunStatus getRunStatus(Policy policy) {
-        if (policy.getRun().getRunTypeEnum() == RunType.DiscoveryRun && policy.getRun().getStatusEnum() == RunStatus.Running) {
-            return policy.getStoppedAt() == null ? RunStatus.Running : RunStatus.Completed;
-        } else {
-            return policy.getRun().getStatusEnum();
-        }
-    }
-
-    public static LocalDateTime getRunCompletedTime(Policy policy) {
-        if (RunStatus.Completed == getRunStatus(policy)) {
-            return policy.getStoppedAt();
-        }
-        return null;
-    }
-
     public static Double getLastScore(Policy policy) {
         if (policy == null || policy.getScores() == null || policy.getScores().isEmpty()) {
             return null;
@@ -62,35 +47,12 @@ public class PolicyUtils {
         return policy.getScores().get(policy.getScores().size() - 1).getIteration();
     }
 
-    public static final String getElapsedTime(Policy policy) {
-        return DateAndTimeUtils.formatDurationTime(RunUtils.getElapsedTime(policy.getRun()));
-    }
-
-    public static String parsePolicyName(String name) {
-        try {
-            return name.split("_")[2];
-        } catch (Exception e) {
-            log.debug(e.getMessage(), e);
-            return null;
-        }
-    }
-
-    public static List<Number> getMeanScores(Policy policy) {
-        return policy.getScores().stream()
-                .map(rewardScore -> rewardScore.getMean())
-                .collect(Collectors.toList());
-    }
-
     public static void loadPolicyDataModel(Policy policy, long policyId, Run run) {
         policy.setId(policyId);
         policy.setRun(run);
         policy.setExperiment(run.getExperiment());
         policy.setModel(run.getModel());
         policy.setProject(run.getProject());
-    }
-
-    public static List<Long> convertToPolicyIds(List<Policy> policies) {
-        return policies.stream().map(policy -> policy.getId()).collect(Collectors.toList());
     }
 
     public static String generatePolicyFileName(Policy policy) {

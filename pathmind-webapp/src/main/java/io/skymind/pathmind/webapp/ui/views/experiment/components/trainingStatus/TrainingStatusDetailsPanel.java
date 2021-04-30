@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -15,7 +16,6 @@ import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.ElapsedTimer;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
@@ -68,19 +68,19 @@ public class TrainingStatusDetailsPanel extends HorizontalLayout implements Expe
     }
 
     private void updateProgressRow() {
-        if (experiment.getTrainingStatusEnum().equals(Running)) {
+        if (RunStatus.isRunning(experiment.getTrainingStatusEnum())) {
             updateProgressBar(experiment);
-        } else if (experiment.getTrainingStatusEnum().equals(Completed)) {
-            getUISupplier.get().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
-                LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
-                final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
-                completedTimeLabel.setText(formattedTrainingCompletedTime);
-            }));
-            completedTimeLabel.setVisible(true);
-            trainingProgress.setVisible(false);
         } else {
             trainingProgress.setVisible(false);
             completedTimeLabel.setVisible(false);
+            getUISupplier.get().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZone -> {
+                LocalDateTime trainingCompletedTime = ExperimentUtils.getTrainingCompletedTime(experiment);
+                if (Objects.nonNull(trainingCompletedTime)) {
+                    completedTimeLabel.setVisible(true);
+                    final var formattedTrainingCompletedTime = DateAndTimeUtils.formatDateAndTimeShortFormatter(trainingCompletedTime, userTimeZone);
+                    completedTimeLabel.setText(formattedTrainingCompletedTime);
+                }
+            }));
         }
     }
 

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -82,6 +83,13 @@ public class ExperimentsNavBar extends VerticalLayout {
         return modelId;
     }
 
+    public void unpinExperiments() {
+        experimentsNavBarItems.stream()
+                .filter(experimentsNavBarItem -> experimentsNavBarItem.isCurrentComparison())
+                .findFirst()
+                .ifPresent(item -> item.setIsCurrentComparison(false));
+    }
+
     public void updateExperiment(Experiment experiment) {
         if (experiment.isArchived()) {
             removeExperiment(experiment);
@@ -138,7 +146,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         rowsWrapper.removeAll();
         experimentsNavBarItems.clear();
 
-        experiments = experimentDAO.getExperimentsForModel(modelId).stream()
+        experiments = experimentDAO.getExperimentsForModel(modelId, false).stream()
                 .filter(exp -> !exp.isArchived()).collect(Collectors.toList());
 
         experiments.stream()
@@ -166,7 +174,7 @@ public class ExperimentsNavBar extends VerticalLayout {
         setVisible(!newCurrentExperiment.isArchived());
 
         // There's no need processing any further if archived as the navbar is not visible.
-        if(newCurrentExperiment.isArchived()) {
+        if (newCurrentExperiment.isArchived()) {
             return;
         }
 
