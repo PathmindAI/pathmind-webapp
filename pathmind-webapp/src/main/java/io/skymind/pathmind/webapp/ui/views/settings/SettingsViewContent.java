@@ -59,6 +59,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("maxMemoryCB")
     private ComboBox<String> maxMemory;
 
+    @Id("freezingCB")
+    private ComboBox<String> freezing;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -83,6 +86,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
             env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
             env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+            env.setFreezing(Boolean.valueOf(freezing.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -157,6 +161,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setLabel("Max memory size in MB");
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
+
+        // init freezing
+        List<String> freezings = List.of("TRUE", "FALSE");
+
+        freezing.setItems(freezings);
+        freezing.setLabel("Enable Freezing");
+        freezing.setPlaceholder(String.valueOf(env.isFreezing()));
+        freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
     }
 
     public interface Model extends TemplateModel {
