@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.icon.Icon;
@@ -33,7 +34,10 @@ public class ExperimentGrid extends Grid<Experiment> {
 
     private Map<String, Column> columnList = new LinkedHashMap<>();
 
-    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
+    private Command afterAddOrShowAdditionalColumn = () -> {};
+
+    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables, Command afterAddOrShowAdditionalColumn) {
+        this.afterAddOrShowAdditionalColumn = afterAddOrShowAdditionalColumn;
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
         }))
@@ -167,6 +171,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         } else {
             additionalColumnList.get(rewardVariableName).setVisible(true);
         }
+        afterAddOrShowAdditionalColumn.execute();
     }
 
 }

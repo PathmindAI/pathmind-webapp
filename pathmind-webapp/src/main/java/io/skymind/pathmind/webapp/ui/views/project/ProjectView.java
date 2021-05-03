@@ -3,7 +3,9 @@ package io.skymind.pathmind.webapp.ui.views.project;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -137,7 +139,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
-        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables, afterAddOrShowAdditionalColumn());
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
@@ -225,6 +227,16 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             }
         });
         return multiSelectGroup;
+    }
+
+    private Command afterAddOrShowAdditionalColumn() {
+        return () -> {
+            getElement().executeJs("window.localStorage.setItem($0, $1);", projectId+"_"+modelId+"_additional_columns", 
+                experimentGrid.getAdditionalColumnList().keyset().stream()
+                    .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
+                    .collect(Collectors.toList())
+                    .toString());
+        };
     }
 
     private NotesField createNotesField() {
@@ -415,6 +427,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
+        getElement().executeJs("window.localStorage.setItem($0, $1);", projectId+"_"+modelId+"_columns", experimentGrid.getColumnList().keySet().toString());
     }
 
     @Override
