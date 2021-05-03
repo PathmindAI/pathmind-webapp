@@ -24,6 +24,7 @@ import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
@@ -42,9 +43,9 @@ public class ExperimentDAO {
     private final DSLContext ctx;
     protected final String statement;
 
-    ExperimentDAO(DSLContext ctx, @Value("classpath:sql/best-policy.sql") Resource resourceFile) throws IOException {
+    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile) throws IOException {
         this.ctx = ctx;
-        this.statement = FileUtils.readFileToString(resourceFile.getFile(), Charset.defaultCharset());
+        this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
     }
 
     public Map<Long, Long> bestPoliciesForExperiment(long modelId) {

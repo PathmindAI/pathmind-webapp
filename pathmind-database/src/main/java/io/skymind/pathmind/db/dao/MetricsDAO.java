@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,8 +24,8 @@ public class MetricsDAO {
                       @Value("classpath:sql/last-iteration-metrics.sql") Resource metricsLastIteration,
                       @Value("classpath:sql/raw_metrics-avg-variance.sql") Resource rawMetricsAvgVariance) throws IOException {
         this.ctx = ctx;
-        this.metricsLastIterSql = FileUtils.readFileToString(metricsLastIteration.getFile(), Charset.defaultCharset());
-        this.rawMetricsAvgVariance = FileUtils.readFileToString(rawMetricsAvgVariance.getFile(), Charset.defaultCharset());
+        this.metricsLastIterSql = String.join(" ", IOUtils.readLines(metricsLastIteration.getInputStream(), Charset.defaultCharset()));
+        this.rawMetricsAvgVariance = String.join(" ", IOUtils.readLines(rawMetricsAvgVariance.getInputStream(), Charset.defaultCharset()));
     }
 
     public List<Double> getLastIterationMetricsMeanForPolicy(long id) {
