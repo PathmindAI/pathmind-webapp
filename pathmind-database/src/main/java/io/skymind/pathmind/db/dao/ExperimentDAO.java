@@ -25,6 +25,7 @@ import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
@@ -50,12 +51,13 @@ public class ExperimentDAO {
 
     public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
         return ctx.fetchStream(statement, modelId)
+                .filter(Objects::nonNull)
                 .map(r -> Pair.of(
                         r.get("experiment_id", Long.class),
                         r.get("policy_id", Long.class)
                         )
                 )
-                .filter(p -> Objects.nonNull(p.getKey()))
+                .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
