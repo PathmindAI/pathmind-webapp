@@ -33,11 +33,11 @@ public class ProjectService {
 
         return experiments.parallelStream().peek(experiment -> {
             final Long policyId = bestPoliciesId.get(experiment.getId());
+            experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experiment.getId()));
             if (policyId != null) {
                 Optional<Policy> bestPolicy = policyDAO.getPolicyIfAllowed(policyId, userId);
                 bestPolicy.ifPresent(bp -> {
                     experiment.setBestPolicy(bp);
-                    experiment.setSelectedObservations(observationDAO.getObservationsForExperiment(experiment.getId()));
 
                     bp.setSimulationMetrics(metricsDAO.getLastIterationMetricsMeanForPolicy(policyId));
 
