@@ -48,6 +48,7 @@ import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.LocalstorageHelper;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -89,6 +90,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private RewardVariableDAO rewardVariableDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
+    @Autowired
+    private LocalstorageHelper localstorageHelper;
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Autowired
@@ -231,8 +234,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private Command afterAddOrShowAdditionalColumn() {
         return () -> {
-            getElement().executeJs("window.localStorage.setItem($0, $1);", projectId+"_"+modelId+"_additional_columns", 
-                experimentGrid.getAdditionalColumnList().keyset().stream()
+            localstorageHelper.setItemInObject(projectId+"_"+modelId, "_additional_columns",
+                experimentGrid.getAdditionalColumnList().keySet().stream()
                     .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
                     .collect(Collectors.toList())
                     .toString());
