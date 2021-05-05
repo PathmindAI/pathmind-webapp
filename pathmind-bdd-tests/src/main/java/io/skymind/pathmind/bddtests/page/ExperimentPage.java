@@ -386,4 +386,14 @@ public class ExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//floating-close-button")).click();
         assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
     }
+
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        waitABit(8000);
+        WebElement btnShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']")));
+        if (!shown){
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is("true"));
+        }else {
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is(null));
+        }
+    }
 }
