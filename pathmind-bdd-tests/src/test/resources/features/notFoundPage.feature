@@ -15,12 +15,11 @@ Feature: Not found page
     When Open page experiment/wrongUrl
     Then Check that Oops page opened
 
-  Scenario: Check Oops page signing out btn
-    Given Login to the pathmind
+  Scenario: Check Oops page before and after sign in
+    Given Open pathmind page
     When Open page experiment/wrongUrl
-    When Click in 'signing out' button
     Then Check that login page opened
-    Given Login with default credentials
+    When Login with default credentials
     Then Check page url contains experiment/wrongUrl
 
   Scenario: Check Invalid data error page title and its error message
