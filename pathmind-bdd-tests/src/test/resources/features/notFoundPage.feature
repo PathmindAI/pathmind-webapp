@@ -21,6 +21,7 @@ Feature: Not found page
     Then Check that login page opened
     When Login with default credentials
     Then Check page url contains experiment/wrongUrl
+    Then Check that Oops page opened
 
   Scenario: Check Invalid data error page title and its error message
     Given Login to the pathmind
