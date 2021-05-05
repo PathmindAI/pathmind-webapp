@@ -259,4 +259,9 @@ public class ExperimentStepDefinitions {
     public void checkLearningProgressBlockHistogramXAxisIsShown() {
         experimentPageSteps.checkLearningProgressBlockHistogramXAxisIsShown();
     }
+
+    @Then("^Check experiment page start run btn is active '(.*)'$")
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPageSteps.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
 }

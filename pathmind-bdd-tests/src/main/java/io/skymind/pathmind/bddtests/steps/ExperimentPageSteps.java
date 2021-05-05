@@ -249,4 +249,9 @@ public class ExperimentPageSteps {
     public void checkLearningProgressBlockHistogramXAxisIsShown() {
         experimentPage.checkLearningProgressBlockHistogramXAxisIsShown();
     }
+
+    @Step
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPage.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
 }

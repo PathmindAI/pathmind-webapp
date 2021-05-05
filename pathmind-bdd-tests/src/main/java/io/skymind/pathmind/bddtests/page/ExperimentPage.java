@@ -393,4 +393,14 @@ public class ExperimentPage extends PageObject {
         WebElement chart = utils.expandRootElement(e.findElement(By.cssSelector("google-chart")));
         assertThat(chart.findElement(By.cssSelector("#chartdiv > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(1) > text")).getText(), is("Value"));
     }
+
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        waitABit(8000);
+        WebElement btnShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']")));
+        if (!shown){
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is("true"));
+        }else {
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is(null));
+        }
+    }
 }
