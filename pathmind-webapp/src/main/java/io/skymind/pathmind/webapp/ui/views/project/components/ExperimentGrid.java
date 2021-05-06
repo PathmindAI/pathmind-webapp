@@ -34,10 +34,7 @@ public class ExperimentGrid extends Grid<Experiment> {
 
     private Map<String, Column> columnList = new LinkedHashMap<>();
 
-    private Command afterAddOrShowAdditionalColumn = () -> {};
-
-    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables, Command afterAddOrShowAdditionalColumn) {
-        this.afterAddOrShowAdditionalColumn = afterAddOrShowAdditionalColumn;
+    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
         }))
@@ -171,7 +168,6 @@ public class ExperimentGrid extends Grid<Experiment> {
         } else {
             additionalColumnList.get(rewardVariableName).setVisible(true);
         }
-        afterAddOrShowAdditionalColumn.execute();
     }
 
 }

@@ -143,7 +143,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
-        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables, afterAddOrShowAdditionalColumn());
+        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
@@ -209,6 +209,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             if (!removedSelection.isEmpty()) {
                 experimentGridColumns.get(removedSelection).setVisible(false);
             }
+            afterHideOrShowColumn().execute();
         });
         return multiSelectGroup;
     }
@@ -228,13 +229,22 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             RewardVariable removedSelection = event.getRemovedSelection().stream().findFirst().orElse(null);
             if (removedSelection != null) {
                 experimentGridAdditionalColumns.get(removedSelection.getName()).setVisible(false);
-                afterAddOrShowAdditionalColumn().execute();
             }
+            afterHideOrShowAdditionalColumn().execute();
         });
         return multiSelectGroup;
     }
 
-    private Command afterAddOrShowAdditionalColumn() {
+    private Command afterHideOrShowColumn() {
+        return () -> {
+            List<String> columnList = experimentGrid.getColumnList().keySet().stream()
+                    .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
+                    .collect(Collectors.toList());
+            localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "columns", columnList);
+        };
+    }
+
+    private Command afterHideOrShowAdditionalColumn() {
         return () -> {
             List<String> additonalColumnList = experimentGrid.getAdditionalColumnList().keySet().stream()
                     .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
@@ -430,10 +440,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        List<String> columnList = new ArrayList<String>();
-        columnList.addAll(experimentGrid.getColumnList().keySet());
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
-        localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "columns", columnList);
+        afterHideOrShowColumn().execute();
     }
 
     @Override
