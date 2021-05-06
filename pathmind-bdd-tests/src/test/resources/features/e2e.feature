@@ -66,6 +66,7 @@ Feature: E2E
     Then Check learning progress block selected tab 'true' name is 'Histogram'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
     Then Check learning progress block selected tab 'false' name is 'Metrics'
+    Then Check learning progress block Histogram x axis is shown
     Then Check learning progress block histogram simulation metric is 'goalReached' and 'mean: 1.0⠀±⠀0.0'
     #    ------------------------
     #Check export policy
