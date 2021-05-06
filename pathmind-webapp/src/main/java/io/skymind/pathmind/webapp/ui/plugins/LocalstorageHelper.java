@@ -16,15 +16,18 @@ import elemental.json.JsonArray;
 @Tag("localstorage-helper")
 @JsModule("./src/plugins/localstorage-helper.js")
 public class LocalstorageHelper extends Component implements HasComponents {
-    public LocalstorageHelper() {
 
+    public LocalstorageHelper() {
     }
+
     public void setItem(String itemKey, String itemValue) {
         getElement().callJsFunction("setItem", itemKey, itemValue);
     }
+
     public void setItemInObject(String itemKey, String objectFieldKey, String objectFieldValue) {
         getElement().callJsFunction("setItemInObject", itemKey, objectFieldKey, objectFieldValue);
     }
+
     public void setArrayItemInObject(String itemKey, String objectFieldKey, List<String> objectFieldValue) {
         JsonArray objectFieldValueArray = Json.createArray();
         for (int i = 0; i < objectFieldValue.size(); i++) {
@@ -32,4 +35,13 @@ public class LocalstorageHelper extends Component implements HasComponents {
         }
         getElement().callJsFunction("setItemInObject", itemKey, objectFieldKey, objectFieldValueArray);
     }
+
+    public void setArrayItemInObjectOfObject(String itemKey, String objectFieldKey, String objectFieldInObjectKey, List<String> objectFieldInObjectValue) {
+        JsonArray objectFieldValueArray = Json.createArray();
+        for (int i = 0; i < objectFieldInObjectValue.size(); i++) {
+            objectFieldValueArray.set(i, objectFieldInObjectValue.get(i));
+        }
+        getElement().callJsFunction("setItemInObjectOfObject", itemKey, objectFieldKey, objectFieldInObjectKey, objectFieldValueArray);
+    }
+
 }

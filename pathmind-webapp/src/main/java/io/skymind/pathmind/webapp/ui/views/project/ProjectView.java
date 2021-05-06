@@ -240,7 +240,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             List<String> columnList = experimentGrid.getColumnList().keySet().stream()
                     .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
                     .collect(Collectors.toList());
-            localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "columns", columnList);
+            localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "columns", columnList);
         };
     }
 
@@ -249,7 +249,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             List<String> additonalColumnList = experimentGrid.getAdditionalColumnList().keySet().stream()
                     .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
                     .collect(Collectors.toList());
-            localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "additional_columns", additonalColumnList);
+            localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "additional_columns", additonalColumnList);
         };
     }
 
