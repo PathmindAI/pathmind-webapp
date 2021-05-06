@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
@@ -23,8 +24,10 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,10 +47,12 @@ public class ExperimentDAO {
 
     private final DSLContext ctx;
     protected final String statement;
+    protected final MetricsDAO metricsDAO;
 
-    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile) throws IOException {
+    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile, MetricsDAO metricsDAO) throws IOException {
         this.ctx = ctx;
         this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
+        this.metricsDAO = metricsDAO;
     }
 
     public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
@@ -140,14 +145,31 @@ public class ExperimentDAO {
                 .descending(isDesc)
                 .build();
         List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
-        return setSelectedObservationsAndMetricsValues(experiments);
+        return setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
     }
 
-    private List<Experiment> setSelectedObservationsAndMetricsValues(List<Experiment> experiments) {
-        experiments.forEach(experiment -> {
+    private List<Experiment> setSelectedObservationsAndMetricsValues(DSLContext ctx, List<Experiment> experiments, Long modelId, Long userId) {
+        Map<Long, Long> bestPoliciesId = new ConcurrentHashMap<>(this.bestPoliciesForExperiment(modelId));
+        CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
+            final Long policyId = bestPoliciesId.get(experiment.getId());
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
-            updateExperimentInternalValues(experiment);
+            if (policyId != null) {
+                Optional<Policy> bestPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+                bestPolicy.ifPresent(bp -> {
+                    experiment.setBestPolicy(bp);
+
+                    bp.setSimulationMetrics(metricsDAO.getLastIterationMetricsMeanForPolicy(policyId));
+
+                    List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
+
+                    bp.setUncertainty(rawMetricsAvgVar.stream()
+                            .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
+                            .collect(Collectors.toList()));
+                });
+            }
         });
+
+
         return experiments;
     }
 

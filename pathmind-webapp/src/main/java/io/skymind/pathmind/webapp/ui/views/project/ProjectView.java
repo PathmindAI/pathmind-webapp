@@ -26,7 +26,6 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.project.ProjectService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
@@ -59,12 +58,14 @@ import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ExperimentGridDa
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
+@Slf4j
 @Route(value = Routes.PROJECT, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
     private static final int PROJECT_ID_SEGMENT = 0;
@@ -91,14 +92,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private ModelService modelService;
 
-    @Autowired
-    private ProjectService projectService;
-
     private long projectId;
     private Long modelId;
     private Project project;
     private List<Model> models;
-    private List<Experiment> experiments;
+//    private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
     private boolean isPythonModel = false;
@@ -277,7 +275,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     public List<Experiment> getExperiments() {
-        return experiments;
+        log.warn("TEMPORARILY DISABLED");
+        return List.of();
+//        return experiments;
     }
 
     public ExperimentGrid getExperimentGrid() {
@@ -298,7 +298,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void loadModelData() {
         modelId = selectedModel != null ? selectedModel.getId() : null;
-        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
+//        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 
