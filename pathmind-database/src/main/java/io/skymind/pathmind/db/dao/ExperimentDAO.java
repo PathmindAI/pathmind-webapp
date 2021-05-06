@@ -1,10 +1,14 @@
 package io.skymind.pathmind.db.dao;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
@@ -20,20 +24,42 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
 import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 @Repository
+@Slf4j
 public class ExperimentDAO {
-    private final DSLContext ctx;
 
-    ExperimentDAO(DSLContext ctx) {
+    private final DSLContext ctx;
+    protected final String statement;
+
+    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile) throws IOException {
         this.ctx = ctx;
+        this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
+    }
+
+    public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
+        return ctx.fetchStream(statement, modelId)
+                .filter(Objects::nonNull)
+                .map(r -> Pair.of(
+                        r.get("experiment_id", Long.class),
+                        r.get("policy_id", Long.class)
+                        )
+                )
+                .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     public Optional<Experiment> getExperiment(long experimentId) {
@@ -57,7 +83,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
         }
         return Optional.ofNullable(experiment);
@@ -65,7 +91,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
             updateExperimentInternalValues(experiment);
             setupDefaultRewardFunction(experiment);
@@ -78,7 +104,7 @@ public class ExperimentDAO {
         // of saving and so on when loading a new experiment. Ideally this should be done on experiment creation
         // however older experiments may still require this logic. There is also a ticket to add a default reward
         // function on creation at: https://github.com/SkymindIO/pathmind-webapp/issues/2754
-        if(StringUtils.isEmpty(experiment.getRewardFunction())) {
+        if (StringUtils.isEmpty(experiment.getRewardFunction())) {
             experiment.setRewardFunction(ExperimentUtils.generateRewardFunction(experiment));
             ExperimentRepository.updateRewardFunction(ctx, experiment);
         }
@@ -90,16 +116,6 @@ public class ExperimentDAO {
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
-    }
-
-    /**
-     * This is for Project/Model page favorite star subscriber to check for the right experiment to update star status
-     * That's why it doesn't need the observations & metrics
-     * @param modelId
-     * @return experiments
-     */
-    public List<Experiment> getExperimentsForModel(long modelId) {
-        return getExperimentsForModel(modelId, true);
     }
 
     /**

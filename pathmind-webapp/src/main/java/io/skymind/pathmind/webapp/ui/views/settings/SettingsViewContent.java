@@ -147,7 +147,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         helperVersion.setValue(env.getPathmindHelperVersion().toString());
 
         // init number of samples
-        List<String> numSamples = List.of("1", "2", "3", "4");
+        List<String> numSamples = List.of("1", "2", "3", "4", "8");
 
         numSample.setItems(numSamples);
         numSample.setLabel("Number of PBT samples");

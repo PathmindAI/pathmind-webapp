@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.MetricsRaw;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
@@ -13,9 +14,11 @@ import static io.skymind.pathmind.db.jooq.Tables.METRICS;
 import static io.skymind.pathmind.db.jooq.Tables.METRICS_RAW;
 import static org.jooq.impl.DSL.max;
 
+@Slf4j
 public class MetricsRawRepository {
 
     protected static Map<Long, Integer> getMaxMetricsRawIterationForPolicies(DSLContext ctx, List<Long> policyIds) {
+        log.trace("getMaxMetricsRawIterationForPolicies {}", policyIds);
         return ctx.select(METRICS_RAW.POLICY_ID, max(METRICS_RAW.ITERATION))
             .from(METRICS_RAW)
             .where(METRICS_RAW.POLICY_ID.in(policyIds))
@@ -23,10 +26,8 @@ public class MetricsRawRepository {
             .fetchMap(METRICS_RAW.POLICY_ID, max(METRICS_RAW.ITERATION));
     }
 
-    /**
-     * Instead of calling getMetricsRawForPolicies() with a single policy I've re-written the method as it's faster with JOOQ.
-     */
     public static List<MetricsRaw> getMetricsRawForPolicy(DSLContext ctx, long policyId) {
+        log.trace("getMetricsRawForPolicy {}", policyId);
         return ctx.select(METRICS_RAW.asterisk())
                 .from(METRICS_RAW)
                 .where(METRICS_RAW.POLICY_ID.eq(policyId))
@@ -45,6 +46,7 @@ public class MetricsRawRepository {
      * we have to rely on batching.
      */
     protected static void insertMetricsRaw(DSLContext ctx, Map<Long, List<MetricsRaw>> metricsRawByPolicyId) {
+        log.trace("insertMetricsRaw");
         List<Query> insertQueries = new ArrayList<>();
         metricsRawByPolicyId.forEach((policyId, metricsRawList) ->
             metricsRawList.stream().forEach(metricsRaw -> {
@@ -67,6 +69,7 @@ public class MetricsRawRepository {
 
 
     public static Map<Long,List<MetricsRaw>> getMetricsRawForPolicies(DSLContext ctx, List<Long> policyIds) {
+        log.trace("getMetricsRawForPolicies {}", policyIds);
         return ctx.select(METRICS_RAW.asterisk())
             .from(METRICS_RAW)
             .where(METRICS_RAW.POLICY_ID.in(policyIds))

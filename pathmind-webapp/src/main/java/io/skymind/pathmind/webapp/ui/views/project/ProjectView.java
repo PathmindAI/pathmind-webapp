@@ -26,6 +26,7 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.project.ProjectService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
@@ -89,6 +90,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ModelCheckerService modelCheckerService;
     @Autowired
     private ModelService modelService;
+
+    @Autowired
+    private ProjectService projectService;
 
     private long projectId;
     private Long modelId;
@@ -294,7 +298,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void loadModelData() {
         modelId = selectedModel != null ? selectedModel.getId() : null;
-        experiments = experimentDAO.getExperimentsForModel(modelId);
+        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 

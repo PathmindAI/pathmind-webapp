@@ -157,6 +157,7 @@ def process_message(message):
         '8cpu_16gb', \
         '8cpu_32gb', \
         '36cpu_72gb', \
+        '72cpu_144gb', \
         '36cpu_72gb_mockup', \
         ]
     app_logger.info('Received {message}'.format(message=message['Body']))
