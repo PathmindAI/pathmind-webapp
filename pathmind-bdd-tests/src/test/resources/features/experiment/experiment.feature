@@ -154,3 +154,31 @@ Feature: Experiment page
     Then Input from file reward function CoffeeShop/CoffeeShopRewardFunctionCommentTest.txt
     Then Click project start run button
     Then Check reward variable is commented '//reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2'
+
+  Scenario: Check commented reward function start training btn
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Input from file reward function CoffeeShop/CoffeeShopRewardFunctionCommentTestDisabledBtn.txt
+    Then Check experiment page start run btn is active 'false'
+
+  Scenario: Check commented reward function start training btn with reward //
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project AutotestProject and click Create project button
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    Then Input reward function //
+    Then Check experiment page start run btn is active 'false'

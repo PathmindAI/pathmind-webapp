@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.RewardScore;
+import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 
@@ -17,6 +18,7 @@ import static io.skymind.pathmind.db.jooq.Tables.RUN;
 import static org.jooq.impl.DSL.count;
 import static org.jooq.impl.DSL.max;
 
+@Slf4j
 class RewardScoreRepository {
     protected static List<RewardScore> getRewardScoresForPolicy(DSLContext ctx, long policyId) {
         return ctx.select(REWARD_SCORE.MEAN, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT)
@@ -30,6 +32,7 @@ class RewardScoreRepository {
     }
 
     protected static Map<Long, List<RewardScore>> getRewardScoresForPolicies(DSLContext ctx, List<Long> policyIds) {
+        log.trace("getRewardScoresForPolicies {}", policyIds);
         return ctx.select(REWARD_SCORE.MEAN, REWARD_SCORE.ITERATION, REWARD_SCORE.EPISODE_COUNT, REWARD_SCORE.POLICY_ID)
                 .from(REWARD_SCORE)
                 .where(REWARD_SCORE.POLICY_ID.in(policyIds))

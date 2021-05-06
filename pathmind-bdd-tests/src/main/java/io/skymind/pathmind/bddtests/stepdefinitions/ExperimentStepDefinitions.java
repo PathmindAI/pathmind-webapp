@@ -254,4 +254,9 @@ public class ExperimentStepDefinitions {
     public void experimentPageClickComparisonFloatingCloseBtn() {
         experimentPageSteps.experimentPageClickComparisonFloatingCloseBtn();
     }
+
+    @Then("^Check experiment page start run btn is active '(.*)'$")
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPageSteps.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
 }
