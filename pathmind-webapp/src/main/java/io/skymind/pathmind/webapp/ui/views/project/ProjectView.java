@@ -1,5 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -227,6 +228,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             RewardVariable removedSelection = event.getRemovedSelection().stream().findFirst().orElse(null);
             if (removedSelection != null) {
                 experimentGridAdditionalColumns.get(removedSelection.getName()).setVisible(false);
+                afterAddOrShowAdditionalColumn().execute();
             }
         });
         return multiSelectGroup;
@@ -234,11 +236,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private Command afterAddOrShowAdditionalColumn() {
         return () -> {
-            localstorageHelper.setItemInObject(projectId+"_"+modelId, "_additional_columns",
-                experimentGrid.getAdditionalColumnList().keySet().stream()
+            List<String> additonalColumnList = experimentGrid.getAdditionalColumnList().keySet().stream()
                     .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
-                    .collect(Collectors.toList())
-                    .toString());
+                    .collect(Collectors.toList());
+            localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "additional_columns", additonalColumnList);
         };
     }
 
@@ -429,8 +430,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
+        List<String> columnList = new ArrayList<String>();
+        columnList.addAll(experimentGrid.getColumnList().keySet());
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
-        localstorageHelper.setItemInObject(projectId+"_"+modelId, "columns", experimentGrid.getColumnList().keySet().toString());
+        localstorageHelper.setArrayItemInObject(projectId+"_"+modelId, "columns", columnList);
     }
 
     @Override
