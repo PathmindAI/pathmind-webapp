@@ -430,7 +430,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
-        getElement().executeJs("window.localStorage.setItem($0, $1);", projectId+"_"+modelId+"_columns", experimentGrid.getColumnList().keySet().toString());
+        localstorageHelper.setItemInObject(projectId+"_"+modelId, "columns", experimentGrid.getColumnList().keySet().toString());
     }
 
     @Override

@@ -16,7 +16,7 @@ class LocalstorageHelper extends LitElement {
     window.localStorage.setItem(itemKey, JSON.stringify(currentObject));
   }
   getItemAsObject(itemKey) {
-    return JSON.parse(window.localStorage.getItem(itemKey));
+    return JSON.parse(window.localStorage.getItem(itemKey)) || {};
   }
 }
 
