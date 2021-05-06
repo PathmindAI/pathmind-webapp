@@ -1,14 +1,12 @@
 package io.skymind.pathmind.db.dao;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import io.skymind.pathmind.db.jooq.tables.Experiment;
 import io.skymind.pathmind.db.utils.JooqUtils;
 import io.skymind.pathmind.shared.data.Metrics;
-import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 

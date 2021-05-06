@@ -1,6 +1,5 @@
 package io.skymind.pathmind.shared.utils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +11,6 @@ import java.util.stream.Collectors;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
@@ -72,7 +70,10 @@ public class PolicyUtils {
         }
         return policies.stream()
                 .filter(p -> p.getRun().getStatusEnum().equals(RunStatus.Completed) ? p.hasFile() : true)
-                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+                .filter(p -> {
+                    Double lastScore = PolicyUtils.getLastScore(p);
+                    return lastScore != null && !Double.isNaN(lastScore);
+                })
                 .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration));
     }
 
@@ -95,8 +96,7 @@ public class PolicyUtils {
             // The Simulation Metric value shown is the mean value of the metric in the last iteration
             // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
             int lastIteration = Collections.max(iterAndMetrics.keySet());
-            iterAndMetrics.get(lastIteration).entrySet().stream()
-                    .forEach(e -> policy.getSimulationMetrics().add(e.getKey(), e.getValue()));
+            iterAndMetrics.get(lastIteration).forEach((key, value) -> policy.getSimulationMetrics().add(key, value));
 
             // (k:index, v:(k:iteration, v:averageMeanValue))
             Map<Integer, Map<Integer, Double>> sparkLineMap = metricsList.stream()
@@ -118,7 +118,7 @@ public class PolicyUtils {
                     );
 
             policy.setUncertainty(uncertaintyMap.values().stream()
-                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+                    .map(PathmindNumberUtils::calculateUncertainty)
                     .collect(Collectors.toList()));
         }
     }

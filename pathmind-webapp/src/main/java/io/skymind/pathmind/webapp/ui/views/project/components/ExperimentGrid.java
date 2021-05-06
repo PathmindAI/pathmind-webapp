@@ -16,6 +16,7 @@ import com.vaadin.flow.data.renderer.TemplateRenderer;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
@@ -24,6 +25,7 @@ import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
@@ -64,8 +66,8 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true)
                 .setSortable(true);
-        Grid.Column<Experiment> selectedObsColumn = addColumn(experiment -> 
-                String.join(", ", experiment.getSelectedObservations().stream().map(obs -> obs.getVariable()).collect(Collectors.toList())))
+        Grid.Column<Experiment> selectedObsColumn = addColumn(experiment ->
+                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream().map(Observation::getVariable).collect(Collectors.joining(", ")))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)
@@ -150,8 +152,8 @@ public class ExperimentGrid extends Grid<Experiment> {
                         return "—";
                     })
                     .setComparator(Comparator.comparingDouble(experiment -> {
-                        if (((Experiment) experiment).getBestPolicy() != null) {
-                            Policy bestPolicy = ((Experiment) experiment).getBestPolicy();
+                        if (experiment.getBestPolicy() != null) {
+                            Policy bestPolicy = experiment.getBestPolicy();
                             return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
                                     ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
                                     : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
