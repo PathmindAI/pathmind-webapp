@@ -43,7 +43,6 @@ Feature: E2E
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp
-    Then Check experiment page serve policy is shown 'false'
     #    ------------------------
     #Check Learning Progress block
     Then Check learning progress block title 'Learning Progress'
