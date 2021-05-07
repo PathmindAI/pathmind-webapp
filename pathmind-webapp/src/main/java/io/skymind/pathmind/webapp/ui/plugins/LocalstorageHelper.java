@@ -10,6 +10,7 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.spring.annotation.UIScope;
 import elemental.json.Json;
 import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 
 @SpringComponent
 @UIScope
@@ -18,6 +19,14 @@ import elemental.json.JsonArray;
 public class LocalstorageHelper extends Component implements HasComponents {
 
     public LocalstorageHelper() {
+    }
+
+    public JsonObject getObject(String itemKey) {
+        getElement().executeJs("return this.getItemAsObject('"+itemKey+"')")
+                .then(JsonObject.class, result -> {
+                    System.out.println(result);
+                });
+        return Json.createObject();
     }
 
     public void setItem(String itemKey, String itemValue) {

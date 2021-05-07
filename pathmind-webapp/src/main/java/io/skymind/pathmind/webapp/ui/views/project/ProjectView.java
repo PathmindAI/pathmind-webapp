@@ -245,6 +245,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         };
     }
 
+    private void getAndSetColumns() {
+        System.out.println(localstorageHelper.getObject("project_model"));
+    }
+
     private NotesField createNotesField() {
         return new NotesField(
                 "Project Notes",
@@ -433,6 +437,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
+        getAndSetColumns();
         afterHideOrShowColumn().execute();
     }
 
