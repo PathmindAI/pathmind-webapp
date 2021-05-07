@@ -211,7 +211,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         multiSelectGroup.addSelectionListener(event -> {
             event.getAddedSelection().stream().findFirst().ifPresent(experimentGrid::addAdditionalColumn);
-            event.getRemovedSelection().stream().findFirst().ifPresent(experimentGrid::removeAdditionalColumn);
+            event.getRemovedSelection().stream().forEach(experimentGrid::removeAdditionalColumn);
         });
         return multiSelectGroup;
     }
