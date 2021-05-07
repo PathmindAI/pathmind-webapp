@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.grid.Grid;
@@ -131,11 +132,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         return columnList;
     }
 
-    public Map<String, Column> getAdditionalColumnList() {
-        return additionalColumnList;
-    }
-
-    public void addOrShowColumn(RewardVariable rewardVar) {
+    public void addAdditionalColumn(RewardVariable rewardVar) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
         if (additionalColumnList.get(rewardVariableName) == null) {
@@ -164,9 +161,14 @@ public class ExperimentGrid extends Grid<Experiment> {
                     .setResizable(true)
                     .setSortable(false);
             additionalColumnList.put(rewardVariableName, newColumn);
-        } else {
-            additionalColumnList.get(rewardVariableName).setVisible(true);
         }
+    }
+
+    public void removeAdditionalColumn(RewardVariable rewardVar) {
+        Optional.ofNullable(rewardVar)
+                .map(RewardVariable::getName)
+                .map(additionalColumnList::remove)
+                .ifPresent(this::removeColumn);
     }
 
 }

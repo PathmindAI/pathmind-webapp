@@ -32,14 +32,22 @@ public class BashScriptCreatorUtil {
         assert selectedObservations != null && !selectedObservations.isEmpty();
         List<String> selectedObservationsVars = new ArrayList<>();
         selectedObservations.stream().forEach(o -> {
-            if (o.getDataTypeEnum() == ObservationDataType.BOOLEAN) {
-                selectedObservationsVars.add(String.format("%s ? 1.0 : 0.0", o.getVariable()));
-            } else if (ObservationDataType.isArray(o.getDataTypeEnum())) {
-                for (int i = 0; i < o.getMaxItems(); i++) {
-                    selectedObservationsVars.add(String.format("%s[%s]", o.getVariable(), i));
+            if (ObservationDataType.isArray(o.getDataTypeEnum())) {
+                if (o.getDataTypeEnum() == ObservationDataType.BOOLEAN_ARRAY) {
+                    for (int i = 0; i < o.getMaxItems(); i++) {
+                        selectedObservationsVars.add(String.format("%s[%s] ? 1.0 : 0.0", o.getVariable(), i));
+                    }
+                } else {
+                    for (int i = 0; i < o.getMaxItems(); i++) {
+                        selectedObservationsVars.add(String.format("%s[%s]", o.getVariable(), i));
+                    }
                 }
             } else {
-                selectedObservationsVars.add(o.getVariable());
+                if (o.getDataTypeEnum() == ObservationDataType.BOOLEAN) {
+                    selectedObservationsVars.add(String.format("%s ? 1.0 : 0.0", o.getVariable()));
+                } else {
+                    selectedObservationsVars.add(o.getVariable());
+                }
             }
         });
 
