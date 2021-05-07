@@ -43,7 +43,6 @@ Feature: E2E
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp
-    Then Check experiment page serve policy is shown 'false'
     #    ------------------------
     #Check Learning Progress block
     Then Check learning progress block title 'Learning Progress'
@@ -66,7 +65,6 @@ Feature: E2E
     Then Check learning progress block selected tab 'true' name is 'Histogram'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
     Then Check learning progress block selected tab 'false' name is 'Metrics'
-    Then Check learning progress block Histogram x axis is shown
     Then Check learning progress block histogram simulation metric is 'goalReached' and 'mean: 1.0⠀±⠀0.0'
     #    ------------------------
     #Check export policy
