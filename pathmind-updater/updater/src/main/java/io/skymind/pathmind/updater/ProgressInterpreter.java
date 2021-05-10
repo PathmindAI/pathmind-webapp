@@ -26,6 +26,9 @@ import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.convertValidD
 
 @Slf4j
 public class ProgressInterpreter {
+
+    public static final int MAX_COLUMNS = Integer.MAX_VALUE;
+
     enum RAY_PROGRESS {
         EPISODE_REWARD_MAX("episode_reward_max"),
         EPISODE_REWARD_MIN("episode_reward_min"),
@@ -131,7 +134,7 @@ public class ProgressInterpreter {
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields(RAY_PROGRESS.scoreColumns());
         settings.getFormat().setLineSeparator("\n");
-        settings.setMaxColumns(4096);
+        settings.setMaxColumns(MAX_COLUMNS);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -160,7 +163,7 @@ public class ProgressInterpreter {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields((RAY_PROGRESS.metricsColumns(numReward, numAgents)));
-        settings.setMaxColumns(4096);
+        settings.setMaxColumns(MAX_COLUMNS);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
@@ -201,7 +204,7 @@ public class ProgressInterpreter {
 //        settings.setMaxCharsPerColumn(-1);
         settings.setMaxCharsPerColumn(327840);
         settings.selectFields((RAY_PROGRESS.metricsRawColumns()));
-        settings.setMaxColumns(4096);
+        settings.setMaxColumns(MAX_COLUMNS);
 
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = parser.parseAllRecords(new ByteArrayInputStream(entry.getValue().getBytes()));
