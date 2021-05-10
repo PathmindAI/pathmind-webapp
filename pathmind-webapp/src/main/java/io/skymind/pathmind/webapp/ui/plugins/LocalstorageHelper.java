@@ -1,6 +1,9 @@
 package io.skymind.pathmind.webapp.ui.plugins;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -21,12 +24,9 @@ public class LocalstorageHelper extends Component implements HasComponents {
     public LocalstorageHelper() {
     }
 
-    public JsonObject getObject(String itemKey) {
+    public void getObject(String itemKey, Consumer<JsonObject> resultHandler) {
         getElement().executeJs("return this.getItemAsObject('"+itemKey+"')")
-                .then(JsonObject.class, result -> {
-                    System.out.println(result);
-                });
-        return Json.createObject();
+                .then(JsonObject.class, result -> resultHandler.accept(result));
     }
 
     public void setItem(String itemKey, String itemValue) {
@@ -49,6 +49,15 @@ public class LocalstorageHelper extends Component implements HasComponents {
         JsonArray objectFieldValueArray = Json.createArray();
         for (int i = 0; i < objectFieldInObjectValue.size(); i++) {
             objectFieldValueArray.set(i, objectFieldInObjectValue.get(i));
+        }
+        getElement().callJsFunction("setItemInObjectOfObject", itemKey, objectFieldKey, objectFieldInObjectKey, objectFieldValueArray);
+    }
+
+    public void setArrayItemInObjectOfObject(String itemKey, String objectFieldKey, String objectFieldInObjectKey, Set<String> objectFieldInObjectValue) {
+        JsonArray objectFieldValueArray = Json.createArray();
+        Iterator<String> itr = objectFieldInObjectValue.iterator();
+        for (int i = 0; i < objectFieldInObjectValue.size(); i++) {
+            objectFieldValueArray.set(i, itr.next());
         }
         getElement().callJsFunction("setItemInObjectOfObject", itemKey, objectFieldKey, objectFieldInObjectKey, objectFieldValueArray);
     }

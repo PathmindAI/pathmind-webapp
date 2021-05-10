@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +68,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
+
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 @Slf4j
@@ -106,11 +110,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
     private boolean isPythonModel = false;
+    private Set<String> localStorageColumnsList = new HashSet<String>();
 
     private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
+    private MultiselectComboBox<String> columnMultiSelect;
     private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -177,8 +183,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
         metricSelectionRow.addClassName("metric-selection-row");
 
+        columnMultiSelect = createColumnSelectionGroup();
         HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
+                LabelFactory.createLabel("Columns", BOLD_LABEL), columnMultiSelect);
         columnSelectionRow.addClassName("column-selection-row");
 
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
@@ -199,16 +206,20 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         Set<String> columnList = experimentGridColumns.keySet();
         multiSelectGroup.setPlaceholder("Customize your table columns");
         multiSelectGroup.setItems(columnList);
-        multiSelectGroup.setValue(columnList);
         multiSelectGroup.addSelectionListener(event -> {
-            String addedSelection = String.join("", event.getAddedSelection());
-            if (!addedSelection.isEmpty()) {
+            event.getAddedSelection().stream().forEach(addedSelection -> {
                 experimentGridColumns.get(addedSelection).setVisible(true);
-            }
-            String removedSelection = String.join("", event.getRemovedSelection());
-            if (!removedSelection.isEmpty()) {
+            });
+            event.getRemovedSelection().stream().forEach(removedSelection -> {
                 experimentGridColumns.get(removedSelection).setVisible(false);
-            }
+            });
+            afterHideOrShowColumn().execute();
+        });
+        multiSelectGroup.addValueChangeListener(event -> {
+            experimentGridColumns.forEach((colName, col) -> col.setVisible(false));
+            event.getValue().stream().forEach(selection -> {
+                experimentGridColumns.get(selection).setVisible(true);
+            });
             afterHideOrShowColumn().execute();
         });
         return multiSelectGroup;
@@ -230,10 +241,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private Command afterHideOrShowColumn() {
         return () -> {
-            List<String> columnList = experimentGrid.getColumnList().keySet().stream()
-                    .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
-                    .collect(Collectors.toList());
-            localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "columns", columnList);
+            if (!localStorageColumnsList.equals(columnMultiSelect.getValue())) {
+                List<String> columnList = experimentGrid.getColumnList().keySet().stream()
+                        .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
+                        .collect(Collectors.toList());
+                localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "columns", columnList);
+            }
         };
     }
 
@@ -246,7 +259,29 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     private void getAndSetColumns() {
-        System.out.println(localstorageHelper.getObject("project_model"));
+        localstorageHelper.getObject("project_model", result -> {
+            JsonObject resultObject = (JsonObject) result;
+            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            if (modelDetails != null) {
+                JsonArray modelColumnsJsonArray = modelDetails.getArray("columns");
+                localStorageColumnsList.clear();
+                if (modelColumnsJsonArray != null) {
+                    int len = modelColumnsJsonArray.length();
+                    for (int i = 0; i < len; i++) {
+                        localStorageColumnsList.add(modelColumnsJsonArray.get(i).asString());
+                    }
+                    columnMultiSelect.setValue(localStorageColumnsList);
+                } else {
+                    setDefaultForColumnMultiSelect();
+                }
+            } else {
+                setDefaultForColumnMultiSelect();
+            }
+        });
+    }
+
+    private void setDefaultForColumnMultiSelect() {
+        columnMultiSelect.setValue(experimentGrid.getColumnList().keySet());
     }
 
     private NotesField createNotesField() {
@@ -367,6 +402,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             } else {
                 dataProvider.refreshAll();
             }
+            getAndSetColumns();
         }
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
@@ -437,7 +473,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
-        getAndSetColumns();
         afterHideOrShowColumn().execute();
     }
 
