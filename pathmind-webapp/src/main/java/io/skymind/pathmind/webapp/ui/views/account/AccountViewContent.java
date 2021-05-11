@@ -159,7 +159,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         getModel().setFirstName(user.getFirstname());
         getModel().setLastName(user.getLastname());
         setApiKey(user.getApiKey());
-        getModel().setSubscription(subscription != null ? "Professional" : "Early Access");
+        getModel().setSubscription(subscription != null ? "Professional" : "Basic");
         getModel().setBillingInfo("Billing Information");
     }
 
