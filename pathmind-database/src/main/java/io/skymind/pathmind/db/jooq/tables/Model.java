@@ -21,7 +21,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -43,7 +43,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 726870872;
+    private static final long serialVersionUID = -1947858301;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -91,12 +91,12 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.archived</code>.
      */
-    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.model.user_notes</code>.
      */
-    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.model.reward_variables_count</code>.
@@ -157,6 +157,11 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.experiment_type</code>.
      */
     public final TableField<ModelRecord, String> EXPERIMENT_TYPE = createField(DSL.name("experiment_type"), org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.model.actionmask</code>.
+     */
+    public final TableField<ModelRecord, Boolean> ACTIONMASK = createField(DSL.name("actionmask"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -252,11 +257,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String, Boolean> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }
