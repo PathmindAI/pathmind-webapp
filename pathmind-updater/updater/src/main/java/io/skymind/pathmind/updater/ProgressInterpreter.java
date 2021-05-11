@@ -19,7 +19,6 @@ import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.utils.MetricsRawUtils;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.convertValidDouble;
@@ -27,7 +26,12 @@ import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.convertValidD
 @Slf4j
 public class ProgressInterpreter {
 
-    public static final int MAX_COLUMNS = Integer.MAX_VALUE;
+    private static final int MAX_COLUMNS;
+    static {
+        int heamInMb = (int)(Runtime.getRuntime().maxMemory() / 1_000_000 * 2 - 1);
+        MAX_COLUMNS = heamInMb * 2 - 1;
+        log.debug("Run with columns number {}", MAX_COLUMNS);
+    }
 
     enum RAY_PROGRESS {
         EPISODE_REWARD_MAX("episode_reward_max"),
