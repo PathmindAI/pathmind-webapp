@@ -39,6 +39,7 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
     private String mainAgent;
     private String experimentClass;
     private String experimentType;
+    private boolean actionmask;
 
     @Override
     public Model shallowClone() {
@@ -61,6 +62,7 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
                 .mainAgent(mainAgent)
                 .experimentClass(experimentClass)
                 .experimentType(experimentType)
+                .actionmask(actionmask)
                 .build());
     }
 }
