@@ -62,7 +62,7 @@
     border-color: var(--lumo-success-color);
 }
 
-:host([theme~="error"]) {
+:host([theme~="error"]:not([disabled])) {
     border-color: var(--lumo-error-color);
 }
 
