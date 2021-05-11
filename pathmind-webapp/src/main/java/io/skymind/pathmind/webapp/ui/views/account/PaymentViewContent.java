@@ -158,14 +158,6 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
         return paymentMethod.getObject("billing_details").getString("name");
     }
 
-    /**
-     * This method is called from the client-side
-     */
-    @EventHandler
-    private void cancelButtonClicked() {
-        getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
-    }
-
     public interface Model extends TemplateModel {
         void setContactLink(String contactLink);
 
