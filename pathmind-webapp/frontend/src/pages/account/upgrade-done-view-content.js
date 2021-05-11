@@ -11,14 +11,14 @@ import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 class UpgradeDoneViewContent extends PolymerElement {
   static get template() {
     return html`
-      <style include="shared-styles  pathmind-dialog-view">
-        .inner-content {
+      <style>
+        upgrade-done-view-content .inner-content {
           margin-top: var(--lumo-space-xxl);
         }
-        .title {
+        upgrade-done-view-content h2 {
           margin: 0 auto var(--lumo-space-m);
         }
-        iron-icon {
+        upgrade-done-view-content iron-icon {
           --iron-icon-height: 40px;  
           --iron-icon-width: 40px;
           color: var(--pm-green-color);   
@@ -28,10 +28,9 @@ class UpgradeDoneViewContent extends PolymerElement {
       <div class="content">
         <vaadin-vertical-layout
           class="inner-content"
-          id="emailPart"
         >
         <iron-icon icon="vaadin:check-circle"></iron-icon>
-          <h2 class="title">Upgraded to {{plan}}!</h2>
+          <h2>Upgraded to {{plan}}!</h2>
           <div>
             A confirmation email will be sent after payment is processed.
           </div>
@@ -49,6 +48,10 @@ class UpgradeDoneViewContent extends PolymerElement {
 
   static get is() {
     return "upgrade-done-view-content";
+  }
+
+  _attachDom(dom) {
+    this.appendChild(dom);
   }
 
 }
