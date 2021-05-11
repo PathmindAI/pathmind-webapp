@@ -165,4 +165,31 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.id("zip")).getText(), containsString("Zip"));
         assertThat(getDriver().findElement(By.id("card-element")).getText(), containsString(""));
     }
+
+    public void fillPaymentFormWithStripeTestCard() {
+        WebElement nameOnCardShadow = utils.expandRootElement(getDriver().findElement(By.id("name")));
+        nameOnCardShadow.findElement(By.cssSelector("input")).sendKeys("Test Name");
+        WebElement billingAddressShadow = utils.expandRootElement(getDriver().findElement(By.id("address")));
+        billingAddressShadow.findElement(By.cssSelector("input")).sendKeys("Jl. Pantai Kedonganan, Kedonganan, Kuta, Kabupaten Badung, Bali");
+        WebElement cityShadow = utils.expandRootElement(getDriver().findElement(By.id("city")));
+        cityShadow.findElement(By.cssSelector("input")).sendKeys("Kuta");
+        WebElement stateShadow = utils.expandRootElement(getDriver().findElement(By.id("state")));
+        stateShadow.findElement(By.cssSelector("input")).sendKeys("Kedonganan");
+        WebElement zipShadow = utils.expandRootElement(getDriver().findElement(By.id("zip")));
+        zipShadow.findElement(By.cssSelector("input")).sendKeys("80361");
+        getDriver().switchTo().frame(getDriver().findElement(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        getDriver().findElement(By.cssSelector("div[class='CardNumberField-input-wrapper'] input")).sendKeys("4242424242424242");
+        getDriver().findElement(By.cssSelector("span[class='CardField-expiry CardField-child'] input")).sendKeys("1222");
+        getDriver().findElement(By.cssSelector("span[class='CardField-cvc CardField-child'] input")).sendKeys("212");
+        getDriver().switchTo().defaultContent();
+    }
+
+    public void paymentPageClickUpgradeBtn() {
+        getDriver().findElement(By.id("signUp")).click();
+        waitABit(5000);
+    }
+
+    public void checkAccountSubscriptionIs(String subscription) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='subscription-wrapper']/descendant::div[@class='data']")).getText(), is(subscription));
+    }
 }

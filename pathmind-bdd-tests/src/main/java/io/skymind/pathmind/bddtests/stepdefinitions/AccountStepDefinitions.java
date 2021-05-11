@@ -106,4 +106,19 @@ public class AccountStepDefinitions {
     public void checkSubscriptionPlansUpgradePage() {
         accountPageSteps.checkSubscriptionPlansUpgradePage();
     }
+
+    @When("^Fill payment form with stripe test card$")
+    public void fillPaymentFormWithStripeTestCard() {
+        accountPageSteps.fillPaymentFormWithStripeTestCard();
+    }
+
+    @When("^Payment page click Upgrade btn$")
+    public void paymentPageClickUpgradeBtn() {
+        accountPageSteps.paymentPageClickUpgradeBtn();
+    }
+
+    @When("^Check account subscription is (.*)")
+    public void checkAccountSubscriptionIs(String subscription) {
+        accountPageSteps.checkAccountSubscriptionIs(subscription);
+    }
 }
