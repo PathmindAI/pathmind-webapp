@@ -44,5 +44,6 @@ Feature: Check Subscription Plans
     When Click in 'Choose Pro' button
     When Fill payment form with stripe test card
     When Payment page click Upgrade btn
-    When Open page account
+    When Check Upgraded to Professional page is shown
+    When Click in 'Done' button
     When Check account subscription is Professional

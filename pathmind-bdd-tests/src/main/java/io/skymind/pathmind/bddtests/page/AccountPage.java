@@ -186,10 +186,14 @@ public class AccountPage extends PageObject {
 
     public void paymentPageClickUpgradeBtn() {
         getDriver().findElement(By.id("signUp")).click();
-        waitABit(5000);
     }
 
     public void checkAccountSubscriptionIs(String subscription) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='subscription-wrapper']/descendant::div[@class='data']")).getText(), is(subscription));
+    }
+
+    public void checkUpgradedToProfessionalPageIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//h2")).getText(), is("Upgraded to Professional!"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='inner-content']//div")).getText(), is("A confirmation email will be sent after payment is processed."));
     }
 }

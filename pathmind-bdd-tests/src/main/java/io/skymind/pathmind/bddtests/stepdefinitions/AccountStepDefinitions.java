@@ -121,4 +121,9 @@ public class AccountStepDefinitions {
     public void checkAccountSubscriptionIs(String subscription) {
         accountPageSteps.checkAccountSubscriptionIs(subscription);
     }
+
+    @When("^Check Upgraded to Professional page is shown$")
+    public void checkUpgradedToProfessionalPageIsShown() {
+        accountPageSteps.checkUpgradedToProfessionalPageIsShown();
+    }
 }

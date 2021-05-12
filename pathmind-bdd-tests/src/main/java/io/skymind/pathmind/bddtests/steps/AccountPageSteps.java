@@ -96,4 +96,9 @@ public class AccountPageSteps {
     public void checkAccountSubscriptionIs(String subscription) {
         accountPage.checkAccountSubscriptionIs(subscription);
     }
+
+    @Step
+    public void checkUpgradedToProfessionalPageIsShown() {
+        accountPage.checkUpgradedToProfessionalPageIsShown();
+    }
 }
