@@ -352,6 +352,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
                 model.setNumberOfAgents(alResult.getNumberOfAgents());
+                model.setActionmask(alResult.isActionMask());
             }
             uploadALPWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
