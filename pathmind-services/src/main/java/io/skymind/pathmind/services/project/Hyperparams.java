@@ -18,6 +18,8 @@ public class Hyperparams {
 
     private final int numberOfAgents;
 
+    private final boolean actionMask;
+
     @Builder.Default
     private final List<String> rewardVariableNames = new ArrayList<>();
 
