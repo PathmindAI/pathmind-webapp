@@ -85,7 +85,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
         try {
             Customer customer = createOrUpdateCustomer(paymentMethod);
             final Subscription subscription = stripeService.createSubscription(customer);
-            segmentIntegrator.accountUpgraded();
+            segmentIntegrator.accountUpgradedPro();
             getUI().ifPresent(ui -> ui.navigate(UpgradeDoneView.class));
         } catch (StripeException e) {
             log.warn("There was an error creating a subscription for the customer: " + user.getEmail());

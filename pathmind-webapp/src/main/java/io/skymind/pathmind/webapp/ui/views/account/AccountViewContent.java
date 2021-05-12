@@ -103,7 +103,10 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 
-        upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class)));
+        upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> {
+            segmentIntegrator.navigatedToPricingFromAccountView();
+            ui.navigate(AccountUpgradeView.class);
+        }));
         cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription());
         rotateApiKeyBtn.addClickListener(evt -> rotateApiKey());
     }
