@@ -13,8 +13,10 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import elemental.json.JsonObject;
 import io.skymind.pathmind.services.billing.StripeService;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +40,9 @@ import org.springframework.context.annotation.Scope;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model> {
 
+    @Autowired
+    private UserService userService;
+
     private static Logger log = LogManager.getLogger(PaymentViewContent.class);
 
     private StripeService stripeService;
@@ -48,12 +53,14 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
 
     @Autowired
     public PaymentViewContent(@Value("${pathmind.stripe.public.key}") String publicKey,
-                              StripeService stripeService,
-                              SegmentIntegrator segmentIntegrator,
-                              CurrentUser currentUser,
-                              @Value("${pathmind.contact-support.address}") String contactLink) {
+                            UserService userService,
+                            StripeService stripeService,
+                            SegmentIntegrator segmentIntegrator,
+                            CurrentUser currentUser,
+                            @Value("${pathmind.contact-support.address}") String contactLink) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
+        this.userService = userService;
         user = currentUser.getUser();
 
         getModel().setContactLink(contactLink);
@@ -86,6 +93,8 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
             Customer customer = createOrUpdateCustomer(paymentMethod);
             final Subscription subscription = stripeService.createSubscription(customer);
             segmentIntegrator.accountUpgradedPro();
+            user.setAccountType(UserRole.Paid.getId());
+            userService.update(user);
             getUI().ifPresent(ui -> ui.navigate(UpgradeDoneView.class));
         } catch (StripeException e) {
             log.warn("There was an error creating a subscription for the customer: " + user.getEmail());

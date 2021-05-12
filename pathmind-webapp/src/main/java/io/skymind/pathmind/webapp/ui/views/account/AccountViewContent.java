@@ -16,6 +16,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.billing.StripeService;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
@@ -139,6 +140,8 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
             SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
                 subscription = stripeService.cancelSubscription(user.getEmail(), true);
                 segmentIntegrator.subscriptionCancelled();
+                user.setAccountType(UserRole.Trial.getId());
+                userService.update(user);
                 initContent();
                 initBtns();
                 setSubscriptionEndDate();
