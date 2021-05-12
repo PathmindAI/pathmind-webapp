@@ -20,6 +20,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -262,7 +263,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
-        System.out.println("running exp: "+experimentDAO.getRunningExperimentsCountForUser(userService.getCurrentUserId()));
+        System.out.println("running exp: " +
+                experimentDAO.getExperimentsWithRunStatusCountForUser(userService.getCurrentUserId(), RunStatus.RUNNING_STATES_CODES)
+        );
     }
 
     public Experiment getExperiment() {

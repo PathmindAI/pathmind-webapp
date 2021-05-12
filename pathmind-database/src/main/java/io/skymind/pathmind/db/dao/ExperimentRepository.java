@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,14 +100,14 @@ class ExperimentRepository {
         return experiment;
     }
 
-    protected static int getRunningExperimentsCountForUser(DSLContext ctx, long userId) {
+    protected static int getExperimentsWithRunStatusCountForUser(DSLContext ctx, long userId, Collection<Integer> runStatuses) {
         return ctx
                 .selectCount()
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .where(PROJECT.PATHMIND_USER_ID.eq(userId))
-                .and(EXPERIMENT.TRAINING_STATUS.eq(1).or(EXPERIMENT.TRAINING_STATUS.eq(2)))
+                .and(EXPERIMENT.TRAINING_STATUS.in(runStatuses))
                 .fetchOne(0, int.class);
     }
 
