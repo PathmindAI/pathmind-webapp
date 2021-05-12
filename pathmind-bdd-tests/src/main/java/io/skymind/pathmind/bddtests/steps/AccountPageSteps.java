@@ -81,4 +81,19 @@ public class AccountPageSteps {
     public void checkSubscriptionPlansUpgradePage() {
         accountPage.checkSubscriptionPlansUpgradePage();
     }
+
+    @Step
+    public void fillPaymentFormWithStripeTestCard() {
+        accountPage.fillPaymentFormWithStripeTestCard();
+    }
+
+    @Step
+    public void paymentPageClickUpgradeBtn() {
+        accountPage.paymentPageClickUpgradeBtn();
+    }
+
+    @Step
+    public void checkAccountSubscriptionIs(String subscription) {
+        accountPage.checkAccountSubscriptionIs(subscription);
+    }
 }
