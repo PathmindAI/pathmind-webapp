@@ -262,6 +262,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
+        System.out.println("running exp: "+experimentDAO.getRunningExperimentsCountForUser(userService.getCurrentUserId()));
     }
 
     public Experiment getExperiment() {

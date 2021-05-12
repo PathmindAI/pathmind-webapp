@@ -97,6 +97,10 @@ public class ExperimentDAO {
         return Optional.ofNullable(experiment);
     }
 
+    public int getRunningExperimentsCountForUser(long userId) {
+        return ExperimentRepository.getRunningExperimentsCountForUser(ctx, userId);
+    }
+
     private void setupDefaultRewardFunction(Experiment experiment) {
         // If there is no default reward function create one and save it so that we can avoid the popup notifications
         // of saving and so on when loading a new experiment. Ideally this should be done on experiment creation

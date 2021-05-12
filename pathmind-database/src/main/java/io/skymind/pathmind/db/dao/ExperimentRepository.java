@@ -99,6 +99,17 @@ class ExperimentRepository {
         return experiment;
     }
 
+    protected static int getRunningExperimentsCountForUser(DSLContext ctx, long userId) {
+        return ctx
+                .selectCount()
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .and(EXPERIMENT.TRAINING_STATUS.eq(1).or(EXPERIMENT.TRAINING_STATUS.eq(2)))
+                .fetchOne(0, int.class);
+    }
+
     protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId, boolean isIncludeArchived) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
         if (!isIncludeArchived) {
