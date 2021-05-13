@@ -35,6 +35,10 @@
     margin: var(--lumo-space-xs) 0 var(--lumo-space-m);
 }
 
+.new-experiment-view .warning-label vaadin-button {
+    margin-right: var(--lumo-space-xs);
+}
+
 .new-experiment-view .section-title-label {
     line-height: 1;
 }
