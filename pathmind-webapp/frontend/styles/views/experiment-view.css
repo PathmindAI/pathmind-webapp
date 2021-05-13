@@ -239,7 +239,6 @@
 }
 
 .experiment-view .observations-panel .observations-table {
-    width: auto !important;
     padding-top: 0;
     overflow-x: visible;
     overflow-y: auto;
