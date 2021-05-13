@@ -18,8 +18,9 @@
     flex: 1;
 }
 
-.new-experiment-view .panel-title {
+.new-experiment-view .panel-title .section-subtitle-label {
     max-width: 460px;
+    margin-bottom: var(--lumo-space-m);
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
@@ -36,7 +37,7 @@
 }
 
 .new-experiment-view .warning-label vaadin-button {
-    margin-right: var(--lumo-space-xs);
+    margin: 0 var(--lumo-space-xs);
 }
 
 .new-experiment-view .section-title-label {

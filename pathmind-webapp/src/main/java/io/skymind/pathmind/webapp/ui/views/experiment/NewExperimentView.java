@@ -8,6 +8,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -61,7 +62,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private FavoriteStar favoriteStar;
-    private Span upgradeBanner;
+    private Div upgradeBanner;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -189,14 +190,14 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     }
 
     private void createUpgradeBanner() {
-        Button upgradeLink = new Button("Upgrade now", click -> {
+        Button upgradeLink = new Button("upgrade now", click -> {
             segmentIntegrator.navigatedToPricingFromNewExpViewBanner();
             getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
         });
         upgradeLink.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        upgradeBanner = new Span();
+        upgradeBanner = new Div(new Span("You have one experiment running already. Please"));
         upgradeBanner.add(upgradeLink);
-        upgradeBanner.add("to run multiple experiments in parallel.");
+        upgradeBanner.add(new Span("to run multiple experiments in parallel."));
         upgradeBanner.addClassName(CssPathmindStyles.WARNING_LABEL);
     }
 
