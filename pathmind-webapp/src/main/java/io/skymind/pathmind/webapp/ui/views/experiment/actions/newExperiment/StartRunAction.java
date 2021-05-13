@@ -18,7 +18,7 @@ public class StartRunAction {
         boolean actionMaskModel = newExperimentView.getExperiment().getModel().isActionmask();
         boolean authorized = pathmindUser.getAccountType() == UserRole.Paid;
         if (actionMaskModel && !authorized) {
-            NotificationUtils.showError("you need to upgrade bro.");
+            NotificationUtils.showError("A Pathmind subscription is required to use action masking. Please navigate to [link here] to upgrade or remove action mask from Pathmind Helper.");
             return;
         }
 
