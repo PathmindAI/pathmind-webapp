@@ -232,7 +232,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.setItems(rewardVariables);
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         multiSelectGroup.addSelectionListener(event -> {
-            event.getAddedSelection().stream().findFirst().ifPresent(experimentGrid::addAdditionalColumn);
+            event.getAddedSelection().stream().forEach(experimentGrid::addAdditionalColumn);
             event.getRemovedSelection().stream().forEach(experimentGrid::removeAdditionalColumn);
             afterHideOrShowAdditionalColumn().execute();
         });
@@ -282,6 +282,38 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private void setDefaultForColumnMultiSelect() {
         columnMultiSelect.setValue(experimentGrid.getColumnList().keySet());
+    }
+
+    private void getAndSetMetricColumns() {
+        localstorageHelper.getObject("project_model", result -> {
+            JsonObject resultObject = (JsonObject) result;
+            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            if (modelDetails != null) {
+                JsonArray modelColumnsJsonArray = modelDetails.getArray("additional_columns");
+                Set<RewardVariable> localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
+                if (modelColumnsJsonArray != null) {
+                    int len = modelColumnsJsonArray.length();
+                    for (int i = 0; i < len; i++) {
+                        String currentRVName = modelColumnsJsonArray.get(i).asString();
+                        rewardVariables
+                            .stream()
+                            .filter(rv -> currentRVName.equals(rv.getName()))
+                            .findFirst()
+                            .ifPresent(rv -> 
+                                localStorageMetricColumnsListForColumnValue.add(rv));
+                    }
+                    metricMultiSelect.setValue(localStorageMetricColumnsListForColumnValue);
+                } else {
+                    setDefaultForMetricMultiSelect();
+                }
+            } else {
+                setDefaultForMetricMultiSelect();
+            }
+        });
+    }
+
+    private void setDefaultForMetricMultiSelect() {
+        metricMultiSelect.setValue(null);
     }
 
     private NotesField createNotesField() {
@@ -403,6 +435,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 dataProvider.refreshAll();
             }
             getAndSetColumns();
+            getAndSetMetricColumns();
         }
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
