@@ -87,7 +87,8 @@ public class AWSTrainingService extends TrainingService {
                 // doesn't need to pass package name for AL model, only need for PY model
                 packageName,
                 objSelection,
-                rewFctName
+                rewFctName,
+                model.isActionmask()
         );
 
         return executionProvider.execute(spec);

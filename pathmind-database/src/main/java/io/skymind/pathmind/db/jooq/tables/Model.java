@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row21;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -151,6 +151,11 @@ public class Model extends TableImpl<ModelRecord> {
      */
     public final TableField<ModelRecord, String> EXPERIMENT_TYPE = createField(DSL.name("experiment_type"), SQLDataType.VARCHAR(255), this, "");
 
+    /**
+     * The column <code>public.model.actionmask</code>.
+     */
+    public final TableField<ModelRecord, Boolean> ACTIONMASK = createField(DSL.name("actionmask"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+
     private Model(Name alias, Table<ModelRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -250,11 +255,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row21 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row21<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String, Boolean> fieldsRow() {
+        return (Row21) super.fieldsRow();
     }
 }

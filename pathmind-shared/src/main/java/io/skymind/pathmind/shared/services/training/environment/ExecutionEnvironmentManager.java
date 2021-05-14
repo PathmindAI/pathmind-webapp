@@ -19,8 +19,8 @@ public class ExecutionEnvironmentManager {
 
     private ExecutionEnvironment defaultEnvironment() {
         return new ExecutionEnvironment(AnyLogic.VERSION_8_7_4,
-                PathmindHelper.VERSION_1_6_0,
-                NativeRL.VERSION_1_6_0,
+                PathmindHelper.VERSION_1_6_1,
+                NativeRL.VERSION_1_6_1,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_0_0,
                 EC2InstanceType.IT_36CPU_72GB,

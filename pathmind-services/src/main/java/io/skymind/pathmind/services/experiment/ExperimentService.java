@@ -101,6 +101,7 @@ public class ExperimentService {
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
                 model.setNumberOfAgents(alResult.getNumberOfAgents());
+                model.setActionmask(alResult.isActionMask());
 
                 modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
                 log.info("created model {}", model.getId());

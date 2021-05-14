@@ -68,6 +68,7 @@ class ModelRepository {
         mod.setMainAgent(model.getMainAgent());
         mod.setExperimentClass(model.getExperimentClass());
         mod.setExperimentType(model.getExperimentType());
+        mod.setActionmask(model.isActionmask());
         mod.store();
         return mod.key().get(MODEL.ID);
     }
