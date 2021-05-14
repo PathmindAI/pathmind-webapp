@@ -1932,4 +1932,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="3098-1" author="daehyun@pathmind.com">
+        <addColumn tableName="MODEL">
+            <column name="ACTIONMASK" type="BOOLEAN" defaultValueBoolean="false"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="MODEL" columnName="ACTIONMASK"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
