@@ -93,6 +93,9 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
             Customer customer = createOrUpdateCustomer(paymentMethod);
             final Subscription subscription = stripeService.createSubscription(customer);
             segmentIntegrator.accountUpgradedPro();
+            if (user.getStripeCustomerId() == null || user.getStripeCustomerId().isEmpty()) {
+                user.setStripeCustomerId(customer.getId());
+            }
             user.setAccountType(UserRole.Paid.getId());
             userService.update(user);
             getUI().ifPresent(ui -> ui.navigate(UpgradeDoneView.class));
