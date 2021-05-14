@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 1522072265;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -53,7 +54,7 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.id</code>.
      */
-    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ModelRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.model.project_id</code>.
@@ -83,12 +84,12 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.archived</code>.
      */
-    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.model.user_notes</code>.
      */
-    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR.nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.model.reward_variables_count</code>.
@@ -153,13 +154,14 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.actionmask</code>.
      */
-    public final TableField<ModelRecord, Boolean> ACTIONMASK = createField(DSL.name("actionmask"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ModelRecord, Boolean> ACTIONMASK = createField(DSL.name("actionmask"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
-    /**
-     * Create a <code>public.model</code> table reference
-     */
-    public Model() {
-        this(DSL.name("model"), null);
+    private Model(Name alias, Table<ModelRecord> aliased) {
+        this(alias, aliased, null);
+    }
+
+    private Model(Name alias, Table<ModelRecord> aliased, Field<?>[] parameters) {
+        super(alias, null, aliased, parameters, DSL.comment(""), TableOptions.table());
     }
 
     /**
@@ -195,6 +197,11 @@ public class Model extends TableImpl<ModelRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.MODEL_PROJECT_FK_INDEX);
+    }
+
+    @Override
+    public Identity<ModelRecord, Long> getIdentity() {
+        return (Identity<ModelRecord, Long>) super.getIdentity();
     }
 
     @Override

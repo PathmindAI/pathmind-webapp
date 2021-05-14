@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 698437897;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -53,7 +54,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.id</code>.
      */
-    public final TableField<ProjectRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ProjectRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.project.pathmind_user_id</code>.
@@ -63,7 +64,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.name</code>.
      */
-    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>public.project.date_created</code>.
@@ -78,12 +79,12 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.archived</code>.
      */
-    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.project.user_notes</code>.
      */
-    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR.nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     private Project(Name alias, Table<ProjectRecord> aliased) {
         this(alias, aliased, null);
@@ -126,6 +127,11 @@ public class Project extends TableImpl<ProjectRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.PROJECT_PATHMIND_USER_FK_INDEX);
+    }
+
+    @Override
+    public Identity<ProjectRecord, Long> getIdentity() {
+        return (Identity<ProjectRecord, Long>) super.getIdentity();
     }
 
     @Override

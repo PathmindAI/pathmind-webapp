@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Experiment extends TableImpl<ExperimentRecord> {
 
-    private static final long serialVersionUID = 1206427238;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.experiment</code>
@@ -53,7 +54,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.id</code>.
      */
-    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<ExperimentRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.experiment.model_id</code>.
@@ -83,12 +84,12 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.archived</code>.
      */
-    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ExperimentRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.experiment.user_notes</code>.
      */
-    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), org.jooq.impl.SQLDataType.VARCHAR(1000).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+    public final TableField<ExperimentRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR.nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.experiment.is_favorite</code>.
@@ -166,6 +167,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.GOALS_COUNT_MIGRATION_IDX);
+    }
+
+    @Override
+    public Identity<ExperimentRecord, Long> getIdentity() {
+        return (Identity<ExperimentRecord, Long>) super.getIdentity();
     }
 
     @Override

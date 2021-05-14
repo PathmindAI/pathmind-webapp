@@ -21,7 +21,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Record21<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String, Boolean> {
 
-    private static final long serialVersionUID = 2062824290;
+    private static final long serialVersionUID = 1L;
 
     /**
      * Setter for <code>public.model.id</code>.
@@ -824,26 +824,26 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
     public ModelRecord(Long id, Long projectId, String name, LocalDateTime dateCreated, LocalDateTime lastActivityDate, Integer numberOfObservations, Boolean archived, String userNotes, Integer rewardVariablesCount, Boolean draft, String packageName, Integer actionTupleSize, Integer invalidModel, Boolean hasGoals, Integer modelType, Integer numberOfAgents, String pathmindHelper, String mainAgent, String experimentClass, String experimentType, Boolean actionmask) {
         super(Model.MODEL);
 
-        set(0, id);
-        set(1, projectId);
-        set(2, name);
-        set(3, dateCreated);
-        set(4, lastActivityDate);
-        set(5, numberOfObservations);
-        set(6, archived);
-        set(7, userNotes);
-        set(8, rewardVariablesCount);
-        set(9, draft);
-        set(10, packageName);
-        set(11, actionTupleSize);
-        set(12, invalidModel);
-        set(13, hasGoals);
-        set(14, modelType);
-        set(15, numberOfAgents);
-        set(16, pathmindHelper);
-        set(17, mainAgent);
-        set(18, experimentClass);
-        set(19, experimentType);
-        set(20, actionmask);
+        setId(id);
+        setProjectId(projectId);
+        setName(name);
+        setDateCreated(dateCreated);
+        setLastActivityDate(lastActivityDate);
+        setNumberOfObservations(numberOfObservations);
+        setArchived(archived);
+        setUserNotes(userNotes);
+        setRewardVariablesCount(rewardVariablesCount);
+        setDraft(draft);
+        setPackageName(packageName);
+        setActionTupleSize(actionTupleSize);
+        setInvalidModel(invalidModel);
+        setHasGoals(hasGoals);
+        setModelType(modelType);
+        setNumberOfAgents(numberOfAgents);
+        setPathmindHelper(pathmindHelper);
+        setMainAgent(mainAgent);
+        setExperimentClass(experimentClass);
+        setExperimentType(experimentType);
+        setActionmask(actionmask);
     }
 }

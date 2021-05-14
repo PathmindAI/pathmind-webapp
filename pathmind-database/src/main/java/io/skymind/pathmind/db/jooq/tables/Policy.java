@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
+import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -35,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = 589894250;
+    private static final long serialVersionUID = 1L;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -53,7 +54,7 @@ public class Policy extends TableImpl<PolicyRecord> {
     /**
      * The column <code>public.policy.id</code>.
      */
-    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<PolicyRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
 
     /**
      * The column <code>public.policy.run_id</code>.
@@ -141,6 +142,11 @@ public class Policy extends TableImpl<PolicyRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.POLICY_RUN_FK_INDEX);
+    }
+
+    @Override
+    public Identity<PolicyRecord, Long> getIdentity() {
+        return (Identity<PolicyRecord, Long>) super.getIdentity();
     }
 
     @Override
