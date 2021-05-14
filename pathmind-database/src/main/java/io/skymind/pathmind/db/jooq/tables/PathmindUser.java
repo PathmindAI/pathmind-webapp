@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
@@ -37,7 +36,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PathmindUser extends TableImpl<PathmindUserRecord> {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1659932035;
 
     /**
      * The reference instance of <code>public.pathmind_user</code>
@@ -55,7 +54,7 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.id</code>.
      */
-    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+    public final TableField<PathmindUserRecord, Long> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
 
     /**
      * The column <code>public.pathmind_user.email</code>.
@@ -75,12 +74,12 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.firstname</code>.
      */
-    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.lastname</code>.
      */
-    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), org.jooq.impl.SQLDataType.VARCHAR(250).nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.address</code>.
@@ -188,11 +187,6 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.PATHMIND_USER_API_KEY_CREATED_AT_IDX);
-    }
-
-    @Override
-    public Identity<PathmindUserRecord, Long> getIdentity() {
-        return (Identity<PathmindUserRecord, Long>) super.getIdentity();
     }
 
     @Override

@@ -43,6 +43,7 @@ env:
   API_FILE_SIZE: 500MB
   API_REQUEST_SIZE: 500MB
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/prod-policy-server.fifo
+  PATHMIND_STRIPE_PUBLIC_KEY: pk_live_geWrjErwYARpzwU3RGxgabBM00LPnWnkdT
 
 readinessprobe: {}
 
