@@ -101,4 +101,19 @@ public class AccountPageSteps {
     public void checkUpgradedToProfessionalPageIsShown() {
         accountPage.checkUpgradedToProfessionalPageIsShown();
     }
+
+    @Step
+    public void checkCancelSubscriptionPopUp() {
+        accountPage.checkCancelSubscriptionPopUp();
+    }
+
+    @Step
+    public void clickPopUpDialogYesCancel() {
+        accountPage.clickPopUpDialogYesCancel();
+    }
+
+    @Step
+    public void checkAccountSubscriptionHint() {
+        accountPage.checkAccountSubscriptionHint();
+    }
 }

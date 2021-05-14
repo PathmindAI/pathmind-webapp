@@ -47,3 +47,10 @@ Feature: Check Subscription Plans
     When Check Upgraded to Professional page is shown
     When Click in 'Done' button
     When Check account subscription is Professional
+    When Click in 'Cancel' button
+    When Check cancel subscription pop-up
+    When Click pop-up dialog 'Keep My Subscription' btn
+    When Click in 'Cancel' button
+    When Click pop-up dialog 'Yes, Cancel'
+    When Check account subscription is Professional
+    When Check account subscription hint

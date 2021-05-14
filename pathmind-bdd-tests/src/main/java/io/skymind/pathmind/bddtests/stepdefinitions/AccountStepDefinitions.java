@@ -126,4 +126,19 @@ public class AccountStepDefinitions {
     public void checkUpgradedToProfessionalPageIsShown() {
         accountPageSteps.checkUpgradedToProfessionalPageIsShown();
     }
+
+    @When("^Check cancel subscription pop-up$")
+    public void checkCancelSubscriptionPopUp() {
+        accountPageSteps.checkCancelSubscriptionPopUp();
+    }
+
+    @When("^Click pop-up dialog 'Yes, Cancel'$")
+    public void clickPopUpDialogYesCancel() {
+        accountPageSteps.clickPopUpDialogYesCancel();
+    }
+
+    @When("^Check account subscription hint$")
+    public void checkAccountSubscriptionHint() {
+        accountPageSteps.checkAccountSubscriptionHint();
+    }
 }

@@ -9,7 +9,11 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.text.DateFormatSymbols;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -119,8 +123,8 @@ public class AccountPage extends PageObject {
     }
 
     public void clickAccountFooterBtn(String btn) {
-        for(WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))){
-            if (element.getText().contains(btn)){
+        for (WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))) {
+            if (element.getText().contains(btn)) {
                 element.click();
                 break;
             }
@@ -195,5 +199,30 @@ public class AccountPage extends PageObject {
     public void checkUpgradedToProfessionalPageIsShown() {
         assertThat(getDriver().findElement(By.xpath("//h2")).getText(), is("Upgraded to Professional!"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='inner-content']//div")).getText(), is("A confirmation email will be sent after payment is processed."));
+    }
+
+    public void checkCancelSubscriptionPopUp() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
+        assertThat(header.getText(), is("Cancel Your Subscription?"));
+        assertThat(popupShadowRoot.findElement(By.className("message")).getText(), containsString("Cancellation will be effective at the end of your current billing period on"));
+    }
+
+    public void clickPopUpDialogYesCancel() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        popupShadowRoot.findElement(By.cssSelector("#confirm")).click();
+    }
+
+    public void checkAccountSubscriptionHint() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
+        LocalDateTime now = LocalDateTime.now();
+        String[] shortMonths = new DateFormatSymbols().getShortMonths();
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")), "Subscription will be cancelled on "));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")).getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
     }
 }
