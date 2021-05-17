@@ -101,6 +101,17 @@ class ConfirmPopup extends PolymerElement {
         `;
     }
 
+    ready() {
+        super.ready();
+        this.$.confirm.focus();
+        document.addEventListener("keypress", event => {
+            if (event.key.toLowerCase() === "enter") {
+                event.preventDefault();
+                this.$.confirm.click();
+            }
+        });
+    }
+
     _isEmptyStringOrUnset(prop) {
         return prop == null || prop === "";
     }
