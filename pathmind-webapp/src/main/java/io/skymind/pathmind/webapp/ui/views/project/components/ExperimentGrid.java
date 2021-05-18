@@ -146,20 +146,12 @@ public class ExperimentGrid extends Grid<Experiment> {
                         }
                         return "—";
                     })
-                    .setComparator(Comparator.comparingDouble(experiment -> {
-                        if (experiment.getBestPolicy() != null) {
-                            Policy bestPolicy = experiment.getBestPolicy();
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                                    ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
-                                    : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
-                        }
-                        return Double.NEGATIVE_INFINITY;
-                    }))
+                    .setSortProperty(Integer.toString(rewardVarIndex))
                     .setHeader(rewardVariableName)
                     .setAutoWidth(true)
                     .setFlexGrow(0)
                     .setResizable(true)
-                    .setSortable(false);
+                    .setSortable(true);
             additionalColumnList.put(rewardVariableName, newColumn);
         }
     }
