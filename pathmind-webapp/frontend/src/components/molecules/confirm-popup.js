@@ -86,7 +86,7 @@ class ConfirmPopup extends PolymerElement {
                     width: 100%;
                 }
             </style>
-            <div id="overlay" on-click="close"></div>
+            <div id="overlay" on-click="closePopup"></div>
             <popup-content>
                 <h3>[[headerText]]</h3>
                 <div class="message">
@@ -104,12 +104,30 @@ class ConfirmPopup extends PolymerElement {
     ready() {
         super.ready();
         this.$.confirm.focus();
-        document.addEventListener("keypress", event => {
+        this.documentKeypressListener = event => {
             if (event.key.toLowerCase() === "enter") {
                 event.preventDefault();
                 this.$.confirm.click();
             }
-        });
+        };
+        
+        document.addEventListener("keypress", this.documentKeypressListener);
+    }
+
+    closePopup() {
+        this.removeKeypressListener();
+    }
+
+    onConfirm() {
+        this.removeKeypressListener();
+    }
+
+    onCancel() {
+        this.removeKeypressListener();
+    }
+
+    removeKeypressListener() {
+        document.removeEventListener("keypress", this.documentKeypressListener);
     }
 
     _isEmptyStringOrUnset(prop) {
