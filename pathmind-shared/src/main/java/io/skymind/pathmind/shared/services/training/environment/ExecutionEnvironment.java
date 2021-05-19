@@ -25,6 +25,7 @@ public class ExecutionEnvironment {
     private int PBT_MAX_TIME_IN_SEC;
     private int PBT_NUM_SAMPLES;
     private int maxMemory;
+    private String scheduler;
     private boolean freezing;
 
     public int getPBT_RUN_ITERATIONS() {

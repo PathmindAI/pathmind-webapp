@@ -59,6 +59,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("maxMemoryCB")
     private ComboBox<String> maxMemory;
 
+    @Id("schedulerCB")
+    private ComboBox<String> scheduler;
+
     @Id("freezingCB")
     private ComboBox<String> freezing;
 
@@ -86,6 +89,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
             env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
             env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+            env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
 
             String text = "Current settings are saved!";
@@ -161,6 +165,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setLabel("Max memory size in MB");
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
+
+        // init scheduler
+        List<String> schedulers = List.of("PBT", "PB2");
+
+        scheduler.setItems(schedulers);
+        scheduler.setLabel("Scheduler");
+        scheduler.setPlaceholder(env.getScheduler());
+        scheduler.setValue(env.getScheduler());
 
         // init freezing
         List<String> freezings = List.of("TRUE", "FALSE");
