@@ -192,4 +192,14 @@ public class GenericPageStepDefinitions {
     public void waitForLoadingBarDisappear() {
         utils.waitForLoadingBar();
     }
+
+    @When("^Click keyboard enter btn$")
+    public void clickKeyboardEnterBtn() {
+        genericPageSteps.clickKeyboardEnterBtn();
+    }
+
+    @When("^Click keyboard enter btn on confirmation popup$")
+    public void clickKeyboardEnterBtnOnConfirmationPopup() {
+        genericPageSteps.clickKeyboardEnterBtnOnConfirmationPopup();
+    }
 }
