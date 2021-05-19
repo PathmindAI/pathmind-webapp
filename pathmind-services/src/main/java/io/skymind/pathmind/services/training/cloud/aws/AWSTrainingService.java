@@ -65,9 +65,11 @@ public class AWSTrainingService extends TrainingService {
                 exp.getId(),
                 run.getId(),
                 modelFileId,
+                null,
                 "", // not collected via UI yet
                 "", // not collected via UI yet
                 exp.getRewardFunction(),
+                "",
                 observations,
                 iterations,
                 executionEnvironment,
