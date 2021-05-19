@@ -46,7 +46,7 @@ public class ExperimentManifestRepository {
                         .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/CallCenterPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
-                                "reward += after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes"
+                                "reward -= after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes"
                                 //@formatter:on
                         )
                         .build()

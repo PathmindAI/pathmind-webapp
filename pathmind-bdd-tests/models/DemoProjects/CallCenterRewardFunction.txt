@@ -1,1 +1,1 @@
-reward += after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes
+reward -= after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes
