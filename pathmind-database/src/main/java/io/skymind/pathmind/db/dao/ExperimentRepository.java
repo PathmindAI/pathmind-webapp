@@ -107,7 +107,7 @@ class ExperimentRepository {
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE)
+                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE, MODEL.ACTIONMASK)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))

@@ -18,7 +18,21 @@ import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIn
 @Slf4j
 @Service
 public class RewardValidationService {
-    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables){
+    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables) {
+        final ArrayList<String> errors = new ArrayList<>();
+        final String invalidRewardFunctionText = "ERROR: Invalid reward function";
+        if (rewardFunction.isEmpty() || rewardFunction.matches("[\\r\\n]*")) {
+            errors.add("Training cannot be started when the reward function is empty.");
+            return errors;
+        }
+        if (containsOnlyComments(rewardFunction)) {
+            errors.add("Training cannot be started when the reward function consists of only comments.");
+            return errors;
+        }
+        if (rewardFunction.indexOf("reward") < 0) {
+            errors.add(invalidRewardFunctionText);
+            return errors;
+        }
         final String code = fillInTemplate(rewardFunction, rewardVariables);
         final String[] lines = code.split("\n");
         int startReward = 0;
@@ -34,7 +48,6 @@ public class RewardValidationService {
                 new CharSequenceJavaFileObject("Environment", code)
         )).call();
 
-        final ArrayList<String> errors = new ArrayList<>();
         for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             if(diagnostic.getLineNumber() >= startReward && diagnostic.getLineNumber() <= endReward){
                 errors.add(diagnostic.getKind() +": Line "+(diagnostic.getLineNumber() - startReward - 1)+": "+diagnostic.getMessage(Locale.ROOT));
@@ -43,9 +56,19 @@ public class RewardValidationService {
         // getDiagnostics() should be empty if everything is fine,
         // otherwise, return a generic error
         if (errors.isEmpty() && !diagnostics.getDiagnostics().isEmpty()) {
-            errors.add("ERROR: Invalid reward function");
+            errors.add(invalidRewardFunctionText);
         }
         return errors;
+    }
+
+    private static Boolean containsOnlyComments(String rewardFunction) {
+        final String multilineCommentRe = "(?:\\/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+\\/)";
+        final String commentRe = "\\/\\*(.|[\\r\\n])*?\\*\\/|(\\/\\/).*";
+        String processedRewardFunction = rewardFunction;
+        processedRewardFunction = processedRewardFunction.replaceAll(multilineCommentRe, "");
+        processedRewardFunction = processedRewardFunction.replaceAll(commentRe, "");
+        processedRewardFunction = processedRewardFunction.replaceAll("[\\s\\r\\n]", "");
+        return processedRewardFunction.isEmpty();
     }
 
     private static String fillInTemplate(String rewardFunction, List<RewardVariable> rewardVariables){

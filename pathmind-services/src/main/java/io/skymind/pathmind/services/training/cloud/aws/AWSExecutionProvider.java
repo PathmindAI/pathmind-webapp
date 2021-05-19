@@ -382,6 +382,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_4_0:
             case VERSION_1_5_0:
             case VERSION_1_6_0:
+            case VERSION_1_6_1:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -495,6 +496,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_4_0:
             case VERSION_1_5_0:
             case VERSION_1_6_0:
+            case VERSION_1_6_1:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -566,7 +568,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
                 var("FREEZING", String.valueOf(job.getEnv().isFreezing())),
-                var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1")
+                var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
+                var("ACTIONMASKS", String.valueOf(job.isActionMask()))
         ));
 
         if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {

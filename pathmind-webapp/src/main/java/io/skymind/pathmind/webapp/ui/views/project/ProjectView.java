@@ -25,6 +25,7 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.project.ProjectService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
@@ -33,7 +34,6 @@ import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.DateAndTimeUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -86,6 +86,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ModelCheckerService modelCheckerService;
     @Autowired
     private ModelService modelService;
+
+    @Autowired
+    private ProjectService projectService;
 
     private long projectId;
     private Long modelId;
@@ -202,20 +205,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private MultiselectComboBox<RewardVariable> createMetricSelectionGroup() {
         MultiselectComboBox<RewardVariable> multiSelectGroup = new MultiselectComboBox<>();
-        Map<String, Column> experimentGridAdditionalColumns = experimentGrid.getAdditionalColumnList();
         multiSelectGroup.setRenderer(TemplateRenderer.<RewardVariable>of("[[item.name]]").withProperty("name", RewardVariable::getName));
         multiSelectGroup.setItemLabelGenerator(rewardVariable -> rewardVariable.getName());
         multiSelectGroup.setItems(rewardVariables);
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         multiSelectGroup.addSelectionListener(event -> {
-            RewardVariable addedSelection = event.getAddedSelection().stream().findFirst().orElse(null);
-            if (addedSelection != null) {
-                experimentGrid.addOrShowColumn(addedSelection);
-            }
-            RewardVariable removedSelection = event.getRemovedSelection().stream().findFirst().orElse(null);
-            if (removedSelection != null) {
-                experimentGridAdditionalColumns.get(removedSelection.getName()).setVisible(false);
-            }
+            event.getAddedSelection().stream().findFirst().ifPresent(experimentGrid::addAdditionalColumn);
+            event.getRemovedSelection().stream().forEach(experimentGrid::removeAdditionalColumn);
         });
         return multiSelectGroup;
     }
@@ -295,7 +291,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void loadModelData() {
         modelId = selectedModel != null ? selectedModel.getId() : null;
-        experiments = experimentDAO.getExperimentsForModel(modelId);
+        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 

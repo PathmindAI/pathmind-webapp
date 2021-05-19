@@ -15,11 +15,15 @@ public class PathmindNumberUtils {
      * We may want to change it to Inter-Quartile Range in the future depending on what the users find useful.
      */
     public static String calculateUncertainty(List<Double> list) {
-        DoubleSummaryStatistics stat = list.stream().mapToDouble(Double::doubleValue).summaryStatistics();
+        double average = list.stream().mapToDouble(Double::doubleValue).summaryStatistics().getAverage();
         double variance = calculateVariance(list);
+        return calculateUncertainty(average, variance);
+    }
+
+    public static String calculateUncertainty(double avg, double variance) {
         double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
         double uncertainty = 2 * sd;
-        return setSigFigBasedOnAnotherDouble(stat.getAverage(), uncertainty, 2) + "\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
+        return setSigFigBasedOnAnotherDouble(avg, uncertainty, 2) + "\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
     }
 
     /**
