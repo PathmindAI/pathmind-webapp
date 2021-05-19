@@ -43,7 +43,7 @@ public class ExperimentManifestRepository {
                         .imageUrl(URI.create("frontend/images/callcenters.png"))
                         .description("Calls are made to each of five interconnected call centers simultaneously. Once a call is received, each call center will decide to either accept the call or transfer it to another call center. A call is balked when the wait time for a particular caller exceeds a randomly initialized threshold (between 20 and 25 minutes). We compare the reinforcement learning policy with three call routing heuristics (no call transferring, shortest queue, and most efficient call center). The objective is to minimize wait times and to minimize balked callers.")
                         .result("The reinforcement learning policy trained using Pathmind outperforms the heuristics by over 9.6%.")
-                        .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/CallCenterPathmindDemo.zip"))
+                        .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/CallCenterPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
                                 "reward += after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes"
