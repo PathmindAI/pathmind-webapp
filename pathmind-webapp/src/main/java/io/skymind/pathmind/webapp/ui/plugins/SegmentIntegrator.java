@@ -164,10 +164,6 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_EDIT_INFO);
     }
 
-    public void navigatedToPricingFromAccountView() {
-        track(EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW);
-    }
-
     public void upgradeToProPlanClicked() {
         track(EVENT_CHOSE_PRO_PLAN);
     }
