@@ -185,4 +185,9 @@ public class GenericPageSteps {
     public void clickKeyboardEnterBtnOnConfirmationPopup() {
         genericPage.clickKeyboardEnterBtnOnConfirmationPopup();
     }
+
+    @Step
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        genericPage.clickPopUpDialogKeepMySubscriptionBtn();
+    }
 }

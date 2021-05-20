@@ -314,4 +314,11 @@ public class GenericPage extends PageObject {
     public void clickKeyboardEnterBtnOnConfirmationPopup() {
         getDriver().findElement(By.cssSelector("confirm-popup")).sendKeys(Keys.ENTER);
     }
+
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        popupShadowRoot.findElement(By.cssSelector("#cancel")).click();
+    }
 }

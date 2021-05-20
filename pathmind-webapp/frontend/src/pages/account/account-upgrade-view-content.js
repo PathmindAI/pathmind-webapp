@@ -176,8 +176,8 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="popular-tag">POPULAR</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$500</span>/Month</span>
-                <span class="additional-info">For yearly subscription per seat</span>
+                <span><span class="price">$499</span>/Month</span>
+                <span class="additional-info">Billed month-to-month</span>
             </span>
             <ul class="features">
                 <li>200 Experiments Per Month</li>
@@ -192,8 +192,8 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="details">For Consultancies & Corporate Teams</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$1,000</span>/Month</span>
-                <span class="additional-info">For yearly subscription per seat</span>
+                <span><span class="price">$999</span>/Month</span>
+                <span class="additional-info">Billed month-to-month; price is per user</span>
             </span>
             <ul class="features">
                 <li>2,000 Experiments Per Month</li>
