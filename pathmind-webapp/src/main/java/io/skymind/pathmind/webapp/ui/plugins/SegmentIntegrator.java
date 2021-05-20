@@ -37,6 +37,7 @@ import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOG
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_MARKETING_SITE_LEAD;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_OBSERVATIONS_SELECTED;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
@@ -163,16 +164,20 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_EDIT_INFO);
     }
 
-    public void navigatedToPricingFromAccountView() {
-        track(EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW);
-    }
-
     public void upgradeToProPlanClicked() {
         track(EVENT_CHOSE_PRO_PLAN);
     }
 
     public void accountUpgradedPro() {
         track(EVENT_ACCOUNT_UPGRADE_PRO);
+    }
+
+    public void navigatedToPricingFromAccountView() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW);
+    }
+
+    public void navigatedToPricingFromNewExpViewBanner() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER);
     }
 
     public void subscriptionCancelled() {
