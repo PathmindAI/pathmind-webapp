@@ -17,11 +17,12 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ACCOUNT_UPGRADE;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ACCOUNT_UPGRADE_PRO;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ARCHIVED;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CANCEL_SUBSCRIPTION;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHOSE_PRO_PLAN;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHANGE_PW;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_FIRST_PROJECT;
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT;
@@ -163,8 +164,16 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_EDIT_INFO);
     }
 
-    public void accountUpgraded() {
-        track(EVENT_ACCOUNT_UPGRADE);
+    public void navigatedToPricingFromAccountView() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW);
+    }
+
+    public void upgradeToProPlanClicked() {
+        track(EVENT_CHOSE_PRO_PLAN);
+    }
+
+    public void accountUpgradedPro() {
+        track(EVENT_ACCOUNT_UPGRADE_PRO);
     }
 
     public void navigatedToPricingFromAccountView() {

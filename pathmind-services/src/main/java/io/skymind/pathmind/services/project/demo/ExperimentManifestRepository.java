@@ -39,23 +39,14 @@ public class ExperimentManifestRepository {
                         )
                         .build(),
                 ExperimentManifest.builder()
-                        .name("Autonomous Moon Landing")
-                        .imageUrl(URI.create("https://downloads.intercomcdn.com/i/o/222782983/ffe1bbf2a4c5766698a7dbca/Overview.png"))
-                        .description("This model simulates a lunar module as it attempts to make a safe landing on the moon. Several key factors are considered as the module approaches the designated landing area and each must have values within a safe zone to avoid crashing or drifting into space.")
-                        .result("The AI learns to land safely on the moon without human intervention.")
-                        .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/MoonLandingPathmindDemoExport.zip"))
+                        .name("Interconnected Call Centers")
+                        .imageUrl(URI.create("frontend/images/callcenters.png"))
+                        .description("Calls are made to each of five interconnected call centers simultaneously. Once a call is received, each call center will decide to either accept the call or transfer it to another call center. A call is balked when the wait time for a particular caller exceeds a randomly initialized threshold (between 20 and 25 minutes). We compare the reinforcement learning policy with three call routing heuristics (no call transferring, shortest queue, and most efficient call center). The objective is to minimize wait times and to minimize balked callers.")
+                        .result("The reinforcement learning policy trained using Pathmind outperforms the heuristics by over 9.6%.")
+                        .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/CallCenterPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
-                                "reward += after.fuelRemaining - before.fuelRemaining;\n" +
-                                "reward += Math.abs(before.distanceToX) - Math.abs(after.distanceToX);\n" +
-                                "reward += Math.abs(before.distanceToY) - Math.abs(after.distanceToY);\n" +
-                                "reward += before.distanceToZ - after.distanceToZ;\n\n" +
-                                "reward += after.landed == 1 ? 3 : 0;\n" +
-                                "reward -= after.crashed == 1 ? 0.3 : 0;\n" +
-                                "reward -= after.gotAway == 1 ? 1 : 0;\n\n" +
-                                "reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedX) > 200 ? 0.01 : 0;\n" + 
-                                "reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedY) > 200 ? 0.01 : 0;\n" +
-                                "reward -= before.distanceToZ <= 100. / 1500. && Math.abs(after.speedZ) > 200 ? 0.01 : 0;\n"
+                                "reward -= after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes"
                                 //@formatter:on
                         )
                         .build()

@@ -9,8 +9,6 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -22,8 +20,6 @@ import org.springframework.context.annotation.Scope;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewContent.Model> {
 
-    private static Logger log = LogManager.getLogger(UpgradeDoneViewContent.class);
-
     @Id("done")
     private Button done;
 
@@ -33,14 +29,11 @@ public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewConte
     public UpgradeDoneViewContent(CurrentUser currentUser,
                                   @Value("${pathmind.contact-support.address}") String contactLink) {
         user = currentUser.getUser();
-        getModel().setContactLink(contactLink);
         getModel().setPlan("Professional");
         done.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
     }
 
     public interface Model extends TemplateModel {
-        void setContactLink(String contactLink);
-
         void setPlan(String plan);
     }
 

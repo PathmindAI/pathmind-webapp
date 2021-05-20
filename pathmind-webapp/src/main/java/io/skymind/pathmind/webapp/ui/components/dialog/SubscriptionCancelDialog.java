@@ -10,8 +10,8 @@ public class SubscriptionCancelDialog extends ConfirmPopup {
 
     public SubscriptionCancelDialog(UI ui, Long periodEndEpoch, Command cancelEventHandler) {
         this.setHeader("Cancel Your Subscription?");
-        this.setConfirmButton("Cancel Subscription", cancelEventHandler, "error primary");
-        this.setCancelButtonText("Cancel");
+        this.setConfirmButton("Yes, Cancel", cancelEventHandler, "error primary");
+        this.setCancelButtonText("Keep My Subscription");
         VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
             this.setMessage(String.format("Cancellation will be effective at the end of your current billing period on %s.",
                     DateAndTimeUtils.formatDateAndTimeShortFormatter(DateAndTimeUtils.fromEpoch(periodEndEpoch), userTimeZoneId)));

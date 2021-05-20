@@ -9,7 +9,11 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.text.DateFormatSymbols;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,7 +39,7 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(2) .info div:nth-child(1)")).getText(), containsString("Password"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Access Token"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Early Access"));
+        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Basic"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(1)")).getText(), containsString("Payment"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(2)")).getText(), containsString("Billing Information"));
         assertThat(getDriver().findElement(By.id("editInfoBtn")).isDisplayed(), is(true));
@@ -119,8 +123,8 @@ public class AccountPage extends PageObject {
     }
 
     public void clickAccountFooterBtn(String btn) {
-        for(WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))){
-            if (element.getText().contains(btn)){
+        for (WebElement element : getDriver().findElements(By.xpath("//app-footer/descendant::ul/li/a"))) {
+            if (element.getText().contains(btn)) {
                 element.click();
                 break;
             }
@@ -139,15 +143,15 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::h2")).getText(), is("Professional"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='details']")).getText(), is("For Professional Simulation Engineers"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='popular-tag']")).getText(), is("POPULAR"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$500"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='additional-info']")).getText(), is("For yearly subscription per seat"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$499"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("200 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::vaadin-button")).getText(), is("Choose Pro"));
 
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::h2")).getText(), is("Enterprise"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='details']")).getText(), is("For Consultancies & Corporate Teams"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$1,000"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='additional-info']")).getText(), is("For yearly subscription per seat"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$999"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month; price is per user"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("2,000 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included\nPolicy Serving Enabled\nRL Advisory and Training"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::vaadin-button")).getText(), is("Contact Us"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::a")).getAttribute("href"), is("mailto:support@pathmind.com"));
@@ -164,5 +168,61 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.id("state")).getText(), containsString("State"));
         assertThat(getDriver().findElement(By.id("zip")).getText(), containsString("Zip"));
         assertThat(getDriver().findElement(By.id("card-element")).getText(), containsString(""));
+    }
+
+    public void fillPaymentFormWithStripeTestCard() {
+        WebElement nameOnCardShadow = utils.expandRootElement(getDriver().findElement(By.id("name")));
+        nameOnCardShadow.findElement(By.cssSelector("input")).sendKeys("Test Name");
+        WebElement billingAddressShadow = utils.expandRootElement(getDriver().findElement(By.id("address")));
+        billingAddressShadow.findElement(By.cssSelector("input")).sendKeys("Jl. Pantai Kedonganan, Kedonganan, Kuta, Kabupaten Badung, Bali");
+        WebElement cityShadow = utils.expandRootElement(getDriver().findElement(By.id("city")));
+        cityShadow.findElement(By.cssSelector("input")).sendKeys("Kuta");
+        WebElement stateShadow = utils.expandRootElement(getDriver().findElement(By.id("state")));
+        stateShadow.findElement(By.cssSelector("input")).sendKeys("Kedonganan");
+        WebElement zipShadow = utils.expandRootElement(getDriver().findElement(By.id("zip")));
+        zipShadow.findElement(By.cssSelector("input")).sendKeys("80361");
+        getDriver().switchTo().frame(getDriver().findElement(By.xpath("//iframe[@title='Secure card payment input frame']")));
+        getDriver().findElement(By.cssSelector("div[class='CardNumberField-input-wrapper'] input")).sendKeys("4242424242424242");
+        getDriver().findElement(By.cssSelector("span[class='CardField-expiry CardField-child'] input")).sendKeys("1222");
+        getDriver().findElement(By.cssSelector("span[class='CardField-cvc CardField-child'] input")).sendKeys("212");
+        getDriver().switchTo().defaultContent();
+    }
+
+    public void paymentPageClickUpgradeBtn() {
+        getDriver().findElement(By.id("signUp")).click();
+    }
+
+    public void checkAccountSubscriptionIs(String subscription) {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@class='subscription-wrapper']/descendant::div[@class='data']")).getText(), is(subscription));
+    }
+
+    public void checkUpgradedToProfessionalPageIsShown() {
+        assertThat(getDriver().findElement(By.xpath("//h2")).getText(), is("Upgraded to Professional!"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='inner-content']//div")).getText(), is("A confirmation email will be sent after payment is processed."));
+    }
+
+    public void checkCancelSubscriptionPopUp() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
+        assertThat(header.getText(), is("Cancel Your Subscription?"));
+        assertThat(popupShadowRoot.findElement(By.className("message")).getText(), containsString("Cancellation will be effective at the end of your current billing period on"));
+    }
+
+    public void clickPopUpDialogYesCancel() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        popupShadowRoot.findElement(By.cssSelector("#confirm")).click();
+    }
+
+    public void checkAccountSubscriptionHint() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
+        LocalDateTime now = LocalDateTime.now();
+        String[] shortMonths = new DateFormatSymbols().getShortMonths();
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")), "Subscription will be cancelled on "));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")).getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
     }
 }
