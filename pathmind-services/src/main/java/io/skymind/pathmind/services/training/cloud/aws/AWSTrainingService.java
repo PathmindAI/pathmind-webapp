@@ -59,39 +59,39 @@ public class AWSTrainingService extends TrainingService {
             rewFctName = !split[2].equals("null") ? split[2] : null;
         }
 
-        final JobSpec spec = new JobSpec(
-                exp.getProject().getPathmindUserId(),
-                model.getId(),
-                exp.getId(),
-                run.getId(),
-                modelFileId,
-                null,
-                "", // not collected via UI yet
-                "", // not collected via UI yet
-                exp.getRewardFunction(),
-                "",
-                observations,
-                iterations,
-                executionEnvironment,
-                ModelType.fromValue(model.getModelType()),
-                DiscoveryRun,
-                maxTimeInSec,
-                numSamples,
-                ModelType.isMultiModel(ModelType.fromValue(model.getModelType())),
-                false,
-                25,
-                false,
-                true,
-                true,
-                StringUtils.defaultString(model.getMainAgent()),
-                StringUtils.defaultString(model.getExperimentClass()),
-                StringUtils.defaultString(model.getExperimentType()),
+        final JobSpec spec = JobSpec.builder()
+                .userId(exp.getProject().getPathmindUserId())
+                .modelId(model.getId())
+                .experimentId(exp.getId())
+                .runId(run.getId())
+                .modelFileId(modelFileId)
+                .checkpointFileId(null)
+                .variables("") // not collected via UI yet
+                .reset("") // not collected via UI yet
+                .reward(exp.getRewardFunction())
+                .metrics("")
+                .selectedObservations(observations)
+                .iterations(iterations)
+                .env(executionEnvironment)
+                .modelType(ModelType.fromValue(model.getModelType()))
+                .type(DiscoveryRun)
+                .maxTimeInSec(maxTimeInSec)
+                .numSamples(numSamples)
+                .multiAgent(ModelType.isMultiModel(ModelType.fromValue(model.getModelType())))
+                .resume(false)
+                .checkpointFrequency(25)
+                .userLog(false)
+                .recordMetricsRaw(true)
+                .namedVariables(true)
+                .mainAgentName(StringUtils.defaultString(model.getMainAgent()))
+                .expClassName(StringUtils.defaultString(model.getExperimentClass()))
+                .expClassType(StringUtils.defaultString(model.getExperimentType()))
                 // doesn't need to pass package name for AL model, only need for PY model
-                packageName,
-                objSelection,
-                rewFctName,
-                model.isActionmask()
-        );
+                .environment(packageName)
+                .obsSelection(objSelection)
+                .rewFctName(rewFctName)
+                .actionMask(model.isActionmask())
+                .build();
 
         return executionProvider.execute(spec);
     }

@@ -7,11 +7,12 @@ import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Builder
 public class JobSpec {
     private final long userId;
     private final long modelId;
