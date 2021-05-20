@@ -124,6 +124,8 @@ spec:
                 secretKeyRef:
                   name: pathmindstripewebhooksigninsecret
                   key: PATHMINDSTRIPEWEBHOOKSIGNINGSECRET
+            - name: PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID
+              value: "{{ .Values.env.PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

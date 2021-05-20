@@ -192,4 +192,9 @@ public class GenericPageStepDefinitions {
     public void waitForLoadingBarDisappear() {
         utils.waitForLoadingBar();
     }
+
+    @When("^Click pop-up dialog 'Keep My Subscription' btn$")
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        genericPageSteps.clickPopUpDialogKeepMySubscriptionBtn();
+    }
 }
