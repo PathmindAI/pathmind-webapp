@@ -53,8 +53,6 @@ public class ExperimentGridService {
             experiments = experiments.stream().sorted(metricsComparator).skip(originOffset).limit(originLimit).collect(Collectors.toList());
         }
 
-        experiments.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e)));
-
         return experiments;
     }
 
