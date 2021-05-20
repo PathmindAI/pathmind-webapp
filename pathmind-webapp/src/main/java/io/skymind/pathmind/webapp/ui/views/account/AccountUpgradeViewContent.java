@@ -9,6 +9,8 @@ import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -24,13 +26,20 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
 
     private PathmindUser user;
 
+    private SegmentIntegrator segmentIntegrator;
+
     @Autowired
     public AccountUpgradeViewContent(CurrentUser currentUser,
-                                     @Value("${pathmind.contact-support.address}") String contactLink) {
+                                     @Value("${pathmind.contact-support.address}") String contactLink,
+                                     SegmentIntegrator segmentIntegrator) {
         getModel().setContactLink(contactLink);
         user = currentUser.getUser();
+        this.segmentIntegrator = segmentIntegrator;
 
-        proBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(PaymentView.class)));
+        proBtn.addClickListener(e -> getUI().ifPresent(ui -> {
+            segmentIntegrator.upgradeToProPlanClicked();
+            ui.navigate(PaymentView.class);
+        }));
     }
 
     public interface Model extends TemplateModel {

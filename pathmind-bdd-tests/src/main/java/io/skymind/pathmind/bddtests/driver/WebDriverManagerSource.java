@@ -44,7 +44,7 @@ public class WebDriverManagerSource implements DriverSource {
                 options.addArguments("--disable-dev-shm-usage");
                 options.addArguments("--verbose");
                 options.addArguments("--disable-popup-blocking");
-                options.addArguments("--lang=en");
+                options.addArguments("--lang=en-US");
 //                options.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
 //                options.setExperimentalOption("useAutomationExtension", false);
 //                prefs.put("credentials_enable_service", false);
