@@ -7,6 +7,7 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class ExperimentGridService {
 
     private final ExperimentDAO experimentDAO;
+    private final RunDAO runDAO;
 
     private final Set<String> experimentSortingFields = Set.of("NAME", "DATE_CREATED", "TRAINING_STATUS");
 
@@ -50,6 +52,8 @@ public class ExperimentGridService {
             }
             experiments = experiments.stream().sorted(metricsComparator).skip(originOffset).limit(originLimit).collect(Collectors.toList());
         }
+
+        experiments.forEach(e -> e.setRuns(runDAO.getRunsForExperiment(e)));
 
         return experiments;
     }
