@@ -307,12 +307,11 @@ public class GenericPage extends PageObject {
     }
 
     public void clickKeyboardEnterBtn() {
-        WebElement shadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-dialog-overlay")));
-        shadow.findElement(By.cssSelector("#overlay")).sendKeys(Keys.ENTER);
+        WebElement shadow = utils.expandRootElement(getDriver().findElement(By.xpath("//div[@class='draggable draggable-leaf-only']/vaadin-text-field")));
+        shadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
     }
 
     public void clickKeyboardEnterBtnOnConfirmationPopup() {
-        WebElement shadow = utils.expandRootElement(getDriver().findElement(By.xpath("//confirm-popup")));
-        shadow.findElement(By.cssSelector("#confirm")).sendKeys(Keys.ENTER);
+        getDriver().findElement(By.cssSelector("confirm-popup")).sendKeys(Keys.ENTER);
     }
 }
