@@ -27,6 +27,7 @@ public class ExecutionEnvironment {
     private int maxMemory;
     private String scheduler;
     private boolean freezing;
+    private boolean longerTraining;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;

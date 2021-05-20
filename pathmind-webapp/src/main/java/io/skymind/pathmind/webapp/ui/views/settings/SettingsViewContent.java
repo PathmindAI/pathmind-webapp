@@ -65,6 +65,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("freezingCB")
     private ComboBox<String> freezing;
 
+    @Id("longerTrainingCB")
+    private ComboBox<String> longerTraining;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -91,6 +94,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
+            env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -181,6 +185,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         freezing.setLabel("Enable Freezing");
         freezing.setPlaceholder(String.valueOf(env.isFreezing()));
         freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
+
+        // init longer training
+        List<String> longerTrainings = List.of("TRUE", "FALSE");
+
+        longerTraining.setItems(longerTrainings);
+        longerTraining.setLabel("Enable Longer Training");
+        longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
+        longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
     }
 
     public interface Model extends TemplateModel {
