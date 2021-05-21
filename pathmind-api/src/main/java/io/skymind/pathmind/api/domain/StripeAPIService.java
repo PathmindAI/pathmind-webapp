@@ -82,7 +82,7 @@ public class StripeAPIService {
                     .setPriceData(
                     SessionCreateParams.LineItem.PriceData.builder()
                         .setCurrency("usd")
-                        .setUnitAmount(50000L)
+                        .setUnitAmount(49900L)
                         .setProductData(
                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
                             .setName("Concierge Onboarding Service")

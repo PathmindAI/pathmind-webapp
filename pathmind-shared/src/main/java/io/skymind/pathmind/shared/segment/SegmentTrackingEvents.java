@@ -26,6 +26,11 @@ public class SegmentTrackingEvents {
     public static final String EVENT_CHANGE_PW = "Password Changed";
     public static final String EVENT_EDIT_INFO = "Info Edited";
     public static final String EVENT_ACCOUNT_UPGRADE = "Account Upgraded";
+    public static final String EVENT_ACCOUNT_UPGRADE_PRO = "Account Upgraded to Professional";
+    public static final String EVENT_ACCOUNT_UPGRADE_ENT = "Account Upgraded to Enterprise";
+    public static final String EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW = "Navigated to Pricing View from Account View";
+    public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER = "Navigated to Pricing View from New Experiment View Banner";
+    public static final String EVENT_CHOSE_PRO_PLAN = "Pro Plan Chosen on Pricing Page";
     public static final String EVENT_CANCEL_SUBSCRIPTION = "Subscription Cancelled";
     public static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Notes on Models View Updated";
     public static final String EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW = "Notes on Experiments View Updated";

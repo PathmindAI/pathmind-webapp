@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -95,6 +97,10 @@ public class ExperimentDAO {
             setupDefaultRewardFunction(experiment);
         }
         return Optional.ofNullable(experiment);
+    }
+
+    public int getExperimentsWithRunStatusCountForUser(long userId, Collection<Integer> runStatuses) {
+        return ExperimentRepository.getExperimentsWithRunStatusCountForUser(ctx, userId, CollectionUtils.emptyIfNull(runStatuses));
     }
 
     private void setupDefaultRewardFunction(Experiment experiment) {
