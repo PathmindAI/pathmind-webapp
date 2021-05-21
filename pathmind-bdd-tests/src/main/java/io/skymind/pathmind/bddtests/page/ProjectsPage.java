@@ -42,7 +42,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void checkThatProjectExistInProjectsList(String projectName) {
-        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
+        utils.moveToElementRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + projectName + "']"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
     }
 
@@ -70,19 +70,6 @@ public class ProjectsPage extends PageObject {
         waitFor(ExpectedConditions.elementToBeClickable(project));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", project);
-    }
-
-    public void clickEditProjectIconFromProjectsPage(String projectName) {
-        waitABit(3000);
-        WebElement project = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(project);
-        actions.perform();
-        WebElement editProjectBtn = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-horizontal-layout/descendant::iron-icon[@icon='vaadin:edit']"));
-        actions.moveToElement(editProjectBtn);
-        actions.click();
-        actions.perform();
-        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='section-title-label' and text()='Rename project']")));
     }
 
     public void checkPageTitleIsProjects(String title) {
