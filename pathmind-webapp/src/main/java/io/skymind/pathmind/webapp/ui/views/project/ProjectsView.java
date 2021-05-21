@@ -41,7 +41,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
-import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -150,16 +149,7 @@ public class ProjectsView extends PathMindDefaultView {
         projectGrid = new Grid<Project>();
         projectGrid.addThemeName("projects");
 
-        projectGrid.addComponentColumn(project -> {
-            String projectName = project.getName();
-            Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-            renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            renameProjectButton.addClassName("action-button");
-            HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    new Span(projectName), renameProjectButton);
-            projectNameColumn.addClassName("project-name-column");
-            return projectNameColumn;
-        })
+        projectGrid.addColumn(Project::getName)
                 .setHeader("Name")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -210,15 +200,6 @@ public class ProjectsView extends PathMindDefaultView {
 
     private List<Project> getProjects() {
         return projects;
-    }
-
-    private void renameProject(Project project) {
-        RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-            projectGrid.getDataProvider().refreshItem(project);
-            // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-            projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); }, 0)");
-        });
-        dialog.open();
     }
 
     @Override
