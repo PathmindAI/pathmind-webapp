@@ -129,7 +129,7 @@ class ExperimentRepository {
     protected static List<Experiment> getExperimentsInModelForUser(DSLContext ctx, ModelExperimentsQueryParams modelExperimentsQueryParams) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
         condition = condition.and(PROJECT.PATHMIND_USER_ID.eq(modelExperimentsQueryParams.getUserId()));
-        condition = condition.and(EXPERIMENT.ARCHIVED.eq(modelExperimentsQueryParams.getIsArchived()));
+        condition = condition.and(EXPERIMENT.ARCHIVED.eq(modelExperimentsQueryParams.isArchived()));
         OrderField<?> orderField = EXPERIMENT.DATE_CREATED.sort(SortOrder.DESC);
         if (!modelExperimentsQueryParams.getSortBy().isEmpty()) {
             SortOrder fieldSortOrder = modelExperimentsQueryParams.isDescending() ? SortOrder.DESC : SortOrder.ASC;

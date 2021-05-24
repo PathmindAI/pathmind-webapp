@@ -1,70 +1,16 @@
 package io.skymind.pathmind.db.utils;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
-public final class ModelExperimentsQueryParams {
-    private long userId;
-    private long modelId;
-    private int limit;
-    private int offset;
-    private boolean isArchived;
-    private String sortBy;
-    private boolean descending;
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public long getModelId() {
-        return modelId;
-    }
-
-    public void setModelId(long modelId) {
-        this.modelId = modelId;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public boolean getIsArchived() {
-        return isArchived;
-    }
-
-    public void setIsArchived(boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-
-    public String getSortBy() {
-        return sortBy;
-    }
-
-    public void setSortBy(String sortBy) {
-        this.sortBy = sortBy;
-    }
-
-    public boolean isDescending() {
-        return descending;
-    }
-
-    public void setDescending(boolean descending) {
-        this.descending = descending;
-    }
+@Getter
+public class ModelExperimentsQueryParams {
+    private final long userId;
+    private final long modelId;
+    private final int limit;
+    private final int offset;
+    private final boolean isArchived;
+    private final String sortBy;
+    private final boolean descending;
 }
