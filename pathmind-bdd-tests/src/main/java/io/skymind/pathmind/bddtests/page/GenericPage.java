@@ -306,6 +306,15 @@ public class GenericPage extends PageObject {
         return (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
     }
 
+    public void clickKeyboardEnterBtn() {
+        WebElement shadow = utils.expandRootElement(getDriver().findElement(By.xpath("//div[@class='draggable draggable-leaf-only']/vaadin-text-field")));
+        shadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
+    }
+
+    public void clickKeyboardEnterBtnOnConfirmationPopup() {
+        getDriver().findElement(By.cssSelector("confirm-popup")).sendKeys(Keys.ENTER);
+    }
+
     public void clickPopUpDialogKeepMySubscriptionBtn() {
         WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
