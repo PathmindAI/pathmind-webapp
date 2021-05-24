@@ -59,8 +59,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("maxMemoryCB")
     private ComboBox<String> maxMemory;
 
+    @Id("schedulerCB")
+    private ComboBox<String> scheduler;
+
     @Id("freezingCB")
     private ComboBox<String> freezing;
+
+    @Id("longerTrainingCB")
+    private ComboBox<String> longerTraining;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -86,7 +92,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
             env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
             env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+            env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
+            env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -162,6 +170,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
 
+        // init scheduler
+        List<String> schedulers = List.of("PBT", "PB2");
+
+        scheduler.setItems(schedulers);
+        scheduler.setLabel("Scheduler");
+        scheduler.setPlaceholder(env.getScheduler());
+        scheduler.setValue(env.getScheduler());
+
         // init freezing
         List<String> freezings = List.of("TRUE", "FALSE");
 
@@ -169,6 +185,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         freezing.setLabel("Enable Freezing");
         freezing.setPlaceholder(String.valueOf(env.isFreezing()));
         freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
+
+        // init longer training
+        List<String> longerTrainings = List.of("TRUE", "FALSE");
+
+        longerTraining.setItems(longerTrainings);
+        longerTraining.setLabel("Enable Longer Training");
+        longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
+        longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
     }
 
     public interface Model extends TemplateModel {

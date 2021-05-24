@@ -32,8 +32,8 @@ public class DemoProjectsView extends PageObject {
     private static final String SECOND_DEMO_TITLE = "Product Delivery";
     private static final String SECOND_DEMO_URL = "https://downloads.intercomcdn.com/i/o/233456333/5221ec61b7e207c74823733d/image.png";
 
-    private static final String THIRD_DEMO_TITLE = "Autonomous Moon Landing";
-    private static final String THIRD_DEMO_URL = "https://downloads.intercomcdn.com/i/o/222782983/ffe1bbf2a4c5766698a7dbca/Overview.png";
+    private static final String THIRD_DEMO_TITLE = "Interconnected Call Centers";
+    private static final String THIRD_DEMO_URL = "/frontend/images/callcenters.png";
 
     public void checkDemoListElements() {
         assertThat(demoPopupTitle.getText(), is(DEMO_POPUP_TITLE));
@@ -44,7 +44,7 @@ public class DemoProjectsView extends PageObject {
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(2) > img")).getAttribute("src"), is(SECOND_DEMO_URL));
 
         assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > span")).getText(), is(THIRD_DEMO_TITLE));
-        assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > img")).getAttribute("src"), is(THIRD_DEMO_URL));
+        assertThat(demoList.findElement(By.cssSelector("vaadin-horizontal-layout > vaadin-vertical-layout:nth-child(3) > img")).getAttribute("src"), containsString(THIRD_DEMO_URL));
     }
 
     public void clickDemoListItem(String model) {
@@ -56,7 +56,7 @@ public class DemoProjectsView extends PageObject {
             case "Product Delivery":
                 btnNumber = "2";
                 break;
-            case "Autonomous Moon Landing":
+            case "Interconnected Call Centers":
                 btnNumber = "3";
                 break;
         }

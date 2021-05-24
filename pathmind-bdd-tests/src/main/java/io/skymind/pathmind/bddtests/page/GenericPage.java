@@ -305,4 +305,11 @@ public class GenericPage extends PageObject {
     public String definePanel(String slot) {
         return (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
     }
+
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        popupShadowRoot.findElement(By.cssSelector("#cancel")).click();
+    }
 }

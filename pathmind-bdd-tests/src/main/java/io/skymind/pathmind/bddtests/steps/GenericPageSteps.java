@@ -175,4 +175,9 @@ public class GenericPageSteps {
     public void openUrlFromTheVariable(String url) {
         genericPage.openUrlFromTheVariable(url);
     }
+
+    @Step
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        genericPage.clickPopUpDialogKeepMySubscriptionBtn();
+    }
 }

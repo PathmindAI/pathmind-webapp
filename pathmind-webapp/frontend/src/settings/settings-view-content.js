@@ -14,7 +14,9 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-combo-box id="helperVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="numSampleCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="maxMemoryCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="schedulerCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="freezingCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="longerTrainingCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-vertical-layout id="buttonsCont">
                             	<vaadin-button id="saveBtn" theme="primary">
                                     Save

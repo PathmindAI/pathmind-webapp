@@ -5,8 +5,10 @@ import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -20,6 +22,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -38,6 +41,7 @@ import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.SaveDraftAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.StartRunAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
@@ -58,6 +62,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private FavoriteStar favoriteStar;
+    private Div upgradeBanner;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -66,6 +71,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private Anchor downloadModelLink;
     private boolean isNeedsSaving = false;
     private boolean isPythonModel = false;
+    private boolean hasRunningExperiments = false;
+    private boolean isBasicPlanUser = true;
 
     private final int allowedRunsNoVerified;
 
@@ -111,6 +118,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         mainPanel.setSpacing(true);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
+        createUpgradeBanner();
         favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
@@ -118,6 +126,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
+                upgradeBanner,
                 WrapperUtils.wrapWidthFullHorizontal(
                         titleWithStar,
                         downloadModelLink
@@ -180,6 +189,18 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         }
     }
 
+    private void createUpgradeBanner() {
+        Button upgradeLink = new Button("upgrade now", click -> {
+            segmentIntegrator.navigatedToPricingFromNewExpViewBanner();
+            getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
+        });
+        upgradeLink.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        upgradeBanner = new Div(new Span("You have one experiment running already. Please"));
+        upgradeBanner.add(upgradeLink);
+        upgradeBanner.add(new Span("to run multiple experiments in parallel."));
+        upgradeBanner.addClassName(CssPathmindStyles.WARNING_LABEL);
+    }
+
     private void createButtons() {
         // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
@@ -197,6 +218,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         Model model = experiment.getModel();
         boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
         return ModelUtils.isValidModel(model)
+                && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
                 && (isPyModel || rewardFunctionEditor.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
@@ -246,12 +268,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
+        isBasicPlanUser = userService.getCurrentUser().isBasicPlanUser();
+        hasRunningExperiments = experimentDAO.getExperimentsWithRunStatusCountForUser(userService.getCurrentUserId(), RunStatus.RUNNING_STATES_CODES) > 0;
         splitButton.setVisible(!experiment.isArchived());
         favoriteStar.setValue(experiment.isFavorite());
         unarchiveExperimentButton.setVisible(experiment.isArchived());
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
+        upgradeBanner.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
     }
 
     @Override

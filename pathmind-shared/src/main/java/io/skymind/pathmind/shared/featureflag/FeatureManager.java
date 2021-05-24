@@ -31,7 +31,7 @@ public class FeatureManager {
             case SEARCH:
                 return true;
             case ACCOUNT_UPGRADE:
-                return false;
+                return true;
             case SIMULATION_METRICS:
                 return simulationMetrics;
             case EXAMPLE_PROJECTS:
