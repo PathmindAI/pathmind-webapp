@@ -59,6 +59,12 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("maxMemoryCB")
     private ComboBox<String> maxMemory;
 
+    @Id("hiddenNodeCB")
+    private ComboBox<String> hiddenNode;
+
+    @Id("hiddenLayerCB")
+    private ComboBox<String> hiddenLayer;
+
     @Id("schedulerCB")
     private ComboBox<String> scheduler;
 
@@ -92,6 +98,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
             env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
             env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+            env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
+            env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
@@ -169,6 +177,22 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setLabel("Max memory size in MB");
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
+
+        // init hidden node
+        List<String> hiddenNodes = List.of("64", "128", "256", "512", "1024");
+
+        hiddenNode.setItems(hiddenNodes);
+        hiddenNode.setLabel("Number of hidden nodes");
+        hiddenNode.setPlaceholder(String.valueOf(env.getHiddenNode()));
+        hiddenNode.setValue(String.valueOf(env.getHiddenNode()));
+
+        // init hidden layer
+        List<String> hiddenLayers = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+
+        hiddenLayer.setItems(hiddenLayers);
+        hiddenLayer.setLabel("Number of hidden layers");
+        hiddenLayer.setPlaceholder(String.valueOf(env.getHiddenLayer()));
+        hiddenLayer.setValue(String.valueOf(env.getHiddenLayer()));
 
         // init scheduler
         List<String> schedulers = List.of("PBT", "PB2");
