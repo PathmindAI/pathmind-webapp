@@ -19,15 +19,18 @@ class PaymentViewContent extends PolymerElement {
     return html`
     <style>
         payment-view-content #card-element {
-            width: 100%;
-            border-radius: var(--lumo-border-radius);
-            background: var(--pm-highlight-medium);
+          width: 100%;
+          padding: 0 var(--lumo-space-s);
+          border: 1px solid var(--pm-grey-color);
+          border-radius: var(--lumo-border-radius);
+          background: var(--pm-highlight-medium);
         }
         payment-view-content .inner-content {
-            max-width: 460px;
+          max-width: 460px;
         }
         payment-view-content .form-cont {
           width: 100%;
+          text-align: left;
           margin: var(--lumo-space-m) auto 0;
         }
         payment-view-content #errorCont {
@@ -150,9 +153,6 @@ class PaymentViewContent extends PolymerElement {
              on-click="submit"
             >Upgrade</vaadin-button
           >
-          <vaadin-button id="cancelSignUpBtn" theme="tertiary" on-click="cancelButtonClicked"
-            >Cancel</vaadin-button
-          >
         </vaadin-vertical-layout>
 
       </vaadin-vertical-layout>
@@ -193,18 +193,13 @@ class PaymentViewContent extends PolymerElement {
 
     const style = {
       base: {
-        fontSize: "17px",
-        iconColor: "#666EE8",
-        color: "#31325F",
-        lineHeight: "40px",
-        fontWeight: 300
-        //'::placeholder': {
-        //    color: '#CFD7E0',
-        //},
+        fontSize: "16px",
+        color: "#1a2949",
+        lineHeight: "32px"
       }
     };
 
-    // Initialize Stripe with the key that is gotten from the backend
+    // Initialize Stripe with the key from the backend
     this.stripe = Stripe(this.key);
     // Initialize Stripe Elements as per Stripe documentation
     const elements = this.stripe.elements();
@@ -266,7 +261,7 @@ class PaymentViewContent extends PolymerElement {
   }
 
   // Called every time the form changes. Validation for the Vaadin elements happens on the server side as well.
-  // NOTE: DO NOT SEND ANY CREDIT CARD RELATED INFORMATION TO THE BACKEND. STRIPE SHOULD ONLY MANAGE THAT!
+  // NOTE: DO NOT SEND ANY CREDIT CARD RELATED INFORMATION TO THE BACKEND. ONLY STRIPE SHOULD MANAGE THAT!
   formUpdated() {
     this.$server.validateForm({
       billing_details: {

@@ -89,6 +89,10 @@ public class RewardFunctionEditor extends VerticalLayout implements ExperimentCo
         });
     }
 
+    public void resize() {
+        rewardFunctionJuicyAceEditor.resize();
+    }
+
     public RewardFunctionErrorPanel getRewardFunctionErrorPanel() {
         return rewardFunctionErrorPanel;
     }

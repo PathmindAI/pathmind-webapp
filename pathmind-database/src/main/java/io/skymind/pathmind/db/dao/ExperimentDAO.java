@@ -3,6 +3,7 @@ package io.skymind.pathmind.db.dao;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,10 @@ public class ExperimentDAO {
             setupDefaultRewardFunction(experiment);
         }
         return Optional.ofNullable(experiment);
+    }
+
+    public int getExperimentsWithRunStatusCountForUser(long userId, Collection<Integer> runStatuses) {
+        return ExperimentRepository.getExperimentsWithRunStatusCountForUser(ctx, userId, CollectionUtils.emptyIfNull(runStatuses));
     }
 
     private void setupDefaultRewardFunction(Experiment experiment) {

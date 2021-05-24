@@ -32,6 +32,26 @@ Feature: Nav bar search
     When Click notes search btn
     Then Check search result page project name contains archived tag
 
+  Scenario: Check project name model tag
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft model
+    When Open projects page
+    When Input project name to the notes search field
+    When Click notes search btn
+    Then Check search result page project name contains tag '1 Model'
+    Then Click project name AutotestProject from search page
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Input project name to the notes search field
+    When Click notes search btn
+    Then Check search result page project name contains tag '2 Models'
+
   Scenario: Check search field clear button
     Given Login to the pathmind
     When Input 'AutotestNoteSearch' to the notes search field
@@ -110,8 +130,12 @@ Feature: Nav bar search
 
   Scenario: Open project in the new tab
     Given Login to the pathmind
-    When Choose search option Project
-    When Input 'AutotestProject' to the notes search field
+    When Create new CoffeeShop project with draft model
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    When Open projects page
+    When Input project name to the notes search field
     When Click notes search btn
     When Click in the new tab 'AutotestProject' button
     When Open tab 1
@@ -130,4 +154,3 @@ Feature: Nav bar search
     When Input 'AutotestProject16' to the notes search field
     When Click create new project button
     Then Check that new project page opened
-

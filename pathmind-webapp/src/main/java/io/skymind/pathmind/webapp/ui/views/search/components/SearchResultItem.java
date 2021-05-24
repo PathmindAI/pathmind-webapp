@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.constants.SearchResultItemType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -39,13 +40,15 @@ public class SearchResultItem extends VerticalLayout {
     private String decodedKeyword;
     private Boolean isArchived;
     private ExperimentDAO experimentDAO;
+    private ModelDAO modelDAO;
     private ModelService modelService;
 
-    public SearchResultItem(ExperimentDAO experimentDAO, ModelService modelService, SearchResult item, String decodedKeyword) {
+    public SearchResultItem(ExperimentDAO experimentDAO, ModelDAO modelDAO, ModelService modelService, SearchResult item, String decodedKeyword) {
         this.searchResult = item;
         this.decodedKeyword = decodedKeyword;
         this.isArchived = searchResult.getIsArchived();
         this.experimentDAO = experimentDAO;
+        this.modelDAO = modelDAO;
         this.modelService = modelService;
         searchResultType = searchResult.getItemType();
         createdDateComponent = new Span("Created");
@@ -74,6 +77,16 @@ public class SearchResultItem extends VerticalLayout {
             }
         }
         tags.add(new TagLabel(searchResultType.getName(), true, "small"));
+
+        if (searchResultType.equals(SearchResultItemType.PROJECT)) {
+            int projectModelCount = modelDAO.getModelCountForProject(searchResult.getItemId());
+            String labelText = projectModelCount + " Model";
+            if (projectModelCount != 1) {
+                labelText += "s";
+            }
+            tags.add(new TagLabel(labelText, true, "small"));
+        }
+
         if (isArchived) {
             tags.add(new TagLabel("Archived", false, "small"));
         }
