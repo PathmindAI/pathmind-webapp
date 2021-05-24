@@ -10,8 +10,8 @@
     overflow: auto;
 }
 
-.new-experiment-view .view-section > vaadin-horizontal-layout:first-child {
-    flex: 0 0 auto;
+.new-experiment-view .view-section > vaadin-split-layout > vaadin-vertical-layout[slot~="primary"] {
+    overflow: visible;
 }
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
