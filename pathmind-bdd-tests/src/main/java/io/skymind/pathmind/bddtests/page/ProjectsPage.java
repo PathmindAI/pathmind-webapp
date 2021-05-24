@@ -66,7 +66,7 @@ public class ProjectsPage extends PageObject {
 
     public void openProjectOnProjectsPage(String projectName) {
         waitABit(2500);
-        WebElement project = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
+        WebElement project = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + projectName + "']"));
         waitFor(ExpectedConditions.elementToBeClickable(project));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", project);
