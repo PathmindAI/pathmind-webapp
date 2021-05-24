@@ -20,7 +20,7 @@
 
 .new-experiment-view .panel-title .section-subtitle-label {
     max-width: 460px;
-    padding: var(--lumo-space-m);
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {

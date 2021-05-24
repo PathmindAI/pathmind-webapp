@@ -14,6 +14,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
@@ -123,14 +124,16 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
+        HorizontalLayout titlePanel = WrapperUtils.wrapWidthFullHorizontal(
+                titleWithStar,
+                downloadModelLink
+        );
+        titlePanel.setPadding(true);
 
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
                 upgradeBanner,
-                WrapperUtils.wrapWidthFullHorizontal(
-                        titleWithStar,
-                        downloadModelLink
-                ),
+                titlePanel,
                 LabelFactory.createLabel(
                         "To judge if an action is a good one, we calculate a reward score. "
                                 + "The reward score is based on the reward function.",
@@ -163,16 +166,17 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
 
-        mainPanel.add(
-            WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                    WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
-                    errorDescriptionLabel,
-                    rewardFunctionAndObservationsWrapper
-                ),
+        SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
+                errorDescriptionLabel,
+                rewardFunctionAndObservationsWrapper
+            ),
             errorAndNotesContainer,
-            60)
-        );
+            60);
+        splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
+
+        mainPanel.add(splitWrapper);
         mainPanel.setClassName("view-section");
 
         HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
