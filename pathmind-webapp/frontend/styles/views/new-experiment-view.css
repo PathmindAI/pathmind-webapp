@@ -83,7 +83,7 @@
     box-sizing: border-box;
     flex: 1 1 19rem;
     line-height: 1;
-    padding: 0 var(--lumo-space-s) var(--lumo-space-xxxs);
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
     overflow-y: auto;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .new-experiment-view .reward-variables-table .header-row {
-    padding: var(--lumo-space-s) 0;
+    padding: var(--lumo-space-xs) 0;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
     margin-bottom: var(--lumo-space-s);
 }
@@ -100,8 +100,7 @@
 .new-experiment-view .reward-variables-table .header-row span {
     width: auto;
     line-height: 1;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 0;
 }
 
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
@@ -111,8 +110,13 @@
 }
 
 .new-experiment-view .observations-panel {
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
     border: none;
     border-radius: 0;
+}
+
+.new-experiment-view .observations-panel span {
+    padding: var(--lumo-space-xs) 0;
 }
 
 .new-experiment-view .error-and-notes-container {
