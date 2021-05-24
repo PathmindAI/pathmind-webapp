@@ -106,4 +106,39 @@ public class AccountStepDefinitions {
     public void checkSubscriptionPlansUpgradePage() {
         accountPageSteps.checkSubscriptionPlansUpgradePage();
     }
+
+    @When("^Fill payment form with stripe test card$")
+    public void fillPaymentFormWithStripeTestCard() {
+        accountPageSteps.fillPaymentFormWithStripeTestCard();
+    }
+
+    @When("^Payment page click Upgrade btn$")
+    public void paymentPageClickUpgradeBtn() {
+        accountPageSteps.paymentPageClickUpgradeBtn();
+    }
+
+    @When("^Check account subscription is (.*)")
+    public void checkAccountSubscriptionIs(String subscription) {
+        accountPageSteps.checkAccountSubscriptionIs(subscription);
+    }
+
+    @When("^Check Upgraded to Professional page is shown$")
+    public void checkUpgradedToProfessionalPageIsShown() {
+        accountPageSteps.checkUpgradedToProfessionalPageIsShown();
+    }
+
+    @When("^Check cancel subscription pop-up$")
+    public void checkCancelSubscriptionPopUp() {
+        accountPageSteps.checkCancelSubscriptionPopUp();
+    }
+
+    @When("^Click pop-up dialog 'Yes, Cancel'$")
+    public void clickPopUpDialogYesCancel() {
+        accountPageSteps.clickPopUpDialogYesCancel();
+    }
+
+    @When("^Check account subscription hint$")
+    public void checkAccountSubscriptionHint() {
+        accountPageSteps.checkAccountSubscriptionHint();
+    }
 }

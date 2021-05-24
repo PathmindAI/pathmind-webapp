@@ -18,7 +18,7 @@
     flex: 1;
 }
 
-.new-experiment-view .panel-title {
+.new-experiment-view .panel-title .section-subtitle-label {
     max-width: 460px;
     padding: var(--lumo-space-m);
 }
@@ -35,6 +35,10 @@
     border: 1px solid var(--pm-gold-color);
     border-radius: var(--lumo-border-radius);
     margin: var(--lumo-space-xs) 0 var(--lumo-space-m);
+}
+
+.new-experiment-view .warning-label vaadin-button {
+    margin: 0 var(--lumo-space-xs);
 }
 
 .new-experiment-view .section-title-label {
