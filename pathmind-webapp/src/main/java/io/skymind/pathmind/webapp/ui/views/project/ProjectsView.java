@@ -1,18 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -40,7 +35,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
-import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ProjectGridDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -195,10 +189,6 @@ public class ProjectsView extends PathMindDefaultView {
 
         projectGrid.addItemClickListener(event ->
                 getUI().ifPresent(ui -> ui.navigate(ProjectView.class, "" + event.getItem().getId())));
-    }
-
-    private List<Project> getProjects() {
-        return projects;
     }
 
     @Override
