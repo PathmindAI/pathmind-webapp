@@ -549,14 +549,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("REWARD_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
-                var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
-                var("EPISODE_REWARD_RANGE", "0.01"),
                 var("ENTROPY_SLOPE", "0.01"),
                 var("VF_LOSS_RANGE", "0.1"),
                 var("VALUE_PRED", "1"), // disabled for now
@@ -564,13 +562,25 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
                 var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),
+                var("NUM_HIDDEN_NODES", String.valueOf(job.getEnv().getHiddenNode())),
+                var("NUM_HIDDEN_LAYERS", String.valueOf(job.getEnv().getHiddenLayer())),
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
                 var("FREEZING", String.valueOf(job.getEnv().isFreezing())),
+                var("SCHEDULER", String.valueOf(job.getEnv().getScheduler())),
                 var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
                 var("ACTIONMASKS", String.valueOf(job.isActionMask()))
         ));
+
+        if (job.getEnv().isLongerTraining()) {
+            instructions.add(var("MAX_ITERATIONS", "1500"));
+            instructions.add(var("EPISODE_REWARD_RANGE", "0.005"));
+            instructions.add(var("CONVERGENCE_CHECK_START_ITERATION", "750"));
+        } else {
+            instructions.add(var("MAX_ITERATIONS", String.valueOf(job.getIterations())));
+            instructions.add(var("EPISODE_REWARD_RANGE", "0.01"));
+        }
 
         if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));

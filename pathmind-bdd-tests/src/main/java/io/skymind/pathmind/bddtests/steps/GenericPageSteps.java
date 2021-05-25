@@ -177,6 +177,16 @@ public class GenericPageSteps {
     }
 
     @Step
+    public void clickKeyboardEnterBtn() {
+        genericPage.clickKeyboardEnterBtn();
+    }
+
+    @Step
+    public void clickKeyboardEnterBtnOnConfirmationPopup() {
+        genericPage.clickKeyboardEnterBtnOnConfirmationPopup();
+    }
+
+    @Step
     public void clickPopUpDialogKeepMySubscriptionBtn() {
         genericPage.clickPopUpDialogKeepMySubscriptionBtn();
     }

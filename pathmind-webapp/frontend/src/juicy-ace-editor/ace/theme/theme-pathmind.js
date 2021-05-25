@@ -9,8 +9,7 @@ contain: none;\
 .ace-eclipse .ace_gutter {\
 background: var(--pm-app-bg-color);\
 color: rgb(136, 136, 136);\
-border-right: 1px solid var(--pm-grey-color-dark);\
-border-top-left-radius: var(--lumo-border-radius);\
+border-right: 1px solid var(--pm-grey-color-lightest);\
 }\
 .ace-eclipse .ace_fold {\
 background-color: rgb(60, 76, 114);\
@@ -21,8 +20,6 @@ background: #ebebeb;\
 }\
 .ace-eclipse {\
 background-color: #FFFFFF;\
-border: 1px solid var(--pm-grey-color);\
-border-radius: var(--lumo-border-radius);\
 color: black;\
 font-size: 0.8125rem;\
 line-height: 1.4rem;\

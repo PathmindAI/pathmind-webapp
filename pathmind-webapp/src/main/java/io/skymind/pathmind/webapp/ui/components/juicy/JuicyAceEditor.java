@@ -44,6 +44,10 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
         getElement().executeJs("window.Pathmind.autocomplete.enableAutoComplete($0, $1)", getElement(), localVariables);
     }
 
+    public void resize() {
+        getElement().executeJs("this.editor.resize()");
+    }
+
     public void setFontsize(Integer fontsize) {
         this.getElement().setAttribute("fontsize", String.valueOf(fontsize));
     }

@@ -11,6 +11,7 @@ import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
@@ -25,7 +26,6 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.project.ProjectService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
@@ -54,15 +54,18 @@ import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
+import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ExperimentGridDataProvider;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
+@Slf4j
 @Route(value = Routes.PROJECT, layout = MainLayout.class)
 public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
     private static final int PROJECT_ID_SEGMENT = 0;
@@ -70,6 +73,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private final Object modelLock = new Object();
 
+    @Autowired
+    private ExperimentGridDataProvider experimentGridDataProvider;
     @Autowired
     private ExperimentDAO experimentDAO;
     @Autowired
@@ -87,18 +92,16 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private ModelService modelService;
 
-    @Autowired
-    private ProjectService projectService;
-
     private long projectId;
     private Long modelId;
     private Project project;
     private List<Model> models;
-    private List<Experiment> experiments;
+//    private List<Experiment> experiments;
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
     private boolean isPythonModel = false;
 
+    private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
@@ -135,6 +138,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelArchivedLabel.setVisible(false);
 
         experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
@@ -253,12 +257,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         archivesTabPanel = new ArchivesTabPanel<>(
                 "Experiments",
                 experimentGrid,
-                this::getExperiments,
                 (experiment, isArchivable) -> {
                     ExperimentGuiUtils.archiveExperiment(experimentDAO, experiment, isArchivable);
                     segmentIntegrator.archived(Experiment.class, isArchivable);
-                },
-                getUISupplier());
+                });
     }
 
     public List<Model> getModels() {
@@ -266,11 +268,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     public List<Experiment> getExperiments() {
-        return experiments;
-    }
-
-    public List<Experiment> getExperimentList() {
-        return experiments;
+        log.warn("TEMPORARILY DISABLED");
+        return List.of();
+//        return experiments;
     }
 
     public ExperimentGrid getExperimentGrid() {
@@ -281,7 +281,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         synchronized (modelLock) {
             selectedModel = model;
             loadModelData();
-            updateComponents();
+            updateComponents(false);
         }
     }
 
@@ -291,7 +291,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     public void loadModelData() {
         modelId = selectedModel != null ? selectedModel.getId() : null;
-        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
+//        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
         rewardVariables = rewardVariableDAO.getRewardVariablesForModel(modelId);
     }
 
@@ -303,7 +303,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return projectId;
     }
 
-    private void updateComponents() {
+    private void updateComponents(boolean isInit) {
         String modelNameText = "Model #" + selectedModel.getName();
         if (selectedModel.getPackageName() != null) {
             modelNameText += " (" + selectedModel.getPackageName() + ")";
@@ -319,11 +319,27 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelNotesField.setNotesText(model.getUserNotes());
         });
         newExperimentButton.setModelId(selectedModel.getId());
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
-            // experimentGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            if (experimentGrid != null) {
-                experimentGrid.setItems(experiments);
+        experimentGridDataProvider.setModelId(modelId);
+        if (dataProvider == null) {
+            dataProvider = experimentGridDataProvider.withConfigurableFilter();
+        }
+        if (isInit) {
+            archivesTabPanel.addTabClickListener(name -> {
+                dataProvider.setFilter(name.equals(archivesTabPanel.getArchivesTabName()));
+                dataProvider.refreshAll();
+            });
+        } else {
+            archivesTabPanel.setToPrimaryTab();
+        }
+        if (experimentGrid != null) {
+            dataProvider.setFilter(false);
+            if (isInit) {
+                experimentGrid.setDataProvider(dataProvider);
+            } else {
+                dataProvider.refreshAll();
             }
+        }
+        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
             if (selectedModel != null) {
                 modelCreatedDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(selectedModel.getDateCreated(), timeZoneId)));
@@ -335,7 +351,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         if (metricMultiSelect != null) {
             metricMultiSelect.setItems(rewardVariables);
         }
-        archivesTabPanel.initData();
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), experimentGrid);
     }
 
@@ -387,7 +402,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void initComponents() {
-        updateComponents();
+        updateComponents(true);
     }
 
     @Override
