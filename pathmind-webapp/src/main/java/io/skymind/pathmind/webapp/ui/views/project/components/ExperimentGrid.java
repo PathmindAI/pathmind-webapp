@@ -1,16 +1,15 @@
 package io.skymind.pathmind.webapp.ui.views.project.components;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -31,9 +30,9 @@ import org.apache.commons.collections4.CollectionUtils;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
-    private Map<String, Column> additionalColumnList = new LinkedHashMap<>();
+    private Map<String, Column<Experiment>> additionalColumnList = new LinkedHashMap<>();
 
-    private Map<String, Column> columnList = new LinkedHashMap<>();
+    private Map<String, Column<Experiment>> columnList = new LinkedHashMap<>();
 
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
@@ -129,11 +128,11 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Notes", notesColumn);
     }
 
-    public Map<String, Column> getColumnList() {
+    public Map<String, Column<Experiment>> getColumnList() {
         return columnList;
     }
 
-    public Map<String, Column> getAdditionalColumnList() {
+    public Map<String, Column<Experiment>> getAdditionalColumnList() {
         return additionalColumnList;
     }
 
@@ -141,15 +140,19 @@ public class ExperimentGrid extends Grid<Experiment> {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
         if (additionalColumnList.get(rewardVariableName) == null) {
-            Grid.Column<Experiment> newColumn = addColumn(experiment -> {
+            Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
+                        Span columnSpan = new Span();
                         if (experiment.getBestPolicy() != null) {
                             Policy bestPolicy = experiment.getBestPolicy();
                             // First conditional value is with uncertainty, second value is without uncertainty
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
+                            String text = bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
                                     ? bestPolicy.getUncertainty().get(rewardVarIndex)
                                     : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex));
+                            columnSpan.add(text);
+                        } else {
+                            columnSpan.add("—");
                         }
-                        return "—";
+                        return columnSpan;
                     })
                     .setSortProperty(Integer.toString(rewardVarIndex))
                     .setHeader(rewardVariableName)

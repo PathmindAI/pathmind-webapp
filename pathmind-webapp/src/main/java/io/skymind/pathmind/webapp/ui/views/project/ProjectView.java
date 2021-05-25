@@ -202,7 +202,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private MultiselectComboBox<String> createColumnSelectionGroup() {
         MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
-        Map<String, Column> experimentGridColumns = experimentGrid.getColumnList();
+        Map<String, Column<Experiment>> experimentGridColumns = experimentGrid.getColumnList();
         Set<String> columnList = experimentGridColumns.keySet();
         multiSelectGroup.setPlaceholder("Customize your table columns");
         multiSelectGroup.setItems(columnList);
