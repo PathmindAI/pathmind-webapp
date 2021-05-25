@@ -201,4 +201,9 @@ public class HomePageSteps {
     public void checkSearchResultPageProjectNameContainsModelTag(String project, String modelNumber) {
         homePage.checkSearchResultPageProjectNameContainsModelTag(project, modelNumber);
     }
+
+    @Step
+    public void clickSearchResultResult(String searchResult) {
+        homePage.clickSearchResultResult(searchResult);
+    }
 }

@@ -113,7 +113,7 @@ Feature: Nav bar search
     When Click notes search btn
     When Wait for search result page
     When Wait a bit 3000 ms
-    When Click text contains 'AutotestProject' link
+    When Click search result 'AutotestProject'
     When Wait a bit 3000 ms
     Then Check that project page is opened
 

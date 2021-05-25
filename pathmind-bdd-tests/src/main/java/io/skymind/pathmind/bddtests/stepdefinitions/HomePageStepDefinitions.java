@@ -222,4 +222,9 @@ public class HomePageStepDefinitions {
     public void checkOnboardingSuccessPage() {
         homePageSteps.checkOnboardingSuccessPage();
     }
+
+    @When("^Click search result '(.*)'$")
+    public void clickSearchResultResult(String searchResult) {
+        homePageSteps.clickSearchResultResult(searchResult);
+    }
 }

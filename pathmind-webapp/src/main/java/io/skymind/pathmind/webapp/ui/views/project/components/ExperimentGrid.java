@@ -37,7 +37,6 @@ public class ExperimentGrid extends Grid<Experiment> {
     public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-            getDataProvider().refreshItem(experiment);
         }))
                 .setHeader(new Icon(VaadinIcon.STAR))
                 .setAutoWidth(true)
@@ -46,7 +45,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
                 .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
-                .setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
+                .setSortProperty("name")
                 .setHeader("#")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -54,7 +53,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> createdColumn = addComponentColumn(experiment -> 
                 new DatetimeDisplay(experiment.getDateCreated())
         )
-                .setComparator(Comparator.comparing(Experiment::getDateCreated))
+                .setSortProperty("date_created")
                 .setHeader("Created")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -62,18 +61,17 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setResizable(true);
         Grid.Column<Experiment> statusColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
                 .setHeader("Status")
-                .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
+                .setSortProperty("training_status")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
+                .setResizable(true);
         Grid.Column<Experiment> selectedObsColumn = addColumn(experiment ->
                 CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream().map(Observation::getVariable).collect(Collectors.joining(", ")))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortable(false);
         // addComponentColumn(experiment -> {
         //             Span goalIcons = new Span();
         //             String successClassName = "success-text";
@@ -148,15 +146,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                         }
                         return "—";
                     })
-                    .setComparator(Comparator.comparingDouble(experiment -> {
-                        if (experiment.getBestPolicy() != null) {
-                            Policy bestPolicy = experiment.getBestPolicy();
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                                    ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
-                                    : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
-                        }
-                        return Double.NEGATIVE_INFINITY;
-                    }))
+                    .setSortProperty(Integer.toString(rewardVarIndex))
                     .setHeader(rewardVariableName)
                     .setAutoWidth(true)
                     .setFlexGrow(0)
