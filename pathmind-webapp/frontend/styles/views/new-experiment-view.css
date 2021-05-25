@@ -29,7 +29,6 @@
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
-    height: 6.3rem;
     padding: var(--lumo-space-m) var(--lumo-space-m) 0 0;
 }
 
@@ -67,8 +66,9 @@
 }
 
 .new-experiment-view .reward-function-wrapper {
-    flex: 1 1 auto;
-    margin-top: 0;
+  flex: 1 1 auto;
+  max-height: calc(100% - 3.875rem);
+  margin-top: 0;
 }
 
 .new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,
@@ -78,6 +78,11 @@
 
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
   flex: 2;
+}
+
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel > vaadin-vertical-layout {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel + vaadin-vertical-layout {
@@ -289,14 +294,17 @@
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper {
   counter-increment: number;
   position: relative;
-  margin: var(--lumo-space-xs) 0;
+  width: calc(100% + 2px);
+  padding: var(--lumo-space-xs);
+  margin: -1px;
+  overflow: hidden;
 }
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper > *:first-child::before {
   content: counter(number);
   position: absolute;
-  top: 0;
-  left: .3rem;
+  top: .4rem;
+  left: .6rem;
   color: var(--pm-grey-color);
 }
 
@@ -305,7 +313,7 @@
 }
 
 .new-experiment-view sortable + vaadin-horizontal-layout {
-  margin-top: var(--lumo-space-s);
+  margin: var(--lumo-space-s) auto;
 }
 
 .new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
@@ -319,6 +327,7 @@
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
   min-height: 8em;
+  border: 1px solid var(--pm-grey-color);
 }
 
 .new-experiment-view .goal-fields-wrapper {

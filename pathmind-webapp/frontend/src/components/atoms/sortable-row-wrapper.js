@@ -9,7 +9,6 @@ class SortableRowWrapper extends LitElement {
         width: 100%;
         font-size: var(--lumo-font-size-s);
         border: 1px solid transparent;
-        border-radius: var(--lumo-border-radius);
       }
       :host(:hover:not(.onDrag)),
       :host(.sortable-chosen) {

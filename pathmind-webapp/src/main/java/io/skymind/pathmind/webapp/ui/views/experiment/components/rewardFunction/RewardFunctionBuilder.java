@@ -73,10 +73,10 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         add(WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL)));
-        add(sortableLayout);
-        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
-            newRVrowButton, newBoxButton
-        ));
+        add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                sortableLayout,
+                WrapperUtils.wrapWidthFullCenterHorizontal(
+                    newRVrowButton, newBoxButton)));
 
         addClassName("reward-fn-editor-panel");
     }
