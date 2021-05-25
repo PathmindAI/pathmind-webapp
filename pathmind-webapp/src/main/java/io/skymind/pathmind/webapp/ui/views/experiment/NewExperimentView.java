@@ -311,10 +311,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return experiment;
     }
 
-    public UserService getUserService() {
-        return userService;
-    }
-
     public void disableSaveNeeded() {
         saveDraftButton.setEnabled(false);
         isNeedsSaving = false;
