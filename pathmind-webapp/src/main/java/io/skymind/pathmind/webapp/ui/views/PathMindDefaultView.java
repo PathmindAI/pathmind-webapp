@@ -20,6 +20,7 @@ import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.molecules.CookieConsentBox;
+import io.skymind.pathmind.webapp.ui.plugins.LocalstorageHelper;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
@@ -34,13 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class PathMindDefaultView extends VerticalLayout implements BeforeEnterObserver, HasDynamicTitle {
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-
+    @Autowired
+    private LocalstorageHelper localstorageHelper;
     @Autowired
     private AWSApiClient awsApiClient;
-
     @Autowired
     protected FeatureManager featureManager;
-
     @Autowired
     protected PolicyServerService policyServerService;
 
@@ -88,7 +88,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         // Update the screen based on the parameters if need be.
         initComponents();
         // Segment plugin added
-        add(segmentIntegrator);
+        add(segmentIntegrator, localstorageHelper);
         // This is needed for pages that are reloaded through ui.navigate such as the UploadModelView.
         EventBus.unsubscribe(this);
         addEventBusSubscribers();

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.icon.Icon;
@@ -130,6 +131,10 @@ public class ExperimentGrid extends Grid<Experiment> {
 
     public Map<String, Column> getColumnList() {
         return columnList;
+    }
+
+    public Map<String, Column> getAdditionalColumnList() {
+        return additionalColumnList;
     }
 
     public void addAdditionalColumn(RewardVariable rewardVar) {
