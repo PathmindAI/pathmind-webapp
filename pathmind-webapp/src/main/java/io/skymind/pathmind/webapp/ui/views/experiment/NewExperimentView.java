@@ -62,7 +62,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
     private FavoriteStar favoriteStar;
-    private Div upgradeBanner;
+    private Div upgradeBannerExpCt;
+    private Div upgradeBannerActMask;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -118,7 +119,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         mainPanel.setSpacing(true);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
-        createUpgradeBanner();
+        createUpgradeBanners();
         favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
@@ -126,7 +127,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
-                upgradeBanner,
+                upgradeBannerExpCt,
+                upgradeBannerActMask,
                 WrapperUtils.wrapWidthFullHorizontal(
                         titleWithStar,
                         downloadModelLink
@@ -189,16 +191,30 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         }
     }
 
-    private void createUpgradeBanner() {
-        Button upgradeLink = new Button("upgrade now", click -> {
+    private void createUpgradeBanners() {
+        Button upgradeLink = new Button("Upgrade now", click -> {
             segmentIntegrator.navigatedToPricingFromNewExpViewBanner();
             getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
         });
         upgradeLink.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        upgradeBanner = new Div(new Span("You have one experiment running already. Please"));
-        upgradeBanner.add(upgradeLink);
-        upgradeBanner.add(new Span("to run multiple experiments in parallel."));
-        upgradeBanner.addClassName(CssPathmindStyles.WARNING_LABEL);
+
+        // upgrade banner for Experiment count
+        upgradeBannerExpCt = new Div(new Span("You have one experiment running already."));
+        upgradeBannerExpCt.add(upgradeLink);
+        upgradeBannerExpCt.add(new Span("to run multiple experiments in parallel."));
+        upgradeBannerExpCt.addClassName(CssPathmindStyles.WARNING_LABEL);
+
+        Button upgradeLink1 = new Button("Upgrade now", click -> {
+            segmentIntegrator.navigatedToPricingFromNewExpViewBanner();
+            getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
+        });
+        upgradeLink1.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+
+        // upgrade banner for Action masking
+        upgradeBannerActMask = new Div(new Span("A Pathmind subscription is required to use action masking."));
+        upgradeBannerActMask.add(upgradeLink1);
+        upgradeBannerActMask.add(new Span("to enable action masking and more"));
+        upgradeBannerActMask.addClassName(CssPathmindStyles.WARNING_LABEL);
     }
 
     private void createButtons() {
@@ -219,6 +235,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
         return ModelUtils.isValidModel(model)
                 && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
+                && (!isBasicPlanUser || (isBasicPlanUser && !model.isActionmask()))
                 && (isPyModel || rewardFunctionEditor.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
@@ -276,7 +293,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
-        upgradeBanner.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
+        upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
+        upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && experiment.getModel().isActionmask());
     }
 
     @Override
