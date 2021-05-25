@@ -28,7 +28,7 @@ public class ProjectViewFavoriteSubscriber extends ExperimentFavoriteSubscriber 
                 .orElse(null);
         if (targetExperiment != null) {
             targetExperiment.setFavorite(event.isFavorite());
-            projectView.getExperimentGrid().getDataProvider().refreshItem(targetExperiment);
+            projectView.getExperimentGrid().getDataProvider().refreshAll();
         }
     }
 

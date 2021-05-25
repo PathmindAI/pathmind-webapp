@@ -21,6 +21,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.SearchResult;
 import io.skymind.pathmind.shared.security.Routes;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SearchResultsView extends PathMindDefaultView implements AfterNavigationObserver, BeforeLeaveObserver, HasUrlParameter<String> {
 
     private ConfigurableFilterDataProvider<SearchResult, Void, String> dataProvider;
+    private ModelDAO modelDAO;
     private ExperimentDAO experimentDAO;
     private String decodedKeyword;
     private String titleText = "Search Results";
@@ -52,8 +54,9 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
     private SegmentIntegrator segmentIntegrator;
 
     @Autowired
-    public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ExperimentDAO experimentDAO) {
+    public SearchResultsView(SearchResultsDataProvider searchResultsDataProvider, ModelDAO modelDAO, ExperimentDAO experimentDAO) {
         dataProvider = searchResultsDataProvider.withConfigurableFilter();
+        this.modelDAO = modelDAO;
         this.experimentDAO = experimentDAO;
     }
 
@@ -103,7 +106,7 @@ public class SearchResultsView extends PathMindDefaultView implements AfterNavig
         grid.addClassName("search-results");
         grid.addThemeVariants(GridVariant.LUMO_NO_ROW_BORDERS, GridVariant.LUMO_NO_BORDER);
         grid.addComponentColumn(
-                searchResult -> new SearchResultItem(experimentDAO, modelService, searchResult, decodedKeyword)
+                searchResult -> new SearchResultItem(experimentDAO, modelDAO, modelService, searchResult, decodedKeyword)
         );
         grid.setSizeFull();
         grid.setDataProvider(dataProvider);

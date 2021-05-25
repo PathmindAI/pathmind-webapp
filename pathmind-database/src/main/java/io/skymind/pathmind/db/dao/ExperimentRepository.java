@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
+import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -19,10 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.OrderField;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Result;
+import org.jooq.SortOrder;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 
@@ -133,6 +136,56 @@ class ExperimentRepository {
             addParentDataModelObjects(record, experiment);
             return experiment;
         }).collect(Collectors.toList());
+    }
+
+    protected static List<Experiment> getExperimentsInModelForUser(DSLContext ctx, ModelExperimentsQueryParams modelExperimentsQueryParams) {
+        Condition condition = EXPERIMENT.MODEL_ID.eq(modelExperimentsQueryParams.getModelId());
+        condition = condition.and(PROJECT.PATHMIND_USER_ID.eq(modelExperimentsQueryParams.getUserId()));
+        condition = condition.and(EXPERIMENT.ARCHIVED.eq(modelExperimentsQueryParams.isArchived()));
+        OrderField<?> orderField = EXPERIMENT.DATE_CREATED.sort(SortOrder.DESC);
+        if (!modelExperimentsQueryParams.getSortBy().isEmpty()) {
+            SortOrder fieldSortOrder = modelExperimentsQueryParams.isDescending() ? SortOrder.DESC : SortOrder.ASC;
+            switch (modelExperimentsQueryParams.getSortBy().toUpperCase()) {
+                case "NAME":
+                    orderField = EXPERIMENT.ID.sort(fieldSortOrder); // NAME is increasing, same as ID
+                    break;
+                case "DATE_CREATED":
+                    orderField = EXPERIMENT.DATE_CREATED.sort(fieldSortOrder);
+                    break;
+                case "TRAINING_STATUS":
+                    orderField = EXPERIMENT.TRAINING_STATUS.sort(fieldSortOrder);
+                    break;
+                default:
+                    orderField = EXPERIMENT.DATE_CREATED.sort(SortOrder.DESC);
+            }
+        }
+
+        Result<?> result = ctx
+                .select(EXPERIMENT.asterisk())
+                .select(MODEL.ID, MODEL.NAME, MODEL.EXPERIMENT_CLASS)
+                .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(condition)
+                .orderBy(orderField)
+                .offset(modelExperimentsQueryParams.getOffset())
+                .limit(modelExperimentsQueryParams.getLimit())
+                .fetch();
+
+        return result.stream().map(record -> {
+            Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
+            addParentDataModelObjects(record, experiment);
+            return experiment;
+        }).collect(Collectors.toList());
+    }
+
+    protected static int getFilteredExperimentCount(DSLContext ctx, long modelId, boolean isArchived) {
+        return ctx.selectCount()
+                .from(EXPERIMENT)
+                .where(EXPERIMENT.MODEL_ID.eq(modelId))
+                .and(EXPERIMENT.ARCHIVED.eq(isArchived))
+                .fetchOne(0, int.class);
     }
 
     private static void addParentDataModelObjects(Record record, Experiment experiment) {
