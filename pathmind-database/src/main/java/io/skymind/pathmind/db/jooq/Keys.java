@@ -38,7 +38,6 @@ import io.skymind.pathmind.db.jooq.tables.records.TrainingErrorRecord;
 import javax.annotation.processing.Generated;
 
 import org.jooq.ForeignKey;
-import org.jooq.Identity;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
 
@@ -61,12 +60,6 @@ public class Keys {
     // IDENTITY definitions
     // -------------------------------------------------------------------------
 
-    public static final Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Identities0.IDENTITY_EXPERIMENT;
-    public static final Identity<ModelRecord, Long> IDENTITY_MODEL = Identities0.IDENTITY_MODEL;
-    public static final Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Identities0.IDENTITY_PATHMIND_USER;
-    public static final Identity<PolicyRecord, Long> IDENTITY_POLICY = Identities0.IDENTITY_POLICY;
-    public static final Identity<ProjectRecord, Long> IDENTITY_PROJECT = Identities0.IDENTITY_PROJECT;
-    public static final Identity<RunRecord, Long> IDENTITY_RUN = Identities0.IDENTITY_RUN;
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
@@ -115,15 +108,6 @@ public class Keys {
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
-
-    private static class Identities0 {
-        public static Identity<ExperimentRecord, Long> IDENTITY_EXPERIMENT = Internal.createIdentity(Experiment.EXPERIMENT, Experiment.EXPERIMENT.ID);
-        public static Identity<ModelRecord, Long> IDENTITY_MODEL = Internal.createIdentity(Model.MODEL, Model.MODEL.ID);
-        public static Identity<PathmindUserRecord, Long> IDENTITY_PATHMIND_USER = Internal.createIdentity(PathmindUser.PATHMIND_USER, PathmindUser.PATHMIND_USER.ID);
-        public static Identity<PolicyRecord, Long> IDENTITY_POLICY = Internal.createIdentity(Policy.POLICY, Policy.POLICY.ID);
-        public static Identity<ProjectRecord, Long> IDENTITY_PROJECT = Internal.createIdentity(Project.PROJECT, Project.PROJECT.ID);
-        public static Identity<RunRecord, Long> IDENTITY_RUN = Internal.createIdentity(Run.RUN, Run.RUN.ID);
-    }
 
     private static class UniqueKeys0 {
         public static final UniqueKey<ExperimentRecord> EXPERIMENT_PKEY = Internal.createUniqueKey(Experiment.EXPERIMENT, "experiment_pkey", Experiment.EXPERIMENT.ID);

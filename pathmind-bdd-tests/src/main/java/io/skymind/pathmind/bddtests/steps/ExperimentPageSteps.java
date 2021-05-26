@@ -244,4 +244,14 @@ public class ExperimentPageSteps {
     public void experimentPageClickComparisonFloatingCloseBtn() {
         experimentPage.experimentPageClickComparisonFloatingCloseBtn();
     }
+
+    @Step
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        experimentPage.checkLearningProgressBlockHistogramXAxisIsShown();
+    }
+
+    @Step
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPage.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
 }

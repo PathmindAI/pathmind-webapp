@@ -108,6 +108,20 @@ spec:
               value: "{{ .Values.env.API_REQUEST_SIZE }}"
             - name: SQS_POLICY_SERVER_URL
               value: "{{ .Values.env.SQS_POLICY_SERVER_URL }}"
+            - name: PATHMIND_STRIPE_PUBLIC_KEY
+              value: "{{ .Values.env.PATHMIND_STRIPE_PUBLIC_KEY }}"
+            - name: PATHMIND_STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pathmindstripesecretkey
+                  key: PATHMINDSTRIPESECRETKEY
+            - name: PATHMIND_STRIPE_WEBHOOK_SIGNING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pathmindstripewebhooksigninsecret
+                  key: PATHMINDSTRIPEWEBHOOKSIGNINGSECRET
+            - name: PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID
+              value: "{{ .Values.env.PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID }}"
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

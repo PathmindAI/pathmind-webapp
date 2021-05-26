@@ -43,5 +43,8 @@ public class HyperparametersDTO {
     @NotBlank(message = "mode(modelType) cannot be blank")
     private String mode;
 
+    @NotBlank(message = "Action mask cannot be blank")
+    private boolean isActionMask;
+
     private String failedSteps;
 }

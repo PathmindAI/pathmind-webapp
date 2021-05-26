@@ -1,6 +1,7 @@
 package io.skymind.pathmind.db.dao;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,6 +100,17 @@ class ExperimentRepository {
         return experiment;
     }
 
+    protected static int getExperimentsWithRunStatusCountForUser(DSLContext ctx, long userId, Collection<Integer> runStatuses) {
+        return ctx
+                .selectCount()
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .where(PROJECT.PATHMIND_USER_ID.eq(userId))
+                .and(EXPERIMENT.TRAINING_STATUS.in(runStatuses))
+                .fetchOne(0, int.class);
+    }
+
     protected static List<Experiment> getExperimentsForModel(DSLContext ctx, long modelId, boolean isIncludeArchived) {
         Condition condition = EXPERIMENT.MODEL_ID.eq(modelId);
         if (!isIncludeArchived) {
@@ -107,7 +119,7 @@ class ExperimentRepository {
 
         Result<?> result = ctx
                 .select(EXPERIMENT.asterisk())
-                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE)
+                .select(MODEL.ID, MODEL.NAME, MODEL.PATHMIND_HELPER, MODEL.MAIN_AGENT, MODEL.EXPERIMENT_CLASS, MODEL.EXPERIMENT_TYPE, MODEL.ACTIONMASK)
                 .select(PROJECT.ID, PROJECT.NAME, PROJECT.PATHMIND_USER_ID)
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
