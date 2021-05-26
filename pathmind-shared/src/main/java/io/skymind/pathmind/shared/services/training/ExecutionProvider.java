@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.services.training;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public interface ExecutionProvider {
      * @param validExternalIds Valid external Id list
      * @return Map of training run to the contents of its progress file
      */
-    Map<String, String> progress(String jobHandle, List<String> validExternalIds);
+    Map<String, InputStream> progress(String jobHandle, List<String> validExternalIds);
 
     /**
      * Download the policy file from the given jobHandle and trainingRun

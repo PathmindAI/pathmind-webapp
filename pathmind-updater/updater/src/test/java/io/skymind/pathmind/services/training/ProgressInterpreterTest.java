@@ -1,6 +1,7 @@
 package io.skymind.pathmind.services.training;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -9,10 +10,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import com.amazonaws.util.StringInputStream;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.updater.ProgressInterpreter;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 
@@ -21,12 +23,12 @@ import static org.junit.Assert.assertNotNull;
 
 public class ProgressInterpreterTest {
     private static String name = "PPO_PathmindEnvironment_0_num_sgd_iter=30,sgd_minibatch_size=2048,train_batch_size=12000_2020-08-18_22-16-53bpjqaxzi";
-    private static String fileContents;
+    private InputStream fileContents;
 
-    @BeforeClass
-    public static void beforeClass() {
+    @Before
+    public void setUp() {
         try {
-            fileContents = FileUtils.readFileToString(ResourceUtils.getFile("classpath:progress.csv"), Charset.defaultCharset());
+            fileContents = new StringInputStream(FileUtils.readFileToString(ResourceUtils.getFile("classpath:progress.csv"), Charset.defaultCharset()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -52,7 +54,7 @@ public class ProgressInterpreterTest {
     @Test
     public void testMetricsRawInterpreter() {
         Policy policy = new Policy();
-        ProgressInterpreter.interpretMetricsRaw(Map.entry(name, fileContents), policy, null, 0, 4, 1);
+        ProgressInterpreter.interpretMetricsRaw(fileContents, policy, null, 0, 4, 1);
 
         assertNotNull(policy.getMetricsRaws());
         assertEquals(11068, policy.getMetricsRaws().size());                           // total iteration

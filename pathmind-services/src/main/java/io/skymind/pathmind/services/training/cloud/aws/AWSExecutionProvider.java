@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -210,18 +211,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
     }
 
     @Override
-    public Map<String, String> progress(String jobHandle, List<String> validExtIds) {
-        Map<String, String> progressMap = new HashMap<>();
-
-        validExtIds.stream()
-                .forEach(id -> {
-                    byte[] contents = client.fileContents(jobHandle + "/output/" + id + "/progress.csv", true);
-                    if (contents != null) {
-                        progressMap.put(id, new String(contents));
-                    }
-                });
-
-        return progressMap;
+    public Map<String, InputStream> progress(String jobHandle, List<String> validExtIds) {
+        return validExtIds.stream().collect(Collectors.toMap(id -> id, id -> client.fileContentsStream( jobHandle + "/output/" + id + "/progress.csv", true)));
     }
 
     @Override

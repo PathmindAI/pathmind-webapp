@@ -3,14 +3,17 @@ package io.skymind.pathmind.services.training.cloud.aws.api;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
@@ -113,10 +116,17 @@ public class AWSApiClient {
     }
 
     public byte[] fileContents(String keyId, boolean checkExists) {
-        if (checkExists) {
-            if (!fileExists(keyId)) {
-                return null;
-            }
+        try {
+            return IOUtils.toByteArray(fileContentsStream(keyId, checkExists));
+        } catch (Exception e) {
+            log.error("Failed to get content from {}/{}", bucketName, keyId, e);
+            throw new PathMindException("Failed to get model content");
+        }
+    }
+
+    public InputStream fileContentsStream(String keyId, boolean checkExists) {
+        if (checkExists && !fileExists(keyId)) {
+            return null;
         }
         String targetBucketName = bucketName;
         String originalPath = s3Client.getObjectMetadata(bucketName, keyId).getUserMetaDataOf("path");
@@ -126,14 +136,7 @@ public class AWSApiClient {
             targetBucketName = split[0];
             keyId = split[1];
         }
-
-        S3Object o = s3Client.getObject(targetBucketName, keyId);
-        try {
-            return IOUtils.toByteArray(o.getObjectContent());
-        } catch (IOException e) {
-            log.error("Failed to get content from {}/{}", targetBucketName, keyId, e);
-            throw new PathMindException("Failed to get model content");
-        }
+        return s3Client.getObject(targetBucketName, keyId).getObjectContent();
     }
 
     public boolean fileExists(String keyId) {

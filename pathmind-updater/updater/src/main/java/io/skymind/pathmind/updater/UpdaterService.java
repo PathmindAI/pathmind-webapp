@@ -2,7 +2,9 @@ package io.skymind.pathmind.updater;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 import com.amazonaws.services.sns.model.MessageAttributeValue;
 import com.amazonaws.services.sns.model.PublishRequest;
 import com.amazonaws.services.sns.model.PublishResult;
+import com.amazonaws.util.StringInputStream;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.skymind.pathmind.db.dao.RunDAO;
@@ -184,7 +187,7 @@ public class UpdaterService {
                 .filter(id -> !stoppedPoliciesNamesForRuns.contains(id))
                 .collect(Collectors.toList());
 
-        final Map<String, String> rawProgress = provider.progress(jobHandle, validExternalIds);
+        final Map<String, InputStream> rawProgress = provider.progress(jobHandle, validExternalIds);
 
         return rawProgress.entrySet().stream()
                 .map(e -> {
@@ -201,10 +204,14 @@ public class UpdaterService {
                         int startIteration = lastIteration - 10;
                         if (freezingProgressCsv != null) {
                             // if the mc_rollout result exist, we will use it instead.
-                            e.setValue(freezingProgressCsv);
+                            try {
+                                e.setValue(new StringInputStream(freezingProgressCsv));
+                            } catch (UnsupportedEncodingException ex) {
+                                log.error("Failed to read freezing", ex);
+                            }
                             startIteration = 0;
                         }
-                        ProgressInterpreter.interpretMetricsRaw(e, policy, previousMetricsRaw, startIteration, numReward, numAgents);
+                        ProgressInterpreter.interpretMetricsRaw(e.getValue(), policy, previousMetricsRaw, startIteration, numReward, numAgents);
                     }
 
                     return policy;
