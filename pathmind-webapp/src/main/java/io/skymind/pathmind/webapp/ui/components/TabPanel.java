@@ -30,11 +30,15 @@ public class TabPanel extends HorizontalLayout {
             tabbedBar.add(tab);
         });
 
-        tabs.get(0).setSelected(true);
+        setToPrimaryTab();
 
         setWidthFull();
         setMargin(false);
         add(tabbedBar);
+    }
+
+    public void setToPrimaryTab() {
+        tabbedBar.setSelectedIndex(0);
     }
 
     /**

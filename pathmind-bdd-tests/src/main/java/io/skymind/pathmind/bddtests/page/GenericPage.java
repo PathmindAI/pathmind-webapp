@@ -268,7 +268,7 @@ public class GenericPage extends PageObject {
 
     public void clickInTheNewTabModelButton(String text) {
         waitABit(2000);
-        WebElement button = getDriver().findElement(By.xpath("//*[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
+        WebElement button = getDriver().findElement(By.xpath("//span[contains(text(),'" + text + "') and not(contains(@class,'section-title-label'))]"));
         Actions actions = new Actions(getDriver());
         actions.keyDown(Keys.CONTROL).build().perform();
         actions.moveToElement(button).build().perform();
@@ -304,6 +304,15 @@ public class GenericPage extends PageObject {
 
     public String definePanel(String slot) {
         return (slot.equals("primary")) ? "middle-panel" : "comparison-panel";
+    }
+
+    public void clickKeyboardEnterBtn() {
+        WebElement shadow = utils.expandRootElement(getDriver().findElement(By.xpath("//div[@class='draggable draggable-leaf-only']/vaadin-text-field")));
+        shadow.findElement(By.cssSelector("input")).sendKeys(Keys.ENTER);
+    }
+
+    public void clickKeyboardEnterBtnOnConfirmationPopup() {
+        getDriver().findElement(By.cssSelector("confirm-popup")).sendKeys(Keys.ENTER);
     }
 
     public void clickPopUpDialogKeepMySubscriptionBtn() {

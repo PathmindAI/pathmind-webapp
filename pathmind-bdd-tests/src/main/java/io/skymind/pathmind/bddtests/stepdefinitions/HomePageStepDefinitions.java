@@ -132,6 +132,11 @@ public class HomePageStepDefinitions {
         homePageSteps.checkSearchResultPageProjectNameContainsArchivedTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
+    @Then("^Check search result page project name contains tag '(.*)'$")
+    public void checkSearchResultPageProjectNameContainsModelTag(String modelNumber) {
+        homePageSteps.checkSearchResultPageProjectNameContainsModelTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"), modelNumber);
+    }
+
     @Then("^Check Search Results for value is '(.*)'$")
     public void checkSearchResultsForValueIs(String value) {
         homePageSteps.checkSearchResultsForValueIs(value);
@@ -216,5 +221,10 @@ public class HomePageStepDefinitions {
     @Then("^Check onboarding success page$")
     public void checkOnboardingSuccessPage() {
         homePageSteps.checkOnboardingSuccessPage();
+    }
+
+    @When("^Click search result '(.*)'$")
+    public void clickSearchResultResult(String searchResult) {
+        homePageSteps.clickSearchResultResult(searchResult);
     }
 }

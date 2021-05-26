@@ -1,8 +1,6 @@
 package io.skymind.pathmind.webapp.ui.components.archive;
 
-import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -17,7 +15,7 @@ import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
  * the grid's row selection listener being called which is not what we want.
  */
 public class ArchivesButton<T extends ArchivableData> extends Button {
-    public ArchivesButton(Grid<T> grid, T data, Function<Boolean, List<T>> getFilteredData, BiConsumer<T, Boolean> archiveDAO) {
+    public ArchivesButton(Grid<T> grid, T data, BiConsumer<T, Boolean> archiveDAO) {
         super();
 
         String entityName = data.getClass().getSimpleName().toLowerCase();
@@ -26,9 +24,9 @@ public class ArchivesButton<T extends ArchivableData> extends Button {
 
         addClickListener(click -> {
             if (data.isArchived()) {
-                ConfirmationUtils.unarchive(entityName, () -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO));
+                ConfirmationUtils.unarchive(entityName, () -> changeArchiveStatus(grid, data, archiveDAO));
             } else {
-                ConfirmationUtils.archive(entityName, () -> changeArchiveStatus(grid, data, getFilteredData, archiveDAO));
+                ConfirmationUtils.archive(entityName, () -> changeArchiveStatus(grid, data, archiveDAO));
             }
         });
     }
@@ -41,10 +39,8 @@ public class ArchivesButton<T extends ArchivableData> extends Button {
         getElement().setAttribute("title", data.isArchived() ? "Unarchive" : "Archive");
     }
 
-    // Weird looking logic but it's so that we stay on the same page once you reverse the archive value. We also
-    // need to set the items here so that the item is removed from the table.
-    private void changeArchiveStatus(Grid<T> grid, T data, Function<Boolean, List<T>> getFilteredData, BiConsumer<T, Boolean> archiveDAO) {
+    private void changeArchiveStatus(Grid<T> grid, T data, BiConsumer<T, Boolean> archiveDAO) {
         archiveDAO.accept(data, !data.isArchived());
-        grid.setItems(getFilteredData.apply(!data.isArchived()));
+        grid.getDataProvider().refreshAll();
     }
 }

@@ -28,6 +28,10 @@ public class ExecutionEnvironmentManager {
                 0,
                 0,
                 0,
+                256,
+                2,
+                "PBT",
+                false,
                 false);
     }
 

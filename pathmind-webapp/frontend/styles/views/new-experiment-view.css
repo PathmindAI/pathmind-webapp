@@ -5,13 +5,13 @@
 
 .new-experiment-view .view-section {
     height: calc(100vh - 5rem);
-    padding: var(--lumo-space-m);
+    padding: 0;
     border-radius: 0;
     overflow: auto;
 }
 
-.new-experiment-view .view-section > vaadin-horizontal-layout:first-child {
-    flex: 0 0 auto;
+.new-experiment-view .view-section > vaadin-split-layout > vaadin-vertical-layout[slot~="primary"] {
+    overflow: visible;
 }
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
@@ -20,11 +20,12 @@
 
 .new-experiment-view .panel-title .section-subtitle-label {
     max-width: 460px;
-    margin-bottom: var(--lumo-space-m);
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
     height: 6.3rem;
+    padding: var(--lumo-space-m) var(--lumo-space-m) 0 0;
 }
 
 .new-experiment-view .warning-label {
@@ -44,9 +45,26 @@
     line-height: 1;
 }
 
+.new-experiment-view .bold-label {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    background: var(--pm-app-bg-color);
+    padding: var(--lumo-space-xs);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+}
+
 .new-experiment-view .reward-function-wrapper {
     flex: 1 0 auto;
     margin-top: 0;
+}
+
+.new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,
+.new-experiment-view .errors-wrapper {
+    border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
@@ -65,9 +83,7 @@
     box-sizing: border-box;
     flex: 1 1 19rem;
     line-height: 1;
-    padding: 0 var(--lumo-space-s) var(--lumo-space-xxxs);
-    border: 1px solid var(--pm-grey-color);
-    border-radius: var(--lumo-border-radius);
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
     overflow-y: auto;
 }
 
@@ -76,7 +92,7 @@
 }
 
 .new-experiment-view .reward-variables-table .header-row {
-    padding: var(--lumo-space-s) 0;
+    padding: var(--lumo-space-xs) 0;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
     margin-bottom: var(--lumo-space-s);
 }
@@ -84,14 +100,23 @@
 .new-experiment-view .reward-variables-table .header-row span {
     width: auto;
     line-height: 1;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding: 0;
 }
 
 .new-experiment-view .reward-variables-table vaadin-horizontal-layout {
     flex: 1 0 auto;
     justify-content: space-between;
     margin-bottom: var(--lumo-space-xxs);
+}
+
+.new-experiment-view .observations-panel {
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
+    border: none;
+    border-radius: 0;
+}
+
+.new-experiment-view .observations-panel span {
+    padding: var(--lumo-space-xs) 0;
 }
 
 .new-experiment-view .error-and-notes-container {
@@ -117,8 +142,6 @@
     font-family: var(--code-font-family);
     background-color: var(--pm-app-bg-color);
     padding: var(--lumo-space-xs) var(--lumo-space-s);
-    border: 1px solid var(--pm-grey-color);
-    border-radius: var(--lumo-border-radius);
     overflow: auto;
 }
 
