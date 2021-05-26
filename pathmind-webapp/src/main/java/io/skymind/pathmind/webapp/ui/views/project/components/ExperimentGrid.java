@@ -99,11 +99,6 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(1)
                 .setResizable(true)
                 .setSortable(false);
-
-        // Sort by created by default
-        sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
-        addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
-        setColumnReorderingAllowed(true);
         Grid.Column<Experiment> notesColumn = addColumn(experiment -> {
             String userNotes = experiment.getUserNotes();
             return userNotes.isEmpty() ? "—" : userNotes;
@@ -140,6 +135,9 @@ public class ExperimentGrid extends Grid<Experiment> {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
         if (additionalColumnList.get(rewardVariableName) == null) {
+            // there's no way to get the values of a particular grid column
+            // because vaadin grid is designed to deal with a large number of rows
+            // need to get the list from the data source and then compare
             Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
                         Span columnSpan = new Span();
                         if (experiment.getBestPolicy() != null) {
@@ -154,7 +152,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                         }
                         return columnSpan;
                     })
-                    .setSortProperty(Integer.toString(rewardVarIndex))
+                    .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
                     .setHeader(rewardVariableName)
                     .setAutoWidth(true)
                     .setFlexGrow(0)

@@ -43,8 +43,8 @@ public class ExperimentGridService {
 
         List<Experiment> experiments = experimentDAO.getExperimentsInModelForUser(userId, modelId, isArchived, offset, limit, sortOrders);
 
-        if(inAppSorting && !experiments.isEmpty()) {
-            int rewardVariableIndex = Integer.parseInt(sortBy);
+        if (inAppSorting && !experiments.isEmpty()) {
+            int rewardVariableIndex = Integer.parseInt(sortBy.replace("reward_var_", ""));
 
             Comparator<Experiment> metricsComparator = new MetricsComparator(rewardVariableIndex);
             if (isDesc) {
