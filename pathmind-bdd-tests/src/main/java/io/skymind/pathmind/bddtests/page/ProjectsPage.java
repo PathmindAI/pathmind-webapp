@@ -42,7 +42,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void checkThatProjectExistInProjectsList(String projectName) {
-        utils.moveToElementRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + projectName + "']"));
+        utils.moveToElementRepeatIfStaleException(By.xpath("//*[text()='" + projectName + "' and @class='project-name-column']"));
         assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']")), hasItem(projectName));
     }
 
@@ -66,7 +66,7 @@ public class ProjectsPage extends PageObject {
 
     public void openProjectOnProjectsPage(String projectName) {
         waitABit(2500);
-        WebElement project = getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + projectName + "']"));
+        WebElement project = getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content"));
         waitFor(ExpectedConditions.elementToBeClickable(project));
         JavascriptExecutor executor = (JavascriptExecutor) getDriver();
         executor.executeScript("arguments[0].click();", project);
