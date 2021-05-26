@@ -43,7 +43,7 @@ public class ProjectsPage extends PageObject {
 
     public void checkThatProjectExistInProjectsList(String projectName) {
         utils.moveToElementRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + projectName + "']"));
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), hasItem(projectName));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']")), hasItem(projectName));
     }
 
     public void inputExperimentNotes(String notes) {
@@ -61,7 +61,7 @@ public class ProjectsPage extends PageObject {
     }
 
     public void checkThatProjectNotExistInProjectList(String projectName) {
-        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']/descendant::span")), not(hasItem(projectName)));
+        assertThat(utils.getStringListRepeatIfStaleException(By.xpath("//*[@class='project-name-column']")), not(hasItem(projectName)));
     }
 
     public void openProjectOnProjectsPage(String projectName) {
