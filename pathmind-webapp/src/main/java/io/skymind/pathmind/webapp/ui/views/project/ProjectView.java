@@ -1,9 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -46,6 +50,7 @@ import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
+import io.skymind.pathmind.webapp.ui.plugins.LocalstorageHelper;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -62,6 +67,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.gatanaso.MultiselectComboBox;
+
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
@@ -88,6 +96,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
+    private LocalstorageHelper localstorageHelper;
+    @Autowired
     private ModelCheckerService modelCheckerService;
     @Autowired
     private ModelService modelService;
@@ -100,11 +110,13 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private List<RewardVariable> rewardVariables;
     private String pageTitle;
     private boolean isPythonModel = false;
+    private Set<String> localStorageColumnsList = new HashSet<String>();
 
     private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
+    private MultiselectComboBox<String> columnMultiSelect;
     private ExperimentGrid experimentGrid;
 
     private Breadcrumbs pageBreadcrumbs;
@@ -171,8 +183,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 LabelFactory.createLabel("Metrics", BOLD_LABEL), metricMultiSelect);
         metricSelectionRow.addClassName("metric-selection-row");
 
+        columnMultiSelect = createColumnSelectionGroup();
         HorizontalLayout columnSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                LabelFactory.createLabel("Columns", BOLD_LABEL), createColumnSelectionGroup());
+                LabelFactory.createLabel("Columns", BOLD_LABEL), columnMultiSelect);
         columnSelectionRow.addClassName("column-selection-row");
 
         Span errorMessage = modelCheckerService.createInvalidErrorLabel(selectedModel);
@@ -193,16 +206,21 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         Set<String> columnList = experimentGridColumns.keySet();
         multiSelectGroup.setPlaceholder("Customize your table columns");
         multiSelectGroup.setItems(columnList);
-        multiSelectGroup.setValue(columnList);
         multiSelectGroup.addSelectionListener(event -> {
-            String addedSelection = String.join("", event.getAddedSelection());
-            if (!addedSelection.isEmpty()) {
+            event.getAddedSelection().stream().forEach(addedSelection -> {
                 experimentGridColumns.get(addedSelection).setVisible(true);
-            }
-            String removedSelection = String.join("", event.getRemovedSelection());
-            if (!removedSelection.isEmpty()) {
+            });
+            event.getRemovedSelection().stream().forEach(removedSelection -> {
                 experimentGridColumns.get(removedSelection).setVisible(false);
-            }
+            });
+            afterHideOrShowColumn().execute();
+        });
+        multiSelectGroup.addValueChangeListener(event -> {
+            experimentGridColumns.forEach((colName, col) -> col.setVisible(false));
+            event.getValue().stream().forEach(selection -> {
+                experimentGridColumns.get(selection).setVisible(true);
+            });
+            afterHideOrShowColumn().execute();
         });
         return multiSelectGroup;
     }
@@ -214,10 +232,88 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.setItems(rewardVariables);
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         multiSelectGroup.addSelectionListener(event -> {
-            event.getAddedSelection().stream().findFirst().ifPresent(experimentGrid::addAdditionalColumn);
+            event.getAddedSelection().stream().forEach(experimentGrid::addAdditionalColumn);
             event.getRemovedSelection().stream().forEach(experimentGrid::removeAdditionalColumn);
+            afterHideOrShowAdditionalColumn().execute();
         });
         return multiSelectGroup;
+    }
+
+    private Command afterHideOrShowColumn() {
+        return () -> {
+            if (!localStorageColumnsList.equals(columnMultiSelect.getValue())) {
+                List<String> columnList = experimentGrid.getColumnList().keySet().stream()
+                        .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
+                        .collect(Collectors.toList());
+                localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "columns", columnList);
+            }
+        };
+    }
+
+    private Command afterHideOrShowAdditionalColumn() {
+        return () -> {
+            List<String> additionalColumnList = new ArrayList<>();
+            additionalColumnList.addAll(experimentGrid.getAdditionalColumnList().keySet());
+            localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "additional_columns", additionalColumnList);
+        };
+    }
+
+    private void getAndSetColumns() {
+        localstorageHelper.getObject("project_model", result -> {
+            JsonObject resultObject = (JsonObject) result;
+            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            if (modelDetails != null) {
+                JsonArray modelColumnsJsonArray = modelDetails.getArray("columns");
+                localStorageColumnsList.clear();
+                if (modelColumnsJsonArray != null) {
+                    int len = modelColumnsJsonArray.length();
+                    for (int i = 0; i < len; i++) {
+                        localStorageColumnsList.add(modelColumnsJsonArray.get(i).asString());
+                    }
+                    columnMultiSelect.setValue(localStorageColumnsList);
+                } else {
+                    setDefaultForColumnMultiSelect();
+                }
+            } else {
+                setDefaultForColumnMultiSelect();
+            }
+        });
+    }
+
+    private void setDefaultForColumnMultiSelect() {
+        columnMultiSelect.setValue(experimentGrid.getColumnList().keySet());
+    }
+
+    private void getAndSetMetricColumns() {
+        localstorageHelper.getObject("project_model", result -> {
+            JsonObject resultObject = (JsonObject) result;
+            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            if (modelDetails != null) {
+                JsonArray modelColumnsJsonArray = modelDetails.getArray("additional_columns");
+                Set<RewardVariable> localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
+                if (modelColumnsJsonArray != null) {
+                    int len = modelColumnsJsonArray.length();
+                    for (int i = 0; i < len; i++) {
+                        String currentRVName = modelColumnsJsonArray.get(i).asString();
+                        rewardVariables
+                            .stream()
+                            .filter(rv -> currentRVName.equals(rv.getName()))
+                            .findFirst()
+                            .ifPresent(rv -> 
+                                localStorageMetricColumnsListForColumnValue.add(rv));
+                    }
+                    metricMultiSelect.setValue(localStorageMetricColumnsListForColumnValue);
+                } else {
+                    setDefaultForMetricMultiSelect();
+                }
+            } else {
+                setDefaultForMetricMultiSelect();
+            }
+        });
+    }
+
+    private void setDefaultForMetricMultiSelect() {
+        metricMultiSelect.setValue(null);
     }
 
     private NotesField createNotesField() {
@@ -338,6 +434,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             } else {
                 dataProvider.refreshAll();
             }
+            getAndSetColumns();
+            getAndSetMetricColumns();
         }
         VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
             createdDate.setText(String.format("Created %s", DateAndTimeUtils.formatDateAndTimeShortFormatter(project.getDateCreated(), timeZoneId)));
@@ -408,6 +506,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
         getUI().ifPresent(ui -> ui.getPage().getHistory().replaceState(null, "project/" + projectId + Routes.MODEL_PATH + modelId));
+        afterHideOrShowColumn().execute();
     }
 
     @Override
