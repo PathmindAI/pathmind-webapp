@@ -51,6 +51,12 @@ class CodeViewer extends PolymerElement {
     const numberRe = /[0-9]+/g;
     let codeSnippet = this.codeSnippet;
 
+    if (this.comparisonCodeSnippet) {
+        this.classList.add("comparison");
+    } else {
+        this.classList.remove("comparison");
+    }
+
     if (this.codeSnippet && this.comparisonCodeSnippet) {
       const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
       const codeDiff = diff.diffWords(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
@@ -137,6 +143,9 @@ class CodeViewer extends PolymerElement {
             line-height: 1.8;
             padding: var(--lumo-space-xs) var(--lumo-space-s);
             margin: 0;
+        }
+        :host(.comparison) code {
+            height: 16rem;
         }
         :host([show-border]) code {
             overflow: auto;
