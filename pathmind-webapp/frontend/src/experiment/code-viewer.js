@@ -52,14 +52,15 @@ class CodeViewer extends PolymerElement {
     let codeSnippet = this.codeSnippet;
 
     if (this.codeSnippet && this.comparisonCodeSnippet) {
-      const codeDiff = diff.diffWords(this.codeSnippet, this.comparisonCodeSnippet);
+      const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
+      const codeDiff = diff.diffWords(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
       let processedCodeSnippet = "";
       codeDiff.forEach(part => {
-          if (part.removed) {
-              processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
-          } else if (!part.added) {
-              processedCodeSnippet += part.value;
-          }
+        if (part.removed) {
+          processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
+        } else if (!part.added) {
+          processedCodeSnippet += part.value;
+        }
       });
       codeSnippet = processedCodeSnippet;
     }
