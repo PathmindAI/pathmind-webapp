@@ -132,6 +132,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentObservationsPanel.unhighlight();
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
+        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }
