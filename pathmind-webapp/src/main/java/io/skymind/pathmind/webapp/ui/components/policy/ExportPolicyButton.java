@@ -11,7 +11,6 @@ import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 
@@ -50,12 +49,13 @@ public class ExportPolicyButton extends Anchor {
     }
 
     public void setExperiment(Experiment experiment) {
-        policy = policyDAO.getPolicyIfAllowed(experiment.getBestPolicy().getId(), SecurityUtils.getUserId()).orElse(null);
-
-        if (policy == null) {
+        boolean isCompletedWithPolicy = experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile();
+        if (!isCompletedWithPolicy) {
             setVisible(false);
             return;
         }
+
+        policy = policyDAO.getPolicy(experiment.getBestPolicy().getId());
 
         policyFilename = PolicyUtils.generatePolicyFileName(policy);
 

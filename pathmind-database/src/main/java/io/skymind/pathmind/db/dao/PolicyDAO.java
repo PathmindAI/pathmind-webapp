@@ -24,6 +24,15 @@ public class PolicyDAO {
         this.ctx = ctx;
     }
 
+    /**
+     * Only use this method after you have checked user permission.
+     * @param policyId
+     * @return Policy
+     */
+    public Policy getPolicy(long policyId) {
+        return PolicyRepository.getPolicy(ctx, policyId);
+    }
+
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
         return PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
     }
