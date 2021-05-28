@@ -91,10 +91,7 @@ public class ModelUploadPage extends PageObject {
 
     public void checkThatModelUploadLinkOpened() {
         waitABit(4000);
-        getDriver().switchTo().frame(1);
-        getDriver().switchTo().frame(1);
-        getDriver().switchTo().frame(1);
-        assertThat(getDriver().findElement(By.cssSelector("body > h1:nth-child(2)")).getText(), is("Exporting models to Java application"));
+        assertThat(getDriver().findElement(By.cssSelector("h1")).getText(), is("Exporting models to Java application"));
     }
 
     public void checkWizardWarningLabelIsShown(String warningLabel, Boolean isShown) {
