@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
-import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -114,7 +113,7 @@ public class SecurityConfiguration {
 
             if (user != null) {
                 final UserRole initRole  = user.getAccountType();
-                if (!UserRole.isServiceOrPremiumUser(initRole)) {
+                if (!UserRole.isInternalOrPremiumUser(initRole)) {
                     try {
                         StripeService.Result<Boolean, StripeService.StripeError> resultHasActiveSubscription =
                                 this.stripeService.userHasActiveProfessionalSubscription(user.getEmail());

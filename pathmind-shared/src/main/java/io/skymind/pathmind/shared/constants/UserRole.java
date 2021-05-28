@@ -25,7 +25,7 @@ public enum UserRole {
 
     public static final EnumSet<UserRole> serviceRoles = EnumSet.of(Admin, Master, Support);
 
-    public static boolean isServiceOrPremiumUser(UserRole role) {
+    public static boolean isInternalOrPremiumUser(UserRole role) {
         return role == Premium || serviceRoles.contains(role);
     }
 

@@ -254,7 +254,7 @@ public class StripeService {
         try {
             customer = getCustomer(email);
         } catch (StripeException e) {
-            log.error("Failed not retrieve customer from Stripe: {}", email);
+            log.error("Failed to retrieve customer from Stripe: {}", email);
         }
         if (customer == null) {
             return new Result<>(null, StripeError.NoUserFound);
