@@ -25,10 +25,7 @@ public class PolicyDAO {
     }
 
     public Optional<Policy> getPolicyIfAllowed(long policyId, long userId) {
-        Optional<Policy> optionalPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
-        optionalPolicy
-                .ifPresent(policy -> policy.setScores(RewardScoreRepository.getRewardScoresForPolicy(ctx, policyId)));
-        return optionalPolicy;
+        return PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
     }
 
     public Map<Long, List<Metrics>> getMetricsForPolicies(List<Long> policyIds) {
