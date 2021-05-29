@@ -20,6 +20,7 @@ import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.TrainingErrorDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.training.cloud.aws.AWSExecutionProvider;
+import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSNS;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.UpdateEvent;
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -33,6 +34,8 @@ import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +62,8 @@ import static io.skymind.pathmind.shared.services.training.constant.ErrorConstan
 public class UpdaterService {
     private final AWSExecutionProvider provider;
 
+    private final AWSApiClient awsApiClient;
+
     private final RunDAO runDAO;
     private final PolicyFileService policyFileService;
     private final TrainingErrorDAO trainingErrorDAO;
@@ -68,7 +73,7 @@ public class UpdaterService {
     private final String sqsFilter;
 
     @Autowired
-    public UpdaterService(AWSExecutionProvider provider,
+    public UpdaterService(AWSExecutionProvider provider, AWSApiClient awsApiClient,
                           RunDAO runDAO,
                           PolicyFileService policyFileService, TrainingErrorDAO trainingErrorDAO,
                           AwsApiClientSNS snsClient,
@@ -76,10 +81,12 @@ public class UpdaterService {
                           @Value("${pathmind.aws.sns.updater_sqs_filter}") String sqsFilter,
                           ObjectMapper objectMapper) {
         this.provider = provider;
+        this.awsApiClient = awsApiClient;
         this.runDAO = runDAO;
         this.policyFileService = policyFileService;
         this.trainingErrorDAO = trainingErrorDAO;
         this.snsClient = snsClient;
+
         this.objectMapper = objectMapper;
         this.updaterTopicArn = topicArn;
         this.sqsFilter = sqsFilter;
@@ -187,31 +194,36 @@ public class UpdaterService {
                 .filter(id -> !stoppedPoliciesNamesForRuns.contains(id))
                 .collect(Collectors.toList());
 
-        final Map<String, InputStream> rawProgress = provider.progress(jobHandle, validExternalIds);
+        final Map<String, String> rawProgress = provider.progressFileLocations(jobHandle, validExternalIds);
 
         return rawProgress.entrySet().stream()
                 .map(e -> {
-                    List<RewardScore> previousScores = runDAO.getScores(runId, e.getKey());
-                    List<Metrics> previousMetrics = runDAO.getMetrics(runId, e.getKey());
+                    final String policyExtId = e.getKey();
+                    final String progressFileLocation = e.getValue();
+
+                    List<RewardScore> previousScores = runDAO.getScores(runId, policyExtId);
+                    List<Metrics> previousMetrics = runDAO.getMetrics(runId, policyExtId);
                     int numReward = runDAO.getRewardNumForRun(runId);
                     int numAgents = runDAO.getAgentsNumForRun(runId);
-                    Policy policy = ProgressInterpreter.interpret(e, previousScores, previousMetrics, numReward, numAgents);
+
+                    Policy policy = ProgressInterpreter.interpret(policyExtId,
+                            awsApiClient.fileContentsStream(progressFileLocation, true),
+                            previousScores, previousMetrics, numReward, numAgents
+                    );
+
                     if (isFinalUpdate && policy.getMetrics().size() > 0) {
-                        String freezingProgressCsv = provider.getBestFreezingProgress(jobHandle);
-                        List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, e.getKey());
+                        List<MetricsRaw> previousMetricsRaw = runDAO.getMetricsRaw(runId, policyExtId);
                         int lastIteration = policy.getMetrics().get(policy.getMetrics().size() - 1).getIteration();
                         // we only store the metrics raw data for the last 10 iteration
                         int startIteration = lastIteration - 10;
-                        if (freezingProgressCsv != null) {
+
+                        Optional<String> freezingProgressCsv = provider.getBestFreezingProgress(jobHandle);
+                        if (freezingProgressCsv.isPresent()) {
                             // if the mc_rollout result exist, we will use it instead.
-                            try {
-                                e.setValue(new StringInputStream(freezingProgressCsv));
-                            } catch (UnsupportedEncodingException ex) {
-                                log.error("Failed to read freezing", ex);
-                            }
                             startIteration = 0;
                         }
-                        ProgressInterpreter.interpretMetricsRaw(e.getValue(), policy, previousMetricsRaw, startIteration, numReward, numAgents);
+                        InputStream rawMetricsProgressLocation = awsApiClient.fileContentsStream(freezingProgressCsv.orElse(progressFileLocation), true);
+                        ProgressInterpreter.interpretMetricsRaw(rawMetricsProgressLocation, policy, previousMetricsRaw, startIteration, numReward, numAgents);
                     }
 
                     return policy;

@@ -37,7 +37,7 @@ public class ProgressInterpreterTest {
 
     @Test
     public void testInterpreter() {
-        final Policy policy = ProgressInterpreter.interpret(Map.entry(name, fileContents), null, null, 4, 1);
+        final Policy policy = ProgressInterpreter.interpret(name, fileContents, null, null, 4, 1);
 
         final LocalDateTime utcTime = LocalDateTime.parse("2020-08-18_22-16-53", DateTimeFormatter.ofPattern("uuuu-MM-dd_HH-mm-ss"));
         final LocalDateTime time = ZonedDateTime.ofInstant(utcTime.toInstant(ZoneOffset.UTC), Clock.systemDefaultZone().getZone()).toLocalDateTime();

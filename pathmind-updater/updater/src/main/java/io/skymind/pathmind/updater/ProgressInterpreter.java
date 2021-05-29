@@ -120,9 +120,9 @@ public class ProgressInterpreter {
         return policy;
     }
 
-    public static Policy interpret(Map.Entry<String, InputStream> entry, List<RewardScore> previousScores,
+    public static Policy interpret(String key, InputStream inputStream, List<RewardScore> previousScores,
                                    List<Metrics> previousMetrics, int numReward, int numAgents) {
-        final Policy policy = interpretKey(entry.getKey());
+        final Policy policy = interpretKey(key);
 
         List<String> columns = Arrays.stream(RAY_PROGRESS.scoreColumns())
                 .map(Enum::name)
@@ -138,7 +138,7 @@ public class ProgressInterpreter {
         CsvParser parser = new CsvParser(settings);
         List<Record> allRecords = List.of();
 
-        try (InputStream is = new BufferedInputStream(entry.getValue())) {
+        try (InputStream is = new BufferedInputStream(inputStream)) {
             allRecords = parser.parseAllRecords(is);
         } catch (IOException e) {
             log.error("Something went wrong", e);
