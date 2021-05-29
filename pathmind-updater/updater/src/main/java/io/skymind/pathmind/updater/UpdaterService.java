@@ -183,7 +183,7 @@ public class UpdaterService {
                 .forEach(policy -> policy.setStoppedAt(terminatedTrials.get(policy.getExternalId())));
     }
 
-    private List<Policy> getPoliciesFromProgressProvider(List<String> stoppedPoliciesNamesForRuns, Long runId,
+    protected List<Policy> getPoliciesFromProgressProvider(List<String> stoppedPoliciesNamesForRuns, Long runId,
                                                          String jobHandle, ExperimentState experimentState, boolean isFinalUpdate) {
         if (experimentState == null) {
             return Collections.emptyList();
@@ -191,6 +191,7 @@ public class UpdaterService {
 
         List<String> validExternalIds = experimentState.getCheckpoints().stream()
                 .map(CheckPoint::getId)
+                .filter(Objects::nonNull)
                 .filter(id -> !stoppedPoliciesNamesForRuns.contains(id))
                 .collect(Collectors.toList());
 
