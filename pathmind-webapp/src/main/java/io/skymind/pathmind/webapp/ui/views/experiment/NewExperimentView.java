@@ -115,8 +115,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelLink = new DownloadModelLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator, false, isPythonModel);
 
-        VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
-        mainPanel.setSpacing(true);
+        VerticalLayout mainPanel = new VerticalLayout();
+        mainPanel.setPadding(false);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
         createUpgradeBanners();
@@ -144,6 +144,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
+        rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionBuilder,
@@ -188,7 +189,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
             WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
-                errorDescriptionLabel,
+                modelCheckerService.createInvalidErrorLabel(experiment.getModel()),
                 rewardFunctionAndObservationsWrapper
             ),
             bottomPanel,
@@ -255,8 +256,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private void createButtons() {
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
         startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this));
-        saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
-        }));
+        saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked());
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
     }
 
@@ -304,23 +304,22 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return settingsPanel.getSettingsText();
     }
 
-    private void handleSaveDraftClicked(Command afterClickedCallback) {
+    private void handleSaveDraftClicked() {
         SaveDraftAction.saveDraft(this);
+    }
+
+    private void handleSaveDraftClicked(Command afterClickedCallback) {
+        handleSaveDraftClicked();
         afterClickedCallback.execute();
     }
 
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         ContinueNavigationAction action = event.postpone();
-        saveDraftExperiment(() -> action.proceed());
-    }
-
-    // STEPH -> TODO -> Clean this up so that it's consistent with the rest.
-    public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
-            handleSaveDraftClicked(afterClickedCallback);
+            handleSaveDraftClicked(() -> action.proceed());
         } else {
-            afterClickedCallback.execute();
+            action.proceed();
         }
     }
 
@@ -341,8 +340,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     public void setExperiment(Experiment experiment) {
-        saveDraftExperiment(() -> {
-        });
+        handleSaveDraftClicked();
         // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
