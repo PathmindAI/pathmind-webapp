@@ -160,11 +160,6 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentPageObservationsList(observation);
     }
 
-    @Then("^Check export policy page '(.*)'$")
-    public void checkExportPolicyPage(String model) {
-        experimentPageSteps.checkExportPolicyPage(model);
-    }
-
     @Then("^Check learning progress block title '(.*)'$")
     public void checkLearningProgressTitle(String title) {
         experimentPageSteps.checkLearningProgressTitle(title);
