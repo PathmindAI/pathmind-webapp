@@ -390,15 +390,6 @@ vaadin-dialog-overlay .demo-view-content {
     flex: 1 0 auto;
 }
 
-.projects-view .project-name-column vaadin-button {
-    height: auto;
-    visibility: hidden;
-}
-
-.projects-view .project-name-column:hover vaadin-button {
-    visibility: visible;
-}
-
 .projects-view .view-section,
 .project-view .view-section,
 .model-view .view-section,
