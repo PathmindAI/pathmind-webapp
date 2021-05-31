@@ -108,17 +108,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     protected Component getMainContent() {
-        HorizontalLayout mainContent = createMainPanel();
-        return mainContent;
-    }
-
-    @Override
-    protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
-    }
-
-    private HorizontalLayout createMainPanel() {
-
         createButtons();
 
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -204,14 +193,17 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
             ),
             bottomPanel,
             60);
-        // splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
 
-        mainPanel.add(splitWrapper);
-        mainPanel.setClassName("view-section");
+        splitWrapper.setClassName("view-section");
 
-        HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
+        HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, splitWrapper);
         panelsWrapper.setSpacing(false);
         return panelsWrapper;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
     }
 
     private SplitButton createSplitButton() {
@@ -261,7 +253,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     }
 
     private void createButtons() {
-        // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
         startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this));
         saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
@@ -371,11 +362,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
         if (experiment.isDraft()) {
             return true;
-        } else {
-            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
-            event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
-            return false;
         }
+        event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
+        return false;
     }
 
     protected void createExperimentComponents() {

@@ -4,7 +4,7 @@
 }
 
 .new-experiment-view .view-section {
-    height: calc(100vh - 5rem);
+    height: calc(100vh - 5rem) !important;
     padding: 0;
     border-radius: 0;
     overflow: auto;
@@ -21,11 +21,6 @@
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
     flex: 1;
-}
-
-.new-experiment-view .panel-title .section-subtitle-label {
-    max-width: 460px;
-    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
