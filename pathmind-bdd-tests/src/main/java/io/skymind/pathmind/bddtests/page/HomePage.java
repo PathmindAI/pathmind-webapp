@@ -177,6 +177,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkThatSearchCounterIs(String counter) {
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")), "Search Results for"));
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-subtitle-label']")).getText().split(" ", 3);
         assertThat(text[1], is(counter));
     }

@@ -43,11 +43,6 @@ public class ProjectsPageSteps {
     }
 
     @Step
-    public void clickEditProjectIconFromProjectsPage(String projectName) {
-        projectsPage.clickEditProjectIconFromProjectsPage(projectName);
-    }
-
-    @Step
     public void checkPageTitleIsProjects(String title) {
         projectsPage.checkPageTitleIsProjects(title);
     }
