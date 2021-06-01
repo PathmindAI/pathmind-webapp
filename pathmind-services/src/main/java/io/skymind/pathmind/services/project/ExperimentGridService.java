@@ -68,10 +68,7 @@ public class ExperimentGridService {
         MetricsComparator(int rewardVarIndex) {
             keyExtractor = experiment -> {
                 if (experiment.getBestPolicy() != null) {
-                    Policy bestPolicy = experiment.getBestPolicy();
-                    return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                            ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
-                            : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
+                    return Double.parseDouble(experiment.getBestPolicy().getMetricDisplayValues().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0]);
                 }
                 return Double.NEGATIVE_INFINITY;
             };

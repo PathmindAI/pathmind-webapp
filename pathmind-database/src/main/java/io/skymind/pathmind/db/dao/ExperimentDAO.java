@@ -167,13 +167,18 @@ public class ExperimentDAO {
 
                     List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
 
-                    bp.setUncertainty(rawMetricsAvgVar.stream()
-                            .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
-                            .collect(Collectors.toList()));
+                    if (rawMetricsAvgVar != null && !rawMetricsAvgVar.isEmpty()) {
+                        bp.setMetricDisplayValues(rawMetricsAvgVar.stream()
+                                .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
+                                .collect(Collectors.toList()));
+                    } else {
+                        for (Double metric : metricsDAO.getLastIterationMetricsMeanForPolicy(policyId)) {
+                            bp.getMetricDisplayValues().add(metric.toString());
+                        }
+                    }
                 });
             }
         });
-
 
         return experiments;
     }

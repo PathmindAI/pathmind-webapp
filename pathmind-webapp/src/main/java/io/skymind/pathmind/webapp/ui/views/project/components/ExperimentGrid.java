@@ -72,27 +72,6 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true)
                 .setSortable(false);
-        // addComponentColumn(experiment -> {
-        //             Span goalIcons = new Span();
-        //             String successClassName = "success-text";
-        //             if (experiment.isHasGoals() && !experiment.isDraft()) {
-        //                 // Get best policy
-        //                 List<Policy> policies = policyDAO.getPoliciesForExperiment(experiment.getId());
-
-        //                 if (policies != null && !policies.isEmpty()) {
-        //                     // TODO: since we are hiding the feature, this is not dealt with for now.
-        //                     // We'll have to add code here if we show the Goals feature again
-        //                 }
-        //             }
-        //             goalIcons.setText("—");
-        //             return goalIcons;
-        //         })
-        // 		.setComparator(Comparator.comparing(Experiment::isGoalsReached))
-        //         .setHeader("Goals Reached")
-        //         .setAutoWidth(true)
-        //         .setFlexGrow(0)
-        //         .setResizable(true)
-        //         .setSortable(true);
         Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
@@ -142,11 +121,9 @@ public class ExperimentGrid extends Grid<Experiment> {
                         Span columnSpan = new Span();
                         if (experiment.getBestPolicy() != null) {
                             Policy bestPolicy = experiment.getBestPolicy();
-                            // First conditional value is with uncertainty, second value is without uncertainty
-                            String text = bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                                    ? bestPolicy.getUncertainty().get(rewardVarIndex)
-                                    : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex));
-                            columnSpan.add(text);
+
+                            System.out.println(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
+                            columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
                         } else {
                             columnSpan.add("—");
                         }
