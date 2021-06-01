@@ -218,7 +218,7 @@ public class AccountPage extends PageObject {
     }
 
     public void checkAccountSubscriptionHint() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d");
         DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
         LocalDateTime now = LocalDateTime.now();
         String[] shortMonths = new DateFormatSymbols().getShortMonths();
