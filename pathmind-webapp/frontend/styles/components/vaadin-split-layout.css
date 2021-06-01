@@ -22,8 +22,8 @@
 
 :host [part="handle"]:hover,
 :host [part="handle"]:active {
-    min-width: 3px;
-    min-height: 3px;
+    min-width: 5px;
+    min-height: 5px;
     background-color: var(--pm-grey-color-lighter);
 }
 

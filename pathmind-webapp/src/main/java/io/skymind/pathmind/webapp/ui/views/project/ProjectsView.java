@@ -1,23 +1,19 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -40,7 +36,6 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
-import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ProjectGridDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -148,16 +143,8 @@ public class ProjectsView extends PathMindDefaultView {
         projectGrid = new Grid<Project>();
         projectGrid.addThemeName("projects");
 
-        projectGrid.addComponentColumn(project -> {
-            String projectName = project.getName();
-            Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-            renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            renameProjectButton.addClassName("action-button");
-            HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    new Span(projectName), renameProjectButton);
-            projectNameColumn.addClassName("project-name-column");
-            return projectNameColumn;
-        })
+        projectGrid.addColumn(TemplateRenderer.<Project>of("<span class='project-name-column'>[[item.name]]</span>")
+                .withProperty("name", Project::getName))
                 .setHeader("Name")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -204,15 +191,6 @@ public class ProjectsView extends PathMindDefaultView {
 
         projectGrid.addItemClickListener(event ->
                 getUI().ifPresent(ui -> ui.navigate(ProjectView.class, "" + event.getItem().getId())));
-    }
-
-    private void renameProject(Project project) {
-        RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-            projectGrid.getDataProvider().refreshItem(project);
-            // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-            projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); }, 0)");
-        });
-        dialog.open();
     }
 
     @Override

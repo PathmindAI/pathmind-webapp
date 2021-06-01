@@ -69,12 +69,14 @@ Feature: Nav bar search
     When Create new CoffeeShop project with single reward function
     When Open projects page
     When Generate unique number 'searchRandomNumber'
-    When Click edit AutotestProject project icon from projects page
+    When Open project AutotestProject on projects page
+    When Click in 'Rename' button
     When Rename project name to 1_SearchTest
     When Click in 'Rename Project' button
     When Create new CoffeeShop project with single reward function
     When Open projects page
-    When Click edit AutotestProject project icon from projects page
+    When Open project AutotestProject on projects page
+    When Click in 'Rename' button
     When Rename project name to 2_SearchTest
     When Click in 'Rename Project' button
     When Input 'SearchTest' to the notes search field with unique number
