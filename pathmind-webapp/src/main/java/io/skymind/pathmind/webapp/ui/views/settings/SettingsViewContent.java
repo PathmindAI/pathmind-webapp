@@ -74,6 +74,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("longerTrainingCB")
     private ComboBox<String> longerTraining;
 
+    @Id("startCheckIterationCB")
+    private ComboBox<String> startCheckIteration;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -103,6 +106,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
+            env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -217,6 +221,18 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         longerTraining.setLabel("Enable Longer Training");
         longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
         longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
+        longerTraining.addValueChangeListener(event -> {
+            startCheckIteration.setVisible(event.getValue().equals("TRUE"));
+        });
+
+        // init start check iteration
+        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500");
+
+        startCheckIteration.setItems(startCheckIterations);
+        startCheckIteration.setLabel("Early Stopper Start Iter");
+        startCheckIteration.setPlaceholder(String.valueOf(env.getStartCheckIterationForLongerTraining()));
+        startCheckIteration.setValue(String.valueOf(env.getStartCheckIterationForLongerTraining()).toUpperCase());
+        startCheckIteration.setVisible(longerTraining.getValue().equals("TRUE"));
     }
 
     public interface Model extends TemplateModel {

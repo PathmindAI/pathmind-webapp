@@ -30,6 +30,7 @@ public class ExecutionEnvironment {
     private String scheduler;
     private boolean freezing;
     private boolean longerTraining;
+    private int startCheckIterationForLongerTraining;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;
