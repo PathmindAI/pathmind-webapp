@@ -119,9 +119,8 @@ public class ExperimentGrid extends Grid<Experiment> {
             // need to get the list from the data source and then compare
             Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
                         Span columnSpan = new Span();
-                        if (experiment.getBestPolicy() != null) {
-                            Policy bestPolicy = experiment.getBestPolicy();
-
+                        Policy bestPolicy = experiment.getBestPolicy();
+                        if (bestPolicy != null) {
                             System.out.println(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
                             columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
                         } else {

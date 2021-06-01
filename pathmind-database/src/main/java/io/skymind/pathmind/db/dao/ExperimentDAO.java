@@ -173,7 +173,7 @@ public class ExperimentDAO {
                                 .collect(Collectors.toList()));
                     } else {
                         for (Double metric : metricsDAO.getLastIterationMetricsMeanForPolicy(policyId)) {
-                            bp.getMetricDisplayValues().add(metric.toString());
+                            bp.getMetricDisplayValues().add(PathmindNumberUtils.formatNumber(metric));
                         }
                     }
                 });
