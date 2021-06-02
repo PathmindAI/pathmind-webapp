@@ -15,12 +15,10 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
@@ -34,7 +32,7 @@ public class ExperimentGrid extends Grid<Experiment> {
 
     private Map<String, Column<Experiment>> columnList = new LinkedHashMap<>();
 
-    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
+    public ExperimentGrid(ExperimentDAO experimentDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
         }))
@@ -113,29 +111,26 @@ public class ExperimentGrid extends Grid<Experiment> {
     public void addAdditionalColumn(RewardVariable rewardVar) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
-        if (additionalColumnList.get(rewardVariableName) == null) {
-            // there's no way to get the values of a particular grid column
-            // because vaadin grid is designed to deal with a large number of rows
-            // need to get the list from the data source and then compare
-            Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
-                        Span columnSpan = new Span();
-                        Policy bestPolicy = experiment.getBestPolicy();
-                        if (bestPolicy != null) {
-                            System.out.println(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
-                            columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
-                        } else {
-                            columnSpan.add("—");
-                        }
-                        return columnSpan;
-                    })
-                    .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
-                    .setHeader(rewardVariableName)
-                    .setAutoWidth(true)
-                    .setFlexGrow(0)
-                    .setResizable(true)
-                    .setSortable(true);
-            additionalColumnList.put(rewardVariableName, newColumn);
-        }
+        // there's no way to get the values of a particular grid column
+        // because vaadin grid is designed to deal with a large number of rows
+        // need to get the list from the data source and then compare
+        Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
+                    Span columnSpan = new Span();
+                    Policy bestPolicy = experiment.getBestPolicy();
+                    if (bestPolicy != null) {
+                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
+                    } else {
+                        columnSpan.add("—");
+                    }
+                    return columnSpan;
+                })
+                .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
+                .setHeader(rewardVariableName)
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
+        additionalColumnList.put(rewardVariableName, newColumn);
     }
 
     public void removeAdditionalColumn(RewardVariable rewardVar) {
