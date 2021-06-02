@@ -13,6 +13,7 @@ import com.stripe.model.PaymentMethod;
 import com.stripe.model.Subscription;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.PathmindUser;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,12 +235,12 @@ public class StripeService {
      * @param email Pathmind user email address
      * @return true if the user has an ongoing subscription, false if not.
      */
-    public boolean userHasActiveProfessionalSubscription(String email) {
-        Subscription subscription = getActiveSubscriptionOfUser(email);
-        if (subscription == null) {
-            return false;
+    public Result<Boolean, StripeError> userHasActiveProfessionalSubscription(String email) {
+        Result<Subscription, StripeError> result = getActiveSubscriptionOfUser(email);
+        if (result.error != null) {
+            return new Result<>(false, result.error);
         }
-        return "active".equalsIgnoreCase(subscription.getStatus());
+        return new Result<>("active".equalsIgnoreCase(result.getResult().getStatus()), null);
     }
 
     /**
@@ -248,22 +249,33 @@ public class StripeService {
      * @param email Pathmind user email address
      * @return ongoing subscription if available, otherwise null.
      */
-    public Subscription getActiveSubscriptionOfUser(String email) {
+    public Result<Subscription, StripeError> getActiveSubscriptionOfUser(String email) {
         Customer customer = null;
         try {
             customer = getCustomer(email);
         } catch (StripeException e) {
-            log.info("Could not retrieve customer from Stripe: " + email);
-            return null;
+            log.error("Failed to retrieve customer from Stripe: {}", email);
         }
-        if (customer == null ||
-                customer.getSubscriptions() == null ||
-                customer.getSubscriptions().getData() == null ||
-                customer.getSubscriptions().getData().isEmpty()
-        ) {
-            return null;
+        if (customer == null) {
+            return new Result<>(null, StripeError.NoUserFound);
         }
-        return customer.getSubscriptions().getData().get(0);
+        if (customer.getSubscriptions() == null || CollectionUtils.isEmpty(customer.getSubscriptions().getData())) {
+            return new Result<>(null, StripeError.NoSubscriptionExist);
+        }
+        return new Result<>(customer.getSubscriptions().getData().get(0), null);
+    }
+
+
+    public enum StripeError {
+        NoUserFound,
+        NoSubscriptionExist
+        ;
+    };
+
+    @lombok.Value
+    public static class Result<T, Error> {
+        T result;
+        Error error;
     }
 
 }

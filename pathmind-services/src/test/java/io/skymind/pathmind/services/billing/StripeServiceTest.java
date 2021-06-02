@@ -54,16 +54,16 @@ public class StripeServiceTest extends PathmindApplicationTests {
 
     @Test
     public void testUserHasActiveProfessionalSubscription() {
-        assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail));
+        assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail).getResult());
     }
 
     @Test
     public void testSubscribeAndCancellation() throws StripeException {
         final Customer customer = stripeService.getCustomer(customerEmail);
         assertNotNull(stripeService.createSubscription(customer));
-        assertTrue(stripeService.userHasActiveProfessionalSubscription(customerEmail));
+        assertTrue(stripeService.userHasActiveProfessionalSubscription(customerEmail).getResult());
         stripeService.cancelSubscription(customerEmail, false);
-        assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail));
+        assertFalse(stripeService.userHasActiveProfessionalSubscription(customerEmail).getResult());
     }
 
 }

@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.services.billing.StripeService;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -32,6 +35,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.firewall.RequestRejectedException;
 
+@Slf4j
 @EnableWebSecurity
 public class SecurityConfiguration {
 
@@ -87,13 +91,17 @@ public class SecurityConfiguration {
     static class VaadinFrontendConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         private final UserDetailsService userDetailsService;
-
-        private PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
+        private final StripeService stripeService;
 
         @Autowired
-        public VaadinFrontendConfigurationAdapter(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        public VaadinFrontendConfigurationAdapter(
+                StripeService stripeService,
+                UserDetailsService userDetailsService,
+                PasswordEncoder passwordEncoder) {
             this.userDetailsService = userDetailsService;
             this.passwordEncoder = passwordEncoder;
+            this.stripeService = stripeService;
         }
 
         @Bean
@@ -102,6 +110,34 @@ public class SecurityConfiguration {
             final String username = SecurityUtils.getUsername();
             PathmindUser user =
                     username != null ? userDAO.findByEmailIgnoreCase(username) : null;
+
+            if (user != null) {
+                final UserRole initRole  = user.getAccountType();
+                if (!UserRole.isInternalOrPremiumUser(initRole)) {
+                    try {
+                        StripeService.Result<Boolean, StripeService.StripeError> resultHasActiveSubscription =
+                                this.stripeService.userHasActiveProfessionalSubscription(user.getEmail());
+
+                        StripeService.StripeError error = resultHasActiveSubscription.getError();
+
+                        if (error != StripeService.StripeError.NoUserFound) {
+                            if (resultHasActiveSubscription.getResult()) {
+                                user.setAccountType(UserRole.Paid.getId());
+                            } else {
+                                user.setAccountType(UserRole.Trial.getId());
+                            }
+                            if(initRole != user.getAccountType()) {
+                                log.info("Change userRole for user {} {} -> {}", user.getEmail(), initRole, user.getAccountType());
+                                userDAO.update(user);
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        log.error("Failed to verify user's subscription {}", user.getEmail(), e);
+                    }
+                }
+            }
+
             return () -> user;
         }
 

@@ -91,7 +91,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
 
     @PostConstruct
     private void init() {
-        subscription = stripeService.getActiveSubscriptionOfUser(user.getEmail());
+        subscription = stripeService.getActiveSubscriptionOfUser(user.getEmail()).getResult();
         initContent();
         initBtns();
     }
@@ -140,8 +140,6 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
             SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
                 subscription = stripeService.cancelSubscription(user.getEmail(), true);
                 segmentIntegrator.subscriptionCancelled();
-                user.setAccountType(UserRole.Trial.getId());
-                userService.update(user);
                 initContent();
                 initBtns();
                 setSubscriptionEndDate();
