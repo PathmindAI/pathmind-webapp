@@ -13,7 +13,6 @@ import io.skymind.pathmind.shared.data.Run;
 import org.jooq.DSLContext;
 import org.jooq.Query;
 import org.jooq.Record;
-import org.jooq.Result;
 
 import static io.skymind.pathmind.db.jooq.Tables.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.Tables.MODEL;
