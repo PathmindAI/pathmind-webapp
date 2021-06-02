@@ -163,8 +163,6 @@ public class ExperimentDAO {
                 bestPolicy.ifPresent(bp -> {
                     experiment.setBestPolicy(bp);
 
-                    bp.setSimulationMetrics(metricsDAO.getLastIterationMetricsMeanForPolicy(policyId));
-
                     List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
 
                     if (rawMetricsAvgVar != null && !rawMetricsAvgVar.isEmpty()) {

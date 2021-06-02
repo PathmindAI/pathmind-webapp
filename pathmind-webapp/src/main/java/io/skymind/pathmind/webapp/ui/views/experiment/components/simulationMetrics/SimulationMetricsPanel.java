@@ -11,13 +11,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import org.springframework.util.CollectionUtils;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
