@@ -9,7 +9,6 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
-import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
@@ -21,61 +20,45 @@ public class ExportPolicyButton extends Anchor {
 
     private Button exportButton;
 
+    private SegmentIntegrator segmentIntegrator;
     private PolicyFileService policyFileService;
-
+    private PolicyDAO policyDAO;
     private Policy policy;
     private String policyFilename;
 
-    // Hack -> Quick little solution to deal "same erasure" issue with lambda's.
-    public interface ExperimentSupplier extends Supplier<Experiment> {
-    }
-
-    public interface PolicySupplier extends Supplier<Policy> {
-    }
-
-    public ExportPolicyButton(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO, PolicySupplier getPolicySupplier) {
+    public ExportPolicyButton(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO, Supplier<Experiment> getExperimentSupplier) {
         super();
-        this.policy = getPolicySupplier.get();
-        setup(segmentIntegrator, policyFileService, policyDAO);
-    }
-
-    public ExportPolicyButton(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO, ExperimentSupplier getExperimentSupplier) {
-        super();
-        this.policy = PolicyUtils.selectBestPolicy(getExperimentSupplier.get()).orElse(null);
-
-        // Temporary solution until we hook up the eventbus. In the meantime we only make the decision to render on page reload.
-        if (getExperimentSupplier.get().getTrainingStatusEnum() != RunStatus.Completed) {
-            setVisible(false);
-            return;
-        }
-
-        setup(segmentIntegrator, policyFileService, policyDAO);
-    }
-
-    private void setup(SegmentIntegrator segmentIntegrator, PolicyFileService policyFileService, PolicyDAO policyDAO) {
-
-        // If there isn't even a policy at this point, such as when an experiment is starting, then there's
-        // nothing to export. In the future we can add a subscriber to listen for the event at which point the
-        // export policy button can become visible but for now since it's only internally we will just omit the button
-        // and the support user can press the refresh button as the cost to add all this is not worth it compared
-        // to getting the initial PR into production.
-        if (policy == null) {
-            setVisible(false);
-            return;
-        }
-
         this.policyFileService = policyFileService;
-        policyFilename = PolicyUtils.generatePolicyFileName(policy);
+        this.policyDAO = policyDAO;
+        this.segmentIntegrator = segmentIntegrator;
 
+        setup();
+    }
+
+    private void setup() {
         exportButton = new Button("Export Policy");
         exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        exportButton.setWidth("200px");
         exportButton.addClickListener(evt -> {
-            policyDAO.updateExportedDate(policy.getId());
-            segmentIntegrator.policyExported();
+            if (policy != null) {
+                policyDAO.updateExportedDate(policy.getId());
+                segmentIntegrator.policyExported();
+            }
         });
 
         add(exportButton);
+    }
+
+    public void setExperiment(Experiment experiment) {
+        boolean isCompletedWithPolicy = experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile();
+        if (!isCompletedWithPolicy) {
+            setVisible(false);
+            return;
+        }
+
+        policy = policyDAO.getPolicy(experiment.getBestPolicy().getId());
+
+        policyFilename = PolicyUtils.generatePolicyFileName(policy);
+
         getElement().setAttribute("href", getResourceStream(policyFilename));
         getElement().setAttribute("download", true);
     }

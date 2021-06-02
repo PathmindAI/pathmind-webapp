@@ -151,11 +151,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void checkExportPolicyPage(String model) {
-        experimentPage.checkExportPolicyPage(model);
-    }
-
-    @Step
     public void checkLearningProgressTitle(String title) {
         experimentPage.checkLearningProgressTitle(title);
     }
