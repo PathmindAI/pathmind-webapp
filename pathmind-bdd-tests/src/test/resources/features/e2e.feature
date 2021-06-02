@@ -69,8 +69,6 @@ Feature: E2E
     #    ------------------------
     #Check export policy
     When Click in 'Export Policy' button
-    Then Check export policy page 'simplestochastic'
-    When Click experiment breadcrumb btn
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn

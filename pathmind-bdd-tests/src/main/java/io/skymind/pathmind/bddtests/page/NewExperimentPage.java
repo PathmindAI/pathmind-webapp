@@ -160,7 +160,8 @@ public class NewExperimentPage extends PageObject {
     }
 
     public void checkThatExperimentPageTitleIs(String experiment) {
-        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), is(experiment));
+        waitABit(3000);
+        assertThat(getDriver().findElement(By.xpath("//span[@class='section-title-label']")).getText(), is(experiment));
     }
 
     public void checkNewExperimentPageModelALPBtn(String filename) {
