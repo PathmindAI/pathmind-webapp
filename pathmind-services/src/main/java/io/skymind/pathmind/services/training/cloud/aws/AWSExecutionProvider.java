@@ -557,7 +557,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
                 var("ENTROPY_SLOPE", "1"), // turn off for now
                 var("VF_LOSS_RANGE", "0"), // turn off for now
-                var("VALUE_PRED", "1"), // disabled for now
+                var("VALUE_PRED", "1"),
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
