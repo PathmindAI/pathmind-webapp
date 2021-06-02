@@ -78,7 +78,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     }
 
     public boolean isDraft() {
-        return getRuns() == null || getRuns().isEmpty();
+        return RunStatus.NotStarted.getValue() == trainingStatus;
     }
 
     public List<Run> getRuns() {

@@ -25,7 +25,11 @@ public class ExecutionEnvironment {
     private int PBT_MAX_TIME_IN_SEC;
     private int PBT_NUM_SAMPLES;
     private int maxMemory;
+    private int hiddenNode;
+    private int hiddenLayer;
+    private String scheduler;
     private boolean freezing;
+    private boolean longerTraining;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;

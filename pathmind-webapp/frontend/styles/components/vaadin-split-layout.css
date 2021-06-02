@@ -6,6 +6,9 @@
 :host(:not([orientation="vertical"])) > [part="splitter"] {
     cursor: col-resize;
 }
+:host([orientation="vertical"]) > [part="splitter"] {
+    cursor: row-resize;
+}
 :host([theme~="comparison-mode"]) [part="splitter"] {
     display: none;
 }
