@@ -105,7 +105,8 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
             boolean isBestPolicyUncertaintyEmpty = Optional.ofNullable(experiment)
                     .map(Experiment::getBestPolicy)
                     .map(Policy::getMetricDisplayValues)
-                    .map(metricValue -> metricValue.indexOf("\u2800\u00B1\u2800") > -1)
+                    .map(List::toString)
+                    .map(metricValue -> metricValue.indexOf("\u2800\u00B1\u2800") == -1)
                     .orElse(true);
             histogramsWrapper.setVisible(!isBestPolicyUncertaintyEmpty);
         } else {
@@ -135,12 +136,12 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
         Policy bestPolicy = experiment.getBestPolicy();
 
-        if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
+        if (bestPolicy == null || bestPolicy.getMetricDisplayValues() == null || bestPolicy.getMetricDisplayValues().isEmpty()) {
             showMetricValuesAndSparklines(false);
             return;
         }
 
-        IntStream.range(0, bestPolicy.getSimulationMetrics().size())
+        IntStream.range(0, bestPolicy.getMetricDisplayValues().size())
                 .forEach(index -> {
                     Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
                     RewardVariable rewardVariable = experiment.getRewardVariables().get(index);

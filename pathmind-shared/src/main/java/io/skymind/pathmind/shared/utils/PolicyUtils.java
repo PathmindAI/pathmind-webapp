@@ -81,7 +81,6 @@ public class PolicyUtils {
         }
         List<Metrics> metricsList = policy.getMetrics();
         policy.getSparklinesData().clear();
-        policy.getSimulationMetrics().clear();
         policy.getMetricDisplayValues().clear();
 
         if (metricsList != null && metricsList.size() > 0) {
@@ -94,7 +93,7 @@ public class PolicyUtils {
             // The Simulation Metric value shown is the mean value of the metric in the last iteration
             // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
             int lastIteration = Collections.max(iterAndMetrics.keySet());
-            iterAndMetrics.get(lastIteration).forEach((key, value) -> policy.getSimulationMetrics().add(key, value));
+            iterAndMetrics.get(lastIteration).forEach((key, value) -> policy.getMetricDisplayValues().add(key, PathmindNumberUtils.formatNumber(value)));
 
             // (k:index, v:(k:iteration, v:averageMeanValue))
             Map<Integer, Map<Integer, Double>> sparkLineMap = metricsList.stream()
