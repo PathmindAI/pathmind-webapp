@@ -170,6 +170,7 @@ public class ExperimentDAO {
                                 .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
                                 .collect(Collectors.toList()));
                     } else {
+                        bp.getMetricDisplayValues().clear();
                         for (Double metric : metricsDAO.getLastIterationMetricsMeanForPolicy(policyId)) {
                             bp.getMetricDisplayValues().add(PathmindNumberUtils.formatNumber(metric));
                         }
