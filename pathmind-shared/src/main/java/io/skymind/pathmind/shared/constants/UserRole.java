@@ -12,12 +12,13 @@ import static io.skymind.pathmind.shared.constants.ViewPermission.EXTENDED_READ;
 import static io.skymind.pathmind.shared.constants.ViewPermission.SETTINGS_READ;
 
 public enum UserRole {
-    Trial(0, "Trial", Set.of(BASIC_READ)),
-    Paid(1, "Paid", Set.of(BASIC_READ)),
-    Premium(2, "Premium", Set.of(BASIC_READ)),
+    Basic(0, "Basic", Set.of(BASIC_READ)),
+    Professional(1, "Professional", Set.of(BASIC_READ)),
+    Enterprise(2, "Enterprise", Set.of(BASIC_READ)),
     Admin(3, "Admin", Set.of(BASIC_READ, SETTINGS_READ)),
     Master(4, "Master", Set.of(BASIC_READ, SETTINGS_READ)),
-    Support(5, "Support", Set.of(BASIC_READ, EXTENDED_READ, SETTINGS_READ));
+    Support(5, "Support", Set.of(BASIC_READ, EXTENDED_READ, SETTINGS_READ)),
+    Partner(6, "Partner", Set.of(BASIC_READ));
 
     private int id;
     private String name;
@@ -25,8 +26,8 @@ public enum UserRole {
 
     public static final EnumSet<UserRole> serviceRoles = EnumSet.of(Admin, Master, Support);
 
-    public static boolean isInternalOrPremiumUser(UserRole role) {
-        return role == Premium || serviceRoles.contains(role);
+    public static boolean isInternalOrEnterpriseOrPartnerUser(UserRole role) {
+        return role == Enterprise || serviceRoles.contains(role) || role == Partner;
     }
 
     UserRole(int id, String name, Set<ViewPermission> permissions) {

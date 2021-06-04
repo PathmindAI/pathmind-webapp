@@ -96,7 +96,7 @@ public class PaymentViewContent extends PolymerTemplate<PaymentViewContent.Model
             if (user.getStripeCustomerId() == null || user.getStripeCustomerId().isEmpty()) {
                 user.setStripeCustomerId(customer.getId());
             }
-            user.setAccountType(UserRole.Paid.getId());
+            user.setAccountType(UserRole.Professional.getId());
             userService.update(user);
             getUI().ifPresent(ui -> ui.navigate(UpgradeDoneView.class));
         } catch (StripeException e) {
