@@ -204,11 +204,13 @@ public class ExperimentView extends AbstractExperimentView {
             leaveComparisonMode();
             resizeChart();
         });
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                comparisonObservationsPanel,
+                60);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                    comparisonObservationsPanel,
-                    60),
+            simulationMetricsAndObservationsPanel,
             generateRewardFunctionGroup(comparisonCodeViewer),
             comparisonChartsPanel,
             comparisonNotesField);
@@ -232,11 +234,13 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     private SplitLayout getMiddlePanel() {
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
+                experimentObservationsPanel,
+                70);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
-                        experimentObservationsPanel,
-                        70),
+                simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
