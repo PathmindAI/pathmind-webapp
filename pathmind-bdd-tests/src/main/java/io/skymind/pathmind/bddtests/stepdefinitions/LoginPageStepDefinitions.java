@@ -264,4 +264,18 @@ public class LoginPageStepDefinitions {
     public void checkThatVerificationEmailPageOpened() {
         loginPageSteps.checkThatVerificationEmailPageOpened();
     }
+
+    @When("^Register and login with new user$")
+    public void registerAndLoginWithNewUser() {
+        loginPageSteps.openPage(pathmindUrl + "sign-up");
+        loginPageSteps.newUserInputFirstName("Evgeniy");
+        loginPageSteps.newUserInputLastName("Autotest");
+        loginPageSteps.newUserInputEmail(emailApi.getEmail());
+        loginPageSteps.fillNewUserPassword("Pass123456");
+        loginPageSteps.fillNewUserConfirmationPassword("Pass123456");
+        loginPageSteps.createNewUserClickSignInButton();
+        loginPageSteps.openPage(pathmindUrl + "email-verification/" + emailApi.getVerificationLink());
+        loginPageSteps.openPathmindUrl();
+        loginPageSteps.loginWithCredential(Serenity.sessionVariableCalled("email"), "Pass123456");
+    }
 }
