@@ -84,7 +84,8 @@ Feature: User accounts tests
     When Check user verification email
 
   Scenario: Check account edit breadcrumb
-    Given Login to the pathmind
+    Given Register and login with new user
+    When Open user account page
     When Open page account/edit
     Then Check account page footer components
     When Click account breadcrumb btn
@@ -92,7 +93,8 @@ Feature: User accounts tests
     Then Check account page footer components
 
   Scenario: Check Change Password breadcrumb
-    Given Login to the pathmind
+    Given Register and login with new user
+    When Open user account page
     When Open page account/change-password
     Then Check account page footer components
     When Click account breadcrumb btn
