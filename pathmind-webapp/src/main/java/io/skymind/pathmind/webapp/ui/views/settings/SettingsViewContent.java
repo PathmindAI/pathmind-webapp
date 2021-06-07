@@ -38,6 +38,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private final PathmindUser user;
     private final ExecutionEnvironment env;
 
+    @Id("userLogCB")
+    private ComboBox<String> userLog;
+
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
 
@@ -74,6 +77,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("longerTrainingCB")
     private ComboBox<String> longerTraining;
 
+    @Id("startCheckIterationCB")
+    private ComboBox<String> startCheckIteration;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -91,6 +97,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     private void initBtns() {
         saveBtn.addClickListener(e -> {
+            env.setUserLog(Boolean.valueOf(userLog.getValue()));
             env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
             env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
             env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
@@ -103,6 +110,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
+            env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
 
             String text = "Current settings are saved!";
             CloseableNotification notification = new CloseableNotification(text);
@@ -113,6 +121,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     }
 
     private void initContent() {
+        // init user log
+        List<String> userLogs = List.of("TRUE", "FALSE");
+
+        userLog.setItems(userLogs);
+        userLog.setLabel("Enable User Log");
+        userLog.setPlaceholder(String.valueOf(env.isUserLog()));
+        userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
+
         // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)
@@ -217,6 +233,18 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         longerTraining.setLabel("Enable Longer Training");
         longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
         longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
+        longerTraining.addValueChangeListener(event -> {
+            startCheckIteration.setVisible(event.getValue().equals("TRUE"));
+        });
+
+        // init start check iteration
+        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500");
+
+        startCheckIteration.setItems(startCheckIterations);
+        startCheckIteration.setLabel("Early Stopper Start Iter");
+        startCheckIteration.setPlaceholder(String.valueOf(env.getStartCheckIterationForLongerTraining()));
+        startCheckIteration.setValue(String.valueOf(env.getStartCheckIterationForLongerTraining()).toUpperCase());
+        startCheckIteration.setVisible(longerTraining.getValue().equals("TRUE"));
     }
 
     public interface Model extends TemplateModel {

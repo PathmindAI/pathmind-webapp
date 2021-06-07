@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.db.utils.GridSortOrder;
+import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.DashboardItem;
@@ -22,6 +25,7 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -44,10 +48,12 @@ public class ExperimentDAO {
 
     private final DSLContext ctx;
     protected final String statement;
+    protected final MetricsDAO metricsDAO;
 
-    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile) throws IOException {
+    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile, MetricsDAO metricsDAO) throws IOException {
         this.ctx = ctx;
         this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
+        this.metricsDAO = metricsDAO;
     }
 
     public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
@@ -123,6 +129,56 @@ public class ExperimentDAO {
     }
 
     /**
+     * This is for Project/Model page to show experiments with metric values and observations
+     * @param userId
+     * @param modelId
+     * @param offset
+     * @param limit
+     * @return experiments
+     */
+    @MonitorExecutionTime
+    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit, List<GridSortOrder> sortOrders) {
+        String sortBy = sortOrders.size() > 0 ? sortOrders.get(0).getPropertyName() : "";
+        boolean isDesc = sortOrders.size() > 0 ? sortOrders.get(0).isDescending() : false;
+        var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
+                .userId(userId)
+                .modelId(modelId)
+                .isArchived(isArchived)
+                .limit(limit)
+                .offset(offset)
+                .sortBy(sortBy)
+                .descending(isDesc)
+                .build();
+        List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
+        return setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+    }
+
+    private List<Experiment> setSelectedObservationsAndMetricsValues(DSLContext ctx, List<Experiment> experiments, Long modelId, Long userId) {
+        Map<Long, Long> bestPoliciesId = new ConcurrentHashMap<>(this.bestPoliciesForExperiment(modelId));
+        CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
+            final Long policyId = bestPoliciesId.get(experiment.getId());
+            experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
+            if (policyId != null) {
+                Optional<Policy> bestPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+                bestPolicy.ifPresent(bp -> {
+                    experiment.setBestPolicy(bp);
+
+                    bp.setSimulationMetrics(metricsDAO.getLastIterationMetricsMeanForPolicy(policyId));
+
+                    List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
+
+                    bp.setUncertainty(rawMetricsAvgVar.stream()
+                            .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
+                            .collect(Collectors.toList()));
+                });
+            }
+        });
+
+
+        return experiments;
+    }
+
+    /**
      * Used as a quick check before a full experiment load to see if we're on the right view between ExperimentView and NewExperimentView.
      */
     public boolean isDraftExperiment(long experimentId) {
@@ -186,6 +242,14 @@ public class ExperimentDAO {
     @MonitorExecutionTime
     public int countDashboardItemsForUser(long userId) {
         return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
+    }
+
+    public int countExperimentsInModel(long modelId) {
+        return ExperimentRepository.getExperimentCount(ctx, modelId);
+    }
+
+    public int countFilteredExperimentsInModel(long modelId, boolean isArchived) {
+        return ExperimentRepository.getFilteredExperimentCount(ctx, modelId, isArchived);
     }
 
     public Experiment createNewExperiment(long modelId) {

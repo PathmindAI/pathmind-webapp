@@ -1,26 +1,21 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.project.demo.DemoProjectService;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;
@@ -41,8 +36,7 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.demo.DemoViewContent;
-import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
-import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
+import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ProjectGridDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = Routes.PROJECTS, layout = MainLayout.class)
@@ -50,9 +44,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProjectsView extends PathMindDefaultView {
 
     @Autowired
-    private ProjectDAO projectDAO;
+    private ProjectGridDataProvider projectGridDataProvider;
     @Autowired
-    private ModelDAO modelDAO;
+    private ProjectDAO projectDAO;
     @Autowired
     private SegmentIntegrator segmentIntegrator;
 
@@ -62,9 +56,10 @@ public class ProjectsView extends PathMindDefaultView {
     @Autowired
     private ExperimentManifestRepository experimentManifestRepository;
 
-    private List<Project> projects;
+    private Integer projectCount;
     private Grid<Project> projectGrid;
 
+    private ConfigurableFilterDataProvider<Project, Void, Boolean> dataProvider;
     private FlexLayout pageWrapper;
     private ArchivesTabPanel<Project> archivesTabPanel;
     private VerticalLayout gridWrapper;
@@ -106,7 +101,7 @@ public class ProjectsView extends PathMindDefaultView {
         pageWrapper = new ViewSection(headerWrapper, contentWrapper);
         pageWrapper.addClassName("page-content");
 
-        if (projects.isEmpty()) {
+        if (projectCount.equals(0)) {
             gridWrapper.setVisible(false);
         } else {
             demoViewContent.setIsVertical(true);
@@ -126,7 +121,7 @@ public class ProjectsView extends PathMindDefaultView {
     private Button showDemosButton() {
         Button showDemosButton = new Button("Example Projects");
         showDemosButton.addClickListener(click -> {
-            if (!projects.isEmpty()) {
+            if (!projectCount.equals(0)) {
                 demoDialog.open();
             }
         });
@@ -137,61 +132,51 @@ public class ProjectsView extends PathMindDefaultView {
         archivesTabPanel = new ArchivesTabPanel<>(
                 "Active",
                 projectGrid,
-                this::getProjects,
                 (project, isArchive) -> {
                     projectDAO.archive(project.getId(), isArchive);
                     project.setArchived(isArchive);
                     segmentIntegrator.archived(Project.class, isArchive);
-                },
-                getUISupplier());
+                });
     }
 
     private void setupProjectGrid() {
         projectGrid = new Grid<Project>();
         projectGrid.addThemeName("projects");
 
-        projectGrid.addComponentColumn(project -> {
-            String projectName = project.getName();
-            Button renameProjectButton = new Button(new Icon(VaadinIcon.EDIT), evt -> renameProject(project));
-            renameProjectButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            renameProjectButton.addClassName("action-button");
-            HorizontalLayout projectNameColumn = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
-                    new Span(projectName), renameProjectButton);
-            projectNameColumn.addClassName("project-name-column");
-            return projectNameColumn;
-        })
+        projectGrid.addColumn(TemplateRenderer.<Project>of("<span class='project-name-column'>[[item.name]]</span>")
+                .withProperty("name", Project::getName))
                 .setHeader("Name")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortProperty("name");
 
         projectGrid.addColumn(Project::getModelCount)
                 .setHeader("Models")
                 .setClassNameGenerator(column -> "align-right")
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
+                .setSortProperty("models");
 
         projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getDateCreated())
         )
-                .setComparator(Comparator.comparing(Project::getDateCreated))
                 .setHeader("Created")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true);
+                .setResizable(true)
+                .setSortProperty("date_created");
 
         Grid.Column<Project> lastActivityColumn = projectGrid.addComponentColumn(project ->
                 new DatetimeDisplay(project.getLastActivityDate())
         )
-                .setComparator(Comparator.comparing(Project::getLastActivityDate))
                 .setHeader("Last Activity")
                 .setClassNameGenerator(column -> "align-right")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true);
+                .setResizable(true)
+                .setSortProperty("last_activity_date");
 
         projectGrid.addColumn(project -> {
             String userNotes = project.getUserNotes();
@@ -208,19 +193,6 @@ public class ProjectsView extends PathMindDefaultView {
                 getUI().ifPresent(ui -> ui.navigate(ProjectView.class, "" + event.getItem().getId())));
     }
 
-    private List<Project> getProjects() {
-        return projects;
-    }
-
-    private void renameProject(Project project) {
-        RenameProjectDialog dialog = new RenameProjectDialog(project, projectDAO, updateProjectName -> {
-            projectGrid.getDataProvider().refreshItem(project);
-            // JS is used because projectGrid.recalculateColumnWidths(); does not work; probably a Vaadin Grid issue
-            projectGrid.getElement().executeJs("setTimeout(() => { $0.recalculateColumnWidths(); }, 0)");
-        });
-        dialog.open();
-    }
-
     @Override
     protected Component getTitlePanel() {
         return null;
@@ -233,23 +205,19 @@ public class ProjectsView extends PathMindDefaultView {
 
     @Override
     protected void initLoadData() throws InvalidDataException {
-        projects = projectDAO.getProjectsForUser(SecurityUtils.getUserId());
-        projects.stream().map(project -> {
-            // We don't need the model count on any other pages of the site for now.
-            // If we do need it at some point, this should not be dynamically mapped to the data object.
-            Integer projectModelCount = modelDAO.getModelCountForProject(project.getId());
-            project.setModelCount(projectModelCount);
-            return project;
-        }).collect(Collectors.toList());
+        projectCount = projectDAO.countProjects(SecurityUtils.getUserId());
     }
 
     @Override
     protected void initComponents() {
-        VaadinDateAndTimeUtils.withUserTimeZoneId(getUISupplier(), timeZoneId -> {
-            // projectGrid uses ZonedDateTimeRenderer, making sure here that time zone id is loaded properly before setting items
-            projectGrid.setItems(projects);
+        dataProvider = projectGridDataProvider.withConfigurableFilter();
+        dataProvider.setFilter(false);
+        archivesTabPanel.addTabClickListener(name -> {
+            dataProvider.setFilter(name.equals(archivesTabPanel.getArchivesTabName()));
+            dataProvider.refreshAll();
         });
-        archivesTabPanel.initData();
+        projectGrid.setPageSize(10);
+        projectGrid.setDataProvider(dataProvider);
 
         recalculateGridColumnWidth(getUISupplier().get().get().getPage(), projectGrid);
     }

@@ -162,7 +162,11 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[3]")).getText(), is("Archived"));
+    }
+
+    public void checkSearchResultPageProjectNameContainsModelTag(String name, String modelNumber) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is(modelNumber));
     }
 
     public void checkSearchResultsForValueIs(String value) {
@@ -173,6 +177,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkThatSearchCounterIs(String counter) {
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")), "Search Results for"));
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-subtitle-label']")).getText().split(" ", 3);
         assertThat(text[1], is(counter));
     }
@@ -257,5 +262,10 @@ public class HomePage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//img[@class='logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
         assertThat(getDriver().findElement(By.xpath("//h3")).getText(), is("You have paid for the onboarding service"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/p")).getText(), is("You should have received the payment receipt email. Our Customer Success Specialist will contact you shortly. If you have any questions, do not hesitate to message us."));
+    }
+
+    public void clickSearchResultResult(String searchResult) {
+        String xpath = String.format("//vaadin-vertical-layout[@class='search-result-item']/descendant::span[contains(text(), '%s')]", searchResult);
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
     }
 }

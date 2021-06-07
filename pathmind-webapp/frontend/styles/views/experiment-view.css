@@ -71,8 +71,12 @@
 }
 
 .experiment-view .experiment-header {
-    position: relative;
     justify-content: space-between;
+    position: relative;
+}
+
+.experiment-view.comparison-mode .experiment-header {
+    height: 7.8rem;
 }
 
 .experiment-view .middle-panel {
@@ -375,10 +379,6 @@
 
 .experiment-view juicy-ace-editor {
     display: block;
-}
-
-.new-experiment-view .bold-label {
-    margin-bottom: var(--lumo-space-xs);
 }
 
 .experiment-view .score {

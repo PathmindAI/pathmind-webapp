@@ -132,6 +132,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentObservationsPanel.unhighlight();
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
+        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }
@@ -275,11 +276,11 @@ public class ExperimentView extends AbstractExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
     }
 
     private SplitLayout getBottomPanel() {

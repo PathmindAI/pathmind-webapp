@@ -80,7 +80,6 @@ public class AWSTrainingService extends TrainingService {
                 .multiAgent(ModelType.isMultiModel(ModelType.fromValue(model.getModelType())))
                 .resume(false)
                 .checkpointFrequency(25)
-                .userLog(false)
                 .recordMetricsRaw(true)
                 .namedVariables(true)
                 .mainAgentName(StringUtils.defaultString(model.getMainAgent()))

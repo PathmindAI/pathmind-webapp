@@ -1,6 +1,7 @@
 package io.skymind.pathmind.shared.constants;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,12 @@ public enum UserRole {
     private int id;
     private String name;
     private final Set<ViewPermission> permissions;
+
+    public static final EnumSet<UserRole> serviceRoles = EnumSet.of(Admin, Master, Support);
+
+    public static boolean isInternalOrPremiumUser(UserRole role) {
+        return role == Premium || serviceRoles.contains(role);
+    }
 
     UserRole(int id, String name, Set<ViewPermission> permissions) {
         this.id = id;
