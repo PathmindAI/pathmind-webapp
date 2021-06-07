@@ -2,13 +2,13 @@
 Feature: Check Subscription Plans
 
   Scenario: Check Subscription Plans page
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     When Click in 'Upgrade' button
     Then Check subscription plans page
 
   Scenario: Check Subscription Plans page breadcrumb
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     When Click in 'Upgrade' button
     Then Check subscription plans page
@@ -16,7 +16,7 @@ Feature: Check Subscription Plans
     Then Check that user account page opened
 
   Scenario: Check Subscription Plans upgrade page breadcrumb
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     When Click in 'Upgrade' button
     When Click in 'Choose Pro' button
@@ -24,21 +24,14 @@ Feature: Check Subscription Plans
     Then Check that user account page opened
 
   Scenario: Check Subscription Plans upgrade page elements
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     When Click in 'Upgrade' button
     When Click in 'Choose Pro' button
     Then Check subscription plans upgrade page
 
   Scenario: Subscribe free plan to professional
-    Given Open page sign-up
-    When Fill new user form with name Evgeniy, Autotest
-    When Fill new user password 'Pass123456'
-    When Fill new user confirmation password 'Pass123456'
-    When Create new user click sign in button
-    When Get email and verify user email
-    When Open pathmind page
-    Then Login with new user email and Pass123456
+    Given Register and login with new user
     When Open user account page
     When Click in 'Upgrade' button
     When Click in 'Choose Pro' button
