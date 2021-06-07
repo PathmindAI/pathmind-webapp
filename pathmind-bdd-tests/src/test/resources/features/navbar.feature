@@ -32,12 +32,12 @@ Feature: Nav bar buttons
     Then Check page url contains onboarding-payment-success
 
   Scenario: Click user account btn and check that account page opened
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     Then Check that user account page opened
 
   Scenario: Click Access Token btn and check that account page opened
-    Given Login to the pathmind
+    Given Register and login with new user
     When Click user menu 'Access Token' btn
     Then Check that user account page opened
 
