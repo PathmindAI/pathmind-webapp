@@ -383,6 +383,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_5_0:
             case VERSION_1_6_0:
             case VERSION_1_6_1:
+            case VERSION_1_6_2:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
