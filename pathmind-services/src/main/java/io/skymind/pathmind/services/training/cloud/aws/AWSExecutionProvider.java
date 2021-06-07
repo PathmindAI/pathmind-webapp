@@ -558,7 +558,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("ENTROPY_SLOPE", "1"), // turn off for now
                 var("VF_LOSS_RANGE", "0"), // turn off for now
                 var("VALUE_PRED", "1"),
-                var("USER_LOG", String.valueOf(job.isUserLog())),
+                var("USER_LOG", String.valueOf(job.getEnv().isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
                 var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),

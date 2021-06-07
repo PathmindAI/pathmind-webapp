@@ -18,7 +18,9 @@ public class ExecutionEnvironmentManager {
     private static Map<Long, ExecutionEnvironment> environmentMap = new HashMap();
 
     private ExecutionEnvironment defaultEnvironment() {
-        return new ExecutionEnvironment(AnyLogic.VERSION_8_7_4,
+        return new ExecutionEnvironment(
+                false,
+                AnyLogic.VERSION_8_7_4,
                 PathmindHelper.VERSION_1_6_1,
                 NativeRL.VERSION_1_6_1,
                 JDK.VERSION_8_222,
