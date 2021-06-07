@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
@@ -84,6 +87,9 @@ public class ProgressInterpreter {
     private static final int TRIAL_ID_LEN = 8;
     private static final int DATE_LEN = 19;
 
+    private static final Predicate<String> CUSTOM_METRICS_MATCH =
+        Pattern.compile("^custom_metrics/metrics_\\d+_mean$", Pattern.CASE_INSENSITIVE).asMatchPredicate();
+
     public static Policy interpretKey(String keyString) {
         final Policy policy = new Policy();
         policy.setExternalId(keyString);
@@ -157,6 +163,8 @@ public class ProgressInterpreter {
         final List<Metrics> metrics = previousMetrics == null || previousMetrics.size() == 0 ? new ArrayList<>() : previousMetrics;
         final int lastIteration = metrics.size() == 0 ? -1 : metrics.get(metrics.size() - 1).getIteration();
 
+        numAgents = verifyNumAgent(numAgents, numReward, entry.getValue());
+
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
         settings.selectFields((RAY_PROGRESS.metricsColumns(numReward, numAgents)));
@@ -191,7 +199,8 @@ public class ProgressInterpreter {
     public static void interpretMetricsRaw(Map.Entry<String, String> entry, Policy policy, List<MetricsRaw> previousMetricsRaw, int startIteration, int numReward, int numAgents) {
         List<MetricsRaw> metricsRaws = previousMetricsRaw == null || previousMetricsRaw.size() == 0 ? new ArrayList<>() : previousMetricsRaw;
         final int lastIteration = metricsRaws.size() == 0 ? Math.max(startIteration, 0) : metricsRaws.get(metricsRaws.size() - 1).getIteration();
-        ;
+
+        numAgents = verifyNumAgent(numAgents, numReward, entry.getValue());
 
         CsvParserSettings settings = new CsvParserSettings();
         settings.setHeaderExtractionEnabled(true);
@@ -228,5 +237,24 @@ public class ProgressInterpreter {
             }
         }
         return metricsRaws;
+    }
+
+    private static int verifyNumAgent(int numAgent, int numReward, String fileContent) {
+        if (numAgent > 1 && fileContent.length() > 0) {
+            int numCustomMetrics = Arrays.stream(fileContent.split("\n")[0]  // extract header
+                .split(",")) // extracted CSV header
+                .filter(CUSTOM_METRICS_MATCH)
+                .collect(Collectors.toList())
+                .size();
+
+            // if the model is multi agent model and number of custom metrics == number of reward
+            // that means it's condensed CSV file
+            // in other words, each custom metrics has averaged values across all agent
+            if (numReward == numCustomMetrics) {
+                return 1;
+            }
+        }
+
+        return numAgent;
     }
 }
