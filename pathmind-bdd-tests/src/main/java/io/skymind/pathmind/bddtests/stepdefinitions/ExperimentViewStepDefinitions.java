@@ -71,4 +71,9 @@ public class ExperimentViewStepDefinitions {
     public void checkRewardVariableIs(String rewardFunction) {
         experimentViewSteps.checkRewardVariableIs(rewardFunction);
     }
+
+    @When("^Check export policy filename '(.*)'$")
+    public void checkExportPolicyFilename(String filename) {
+        experimentViewSteps.checkExportPolicyFilename(filename);
+    }
 }
