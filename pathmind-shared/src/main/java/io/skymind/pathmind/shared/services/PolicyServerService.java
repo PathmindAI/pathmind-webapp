@@ -42,6 +42,8 @@ public interface PolicyServerService {
             private boolean tuple;
             @JsonProperty("api_key")
             private String apiKey;
+            @JsonProperty("url_path")
+            private String urlPath;
         }
     }
 

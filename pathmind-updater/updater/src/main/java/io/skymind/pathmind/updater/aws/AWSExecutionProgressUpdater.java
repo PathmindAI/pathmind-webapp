@@ -111,6 +111,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                                     .discrete(false)
                                     .tuple(false)
                                     .apiKey(user.getApiKey())
+                                    .urlPath("policy/" + run.getJobId())
                             .build()
                     )
                     .build();
