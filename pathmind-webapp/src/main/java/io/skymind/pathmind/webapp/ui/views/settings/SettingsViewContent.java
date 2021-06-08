@@ -74,6 +74,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("freezingCB")
     private ComboBox<String> freezing;
 
+    @Id("rayDebugCB")
+    private ComboBox<String> rayDebug;
+
     @Id("longerTrainingCB")
     private ComboBox<String> longerTraining;
 
@@ -109,6 +112,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
+            env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
             env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
 
@@ -225,6 +229,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         freezing.setLabel("Enable Freezing");
         freezing.setPlaceholder(String.valueOf(env.isFreezing()));
         freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
+
+        // init ray debug
+        List<String> rayDebugs = List.of("TRUE", "FALSE");
+
+        freezing.setItems(rayDebugs);
+        freezing.setLabel("Enable Ray Debug");
+        freezing.setPlaceholder(String.valueOf(env.isRayDebug()));
+        freezing.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
 
         // init longer training
         List<String> longerTrainings = List.of("TRUE", "FALSE");

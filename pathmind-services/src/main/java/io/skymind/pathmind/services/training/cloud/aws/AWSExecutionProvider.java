@@ -569,6 +569,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
                 var("FREEZING", String.valueOf(job.getEnv().isFreezing())),
+                var("RAY_DEBUG", String.valueOf(job.getEnv().isRayDebug())),
                 var("SCHEDULER", String.valueOf(job.getEnv().getScheduler())),
                 var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
                 var("ACTIONMASKS", String.valueOf(job.isActionMask()))
