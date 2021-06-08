@@ -1,6 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../components/atoms/status-icon.js";
-import "../components/atoms/goals-reached-status.js";
 
 class ExperimentNavbarItem extends PolymerElement {
     static get is() {
@@ -63,16 +62,12 @@ class ExperimentNavbarItem extends PolymerElement {
                 :host([is-current]) vaadin-button[title="Compare"] {
                     display: none;
                 }
-                :host([is-draft]) goals-reached-status {
-                    display: none;
-                }
             </style>
             <a id="experimentLink" on-click="handleRowClicked">
                 <status-icon status=[[status]] status-text=[[statusText]]></status-icon>
                 <div class="experiment-name">
                     <p>Experiment #[[experimentName]]<favorite-star is-favorite="{{isFavorite}}"></favorite-star></p>
                     <p>Created <slot></slot></p>
-                    <goals-reached-status reached=[[goalsReached]] hidden></goals-reached-status>
                 </div>
                 <vaadin-button
                     id="compareButton"

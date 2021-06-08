@@ -157,7 +157,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setIsDraft(experiment.isDraft());
         getModel().setStatus(getIconStatus(experiment.getTrainingStatusEnum()));
         getModel().setStatusText(experiment.getTrainingStatusEnum().toString());
-        // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
