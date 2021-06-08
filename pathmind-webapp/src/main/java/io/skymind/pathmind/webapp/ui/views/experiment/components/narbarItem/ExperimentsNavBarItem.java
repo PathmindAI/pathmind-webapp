@@ -93,9 +93,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     private void setExperimentDetails(Experiment experiment) {
         getModel().setIsDraft(experiment.isDraft());
         getModel().setExperimentName(experiment.getName());
-        getModel().setShowGoals(!experiment.isDraft()
-                && experiment.isHasGoals()
-                && experiment.isGoalsReached());
         getElement().appendChild(new DatetimeDisplay(experiment.getDateCreated()).getElement());
         updateVariableComponentValues();
     }
@@ -161,7 +158,6 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         getModel().setStatus(getIconStatus(experiment.getTrainingStatusEnum()));
         getModel().setStatusText(experiment.getTrainingStatusEnum().toString());
         // REFACTOR -> https://github.com/SkymindIO/pathmind-webapp/issues/2277
-        getModel().setGoalsReached(experiment.isGoalsReached());
         getModel().setIsFavorite(experiment.isFavorite());
     }
 
@@ -185,8 +181,5 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
 
         void setStatusText(String statusText);
 
-        void setShowGoals(boolean showGoals);
-
-        void setGoalsReached(boolean goalsReached);
     }
 }

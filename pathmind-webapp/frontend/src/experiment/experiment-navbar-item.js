@@ -122,13 +122,6 @@ class ExperimentNavbarItem extends PolymerElement {
             },
             statusText: {
                 type: String,
-            },
-            showGoals: {
-                type: Boolean,
-                value: false,
-            },
-            goalsReached: {
-                type: Boolean,
             }
         }
     }
