@@ -233,10 +233,10 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         // init ray debug
         List<String> rayDebugs = List.of("TRUE", "FALSE");
 
-        freezing.setItems(rayDebugs);
-        freezing.setLabel("Enable Ray Debug");
-        freezing.setPlaceholder(String.valueOf(env.isRayDebug()));
-        freezing.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
+        rayDebug.setItems(rayDebugs);
+        rayDebug.setLabel("Enable Ray Debug");
+        rayDebug.setPlaceholder(String.valueOf(env.isRayDebug()));
+        rayDebug.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
 
         // init longer training
         List<String> longerTrainings = List.of("TRUE", "FALSE");
