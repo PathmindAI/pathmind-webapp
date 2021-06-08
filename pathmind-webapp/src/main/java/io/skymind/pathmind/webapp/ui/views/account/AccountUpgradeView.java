@@ -37,12 +37,11 @@ public class AccountUpgradeView extends PathMindDefaultView {
             event.rerouteTo(AccountView.class);
         }
 
-        super.beforeEnter(event);
-    }
+        if (!featureManager.isEnabled(Feature.ACCOUNT_UPGRADE)) {
+            event.rerouteTo(AccountView.class);
+        }
 
-    @Override
-    protected boolean isAccessAllowedForUser() {
-        return featureManager.isEnabled(Feature.ACCOUNT_UPGRADE);
+        super.beforeEnter(event);
     }
 
     @Override
