@@ -113,7 +113,7 @@ public class SecurityConfiguration {
 
             if (user != null) {
                 final UserRole initRole  = user.getAccountType();
-                if (!UserRole.isInternalOrPremiumUser(initRole)) {
+                if (!UserRole.isInternalOrEnterpriseOrPartnerUser(initRole)) {
                     try {
                         StripeService.Result<Boolean, StripeService.StripeError> resultHasActiveSubscription =
                                 this.stripeService.userHasActiveProfessionalSubscription(user.getEmail());
@@ -122,9 +122,9 @@ public class SecurityConfiguration {
 
                         if (error != StripeService.StripeError.NoUserFound) {
                             if (resultHasActiveSubscription.getResult()) {
-                                user.setAccountType(UserRole.Paid.getId());
+                                user.setAccountType(UserRole.Professional.getId());
                             } else {
-                                user.setAccountType(UserRole.Trial.getId());
+                                user.setAccountType(UserRole.Basic.getId());
                             }
                             if(initRole != user.getAccountType()) {
                                 log.info("Change userRole for user {} {} -> {}", user.getEmail(), initRole, user.getAccountType());

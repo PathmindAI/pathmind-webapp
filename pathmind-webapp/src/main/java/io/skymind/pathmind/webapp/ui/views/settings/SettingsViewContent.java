@@ -38,6 +38,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private final PathmindUser user;
     private final ExecutionEnvironment env;
 
+    @Id("userLogCB")
+    private ComboBox<String> userLog;
+
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
 
@@ -94,6 +97,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     private void initBtns() {
         saveBtn.addClickListener(e -> {
+            env.setUserLog(Boolean.valueOf(userLog.getValue()));
             env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
             env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
             env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
@@ -117,6 +121,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     }
 
     private void initContent() {
+        // init user log
+        List<String> userLogs = List.of("TRUE", "FALSE");
+
+        userLog.setItems(userLogs);
+        userLog.setLabel("Enable User Log");
+        userLog.setPlaceholder(String.valueOf(env.isUserLog()));
+        userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
+
         // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)

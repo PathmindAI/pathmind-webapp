@@ -42,7 +42,6 @@ public class JobSpec {
     private final boolean multiAgent;
     private final boolean resume;
     private final int checkpointFrequency;
-    private final boolean userLog;
 
     private final boolean recordMetricsRaw;
     private final boolean namedVariables;

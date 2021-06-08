@@ -15,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExecutionEnvironment {
+    private boolean userLog;
     private AnyLogic anylogicVersion;
     private PathmindHelper pathmindHelperVersion;
     private NativeRL nativerlVersion;

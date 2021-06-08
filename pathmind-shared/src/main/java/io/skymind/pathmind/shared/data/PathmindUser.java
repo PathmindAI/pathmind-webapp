@@ -48,7 +48,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
     }
 
     public boolean isBasicPlanUser() {
-        return UserRole.Trial.equals(getAccountType());
+        return UserRole.Basic.equals(getAccountType());
     }
 
     public boolean isSupportAccountType() {

@@ -1,9 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.chart;
 
-import java.util.Optional;
-import java.util.function.Supplier;
-
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -12,6 +8,7 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
@@ -30,7 +27,12 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
 
     private Experiment experiment;
 
-    public ExperimentChartsPanel(Supplier<Optional<UI>> getUISupplier) {
+    private ExperimentView experimentView;
+    private boolean isComparisonPanel;
+
+    public ExperimentChartsPanel(ExperimentView experimentView, boolean isComparisonPanel) {
+        this.experimentView = experimentView;
+        this.isComparisonPanel = isComparisonPanel;
 
         Tabs chartTabs = createChartTabs();
         compareMetricsChartPanel = new CompareMetricsChartPanel();
@@ -69,13 +71,25 @@ public class ExperimentChartsPanel extends VerticalLayout implements ExperimentC
     }
 
     private void setVisiblePanel(boolean isRedraw) {
-        if (chartTabs.getSelectedIndex() == 0) {
+        int tabIndex = chartTabs.getSelectedIndex();
+        if (tabIndex == 0) {
             setCompareMetricsChartPanelVisible(isRedraw);
-        } else if (chartTabs.getSelectedIndex() == 1) {
+        } else if (tabIndex == 1) {
             setHistogramChartPanelVisible(isRedraw);
         } else {
             setPolicyChartPanelVisible(isRedraw);
         }
+        if (experimentView.isComparisonMode()) {
+            if (isComparisonPanel) {
+                experimentView.getExperimentChartsPanel().setTabToIndex(tabIndex);
+            } else {
+                experimentView.getComparisonChartsPanel().setTabToIndex(tabIndex);
+            }
+        }
+    }
+
+    public void setTabToIndex(int tabIndex) {
+        chartTabs.setSelectedIndex(tabIndex);
     }
 
     public void selectVisibleChart() {
