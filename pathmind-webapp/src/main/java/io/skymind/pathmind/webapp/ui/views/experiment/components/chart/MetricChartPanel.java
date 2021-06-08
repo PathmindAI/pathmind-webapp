@@ -51,9 +51,6 @@ public class MetricChartPanel extends VerticalLayout {
         }
     }
 
-    // TODO -> Should we passing in the reward variable as it's already assigned in setGoals()? And could these two methods
-    // not just be combined since they are always called together.
-    // More details at: https://github.com/SkymindIO/pathmind-webapp/issues/2327
     public void setupChart(Map<Integer, Double> sparklineData, RewardVariable rewardVariable) {
         chartLabel.setText(rewardVariable.getName());
         chart.setSparkLine(sparklineData, rewardVariable, true);

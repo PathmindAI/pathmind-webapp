@@ -63,16 +63,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         // IMPORTANT -> Needed so that Push works consistently on every page/view.
         event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 
-        // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
-        // Before we do anything we need to confirm the user has permission to access the data.
-        // TODO -> This solution is a band-aid solution and although it does implement enough security for now
-        // we absolutely have to revisit it (as well as the exception). See the method itself for more details.
-        // TODO -> This throws InvalidDataException which is incorrect but it is the best we can do with the current solution
-        // until we decide how we want to implement user data management.
-        if (!isAccessAllowedForUser()) {
-            throw new InvalidDataException("Item does not exist");
-        }
-
         initLoadData();
 
         // This is used to determine if the view is correct URL such as newExperimentView and ExperimentView. If we're at the wrong
@@ -149,13 +139,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
     private Component getWarningMessage() {
         return LabelFactory.createLabel("Using Mock Backend", "mock-backend-header");
-    }
-
-    // TODO -> https://github.com/SkymindIO/pathmind-webapp/issues/217 Implement a security framework on the views.
-    // NOTE -> This is a janky solution for https://github.com/SkymindIO/pathmind-webapp/issues/217 until we decide exactly
-    // what we want to implement.
-    protected boolean isAccessAllowedForUser() {
-        return true;
     }
 
     protected abstract Component getTitlePanel();

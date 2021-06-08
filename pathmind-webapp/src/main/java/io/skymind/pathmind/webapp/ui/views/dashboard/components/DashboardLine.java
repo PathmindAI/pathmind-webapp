@@ -23,7 +23,6 @@ import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
-import io.skymind.pathmind.webapp.ui.components.atoms.GoalsReachedStatus;
 import io.skymind.pathmind.webapp.ui.components.atoms.IconStopped;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -165,14 +164,6 @@ public class DashboardLine extends HorizontalLayout {
             }
         } else {
             item = LabelFactory.createLabel(stage.getName(), "stage-next");
-        }
-        if (stage.equals(Stage.TrainPolicy)) {
-            Experiment experiment = dashboardItem.getExperiment();
-            if (experiment != null && experiment.isHasGoals() && !experiment.isDraft()) {
-                GoalsReachedStatus goalStatusComponent = new GoalsReachedStatus(experiment.isGoalsReached());
-                goalStatusComponent.setSize("large");
-                item.add(goalStatusComponent);
-            }
         }
         return item;
     }
