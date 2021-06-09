@@ -12,7 +12,6 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
-import com.vaadin.flow.shared.communication.PushMode;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -59,9 +58,6 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
 
         // IMPORTANT -> This is needed because the UI needed for component rendering is not always available on time.
         ui = event.getUI();
-
-        // IMPORTANT -> Needed so that Push works consistently on every page/view.
-        event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
 
         initLoadData();
 
