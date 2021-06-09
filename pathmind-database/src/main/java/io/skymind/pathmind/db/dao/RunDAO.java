@@ -255,7 +255,6 @@ public class RunDAO {
             DBUtils.setLockTimeout(transactionCtx, 4);
 
             updateRun(transactionCtx, run, providerJobStatus, policies);
-            calculateGoals(transactionCtx, run.getExperiment(), policies);
             updateExperimentTrainingStatus(transactionCtx, run);
 
             if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
@@ -284,41 +283,6 @@ public class RunDAO {
         experiment.setRuns(runsForExperiment);
         ExperimentUtils.updateTrainingStatus(experiment);
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
-    }
-
-    public void calculateGoals(DSLContext transactionCtx, Experiment experiment, List<Policy> policies) {
-        experiment.setPolicies(policies);
-        ExperimentUtils.updateBestPolicy(experiment);
-        calculateGoals(transactionCtx, experiment);
-    }
-
-    public void calculateGoals(DSLContext transactionCtx, Experiment experiment) {
-        final List<RewardVariable> rewardVariablesWithGoals = new ArrayList<>();
-        if (experiment.isHasGoals()) {
-            List<RewardVariable> rewardVariablesForModel =
-                    RewardVariableRepository.getRewardVariablesForModel(transactionCtx, experiment.getModelId());
-            for (RewardVariable rv : rewardVariablesForModel) {
-                if (rv.getGoalConditionType() != null) {
-                    rewardVariablesWithGoals.add(rv);
-                }
-            }
-            int goalsTotalNum = rewardVariablesWithGoals.size();
-            experiment.setTotalGoals(goalsTotalNum);
-            ExperimentRepository.updateGoalsTotal(transactionCtx, experiment.getId(), goalsTotalNum);
-        }
-
-        if (experiment.getBestPolicy() != null) {
-            if (experiment.isHasGoals()) {
-                int goalsReached = 0;
-                for (RewardVariable rv : rewardVariablesWithGoals) {
-                    if (PolicyUtils.isGoalReached(rv, experiment.getBestPolicy())) {
-                        goalsReached += 1;
-                    }
-                }
-                experiment.setGoalsReached(goalsReached);
-                ExperimentRepository.updateGoalsReached(transactionCtx, experiment.getId(), goalsReached);
-            }
-        }
     }
 
     public void updatePolicyData(Run run, List<Policy> policies) {

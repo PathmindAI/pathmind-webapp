@@ -15,7 +15,7 @@ public class UserTestUtils {
         PathmindUser pathmindUser = new PathmindUser();
         pathmindUser.setEmail(email1);
         pathmindUser.setPassword("Password");
-        pathmindUser.setAccountType(UserRole.Paid.getId());
+        pathmindUser.setAccountType(UserRole.Professional.getId());
         pathmindUser.setFirstname("Firstname");
         pathmindUser.setLastname("Lastname");
         pathmindUser.setAddress("Address");
@@ -32,7 +32,7 @@ public class UserTestUtils {
     public static void changePathmindUser(PathmindUser pathmindUser) {
         pathmindUser.setEmail(email2);
         pathmindUser.setPassword("Password2");
-        pathmindUser.setAccountType(UserRole.Premium.getId());
+        pathmindUser.setAccountType(UserRole.Enterprise.getId());
         pathmindUser.setFirstname("Firstname2");
         pathmindUser.setLastname("Lastname2");
         pathmindUser.setAddress("Address2");

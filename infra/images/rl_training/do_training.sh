@@ -126,6 +126,10 @@ commit;
 EOF
 fi
 
+
+#Get DEBUG_RAY
+RAY_DEBUG=`grep RAY_DEBUG script.sh | grep export | cut -f2 -d"'" | sed "s/ //g"`
+
 bash script.sh > ${log_file} 2>&1 &
 pid=$!
 
@@ -191,8 +195,12 @@ EOF
                     --data "{'text':':x:Spot Instance Termination Job ${S3PATH}\nDescription: ${description}\nEnv: ${ENVIRONMENT}\nUser: ${EMAIL}\nhttps://s3.console.aws.amazon.com/s3/buckets/${s3_url_link}/'}" \
                     https://hooks.slack.com/services/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
                 sleep 20
-                mkdir ./work/PPO/ray_debug
-                cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
+                #Upload RAY debug
+                if [ "${RAY_DEBUG}" == true ]
+                then
+                        mkdir ./work/PPO/ray_debug
+                        cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
+                fi
                 aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
                 #Wait for the instace to be taken
                 sleep 300
@@ -239,9 +247,14 @@ cd ..
 
 #Check errors
 bash errorCheck.sh
+#Upload RAY debug
+if [ "${RAY_DEBUG}" == true ]
+then
+        mkdir ./work/PPO/ray_debug
+        cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
+fi
 #Upload the final files only after policy and checkpoint are uploaded
-mkdir ./work/PPO/ray_debug
-cp -r /tmp/ray/session_latest/* ./work/PPO/ray_debug
+#delete old state files
 aws s3 sync ./work/PPO ${s3_url}/output/ > /dev/null
 aws s3 cp ${log_file} ${s3_url}/output/${log_file} > /dev/null
 aws s3 cp errors.log ${s3_url}/output/errors.log > /dev/null

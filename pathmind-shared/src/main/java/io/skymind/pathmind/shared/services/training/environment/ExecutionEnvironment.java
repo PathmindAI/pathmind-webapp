@@ -15,6 +15,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ExecutionEnvironment {
+    private boolean userLog;
     private AnyLogic anylogicVersion;
     private PathmindHelper pathmindHelperVersion;
     private NativeRL nativerlVersion;
@@ -29,6 +30,7 @@ public class ExecutionEnvironment {
     private int hiddenLayer;
     private String scheduler;
     private boolean freezing;
+    private boolean rayDebug;
     private boolean longerTraining;
     private int startCheckIterationForLongerTraining;
 

@@ -204,11 +204,13 @@ public class ExperimentView extends AbstractExperimentView {
             leaveComparisonMode();
             resizeChart();
         });
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                comparisonObservationsPanel,
+                60);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                    comparisonObservationsPanel,
-                    60),
+            simulationMetricsAndObservationsPanel,
             generateRewardFunctionGroup(comparisonCodeViewer),
             comparisonChartsPanel,
             comparisonNotesField);
@@ -232,11 +234,13 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     private SplitLayout getMiddlePanel() {
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
+                experimentObservationsPanel,
+                70);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
-                        experimentObservationsPanel,
-                        70),
+                simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
@@ -322,7 +326,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
         experimentNotesField.setSecondaryStyle(true);
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
-        experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        experimentChartsPanel = new ExperimentChartsPanel(this, false);
         experimentCodeViewer = new CodeViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
@@ -347,7 +351,7 @@ public class ExperimentView extends AbstractExperimentView {
         comparisonTitleBar = createComparisonExperimentTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
         comparisonNotesField.setSecondaryStyle(true);
-        comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        comparisonChartsPanel = new ExperimentChartsPanel(this, true);
         comparisonCodeViewer = new CodeViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
@@ -362,5 +366,13 @@ public class ExperimentView extends AbstractExperimentView {
                 comparisonSimulationMetricsPanel,
                 comparisonObservationsPanel,
                 comparisonStoppedTrainingNotification));
+    }
+
+    public ExperimentChartsPanel getExperimentChartsPanel() {
+        return experimentChartsPanel;
+    }
+
+    public ExperimentChartsPanel getComparisonChartsPanel() {
+        return comparisonChartsPanel;
     }
 }

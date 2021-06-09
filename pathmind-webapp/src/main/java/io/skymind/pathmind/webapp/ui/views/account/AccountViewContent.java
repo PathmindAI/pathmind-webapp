@@ -100,7 +100,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         editInfoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountEditView.class)));
         changePasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ChangePasswordView.class)));
         editPaymentBtn.setEnabled(false);
-        upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null);
+        upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && !UserRole.isInternalOrEnterpriseOrPartnerUser(user.getAccountType()));
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
 
@@ -163,7 +163,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         getModel().setFirstName(user.getFirstname());
         getModel().setLastName(user.getLastname());
         setApiKey(user.getApiKey());
-        getModel().setSubscription(subscription != null ? "Professional" : "Basic");
+        getModel().setSubscription(user.getAccountType().equals(UserRole.Partner) ? "Professional" : user.getAccountType().toString());
         getModel().setBillingInfo("Billing Information");
     }
 
