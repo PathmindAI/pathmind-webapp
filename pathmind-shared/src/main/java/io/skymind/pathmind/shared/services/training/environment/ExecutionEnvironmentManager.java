@@ -32,7 +32,8 @@ public class ExecutionEnvironmentManager {
                 2,
                 "PBT",
                 false,
-                false);
+                false,
+                750);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

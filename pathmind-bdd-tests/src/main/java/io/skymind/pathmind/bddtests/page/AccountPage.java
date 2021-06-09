@@ -137,7 +137,7 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='details']")).getText(), is("For Students and Hobbyists"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='price']")).getText(), is("Free"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='additional-info']")).getText(), is(" "));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::ul")).getText(), is("25 Experiments Per Month\nUnlimited Policy Export"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::ul")).getText(), is("One Concurrent Experiment\nUnlimited Policy Export"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::vaadin-button")).getText(), is("Current Plan"));
 
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::h2")).getText(), is("Professional"));
@@ -145,14 +145,14 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='popular-tag']")).getText(), is("POPULAR"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$499"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("200 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy Export\nTechnical Support Included"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::vaadin-button")).getText(), is("Choose Pro"));
 
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::h2")).getText(), is("Enterprise"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='details']")).getText(), is("For Consultancies & Corporate Teams"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$999"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month; price is per user"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("2,000 Experiments Per Month\nUnlimited Policy Export\nTechnical Support Included\nPolicy Serving Enabled\nRL Advisory and Training"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy Export\nTechnical Support Included\nPolicy Serving Enabled\nRL Advisory and Training"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::vaadin-button")).getText(), is("Contact Us"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::a")).getAttribute("href"), is("mailto:support@pathmind.com"));
 
@@ -218,7 +218,7 @@ public class AccountPage extends PageObject {
     }
 
     public void checkAccountSubscriptionHint() {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d");
         DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
         LocalDateTime now = LocalDateTime.now();
         String[] shortMonths = new DateFormatSymbols().getShortMonths();

@@ -555,9 +555,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
-                var("ENTROPY_SLOPE", "0.01"),
-                var("VF_LOSS_RANGE", "0.1"),
-                var("VALUE_PRED", "1"), // disabled for now
+                var("ENTROPY_SLOPE", "1"), // turn off for now
+                var("VF_LOSS_RANGE", "0"), // turn off for now
+                var("VALUE_PRED", "1"),
                 var("USER_LOG", String.valueOf(job.isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
@@ -576,7 +576,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         if (job.getEnv().isLongerTraining()) {
             instructions.add(var("MAX_ITERATIONS", "1500"));
             instructions.add(var("EPISODE_REWARD_RANGE", "0.005"));
-            instructions.add(var("CONVERGENCE_CHECK_START_ITERATION", "750"));
+            instructions.add(var("CONVERGENCE_CHECK_START_ITERATION", String.valueOf(job.getEnv().getStartCheckIterationForLongerTraining())));
         } else {
             instructions.add(var("MAX_ITERATIONS", String.valueOf(job.getIterations())));
             instructions.add(var("EPISODE_REWARD_RANGE", "0.01"));

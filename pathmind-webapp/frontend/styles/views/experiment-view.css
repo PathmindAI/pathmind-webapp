@@ -71,8 +71,12 @@
 }
 
 .experiment-view .experiment-header {
-    position: relative;
     justify-content: space-between;
+    position: relative;
+}
+
+.experiment-view.comparison-mode .experiment-header {
+    height: 7.8rem;
 }
 
 .experiment-view .middle-panel {
