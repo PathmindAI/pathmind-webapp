@@ -183,17 +183,14 @@ background-color: var(--pm-grey-color-light);
     color: var(--pm-gold-color);
 }
 
-.project-view [icon="vaadin:star"],
-.model-view [icon="vaadin:star"] {
+.project-view [icon="vaadin:star"] {
     --iron-icon-width: var(--lumo-font-size-s);
     --iron-icon-height: var(--lumo-font-size-s);
     vertical-align: text-top;
 }
 
 .project-view [icon="vaadin:close"],
-.project-view [icon="vaadin:check"],
-.model-view [icon="vaadin:close"],
-.model-view [icon="vaadin:check"] {
+.project-view [icon="vaadin:check"] {
     --iron-icon-width: var(--lumo-font-size-m);
     --iron-icon-height: var(--lumo-font-size-m);
     vertical-align: text-top;
@@ -343,8 +340,7 @@ background-color: var(--pm-grey-color-light);
     border-top: 1px solid var(--pm-grey-color-lightest);
 }
 
-.default-view.project-view,
-.default-view.model-view {
+.default-view.project-view {
     height: auto;
     min-height: 100%;
 }
@@ -392,9 +388,7 @@ vaadin-dialog-overlay .demo-view-content {
 
 .projects-view .view-section,
 .project-view .view-section,
-.model-view .view-section,
-.project-view .page-content,
-.model-view .page-content {
+.project-view .page-content {
     box-sizing: border-box;
     flex: 1 1 auto;
 }
@@ -409,21 +403,14 @@ vaadin-dialog-overlay .demo-view-content {
     border-radius: 0;
 }
 
-.model-view .view-section {
-    padding: var(--lumo-space-m) var(--lumo-space-l);
-    border-radius: 0;
-}
-
-.project-view .view-section,
-.model-view .view-section {
+.project-view .view-section {
     min-width: unset;
     line-height: 1.6em;
     overflow: auto;
 }
 
 .projects-view .section-title-label,
-.project-view .section-title-label,
-.model-view .section-title-label {
+.project-view .section-title-label {
     line-height: 1.1;
     white-space: pre-wrap;
     word-break: break-word;
@@ -546,14 +533,6 @@ change-password-view-content .inner-content {
     width: calc(var(--lumo-space-m) * 2 + 100%) !important;
 }
 
-.projects-view .demoMessage {
-    margin: 0;
-}
-
-.create-project-button {
-    width: 275px;
-}
-
 .mock-backend-header {
     width: 100%;
     font-size: var(--lumo-font-size-s);
@@ -605,10 +584,6 @@ change-password-view-content .inner-content {
 }
 
 /* General Helper Styles */
-.style-text-align-center {
-    text-align: center;
-}
-
 .tag {
     color: var(--pm-grey-color-dark);
     padding: var(--lumo-space-xxxs) var(--lumo-space-xs);
@@ -630,10 +605,6 @@ change-password-view-content .inner-content {
 }
 .reason-why-the-training-stopped.success-label a {
     color: var(--pm-grey-color-darker);
-}
-.success-label-bright-green {
-    background: var(--pm-friendly-color-bright);
-    color: black;
 }
 .warning-label {
     background: var(--pm-gold-color);
