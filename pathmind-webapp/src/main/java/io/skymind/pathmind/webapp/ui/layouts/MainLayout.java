@@ -7,7 +7,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
-import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 
@@ -19,7 +18,7 @@ import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 
-@Push(PushMode.AUTOMATIC)
+@Push
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-number-field.css", themeFor = "vaadin-number-field")
