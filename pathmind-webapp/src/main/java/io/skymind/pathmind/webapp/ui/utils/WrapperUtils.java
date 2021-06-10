@@ -42,7 +42,7 @@ public class WrapperUtils {
 
     public static VerticalLayout wrapFormCenterVertical(Component... components) {
         VerticalLayout verticalLayout = new VerticalLayout(components);
-        verticalLayout.setWidth(UIConstants.CENTERED_FORM_WIDTH);
+        verticalLayout.setWidth("520px");
         verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         return verticalLayout;
     }
