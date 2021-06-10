@@ -97,7 +97,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
-        bestPythonPolicy(experiment)
+        bestPolicyIfCompleted(experiment)
                 .ifPresent(policy -> {
                     final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
@@ -119,7 +119,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public String getPolicyServerUrl(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
@@ -134,7 +134,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public DeploymentStatus getPolicyServerStatus(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
@@ -143,11 +143,10 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 }).orElse(DeploymentStatus.NOT_DEPLOYED);
     }
 
-    private static Optional<Policy> bestPythonPolicy(Experiment experiment) {
+    private static Optional<Policy> bestPolicyIfCompleted(Experiment experiment) {
         return Optional.of(experiment)
                 .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
-                .map(Experiment::getBestPolicy)
-                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType())));
+                .map(Experiment::getBestPolicy);
     }
 
 }
