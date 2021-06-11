@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
 import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
@@ -37,9 +36,6 @@ import org.jooq.impl.DSL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
-
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
 
 @Repository
 @Slf4j

@@ -7,35 +7,23 @@ import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
-import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
-import org.jooq.Field;
 import org.jooq.OrderField;
 import org.jooq.Record;
-import org.jooq.Record1;
-import org.jooq.Record8;
 import org.jooq.Result;
 import org.jooq.SortOrder;
-import org.jooq.Table;
-import org.jooq.impl.DSL;
 
 import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
-import static io.skymind.pathmind.db.jooq.Tables.POLICY;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
-import static io.skymind.pathmind.db.jooq.tables.Run.RUN;
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
-import static org.jooq.impl.DSL.count;
 
 @Slf4j
 class ExperimentRepository {
@@ -243,14 +231,6 @@ class ExperimentRepository {
                 .set(Tables.EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
                 .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
-    }
-
-    private static Condition findByUserOrExperimentCondition(DashboardQueryParams dashboardQueryParams) {
-        if (dashboardQueryParams.getQueryType() == FETCH_MULTIPLE_BY_USER) {
-            return PATHMIND_USER.ID.eq(dashboardQueryParams.getUserId());
-        } else {
-            return EXPERIMENT.ID.eq(dashboardQueryParams.getExperimentId());
-        }
     }
 
     protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
