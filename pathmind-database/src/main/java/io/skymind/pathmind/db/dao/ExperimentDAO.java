@@ -18,7 +18,6 @@ import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
@@ -219,33 +218,6 @@ public class ExperimentDAO {
 
     public void archive(long experimentId, boolean isArchive) {
         ExperimentRepository.archive(ctx, experimentId, isArchive);
-    }
-
-    @MonitorExecutionTime
-    public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
-        var dashboardQueryParams = DashboardQueryParams.builder()
-                .userId(userId)
-                .limit(limit)
-                .offset(offset)
-                .queryType(FETCH_MULTIPLE_BY_USER)
-                .build();
-        return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
-    }
-
-    @MonitorExecutionTime
-    public List<DashboardItem> getSingleDashboardItem(long experimentId) {
-        var dashboardQueryParams = DashboardQueryParams.builder()
-                .experimentId(experimentId)
-                .limit(1)
-                .offset(0)
-                .queryType(FETCH_SINGLE_BY_EXPERIMENT)
-                .build();
-        return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
-    }
-
-    @MonitorExecutionTime
-    public int countDashboardItemsForUser(long userId) {
-        return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
     }
 
     public int countExperimentsInModel(long modelId) {
