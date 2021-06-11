@@ -187,7 +187,7 @@
 .experiment-view .sparklines-wrapper .sparkline,
 .experiment-view .histograms-wrapper .histogram {
     position: relative;
-    width: 100px;
+    width: calc(100% - var(--lumo-space-s));
     height: 2rem !important;
     padding: var(--lumo-space-xxs) 0;
     margin-left: var(--lumo-space-s);

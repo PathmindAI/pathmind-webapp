@@ -49,10 +49,6 @@ public class PolicyDAO {
         return RewardScoreRepository.getRewardScoresCountForExperiments(ctx, experimentIds);
     }
 
-    public List<Policy> getActivePoliciesForUser(long userId) {
-        return PolicyRepository.getActivePoliciesForUser(ctx, userId);
-    }
-
     public void updateExportedDate(long policyId) {
         PolicyRepository.updateExportedDate(ctx, policyId);
     }

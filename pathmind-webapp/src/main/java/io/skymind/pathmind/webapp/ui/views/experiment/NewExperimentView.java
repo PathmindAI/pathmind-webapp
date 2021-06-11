@@ -135,10 +135,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 verifyEmailReminder,
                 upgradeBannerExpCt,
                 upgradeBannerActMask,
-                WrapperUtils.wrapWidthFullHorizontal(
-                        titleWithStar,
-                        downloadModelLink
-                ),
                 titlePanel,
                 LabelFactory.createLabel(
                         "To judge if an action is a good one, we calculate a reward score. "

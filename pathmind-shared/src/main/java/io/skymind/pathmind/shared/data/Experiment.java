@@ -32,8 +32,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private String userNotes;
     private boolean isFavorite;
     private boolean hasGoals;
-    private int totalGoals;
-    private int goalsReached;
     private int trainingStatus;
     private boolean sharedWithSupport;
 
@@ -92,10 +90,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         runs.add(run);
     }
 
-    public boolean isGoalsReached() {
-        return hasGoals && Objects.equals(goalsReached, totalGoals);
-    }
-
     public boolean isTrainingError() {
         return StringUtils.isNotEmpty(trainingError);
     }
@@ -125,8 +119,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                 .isFavorite(isFavorite)
                 .trainingStatus(trainingStatus)
                 .hasGoals(hasGoals)
-                .goalsReached(goalsReached)
-                .totalGoals(totalGoals)
                 .sharedWithSupport(sharedWithSupport)
                 .build());
     }

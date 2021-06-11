@@ -40,24 +40,24 @@ public class HistogramChartPanel extends VerticalLayout implements ExperimentCom
             if (!selectedRewardVars.isEmpty()) {
                 final Policy bestPolicy = opt.get();
                 chart.setHistogramData(new ArrayList<>(selectedRewardVars), bestPolicy, true);
-                List<String> uncertainty = bestPolicy.getUncertainty();
+                List<String> uncertainty = bestPolicy.getMetricDisplayValues();
                 selectedRewardVars.forEach(rewardVar -> {
                     int arrayIndex = rewardVar.getArrayIndex();
-                    String meanValue = uncertainty.size() > arrayIndex
-                            ? uncertainty.get(arrayIndex)
-                            : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(arrayIndex));
-                    Span colorBox = new Span();
-                    colorBox.addClassName("color-box");
-                    colorBox.addClassName("variable-color-"+ arrayIndex % 10);
-                    metricMeanValue.add(
-                        WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                            new HorizontalLayout(
-                                colorBox,
-                                new Span(rewardVar.getName())
-                            ),
-                            new Span("mean: "+meanValue)
-                        )
-                    );
+                    if (uncertainty.size() > arrayIndex) {
+                        String meanValue = uncertainty.get(arrayIndex);
+                        Span colorBox = new Span();
+                        colorBox.addClassName("color-box");
+                        colorBox.addClassName("variable-color-"+ arrayIndex % 10);
+                        metricMeanValue.add(
+                            WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+                                new HorizontalLayout(
+                                    colorBox,
+                                    new Span(rewardVar.getName())
+                                ),
+                                new Span("mean: "+meanValue)
+                            )
+                        );
+                    }
                 });
             }
         } else {

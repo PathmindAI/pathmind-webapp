@@ -11,13 +11,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-import org.springframework.util.CollectionUtils;
-
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
-import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.components.atoms.HistogramChart;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -106,11 +102,12 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
         metricsWrapper.setVisible(show);
         sparklinesWrapper.setVisible(show);
         if (show) {
-            boolean isBestPolicyUncertaintyEmpty = Optional.ofNullable(experiment)
+            boolean isBestPolicyUncertaintyEmpty = !Optional.ofNullable(experiment)
                     .map(Experiment::getBestPolicy)
-                    .map(Policy::getUncertainty)
-                    .map(CollectionUtils::isEmpty)
-                    .orElse(true);
+                    .map(Policy::getMetricDisplayValues)
+                    .map(List::stream)
+                    .flatMap(stream -> stream.filter(s -> s.contains("\u2800\u00B1\u2800")).findAny())
+                    .isPresent();
             histogramsWrapper.setVisible(!isBestPolicyUncertaintyEmpty);
         } else {
             histogramsWrapper.setVisible(false);
@@ -139,28 +136,20 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
 
         Policy bestPolicy = experiment.getBestPolicy();
 
-        if (bestPolicy == null || bestPolicy.getSimulationMetrics() == null || bestPolicy.getSimulationMetrics().isEmpty()) {
+        if (bestPolicy == null || bestPolicy.getMetricDisplayValues() == null || bestPolicy.getMetricDisplayValues().isEmpty()) {
             showMetricValuesAndSparklines(false);
             return;
         }
 
-        IntStream.range(0, bestPolicy.getSimulationMetrics().size())
+        IntStream.range(0, bestPolicy.getMetricDisplayValues().size())
                 .forEach(index -> {
                     Map<Integer, Double> sparklineData = bestPolicy.getSparklinesData().get(index);
                     RewardVariable rewardVariable = experiment.getRewardVariables().get(index);
 
-                    // First conditional value is with uncertainty, second value is without uncertainty
-                    String metricValue = bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                            ? bestPolicy.getUncertainty().get(index)
-                            : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(index));
-
-                    if (rewardVariable.getGoalConditionTypeEnum() != null) {
-                        Boolean reachedGoal = PolicyUtils.isGoalReached(rewardVariable, bestPolicy);
-                        String metricSpanColorClass = reachedGoal ? "success-text" : "failure-text";
-                        metricSpans.get(index).addClassName(metricSpanColorClass);
-                    }
                     sparklineCharts.get(index).setSparkLine(sparklineData, rewardVariable, false, index);
-                    metricSpans.get(index).setText(metricValue);
+                    if (bestPolicy.getMetricDisplayValues().size() > index) {
+                        metricSpans.get(index).setText(bestPolicy.getMetricDisplayValues().get(index));
+                    }
                     List<RewardVariable> histogramRewardVarList = new ArrayList<>();
                     histogramRewardVarList.add(rewardVariable);
                     histogramCharts.get(index).setHistogramData(histogramRewardVarList, bestPolicy, false);
