@@ -21,7 +21,6 @@ import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
