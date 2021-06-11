@@ -293,7 +293,7 @@ public class ExperimentDAO {
     public void saveExperiment(Experiment experiment) {
         ctx.transaction(conf -> {
             DSLContext transactionCtx = DSL.using(conf);
-            ExperimentObservationRepository.deleteExperimentObservations(transactionCtx, experiment.getId());
+            ObservationRepository.deleteExperimentObservations(transactionCtx, experiment.getId());
             ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
