@@ -31,16 +31,6 @@ public class HomePageStepDefinitions {
         homePageSteps.checkThatLearnPageOpened(learnPage);
     }
 
-    @When("^Open dashboard page$")
-    public void openDashboardPage() {
-        homePageSteps.openDashboardPage();
-    }
-
-    @Then("^Check that dashboard page opened$")
-    public void checkThatDashboardPageOpened() {
-        homePageSteps.checkThatDashboardPageOpened();
-    }
-
     @Then("^Check that projects page opened$")
     public void checkThatProjectsPageOpened() {
         homePageSteps.checkThatProjectsPageOpened();
