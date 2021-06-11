@@ -28,21 +28,8 @@ public class WrapperUtils {
         return wrapper;
     }
 
-    public static VerticalLayout wrapSizeFullVertical(Component... components) {
-        VerticalLayout wrapper = new VerticalLayout(components);
-        wrapper.setSizeFull();
-        return wrapper;
-    }
-
     public static VerticalLayout wrapWidthFullCenterVertical(Component... components) {
         VerticalLayout verticalLayout = wrapWidthFullVertical(components);
-        verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
-        return verticalLayout;
-    }
-
-    public static VerticalLayout wrapFormCenterVertical(Component... components) {
-        VerticalLayout verticalLayout = new VerticalLayout(components);
-        verticalLayout.setWidth("520px");
         verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         return verticalLayout;
     }
@@ -92,17 +79,6 @@ public class WrapperUtils {
         wrapper.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         wrapper.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         return wrapper;
-    }
-
-    /**
-     * TODO -> The only way it seems to work is if you setup the style, the HorizontalLayout otherwise doesn't
-     * seem to want to respect the right alignment of the rightComponent:
-     * https://vaadin.com/forum/thread/17198105/button-alignment-in-horizontal-layout
-     */
-    public static HorizontalLayout wrapLeftAndRightAligned(Component leftComponent, Component rightComponent) {
-        HorizontalLayout horizontalLayout = wrapWidthFullHorizontal(leftComponent, rightComponent);
-        rightComponent.getElement().getStyle().set("margin-left", "auto");
-        return horizontalLayout;
     }
 
     public static HorizontalLayout wrapWidthFullRightHorizontal(Component... components) {
