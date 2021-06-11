@@ -20,11 +20,11 @@ public class ExecutionEnvironmentManager {
     private ExecutionEnvironment defaultEnvironment() {
         return new ExecutionEnvironment(
                 false,
-                AnyLogic.VERSION_8_7_4,
+                AnyLogic.VERSION_8_7_5,
                 PathmindHelper.VERSION_1_6_1,
                 NativeRL.VERSION_1_6_2,
                 JDK.VERSION_8_222,
-                Conda.VERSION_1_3_0,
+                Conda.VERSION_1_4_0,
                 EC2InstanceType.IT_36CPU_72GB,
                 0,
                 0,
