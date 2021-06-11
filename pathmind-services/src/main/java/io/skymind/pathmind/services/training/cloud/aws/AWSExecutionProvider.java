@@ -412,6 +412,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_7_0:
             case VERSION_8_7_3:
             case VERSION_8_7_4:
+            case VERSION_8_7_5:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -457,6 +458,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_7:
             case VERSION_1_0_0:
             case VERSION_1_3_0:
+            case VERSION_1_4_0:
                 instructions.addAll(Arrays.asList(
                     // Setup Anaconda
                     "mkdir -p conda",
