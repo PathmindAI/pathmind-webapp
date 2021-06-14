@@ -3,6 +3,7 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.skymind.pathmind.bddtests.steps.ExperimentViewSteps;
+import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Steps;
 
 import java.io.IOException;
@@ -72,8 +73,9 @@ public class ExperimentViewStepDefinitions {
         experimentViewSteps.checkRewardVariableIs(rewardFunction);
     }
 
-    @When("^Check export policy filename '(.*)'$")
-    public void checkExportPolicyFilename(String filename) {
-        experimentViewSteps.checkExportPolicyFilename(filename);
+    @When("^Check export policy filename '(.*)', '(.*)'$")
+    public void checkExportPolicyFilename(String projectName, String filename) {
+        projectName = projectName.charAt(0) + projectName.substring(1).toLowerCase();
+        experimentViewSteps.checkExportPolicyFilename(projectName + Serenity.sessionVariableCalled("randomNumber") + filename);
     }
 }

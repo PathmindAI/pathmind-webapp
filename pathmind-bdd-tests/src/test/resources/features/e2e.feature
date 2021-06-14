@@ -69,7 +69,7 @@ Feature: E2E
     #    ------------------------
     #Check export policy
     When Click in 'Export Policy' button
-    When Check export policy filename 'Simple-M1-simplestochasticmodel-E2-Policy.zip'
+    When Check export policy filename '<project name>', '-M1-simplestochasticmodel-E2-Policy.zip'
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn

@@ -53,9 +53,6 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     @Id("cancelSubscriptionBtn")
     private Button cancelSubscriptionBtn;
 
-    @Id("editPaymentBtn")
-    private Button editPaymentBtn;
-
     @Id("rotateApiKeyBtn")
     private Button rotateApiKeyBtn;
 
@@ -99,7 +96,6 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     private void initBtns() {
         editInfoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountEditView.class)));
         changePasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ChangePasswordView.class)));
-        editPaymentBtn.setEnabled(false);
         upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && !UserRole.isInternalOrEnterpriseOrPartnerUser(user.getAccountType()));
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
@@ -164,7 +160,6 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         getModel().setLastName(user.getLastname());
         setApiKey(user.getApiKey());
         getModel().setSubscription(user.getAccountType().equals(UserRole.Partner) ? "Professional" : user.getAccountType().toString());
-        getModel().setBillingInfo("Billing Information");
     }
 
     public interface Model extends TemplateModel {
@@ -181,8 +176,6 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         void setSubscription(String subscription);
 
         void setSubscriptionCancellationNote(String cancellationNote);
-
-        void setBillingInfo(String billingInfo);
 
         void setContactLink(String contactLink);
 

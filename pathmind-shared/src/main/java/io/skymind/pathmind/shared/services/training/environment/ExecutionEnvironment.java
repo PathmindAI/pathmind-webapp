@@ -30,6 +30,7 @@ public class ExecutionEnvironment {
     private int hiddenLayer;
     private String scheduler;
     private boolean freezing;
+    private boolean rayDebug;
     private boolean longerTraining;
     private int startCheckIterationForLongerTraining;
 
