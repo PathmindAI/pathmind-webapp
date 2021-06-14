@@ -54,14 +54,10 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Access Token"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Basic"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(1)")).getText(), containsString("Payment"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(2)")).getText(), containsString("Billing Information"));
         assertThat(accountInfoEditBtn.isDisplayed(), is(true));
         assertThat(accountInfoEditBtn.getText(), containsString("Edit"));
         assertThat(accountPasswordEditBtn.isDisplayed(), is(true));
         assertThat(accountPasswordEditBtn.getText(), containsString("Change"));
-        assertThat(accountPaymentEditBtn.isDisplayed(), is(true));
-        assertThat(accountPaymentEditBtn.getText(), containsString("Edit"));
     }
 
     public void clickAccountEditBtn() {
