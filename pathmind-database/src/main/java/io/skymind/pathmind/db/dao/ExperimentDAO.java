@@ -284,10 +284,12 @@ public class ExperimentDAO {
         experiment.getRuns().stream()
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()
-                .ifPresent(run ->
+                .ifPresent(run -> {
                         Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
                             experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-                        }));
+                            experiment.setTrainingErrorId(run.getTrainingErrorId());
+                        });
+                    });
     }
 
     public void saveExperiment(Experiment experiment) {

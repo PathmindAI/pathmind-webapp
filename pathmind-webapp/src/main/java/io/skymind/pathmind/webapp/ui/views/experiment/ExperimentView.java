@@ -85,6 +85,8 @@ public class ExperimentView extends AbstractExperimentView {
     private String earlyStoppingUrl;
     @Value("${pathmind.al-engine-error-article.url}")
     private String alEngineErrorArticleUrl;
+    @Value("${pathmind.training-errors.url-list}")
+    private List<String> trainingErrorsHelpArticleList;
 
     // Although this is really only for the experiment view it's a lot simpler to
     // put it at the parent level otherwise a lot of methods would have to be
@@ -331,7 +333,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
+        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl, trainingErrorsHelpArticleList);
 
         experimentComponentList.addAll(List.of(
                 experimentTitleBar,
@@ -356,7 +358,7 @@ public class ExperimentView extends AbstractExperimentView {
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
+        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl, trainingErrorsHelpArticleList);
 
         comparisonExperimentComponents.addAll(List.of(
                 comparisonTitleBar,
