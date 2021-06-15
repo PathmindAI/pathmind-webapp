@@ -56,7 +56,6 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
     @Override
     public void setExperiment(Experiment experiment) {
 
-        // Clear everything so we have a clean slate.
         clearErrorState();
 
         if (RunStatus.isError(experiment.getTrainingStatusEnum())) {
@@ -69,7 +68,6 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
                                     "to reproduce the error back in AnyLogic";
                     trainingError = MessageFormat.format(trainingError, alEngineErrorArticleUrl);
                 } else {
-                    System.out.println(trainingErrorsHelpArticleList);
                     trainingError = experiment.getTrainingError() + " Click <a target=\"_blank\" href=\"{0}\">here</a> for more information.";
                     trainingError = MessageFormat.format(trainingError, trainingErrorsHelpArticleList.get(Math.toIntExact(experiment.getTrainingErrorId()) - 1));
                 }
