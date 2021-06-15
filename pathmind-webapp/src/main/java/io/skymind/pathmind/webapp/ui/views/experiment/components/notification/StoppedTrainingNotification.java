@@ -4,15 +4,11 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 import java.text.MessageFormat;
-import java.util.List;
 
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SUCCESS_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.*;
 
 public class StoppedTrainingNotification extends Span implements ExperimentComponent {
 
@@ -20,14 +16,10 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
     private static final String[] NOTIFICATION_CSS_CLASSNAMES = new String[]{SUCCESS_LABEL, WARNING_LABEL, ERROR_LABEL};
 
     private final String earlyStoppingUrl;
-    private final String alEngineErrorArticleUrl;
-    private final List<String> trainingErrorsHelpArticleList;
 
-    public StoppedTrainingNotification(String earlyStoppingUrl, String alEngineErrorArticleUrl, List<String> trainingErrorsHelpArticleList) {
+    public StoppedTrainingNotification(String earlyStoppingUrl) {
         super("");
         this.earlyStoppingUrl = earlyStoppingUrl;
-        this.alEngineErrorArticleUrl = alEngineErrorArticleUrl;
-        this.trainingErrorsHelpArticleList = trainingErrorsHelpArticleList;
         addClassNames(CSS_CLASSNAME);
     }
 
@@ -52,24 +44,16 @@ public class StoppedTrainingNotification extends Span implements ExperimentCompo
         setVisible(false);
     }
 
-
     @Override
     public void setExperiment(Experiment experiment) {
-
         clearErrorState();
 
         if (RunStatus.isError(experiment.getTrainingStatusEnum())) {
             if(experiment.isTrainingError()) {
-                String trainingError = "";
-                if (ExperimentUtils.isAnyLogicEngineError(trainingError)) {
-                    trainingError =
-                            "AnyLogic engine has returned ERROR. Please follow " +
-                                    "<a target=\"_blank\" href=\"{0}\">these instructions</a> " +
-                                    "to reproduce the error back in AnyLogic";
-                    trainingError = MessageFormat.format(trainingError, alEngineErrorArticleUrl);
-                } else {
-                    trainingError = experiment.getTrainingError() + " Click <a target=\"_blank\" href=\"{0}\">here</a> for more information.";
-                    trainingError = MessageFormat.format(trainingError, trainingErrorsHelpArticleList.get(Math.toIntExact(experiment.getTrainingErrorId()) - 1));
+                String trainingError = experiment.getTrainingError();
+                if (experiment.getSupportArticle() != null && trainingError.contains("Click here")) {
+                    trainingError = trainingError.replace("Click here", "Click <a target=\"_blank\" href=\"{0}\">here</a>");
+                    trainingError = MessageFormat.format(trainingError, experiment.getSupportArticle());
                 }
                 showTheReasonWhyTheTrainingStopped(trainingError, ERROR_LABEL, false);
             }

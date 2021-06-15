@@ -55,12 +55,6 @@ public class ExperimentUtils {
         return experiment.getName();
     }
 
-    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
-
-    public static boolean isAnyLogicEngineError(String rlErrorText) {
-        return StringUtils.trimToEmpty(rlErrorText).startsWith(AL_ENGINE_ERROR_PREFIX);
-    }
-
     public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
         return experiment.getRuns().stream()
                 .map(Run::getStartedAt)

@@ -288,6 +288,7 @@ public class ExperimentDAO {
                         Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
                             experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
                             experiment.setTrainingErrorId(run.getTrainingErrorId());
+                            experiment.setSupportArticle(trainingError.getSupportArticle());
                         });
                     });
     }
