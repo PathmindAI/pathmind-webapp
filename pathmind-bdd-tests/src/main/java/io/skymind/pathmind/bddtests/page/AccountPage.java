@@ -34,17 +34,19 @@ public class AccountPage extends PageObject {
     private WebElement accountInfoEditBtn;
     @FindBy(id = "changePasswordBtn")
     private WebElement accountPasswordEditBtn;
-    @FindBy(id = "editPaymentBtn")
-    private WebElement accountPaymentEditBtn;
     @FindBy(css = ".support")
     private WebElement footerSupportBtn;
+    @FindBy(xpath = "//confirm-popup")
+    private WebElement popupShadow;
+    @FindBy(xpath = "//div[@class='data subscription-hint']")
+    private WebElement subscriptionHint;
     private By inputLocator = By.cssSelector("input");
 
     private static final String ACCOUNT_PAGE_TITLE = "Pathmind | Account";
     private static final String ACCOUNT_PAGE_TITLE_LABEL = "Account";
 
     public void checkThatAccountPageOpened() {
-        waitABit(2500);
+        waitFor(ExpectedConditions.textToBePresentInElement(titleLabelLocator, ACCOUNT_PAGE_TITLE_LABEL));
         assertThat(getDriver().getTitle(), containsString(ACCOUNT_PAGE_TITLE));
         assertThat(titleLabelLocator.getText(), containsString(ACCOUNT_PAGE_TITLE_LABEL));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(1)")).getText(), containsString("User Email"));
@@ -108,6 +110,7 @@ public class AccountPage extends PageObject {
         input.click();
         input.sendKeys(Keys.CONTROL + "V");
         waitABit(2500);
+        waitFor(ExpectedConditions.attributeToBe(input, "value", accessToken.getText()));
         assertThat(accessToken.getText(), is(input.getAttribute("value")));
     }
 
@@ -212,7 +215,6 @@ public class AccountPage extends PageObject {
     }
 
     public void checkCancelSubscriptionPopUp() {
-        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
@@ -221,7 +223,6 @@ public class AccountPage extends PageObject {
     }
 
     public void clickPopUpDialogYesCancel() {
-        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         popupShadowRoot.findElement(By.cssSelector("#confirm")).click();
@@ -232,7 +233,7 @@ public class AccountPage extends PageObject {
         DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
         LocalDateTime now = LocalDateTime.now();
         String[] shortMonths = new DateFormatSymbols().getShortMonths();
-        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")), "Subscription will be cancelled on "));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")).getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
+        waitFor(ExpectedConditions.textToBePresentInElement(subscriptionHint, "Subscription will be cancelled on "));
+        assertThat(subscriptionHint.getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
     }
 }
