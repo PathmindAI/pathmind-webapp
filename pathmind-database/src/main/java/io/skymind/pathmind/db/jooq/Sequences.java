@@ -26,6 +26,11 @@ public class Sequences {
     public static final Sequence<Long> MODEL_ID_SEQ = Internal.createSequence("model_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
 
     /**
+     * The sequence <code>public.observation_id_seq</code>
+     */
+    public static final Sequence<Long> OBSERVATION_ID_SEQ = Internal.createSequence("observation_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
+
+    /**
      * The sequence <code>public.pathmind_user_id_seq</code>
      */
     public static final Sequence<Long> PATHMIND_USER_ID_SEQ = Internal.createSequence("pathmind_user_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
@@ -41,7 +46,17 @@ public class Sequences {
     public static final Sequence<Long> PROJECT_ID_SEQ = Internal.createSequence("project_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
 
     /**
+     * The sequence <code>public.reward_variable_id_seq</code>
+     */
+    public static final Sequence<Long> REWARD_VARIABLE_ID_SEQ = Internal.createSequence("reward_variable_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
+
+    /**
      * The sequence <code>public.run_id_seq</code>
      */
     public static final Sequence<Long> RUN_ID_SEQ = Internal.createSequence("run_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
+
+    /**
+     * The sequence <code>public.training_error_id_seq</code>
+     */
+    public static final Sequence<Long> TRAINING_ERROR_ID_SEQ = Internal.createSequence("training_error_id_seq", Public.PUBLIC, SQLDataType.BIGINT.nullable(false), null, null, null, null, false, null);
 }
