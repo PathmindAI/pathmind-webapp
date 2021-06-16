@@ -1958,7 +1958,7 @@
 
     <changeSet id="3189-02" author="daehyun@pathmind.com">
         <update tableName="TRAINING_ERROR">
-            <column name="DESCRIPTION" value=" Unsupported version of AnyLogic detected. Please upgrade to the latest version of AnyLogic."/>
+            <column name="DESCRIPTION" value="Unsupported version of AnyLogic detected. Please upgrade to the latest version of AnyLogic."/>
             <where>ID = 7</where>
         </update>
         <update tableName="TRAINING_ERROR">
