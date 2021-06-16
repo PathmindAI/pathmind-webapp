@@ -75,6 +75,7 @@ public class ExperimentViewStepDefinitions {
 
     @When("^Check export policy filename '(.*)', '(.*)'$")
     public void checkExportPolicyFilename(String projectName, String filename) {
+        projectName = projectName.charAt(0) + projectName.substring(1).toLowerCase();
         experimentViewSteps.checkExportPolicyFilename(projectName + Serenity.sessionVariableCalled("randomNumber") + filename);
     }
 }

@@ -29,17 +29,6 @@ Feature: Experiment favorite feature
     Then Check experiment page side bar Experiment #2 is favorite true
     Then Check experiment page side bar Experiment #1 is favorite false
 
-  # Scenario: Check favorite buttons on the dashboard page
-  #   Given Login to the pathmind
-  #   When Create new CoffeeShop project with single reward function
-  #   When Open dashboard page
-  #   When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
-  #   When Refresh page
-  #   Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite true
-  #   When Click dashboard page 'AutotestProject' 'Experiment #1' favorite button
-  #   When Refresh page
-  #   Then Check dashboard page 'AutotestProject' 'Experiment #1' is favorite false
-
   Scenario: Check favorite buttons on the model page
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function

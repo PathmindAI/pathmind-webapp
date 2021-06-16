@@ -43,7 +43,6 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/project-view.css")
-@CssImport(value = "./styles/views/dashboard-view.css")
 @CssImport(value = "./styles/views/search-results-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 // Stripe should be added to every page to be able to use their fraud detection mechanism

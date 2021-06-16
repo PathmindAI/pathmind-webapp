@@ -33,10 +33,8 @@ public class ModelFileVerifier {
     public static List<Predicate<String>> matchList;
 
     static {
-
         matchList = List.of(XLS_MATCH, TXT_MATCH, XSD_MATCH, XML_MATCH);
     }
-
 
     public ModelBytes assureModelBytes(ModelBytes modelBytes) {
         try {
@@ -103,6 +101,5 @@ public class ModelFileVerifier {
     private static boolean checkMatchList(String filename) {
         return matchList.stream().filter(m -> m.test(filename)).findFirst().isPresent();
     }
-
 
 }

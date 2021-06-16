@@ -78,7 +78,8 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
         createExperimentComponents();
     }
 
-    private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
+    private void createSharedComponents() {
+        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
 
         experimentComponentList.add(experimentPanelTitle);

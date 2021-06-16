@@ -28,16 +28,6 @@ public class HomePageSteps {
     }
 
     @Step
-    public void openDashboardPage() {
-        homePage.openDashboardPage();
-    }
-
-    @Step
-    public void checkThatDashboardPageOpened() {
-        homePage.checkThatDashboardPageOpened();
-    }
-
-    @Step
     public void checkThatProjectsPageOpened() {
         homePage.checkThatProjectsPageOpened();
     }

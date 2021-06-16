@@ -71,7 +71,6 @@ public class ProjectsView extends PathMindDefaultView {
     public ProjectsView(FeatureManager featureManager) {
         super();
         this.featureManager = featureManager;
-
     }
 
     protected Component getMainContent() {
@@ -83,7 +82,7 @@ public class ProjectsView extends PathMindDefaultView {
         Span projectsTitle = LabelFactory.createLabel("Projects", CssPathmindStyles.SECTION_TITLE_LABEL, CssPathmindStyles.TRUNCATED_LABEL);
         Button showDemosButton = showDemosButton();
 
-        HorizontalLayout headerWrapper = WrapperUtils.wrapLeftAndRightAligned(projectsTitle,
+        HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(projectsTitle,
                 WrapperUtils.wrapWidthFullRightHorizontal(new NewProjectButton(), showDemosButton));
         headerWrapper.addClassName("page-content-header");
 

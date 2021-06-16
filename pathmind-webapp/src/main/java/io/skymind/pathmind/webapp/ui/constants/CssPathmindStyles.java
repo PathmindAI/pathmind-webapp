@@ -1,15 +1,11 @@
 package io.skymind.pathmind.webapp.ui.constants;
 
 public class CssPathmindStyles {
-    public static final String ACTION_BUTTON = "action-button";
-
     public static final String BOLD_LABEL = "bold-label";
-    public static final String PANEL_TITLE_LABEL = "panel-title-label";
     public static final String NO_TOP_MARGIN_LABEL = "no-top-margin-label";
     public static final String TRUNCATED_LABEL = "truncated-label";
     public static final String ERROR_LABEL = "error-label";
     public static final String SUCCESS_LABEL = "success-label";
-    public static final String SUCCESS_LABEL_BRIGHT_GREEN = "success-label-bright-green";
     public static final String WARNING_LABEL = "warning-label";
 
     public static final String WELCOME_TEXT = "welcome-text";
