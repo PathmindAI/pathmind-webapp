@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import io.skymind.pathmind.bddtests.Utils;
@@ -23,9 +22,6 @@ public class ProjectsPage extends PageObject {
     private WebElement experimentNotesField;
     @FindBy(xpath = "//vaadin-button[text()='New Project']")
     private WebElement newProjectBtn;
-
-    private final By byInput = By.cssSelector("input");
-    private final By byTextarea = By.cssSelector("textarea");
 
     public void clickCreateNewProjectBtn() {
         waitABit(3500);

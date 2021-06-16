@@ -20,7 +20,7 @@ public class ExecutionEnvironmentManager {
     private ExecutionEnvironment defaultEnvironment() {
         return new ExecutionEnvironment(
                 false,
-                AnyLogic.VERSION_8_7_4,
+                AnyLogic.VERSION_8_7_5,
                 PathmindHelper.VERSION_1_6_1,
                 NativeRL.VERSION_1_6_2,
                 JDK.VERSION_8_222,

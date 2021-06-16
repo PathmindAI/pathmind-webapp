@@ -31,8 +31,6 @@ public class HomePage extends PageObject {
     private WebElement logoutBtn;
     @FindBy(xpath = "//a[text()='Help']")
     private WebElement helpBtn;
-    @FindBy(xpath = "//a[@href='dashboard']")
-    private WebElement dashboardBtn;
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageLabel;
     @FindBy(xpath = "//vaadin-menu-bar[@class='account-menu']")
@@ -68,18 +66,6 @@ public class HomePage extends PageObject {
         getDriver().switchTo().window(tabs.get(1));
         assertThat(getDriver().getCurrentUrl(), equalTo(learnPage));
         assertThat(getDriver().getTitle(), containsString("Pathmind Knowledge Base"));
-    }
-
-    public void openDashboardPage() {
-        dashboardBtn.click();
-    }
-
-    public void checkThatDashboardPageOpened() {
-        waitABit(1000);
-        waitFor(ExpectedConditions.attributeToBe(dashboardBtn, "highlight", ""));
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        assertThat(getDriver().getTitle(), is("Pathmind | Dashboard"));
-        assertThat(getDriver().getCurrentUrl(), containsString("/dashboard"));
     }
 
     public void checkThatProjectsPageOpened() {

@@ -32,11 +32,4 @@ public class ObservationDAO {
         });
     }
 
-    public void saveExperimentObservations(long experimentId, Collection<Observation> observations) {
-        ctx.transaction(conf -> {
-            DSLContext transactionCtx = DSL.using(conf);
-            ExperimentObservationRepository.deleteExperimentObservations(transactionCtx, experimentId);
-            ObservationRepository.insertExperimentObservations(transactionCtx, experimentId, observations);
-        });
-    }
 }

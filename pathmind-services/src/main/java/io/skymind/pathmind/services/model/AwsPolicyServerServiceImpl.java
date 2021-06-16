@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.PolicyFileService;
@@ -39,7 +40,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     private final PolicyFileService policyFileService;
 
-    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
 
     private final UriComponentsBuilder urlBuilder;
 
@@ -96,7 +97,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
-        bestPythonPolicy(experiment)
+        bestPolicyIfCompleted(experiment)
                 .ifPresent(policy -> {
                     final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
@@ -118,7 +119,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public String getPolicyServerUrl(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
@@ -133,7 +134,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public DeploymentStatus getPolicyServerStatus(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
@@ -142,11 +143,10 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 }).orElse(DeploymentStatus.NOT_DEPLOYED);
     }
 
-    private static Optional<Policy> bestPythonPolicy(Experiment experiment) {
+    private static Optional<Policy> bestPolicyIfCompleted(Experiment experiment) {
         return Optional.of(experiment)
                 .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
-                .map(Experiment::getBestPolicy)
-                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType())));
+                .map(Experiment::getBestPolicy);
     }
 
 }
