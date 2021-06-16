@@ -16,7 +16,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -56,17 +56,22 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     /**
      * The column <code>public.training_error.keyword</code>.
      */
-    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>public.training_error.description</code>.
      */
-    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.VARCHAR, this, "");
+    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.VARCHAR(255), this, "");
 
     /**
      * The column <code>public.training_error.restartable</code>.
      */
     public final TableField<TrainingErrorRecord, Boolean> RESTARTABLE = createField(DSL.name("restartable"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.training_error.support_article</code>.
+     */
+    public final TableField<TrainingErrorRecord, String> SUPPORT_ARTICLE = createField(DSL.name("support_article"), SQLDataType.VARCHAR(255), this, "");
 
     private TrainingError(Name alias, Table<TrainingErrorRecord> aliased) {
         this(alias, aliased, null);
@@ -148,11 +153,11 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Long, String, String, Boolean> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Long, String, String, Boolean, String> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }
