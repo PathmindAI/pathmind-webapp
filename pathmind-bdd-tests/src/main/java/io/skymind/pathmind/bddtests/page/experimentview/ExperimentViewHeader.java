@@ -57,4 +57,8 @@ public class ExperimentViewHeader extends PageObject {
 
         genericPage.checkElement(shareWithSpLabel, String.format(shareSupportLabelXpath, slot), SHARE_SUPPORT_LABEL);
     }
+
+    public void checkExportPolicyFilename(String filename) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='experiment-header']/descendant::a[not(@class='download-alp-link')]")).getAttribute("href"), containsString(filename));
+    }
 }

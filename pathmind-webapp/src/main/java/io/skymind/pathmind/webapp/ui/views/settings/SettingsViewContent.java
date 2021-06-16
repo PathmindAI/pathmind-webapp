@@ -38,6 +38,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private final PathmindUser user;
     private final ExecutionEnvironment env;
 
+    @Id("userLogCB")
+    private ComboBox<String> userLog;
+
     @Id("ec2InstanceTypeCB")
     private ComboBox<String> ec2InstanceType;
 
@@ -71,6 +74,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("freezingCB")
     private ComboBox<String> freezing;
 
+    @Id("rayDebugCB")
+    private ComboBox<String> rayDebug;
+
     @Id("longerTrainingCB")
     private ComboBox<String> longerTraining;
 
@@ -94,6 +100,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     private void initBtns() {
         saveBtn.addClickListener(e -> {
+            env.setUserLog(Boolean.valueOf(userLog.getValue()));
             env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
             env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
             env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
@@ -105,6 +112,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
+            env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
             env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
 
@@ -117,6 +125,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     }
 
     private void initContent() {
+        // init user log
+        List<String> userLogs = List.of("TRUE", "FALSE");
+
+        userLog.setItems(userLogs);
+        userLog.setLabel("Enable User Log");
+        userLog.setPlaceholder(String.valueOf(env.isUserLog()));
+        userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
+
         // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)
@@ -213,6 +229,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         freezing.setLabel("Enable Freezing");
         freezing.setPlaceholder(String.valueOf(env.isFreezing()));
         freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
+
+        // init ray debug
+        List<String> rayDebugs = List.of("TRUE", "FALSE");
+
+        rayDebug.setItems(rayDebugs);
+        rayDebug.setLabel("Enable Ray Debug");
+        rayDebug.setPlaceholder(String.valueOf(env.isRayDebug()));
+        rayDebug.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
 
         // init longer training
         List<String> longerTrainings = List.of("TRUE", "FALSE");

@@ -246,20 +246,6 @@ class ExperimentRepository {
                 .execute();
     }
 
-    protected static void updateGoalsReached(DSLContext ctx, long experimentId, int goalsReached) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.GOALS_REACHED_NUM, goalsReached)
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
-                .execute();
-    }
-
-    protected static void updateGoalsTotal(DSLContext ctx, long experimentId, int totalGoals) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.GOALS_TOTAL_NUM, totalGoals)
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
-                .execute();
-    }
-
     /**
      * Main method to retrieve List of {@link DashboardItem}.
      * It prepares a query to get all needed data within single database call, then tries to map returned
@@ -320,7 +306,7 @@ class ExperimentRepository {
                 DSL.greatest(MODEL.LAST_ACTIVITY_DATE, PROJECT.LAST_ACTIVITY_DATE));
 
         final Result<?> result = ctx.select(EXPERIMENT.ID, EXPERIMENT.NAME, EXPERIMENT.USER_NOTES,
-                EXPERIMENT.IS_FAVORITE, EXPERIMENT.HAS_GOALS, EXPERIMENT.GOALS_REACHED_NUM, EXPERIMENT.GOALS_TOTAL_NUM,
+                EXPERIMENT.IS_FAVORITE, EXPERIMENT.HAS_GOALS,
                 EXPERIMENT.TRAINING_STATUS, MODEL.ID, MODEL.NAME, MODEL.DRAFT, MODEL.PACKAGE_NAME,
                 PROJECT.ID, PROJECT.NAME,
                 latestRun.asterisk(),

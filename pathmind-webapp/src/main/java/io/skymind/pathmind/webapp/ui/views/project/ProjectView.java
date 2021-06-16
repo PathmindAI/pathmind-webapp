@@ -26,7 +26,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.db.dao.RewardVariableDAO;
 import io.skymind.pathmind.services.ModelService;
@@ -85,8 +84,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ExperimentGridDataProvider experimentGridDataProvider;
     @Autowired
     private ExperimentDAO experimentDAO;
-    @Autowired
-    private PolicyDAO policyDAO;
     @Autowired
     private ModelDAO modelDAO;
     @Autowired
@@ -149,7 +146,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelCreatedDate = LabelFactory.createLabel("", CssPathmindStyles.SECTION_SUBTITLE_LABEL);
         modelArchivedLabel.setVisible(false);
 
-        experimentGrid = new ExperimentGrid(experimentDAO, policyDAO, rewardVariables);
+        experimentGrid = new ExperimentGrid(experimentDAO, rewardVariables);
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
@@ -202,7 +199,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private MultiselectComboBox<String> createColumnSelectionGroup() {
         MultiselectComboBox<String> multiSelectGroup = new MultiselectComboBox<>();
-        Map<String, Column> experimentGridColumns = experimentGrid.getColumnList();
+        Map<String, Column<Experiment>> experimentGridColumns = experimentGrid.getColumnList();
         Set<String> columnList = experimentGridColumns.keySet();
         multiSelectGroup.setPlaceholder("Customize your table columns");
         multiSelectGroup.setItems(columnList);
@@ -218,7 +215,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.addValueChangeListener(event -> {
             experimentGridColumns.forEach((colName, col) -> col.setVisible(false));
             event.getValue().stream().forEach(selection -> {
-                experimentGridColumns.get(selection).setVisible(true);
+                if (experimentGridColumns.get(selection) != null) {
+                    experimentGridColumns.get(selection).setVisible(true);
+                }
             });
             afterHideOrShowColumn().execute();
         });

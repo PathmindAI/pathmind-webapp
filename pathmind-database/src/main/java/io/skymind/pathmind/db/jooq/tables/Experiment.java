@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -107,16 +107,6 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     public final TableField<ExperimentRecord, Integer> TRAINING_STATUS = createField(DSL.name("training_status"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field("0", SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.experiment.goals_total_num</code>.
-     */
-    public final TableField<ExperimentRecord, Integer> GOALS_TOTAL_NUM = createField(DSL.name("goals_total_num"), SQLDataType.INTEGER.defaultValue(DSL.field("0", SQLDataType.INTEGER)), this, "");
-
-    /**
-     * The column <code>public.experiment.goals_reached_num</code>.
-     */
-    public final TableField<ExperimentRecord, Integer> GOALS_REACHED_NUM = createField(DSL.name("goals_reached_num"), SQLDataType.INTEGER.nullable(false).defaultValue(DSL.field("0", SQLDataType.INTEGER)), this, "");
-
-    /**
      * The column <code>public.experiment.shared_with_support</code>.
      */
     public final TableField<ExperimentRecord, Boolean> SHARED_WITH_SUPPORT = createField(DSL.name("shared_with_support"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
@@ -166,7 +156,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX, Indexes.GOALS_COUNT_MIGRATION_IDX);
+        return Arrays.<Index>asList(Indexes.EXPERIMENT_MODEL_FK_INDEX);
     }
 
     @Override
@@ -225,11 +215,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Integer, Integer, Boolean, Boolean> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Boolean, Boolean> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }
