@@ -1,0 +1,12 @@
+parameters:
+  discrete: false
+  tuple: false
+  api_key: 12345asdfg
+  url_path: policy/id1234
+observations:
+  one:
+    type: int
+  two:
+    type: List[int]
+  three:
+    type: List[float]
