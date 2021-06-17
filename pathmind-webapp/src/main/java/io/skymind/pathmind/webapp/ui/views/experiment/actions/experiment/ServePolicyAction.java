@@ -16,6 +16,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 
 public class ServePolicyAction {
 
@@ -31,13 +32,23 @@ public class ServePolicyAction {
 
         switch (deploymentStatus) {
             case FAILED: {
+                final Button retryButton = GuiUtils.getPrimaryButton("Redeploy Now", click -> {
+                    // TODO: reset policy server status and trigger deployment again.
+
+                    policyServerService.triggerPolicyServerDeployment(experiment);
+
+                    dialog.close();
+                });
                 dialogContent.add(
                         new H3("Error"),
                         new Paragraph(
                             new Span("The policy server deployment was unsuccessful."),
                             new Html("<br/>"),
-                            new Span("Please contact Pathmind for assistance.")
-                        )
+                            new Span("Click the button below to retry."),
+                            new Html("<br/>"),
+                            new Span("If the problem persists, please contact Pathmind for assistance.")
+                        ),
+                        retryButton
                 );
                 break;
             }
