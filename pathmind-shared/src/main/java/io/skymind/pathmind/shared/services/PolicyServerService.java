@@ -1,17 +1,19 @@
 package io.skymind.pathmind.shared.services;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public interface PolicyServerService {
 
@@ -56,6 +58,7 @@ public interface PolicyServerService {
             private String urlPath;
         }
 
+        @JsonFormat(shape = JsonFormat.Shape.OBJECT)
         public enum ObservationType {
             INT("int"),
             INT_ARRAY("List[int]"),
@@ -71,8 +74,6 @@ public interface PolicyServerService {
 
             private final String type;
 
-            @JsonProperty("type")
-            @JsonValue
             public String getType() {
                 return this.type;
             }
@@ -114,6 +115,9 @@ public interface PolicyServerService {
         DeploymentStatus(int code) {
             this.code = code;
         }
+
+        public static final Set<DeploymentStatus> DEPLOYABLE = EnumSet.of(NOT_DEPLOYED, FAILED);
+
     }
 
 }

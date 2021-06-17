@@ -339,18 +339,6 @@
     margin-bottom: 0;
 }
 
-.experiment-view .hint-label {
-    color: var(--lumo-secondary-text-color);
-    padding: 0 var(--lumo-space-s);
-    margin-bottom: 0;
-}
-
-.experiment-view .hint-label iron-icon {
-    --iron-icon-width: var(--lumo-font-size-s);
-    --iron-icon-height: var(--lumo-font-size-s);
-    margin-right: var(--lumo-space-xxs);
-}
-
 .experiment-view .buttons-wrapper {
     position: absolute;
     bottom: 0;
@@ -523,6 +511,7 @@
 
 .share-with-support-instructions h3,
 .serve-policy-instructions h3 {
+    text-align: center;
     margin-top: 0;
 }
 
@@ -534,4 +523,8 @@
     top: var(--lumo-space-s);
     right: var(--lumo-space-s);
     margin: 0;
+}
+
+.serve-policy-instructions vaadin-button {
+    width: 100%;
 }
