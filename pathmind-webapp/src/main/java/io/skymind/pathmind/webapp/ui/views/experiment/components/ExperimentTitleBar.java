@@ -192,11 +192,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 case DEPLOYED:
                     servePolicyButtonText = "Policy Server Live";
                     break;
-                case NOT_DEPLOYED:
-                    // fallthrough
                 case PENDING:
                     servePolicyButtonText = "Policy Server Deploying";
                     break;
+                case NOT_DEPLOYED:
+                    // fallthrough
                 default:
                     servePolicyButtonText = "Start Policy Server";
             } 
