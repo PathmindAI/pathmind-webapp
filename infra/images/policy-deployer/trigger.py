@@ -108,7 +108,7 @@ def process_message(message):
             app_logger.info('Clonning repository')
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
-            sh.git('clone','git@github.com:SkymindIO/policy-server.git')
+            sh.git('clone','https://foo:{GH_PAT}@github.com/SkymindIO/policy-server.git'.format(GH_PAT=GH_PAT))
             app_logger.info('Creating container')
             output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
@@ -171,6 +171,7 @@ if __name__ == "__main__":
     ENVIRONMENT=os.environ['ENVIRONMENT']
     AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
     AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
+    GH_PAT=os.environ['GH_PAT']
     if ENVIRONMENT=='prod':
         NAMESPACE='default'
     else:
