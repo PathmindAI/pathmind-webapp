@@ -10,8 +10,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public interface PolicyServerService {
 
@@ -113,6 +115,9 @@ public interface PolicyServerService {
         DeploymentStatus(int code) {
             this.code = code;
         }
+
+        public static final Set<DeploymentStatus> DEPLOYABLE = EnumSet.of(NOT_DEPLOYED, FAILED);
+
     }
 
 }

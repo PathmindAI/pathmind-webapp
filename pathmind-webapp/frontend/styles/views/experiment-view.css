@@ -511,6 +511,7 @@
 
 .share-with-support-instructions h3,
 .serve-policy-instructions h3 {
+    text-align: center;
     margin-top: 0;
 }
 
@@ -522,4 +523,8 @@
     top: var(--lumo-space-s);
     right: var(--lumo-space-s);
     margin: 0;
+}
+
+.serve-policy-instructions vaadin-button {
+    width: 100%;
 }

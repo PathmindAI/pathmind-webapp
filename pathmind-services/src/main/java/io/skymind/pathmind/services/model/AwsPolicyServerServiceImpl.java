@@ -13,7 +13,6 @@ import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage;
-import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
@@ -101,8 +100,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 .ifPresent(policy -> {
                     final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
-                    if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
-
+                    if (DeploymentStatus.DEPLOYABLE.contains(deploymentStatus)) {
                         final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
                                 .jobId(run.getJobId())
