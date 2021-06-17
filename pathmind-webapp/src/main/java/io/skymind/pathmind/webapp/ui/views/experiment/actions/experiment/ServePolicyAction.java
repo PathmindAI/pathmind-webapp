@@ -33,10 +33,7 @@ public class ServePolicyAction {
         switch (deploymentStatus) {
             case FAILED: {
                 final Button retryButton = GuiUtils.getPrimaryButton("Redeploy Now", click -> {
-                    // TODO: reset policy server status and trigger deployment again.
-
                     policyServerService.triggerPolicyServerDeployment(experiment);
-
                     dialog.close();
                 });
                 dialogContent.add(
