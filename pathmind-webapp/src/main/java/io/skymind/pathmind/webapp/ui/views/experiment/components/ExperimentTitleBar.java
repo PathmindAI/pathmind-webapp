@@ -20,7 +20,6 @@ import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -55,7 +54,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
-    private Policy policy;
 
     private Button servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
@@ -192,11 +190,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 case DEPLOYED:
                     servePolicyButtonText = "Policy Server Live";
                     break;
-                case NOT_DEPLOYED:
-                    // fallthrough
                 case PENDING:
                     servePolicyButtonText = "Policy Server Deploying";
                     break;
+                case NOT_DEPLOYED:
+                    // fallthrough
                 default:
                     servePolicyButtonText = "Start Policy Server";
             } 
