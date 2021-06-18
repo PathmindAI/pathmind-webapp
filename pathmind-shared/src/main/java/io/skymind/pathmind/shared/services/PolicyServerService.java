@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.data.Run;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +24,8 @@ public interface PolicyServerService {
     byte[] getSchemaYamlFile(String jobId);
 
     void saveSchemaYamlFile(String jobId, PolicyServerSchema schema);
+
+    PolicyServerSchema generateSchemaYaml(Run run);
 
     void triggerPolicyServerDeployment(Experiment experiment);
 
