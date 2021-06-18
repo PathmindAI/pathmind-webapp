@@ -17,10 +17,11 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentTitleBar;
 
 public class ServePolicyAction {
 
-    public static void servePolicy(Supplier<Experiment> getExperimentSupplier, PolicyServerService policyServerService) {
+    public static void servePolicy(Supplier<Experiment> getExperimentSupplier, PolicyServerService policyServerService, ExperimentTitleBar experimentTitleBar) {
         Experiment experiment = getExperimentSupplier.get();
         PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
         Dialog dialog = new Dialog();
@@ -28,6 +29,10 @@ public class ServePolicyAction {
         Button closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         closeButton.addClickListener(event -> {
             dialog.close();
+        });
+
+        dialog.addDialogCloseActionListener(close -> {
+            experimentTitleBar.setServePolicyButtonText(true);
         });
 
         switch (deploymentStatus) {
