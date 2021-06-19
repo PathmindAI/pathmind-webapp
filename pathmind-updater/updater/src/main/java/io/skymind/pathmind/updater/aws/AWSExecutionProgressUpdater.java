@@ -105,7 +105,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private void policyServerForRun(Run run) {
-        final boolean isPythonModel = ModelType.isALModel(ModelType.fromValue(run.getModel().getModelType()));
+        final boolean isPythonModel = ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()));
         if (Completed == run.getStatusEnum()) {
             long userId = run.getProject().getPathmindUserId();
             PathmindUser user = userDAO.findById(userId);

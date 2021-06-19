@@ -135,7 +135,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new Button("", click -> ServePolicyAction.servePolicy(getExperimentSupplier, policyServerService));
+        servePolicyButton = new Button("", click -> ServePolicyAction.servePolicy(getExperimentSupplier, policyServerService, this));
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
@@ -179,6 +179,17 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                         && experiment.getBestPolicy() != null
                         && experiment.getBestPolicy().hasFile();
         exportPolicyButton.setVisible(isCompletedWithPolicy);
+        setServePolicyButtonText(isCompletedWithPolicy);
+        stopTrainingButton.setVisible(experiment.isTrainingRunning());
+
+        archivedLabel.setVisible(experiment.isArchived());
+
+        // Update components with SharedExperimentView (share through support).
+        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
+        shareButton.setVisible(!experiment.isSharedWithSupport());
+    }
+
+    public void setServePolicyButtonText(Boolean isCompletedWithPolicy) {
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
             PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
             servePolicyButton.setVisible(isCompletedWithPolicy);
@@ -200,13 +211,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
             } 
             servePolicyButton.setText(servePolicyButtonText);
         }
-        stopTrainingButton.setVisible(experiment.isTrainingRunning());
-
-        archivedLabel.setVisible(experiment.isArchived());
-
-        // Update components with SharedExperimentView (share through support).
-        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
-        shareButton.setVisible(!experiment.isSharedWithSupport());
     }
 
     public void setExperiment(Experiment experiment) {
