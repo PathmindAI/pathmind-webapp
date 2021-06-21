@@ -1,4 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "../atoms/loading-spinner.js";
 
 class CopyField extends PolymerElement {
     static get is() {
@@ -10,6 +11,9 @@ class CopyField extends PolymerElement {
             text: {
                 type: String,
             },
+            checkUrlReady: {
+                type: Boolean,
+            },
         }
     }
 
@@ -19,6 +23,7 @@ class CopyField extends PolymerElement {
                 :host {
                     box-sizing: border-box;
                     display: flex;
+                    align-items: center;
                     max-width: 400px;
                     width: 100%;
                     border: 1px solid var(--pm-grey-color);
@@ -59,17 +64,30 @@ class CopyField extends PolymerElement {
                 #copy span[active] {
                     opacity: 1;
                 }
+                loading-spinner {
+                    margin: var(--lumo-space-xxs);
+                }
             </style>
             <div id="textToCopy" autoselect>[[text]]</div>
             <vaadin-button id="copy" theme="small" on-click="onCopy">
                 <span active><iron-icon icon="vaadin:copy-o"></iron-icon></span>
                 <span><iron-icon icon="vaadin:check"></iron-icon></span>
             </vaadin-button>
+            <loading-spinner id="spinner"></loading-spinner>
         `;
     }
 
     ready() {
         super.ready();
+
+        window.checkUrl = this.checkUrl;
+
+        if (this.checkUrlReady) {
+            this.showSpinner();
+            this.checkUrl(this);
+        } else {
+            this.$.spinner.setAttribute("hidden", true);
+        }
 
         this.$.textToCopy.addEventListener("click", event => {
             this.onCopy();
@@ -84,6 +102,29 @@ class CopyField extends PolymerElement {
             }
             event.preventDefault();
         });
+    }
+
+    showSpinner() {
+        this.$.spinner.removeAttribute("hidden");
+        this.$.copy.setAttribute("hidden", true);
+    }
+
+    checkUrl(shadow) {
+        fetch(shadow.text)
+            .then((response, shadow) => {
+                console.log("response ",response)
+                if (response.status != 200) {
+                    shadow.showSpinner();
+                    requestAnimationFrame(function(shadow) {
+                        checkUrl(shadow);
+                    });
+                } else {
+                    shadow.$.spinner.setAttribute("hidden", true);
+                    shadow.$.copy.setAttribute("hidden", false);
+                }
+            }).catch(error => {
+                console.error("Error: ", error);
+            });
     }
 
     onCopy() {
