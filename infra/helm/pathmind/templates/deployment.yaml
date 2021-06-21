@@ -126,6 +126,8 @@ spec:
                   key: PATHMINDSTRIPEWEBHOOKSIGNINGSECRET
             - name: PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID
               value: "{{ .Values.env.PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID }}"
+            - name: POLICY_SERVING
+              value: "{{ .Values.env.POLICY_SERVING }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
