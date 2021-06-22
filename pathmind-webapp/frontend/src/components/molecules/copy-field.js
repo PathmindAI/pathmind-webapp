@@ -80,11 +80,11 @@ class CopyField extends PolymerElement {
     ready() {
         super.ready();
 
-        window.checkUrl = this.checkUrl;
+        window.checkUrl = this.checkUrl.bind(this);
 
         if (this.checkUrlReady) {
             this.showSpinner();
-            this.checkUrl(this);
+            checkUrl();
         } else {
             this.$.spinner.setAttribute("hidden", true);
         }
@@ -109,18 +109,15 @@ class CopyField extends PolymerElement {
         this.$.copy.setAttribute("hidden", true);
     }
 
-    checkUrl(shadow) {
-        fetch(shadow.text)
-            .then((response, shadow) => {
-                console.log("response ",response)
+    checkUrl() {
+        fetch(this.text)
+            .then(response => {
                 if (response.status != 200) {
-                    shadow.showSpinner();
-                    requestAnimationFrame(function(shadow) {
-                        checkUrl(shadow);
-                    });
+                    this.showSpinner();
+                    requestAnimationFrame(checkUrl);
                 } else {
-                    shadow.$.spinner.setAttribute("hidden", true);
-                    shadow.$.copy.setAttribute("hidden", false);
+                    this.$.spinner.setAttribute("hidden", true);
+                    this.$.copy.removeAttribute("hidden");
                 }
             }).catch(error => {
                 console.error("Error: ", error);
