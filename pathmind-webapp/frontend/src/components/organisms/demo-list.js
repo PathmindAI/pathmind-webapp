@@ -37,15 +37,11 @@ class DemoList extends PolymerElement {
                     flex: 0 1 calc(33% - var(--lumo-space-l)*2);
                     max-width: 20rem;
                     font-size: var(--lumo-font-size-s);
-                    padding: var(--lumo-space-s);
+                    padding: var(--lumo-space-s) var(--lumo-space-s) var(--lumo-space-xs);
                     background: var(--pm-grey-color-lightest);
                     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
                     border-radius: var(--lumo-border-radius);
                     margin: 0 var(--lumo-space-l) var(--lumo-space-l);
-                    cursor: pointer;
-                }
-                demo-list .demo-item:hover {
-                    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.16);
                 }
                 demo-list span {
                     width: 100%;
@@ -60,6 +56,11 @@ class DemoList extends PolymerElement {
                     width: 14rem;
                     height: 8rem;
                     object-fit: cover;
+                    transition: filter 0.2s;
+                    cursor: pointer;
+                }
+                demo-list img:hover {
+                    filter: contrast(105%) brightness(103%);
                 }
                 demo-list[is-vertical] img {
                     height: 13.5vh;
@@ -81,43 +82,62 @@ class DemoList extends PolymerElement {
                     display: inline-block;
                     margin-right: var(--lumo-space-xs);
                 }
+                demo-list a {
+                    align-self: center;
+                    margin-top: var(--lumo-space-xs);
+                }
             </style>
             <vaadin-horizontal-layout name="{{name}}">
                 <vaadin-vertical-layout
                     class="demo-item"
                     name$="[[_getDataItem(demoDataList, '0', 'name')]]"
-                    on-click="buttonClickedHandler"
                     disabled="[[disableButtons]]"
                 >
                     <span>[[_getDataItem(demoDataList, '0', 'name')]]</span>
-                    <img src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"/>
+                    <img
+                        src="[[_getDataItem(demoDataList, '0', 'imageUrl')]]"
+                        on-click="buttonClickedHandler"
+                    />
                     <div class="loading-wrapper">
                         <loading-spinner></loading-spinner>
                     </div>
+                    <a href="[[_getDataItem(demoDataList, '0', 'tutorialUrl')]]" target="_blank">
+                        Read Tutorial Article
+                    </a>
                 </vaadin-vertical-layout>
                 <vaadin-vertical-layout
                     class="demo-item"
                     name$="[[_getDataItem(demoDataList, '1', 'name')]]"
-                    on-click="buttonClickedHandler"
                     disabled="[[disableButtons]]"
                 >
                     <span>[[_getDataItem(demoDataList, '1', 'name')]]</span>
-                    <img src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"/>
+                    <img
+                        src="[[_getDataItem(demoDataList, '1', 'imageUrl')]]"
+                        on-click="buttonClickedHandler"
+                    />
                     <div class="loading-wrapper">
                         <loading-spinner></loading-spinner>
                     </div>
+                    <a href="[[_getDataItem(demoDataList, '1', 'tutorialUrl')]]" target="_blank">
+                        Read Tutorial Article
+                    </a>
                 </vaadin-vertical-layout>
                 <vaadin-vertical-layout
                     class="demo-item"
                     name$="[[_getDataItem(demoDataList, '2', 'name')]]"
-                    on-click="buttonClickedHandler"
                     disabled="[[disableButtons]]"
                 >
                     <span>[[_getDataItem(demoDataList, '2', 'name')]]</span>
-                    <img src="[[_getDataItem(demoDataList, '2', 'imageUrl')]]"/>
+                    <img
+                        src="[[_getDataItem(demoDataList, '2', 'imageUrl')]]"
+                        on-click="buttonClickedHandler"
+                    />
                     <div class="loading-wrapper">
                         <loading-spinner></loading-spinner>
                     </div>
+                    <a href="[[_getDataItem(demoDataList, '2', 'tutorialUrl')]]" target="_blank">
+                        Read Tutorial Article
+                    </a>
                 </vaadin-vertical-layout>
             </vaadin-horizontal-layout>
         `;
@@ -144,18 +164,9 @@ class DemoList extends PolymerElement {
     }
 
     buttonClickedHandler(event) {
-        const targetTagName = "vaadin-vertical-layout";
-        let targetElement = event.target;
-        if (event.target.tagName != targetTagName) {
-            targetElement = this._findParent(event.target, targetTagName);
-        }
-        if (!targetElement) {
-            this.name = null;
-            return;
-        }
         this.disableButtons = true;
-        targetElement.setAttribute("loading", true);
-        this.set("name", targetElement.getAttribute("name"));
+        event.target.parentNode.setAttribute("loading", true);
+        this.set("name", event.target.parentNode.getAttribute("name"));
     }
 
     static get properties() {
