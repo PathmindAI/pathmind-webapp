@@ -17,6 +17,7 @@ public class Routes {
     public static final String RESET_PASSWORD = "reset-password";
     public static final String EMAIL_VERIFICATION = "email-verification";
     public static final String VERIFICATION_EMAIL_SENT = "verification-email-sent";
+    public static final String ONBOARDING_PAYMENT_SUCCESS = "onboarding-payment-success";
 
     public static final String ACCOUNT_EDIT = "account/edit";
     public static final String ACCOUNT = "account";
@@ -38,7 +39,6 @@ public class Routes {
     public static final String EXPORT_POLICY = "exportPolicy";
     public static final String PROJECT = "project";
     public static final String PROJECTS = "projects";
-    public static final String DASHBOARD = "dashboard";
 
     public static final String SETTINGS = "settings";
 

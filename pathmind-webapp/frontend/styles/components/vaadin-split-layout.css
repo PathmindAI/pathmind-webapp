@@ -6,6 +6,9 @@
 :host(:not([orientation="vertical"])) > [part="splitter"] {
     cursor: col-resize;
 }
+:host([orientation="vertical"]) > [part="splitter"] {
+    cursor: row-resize;
+}
 :host([theme~="comparison-mode"]) [part="splitter"] {
     display: none;
 }
@@ -19,8 +22,8 @@
 
 :host [part="handle"]:hover,
 :host [part="handle"]:active {
-    min-width: 3px;
-    min-height: 3px;
+    min-width: 5px;
+    min-height: 5px;
     background-color: var(--pm-grey-color-lighter);
 }
 

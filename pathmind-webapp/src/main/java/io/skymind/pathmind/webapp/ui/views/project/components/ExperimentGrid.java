@@ -1,40 +1,40 @@
 package io.skymind.pathmind.webapp.ui.views.project.components;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
-import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ExperimentGrid extends Grid<Experiment> {
 
-    private Map<String, Column> additionalColumnList = new LinkedHashMap<>();
+    private Map<String, Column<Experiment>> additionalColumnList = new LinkedHashMap<>();
 
-    private Map<String, Column> columnList = new LinkedHashMap<>();
+    private Map<String, Column<Experiment>> columnList = new LinkedHashMap<>();
 
-    public ExperimentGrid(ExperimentDAO experimentDAO, PolicyDAO policyDAO, List<RewardVariable> rewardVariables) {
+    public ExperimentGrid(ExperimentDAO experimentDAO, List<RewardVariable> rewardVariables) {
         Grid.Column<Experiment> favoriteColumn = addComponentColumn(experiment -> new FavoriteStar(experiment.isFavorite(), newIsFavorite -> {
             ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, newIsFavorite);
-            getDataProvider().refreshItem(experiment);
         }))
                 .setHeader(new Icon(VaadinIcon.STAR))
                 .setAutoWidth(true)
@@ -43,7 +43,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
                 .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
-                .setComparator(Comparator.comparingLong(experiment -> Long.parseLong(experiment.getName())))
+                .setSortProperty("name")
                 .setHeader("#")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -51,7 +51,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         Grid.Column<Experiment> createdColumn = addComponentColumn(experiment -> 
                 new DatetimeDisplay(experiment.getDateCreated())
         )
-                .setComparator(Comparator.comparing(Experiment::getDateCreated))
+                .setSortProperty("date_created")
                 .setHeader("Created")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
@@ -59,50 +59,23 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setResizable(true);
         Grid.Column<Experiment> statusColumn = addComponentColumn(experiment -> new StatusIcon(experiment))
                 .setHeader("Status")
-                .setComparator(Comparator.comparing(Experiment::getTrainingStatus))
+                .setSortProperty("training_status")
                 .setAutoWidth(true)
                 .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
-        Grid.Column<Experiment> selectedObsColumn = addColumn(experiment -> 
-                String.join(", ", experiment.getSelectedObservations().stream().map(obs -> obs.getVariable()).collect(Collectors.toList())))
+                .setResizable(true);
+        Grid.Column<Experiment> selectedObsColumn = addColumn(experiment ->
+                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream().map(Observation::getVariable).collect(Collectors.joining(", ")))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)
                 .setResizable(true)
-                .setSortable(true);
-        // addComponentColumn(experiment -> {
-        //             Span goalIcons = new Span();
-        //             String successClassName = "success-text";
-        //             if (experiment.isHasGoals() && !experiment.isDraft()) {
-        //                 // Get best policy
-        //                 List<Policy> policies = policyDAO.getPoliciesForExperiment(experiment.getId());
-
-        //                 if (policies != null && !policies.isEmpty()) {
-        //                     // TODO: since we are hiding the feature, this is not dealt with for now.
-        //                     // We'll have to add code here if we show the Goals feature again
-        //                 }
-        //             }
-        //             goalIcons.setText("—");
-        //             return goalIcons;
-        //         })
-        // 		.setComparator(Comparator.comparing(Experiment::isGoalsReached))
-        //         .setHeader("Goals Reached")
-        //         .setAutoWidth(true)
-        //         .setFlexGrow(0)
-        //         .setResizable(true)
-        //         .setSortable(true);
+                .setSortable(false);
         Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
                 .setFlexGrow(1)
                 .setResizable(true)
                 .setSortable(false);
-
-        // Sort by created by default
-        sort(Arrays.asList(new GridSortOrder<>(createdColumn, SortDirection.DESCENDING)));
-        addItemClickListener(event -> ExperimentGuiUtils.navigateToExperiment(getUI(), event.getItem()));
-        setColumnReorderingAllowed(true);
         Grid.Column<Experiment> notesColumn = addColumn(experiment -> {
             String userNotes = experiment.getUserNotes();
             return userNotes.isEmpty() ? "—" : userNotes;
@@ -127,46 +100,44 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Notes", notesColumn);
     }
 
-    public Map<String, Column> getColumnList() {
+    public Map<String, Column<Experiment>> getColumnList() {
         return columnList;
     }
 
-    public Map<String, Column> getAdditionalColumnList() {
+    public Map<String, Column<Experiment>> getAdditionalColumnList() {
         return additionalColumnList;
     }
 
-    public void addOrShowColumn(RewardVariable rewardVar) {
+    public void addAdditionalColumn(RewardVariable rewardVar) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
-        if (additionalColumnList.get(rewardVariableName) == null) {
-            Grid.Column<Experiment> newColumn = addColumn(experiment -> {
-                        if (experiment.getBestPolicy() != null) {
-                            Policy bestPolicy = experiment.getBestPolicy();
-                            // First conditional value is with uncertainty, second value is without uncertainty
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                                    ? bestPolicy.getUncertainty().get(rewardVarIndex)
-                                    : PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex));
-                        }
-                        return "—";
-                    })
-                    .setComparator(Comparator.comparingDouble(experiment -> {
-                        if (((Experiment) experiment).getBestPolicy() != null) {
-                            Policy bestPolicy = ((Experiment) experiment).getBestPolicy();
-                            return bestPolicy.getUncertainty() != null && !bestPolicy.getUncertainty().isEmpty()
-                                    ? Double.parseDouble(bestPolicy.getUncertainty().get(rewardVarIndex).split("\u2800\u00B1\u2800")[0])
-                                    : Double.parseDouble(PathmindNumberUtils.formatNumber(bestPolicy.getSimulationMetrics().get(rewardVarIndex)));
-                        }
-                        return Double.NEGATIVE_INFINITY;
-                    }))
-                    .setHeader(rewardVariableName)
-                    .setAutoWidth(true)
-                    .setFlexGrow(0)
-                    .setResizable(true)
-                    .setSortable(true);
-            additionalColumnList.put(rewardVariableName, newColumn);
-        } else {
-            additionalColumnList.get(rewardVariableName).setVisible(true);
-        }
+        // there's no way to get the values of a particular grid column
+        // because vaadin grid is designed to deal with a large number of rows
+        // need to get the list from the data source and then compare
+        Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
+                    Span columnSpan = new Span();
+                    Policy bestPolicy = experiment.getBestPolicy();
+                    if (bestPolicy != null) {
+                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
+                    } else {
+                        columnSpan.add("—");
+                    }
+                    return columnSpan;
+                })
+                .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
+                .setHeader(rewardVariableName)
+                .setAutoWidth(true)
+                .setFlexGrow(0)
+                .setResizable(true)
+                .setSortable(true);
+        additionalColumnList.put(rewardVariableName, newColumn);
+    }
+
+    public void removeAdditionalColumn(RewardVariable rewardVar) {
+        Optional.ofNullable(rewardVar)
+                .map(RewardVariable::getName)
+                .map(additionalColumnList::remove)
+                .ifPresent(this::removeColumn);
     }
 
 }

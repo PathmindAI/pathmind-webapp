@@ -12,6 +12,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -285,28 +286,6 @@ public class ExperimentPage extends PageObject {
         assertThat(actual, containsInAnyOrder(items.toArray()));
     }
 
-    public void checkExportPolicyPage(String model) {
-        WebElement exportViewPolicy = utils.expandRootElement(getDriver().findElement(By.xpath("//export-policy-view-content")));
-        waitFor(ExpectedConditions.visibilityOf(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon"))));
-        assertThat(exportViewPolicy.findElement(By.cssSelector(".section-title-label")).getText(), is("Export Policy"));
-        assertThat(exportViewPolicy.findElement(By.cssSelector(".policy-file-icon")).getAttribute("src"), containsString("/frontend/images/exportPolicyIcon.gif"));
-        assertThat(exportViewPolicy.findElement(By.cssSelector(".filename")).getText(), containsString(model));
-        assertThat(exportViewPolicy.findElement(By.cssSelector("h4")).getText(), is("To use your policy:"));
-        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > ol")).getText(), is("Download this file.\n" +
-            "Return to AnyLogic and open the Pathmind Helper properties in your simulation.\n" +
-            "Change the 'Mode' to 'Use Policy'.\n" +
-            "In 'policyFile', click 'Browse' and select the file you downloaded.\n" +
-            "Run the simulation to see the policy in action."));
-        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getText(), is("Learn how to validate your policy"));
-        assertThat(exportViewPolicy.findElement(By.cssSelector("vaadin-vertical-layout > div > a")).getAttribute("href"), is("https://help.pathmind.com/en/articles/3655157-9-validate-trained-policy"));
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]"))));
-        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[1]/vaadin-button")).getText(), is("Export Policy"));
-        waitFor(ExpectedConditions.visibilityOf(getDriver().findElement(By.cssSelector(".download-alp-link"))));
-        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]")).getAttribute("href"), containsString(model));
-        assertThat(getDriver().findElement(By.xpath("//export-policy-view-content/following-sibling::a[2]/vaadin-button")).getText(), is("Model ALP"));
-    }
-
     public void checkLearningProgressTitle(String title) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='row-2-of-3']/span")).getText(), is(title));
     }
@@ -385,5 +364,21 @@ public class ExperimentPage extends PageObject {
     public void experimentPageClickComparisonFloatingCloseBtn() {
         getDriver().findElement(By.xpath("//floating-close-button")).click();
         assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
+    }
+
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector("histogram-chart")));
+        WebElement chart = utils.expandRootElement(e.findElement(By.cssSelector("google-chart")));
+        assertThat(chart.findElement(By.cssSelector("#chartdiv > div > div:nth-child(1) > div > svg > g:nth-child(4) > g:nth-child(1) > text")).getText(), is("Value"));
+    }
+
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        waitABit(8000);
+        WebElement btnShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']")));
+        if (!shown){
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is("true"));
+        }else {
+            assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is(null));
+        }
     }
 }

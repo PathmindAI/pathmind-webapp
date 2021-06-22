@@ -56,7 +56,7 @@ class ConfirmPopup extends PolymerElement {
                     left: 0;
                     background-color: rgba(0,0,0,0.08);
                 }
-                popup {
+                popup-content {
                     box-sizing: border-box;
                     position: relative;
                     max-width: 30rem;
@@ -86,8 +86,8 @@ class ConfirmPopup extends PolymerElement {
                     width: 100%;
                 }
             </style>
-            <div id="overlay" on-click="close"></div>
-            <popup>
+            <div id="overlay" on-click="closePopup"></div>
+            <popup-content>
                 <h3>[[headerText]]</h3>
                 <div class="message">
                     <slot></slot>
@@ -97,8 +97,37 @@ class ConfirmPopup extends PolymerElement {
                     <vaadin-button id="cancel" tabindex="0" role="button" on-click="onCancel" hidden="[[_isEmptyStringOrUnset(cancelText)]]">[[cancelText]]</vaadin-button>
                     <vaadin-button id="confirm" theme="[[confirmButtonThemes]]" tabindex="0" role="button" on-click="onConfirm">[[confirmText]]</vaadin-button>
                 </div>
-            </popup>
+            </popup-content>
         `;
+    }
+
+    ready() {
+        super.ready();
+        this.$.confirm.focus();
+        this.documentKeypressListener = event => {
+            if (event.key.toLowerCase() === "enter") {
+                event.preventDefault();
+                this.$.confirm.click();
+            }
+        };
+        
+        document.addEventListener("keypress", this.documentKeypressListener);
+    }
+
+    closePopup() {
+        this.removeKeypressListener();
+    }
+
+    onConfirm() {
+        this.removeKeypressListener();
+    }
+
+    onCancel() {
+        this.removeKeypressListener();
+    }
+
+    removeKeypressListener() {
+        document.removeEventListener("keypress", this.documentKeypressListener);
     }
 
     _isEmptyStringOrUnset(prop) {

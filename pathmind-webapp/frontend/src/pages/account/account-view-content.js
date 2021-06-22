@@ -68,6 +68,14 @@ class AccountViewContent extends PolymerElement {
                 #apiCopyBtn span[active] {
                     opacity: 1;
                 }
+                .subscription-wrapper {
+                    justify-content: space-between;
+                    width: 100%;
+                }
+                .subscription-hint {
+                    font-size: var(--lumo-font-size-xs);
+                    color: var(--lumo-secondary-text-color);
+                }
             </style>
             <vaadin-horizontal-layout class="panel-wrapper">
               <div class="content">
@@ -128,26 +136,21 @@ class AccountViewContent extends PolymerElement {
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                     <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-                        <vaadin-vertical-layout class="info">
-                            <div class="title">Current Subscription</div>
-                            <div class="data">{{subscription}}</div>
-                            <div class="data small">{{subscriptionCancellationNote}}</div>
+                        <vaadin-vertical-layout style="width: 100%;">
+                            <vaadin-horizontal-layout class="subscription-wrapper">
+                                <vaadin-vertical-layout class="info">
+                                    <div class="title">Current Subscription</div>
+                                    <div class="data">{{subscription}}</div>
+                                </vaadin-vertical-layout>
+                                <vaadin-button id="upgradeBtn" theme="small">
+                                    Upgrade
+                                </vaadin-button>
+                                <vaadin-button id="cancelSubscriptionBtn" theme="error small">
+                                    Cancel
+                                </vaadin-button>
+                            </vaadin-horizontal-layout>
+                            <div class="data subscription-hint">{{subscriptionCancellationNote}}</div>
                         </vaadin-vertical-layout>
-                        <vaadin-button id="upgradeBtn" theme="small">
-                            Upgrade
-                        </vaadin-button>
-                        <vaadin-button id="cancelSubscriptionBtn" theme="error">
-                            Cancel
-                        </vaadin-button>
-                    </vaadin-horizontal-layout>
-                    <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-                        <vaadin-vertical-layout class="info">
-                            <div class="title">Payment</div>
-                            <div class="data">{{billingInfo}}</div>
-                        </vaadin-vertical-layout>
-                        <vaadin-button id="editPaymentBtn" theme="small">
-                            Edit
-                        </vaadin-button>
                     </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
             </div>
@@ -177,6 +180,8 @@ class AccountViewContent extends PolymerElement {
             }
             event.preventDefault();
         });
+
+        this.$server.setSubscriptionEndDate();
     }
 
     triggerRotateBtn() {

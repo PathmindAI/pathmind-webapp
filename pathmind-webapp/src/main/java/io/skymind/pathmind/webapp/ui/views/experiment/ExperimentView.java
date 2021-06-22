@@ -83,8 +83,6 @@ public class ExperimentView extends AbstractExperimentView {
     private ModelCheckerService modelCheckerService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
-    @Value("${pathmind.al-engine-error-article.url}")
-    private String alEngineErrorArticleUrl;
 
     // Although this is really only for the experiment view it's a lot simpler to
     // put it at the parent level otherwise a lot of methods would have to be
@@ -132,6 +130,7 @@ public class ExperimentView extends AbstractExperimentView {
         experimentObservationsPanel.unhighlight();
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
+        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }
@@ -203,11 +202,13 @@ public class ExperimentView extends AbstractExperimentView {
             leaveComparisonMode();
             resizeChart();
         });
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
+                comparisonObservationsPanel,
+                60);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                    generateSimulationsMetricsPanelGroup(comparisonSimulationMetricsPanel),
-                    comparisonObservationsPanel,
-                    60),
+            simulationMetricsAndObservationsPanel,
             generateRewardFunctionGroup(comparisonCodeViewer),
             comparisonChartsPanel,
             comparisonNotesField);
@@ -231,11 +232,13 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     private SplitLayout getMiddlePanel() {
+        SplitLayout simulationMetricsAndObservationsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
+                experimentObservationsPanel,
+                70);
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                        generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
-                        experimentObservationsPanel,
-                        70),
+                simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
@@ -275,11 +278,11 @@ public class ExperimentView extends AbstractExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
     }
 
     private SplitLayout getBottomPanel() {
@@ -321,12 +324,12 @@ public class ExperimentView extends AbstractExperimentView {
         experimentNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
         experimentNotesField.setSecondaryStyle(true);
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
-        experimentChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        experimentChartsPanel = new ExperimentChartsPanel(this, false);
         experimentCodeViewer = new CodeViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
+        stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
                 experimentTitleBar,
@@ -346,12 +349,12 @@ public class ExperimentView extends AbstractExperimentView {
         comparisonTitleBar = createComparisonExperimentTitleBar();
         comparisonNotesField = createNotesField(() -> segmentIntegrator.updatedNotesExperimentView(), true, false);
         comparisonNotesField.setSecondaryStyle(true);
-        comparisonChartsPanel = new ExperimentChartsPanel(getUISupplier());
+        comparisonChartsPanel = new ExperimentChartsPanel(this, true);
         comparisonCodeViewer = new CodeViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl, alEngineErrorArticleUrl);
+        comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         comparisonExperimentComponents.addAll(List.of(
                 comparisonTitleBar,
@@ -361,5 +364,13 @@ public class ExperimentView extends AbstractExperimentView {
                 comparisonSimulationMetricsPanel,
                 comparisonObservationsPanel,
                 comparisonStoppedTrainingNotification));
+    }
+
+    public ExperimentChartsPanel getExperimentChartsPanel() {
+        return experimentChartsPanel;
+    }
+
+    public ExperimentChartsPanel getComparisonChartsPanel() {
+        return comparisonChartsPanel;
     }
 }

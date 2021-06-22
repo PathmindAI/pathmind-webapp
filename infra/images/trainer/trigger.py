@@ -157,6 +157,7 @@ def process_message(message):
         '8cpu_16gb', \
         '8cpu_32gb', \
         '36cpu_72gb', \
+        '72cpu_144gb', \
         '36cpu_72gb_mockup', \
         ]
     app_logger.info('Received {message}'.format(message=message['Body']))
@@ -187,7 +188,8 @@ def process_message(message):
                     ec2_end_date=NOW(),
                     update_date=NOW()
                     where job_id='{job_id}'
-            """.format(job_id=job_id)
+                    and s3bucket='{s3bucket}'
+            """.format(job_id=job_id,s3bucket=s3bucket)
             execute_psql(sql_script)
             try:
                 if int(body['destroy']) == 1:

@@ -175,4 +175,19 @@ public class GenericPageSteps {
     public void openUrlFromTheVariable(String url) {
         genericPage.openUrlFromTheVariable(url);
     }
+
+    @Step
+    public void clickKeyboardEnterBtn() {
+        genericPage.clickKeyboardEnterBtn();
+    }
+
+    @Step
+    public void clickKeyboardEnterBtnOnConfirmationPopup() {
+        genericPage.clickKeyboardEnterBtnOnConfirmationPopup();
+    }
+
+    @Step
+    public void clickPopUpDialogKeepMySubscriptionBtn() {
+        genericPage.clickPopUpDialogKeepMySubscriptionBtn();
+    }
 }

@@ -42,11 +42,10 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
     private transient List<MetricsRaw> metricsRaws;
 
     // Helper Simulation Metrics GUI attributes not stored in the database
-    private List<Double> simulationMetrics = new ArrayList<>();
+    private List<String> metricDisplayValues = new ArrayList<>();
 
     // The first Integer is the Index of the Metric, the <Integer, Double> are the Iteration number and the Mean Value of the Metric
     private Map<Integer, Map<Integer, Double>> sparklinesData = new LinkedHashMap<>();
-    private List<String> uncertainty = new ArrayList<>();
 
     // GUI helper attributes
     Map<Integer, List<Double>> metricsLinesData;
@@ -79,9 +78,8 @@ public class Policy extends Data implements DeepCloneableInterface<Policy> {
                 .run(CloneUtils.shallowClone(run))
                 .metrics(CloneUtils.shallowCloneList(metrics))
                 .metricsRaws(CloneUtils.shallowCloneList(metricsRaws))
-                .simulationMetrics(simulationMetrics == null ? null : new ArrayList<>(simulationMetrics))
                 .sparklinesData(CloneUtils.cloneMapIntegerMapIntegerDouble(sparklinesData))
-                .uncertainty(uncertainty == null ? null : new ArrayList<>(uncertainty))
+                .metricDisplayValues(metricDisplayValues == null ? null : new ArrayList<>(metricDisplayValues))
                 .build());
     }
 }

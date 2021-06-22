@@ -21,6 +21,7 @@ service:
 
 env:
   APPLICATION_URL: https://staging.devpathmind.com
+  PATHMIND_API_URL: https://api.staging.devpathmind.com
   INTERCOM_APP_ID: q51xonft
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 7
   PATHMIND_LOG_FILE_PATH: /tmp/
@@ -41,10 +42,23 @@ env:
   NEW_RUN_MONTHLY_LIMIT: 2000
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/staging-punctuator
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/staging-policy-server.fifo
+  POLICY_SERVING: true
 
-readinessprobe: {}
+probes:
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 10
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 30
+    periodSeconds: 15
 
-livenessprobe: {}
 
 name: pathmind-updater
 
@@ -82,5 +96,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-probes: {}

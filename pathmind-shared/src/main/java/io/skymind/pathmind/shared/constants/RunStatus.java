@@ -3,7 +3,9 @@ package io.skymind.pathmind.shared.constants;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public enum RunStatus {
     NotStarted(0, "Not Started"),
@@ -25,6 +27,9 @@ public enum RunStatus {
     private static final EnumSet<RunStatus> FINISHED_STATES = EnumSet.of(Completed, Error, Killed);
     private static final EnumSet<RunStatus> ERROR_STATES = EnumSet.of(Error, Killed);
 
+    public static final Set<Integer> RUNNING_STATES_CODES;
+
+
     RunStatus(int id, String name) {
         this.id = id;
         this.name = name;
@@ -44,6 +49,9 @@ public enum RunStatus {
             map.put(instance.getValue(), instance);
         }
         STATUS_BY_ID = Collections.unmodifiableMap(map);
+
+        RUNNING_STATES_CODES = RUNNING_STATES.stream().map(RunStatus::getValue).collect(Collectors.toUnmodifiableSet());
+
     }
 
     public static RunStatus getEnumFromValue(int value) {

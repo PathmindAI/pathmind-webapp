@@ -10,14 +10,34 @@ Feature: Nav bar buttons
     When Click learn btn
     Then Check that learn page https://help.pathmind.com/en/ opened
     Then Close browser tab
+  @disabled
+  Scenario: Check Request Onboarding Service page elements
+    Given Login to the pathmind
+    When Click Request Onboarding Service btn
+    Then Check page url contains checkout.stripe.com/pay
+    Then Check page title tag text is Pathmind Inc.
+    Then Check request onboarding service page
+    When Click Request Onboarding Service back btn
+    Then Check that projects page opened
+  @disabled
+  Scenario: Check Request Onboarding Service payment
+    Given Login to the pathmind
+    When Click Request Onboarding Service btn
+    Then Check page url contains checkout.stripe.com/pay
+    Then Check page title tag text is Pathmind Inc.
+    Then Fill Request Onboarding Service payment form
+    When Click Request Onboarding Service back btn
+    When Click Request Onboarding Service pay btn
+    Then Check onboarding success page
+    Then Check page url contains onboarding-payment-success
 
   Scenario: Click user account btn and check that account page opened
-    Given Login to the pathmind
+    Given Register and login with new user
     When Open user account page
     Then Check that user account page opened
 
   Scenario: Click Access Token btn and check that account page opened
-    Given Login to the pathmind
+    Given Register and login with new user
     When Click user menu 'Access Token' btn
     Then Check that user account page opened
 

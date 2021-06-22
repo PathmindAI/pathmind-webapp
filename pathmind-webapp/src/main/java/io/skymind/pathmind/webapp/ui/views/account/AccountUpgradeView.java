@@ -33,16 +33,15 @@ public class AccountUpgradeView extends PathMindDefaultView {
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         // if user has an ongoing subscription this view shouldn't be shown
-        if (stripeService.userHasActiveProfessionalSubscription(SecurityUtils.getUser().getEmail())) {
+        if (stripeService.userHasActiveProfessionalSubscription(SecurityUtils.getUser().getEmail()).getResult()) {
+            event.rerouteTo(AccountView.class);
+        }
+
+        if (!featureManager.isEnabled(Feature.ACCOUNT_UPGRADE)) {
             event.rerouteTo(AccountView.class);
         }
 
         super.beforeEnter(event);
-    }
-
-    @Override
-    protected boolean isAccessAllowedForUser() {
-        return featureManager.isEnabled(Feature.ACCOUNT_UPGRADE);
     }
 
     @Override

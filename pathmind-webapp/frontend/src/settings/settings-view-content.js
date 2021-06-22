@@ -7,6 +7,7 @@ class SettingsViewContent extends PolymerElement {
             <div class="content">
                 <vaadin-vertical-layout style="width: 100%;" class="inner-content">
                         <vaadin-vertical-layout style="width: 100%; height: 100%;">
+                            <vaadin-combo-box id="userLogCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="ec2InstanceTypeCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="condaVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="anylogicVersionCB" style="width: 100%;"> </vaadin-combo-box>
@@ -14,6 +15,13 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-combo-box id="helperVersionCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="numSampleCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="maxMemoryCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="hiddenNodeCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="hiddenLayerCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="schedulerCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="freezingCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="rayDebugCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="longerTrainingCB" style="width: 100%;"> </vaadin-combo-box>
+                            <vaadin-combo-box id="startCheckIterationCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-vertical-layout id="buttonsCont">
                             	<vaadin-button id="saveBtn" theme="primary">
                                     Save

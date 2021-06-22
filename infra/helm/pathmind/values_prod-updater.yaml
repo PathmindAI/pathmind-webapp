@@ -21,6 +21,7 @@ service:
 
 env:
   APPLICATION_URL: https://app.pathmind.com
+  PATHMIND_API_URL: https://api.pathmind.com
   INTERCOM_APP_ID: byklc7u3
   WEBSITE_HTTPLOGGING_RETENTION_DAYS: 5
   PATHMIND_LOG_FILE_PATH: /tmp/
@@ -41,11 +42,23 @@ env:
   NEW_RUN_MONTHLY_LIMIT: 1000
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/prod-punctuator
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/prod-policy-server.fifo
+  POLICY_SERVING: false
 
-readinessprobe: {}
+probes:
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 10
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 9901
+    initialDelaySeconds: 30
+    periodSeconds: 15
 
-livenessprobe: {}
-  
 name: pathmind-updater
 
 namespace: default
@@ -83,4 +96,3 @@ tolerations: []
 
 affinity: {}
 
-probes: {}

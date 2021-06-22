@@ -11,8 +11,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Location;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.services.ModelService;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.user.UserCaps;
@@ -43,6 +45,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     @Autowired
     protected ExperimentDAO experimentDAO;
     @Autowired
+    protected PolicyDAO policyDAO;
+    @Autowired
+    protected PolicyFileService policyFileService;
+    @Autowired
     protected RunDAO runDAO;
     @Autowired
     protected TrainingService trainingService;
@@ -72,7 +78,8 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
         createExperimentComponents();
     }
 
-    private void createSharedComponents() {experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
+    private void createSharedComponents() {
+        experimentBreadcrumbs = new ExperimentBreadcrumbs(experiment);
         experimentPanelTitle = new ExperimentPanelTitle();
 
         experimentComponentList.add(experimentPanelTitle);

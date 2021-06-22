@@ -58,7 +58,7 @@ class HistogramChart extends PolymerElement {
                 div[dir="ltr"] {
                     width: 100% !important;
                     height: 0 !important;
-                    padding-bottom: 40.8%;
+                    padding-bottom: 32%;
                 }
                 .google-visualization-tooltip div {
                     line-height: 1.2;
@@ -95,7 +95,7 @@ class HistogramChart extends PolymerElement {
             "hAxis": {
                 "title": haxistitle,
                 "titleTextStyle": {"italic": false},
-                "textPosition": haxistitle ? "out" : "none",
+                "textPosition": haxistitle ? "in" : "none",
                 "ticks": haxistitle ? "auto" : [],
                 "baselineColor": haxistitle ? "black" : "#FFF",
                 "gridlineColor": haxistitle ? "#CCC" : "#FFF"

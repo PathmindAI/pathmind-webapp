@@ -67,4 +67,14 @@ public class ExperimentViewSteps {
     public void experimentPageCheckRewardVariableIsHighlighted(String slot, String observation, boolean highlighted) {
         experimentViewMiddlePanel.experimentPageCheckRewardVariableIsHighlighted(slot, observation, highlighted);
     }
+
+    @Step
+    public void checkRewardVariableIs(String rewardFunction) {
+        experimentViewMiddlePanel.checkRewardVariableIs(rewardFunction);
+    }
+
+    @Step
+    public void checkExportPolicyFilename(String filename) {
+        experimentViewHeader.checkExportPolicyFilename(filename);
+    }
 }

@@ -160,11 +160,6 @@ public class ExperimentStepDefinitions {
         experimentPageSteps.checkExperimentPageObservationsList(observation);
     }
 
-    @Then("^Check export policy page '(.*)'$")
-    public void checkExportPolicyPage(String model) {
-        experimentPageSteps.checkExportPolicyPage(model);
-    }
-
     @Then("^Check learning progress block title '(.*)'$")
     public void checkLearningProgressTitle(String title) {
         experimentPageSteps.checkLearningProgressTitle(title);
@@ -253,5 +248,15 @@ public class ExperimentStepDefinitions {
     @When("^Experiment page click comparison floating close btn$")
     public void experimentPageClickComparisonFloatingCloseBtn() {
         experimentPageSteps.experimentPageClickComparisonFloatingCloseBtn();
+    }
+
+    @Then("^Check learning progress block Histogram x axis is shown$")
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        experimentPageSteps.checkLearningProgressBlockHistogramXAxisIsShown();
+    }
+
+    @Then("^Check experiment page start run btn is active '(.*)'$")
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPageSteps.checkExperimentPageStartRunBtnIsActiveTrue(shown);
     }
 }

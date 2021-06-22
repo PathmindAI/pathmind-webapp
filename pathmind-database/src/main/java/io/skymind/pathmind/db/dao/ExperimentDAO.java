@@ -1,38 +1,66 @@
 package io.skymind.pathmind.db.dao;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import io.skymind.pathmind.db.utils.DashboardQueryParams;
 import io.skymind.pathmind.db.utils.DataUtils;
+import io.skymind.pathmind.db.utils.GridSortOrder;
+import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.DashboardItem;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
-import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_MULTIPLE_BY_USER;
-import static io.skymind.pathmind.db.utils.DashboardQueryParams.QUERY_TYPE.FETCH_SINGLE_BY_EXPERIMENT;
-
 @Repository
+@Slf4j
 public class ExperimentDAO {
-    private final DSLContext ctx;
 
-    ExperimentDAO(DSLContext ctx) {
+    private final DSLContext ctx;
+    protected final String statement;
+    protected final MetricsDAO metricsDAO;
+
+    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile, MetricsDAO metricsDAO) throws IOException {
         this.ctx = ctx;
+        this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
+        this.metricsDAO = metricsDAO;
+    }
+
+    public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
+        return ctx.fetchStream(statement, modelId)
+                .filter(Objects::nonNull)
+                .map(r -> Pair.of(
+                        r.get("experiment_id", Long.class),
+                        r.get("policy_id", Long.class)
+                        )
+                )
+                .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     public Optional<Experiment> getExperiment(long experimentId) {
@@ -56,7 +84,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentForSupportIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
         }
         return Optional.ofNullable(experiment);
@@ -64,7 +92,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getExperimentIfAllowed(long experimentId, long userId) {
         Experiment experiment = ExperimentRepository.getExperimentIfAllowed(ctx, experimentId, userId);
-        if(experiment != null) {
+        if (experiment != null) {
             loadExperimentData(experiment);
             updateExperimentInternalValues(experiment);
             setupDefaultRewardFunction(experiment);
@@ -72,12 +100,16 @@ public class ExperimentDAO {
         return Optional.ofNullable(experiment);
     }
 
+    public int getExperimentsWithRunStatusCountForUser(long userId, Collection<Integer> runStatuses) {
+        return ExperimentRepository.getExperimentsWithRunStatusCountForUser(ctx, userId, CollectionUtils.emptyIfNull(runStatuses));
+    }
+
     private void setupDefaultRewardFunction(Experiment experiment) {
         // If there is no default reward function create one and save it so that we can avoid the popup notifications
         // of saving and so on when loading a new experiment. Ideally this should be done on experiment creation
         // however older experiments may still require this logic. There is also a ticket to add a default reward
         // function on creation at: https://github.com/SkymindIO/pathmind-webapp/issues/2754
-        if(StringUtils.isEmpty(experiment.getRewardFunction())) {
+        if (StringUtils.isEmpty(experiment.getRewardFunction())) {
             experiment.setRewardFunction(ExperimentUtils.generateRewardFunction(experiment));
             ExperimentRepository.updateRewardFunction(ctx, experiment);
         }
@@ -91,12 +123,57 @@ public class ExperimentDAO {
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
-    public List<Experiment> getExperimentsForModel(long modelId) {
-        List<Experiment> experiments = getExperimentsForModel(modelId, true);
-        experiments.forEach(experiment -> {
+    /**
+     * This is for Project/Model page to show experiments with metric values and observations
+     * @param userId
+     * @param modelId
+     * @param offset
+     * @param limit
+     * @return experiments
+     */
+    @MonitorExecutionTime
+    public List<Experiment> getExperimentsInModelForUser(long userId, long modelId, boolean isArchived, int offset, int limit, List<GridSortOrder> sortOrders) {
+        String sortBy = sortOrders.size() > 0 ? sortOrders.get(0).getPropertyName() : "";
+        boolean isDesc = sortOrders.size() > 0 ? sortOrders.get(0).isDescending() : false;
+        var modelExperimentsQueryParams = ModelExperimentsQueryParams.builder()
+                .userId(userId)
+                .modelId(modelId)
+                .isArchived(isArchived)
+                .limit(limit)
+                .offset(offset)
+                .sortBy(sortBy)
+                .descending(isDesc)
+                .build();
+        List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
+        return setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+    }
+
+    private List<Experiment> setSelectedObservationsAndMetricsValues(DSLContext ctx, List<Experiment> experiments, Long modelId, Long userId) {
+        Map<Long, Long> bestPoliciesId = new ConcurrentHashMap<>(this.bestPoliciesForExperiment(modelId));
+        CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
+            final Long policyId = bestPoliciesId.get(experiment.getId());
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
-            updateExperimentInternalValues(experiment);
+            if (policyId != null) {
+                Optional<Policy> bestPolicy = PolicyRepository.getPolicyIfAllowed(ctx, policyId, userId);
+                bestPolicy.ifPresent(bp -> {
+                    experiment.setBestPolicy(bp);
+
+                    List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
+
+                    if (rawMetricsAvgVar != null && !rawMetricsAvgVar.isEmpty()) {
+                        bp.setMetricDisplayValues(rawMetricsAvgVar.stream()
+                                .map(pair -> PathmindNumberUtils.calculateUncertainty(pair.getLeft(), pair.getRight()))
+                                .collect(Collectors.toList()));
+                    } else {
+                        bp.getMetricDisplayValues().clear();
+                        for (Double metric : metricsDAO.getLastIterationMetricsMeanForPolicy(policyId)) {
+                            bp.getMetricDisplayValues().add(PathmindNumberUtils.formatNumber(metric));
+                        }
+                    }
+                });
+            }
         });
+
         return experiments;
     }
 
@@ -139,31 +216,12 @@ public class ExperimentDAO {
         ExperimentRepository.archive(ctx, experimentId, isArchive);
     }
 
-    @MonitorExecutionTime
-    public List<DashboardItem> getDashboardItemsForUser(long userId, int offset, int limit) {
-        var dashboardQueryParams = DashboardQueryParams.builder()
-                .userId(userId)
-                .limit(limit)
-                .offset(offset)
-                .queryType(FETCH_MULTIPLE_BY_USER)
-                .build();
-        return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
+    public int countExperimentsInModel(long modelId) {
+        return ExperimentRepository.getExperimentCount(ctx, modelId);
     }
 
-    @MonitorExecutionTime
-    public List<DashboardItem> getSingleDashboardItem(long experimentId) {
-        var dashboardQueryParams = DashboardQueryParams.builder()
-                .experimentId(experimentId)
-                .limit(1)
-                .offset(0)
-                .queryType(FETCH_SINGLE_BY_EXPERIMENT)
-                .build();
-        return ExperimentRepository.getDashboardItems(ctx, dashboardQueryParams);
-    }
-
-    @MonitorExecutionTime
-    public int countDashboardItemsForUser(long userId) {
-        return ExperimentRepository.countDashboardItemsForUser(ctx, userId);
+    public int countFilteredExperimentsInModel(long modelId, boolean isArchived) {
+        return ExperimentRepository.getFilteredExperimentCount(ctx, modelId, isArchived);
     }
 
     public Experiment createNewExperiment(long modelId) {
@@ -226,20 +284,27 @@ public class ExperimentDAO {
         experiment.getRuns().stream()
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()
-                .ifPresent(run ->
+                .ifPresent(run -> {
                         Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
                             experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-                        }));
+                            experiment.setTrainingErrorId(run.getTrainingErrorId());
+                            experiment.setSupportArticle(trainingError.getSupportArticle());
+                        });
+                    });
     }
 
     public void saveExperiment(Experiment experiment) {
         ctx.transaction(conf -> {
             DSLContext transactionCtx = DSL.using(conf);
-            ExperimentObservationRepository.deleteExperimentObservations(transactionCtx, experiment.getId());
+            ObservationRepository.deleteExperimentObservations(transactionCtx, experiment.getId());
             ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
         });
+    }
+
+    public void setDeployPolicyOnSuccess(long id, boolean value) {
+        ExperimentRepository.setDeployPolicyOnSuccess(ctx, id, value);
     }
 
 }

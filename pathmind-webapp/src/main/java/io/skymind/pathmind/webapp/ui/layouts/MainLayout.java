@@ -7,16 +7,18 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.InitialPageSettings;
 import com.vaadin.flow.server.PageConfigurator;
-import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
+
+import org.springframework.beans.factory.annotation.Value;
+
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.layouts.components.AccountHeaderPanel;
 import io.skymind.pathmind.webapp.ui.layouts.components.SectionsHeaderPanel;
 import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 
-@Push(PushMode.AUTOMATIC)
+@Push
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
 @CssImport(value = "./styles/components/vaadin-number-field.css", themeFor = "vaadin-number-field")
@@ -41,7 +43,6 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @CssImport(value = "./styles/layouts/vaadin-app-layout.css", themeFor = "vaadin-app-layout")
 @CssImport(value = "./styles/views/experiment-view.css")
 @CssImport(value = "./styles/views/project-view.css")
-@CssImport(value = "./styles/views/dashboard-view.css")
 @CssImport(value = "./styles/views/search-results-view.css")
 @CssImport(value = "./styles/views/pathmind-dialog-view.css", id = "pathmind-dialog-view")
 // Stripe should be added to every page to be able to use their fraud detection mechanism
@@ -50,10 +51,13 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 public class MainLayout extends AppLayout implements PageConfigurator {
     private AccountHeaderPanel accountHeaderPanel;
 
-    public MainLayout(CurrentUser user, FeatureManager featureManager) {
+    public MainLayout(CurrentUser user,
+            FeatureManager featureManager,
+            @Value("${pathmind.stripe.public.key}") String publicKey,
+            @Value("${pathmind.pathmind-api.url}") String pathmindApiUrl) {
         setId("pathmind-app-layout");
         boolean hasLoginUser = user != null && user.getUser() != null;
-        addToNavbar(new SectionsHeaderPanel(hasLoginUser));
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey, pathmindApiUrl));
         if (hasLoginUser) {
             accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
             addToNavbar(accountHeaderPanel);

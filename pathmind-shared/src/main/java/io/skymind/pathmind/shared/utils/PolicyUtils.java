@@ -1,6 +1,5 @@
 package io.skymind.pathmind.shared.utils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,14 +9,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Metrics;
 import io.skymind.pathmind.shared.data.MetricsRaw;
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -72,7 +68,10 @@ public class PolicyUtils {
         }
         return policies.stream()
                 .filter(p -> p.getRun().getStatusEnum().equals(RunStatus.Completed) ? p.hasFile() : true)
-                .filter(p -> PolicyUtils.getLastScore(p) != null && !Double.isNaN(PolicyUtils.getLastScore(p)))
+                .filter(p -> {
+                    Double lastScore = PolicyUtils.getLastScore(p);
+                    return lastScore != null && !Double.isNaN(lastScore);
+                })
                 .max(Comparator.comparing(PolicyUtils::getLastScore).thenComparing(PolicyUtils::getLastIteration));
     }
 
@@ -82,8 +81,7 @@ public class PolicyUtils {
         }
         List<Metrics> metricsList = policy.getMetrics();
         policy.getSparklinesData().clear();
-        policy.getSimulationMetrics().clear();
-        policy.getUncertainty().clear();
+        policy.getMetricDisplayValues().clear();
 
         if (metricsList != null && metricsList.size() > 0) {
             // (k:iteration, v:(k:index, v:averageMeanValue))
@@ -95,8 +93,7 @@ public class PolicyUtils {
             // The Simulation Metric value shown is the mean value of the metric in the last iteration
             // Below sets the mean value of the metrics at the latest iteration into the list `simulationMetrics`
             int lastIteration = Collections.max(iterAndMetrics.keySet());
-            iterAndMetrics.get(lastIteration).entrySet().stream()
-                    .forEach(e -> policy.getSimulationMetrics().add(e.getKey(), e.getValue()));
+            iterAndMetrics.get(lastIteration).forEach((key, value) -> policy.getMetricDisplayValues().add(key, PathmindNumberUtils.formatNumber(value)));
 
             // (k:index, v:(k:iteration, v:averageMeanValue))
             Map<Integer, Map<Integer, Double>> sparkLineMap = metricsList.stream()
@@ -111,51 +108,16 @@ public class PolicyUtils {
 
         if (metricsRawList != null && metricsRawList.size() > 0) {
             // (k: index, v: meanValueList)
-            Map<Integer, List<Double>> uncertaintyMap = policy.getMetricsRaws().stream()
+            Map<Integer, List<Double>> uncertaintyMap = metricsRawList.stream()
                     .collect(groupingBy(MetricsRaw::getIndex,
                             mapping(MetricsRaw::getValue, Collectors.toList())
                             )
                     );
 
-            policy.setUncertainty(uncertaintyMap.values().stream()
-                    .map(list -> PathmindNumberUtils.calculateUncertainty(list))
+            policy.setMetricDisplayValues(uncertaintyMap.values().stream()
+                    .map(PathmindNumberUtils::calculateUncertainty)
                     .collect(Collectors.toList()));
         }
-    }
-
-    public static boolean isGoalReached(RewardVariable rv, Policy policy) {
-        Double metricValue = 0.0, uncertaintyValue = 0.0;
-        if (policy.getUncertainty() != null && !policy.getUncertainty().isEmpty()) {
-            // No data to calculate yet
-            if (policy.getUncertainty().size() <= rv.getArrayIndex()) {
-                return false;
-            }
-            String metricValueWithUncertainty = policy.getUncertainty().get(rv.getArrayIndex());
-            Double[] metricAndUncertainity = parseMetricAndUncertainity(metricValueWithUncertainty);
-            metricValue = metricAndUncertainity[0];
-            // todo https://github.com/SkymindIO/pathmind-webapp/pull/2063#issuecomment-693542915
-            // https://github.com/SkymindIO/pathmind-webapp/issues/2108
-            // uncertaintyValue = metricAndUncertainity[1];
-        } else {
-            // No data to calculate yet
-            if (policy.getSimulationMetrics().size() <= rv.getArrayIndex()) {
-                return false;
-            }
-            metricValue = policy.getSimulationMetrics().get(rv.getArrayIndex());
-        }
-        if (rv.getGoalConditionTypeEnum() != null &&  rv.getGoalValue() != null) {
-            if (rv.getGoalConditionTypeEnum().equals(GoalConditionType.GREATER_THAN_OR_EQUAL)) {
-                return metricValue + uncertaintyValue >= rv.getGoalValue();
-            } else {
-                return metricValue - uncertaintyValue <= rv.getGoalValue();
-            }
-        }
-        return false;
-    }
-
-    private static Double[] parseMetricAndUncertainity(String metricValueWithUncertainty) {
-        String[] actualMetricBreakdown = metricValueWithUncertainty.split("\u2800\u00B1\u2800");
-        return new Double[]{Double.parseDouble(actualMetricBreakdown[0]), Double.parseDouble(actualMetricBreakdown[1])};
     }
 
     public static void updateCompareMetricsChartData(Policy bestPolicy) {

@@ -43,7 +43,6 @@ Feature: E2E
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp
-    Then Check experiment page serve policy is shown 'false'
     #    ------------------------
     #Check Learning Progress block
     Then Check learning progress block title 'Learning Progress'
@@ -51,7 +50,6 @@ Feature: E2E
     Then Check learning progress block selected tab 'true' name is 'Metrics'
     Then Check learning progress block selected tab 'false' name is 'Histogram'
     Then Check learning progress block selected tab 'false' name is 'Mean Reward Score'
-    Then Check learning progress block metrics hint 'Select any two metrics on the simulation metric names above for comparison.'
     Then Check learning progress block metrics data-chart is shown
     When Click in 'Mean Reward Score' button
     Then Check learning progress block selected tab 'false' name is 'Metrics'
@@ -70,8 +68,7 @@ Feature: E2E
     #    ------------------------
     #Check export policy
     When Click in 'Export Policy' button
-    Then Check export policy page 'simplestochastic'
-    When Click experiment breadcrumb btn
+    When Check export policy filename '<project name>', '-M1-simplestochasticmodel-E2-Policy.zip'
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn

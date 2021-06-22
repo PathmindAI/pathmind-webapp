@@ -31,8 +31,6 @@ public class HomePage extends PageObject {
     private WebElement logoutBtn;
     @FindBy(xpath = "//a[text()='Help']")
     private WebElement helpBtn;
-    @FindBy(xpath = "//a[@href='dashboard']")
-    private WebElement dashboardBtn;
     @FindBy(xpath = "//span[@class='breadcrumb']")
     private WebElement pageLabel;
     @FindBy(xpath = "//vaadin-menu-bar[@class='account-menu']")
@@ -68,18 +66,6 @@ public class HomePage extends PageObject {
         getDriver().switchTo().window(tabs.get(1));
         assertThat(getDriver().getCurrentUrl(), equalTo(learnPage));
         assertThat(getDriver().getTitle(), containsString("Pathmind Knowledge Base"));
-    }
-
-    public void openDashboardPage() {
-        dashboardBtn.click();
-    }
-
-    public void checkThatDashboardPageOpened() {
-        waitABit(1000);
-        waitFor(ExpectedConditions.attributeToBe(dashboardBtn, "highlight", ""));
-        waitFor(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@style='display: none;']")));
-        assertThat(getDriver().getTitle(), is("Pathmind | Dashboard"));
-        assertThat(getDriver().getCurrentUrl(), containsString("/dashboard"));
     }
 
     public void checkThatProjectsPageOpened() {
@@ -162,7 +148,11 @@ public class HomePage extends PageObject {
     }
 
     public void checkSearchResultPageProjectNameContainsArchivedTag(String name) {
-        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is("Archived"));
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[3]")).getText(), is("Archived"));
+    }
+
+    public void checkSearchResultPageProjectNameContainsModelTag(String name, String modelNumber) {
+        assertThat(getDriver().findElement(By.xpath("//*[@class='highlight-label' and contains(text(), '" + name + "')]/ancestor::vaadin-vertical-layout[@class='search-result-item']/descendant::vaadin-horizontal-layout[@class='info-row']//vaadin-horizontal-layout[1]//tag-label[2]")).getText(), is(modelNumber));
     }
 
     public void checkSearchResultsForValueIs(String value) {
@@ -173,6 +163,7 @@ public class HomePage extends PageObject {
     }
 
     public void checkThatSearchCounterIs(String counter) {
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//span[@class='section-title-label truncated-label']")), "Search Results for"));
         String[] text = getDriver().findElement(By.xpath("//*[@class='section-subtitle-label']")).getText().split(" ", 3);
         assertThat(text[1], is(counter));
     }
@@ -221,5 +212,46 @@ public class HomePage extends PageObject {
 
     public void clickUserMenuBtn(String btn) {
         getDriver().findElement(By.cssSelector(".vaadin-menu-item")).click();
+    }
+
+    public void clickRequestOnboardingServiceBtn() {
+        assertThat(getDriver().findElement(By.xpath("//request-onboarding-service-button/vaadin-button")).getText(), containsString("Request Onboarding Service"));
+        getDriver().findElement(By.xpath("//request-onboarding-service-button/vaadin-button")).click();
+    }
+
+    public void clickRequestOnboardingServiceBackBtn() {
+        getDriver().findElement(By.xpath("//a[@title='Pathmind Inc.']")).click();
+    }
+
+    public void checkRequestOnboardingServicePage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[1]")).getText(), is("Concierge Onboarding Service"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[2]")).getText(), is("$500.00"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='ProductSummary-info']/span[3]")).getText(), is("A dedicated Pathmind Engineer to help retrofit your existing simulation for reinforcement learning."));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='PaymentHeader']/div")).getText(), is("Pay with card"));
+        assertThat(getDriver().findElement(By.xpath("//dl[@class='PrefilledInfo']/div")).getText(), is("Email\nevegeniy@skymind.io"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='SubmitButton-TextContainer']/span[1]")).getText(), is("Pay $500.00"));
+    }
+
+    public void fillRequestOnboardingServicePaymentForm() {
+        getDriver().findElement(By.id("cardNumber")).sendKeys("4242424242424242");
+        getDriver().findElement(By.id("cardExpiry")).sendKeys("1221");
+        getDriver().findElement(By.id("cardCvc")).sendKeys("123");
+        getDriver().findElement(By.id("billingName")).sendKeys("Evgeniy Ivanchenko");
+    }
+
+    public void clickRequestOnboardingServicePayBtn() {
+        getDriver().findElement(By.xpath("//button[@type='submit']")).click();
+    }
+
+    public void checkOnboardingSuccessPage() {
+        assertThat(getDriver().findElement(By.xpath("//span[@class='welcome-text']")).getText(), is("Welcome to"));
+        assertThat(getDriver().findElement(By.xpath("//img[@class='logo']")).getAttribute("src"), containsString("frontend/images/pathmind-logo.svg"));
+        assertThat(getDriver().findElement(By.xpath("//h3")).getText(), is("You have paid for the onboarding service"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout/p")).getText(), is("You should have received the payment receipt email. Our Customer Success Specialist will contact you shortly. If you have any questions, do not hesitate to message us."));
+    }
+
+    public void clickSearchResultResult(String searchResult) {
+        String xpath = String.format("//vaadin-vertical-layout[@class='search-result-item']/descendant::span[contains(text(), '%s')]", searchResult);
+        utils.clickElementRepeatIfStaleException(By.xpath(xpath));
     }
 }

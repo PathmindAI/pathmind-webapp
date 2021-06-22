@@ -164,7 +164,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="additional-info">&nbsp;</span>
             </span>
             <ul class="features">
-                <li>25 Experiments Per Month</li>
+                <li><b>One Concurrent</b> Experiment</li>
                 <li>Unlimited Policy Export</li>
             </ul>
             <vaadin-button id="freeBtn" theme="tertiary" disabled>Current Plan</vaadin-button>
@@ -176,11 +176,11 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="popular-tag">POPULAR</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$500</span>/Month</span>
-                <span class="additional-info">For yearly subscription per seat</span>
+                <span><span class="price">$499</span>/Month</span>
+                <span class="additional-info">Billed month-to-month</span>
             </span>
             <ul class="features">
-                <li>200 Experiments Per Month</li>
+                <li><b>Unlimited Concurrent</b> Experiments</li>
                 <li>Unlimited Policy Export</li>
                 <li>Technical Support Included</li>
             </ul>
@@ -192,11 +192,11 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="details">For Consultancies & Corporate Teams</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$1,000</span>/Month</span>
-                <span class="additional-info">For yearly subscription per seat</span>
+                <span><span class="price">$999</span>/Month</span>
+                <span class="additional-info">Billed month-to-month; price is per user</span>
             </span>
             <ul class="features">
-                <li>2,000 Experiments Per Month</li>
+                <li><b>Unlimited Concurrent</b> Experiments</li>
                 <li>Unlimited Policy Export</li>
                 <li>Technical Support Included</li>
                 <li>Policy Serving Enabled</li>

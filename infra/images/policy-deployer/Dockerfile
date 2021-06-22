@@ -6,6 +6,7 @@ WORKDIR /app
 #Copy files
 COPY trigger.py .
 COPY build_and_push.sh .
+COPY run_helm.sh .
 COPY LoggerInit.py .
 COPY requirements.txt .
 
@@ -32,13 +33,6 @@ RUN apt-get update && \
 
 # Install Docker
 RUN curl -sSL https://get.docker.com/ | sh
-
-#Github key
-COPY id_rsa .
-RUN chmod 600 id_rsa && \
-    mkdir -p ~/.ssh && \
-    mv id_rsa ~/.ssh && \
-    ssh-keyscan -H github.com >> /etc/ssh/ssh_known_hosts
 
 CMD ["python3","trigger.py"]
 #CMD ["bash","-c","sleep 10000000"]

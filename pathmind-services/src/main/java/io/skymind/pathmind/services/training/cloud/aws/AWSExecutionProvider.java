@@ -7,6 +7,7 @@ import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.services.training.constant.TrainingFile;
 import io.skymind.pathmind.services.training.versions.AWSFileManager;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
+import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.rllib.CheckPoint;
 import io.skymind.pathmind.shared.data.rllib.ExperimentState;
@@ -341,6 +342,22 @@ public class AWSExecutionProvider implements ExecutionProvider {
             .map(bytes -> new String(bytes, StandardCharsets.UTF_8).trim());
     }
 
+    public String getBestFreezingProgress(String jobHandle) {
+        Optional<String> report = getExperimentReport(jobHandle);
+        if (report.isPresent() && report.get().contains("Best Freezing:")) {
+            // example of bestFreezingLine : Best Freezing: /app/work/PPO/freezing/PPO/PPO_PathmindEnvironment_7fd09_00000_0_2021-03-24_23-34-38
+            Optional<String> bestFreezingLine = Arrays.stream(report.get().split("\n")).filter(line -> line.contains("Best Freezing:")).findFirst();
+            if (bestFreezingLine.isPresent()) {
+                String bestFreezingPath = bestFreezingLine.get().split(":")[1];
+                String[] split = bestFreezingPath.split("/");
+                Optional<byte[]> content =  getFile(jobHandle, split[split.length-1] + "/progress.csv", null);
+                return content.isPresent() ? new String(content.get()) : null;
+            }
+        }
+
+        return null;
+    }
+
     public Map<String, LocalDateTime> getTerminatedTrials(ExperimentState experimentState) {
         if (experimentState != null) {
             return experimentState.getCheckpoints().stream()
@@ -364,6 +381,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_3_0:
             case VERSION_1_4_0:
             case VERSION_1_5_0:
+            case VERSION_1_6_0:
+            case VERSION_1_6_1:
+            case VERSION_1_6_2:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -390,6 +410,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_6_0:
             case VERSION_8_6_1:
             case VERSION_8_7_0:
+            case VERSION_8_7_3:
+            case VERSION_8_7_4:
+            case VERSION_8_7_5:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -434,6 +457,20 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_0_8_6:
             case VERSION_0_8_7:
             case VERSION_1_0_0:
+            case VERSION_1_3_0:
+            case VERSION_1_4_0:
+                instructions.addAll(Arrays.asList(
+                    // Setup Anaconda
+                    "mkdir -p conda",
+                    "cd conda",
+                    "tar xf ../rllibpack.tar.gz > /dev/null",
+                    "rm ../rllibpack.tar.gz",
+                    "source bin/activate",
+                    "cd .."
+                ));
+
+                files.addAll(fileManager.getFiles(condaVersion));
+                break;
             case VERSION_1_2_0:
                 instructions.addAll(Arrays.asList(
                         // Setup Anaconda
@@ -461,6 +498,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_3_0:
             case VERSION_1_4_0:
             case VERSION_1_5_0:
+            case VERSION_1_6_0:
+            case VERSION_1_6_1:
                 instructions.addAll(Arrays.asList(
                         "mv PathmindPolicy.jar work/lib/"
                 ));
@@ -513,31 +552,51 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("REWARD_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
-                var("MAX_ITERATIONS", String.valueOf(job.getIterations())),
                 var("TEST_ITERATIONS", "0"), // disabled for now
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
                 var("NUM_SAMPLES", String.valueOf(job.getNumSamples())),
                 var("MULTIAGENT", String.valueOf(job.isMultiAgent())),
                 varCondition("RESUME", String.valueOf(job.isResume())),
                 var("CHECKPOINT_FREQUENCY", String.valueOf(job.getCheckpointFrequency())),
-                var("EPISODE_REWARD_RANGE", "0.01"),
-                var("ENTROPY_SLOPE", "0.01"),
-                var("VF_LOSS_RANGE", "0.1"),
-                var("VALUE_PRED", "1"), // disabled for now
-                var("USER_LOG", String.valueOf(job.isUserLog())),
+                var("ENTROPY_SLOPE", "1"), // turn off for now
+                var("VF_LOSS_RANGE", "0"), // turn off for now
+                var("VALUE_PRED", "1"),
+                var("USER_LOG", String.valueOf(job.getEnv().isUserLog())),
                 var("DEBUGMETRICS", String.valueOf(job.isRecordMetricsRaw())),
                 var("NAMED_VARIABLE", String.valueOf(job.isNamedVariables())),
                 var("MAX_MEMORY_IN_MB", String.valueOf(job.getEnv().getMaxMemory())),
+                var("NUM_HIDDEN_NODES", String.valueOf(job.getEnv().getHiddenNode())),
+                var("NUM_HIDDEN_LAYERS", String.valueOf(job.getEnv().getHiddenLayer())),
                 var("MAIN_AGENT", job.getMainAgentName()),
                 var("EXPERIMENT_CLASS", job.getExpClassName()),
                 var("EXPERIMENT_TYPE", job.getExpClassType()),
-                var("FREEZING", String.valueOf(Boolean.TRUE))
+                var("FREEZING", String.valueOf(job.getEnv().isFreezing())),
+                var("RAY_DEBUG", String.valueOf(job.getEnv().isRayDebug())),
+                var("SCHEDULER", String.valueOf(job.getEnv().getScheduler())),
+                var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
+                var("ACTIONMASKS", String.valueOf(job.isActionMask()))
         ));
 
-        if (job.getEnvironment() != null) {
+        if (job.getEnv().isLongerTraining()) {
+            instructions.add(var("MAX_ITERATIONS", "1500"));
+            instructions.add(var("EPISODE_REWARD_RANGE", "0.005"));
+            instructions.add(var("CONVERGENCE_CHECK_START_ITERATION", String.valueOf(job.getEnv().getStartCheckIterationForLongerTraining())));
+        } else {
+            instructions.add(var("MAX_ITERATIONS", String.valueOf(job.getIterations())));
+            instructions.add(var("EPISODE_REWARD_RANGE", "0.01"));
+        }
+
+        if (ModelType.isPythonModel(job.getModelType()) || ModelType.isPathmindModel(job.getModelType())) {
             instructions.add(var("ENVIRONMENT_NAME", job.getEnvironment()));
             instructions.add(var("USE_PY_NATIVERL", Boolean.TRUE.toString()));
-            instructions.add(var("IS_GYM", Boolean.TRUE.toString()));
+            instructions.add(var("IS_GYM", Boolean.valueOf(ModelType.isPythonModel(job.getModelType())).toString()));
+            instructions.add(var("IS_PATHMIND_SIMULATION", Boolean.valueOf(ModelType.isPathmindModel(job.getModelType())).toString()));
+            if (job.getObsSelection() != null) {
+                instructions.add(var("OBS_SELECTION", job.getObsSelection()));
+            }
+            if (job.getRewFctName() != null) {
+                instructions.add(var("REW_FCT_NAME", job.getRewFctName()));
+            }
             //todo if we need to validate requirements, we'd rather create another script to check it. the current script is just install requirements.txt
             instructions.add("if [[ ! -z \"$ENVIRONMENT_NAME\" ]]; then find . -maxdepth 1 -name requirements.txt -exec pip install -r '{}' \\; 2>/dev/null ; fi");
         }

@@ -31,16 +31,6 @@ public class HomePageStepDefinitions {
         homePageSteps.checkThatLearnPageOpened(learnPage);
     }
 
-    @When("^Open dashboard page$")
-    public void openDashboardPage() {
-        homePageSteps.openDashboardPage();
-    }
-
-    @Then("^Check that dashboard page opened$")
-    public void checkThatDashboardPageOpened() {
-        homePageSteps.checkThatDashboardPageOpened();
-    }
-
     @Then("^Check that projects page opened$")
     public void checkThatProjectsPageOpened() {
         homePageSteps.checkThatProjectsPageOpened();
@@ -132,6 +122,11 @@ public class HomePageStepDefinitions {
         homePageSteps.checkSearchResultPageProjectNameContainsArchivedTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"));
     }
 
+    @Then("^Check search result page project name contains tag '(.*)'$")
+    public void checkSearchResultPageProjectNameContainsModelTag(String modelNumber) {
+        homePageSteps.checkSearchResultPageProjectNameContainsModelTag("AutotestProject" + Serenity.sessionVariableCalled("randomNumber"), modelNumber);
+    }
+
     @Then("^Check Search Results for value is '(.*)'$")
     public void checkSearchResultsForValueIs(String value) {
         homePageSteps.checkSearchResultsForValueIs(value);
@@ -186,5 +181,40 @@ public class HomePageStepDefinitions {
     public void clickUserMenuBtn(String btn) {
         homePageSteps.openUserDropdown();
         homePageSteps.clickUserMenuBtn(btn);
+    }
+
+    @When("^Click Request Onboarding Service btn$")
+    public void clickRequestOnboardingServiceBtn() {
+        homePageSteps.clickRequestOnboardingServiceBtn();
+    }
+
+    @When("^Click Request Onboarding Service back btn$")
+    public void clickRequestOnboardingServiceBackBtn() {
+        homePageSteps.clickRequestOnboardingServiceBackBtn();
+    }
+
+    @Then("^Check request onboarding service page$")
+    public void checkRequestOnboardingServicePage() {
+        homePageSteps.checkRequestOnboardingServicePage();
+    }
+
+    @Then("^Fill Request Onboarding Service payment form$")
+    public void fillRequestOnboardingServicePaymentForm() {
+        homePageSteps.fillRequestOnboardingServicePaymentForm();
+    }
+
+    @When("^Click Request Onboarding Service pay btn$")
+    public void clickRequestOnboardingServicePayBtn() {
+        homePageSteps.clickRequestOnboardingServicePayBtn();
+    }
+
+    @Then("^Check onboarding success page$")
+    public void checkOnboardingSuccessPage() {
+        homePageSteps.checkOnboardingSuccessPage();
+    }
+
+    @When("^Click search result '(.*)'$")
+    public void clickSearchResultResult(String searchResult) {
+        homePageSteps.clickSearchResultResult(searchResult);
     }
 }

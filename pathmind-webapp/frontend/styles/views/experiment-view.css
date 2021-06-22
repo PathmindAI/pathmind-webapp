@@ -71,18 +71,21 @@
 }
 
 .experiment-view .experiment-header {
-    position: relative;
     justify-content: space-between;
+    position: relative;
+}
+
+.experiment-view.comparison-mode .experiment-header {
+    height: 7.8rem;
 }
 
 .experiment-view .middle-panel {
-    flex: 1 1 auto;
-    height: auto !important;
+    flex: 0 1 auto;
+    height: 40vh !important;
 }
 
-.experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:first-child,
-.experiment-view .comparison-panel > vaadin-split-layout > vaadin-vertical-layout:first-child {
-    max-height: 27rem;
+.experiment-view .middle-panel > vaadin-split-layout {
+    height: auto !important;
 }
 
 .experiment-view .middle-panel > vaadin-split-layout > vaadin-vertical-layout:last-child {
@@ -107,7 +110,12 @@
     overflow: auto;
 }
 
+.experiment-view .simulation-metrics-table-wrapper .with-container-border {
+    width: auto !important;
+}
+
 .experiment-view .reward-variables-table {
+    width: auto !important;
     font-size: var(--lumo-font-size-xs);
 }
 
@@ -172,13 +180,14 @@
 .experiment-view .sparklines-wrapper,
 .experiment-view .histograms-wrapper {
     flex: 1 0 0;
+    width: auto !important;
     line-height: 2rem;
 }
 
 .experiment-view .sparklines-wrapper .sparkline,
 .experiment-view .histograms-wrapper .histogram {
     position: relative;
-    width: 100px;
+    width: calc(100% - var(--lumo-space-s));
     height: 2rem !important;
     padding: var(--lumo-space-xxs) 0;
     margin-left: var(--lumo-space-s);
@@ -222,16 +231,21 @@
 }
 
 .experiment-view .observations-panel {
-    max-height: 27rem;
     font-size: var(--lumo-font-size-s);
     padding: 0;
     border: none;
     border-radius: 0;
 }
 
+.experiment-view .observations-panel span {
+    width: auto;
+    min-width: 100%;
+}
+
 .experiment-view .observations-panel .observations-table {
     padding-top: 0;
-    overflow: auto;
+    overflow-x: visible;
+    overflow-y: auto;
 }
 
 .experiment-view .observations-panel .observations-table > vaadin-checkbox {
@@ -294,9 +308,17 @@
     margin: 0;
 }
 
-.experiment-view .bottom-panel,
-.experiment-view .row-2-of-3 vaadin-vertical-layout {
-    flex: 1 1 auto;
+.experiment-view:not(.comparison-mode) .bottom-panel {
+    flex: 0 0 calc(40vh + 7.2rem) !important;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 {
+    flex: 0 0 auto;
+    overflow: initial;
+}
+
+.experiment-view:not(.comparison-mode) .row-2-of-3 vaadin-vertical-layout {
+    flex: 0 0 calc(40vh + 3.7rem);
 }
 
 .experiment-view .bottom-panel .row-2-of-3 .bold-label {
@@ -305,30 +327,16 @@
     z-index: 1;
 }
 
-.experiment-view .bottom-panel histogram-chart,
-.experiment-view .bottom-panel data-chart {
-    flex: 1 0 100%;
+.experiment-view .bottom-panel histogram-chart {
+    flex: 0 1 calc(100% - 5.5rem);
 }
 
-.experiment-view.comparison-mode .bottom-panel,
-.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout {
-    max-height: none;
+.experiment-view .bottom-panel data-chart {
+    flex: 0 1 calc(100% - 2rem);
 }
 
 .experiment-view vaadin-tabs {
     margin-bottom: 0;
-}
-
-.experiment-view .hint-label {
-    color: var(--lumo-secondary-text-color);
-    padding: 0 var(--lumo-space-s);
-    margin-bottom: 0;
-}
-
-.experiment-view .hint-label iron-icon {
-    --iron-icon-width: var(--lumo-font-size-s);
-    --iron-icon-height: var(--lumo-font-size-s);
-    margin-right: var(--lumo-space-xxs);
 }
 
 .experiment-view .buttons-wrapper {
@@ -359,10 +367,6 @@
 
 .experiment-view juicy-ace-editor {
     display: block;
-}
-
-.new-experiment-view .bold-label {
-    margin-bottom: var(--lumo-space-xs);
 }
 
 .experiment-view .score {
@@ -482,6 +486,10 @@
     width: 100% !important;
 }
 
+.experiment-view.comparison-mode .row.experiment-view.comparison-mode .row-2-of-3 vaadin-vertical-layout-2-of-3 {
+    flex: 1 1 auto;
+}
+
 .experiment-view.comparison-mode {
     height: calc(100vh - 5rem) !important;
 }
@@ -503,6 +511,7 @@
 
 .share-with-support-instructions h3,
 .serve-policy-instructions h3 {
+    text-align: center;
     margin-top: 0;
 }
 
@@ -514,4 +523,8 @@
     top: var(--lumo-space-s);
     right: var(--lumo-space-s);
     margin: 0;
+}
+
+.serve-policy-instructions vaadin-button {
+    width: 100%;
 }

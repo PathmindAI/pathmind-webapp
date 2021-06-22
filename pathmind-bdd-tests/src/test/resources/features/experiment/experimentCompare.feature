@@ -267,3 +267,4 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'primary' reward variable 'balkedCustomers' is highlighted 'true'
     Then Experiment page Check 'primary' reward variable 'avgServiceTime' is highlighted 'true'
     Then Experiment page Check 'secondary' reward variable 'kitchenCleanlinessLevel' is highlighted 'true'
+    Then Experiment page Check 'secondary' reward variable 'reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2 reward -= after.balkedCustomers - before.balkedCustomers; // Minimize balked customers test3 reward -= after.avgServiceTime - before.avgServiceTime; // Minimize average service time test4' is highlighted 'true'

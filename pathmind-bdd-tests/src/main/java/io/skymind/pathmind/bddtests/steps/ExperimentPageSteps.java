@@ -151,11 +151,6 @@ public class ExperimentPageSteps {
     }
 
     @Step
-    public void checkExportPolicyPage(String model) {
-        experimentPage.checkExportPolicyPage(model);
-    }
-
-    @Step
     public void checkLearningProgressTitle(String title) {
         experimentPage.checkLearningProgressTitle(title);
     }
@@ -243,5 +238,15 @@ public class ExperimentPageSteps {
     @Step
     public void experimentPageClickComparisonFloatingCloseBtn() {
         experimentPage.experimentPageClickComparisonFloatingCloseBtn();
+    }
+
+    @Step
+    public void checkLearningProgressBlockHistogramXAxisIsShown() {
+        experimentPage.checkLearningProgressBlockHistogramXAxisIsShown();
+    }
+
+    @Step
+    public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
+        experimentPage.checkExperimentPageStartRunBtnIsActiveTrue(shown);
     }
 }

@@ -2,12 +2,17 @@ package io.skymind.pathmind.services.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.PolicyServerFilesCreator;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
@@ -15,15 +20,20 @@ import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import static io.skymind.pathmind.shared.services.PolicyServerService.PolicyServerSchema.typeOf;
 
 @Slf4j
 @Service
@@ -35,30 +45,38 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     private final RunDAO runDAO;
 
+    private final UserDAO userDAO;
+
     private final AWSApiClient awsApiClient;
 
     private final PolicyFileService policyFileService;
 
-    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory().enable(YAMLGenerator.Feature.MINIMIZE_QUOTES));
 
     private final UriComponentsBuilder urlBuilder;
-    private final String applicationHost;
 
     @Autowired
-    public AwsPolicyServerServiceImpl(RunDAO runDAO, ObservationDAO observationDAO,
-                                      @Value("${pathmind.policyserver.url}") String policyServerBaseUrl,
+    public AwsPolicyServerServiceImpl(RunDAO runDAO, ObservationDAO observationDAO, UserDAO userDAO,
+                                      @Value("${pathmind.application.url}") String applicationUrl,
                                       @Value("${pathmind.application.environment}") String environment,
                                       AWSApiClient awsApiClient, PolicyFileService policyFileService,
                                       PolicyServerFilesCreator filesCreator) throws MalformedURLException {
         this.filesCreator = filesCreator;
         this.observationDAO = observationDAO;
         this.runDAO = runDAO;
+        this.userDAO = userDAO;
         this.awsApiClient = awsApiClient;
         this.policyFileService = policyFileService;
 
-        URL url = new URL(policyServerBaseUrl);
-        this.applicationHost = environment + "." + url.getHost();
-        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(policyServerBaseUrl);
+        final URL url = new URL(applicationUrl);
+        String policyServerURI;
+        if (environment.equalsIgnoreCase("prod")) {
+            policyServerURI = url.getHost().replaceFirst("app", "api");
+        } else {
+            policyServerURI = "api." + url.getHost();
+        }
+        log.debug("Serve policy at {}", policyServerURI);
+        this.urlBuilder = UriComponentsBuilder.fromHttpUrl(applicationUrl).host(policyServerURI);
     }
 
 //    @Override
@@ -90,12 +108,46 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     }
 
     @Override
+    public PolicyServerSchema generateSchemaYaml(Run run) {
+
+        run = runDAO.getRun(run.getId()); // here run comes not full
+        long userId = run.getProject().getPathmindUserId();
+        PathmindUser user = userDAO.findById(userId);
+
+        final boolean isPythonModel = ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()));
+
+        List<Observation> observationsForModel = observationDAO.getObservationsForModel(run.getModel().getId());
+
+        PolicyServerService.PolicyServerSchema.PolicyServerSchemaBuilder schemaBuilder = PolicyServerService.PolicyServerSchema.builder();
+        schemaBuilder
+                .parameters(
+                        PolicyServerService.PolicyServerSchema.Parameters.builder()
+                                .discrete(isPythonModel ? false : true)
+                                .tuple(isPythonModel ? false : true)
+                                .apiKey(user.getApiKey())
+                                .urlPath("policy/" + run.getJobId())
+                                .build()
+                );
+
+        Map<String, PolicyServerSchema.ObservationType> observationTypeMap =
+                CollectionUtils.emptyIfNull(observationsForModel).stream()
+                        .map(observation -> Map.entry(observation.getVariable(), typeOf(observation)))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        schemaBuilder.observations(observationTypeMap);
+
+        return schemaBuilder.build();
+    }
+
+    @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
-        bestPythonPolicy(experiment)
+        bestPolicyIfCompleted(experiment)
                 .ifPresent(policy -> {
                     final Run run = policy.getRun();
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
-                    if (deploymentStatus == DeploymentStatus.NOT_DEPLOYED) {
+                    if (DeploymentStatus.DEPLOYABLE.contains(deploymentStatus)) {
+
+                        PolicyServerService.PolicyServerSchema schema = generateSchemaYaml(run);
+                        saveSchemaYamlFile(run.getJobId(), schema);
 
                         final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
                         DeploymentMessage message = DeploymentMessage.builder()
@@ -113,12 +165,13 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public String getPolicyServerUrl(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     if (getPolicyServerStatus(experiment) == DeploymentStatus.DEPLOYED) {
-                        String host = run.getJobId() + "." + applicationHost;
-                        UriComponents uriComponents = this.urlBuilder.cloneBuilder().host(host).build();
+                        UriComponents uriComponents = this.urlBuilder.cloneBuilder()
+                                .pathSegment("policy", run.getJobId())
+                                .build();
                         return uriComponents.toUriString();
                     }
                     return null;
@@ -127,7 +180,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public DeploymentStatus getPolicyServerStatus(Experiment experiment) {
-        return bestPythonPolicy(experiment)
+        return bestPolicyIfCompleted(experiment)
                 .map(Policy::getRun)
                 .map(run -> {
                     DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
@@ -136,11 +189,10 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                 }).orElse(DeploymentStatus.NOT_DEPLOYED);
     }
 
-    private static Optional<Policy> bestPythonPolicy(Experiment experiment) {
+    private static Optional<Policy> bestPolicyIfCompleted(Experiment experiment) {
         return Optional.of(experiment)
                 .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
-                .map(Experiment::getBestPolicy)
-                .filter(policy -> ModelType.isPythonModel(ModelType.fromValue(experiment.getModel().getModelType())));
+                .map(Experiment::getBestPolicy);
     }
 
 }

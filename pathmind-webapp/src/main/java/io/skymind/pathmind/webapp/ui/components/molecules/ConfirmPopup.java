@@ -78,6 +78,7 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
         getModel().setOpened(true);
     }
 
+    @EventHandler
     public void closePopup() {
         getElement().removeFromParent();
         getModel().setOpened(false);

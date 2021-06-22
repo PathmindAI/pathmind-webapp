@@ -24,7 +24,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
@@ -173,9 +172,6 @@ public class LoginView extends HorizontalLayout
     public void beforeEnter(BeforeEnterEvent event) {
         if (SecurityUtils.isUserLoggedIn()) {
             event.forwardTo(ProjectsView.class);
-            // Make sure automatic push mode is enabled. If we don't do this, automatic push
-            // won't work even we have proper annotations in place.
-            event.getUI().getPushConfiguration().setPushMode(PushMode.AUTOMATIC);
             return;
         }
         if (CookieUtils.getCookie("isFirstTimeVisit") == null) {

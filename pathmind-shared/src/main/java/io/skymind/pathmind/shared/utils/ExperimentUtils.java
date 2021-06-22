@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
@@ -21,6 +20,7 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Error;
@@ -55,12 +55,6 @@ public class ExperimentUtils {
         return experiment.getName();
     }
 
-    private static final String AL_ENGINE_ERROR_PREFIX = "RuntimeError: java.lang.RuntimeException: Engine error";
-
-    public static boolean isAnyLogicEngineError(String rlErrorText) {
-        return StringUtils.trimToEmpty(rlErrorText).startsWith(AL_ENGINE_ERROR_PREFIX);
-    }
-
     public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
         return experiment.getRuns().stream()
                 .map(Run::getStartedAt)
@@ -77,15 +71,13 @@ public class ExperimentUtils {
      * Returns null if any policy has not finished yet.
      */
     public static LocalDateTime getTrainingCompletedTime(Experiment experiment) {
-        final var stoppedTimes = experiment.getRuns().stream()
-                .map(Run::getStoppedAt)
-                .collect(Collectors.toList());
-
-        if (isAnyNotFinished(stoppedTimes)) {
+        if (RunStatus.isRunning(experiment.getTrainingStatusEnum())) {
             return null;
         }
 
-        return stoppedTimes.stream()
+        return experiment.getRuns().stream()
+                .map(Run::getStoppedAt)
+                .filter(Objects::nonNull)
                 .max(LocalDateTime::compareTo)
                 .orElse(LocalDateTime.now());
     }
@@ -95,7 +87,7 @@ public class ExperimentUtils {
      * It sums up a size of reward list for each policy.
      */
     public static Integer getNumberOfProcessedIterations(Experiment experiment) {
-        return experiment.getPolicies().stream()
+        return CollectionUtils.emptyIfNull(experiment.getPolicies()).stream()
                 .map(Policy::getScores)
                 .map(List::size)
                 .reduce(0, Integer::sum);
@@ -115,10 +107,6 @@ public class ExperimentUtils {
 
     private static double calculateTrainingSecondsLeft(long totalSeconds, double progress) {
         return totalSeconds * (100 - progress) / progress;
-    }
-
-    private static boolean isAnyNotFinished(List<LocalDateTime> stoppedTimes) {
-        return stoppedTimes.stream().anyMatch(Objects::isNull);
     }
 
     public static double calculateProgressByExperiment(Experiment experiment) {

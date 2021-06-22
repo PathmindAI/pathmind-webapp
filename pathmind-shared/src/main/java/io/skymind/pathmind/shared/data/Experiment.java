@@ -32,8 +32,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private String userNotes;
     private boolean isFavorite;
     private boolean hasGoals;
-    private int totalGoals;
-    private int goalsReached;
     private int trainingStatus;
     private boolean sharedWithSupport;
 
@@ -48,8 +46,12 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     // Helper attributes for error handling to prevent extra processing with training
     private String trainingError;
+    private long trainingErrorId;
+    private String supportArticle;
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
+
+    private boolean deployPolicyOnSuccess;
 
     private List<RewardVariable> rewardVariables;
     private List<RewardVariable> selectedRewardVariables = new ArrayList<>();
@@ -76,7 +78,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     }
 
     public boolean isDraft() {
-        return getRuns() == null || getRuns().isEmpty();
+        return RunStatus.NotStarted.getValue() == trainingStatus;
     }
 
     public List<Run> getRuns() {
@@ -88,10 +90,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
             runs = new ArrayList<>();
         }
         runs.add(run);
-    }
-
-    public boolean isGoalsReached() {
-        return hasGoals && Objects.equals(goalsReached, totalGoals);
     }
 
     public boolean isTrainingError() {
@@ -123,8 +121,6 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                 .isFavorite(isFavorite)
                 .trainingStatus(trainingStatus)
                 .hasGoals(hasGoals)
-                .goalsReached(goalsReached)
-                .totalGoals(totalGoals)
                 .sharedWithSupport(sharedWithSupport)
                 .build());
     }

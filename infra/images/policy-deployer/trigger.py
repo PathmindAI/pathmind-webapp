@@ -78,6 +78,10 @@ def process_message(message):
     S3ModelPath=body['S3ModelPath']
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
+    if 'UrlPath' not in body:
+        UrlPath=JobId
+    else:
+        UrlPath=body['UrlPath']
     helm_name="policy-"+JobId
     domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
@@ -94,17 +98,17 @@ def process_message(message):
         except Exception as e:
             app_logger.error(traceback.format_exc())
     else:
-        policyServerStatus=2
+        policy_server_status=2
         try:
             #insert the status to run
             sql_script=""" 
-                update public.run set policyServerStatus=1 where job_id='{JobId}'
-            """.format(JobId=JobId)
+                update public.run set policy_server_status=1,policy_server_url='{UrlPath}' where job_id='{JobId}'
+            """.format(JobId=JobId,UrlPath=UrlPath)
             execute_psql(sql_script)
             app_logger.info('Clonning repository')
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
-            sh.git('clone','git@github.com:SkymindIO/policy-server.git')
+            sh.git('clone','https://foo:{GH_PAT}@github.com/SkymindIO/policy-server.git'.format(GH_PAT=GH_PAT))
             app_logger.info('Creating container')
             output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
@@ -116,29 +120,20 @@ def process_message(message):
                 ,'--build-arg', 'AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}'.format(AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY) \
                 ,'--build-arg', 'AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}'.format(AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID))
             if output.exit_code != 0:
-                policyServerStatus=3
+                policy_server_status=3
             else:
                 app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-                output=sh.helm('upgrade' \
-                    ,'--install' \
-                    ,helm_name \
-                    ,'policy-server/helm/policy-server/' \
-                    ,'--set', 'image.tag={ENVIRONMENT}{JobId}'.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId) \
-                    ,'--set', '\'ingress.hosts[0].host\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
-                    ,'--set', '\'ingress.hosts[0].paths[0]\'=\'/\'' \
-                    ,'--set', '\'ingress.tls[0].hosts[0]\'=\'{JobId}.{ENVIRONMENT}.{domain_name}\''.format(ENVIRONMENT=ENVIRONMENT,JobId=JobId,domain_name=domain_name) \
-                    ,'--set', '\'ingress.tls[0].secretName\'=\'letsencrypt-{ENVIRONMENT}\''.format(ENVIRONMENT=ENVIRONMENT) \
-                    ,'-n',NAMESPACE)
+                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,UrlPath,NAMESPACE)
                 if output.exit_code != 0:
-                    policyServerStatus=3
+                    policy_server_status=3
         except Exception as e:
-            policyServerStatus=3
+            policy_server_status=3
             app_logger.error(traceback.format_exc())
 
         #insert the status to run
         sql_script=""" 
-            update public.run set policyServerStatus={policyServerStatus} where job_id='{JobId}'
-        """.format(JobId=JobId,policyServerStatus=policyServerStatus)
+            update public.run set policy_server_status={policy_server_status} where job_id='{JobId}'
+        """.format(JobId=JobId,policy_server_status=policy_server_status)
         execute_psql(sql_script)
 
     try:
@@ -176,6 +171,7 @@ if __name__ == "__main__":
     ENVIRONMENT=os.environ['ENVIRONMENT']
     AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
     AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
+    GH_PAT=os.environ['GH_PAT']
     if ENVIRONMENT=='prod':
         NAMESPACE='default'
     else:
