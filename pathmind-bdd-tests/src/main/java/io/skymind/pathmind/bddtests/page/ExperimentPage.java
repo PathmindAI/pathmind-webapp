@@ -381,4 +381,30 @@ public class ExperimentPage extends PageObject {
             assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is(null));
         }
     }
+
+    public void checkDeployingPolicyServerOverlay() {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/h3")).getText(), is("Deploying Policy Server"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p")).getText(), is("Your policy will be available in about five minutes."));
+    }
+
+    public void checkPolicyServerLiveWithMinutes(int limit) {
+        System.out.println("!Waiting for policy server live with limit " + limit + " minutes!");
+        for (int i = 0; i < limit; i++) {
+            if (getDriver().findElements(By.xpath("//vaadin-button[text()='Policy Server Live']")).size() != 0) {
+                break;
+            } else {
+                waitABit(60000);
+                getDriver().navigate().refresh();
+            }
+        }//*[@class='experiment-header']/*[@class='buttons-wrapper']/vaadin-button[2]
+        assertThat(experimentStatus.getText(), containsString("Completed"));
+    }
+
+    public void checkPolicyServerLiveOverlay() {
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/h3")).getText(), is("The Policy is Live"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/span")).getText(), is("The policy is being served at this URL:"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/span")).getText(), is("Read the docs for more details:"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getAttribute("href"), containsString("https://api.dev.devpathmind.com/policy/"));
+    }
 }

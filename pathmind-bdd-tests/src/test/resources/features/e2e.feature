@@ -1,4 +1,4 @@
-@e2e
+@debug
 Feature: E2E
 
   Scenario Outline: Create new project and run experiment
@@ -69,6 +69,14 @@ Feature: E2E
     #Check export policy
     When Click in 'Export Policy' button
     When Check export policy filename '<project name>', '-M1-simplestochasticmodel-E2-Policy.zip'
+    #    ------------------------
+    #Check policy server deploying
+    When Click in 'Start Policy Server' button
+    When Check deploying policy server overlay
+    Then Check policy server live with 10 minutes
+    Then Click in 'Policy Server Live' button
+    When Check policy server live overlay
+
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn

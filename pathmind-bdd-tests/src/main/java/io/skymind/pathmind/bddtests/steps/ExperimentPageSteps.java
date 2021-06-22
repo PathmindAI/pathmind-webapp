@@ -249,4 +249,19 @@ public class ExperimentPageSteps {
     public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
         experimentPage.checkExperimentPageStartRunBtnIsActiveTrue(shown);
     }
+
+    @Step
+    public void checkDeployingPolicyServerOverlay() {
+        experimentPage.checkDeployingPolicyServerOverlay();
+    }
+
+    @Step
+    public void checkPolicyServerLiveWithMinutes(int timeout) {
+        experimentPage.checkPolicyServerLiveWithMinutes(timeout);
+    }
+
+    @Step
+    public void checkPolicyServerLiveOverlay() {
+        experimentPage.checkPolicyServerLiveOverlay();
+    }
 }
