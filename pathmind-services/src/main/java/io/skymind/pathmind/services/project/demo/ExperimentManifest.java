@@ -19,6 +19,7 @@ public class ExperimentManifest {
     private URI modelUrl;
     private String rewardFunction;
     private URI imageUrl;
+    private URI tutorialUrl;
     private String description;
     private String result;
 

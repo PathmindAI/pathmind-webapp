@@ -3,7 +3,6 @@ package io.skymind.pathmind.updater.aws;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
@@ -14,10 +13,7 @@ import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
-import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -25,12 +21,10 @@ import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.UpdaterService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
-import static io.skymind.pathmind.shared.services.PolicyServerService.PolicyServerSchema.typeOf;
 
 @Service
 @Slf4j
@@ -105,31 +99,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private void policyServerForRun(Run run) {
-        final boolean isPythonModel = ModelType.isALModel(ModelType.fromValue(run.getModel().getModelType()));
         if (Completed == run.getStatusEnum()) {
-            long userId = run.getProject().getPathmindUserId();
-            PathmindUser user = userDAO.findById(userId);
-
-            List<Observation> observationsForModel = observationDAO.getObservationsForModel(run.getModel().getId());
-
-            PolicyServerService.PolicyServerSchema.PolicyServerSchemaBuilder schemaBuilder = PolicyServerService.PolicyServerSchema.builder();
-            schemaBuilder
-                    .parameters(
-                            PolicyServerService.PolicyServerSchema.Parameters.builder()
-                                    .discrete(isPythonModel ? false : true)
-                                    .tuple(isPythonModel ? false : true)
-                                    .apiKey(user.getApiKey())
-                                    .urlPath("policy/" + run.getJobId())
-                                    .build()
-                    );
-
-            Map<String, PolicyServerService.PolicyServerSchema.ObservationType> observationTypeMap =
-                    CollectionUtils.emptyIfNull(observationsForModel).stream()
-                            .map(observation -> Map.entry(observation.getVariable(), typeOf(observation)))
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            schemaBuilder.observations(observationTypeMap);
-
-            policyServerService.saveSchemaYamlFile(run.getJobId(), schemaBuilder.build());
             if (run.getExperiment().isDeployPolicyOnSuccess()) {
                 policyServerService.triggerPolicyServerDeployment(run.getExperiment());
             }

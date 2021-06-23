@@ -25,6 +25,7 @@ public class ExperimentManifestRepository {
                                 "reward += ( after.trips - before.trips ) * 0.01;\n"
                                 //@formatter:on
                         )
+                        .tutorialUrl(URI.create("https://help.pathmind.com/en/articles/4694248-automated-guided-vehicle-agv"))
                         .build(),
                 ExperimentManifest.builder()
                         .name("Product Delivery")
@@ -37,6 +38,7 @@ public class ExperimentManifestRepository {
                                 "reward -= after.avgWaitTime - before.avgWaitTime; // Minimize wait times\n"
                                 //@formatter:on
                         )
+                        .tutorialUrl(URI.create("https://help.pathmind.com/en/articles/4318146-product-delivery"))
                         .build(),
                 ExperimentManifest.builder()
                         .name("Interconnected Call Centers")
@@ -49,6 +51,7 @@ public class ExperimentManifestRepository {
                                 "reward -= after.aMeanWaitTimes - before.aMeanWaitTimes; // minimize aMeanWaitTimes"
                                 //@formatter:on
                         )
+                        .tutorialUrl(URI.create("https://help.pathmind.com/en/articles/5100776-interconnected-call-centers"))
                         .build()
         );
     }
