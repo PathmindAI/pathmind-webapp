@@ -28,6 +28,7 @@ class TrainingErrorRepository {
     static List<String> getAllErrorsKeywords(DSLContext ctx) {
         return ctx.select(TRAINING_ERROR.KEYWORD)
                 .from(TRAINING_ERROR)
+                .orderBy(TRAINING_ERROR.ID)
                 .fetchInto(String.class);
     }
 }
