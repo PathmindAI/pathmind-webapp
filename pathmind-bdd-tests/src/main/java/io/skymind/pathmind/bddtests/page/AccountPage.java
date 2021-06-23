@@ -40,14 +40,10 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Access Token"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Basic"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(1)")).getText(), containsString("Payment"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(5) .info div:nth-child(2)")).getText(), containsString("Billing Information"));
         assertThat(getDriver().findElement(By.id("editInfoBtn")).isDisplayed(), is(true));
         assertThat(getDriver().findElement(By.id("editInfoBtn")).getText(), containsString("Edit"));
         assertThat(getDriver().findElement(By.id("changePasswordBtn")).isDisplayed(), is(true));
         assertThat(getDriver().findElement(By.id("changePasswordBtn")).getText(), containsString("Change"));
-        assertThat(getDriver().findElement(By.id("editPaymentBtn")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.id("editPaymentBtn")).getText(), containsString("Edit"));
     }
 
     public void clickAccountEditBtn() {

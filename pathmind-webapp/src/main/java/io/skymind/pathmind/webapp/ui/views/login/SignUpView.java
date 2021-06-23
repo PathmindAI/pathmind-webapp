@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.login;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,7 +40,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 @Tag("sign-up-view")
-@CssImport(value = "./styles/views/sign-up-view.css", id = "sign-up-view-styles")
 @JsModule("./src/pages/account/sign-up-view.js")
 @Route(value = Routes.SIGN_UP)
 public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView, HasUrlParameter<String> {

@@ -3,7 +3,6 @@ package io.skymind.pathmind.services.training.cloud.aws.api;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.List;
 
 import com.amazonaws.services.s3.AmazonS3;

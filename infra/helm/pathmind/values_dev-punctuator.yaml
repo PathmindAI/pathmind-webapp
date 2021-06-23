@@ -42,6 +42,7 @@ env:
   NEW_RUN_MONTHLY_LIMIT: 2000
   SQS_UPDATER_PUNCTUATOR_QUEUE: https://sqs.us-east-1.amazonaws.com/839270835622/dev-punctuator
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/dev-policy-server.fifo
+  POLICY_SERVING: true
 
 probes:
   readinessProbe:

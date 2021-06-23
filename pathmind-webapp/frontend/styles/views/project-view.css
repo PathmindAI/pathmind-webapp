@@ -1,6 +1,14 @@
+.project-view.default-view {
+    height: auto;
+    min-height: 100%;
+}
+
 .project-view .view-section {
+    min-width: unset;
+    line-height: 1.6em;
     padding: 0;
     border-radius: 0;
+    overflow: auto;
 }
 
 .project-view .view-section + .view-section {

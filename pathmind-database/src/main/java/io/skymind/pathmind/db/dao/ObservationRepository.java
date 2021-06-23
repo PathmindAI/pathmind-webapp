@@ -48,6 +48,11 @@ class ObservationRepository {
         ctx.batch(saveQueries).execute();
     }
 
+    
+    protected static void deleteExperimentObservations(DSLContext ctx, long experimentId) {
+        ctx.deleteFrom(EXPERIMENT_OBSERVATION).where(EXPERIMENT_OBSERVATION.EXPERIMENT_ID.eq(experimentId)).execute();
+    }
+
     protected static List<Observation> getObservationsForModel(DSLContext ctx, long modelId) {
         return ctx.select(OBSERVATION.asterisk())
                 .from(OBSERVATION)

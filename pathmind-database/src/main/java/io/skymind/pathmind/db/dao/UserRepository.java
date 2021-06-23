@@ -8,8 +8,6 @@ import java.util.UUID;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import org.jooq.DSLContext;
 
-import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
-
 class UserRepository {
     protected static PathmindUser findByEmailIgnoreCase(DSLContext ctx, String email) {
         return ctx

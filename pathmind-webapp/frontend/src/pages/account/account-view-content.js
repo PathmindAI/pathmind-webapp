@@ -152,15 +152,6 @@ class AccountViewContent extends PolymerElement {
                             <div class="data subscription-hint">{{subscriptionCancellationNote}}</div>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
-                    <vaadin-horizontal-layout style="width: 100%;" class="block border-top">
-                        <vaadin-vertical-layout class="info">
-                            <div class="title">Payment</div>
-                            <div class="data">{{billingInfo}}</div>
-                        </vaadin-vertical-layout>
-                        <vaadin-button id="editPaymentBtn" theme="small">
-                            Edit
-                        </vaadin-button>
-                    </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
             </div>
         </vaadin-horizontal-layout>
