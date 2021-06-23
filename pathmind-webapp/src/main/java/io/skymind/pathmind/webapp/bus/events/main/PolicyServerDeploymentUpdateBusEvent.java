@@ -15,7 +15,7 @@ public class PolicyServerDeploymentUpdateBusEvent implements PathmindBusEvent {
 
     @Override
     public PathmindBusEvent cloneForEventBus() {
-        return new PolicyServerDeploymentUpdateBusEvent(runId,  experiment.deepClone(), status);
+        return new PolicyServerDeploymentUpdateBusEvent(runId, experiment.deepClone(), status);
     }
 
     @Override

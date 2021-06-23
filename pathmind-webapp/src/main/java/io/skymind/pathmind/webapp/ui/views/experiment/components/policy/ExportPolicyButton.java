@@ -1,4 +1,4 @@
-package io.skymind.pathmind.webapp.ui.components.policy;
+package io.skymind.pathmind.webapp.ui.views.experiment.components.policy;
 
 import java.io.ByteArrayInputStream;
 import java.util.function.Supplier;
