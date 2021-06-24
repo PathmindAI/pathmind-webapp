@@ -218,8 +218,10 @@ public class UpdaterService {
         if (status == RunStatus.Error && !CollectionUtils.isEmpty(descriptions)) {
             final var errorMessage = descriptions;
             final var allErrorsKeywords = trainingErrorDAO.getAllErrorsKeywords();
+            // the below should be m x n complexity:m is num of error messages in errors.log and n is num of error keywords
+            // since error message is not always the exactly same with error keyword
             final var knownErrorMessage = allErrorsKeywords.stream()
-                    .filter(errorMessage::contains)
+                    .filter(keyword -> errorMessage.stream().filter(e -> e.contains(keyword)).findFirst().isPresent())
                     .findFirst()
                     .orElseGet(() -> {
                         log.warn("Unrecognized error: {}", errorMessage);
