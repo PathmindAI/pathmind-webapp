@@ -666,7 +666,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     private List<String> checkErrors() {
         List<String> instructions = new ArrayList<>();
         instructions.addAll(trainingErrorDAO.getAllKnownErrorsKeywords().stream()
-                .map(msg -> "grep -m 1 \"" + msg + "\" " + TrainingFile.SCRIPT_LOG + " >> " + TrainingFile.KNOWN_ERROR)
+                .map(e -> "grep -m 1 \"" + e.getKeyword() + "\" " + e.getTargetFile() + " >> " + TrainingFile.KNOWN_ERROR)
                 .collect(Collectors.toList()));
 
         return instructions;

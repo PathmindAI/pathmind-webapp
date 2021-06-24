@@ -2031,7 +2031,7 @@
 
     <changeSet id="3237-02" author="daehyun@pathmind.com">
         <update tableName="TRAINING_ERROR">
-            <column name="TARGET_FILE" value="ExperimentErrorStackTrace.txt"/>
+            <column name="TARGET_FILE" value="work/PPO/ExperimentErrorStackTrace.txt"/>
             <where>ID = 20</where>
         </update>
     </changeSet>

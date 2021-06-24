@@ -31,4 +31,11 @@ class TrainingErrorRepository {
                 .orderBy(TRAINING_ERROR.ID)
                 .fetchInto(String.class);
     }
+
+    static List<TrainingError> getAllKnownErrors(DSLContext ctx) {
+        return ctx.select(TRAINING_ERROR.asterisk())
+            .from(TRAINING_ERROR)
+            .orderBy(TRAINING_ERROR.ID)
+            .fetchInto(TrainingError.class);
+    }
 }
