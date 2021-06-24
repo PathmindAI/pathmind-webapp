@@ -75,6 +75,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
             demoData.put("imageUrl", manifest.getImageUrl().toString());
             demoData.put("description", manifest.getDescription());
             demoData.put("result", manifest.getResult());
+            demoData.put("tutorialUrl", manifest.getTutorialUrl().toString());
             
             demoDataList.set(index, demoData);
         }

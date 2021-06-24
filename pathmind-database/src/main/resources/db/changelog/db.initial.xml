@@ -2020,4 +2020,20 @@
         </update>
     </changeSet>
 
+    <changeSet id="3237-01" author="daehyun@pathmind.com">
+        <addColumn tableName="TRAINING_ERROR">
+            <column name="TARGET_FILE" type="VARCHAR(255)" defaultValue="process_output.log"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINING_ERROR" columnName="TARGET_FILE"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3237-02" author="daehyun@pathmind.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="TARGET_FILE" value="work/PPO/ExperimentErrorStackTrace.txt"/>
+            <where>ID = 20</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
