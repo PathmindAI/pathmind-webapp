@@ -12,10 +12,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public interface PolicyServerService {
 
@@ -115,9 +117,18 @@ public interface PolicyServerService {
         FAILED(3);
 
         public final int code;
+        public static final Map<Integer, DeploymentStatus> STATUS_BY_ID;
 
         DeploymentStatus(int code) {
             this.code = code;
+        }
+
+        static {
+            Map<Integer, DeploymentStatus> map = new ConcurrentHashMap<>();
+            for (DeploymentStatus instance : DeploymentStatus.values()) {
+                map.put(instance.code, instance);
+            }
+            STATUS_BY_ID = Collections.unmodifiableMap(map);
         }
 
         public static final Set<DeploymentStatus> DEPLOYABLE = EnumSet.of(NOT_DEPLOYED, FAILED);

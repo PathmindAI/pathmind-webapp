@@ -33,6 +33,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewComparisonExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyServerDeploymentUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -158,6 +159,7 @@ public class ExperimentView extends AbstractExperimentView {
                 new ExperimentViewFavoriteSubscriber(this),
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewPolicyServerDeploymentUpdateSubscriber(this),
                 new ExperimentViewComparisonExperimentArchivedSubscriber(this));
     }
 
@@ -372,5 +374,13 @@ public class ExperimentView extends AbstractExperimentView {
 
     public ExperimentChartsPanel getComparisonChartsPanel() {
         return comparisonChartsPanel;
+    }
+
+    public ExperimentTitleBar getExperimentTitleBar() {
+        return experimentTitleBar;
+    }
+
+    public ExperimentTitleBar getComparisonTitleBar() {
+        return comparisonTitleBar;
     }
 }

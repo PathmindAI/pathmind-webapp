@@ -17,6 +17,11 @@ public class UpdateEvent implements Serializable {
 
     public static final String TYPE_POLICY = "policy";
     public static final String TYPE_RUN = "run";
+    public static final String TYPE_POLICY_SERVER = "policy_server";
+
+    public UpdateEvent(Long id, String type, Integer size) {
+        this(id, type, size, null);
+    }
 
     @JsonProperty("id")
     private Long id;
@@ -24,5 +29,7 @@ public class UpdateEvent implements Serializable {
     private String type;
     @JsonProperty("size")
     private Integer size;
+    @JsonProperty("info")
+    private String info;
 }
 

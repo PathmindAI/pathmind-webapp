@@ -9,4 +9,5 @@ public enum BusEventType {
     ExperimentStartTraining,
     ExperimentArchived,
     ExperimentFavorite,
+    PolicyServerDeploymentUpdate,
 }
