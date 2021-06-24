@@ -59,7 +59,7 @@ public class ServePolicyAction {
                 dialogContent.add(
                         new H3("The Policy is Live"),
                         new Span("The policy is being served at this URL:"),
-                        new CopyField(url),
+                        new CopyField(url, true),
                         new Paragraph(new Span("Read the docs for more details:"),
                                 new Html("<br/>"),
                                 new Anchor(url + "/docs", url + "/docs"))
