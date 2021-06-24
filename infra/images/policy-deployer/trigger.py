@@ -106,6 +106,9 @@ def process_message(message):
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
             sh.git('clone','https://foo:{GH_PAT}@github.com/SkymindIO/policy-server.git'.format(GH_PAT=GH_PAT))
+            sh.cd(GH_PAT)
+            sh.git('checkout',ENVIRONMENT)
+            sh.cd('..')
             app_logger.info('Creating container')
             output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
