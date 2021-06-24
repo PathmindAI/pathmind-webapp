@@ -11,4 +11,5 @@ public class TrainingError {
     private String description;
     private boolean restartable;
     private String supportArticle;
+    private String targetFile;
 }
