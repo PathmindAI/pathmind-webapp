@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.MockedUI;
+import com.github.mvysny.kaributesting.v10.mock.MockedUI;
 import com.github.mvysny.kaributesting.v10.Routes;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
