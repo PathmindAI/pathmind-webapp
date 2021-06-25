@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import cucumber.api.java.en.Then;
@@ -271,7 +272,7 @@ public class ExperimentStepDefinitions {
     }
 
     @When("^Check policy server live overlay$")
-    public void checkPolicyServerLiveOverlay() {
+    public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
         experimentPageSteps.checkPolicyServerLiveOverlay();
     }
 }

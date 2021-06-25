@@ -1,5 +1,10 @@
 package io.skymind.pathmind.bddtests.page;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.skymind.pathmind.bddtests.Utils;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import net.thucydides.core.annotations.DefaultUrl;
 import org.apache.commons.io.FileUtils;
@@ -375,9 +381,9 @@ public class ExperimentPage extends PageObject {
     public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
         waitABit(8000);
         WebElement btnShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-button[@theme='small new-experiment-split-button split-button primary']")));
-        if (!shown){
+        if (!shown) {
             assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is("true"));
-        }else {
+        } else {
             assertThat(btnShadow.findElement(By.cssSelector("button")).getAttribute("disabled"), is(null));
         }
     }
@@ -396,15 +402,29 @@ public class ExperimentPage extends PageObject {
                 waitABit(60000);
                 getDriver().navigate().refresh();
             }
-        }//*[@class='experiment-header']/*[@class='buttons-wrapper']/vaadin-button[2]
-        assertThat(experimentStatus.getText(), containsString("Completed"));
+        }
+        assertThat(getDriver().findElement(By.xpath("//*[@class='experiment-header']/*[@class='buttons-wrapper']/vaadin-button[2]")).getText(), containsString("Policy Server Live"));
     }
 
-    public void checkPolicyServerLiveOverlay() {
+    public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/h3")).getText(), is("The Policy is Live"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/span")).getText(), is("The policy is being served at this URL:"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/span")).getText(), is("Read the docs for more details:"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getAttribute("href"), containsString("https://api.dev.devpathmind.com/policy/"));
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::copy-field")));
+        assertThat(e.findElement(By.id("textToCopy")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
+        e.findElement(By.id("copy")).click();
+        ((JavascriptExecutor) getDriver()).executeScript("window.open()");
+        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+        getDriver().switchTo().window(tabs.get(1));
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable contents = clipboard.getContents(null);
+        String url = (String) contents.getTransferData(DataFlavor.stringFlavor);
+        Serenity.setSessionVariable("policyServerUrl").to(url);
+        getDriver().get(url);
+        assertThat(getDriver().findElement(By.xpath("//pre")).getText(), containsString("ok"));
+        getDriver().close();
+        getDriver().switchTo().window(tabs.get(0));
     }
 }

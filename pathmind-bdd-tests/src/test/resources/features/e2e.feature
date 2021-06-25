@@ -1,4 +1,4 @@
-@debug
+@e2e
 Feature: E2E
 
   Scenario Outline: Create new project and run experiment
@@ -76,7 +76,9 @@ Feature: E2E
     Then Check policy server live with 10 minutes
     Then Click in 'Policy Server Live' button
     When Check policy server live overlay
-
+    When Click pop-up dialog close btn
+    #Check policy server api
+    #TODO
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn
