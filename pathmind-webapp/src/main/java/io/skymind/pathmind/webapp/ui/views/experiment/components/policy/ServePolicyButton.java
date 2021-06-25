@@ -101,13 +101,15 @@ public class ServePolicyButton extends Button {
                 }
                 case DEPLOYED: {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
+                    final Anchor docsLink = new Anchor(url + "/docs", url + "/docs");
+                    docsLink.setTarget("_blank");
                     dialogContent.add(
                             new H3("The Policy is Live"),
                             new Span("The policy is being served at this URL:"),
                             new CopyField(url, true),
                             new Paragraph(new Span("Read the docs for more details:"),
                                     new Html("<br/>"),
-                                    new Anchor(url + "/docs", url + "/docs"))
+                                    docsLink)
                     );
                     break;
                 }
