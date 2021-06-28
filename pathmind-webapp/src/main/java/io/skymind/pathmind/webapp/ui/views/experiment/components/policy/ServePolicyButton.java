@@ -13,6 +13,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.services.PolicyServerService;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 
@@ -22,10 +23,12 @@ public class ServePolicyButton extends Button {
     private Experiment experiment;
     private Dialog dialog;
     private Button closeButton;
+    private UserService userService;
 
-    public ServePolicyButton(PolicyServerService policyServerService) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserService userService) {
         super();
         this.policyServerService = policyServerService;
+        this.userService = userService;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> openDialog());
     }
@@ -106,8 +109,16 @@ public class ServePolicyButton extends Button {
                     dialogContent.add(
                             new H3("The Policy is Live"),
                             new Span("The policy is being served at this URL:"),
-                            new CopyField(url, true),
-                            new Paragraph(new Span("Read the docs for more details:"),
+                            new CopyField(url, true)
+                    );
+                    if (userService != null) {
+                        dialogContent.add(
+                            new Span("Your access token:"),
+                            new CopyField(userService.getCurrentUser().getApiKey())
+                        );
+                    }
+                    dialogContent.add(
+                        new Paragraph(new Span("Read the docs for more details:"),
                                     new Html("<br/>"),
                                     docsLink)
                     );

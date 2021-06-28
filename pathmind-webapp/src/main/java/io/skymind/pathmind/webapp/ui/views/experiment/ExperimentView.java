@@ -16,6 +16,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -82,6 +83,8 @@ public class ExperimentView extends AbstractExperimentView {
 
     @Autowired
     private ModelCheckerService modelCheckerService;
+    @Autowired
+    private UserService userService;
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
@@ -280,11 +283,11 @@ public class ExperimentView extends AbstractExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userService);
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userService);
     }
 
     private SplitLayout getBottomPanel() {

@@ -23,6 +23,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
@@ -67,6 +68,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private ExperimentView experimentView;
     private TrainingService trainingService;
     private ModelService modelService;
+    private UserService userService;
     private Runnable updateExperimentViewRunnable;
     private Supplier<Object> getLockSupplier;
     private PolicyDAO policyDAO;
@@ -81,8 +83,15 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
-                              TrainingService trainingService, ModelService modelService) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, false);
+                              TrainingService trainingService, ModelService modelService, UserService userService) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userService, false);
+    }
+
+    public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
+                              Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
+                              RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
+                              TrainingService trainingService, ModelService modelService, boolean isExportPolicyButtonOnly) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, null, false);
     }
 
     /**
@@ -91,7 +100,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
-                              TrainingService trainingService, ModelService modelService,
+                              TrainingService trainingService, ModelService modelService, UserService userService,
                               boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
         this.getExperimentSupplier = () -> getExperiment();
@@ -99,6 +108,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.getLockSupplier = getLockSupplier;
         this.trainingService = trainingService;
         this.modelService = modelService;
+        this.userService = userService;
         this.featureManager = featureManager;
         this.policyDAO = policyDAO;
         this.policyFileService = policyFileService;
@@ -135,7 +145,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new ServePolicyButton(policyServerService);
+        servePolicyButton = new ServePolicyButton(policyServerService, userService);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
