@@ -44,6 +44,7 @@ public class AccountHeaderPanelTest {
     @After
     public void tearDown() {
         SecurityContextHolder.clearContext();
+        KaribuUtils.tearDown();
     }
 
     @Test

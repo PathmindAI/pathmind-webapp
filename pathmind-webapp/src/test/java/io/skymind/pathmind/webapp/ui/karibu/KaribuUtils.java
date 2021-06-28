@@ -34,6 +34,14 @@ public class KaribuUtils {
         }
     }
 
+    public static Routes discoverRoutes() {
+        // Route discovery involves classpath scanning and is an expensive operation.
+        // Running the discovery process only once per test run speeds up the test runtime considerably.
+        // Discover the routes once and cache the result.
+        return new Routes().autoDiscoverViews("package io.skymind.pathmind.webapp.ui.views");
+    }
+
+
     public static void setup() {
         MockedUI ui = Mockito.spy(new MockedUI());
         MockVaadin.setup(new Routes(), () -> ui);
@@ -48,7 +56,8 @@ public class KaribuUtils {
 
     public static void setupRoutes(Class<? extends Component>... routes) {
         HashSet<Class<? extends Component>> routesSet = new HashSet<>(Arrays.asList(routes));
-        MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
+        // MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
+        MockVaadin.setup(discoverRoutes());
     }
 
     public static void tearDown() {
