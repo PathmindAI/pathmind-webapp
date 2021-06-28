@@ -106,7 +106,7 @@ def process_message(message):
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
             sh.git('clone','https://foo:{GH_PAT}@github.com/SkymindIO/policy-server.git'.format(GH_PAT=GH_PAT))
-            sh.cd(GH_PAT)
+            sh.cd("policy-server")
             sh.git('checkout',ENVIRONMENT)
             sh.cd('..')
             app_logger.info('Creating container')
@@ -145,7 +145,7 @@ def process_message(message):
                                 'StringValue': SNS_UPDATER_SQS_FILTER_ATTR
                             }
                         },
-                        Message='{"id":'+IntJobId+', "type":"policy_server", "info":"'+policy_server_status+'"}')
+                        Message='{"id":'+IntJobId+', "type":"policy_server", "info":"'+str(policy_server_status)+'"}')
         except Exception as e:
             app_logger.error(traceback.format_exc())
 
@@ -171,7 +171,7 @@ def main():
             QueueUrl=SQS_URL,
             AttributeNames=['All'],
             MaxNumberOfMessages=10,
-            VisibilityTimeout=60,
+            VisibilityTimeout=900,
             WaitTimeSeconds=20
         )
         if ('Messages' in resp):
