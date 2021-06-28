@@ -105,7 +105,7 @@ public interface PolicyServerService {
             }
         }
 
-        public static ObservationType typeOf(Observation observation) {
+        private static ObservationType typeOf(Observation observation) {
             switch (observation.getDataTypeEnum()) {
                 case INTEGER:
                 case LONG:
