@@ -141,7 +141,7 @@ def process_message(message):
             sns.publish(TopicArn=SNS_UPDATER_TOPIC_ARN,
                         MessageAttributes={
                             'filter': {
-                                'DataType': 'string',
+                                'DataType': 'String',
                                 'StringValue': SNS_UPDATER_SQS_FILTER_ATTR
                             }
                         },
