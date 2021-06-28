@@ -8,5 +8,9 @@ observations:
     type: int
   two:
     type: List[int]
+    min_items: 5
+    max_items: 5
   three:
     type: List[float]
+    min_items: 3
+    max_items: 3

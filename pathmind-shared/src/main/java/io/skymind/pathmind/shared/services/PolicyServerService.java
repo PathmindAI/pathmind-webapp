@@ -1,22 +1,23 @@
 package io.skymind.pathmind.shared.services;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Run;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public interface PolicyServerService {
@@ -36,6 +37,24 @@ public interface PolicyServerService {
     DeploymentStatus getPolicyServerStatus(Experiment experiment);
 
     @Getter
+    class ObservationWrapper {
+        public ObservationWrapper(Observation observation) {
+            this.name = observation.getVariable();
+            this.type = PolicyServerSchema.typeOf(observation);
+            this.min_items = observation.getMaxItems();
+            this.max_items = observation.getMaxItems();
+        }
+
+        @JsonIgnore
+        private String name;
+        private PolicyServerSchema.ObservationType type;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Integer min_items;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        private Integer max_items;
+    }
+
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
@@ -47,7 +66,8 @@ public interface PolicyServerService {
         @Builder.Default
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         @JsonProperty("observations")
-        private Map<String, ObservationType> observations = new HashMap<>();
+        @JsonSerialize(using = ListObservationSerializer.class)
+        private List<Observation> observations = new ArrayList<>();
 
         @Getter
         @NoArgsConstructor
@@ -64,7 +84,6 @@ public interface PolicyServerService {
             private String urlPath;
         }
 
-        @JsonFormat(shape = JsonFormat.Shape.OBJECT)
         public enum ObservationType {
             INT("int"),
             INT_ARRAY("List[int]"),
@@ -78,12 +97,12 @@ public interface PolicyServerService {
                 this.type = type;
             }
 
+            @JsonValue
             private final String type;
 
             public String getType() {
                 return this.type;
             }
-
         }
 
         public static ObservationType typeOf(Observation observation) {
@@ -132,7 +151,19 @@ public interface PolicyServerService {
         }
 
         public static final Set<DeploymentStatus> DEPLOYABLE = EnumSet.of(NOT_DEPLOYED, FAILED);
+    }
 
+    class ListObservationSerializer extends JsonSerializer<List<Observation>> {
+        @Override
+        public void serialize(List<Observation> observations, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeStartObject();
+            for (Observation obs : observations) {
+                ObservationWrapper ow = new ObservationWrapper(obs);
+                jsonGenerator.writeFieldName(ow.getName());
+                jsonGenerator.writeObject(ow);
+            }
+            jsonGenerator.writeEndObject();
+        }
     }
 
 }
