@@ -41,17 +41,19 @@ public interface PolicyServerService {
         public ObservationWrapper(Observation observation) {
             this.name = observation.getVariable();
             this.type = PolicyServerSchema.typeOf(observation);
-            this.min_items = observation.getMaxItems();
-            this.max_items = observation.getMaxItems();
+            this.minItems = observation.getMaxItems();
+            this.maxItems = observation.getMaxItems();
         }
 
         @JsonIgnore
         private String name;
         private PolicyServerSchema.ObservationType type;
+        @JsonProperty("min_items")
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        private Integer min_items;
+        private Integer minItems;
+        @JsonProperty("max_items")
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        private Integer max_items;
+        private Integer maxItems;
     }
 
     @Getter
