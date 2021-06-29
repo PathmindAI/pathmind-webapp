@@ -94,7 +94,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
                               TrainingService trainingService, ModelService modelService, boolean isExportPolicyButtonOnly) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, null, false);
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, null, isExportPolicyButtonOnly);
     }
 
     /**
