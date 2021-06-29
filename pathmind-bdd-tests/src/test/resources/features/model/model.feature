@@ -22,9 +22,9 @@ Feature: Model page
     When Click experiment '1' archive/unarchive button
     When In confirmation dialog click in 'Archive' button
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
     When Open projects/model/experiment archived tab
-    When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
+    When Check that model/experiment name '1' NOT exist in archived/not archived tab
 
   Scenario: Check model page experiment Unarchive btn
     Given Login to the pathmind
@@ -37,9 +37,9 @@ Feature: Model page
     When Open projects/model/experiment archived tab
     When Click experiment unarchive button
     When In confirmation dialog click in 'Unarchive' button
-    When Check that model/experiment name '1 Draft' NOT exist in archived/not archived tab
+    When Check that model/experiment name '1' NOT exist in archived/not archived tab
     When Open projects/model/experiment archived tab
-    Then Check that model/experiment name '1 Draft' exist in archived/not archived tab
+    Then Check that model/experiment name '1' exist in archived/not archived tab
 
   Scenario: Check model page elements
     Given Login to the pathmind

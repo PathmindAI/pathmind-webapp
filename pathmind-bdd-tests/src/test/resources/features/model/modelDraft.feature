@@ -12,7 +12,8 @@ Feature: Save Model draft
     Then Check that model successfully uploaded
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Check that there are 1 model(s) with 'Draft' tag in project page
+    Then Check that models sidebar model '1' contains draft tag 'false'
+    Then Check that models sidebar model '2' contains draft tag 'true'
 
   @saveModelDraft
   Scenario: Check that after uploading a model and clicking in next, the model is still a draft
@@ -27,7 +28,8 @@ Feature: Save Model draft
     Then Click wizard model details next btn
     When Open projects page
     When Open project AutotestProject on projects page
-    Then Check that there are 1 model(s) with 'Draft' tag in project page
+    Then Check that models sidebar model '1' contains draft tag 'false'
+    Then Check that models sidebar model '2' contains draft tag 'true'
 
   @saveModelDraft
   Scenario: Check Save Model Draft with reward variables
@@ -41,7 +43,8 @@ Feature: Save Model draft
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
     When Click project/ breadcrumb btn
-    Then Check that there are 1 model(s) with 'Draft' tag in project page
+    Then Check that models sidebar model '1' contains draft tag 'false'
+    Then Check that models sidebar model '2' contains draft tag 'true'
     When Click the model name 2
     When Click wizard upload ALP next btn
     When Click wizard model details next btn
