@@ -9,12 +9,12 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.progressbar.ProgressBar;
 
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
+import io.skymind.pathmind.webapp.ui.components.atoms.AnimatedProgressBar;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 
@@ -133,14 +133,12 @@ public class ServePolicyButton extends Button {
                 case PENDING:
                     // fallthrough
                 default: {
-                    ProgressBar progressBar = new ProgressBar(0, 100);
-                    progressBar.setIndeterminate(true);
                     dialogContent.add(
                             new H3("Deploying Policy Server"),
                             new Paragraph(
                                 "Your policy will be available in about five minutes."
                             ),
-                            progressBar
+                            new AnimatedProgressBar(300)
                     );
                     break;
                 }
