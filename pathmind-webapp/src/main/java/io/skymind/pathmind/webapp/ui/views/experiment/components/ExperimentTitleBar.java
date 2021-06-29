@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -24,7 +25,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
-import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
@@ -33,6 +33,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShutDownPolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
@@ -59,6 +60,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
+    private Button shutDownPolicyServerButton;
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
@@ -147,21 +149,20 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
         servePolicyButton = new ServePolicyButton(policyServerService, userDAO);
+        shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> ShutDownPolicyAction.shutDown(this, getExperimentSupplier));
+        shutDownPolicyServerButton.setVisible(false);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelLink = new DownloadModelLink(modelService, experimentView.getSegmentIntegrator(), true, isPythonModel);
 
-        // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
+        // isExportPolicyButtonOnly is true for SharedExperimentView only
         if (isExportPolicyButtonOnly) {
             return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
-            List<Button> actionButtons = new ArrayList<Button>();
-            actionButtons.add(shareButton);
-            actionButtons.add(archiveButton);
-            actionButtons.add(unarchiveButton);
+            List<Button> actionButtons = new ArrayList<Button>(Arrays.asList(shareButton, archiveButton, unarchiveButton));
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
+            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, shutDownPolicyServerButton, downloadModelLink};
         }
     }
 
@@ -171,7 +172,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         return buttonsWrapper;
     }
 
-    private void updateComponentEnablements() {
+    public void updateComponentEnablements() {
         archivedLabel.setVisible(experiment.isArchived());
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
 
@@ -192,8 +193,14 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         exportPolicyButton.setVisible(isCompletedWithPolicy);
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
             servePolicyButton.setServePolicyButtonText(isCompletedWithPolicy);
+            if (policyServerService.getPolicyServerStatus(experiment).equals(PolicyServerService.DeploymentStatus.DEPLOYED)) {
+                shutDownPolicyServerButton.setVisible(true);
+            } else {
+                shutDownPolicyServerButton.setVisible(false);
+            }
         } else {
             servePolicyButton.setVisible(false);
+            shutDownPolicyServerButton.setVisible(false);
         }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
