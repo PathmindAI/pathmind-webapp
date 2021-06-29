@@ -15,6 +15,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
@@ -68,7 +69,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private ExperimentView experimentView;
     private TrainingService trainingService;
     private ModelService modelService;
-    private UserService userService;
+    private UserDAO userDAO;
     private Runnable updateExperimentViewRunnable;
     private Supplier<Object> getLockSupplier;
     private PolicyDAO policyDAO;
@@ -83,8 +84,8 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
-                              TrainingService trainingService, ModelService modelService, UserService userService) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userService, false);
+                              TrainingService trainingService, ModelService modelService, UserDAO userDAO) {
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userDAO, false);
     }
 
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
@@ -100,7 +101,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     public ExperimentTitleBar(ExperimentView experimentView, Runnable updateExperimentViewRunnable,
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
-                              TrainingService trainingService, ModelService modelService, UserService userService,
+                              TrainingService trainingService, ModelService modelService, UserDAO userDAO,
                               boolean isExportPolicyButtonOnly) {
         this.experimentView = experimentView;
         this.getExperimentSupplier = () -> getExperiment();
@@ -108,7 +109,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.getLockSupplier = getLockSupplier;
         this.trainingService = trainingService;
         this.modelService = modelService;
-        this.userService = userService;
+        this.userDAO = userDAO;
         this.featureManager = featureManager;
         this.policyDAO = policyDAO;
         this.policyFileService = policyFileService;
@@ -145,7 +146,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new ServePolicyButton(policyServerService, userService);
+        servePolicyButton = new ServePolicyButton(policyServerService, userDAO);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation

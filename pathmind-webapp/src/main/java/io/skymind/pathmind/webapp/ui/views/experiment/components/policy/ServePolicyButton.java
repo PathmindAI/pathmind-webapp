@@ -11,9 +11,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
-import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 
@@ -23,12 +24,12 @@ public class ServePolicyButton extends Button {
     private Experiment experiment;
     private Dialog dialog;
     private Button closeButton;
-    private UserService userService;
+    private UserDAO userDAO;
 
-    public ServePolicyButton(PolicyServerService policyServerService, UserService userService) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO) {
         super();
         this.policyServerService = policyServerService;
-        this.userService = userService;
+        this.userDAO = userDAO;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> openDialog());
     }
@@ -111,10 +112,11 @@ public class ServePolicyButton extends Button {
                             new Span("The policy is being served at this URL:"),
                             new CopyField(url, true)
                     );
-                    if (userService != null) {
+                    if (userDAO != null) {
+                        PathmindUser user = userDAO.findById(experiment.getProject().getPathmindUserId());
                         dialogContent.add(
                             new Span("Your access token:"),
-                            new CopyField(userService.getCurrentUser().getApiKey())
+                            new CopyField(user.getApiKey())
                         );
                     }
                     dialogContent.add(
