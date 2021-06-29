@@ -16,6 +16,8 @@ image:
 env:
   SQS_URL: https://queue.amazonaws.com/839270835622/staging-policy-server.fifo
   ENVIRONMENT: staging
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:staging-updater-topic
+  SNS_UPDATER_SQS_FILTER_ATTR: staging
 
 ingress:
   enabled: false

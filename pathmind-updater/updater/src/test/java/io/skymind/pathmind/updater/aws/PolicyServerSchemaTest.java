@@ -1,11 +1,5 @@
 package io.skymind.pathmind.updater.aws;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -16,7 +10,11 @@ import org.junit.Test;
 import org.springframework.util.ResourceUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import static io.skymind.pathmind.shared.services.PolicyServerService.PolicyServerSchema.typeOf;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
@@ -28,13 +26,18 @@ public class PolicyServerSchemaTest {
     public void test() throws IOException {
 
         Observation oInt = new Observation();
+        oInt.setVariable("one");
         oInt.setDataType("int");
 
         Observation oIntList = new Observation();
+        oIntList.setVariable("two");
         oIntList.setDataType("int[]");
+        oIntList.setMaxItems(5);
 
         Observation oFloatList = new Observation();
+        oFloatList.setVariable("three");
         oFloatList.setDataType("float[]");
+        oFloatList.setMaxItems(3);
 
         PolicyServerService.PolicyServerSchema schema = PolicyServerService.PolicyServerSchema.builder()
                 .parameters(
@@ -46,10 +49,8 @@ public class PolicyServerSchemaTest {
                                 .build()
                 )
                 .observations(
-                        Map.of(
-                                "one", typeOf(oInt),
-                                "two", typeOf(oIntList),
-                                "three", typeOf(oFloatList)
+                        List.of(
+                                oInt, oIntList, oFloatList
                         )
                 )
                 .build();
@@ -66,9 +67,6 @@ public class PolicyServerSchemaTest {
         Map<Object, Object> actual = yaml.load(yamlString);
 
         assertThat(actual.entrySet(), equalTo(expected.entrySet()));
-
-
     }
-
 
 }

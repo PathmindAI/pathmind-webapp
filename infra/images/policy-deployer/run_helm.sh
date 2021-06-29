@@ -7,6 +7,7 @@ NAMESPACE=$6
 
 helm upgrade --install ${helm_name} \
 	policy-server/helm/policy-server/ \
+	-f policy-server/helm/policy-server/values_${ENVIRONMENT}.yaml \
 	--set image.tag=${ENVIRONMENT}${JobId} \
 	--set 'ingress.hosts[0].host'=api.${ENVIRONMENT}.${domain_name} \
 	--set 'ingress.hosts[0].paths[0]'="/policy/${UrlPath}(/|\$)(.*)" \

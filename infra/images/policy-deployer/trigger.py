@@ -78,6 +78,7 @@ def process_message(message):
     S3ModelPath=body['S3ModelPath']
     S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
+    IntJobId=JobId.replace("id","")
     if 'UrlPath' not in body:
         UrlPath=JobId
     else:
@@ -86,6 +87,7 @@ def process_message(message):
     domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
     tag=ENVIRONMENT+JobId
+    sns=boto3.client('sns')
 
     #jobs is done so destroy the spot instance and the pod
     if 'destroy' in body:
@@ -100,15 +102,13 @@ def process_message(message):
     else:
         policy_server_status=2
         try:
-            #insert the status to run
-            sql_script=""" 
-                update public.run set policy_server_status=1,policy_server_url='{UrlPath}' where job_id='{JobId}'
-            """.format(JobId=JobId,UrlPath=UrlPath)
-            execute_psql(sql_script)
             app_logger.info('Clonning repository')
             sh.mkdir('-p','policy-server')
             sh.rm('-rf','policy-server')
             sh.git('clone','https://foo:{GH_PAT}@github.com/SkymindIO/policy-server.git'.format(GH_PAT=GH_PAT))
+            sh.cd("policy-server")
+            sh.git('checkout',ENVIRONMENT)
+            sh.cd('..')
             app_logger.info('Creating container')
             output=sh.bash('build_and_push.sh'\
                 ,'policy-server'\
@@ -130,11 +130,24 @@ def process_message(message):
             policy_server_status=3
             app_logger.error(traceback.format_exc())
 
-        #insert the status to run
-        sql_script=""" 
-            update public.run set policy_server_status={policy_server_status} where job_id='{JobId}'
-        """.format(JobId=JobId,policy_server_status=policy_server_status)
-        execute_psql(sql_script)
+        try:
+            #update the deployment status of run
+            sql_script=""" 
+                update public.run set policy_server_status={policy_server_status}, policy_server_url='{UrlPath}' where job_id='{JobId}'
+            """.format(JobId=JobId, UrlPath=UrlPath, policy_server_status=policy_server_status)
+            execute_psql(sql_script)
+
+            #Update the webapp via SNS
+            sns.publish(TopicArn=SNS_UPDATER_TOPIC_ARN,
+                        MessageAttributes={
+                            'filter': {
+                                'DataType': 'String',
+                                'StringValue': SNS_UPDATER_SQS_FILTER_ATTR
+                            }
+                        },
+                        Message='{"id":'+IntJobId+', "type":"policy_server", "info":"'+str(policy_server_status)+'"}')
+        except Exception as e:
+            app_logger.error(traceback.format_exc())
 
     try:
         #Delete message
@@ -158,7 +171,7 @@ def main():
             QueueUrl=SQS_URL,
             AttributeNames=['All'],
             MaxNumberOfMessages=10,
-            VisibilityTimeout=60,
+            VisibilityTimeout=900,
             WaitTimeSeconds=20
         )
         if ('Messages' in resp):
@@ -171,6 +184,8 @@ if __name__ == "__main__":
     ENVIRONMENT=os.environ['ENVIRONMENT']
     AWS_SECRET_ACCESS_KEY=os.environ['AWS_SECRET_ACCESS_KEY']
     AWS_ACCESS_KEY_ID=os.environ['AWS_ACCESS_KEY_ID']
+    SNS_UPDATER_TOPIC_ARN=os.environ['SNS_UPDATER_TOPIC_ARN']
+    SNS_UPDATER_SQS_FILTER_ATTR=os.environ['SNS_UPDATER_SQS_FILTER_ATTR']
     GH_PAT=os.environ['GH_PAT']
     if ENVIRONMENT=='prod':
         NAMESPACE='default'
