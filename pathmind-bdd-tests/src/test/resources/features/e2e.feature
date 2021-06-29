@@ -77,7 +77,7 @@ Feature: E2E
     Then Click in 'Policy Server Live' button
     When Check policy server live overlay
     When Click pop-up dialog close btn
-    #Check policy server api
+    #Check policy server api requests
     #TODO
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2

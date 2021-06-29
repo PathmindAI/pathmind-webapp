@@ -413,6 +413,7 @@ public class ExperimentPage extends PageObject {
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getAttribute("href"), containsString("https://api.dev.devpathmind.com/policy/"));
         WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::copy-field")));
+        String copyFieldUrl = e.findElement(By.id("textToCopy")).getText();
         assertThat(e.findElement(By.id("textToCopy")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
         e.findElement(By.id("copy")).click();
         ((JavascriptExecutor) getDriver()).executeScript("window.open()");
@@ -424,6 +425,7 @@ public class ExperimentPage extends PageObject {
         Serenity.setSessionVariable("policyServerUrl").to(url);
         getDriver().get(url);
         assertThat(getDriver().findElement(By.xpath("//pre")).getText(), containsString("ok"));
+        assertThat(getDriver().getCurrentUrl(), is(copyFieldUrl));
         getDriver().close();
         getDriver().switchTo().window(tabs.get(0));
     }
