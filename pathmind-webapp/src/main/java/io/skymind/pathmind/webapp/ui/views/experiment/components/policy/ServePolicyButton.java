@@ -78,6 +78,12 @@ public class ServePolicyButton extends Button {
 
         updateDialogContent();
 
+        PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
+        if (deploymentStatus == PolicyServerService.DeploymentStatus.NOT_DEPLOYED) {
+            policyServerService.triggerPolicyServerDeployment(experiment);
+            segmentIntegrator.deployPolicyServer();
+        }
+
         dialog.open();
     }
 
@@ -144,8 +150,7 @@ public class ServePolicyButton extends Button {
                     break;
                 }
                 case NOT_DEPLOYED: {
-                    policyServerService.triggerPolicyServerDeployment(experiment);
-                    segmentIntegrator.deployPolicyServer();
+
                     // intentional fallthrough to PENDING state
                 }
                 case PENDING:
