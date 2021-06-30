@@ -16,7 +16,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -72,6 +72,11 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
      * The column <code>public.training_error.support_article</code>.
      */
     public final TableField<TrainingErrorRecord, String> SUPPORT_ARTICLE = createField(DSL.name("support_article"), SQLDataType.VARCHAR(255), this, "");
+
+    /**
+     * The column <code>public.training_error.target_file</code>.
+     */
+    public final TableField<TrainingErrorRecord, String> TARGET_FILE = createField(DSL.name("target_file"), SQLDataType.VARCHAR(255).defaultValue(DSL.field("'process_output.log'::character varying", SQLDataType.VARCHAR)), this, "");
 
     private TrainingError(Name alias, Table<TrainingErrorRecord> aliased) {
         this(alias, aliased, null);
@@ -153,11 +158,11 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Long, String, String, Boolean, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<Long, String, String, Boolean, String, String> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

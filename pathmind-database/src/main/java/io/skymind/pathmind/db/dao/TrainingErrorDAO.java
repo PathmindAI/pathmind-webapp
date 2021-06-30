@@ -34,10 +34,10 @@ public class TrainingErrorDAO {
         return TrainingErrorRepository.getAllErrorsKeywords(ctx);
     }
 
-    public List<String> getAllKnownErrorsKeywords() {
+    public List<TrainingError> getAllKnownErrorsKeywords() {
         final var excludeMessages = List.of(UNKNOWN_ERROR_KEYWORD, NOT_AN_ERROR);
-        return getAllErrorsKeywords().stream()
-                .filter(keyword -> !excludeMessages.contains(keyword))
+        return TrainingErrorRepository.getAllKnownErrors(ctx).stream()
+                .filter(error -> !excludeMessages.contains(error.getKeyword()))
                 .collect(Collectors.toList());
     }
 }
