@@ -16,8 +16,8 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
-
 public class ServePolicyButton extends Button {
 
     private PolicyServerService policyServerService;
@@ -107,6 +107,17 @@ public class ServePolicyButton extends Button {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
                     final Anchor docsLink = new Anchor(url + "/docs", url + "/docs");
                     docsLink.setTarget("_blank");
+                    final Button shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> {
+                        dialog.close();
+                        ConfirmationUtils.confirmationPopupDialog(
+                            "Shut down policy server",
+                            "This will shut down the deployed policy server for this experiment (id: "+experiment.getId()+"). You will be able to redeploy the policy server.",
+                            "Shut down",
+                            () -> {
+                                policyServerService.destroyPolicyServerDeployment(experiment);
+                                setServePolicyButtonText(true);
+                            });
+                        });
                     dialogContent.add(
                             new H3("The Policy is Live"),
                             new Span("The policy is being served at this URL:"),
@@ -122,7 +133,8 @@ public class ServePolicyButton extends Button {
                     dialogContent.add(
                         new Paragraph(new Span("Read the docs for more details:"),
                                     new Html("<br/>"),
-                                    docsLink)
+                                    docsLink),
+                        shutDownPolicyServerButton
                     );
                     break;
                 }

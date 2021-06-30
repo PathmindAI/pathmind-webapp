@@ -33,7 +33,6 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShutDownPolicyAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
@@ -60,7 +59,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
-    private Button shutDownPolicyServerButton;
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
@@ -149,8 +147,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
         servePolicyButton = new ServePolicyButton(policyServerService, userDAO);
-        shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> ShutDownPolicyAction.shutDown(this, policyServerService, getExperimentSupplier));
-        shutDownPolicyServerButton.setVisible(false);
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
@@ -162,7 +158,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         } else {
             List<Button> actionButtons = new ArrayList<Button>(Arrays.asList(shareButton, archiveButton, unarchiveButton));
             actionDropdown = new ActionDropdown(actionButtons);
-            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, shutDownPolicyServerButton, downloadModelLink};
+            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
 
@@ -193,14 +189,8 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         exportPolicyButton.setVisible(isCompletedWithPolicy);
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
             servePolicyButton.setServePolicyButtonText(isCompletedWithPolicy);
-            if (policyServerService.getPolicyServerStatus(experiment).equals(PolicyServerService.DeploymentStatus.DEPLOYED)) {
-                shutDownPolicyServerButton.setVisible(true);
-            } else {
-                shutDownPolicyServerButton.setVisible(false);
-            }
         } else {
             servePolicyButton.setVisible(false);
-            shutDownPolicyServerButton.setVisible(false);
         }
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
