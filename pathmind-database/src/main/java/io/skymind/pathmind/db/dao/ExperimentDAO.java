@@ -86,6 +86,7 @@ public class ExperimentDAO {
         Experiment experiment = ExperimentRepository.getSharedExperiment(ctx, experimentId, userId);
         if (experiment != null) {
             loadExperimentData(experiment);
+            updateExperimentInternalValues(experiment);
         }
         return Optional.ofNullable(experiment);
     }

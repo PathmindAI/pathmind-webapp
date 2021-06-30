@@ -8,10 +8,11 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout.SplitterDragendEvent;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
@@ -33,6 +34,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetri
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewComparisonExperimentArchivedSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyServerDeploymentUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewPolicyUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewRunUpdateSubscriber;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +83,10 @@ public class ExperimentView extends AbstractExperimentView {
 
     @Autowired
     private ModelCheckerService modelCheckerService;
+
+    @Autowired
+    private UserDAO userDAO;
+
     @Value("${pathmind.early-stopping.url}")
     private String earlyStoppingUrl;
 
@@ -158,6 +164,7 @@ public class ExperimentView extends AbstractExperimentView {
                 new ExperimentViewFavoriteSubscriber(this),
                 new ExperimentViewPolicyUpdateSubscriber(this, experimentDAO),
                 new ExperimentViewRunUpdateSubscriber(this, experimentDAO),
+                new ExperimentViewPolicyServerDeploymentUpdateSubscriber(this),
                 new ExperimentViewComparisonExperimentArchivedSubscriber(this));
     }
 
@@ -278,11 +285,11 @@ public class ExperimentView extends AbstractExperimentView {
      * This is overwritten by ShareExperimentView where we only want a subset of buttons.
      */
     protected ExperimentTitleBar createExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComponents, this::getExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userDAO);
     }
 
     private ExperimentTitleBar createComparisonExperimentTitleBar() {
-        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService);
+        return new ExperimentTitleBar(this, this::updateComparisonComponents, this::getComparisonExperimentLock, getUISupplier(), runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, userDAO);
     }
 
     private SplitLayout getBottomPanel() {
@@ -372,5 +379,13 @@ public class ExperimentView extends AbstractExperimentView {
 
     public ExperimentChartsPanel getComparisonChartsPanel() {
         return comparisonChartsPanel;
+    }
+
+    public ExperimentTitleBar getExperimentTitleBar() {
+        return experimentTitleBar;
+    }
+
+    public ExperimentTitleBar getComparisonTitleBar() {
+        return comparisonTitleBar;
     }
 }

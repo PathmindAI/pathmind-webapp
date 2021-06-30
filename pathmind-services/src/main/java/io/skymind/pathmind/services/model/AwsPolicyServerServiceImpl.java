@@ -1,12 +1,5 @@
 package io.skymind.pathmind.services.model;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -20,20 +13,20 @@ import io.skymind.pathmind.services.training.cloud.aws.api.dto.DeploymentMessage
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import static io.skymind.pathmind.shared.services.PolicyServerService.PolicyServerSchema.typeOf;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -116,8 +109,6 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
         final boolean isPythonModel = ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()));
 
-        List<Observation> observationsForModel = observationDAO.getObservationsForModel(run.getModel().getId());
-
         PolicyServerService.PolicyServerSchema.PolicyServerSchemaBuilder schemaBuilder = PolicyServerService.PolicyServerSchema.builder();
         schemaBuilder
                 .parameters(
@@ -129,11 +120,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                                 .build()
                 );
 
-        Map<String, PolicyServerSchema.ObservationType> observationTypeMap =
-                CollectionUtils.emptyIfNull(observationsForModel).stream()
-                        .map(observation -> Map.entry(observation.getVariable(), typeOf(observation)))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        schemaBuilder.observations(observationTypeMap);
+        schemaBuilder.observations(observationDAO.getObservationsForModel(run.getModel().getId()));
 
         return schemaBuilder.build();
     }
