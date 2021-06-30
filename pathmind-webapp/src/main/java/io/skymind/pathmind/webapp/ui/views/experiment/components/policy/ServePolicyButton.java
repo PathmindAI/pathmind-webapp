@@ -16,6 +16,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 public class ServePolicyButton extends Button {
@@ -25,11 +26,13 @@ public class ServePolicyButton extends Button {
     private Dialog dialog;
     private Button closeButton;
     private UserDAO userDAO;
+    private SegmentIntegrator segmentIntegrator;
 
-    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, SegmentIntegrator segmentIntegrator) {
         super();
         this.policyServerService = policyServerService;
         this.userDAO = userDAO;
+        this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> openDialog());
     }
@@ -87,6 +90,7 @@ public class ServePolicyButton extends Button {
                 case FAILED: {
                     final Button retryButton = GuiUtils.getPrimaryButton("Redeploy Now", click -> {
                         policyServerService.triggerPolicyServerDeployment(experiment);
+                        segmentIntegrator.redeployPolicyServer();
                         updateDialogContent();
                         setServePolicyButtonText(true);
                     });
@@ -115,6 +119,7 @@ public class ServePolicyButton extends Button {
                             "Shut down",
                             () -> {
                                 policyServerService.destroyPolicyServerDeployment(experiment);
+                                segmentIntegrator.shutDownPolicyServer();
                                 setServePolicyButtonText(true);
                             });
                         });
@@ -140,6 +145,7 @@ public class ServePolicyButton extends Button {
                 }
                 case NOT_DEPLOYED: {
                     policyServerService.triggerPolicyServerDeployment(experiment);
+                    segmentIntegrator.deployPolicyServer();
                     // intentional fallthrough to PENDING state
                 }
                 case PENDING:

@@ -146,7 +146,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new ServePolicyButton(policyServerService, userDAO);
+        servePolicyButton = new ServePolicyButton(policyServerService, userDAO, experimentView.getSegmentIntegrator());
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
