@@ -85,7 +85,6 @@ def process_message(message):
     else:
         UrlPath=body['UrlPath']
     helm_name="policy-"+JobId
-    domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
     tag=ENVIRONMENT+JobId
     sns=boto3.client('sns')
@@ -125,7 +124,7 @@ def process_message(message):
                 policy_server_status=3
             else:
                 app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,UrlPath,NAMESPACE)
+                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,UrlPath,NAMESPACE)
                 if output.exit_code != 0:
                     policy_server_status=3
         except Exception as e:
