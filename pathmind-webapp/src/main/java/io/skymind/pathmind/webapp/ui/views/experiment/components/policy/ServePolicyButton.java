@@ -20,6 +20,8 @@ import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 public class ServePolicyButton extends Button {
 
     private PolicyServerService policyServerService;
@@ -35,7 +37,42 @@ public class ServePolicyButton extends Button {
         this.userDAO = userDAO;
         this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-        addClickListener(click -> openDialog());
+        addClickListener(click -> {
+            Boolean hasExistingDeployedPolicyServer = true; // TODO -> get the actual value
+            // Check if the user is a free user & whether the user has an existing deployed policy server
+            Boolean canDeploy = false;
+            // Boolean canDeploy = !userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() || (
+            //     userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
+            //     !hasExistingDeployedPolicyServer
+            // );
+            if (canDeploy) {
+                openDeploymentDialog();
+            } else {
+                openUndeployableDialog();
+            }
+        });
+    }
+
+    private void openUndeployableDialog() {
+        Dialog undeployableDialog = new Dialog();
+        Button upgradeButton = GuiUtils.getPrimaryButton("Upgrade to Pro now", click -> {
+            getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
+            undeployableDialog.close();
+        });
+        Button checkExistingPolicyServerButton = new Button("Review and shut down your existing policy server", click -> {
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, "" + 123)); // 123 should be replaced with the actual experiment id
+            undeployableDialog.close();
+        });
+        Button cancelButton = new Button("Cancel", click -> undeployableDialog.close());
+        undeployableDialog.add(
+            new Paragraph("You've reached the limit for your free plan."),
+            WrapperUtils.wrapVerticalWithNoPadding(
+                upgradeButton,
+                checkExistingPolicyServerButton,
+                cancelButton
+            )
+        );
+        undeployableDialog.open();
     }
 
     public void setServePolicyButtonText(Boolean isCompletedWithPolicy) {
@@ -64,7 +101,7 @@ public class ServePolicyButton extends Button {
         setText(servePolicyButtonText);
     }
 
-    private void openDialog() {
+    private void openDeploymentDialog() {
         dialog = new Dialog();
         closeButton.addClickListener(event -> {
             dialog.close();
