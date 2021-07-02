@@ -19,12 +19,12 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.RewardScore;
-import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -337,5 +337,15 @@ public class RunDAO {
 
     public PolicyServerService.DeploymentStatus policyServerDeployedStatus(long experimentId) {
         return RunRepository.fetchPolicyServerStatus(ctx, experimentId);
+    }
+
+    @Value
+    public static class ActivePolicyServerInfo {
+        long experimentId;
+        long runId;
+    }
+
+    public List<ActivePolicyServerInfo> fetchExperimentIdWithActivePolicyServer(long userId) {
+        return RunRepository.fetchActivePolicyServerInfo(ctx, userId);
     }
 }

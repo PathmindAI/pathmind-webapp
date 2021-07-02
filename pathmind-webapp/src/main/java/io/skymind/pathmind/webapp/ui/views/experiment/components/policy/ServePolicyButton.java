@@ -11,7 +11,9 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -22,6 +24,10 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ServePolicyButton extends Button {
 
     private PolicyServerService policyServerService;
@@ -29,35 +35,37 @@ public class ServePolicyButton extends Button {
     private Dialog dialog;
     private Button closeButton;
     private UserDAO userDAO;
+    private RunDAO runDAO;
     private SegmentIntegrator segmentIntegrator;
 
-    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, SegmentIntegrator segmentIntegrator) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, RunDAO runDAO, SegmentIntegrator segmentIntegrator) {
         super();
         this.policyServerService = policyServerService;
         this.userDAO = userDAO;
+        this.runDAO = runDAO;
         this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> {
-            Boolean hasExistingDeployedPolicyServer = true; // TODO -> get the actual value
-            Boolean thisIsTheExistingPolicyServer = false; // TODO -> compare the experiment id of the existing policy server and the experiment id of this policy server button
-            // Check if the user is a free user & whether the user has an existing deployed policy server
-            Boolean canOpenDeployPopup = false;
-            // Boolean canDeploy = !userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() || 
-            //     (userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
-            //             !hasExistingDeployedPolicyServer) || 
-            //     (userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
-            //             hasExistingDeployedPolicyServer &&
-            //             thisIsTheExistingPolicyServer
-            // );
-            if (canOpenDeployPopup) {
-                openDeploymentDialog();
-            } else {
-                openUndeployableDialog();
+            final long userId = experiment.getProject().getPathmindUserId();
+            final PathmindUser user = userDAO.findById(userId);
+            final boolean isBasicUser = !UserRole.isInternalOrEnterpriseOrPartnerUser(user.getAccountType());
+            List<RunDAO.ActivePolicyServerInfo> expWithDeployedServers =
+                    runDAO.fetchExperimentIdWithActivePolicyServer(userId);
+
+            List<RunDAO.ActivePolicyServerInfo> otherActiveDeployedServers = expWithDeployedServers.stream()
+                            .filter(info -> info.getExperimentId() != experiment.getId()).collect(Collectors.toList());
+
+            if (isBasicUser) {
+                if(otherActiveDeployedServers.isEmpty()) {
+                    openDeploymentDialog();
+                } else {
+                    openUndeployableDialog(otherActiveDeployedServers.get(0).getExperimentId());
+                }
             }
         });
     }
 
-    private void openUndeployableDialog() {
+    private void openUndeployableDialog(long experimentIdWithActivePolicyServer) {
         Dialog undeployableDialog = new Dialog();
         Button upgradeButton = GuiUtils.getPrimaryButton("Upgrade to Pro now", click -> {
             segmentIntegrator.navigatedToPricingFromPolicyServerLimitPopup();
@@ -65,7 +73,7 @@ public class ServePolicyButton extends Button {
             undeployableDialog.close();
         });
         Button checkExistingPolicyServerButton = new Button("Review and shut down your existing policy server", click -> {
-            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, "" + 123)); // 123 should be replaced with the actual experiment id
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, "" + experimentIdWithActivePolicyServer));
             undeployableDialog.close();
         });
         Button cancelButton = new Button("Cancel", click -> undeployableDialog.close());
