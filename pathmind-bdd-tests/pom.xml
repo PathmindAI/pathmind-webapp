@@ -16,7 +16,6 @@
         <serenity.cucumber.version>1.9.45</serenity.cucumber.version>
         <webdriver.manager.version>3.8.0</webdriver.manager.version>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>net.serenity-bdd</groupId>
