@@ -89,11 +89,10 @@ public class ModelDetailsWizardPanel extends VerticalLayout {
     }
 
     private Component getNotesFieldPanel() {
-        VerticalLayout wrapper = WrapperUtils.wrapWidthFullVertical(
+        VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 LabelFactory.createLabel("Notes", CssPathmindStyles.BOLD_LABEL),
                 LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
                 notesFieldTextArea);
-        GuiUtils.removeMarginsPaddingAndSpacing(wrapper);
         return wrapper;
     }
 }
