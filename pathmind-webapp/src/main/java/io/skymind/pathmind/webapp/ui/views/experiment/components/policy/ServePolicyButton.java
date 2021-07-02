@@ -39,13 +39,17 @@ public class ServePolicyButton extends Button {
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> {
             Boolean hasExistingDeployedPolicyServer = true; // TODO -> get the actual value
+            Boolean thisIsTheExistingPolicyServer = false; // TODO -> compare the experiment id of the existing policy server and the experiment id of this policy server button
             // Check if the user is a free user & whether the user has an existing deployed policy server
-            Boolean canDeploy = false;
-            // Boolean canDeploy = !userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() || (
-            //     userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
-            //     !hasExistingDeployedPolicyServer
+            Boolean canOpenDeployPopup = false;
+            // Boolean canDeploy = !userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() || 
+            //     (userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
+            //             !hasExistingDeployedPolicyServer) || 
+            //     (userDAO.findById(experiment.getProject().getPathmindUserId()).isBasicPlanUser() &&
+            //             hasExistingDeployedPolicyServer &&
+            //             thisIsTheExistingPolicyServer
             // );
-            if (canDeploy) {
+            if (canOpenDeployPopup) {
                 openDeploymentDialog();
             } else {
                 openUndeployableDialog();
