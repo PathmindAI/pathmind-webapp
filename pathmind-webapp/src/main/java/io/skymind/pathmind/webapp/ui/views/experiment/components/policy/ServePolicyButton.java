@@ -105,7 +105,7 @@ public class ServePolicyButton extends Button {
                 }
                 case DEPLOYED: {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
-                    final Anchor docsLink = new Anchor(url + "/docs", url + "/docs");
+                    final Anchor docsLink = new Anchor(url + "/redoc", url + "/redoc");
                     docsLink.setTarget("_blank");
                     dialogContent.add(
                             new H3("The Policy is Live"),
