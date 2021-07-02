@@ -525,6 +525,6 @@
     margin: 0;
 }
 
-.serve-policy-instructions vaadin-button {
-    width: 100%;
+.serve-policy-instructions vaadin-button:first-child {
+    margin-right: var(--lumo-space-m);
 }
