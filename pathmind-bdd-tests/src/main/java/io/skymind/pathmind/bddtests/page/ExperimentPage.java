@@ -429,4 +429,17 @@ public class ExperimentPage extends PageObject {
         getDriver().close();
         getDriver().switchTo().window(tabs.get(0));
     }
+
+    public void checkShutdownPolicyServerConfirmationPopup() {
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//confirm-popup")));
+        assertThat(e.findElement(By.cssSelector("h3")).getText(), is("Shut down policy server"));
+        assertThat(e.findElement(By.cssSelector(".message")).getText(), containsString("This will shut down the deployed policy server for this experiment (id: 33042). You will be able to redeploy the policy server."));
+    }
+
+    public void clickPopUpDialogIdCancel(String id) {
+        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
+        waitFor(ExpectedConditions.visibilityOf(popupShadow));
+        WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
+        popupShadowRoot.findElement(By.cssSelector("#" + id)).click();
+    }
 }

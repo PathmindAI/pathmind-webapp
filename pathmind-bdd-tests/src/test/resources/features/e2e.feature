@@ -79,6 +79,15 @@ Feature: E2E
     When Click pop-up dialog close btn
     #Check policy server api requests
     #TODO
+    #Check policy server stop server
+    When Click in 'Shut Down Policy Server' button
+    When Check shutdown policy server confirmation popup
+    When Click pop-up dialog id 'cancel'
+    Then Click in 'Policy Server Live' button
+    When Check policy server live overlay
+    When Click in 'Shut Down Policy Server' button
+    When Click pop-up dialog id 'confirm'
+
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn
