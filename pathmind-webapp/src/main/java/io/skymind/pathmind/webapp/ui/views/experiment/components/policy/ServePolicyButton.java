@@ -56,6 +56,7 @@ public class ServePolicyButton extends Button {
     private void openUndeployableDialog() {
         Dialog undeployableDialog = new Dialog();
         Button upgradeButton = GuiUtils.getPrimaryButton("Upgrade to Pro now", click -> {
+            segmentIntegrator.navigatedToPricingFromPolicyServerLimitPopup();
             getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
             undeployableDialog.close();
         });

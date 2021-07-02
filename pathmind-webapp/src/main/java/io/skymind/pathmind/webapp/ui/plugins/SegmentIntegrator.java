@@ -144,6 +144,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER);
     }
 
+    public void navigatedToPricingFromPolicyServerLimitPopup() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_POLICY_SERVER_LIMIT_POPUP);
+    }
+
     public void subscriptionCancelled() {
         track(EVENT_CANCEL_SUBSCRIPTION);
     }
