@@ -19,6 +19,7 @@ import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 public class ServePolicyButton extends Button {
 
     private PolicyServerService policyServerService;
@@ -145,7 +146,9 @@ public class ServePolicyButton extends Button {
                         new Paragraph(new Span("Read the docs for more details:"),
                                     new Html("<br/>"),
                                     docsLink),
-                        shutDownPolicyServerButton
+                        WrapperUtils.wrapWidthFullBetweenHorizontal(
+                            shutDownPolicyServerButton,
+                            GuiUtils.getPrimaryButton("Close", click -> dialog.close()))
                     );
                     break;
                 }
