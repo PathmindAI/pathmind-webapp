@@ -234,7 +234,7 @@ class RunRepository {
                 .fetchOne(Tables.RUN.POLICY_SERVER_STATUS);
     }
 
-    public static List<RunDAO.ActivePolicyServerInfo> fetchActivePolicyServerInfo(DSLContext ctx, long userId) {
+    public static List<PolicyServerService.ActivePolicyServerInfo> fetchActivePolicyServerInfo(DSLContext ctx, long userId) {
         return ctx.select(EXPERIMENT.ID, RUN.ID)
                 .from(PROJECT).innerJoin(MODEL).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .innerJoin(EXPERIMENT).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
@@ -244,7 +244,7 @@ class RunRepository {
                         PolicyServerService.DeploymentStatus.PENDING,
                         PolicyServerService.DeploymentStatus.DEPLOYED
                 ).and(PROJECT.PATHMIND_USER_ID.eq(userId))
-                ).fetch(expIdWithRunId-> new RunDAO.ActivePolicyServerInfo(expIdWithRunId.value1(), expIdWithRunId.value2()));
+                ).fetch(expIdWithRunId-> new PolicyServerService.ActivePolicyServerInfo(expIdWithRunId.value1(), expIdWithRunId.value2()));
 
     }
 

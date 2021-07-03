@@ -339,13 +339,7 @@ public class RunDAO {
         return RunRepository.fetchPolicyServerStatus(ctx, experimentId);
     }
 
-    @Value
-    public static class ActivePolicyServerInfo {
-        long experimentId;
-        long runId;
-    }
-
-    public List<ActivePolicyServerInfo> fetchExperimentIdWithActivePolicyServer(long userId) {
+    public List<PolicyServerService.ActivePolicyServerInfo> fetchExperimentIdWithActivePolicyServer(long userId) {
         return RunRepository.fetchActivePolicyServerInfo(ctx, userId);
     }
 }

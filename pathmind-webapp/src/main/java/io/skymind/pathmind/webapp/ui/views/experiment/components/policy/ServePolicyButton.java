@@ -13,7 +13,6 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
 
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -46,22 +45,13 @@ public class ServePolicyButton extends Button {
         this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> {
-            final long userId = experiment.getProject().getPathmindUserId();
-            final PathmindUser user = userDAO.findById(userId);
-            final boolean isBasicUser = !UserRole.isInternalOrEnterpriseOrPartnerUser(user.getAccountType());
-            List<RunDAO.ActivePolicyServerInfo> expWithDeployedServers =
-                    runDAO.fetchExperimentIdWithActivePolicyServer(userId);
-
-            List<RunDAO.ActivePolicyServerInfo> otherActiveDeployedServers = expWithDeployedServers.stream()
-                            .filter(info -> info.getExperimentId() != experiment.getId()).collect(Collectors.toList());
-
-            if (isBasicUser) {
-                if(otherActiveDeployedServers.isEmpty()) {
-                    openDeploymentDialog();
-                } else {
-                    openUndeployableDialog(otherActiveDeployedServers.get(0).getExperimentId());
-                }
+            try {
+                policyServerService.verifyDeploy(experiment);
+            } catch (PolicyServerService.NumberOfActivePolicyServersExceededException e) {
+                openUndeployableDialog(e.getExperimentsWithPolicyServers().get(0).getExperimentId());
+                return;
             }
+            openDeploymentDialog();
         });
     }
 

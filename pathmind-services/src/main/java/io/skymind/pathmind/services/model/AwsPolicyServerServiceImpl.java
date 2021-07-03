@@ -17,6 +17,8 @@ import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.PolicyServerService;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +28,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -179,6 +183,12 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
                     if (DeploymentStatus.DEPLOYABLE.contains(deploymentStatus)) {
 
+                        try {
+                            verifyDeploy(experiment);
+                        } catch (NumberOfActivePolicyServersExceededException e) {
+                            throw new RuntimeException(e);
+                        }
+
                         PolicyServerService.PolicyServerSchema schema = generateSchemaYaml(run);
                         saveSchemaYamlFile(run.getJobId(), schema);
 
@@ -196,5 +206,23 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                     awsApiClient.operatePolicyServer(message.build());
                 });
     }
+
+    @Override
+    public void verifyDeploy(Experiment experiment) throws NumberOfActivePolicyServersExceededException {
+        final long userId = experiment.getProject().getPathmindUserId();
+        final PathmindUser user = userDAO.findById(userId);
+        final boolean isBasicUser = user.isBasicPlanUser();
+        List<ActivePolicyServerInfo> expWithDeployedServers =
+                runDAO.fetchExperimentIdWithActivePolicyServer(userId);
+
+        List<ActivePolicyServerInfo> otherActiveDeployedServers = expWithDeployedServers.stream()
+                .filter(info -> info.getExperimentId() != experiment.getId()).collect(Collectors.toList());
+
+        if (isBasicUser && otherActiveDeployedServers.size() >= 1) {
+            log.info("User {} has policy servers running: {}", userId, otherActiveDeployedServers);
+            throw new NumberOfActivePolicyServersExceededException(otherActiveDeployedServers);
+        }
+    }
+
 
 }
