@@ -265,4 +265,14 @@ public class ExperimentPageSteps {
     public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
         experimentPage.checkPolicyServerLiveOverlay();
     }
+
+    @Step
+    public void checkShutdownPolicyServerConfirmationPopup() {
+        experimentPage.checkShutdownPolicyServerConfirmationPopup();
+    }
+
+    @Step
+    public void clickPopUpDialogIdCancel(String id) {
+        experimentPage.clickPopUpDialogIdCancel(id);
+    }
 }
