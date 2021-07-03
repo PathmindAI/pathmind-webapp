@@ -129,6 +129,7 @@ public class ProjectFileCheckService {
 
     private Hyperparams buildHyperparams(HyperparametersDTO params) {
     	return Hyperparams.builder()
+                .numAction(Integer.parseInt(params.getActions()))
                 .numObservation(Integer.parseInt(params.getObservations()))
                 .rewardVariableFunction(params.getRewardFunction())
                 .rewardVariableNames(params.getRewardVariableNames())

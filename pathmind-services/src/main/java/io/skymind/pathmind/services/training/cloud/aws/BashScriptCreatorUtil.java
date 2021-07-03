@@ -31,7 +31,9 @@ public class BashScriptCreatorUtil {
     public static String createObservationSnippet(List<Observation> selectedObservations) {
         assert selectedObservations != null && !selectedObservations.isEmpty();
         List<String> selectedObservationsVars = new ArrayList<>();
-        selectedObservations.stream().forEach(o -> {
+        selectedObservations.stream()
+            .filter(obs -> !obs.getVariable().equals("actionMask")) // filter out action mask observation
+            .forEach(o -> {
             if (ObservationDataType.isArray(o.getDataTypeEnum())) {
                 if (o.getDataTypeEnum() == ObservationDataType.BOOLEAN_ARRAY) {
                     for (int i = 0; i < o.getMaxItems(); i++) {
