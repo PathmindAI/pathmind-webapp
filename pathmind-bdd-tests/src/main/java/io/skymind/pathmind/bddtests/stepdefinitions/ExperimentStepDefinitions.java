@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.stepdefinitions;
 
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import cucumber.api.java.en.Then;
@@ -258,5 +259,30 @@ public class ExperimentStepDefinitions {
     @Then("^Check experiment page start run btn is active '(.*)'$")
     public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
         experimentPageSteps.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
+
+    @When("^Check deploying policy server overlay$")
+    public void checkDeployingPolicyServerOverlay() {
+        experimentPageSteps.checkDeployingPolicyServerOverlay();
+    }
+
+    @Then("^Check policy server live with (.*) minutes$")
+    public void checkPolicyServerLiveWithMinutes(int timeout) {
+        experimentPageSteps.checkPolicyServerLiveWithMinutes(timeout);
+    }
+
+    @When("^Check policy server live overlay$")
+    public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
+        experimentPageSteps.checkPolicyServerLiveOverlay();
+    }
+
+    @When("^Check shutdown policy server confirmation popup$")
+    public void checkShutdownPolicyServerConfirmationPopup() {
+        experimentPageSteps.checkShutdownPolicyServerConfirmationPopup();
+    }
+
+    @When("^Click pop-up dialog id '(.*)'$")
+    public void clickPopUpDialogIdCancel(String id) {
+        experimentPageSteps.clickPopUpDialogIdCancel(id);
     }
 }

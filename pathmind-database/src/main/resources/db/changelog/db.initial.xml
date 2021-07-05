@@ -1947,5 +1947,93 @@
         <dropColumn tableName="EXPERIMENT" columnName="GOALS_TOTAL_NUM" />
     </changeSet>
 
+    <changeSet id="3189-01" author="daehyun@pathmind.com">
+        <addColumn tableName="TRAINING_ERROR">
+            <column name="SUPPORT_ARTICLE" type="VARCHAR(255)"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINING_ERROR" columnName="SUPPORT_ARTICLE"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3189-02" author="daehyun@pathmind.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="Unsupported version of AnyLogic detected. Please upgrade to the latest version of AnyLogic."/>
+            <where>ID = 7</where>
+        </update>
+        <update tableName="TRAINING_ERROR">
+            <column name="DESCRIPTION" value="OutOfMemoryError: Experiment has crashed. Click here for solution."/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322888-outofmemoryerror-experiment-has-crashed"/>
+            <where>ID = 9</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="3189-03" author="daehyun@pathmind.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="ValueError: Reward should be finite scalar, got inf"/>
+            <column name="DESCRIPTION" value="ValueError: A value of infinity was detected in your rewards. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322833-valueerror-invalid-observations-or-rewards"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="ValueError: Reward should be finite scalar, got nan"/>
+            <column name="DESCRIPTION" value="ValueError: A value of NaN was detected in your rewards. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322833-valueerror-invalid-observations-or-rewards"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Observation outside expected value range"/>
+            <column name="DESCRIPTION" value="ValueError: An infinity or NaN was detected in your observations. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322833-valueerror-invalid-observations-or-rewards"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="RuntimeError: java.lang.RuntimeException: Engine error"/>
+            <column name="DESCRIPTION" value="RuntimeError: Your AnyLogic model has returned an error. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="https://help.pathmind.com/en/articles/4693760-reproducing-anylogic-engine-errors"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="No update in the log file process_output.log for more than 3649 seconds, job is killed"/>
+            <column name="DESCRIPTION" value="RuntimeError: Experiment has stalled and timed out. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322840-runtimeerror-experiment-has-stalled-and-timed-out"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Database lock acquisition failure"/>
+            <column name="DESCRIPTION" value="RuntimeError: Database writes and deletes are not permitted. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322843-runtimeerror-database-writes-and-deletes-are-not-permitted"/>
+        </insert>
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="RuntimeError: java.lang.RuntimeException: Could not do actions."/>
+            <column name="DESCRIPTION" value="RuntimeError: Could not do actions. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="http://help.pathmind.com/en/articles/5322845-runtime-error-could-not-do-actions"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3189-04" author="daehyun@pathmind.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="No update in the log file process_output.log for more than"/>
+            <where>ID = 19</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="3237-01" author="daehyun@pathmind.com">
+        <addColumn tableName="TRAINING_ERROR">
+            <column name="TARGET_FILE" type="VARCHAR(255)" defaultValue="process_output.log"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="TRAINING_ERROR" columnName="TARGET_FILE"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3237-02" author="daehyun@pathmind.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="TARGET_FILE" value="work/PPO/ExperimentErrorStackTrace.txt"/>
+            <where>ID = 20</where>
+        </update>
+    </changeSet>
 
 </databaseChangeLog>

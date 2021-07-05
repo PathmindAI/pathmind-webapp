@@ -43,7 +43,7 @@ class UploadModelInstructions extends PolymerElement {
         return {
             anylogicExportGuide: {
                 type: String,
-                value: "https://help.anylogic.com/index.jsp?topic=%2Fcom.anylogic.help%2Fhtml%2Frunning%2Fexport-java-application.html",
+                value: "https://anylogic.help/anylogic/running/export-java-application.html",
             },
             isZip: {
                 type: Boolean,

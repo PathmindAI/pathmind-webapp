@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services.model.analyze;
 
-
 import java.io.IOException;
 
 import lombok.Getter;
@@ -25,7 +24,5 @@ public class ModelBytes {
     public static ModelBytes error(String error) {
         return new ModelBytes(null, error);
     }
-
-
 
 }

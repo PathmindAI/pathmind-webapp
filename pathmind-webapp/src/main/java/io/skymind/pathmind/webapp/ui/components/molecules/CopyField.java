@@ -10,10 +10,17 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 public class CopyField extends PolymerTemplate<CopyField.Model> {
 
     public CopyField(String text) {
+        this(text, false);
+    }
+
+    public CopyField(String text, Boolean checkUrlReady) {
         getModel().setText(text);
+        getModel().setCheckUrlReady(checkUrlReady);
     }
 
     public interface Model extends TemplateModel {
         void setText(String text);
+
+        void setCheckUrlReady(Boolean checkUrlReady);
     }
 }

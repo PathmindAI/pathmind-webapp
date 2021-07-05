@@ -16,6 +16,9 @@ class LoadingSpinner extends PolymerElement {
                     width: var(--icon-size);
                     height: var(--icon-size);
                 }
+                :host([hidden]) {
+                    display: none;
+                }
                 div {
                     box-sizing: border-box;
                     content: "";

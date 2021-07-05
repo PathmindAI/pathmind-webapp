@@ -46,6 +46,8 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
 
     // Helper attributes for error handling to prevent extra processing with training
     private String trainingError;
+    private long trainingErrorId;
+    private String supportArticle;
     private boolean trainingStoppedEarly = false;
     private String trainingStoppedEarlyMessage;
 

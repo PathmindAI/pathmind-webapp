@@ -13,6 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HyperparametersDTO {
+    @NotBlank(message = "Number of actions cannot be blank")
+    private String actions;
+
     @NotBlank(message = "isEnabled cannot be blank")
     private boolean isEnabled;
 

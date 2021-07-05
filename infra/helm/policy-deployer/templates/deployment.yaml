@@ -59,6 +59,12 @@ spec:
               secretKeyRef:
                 name: awssecretaccesskey
                 key: AWS_SECRET_ACCESS_KEY
+          - name: GH_PAT
+            valueFrom:
+              secretKeyRef:
+                name: ghpat
+                key: GH_PAT
+          - name: AWS_SECRET_ACCESS_KEY
           - name: ENVIRONMENT
             value: "{{ .Values.env.ENVIRONMENT }}"
           - name: SQS_URL
@@ -68,6 +74,10 @@ spec:
               secretKeyRef:
                 name: dburlcli
                 key: DB_URL_CLI
+          - name: SNS_UPDATER_TOPIC_ARN
+            value: "{{ .Values.env.SNS_UPDATER_TOPIC_ARN }}"
+          - name: SNS_UPDATER_SQS_FILTER_ATTR
+            value: "{{ .Values.env.SNS_UPDATER_SQS_FILTER_ATTR }}"
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

@@ -43,5 +43,8 @@ public class SegmentTrackingEvents {
     public static final String EVENT_ARCHIVED = "Archived";
     public static final String EVENT_UNARCHIVED = "Unarchived";
     public static final String EVENT_NEW_EXPERIMENT = "New Experiment Created";
+    public static final String EVENT_POLICY_SERVER_DEPLOYMENT_STARTED = "Policy Server Deployment Started";
+    public static final String EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED = "Policy Server Redeployment Started After Failure";
+    public static final String EVENT_POLICY_SERVER_SHUT_DOWN = "Policy Server Deployment Shut Down";
 
 }

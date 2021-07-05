@@ -7,17 +7,16 @@ import java.util.Map;
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
+import io.skymind.pathmind.db.dao.ObservationDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
-import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.services.analytics.SegmentTrackerService;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.services.training.cloud.aws.api.client.AwsApiClientSQS;
-import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.RunUtils;
 import io.skymind.pathmind.updater.ExecutionProgressUpdater;
 import io.skymind.pathmind.updater.UpdaterService;
@@ -38,6 +37,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     private final SegmentTrackerService segmentTrackerService;
     private final PolicyServerService policyServerService;
     private final UserDAO userDAO;
+    private final ObservationDAO observationDAO;
     private final AwsApiClientSQS sqsClient;
     private final String punctuatorQueueUrl;
 
@@ -46,7 +46,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
                                        @Value("${pathmind.aws.sqs.updater_punctuator_queue_url}") String punctuatorQueueUrl,
                                        @Value("${pathmind.updater.completing.attempts}") int completingAttempts,
                                        EmailNotificationService emailNotificationService,
-                                       UpdaterService updaterService,
+                                       UpdaterService updaterService, ObservationDAO observationDAO,
                                        SegmentTrackerService segmentTrackerService) {
         this.runDAO = runDAO;
         this.sqsClient = sqsClient;
@@ -57,6 +57,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
         this.segmentTrackerService = segmentTrackerService;
         this.policyServerService = policyServerService;
         this.userDAO = userDAO;
+        this.observationDAO = observationDAO;
     }
 
     @Override
@@ -98,23 +99,7 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
     }
 
     private void policyServerForRun(Run run) {
-        final boolean generateSchemaYaml =
-                Completed == run.getStatusEnum()
-                        && ModelType.isPythonModel(ModelType.fromValue(run.getModel().getModelType()));
-        if (generateSchemaYaml) {
-            long userId = run.getProject().getPathmindUserId();
-            PathmindUser user = userDAO.findById(userId);
-
-            PolicyServerService.PolicyServerSchema schema = PolicyServerService.PolicyServerSchema.builder()
-                    .parameters(
-                            PolicyServerService.PolicyServerSchema.Parameters.builder()
-                                    .discrete(false)
-                                    .tuple(false)
-                                    .apiKey(user.getApiKey())
-                            .build()
-                    )
-                    .build();
-            policyServerService.saveSchemaYamlFile(run.getJobId(), schema);
+        if (Completed == run.getStatusEnum()) {
             if (run.getExperiment().isDeployPolicyOnSuccess()) {
                 policyServerService.triggerPolicyServerDeployment(run.getExperiment());
             }
@@ -137,13 +122,6 @@ public class AWSExecutionProgressUpdater implements ExecutionProgressUpdater {
             emailNotificationService.sendTrainingCompletedEmail(run, jobStatus);
             runDAO.markAsNotificationSent(run.getId());
         }
-    }
-
-    private boolean hasJobId(Run run) {
-        if (run.getJobId() == null) {
-            log.error("Run {} marked as executing but no aws run id found for it.", run.getId());
-        }
-        return run.getJobId() != null;
     }
 
 }

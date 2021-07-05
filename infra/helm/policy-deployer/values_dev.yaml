@@ -16,6 +16,8 @@ image:
 env:
   SQS_URL: https://queue.amazonaws.com/839270835622/dev-policy-server.fifo
   ENVIRONMENT: dev
+  SNS_UPDATER_TOPIC_ARN: arn:aws:sns:us-east-1:839270835622:dev-updater-topic
+  SNS_UPDATER_SQS_FILTER_ATTR: dev
 
 ingress:
   enabled: false
