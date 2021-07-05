@@ -196,7 +196,7 @@ public class AWSApiClient {
 
 
     @SneakyThrows
-    public String deployPolicyServer(DeploymentMessage deploymentMessage) {
+    public String operatePolicyServer(DeploymentMessage deploymentMessage) {
         deploymentMessage.setS3Bucket(bucketName);
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(policyServerQueueUrl)
