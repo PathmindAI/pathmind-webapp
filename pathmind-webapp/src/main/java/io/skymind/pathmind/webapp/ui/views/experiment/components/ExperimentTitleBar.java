@@ -128,6 +128,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
             titleWithStar.add(actionDropdown);
         }
 
+        sharedWithSupportLabel.addClassName("shared-with-support-label");
+        sharedWithSupportLabel.getElement().addEventListener("click", click -> 
+                ShareWithSupportAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
                 new HorizontalLayout(archivedLabel, sharedWithSupportLabel),
