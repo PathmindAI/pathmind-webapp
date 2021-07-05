@@ -40,9 +40,9 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
-        Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
+        Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.shared]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
-                .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
+                .withProperty("shared", experiment -> experiment.isSharedWithSupport() ? "Shared" : ""))
                 .setSortProperty("name")
                 .setHeader("#")
                 .setAutoWidth(true)

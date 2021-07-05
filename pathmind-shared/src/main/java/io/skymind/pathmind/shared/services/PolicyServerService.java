@@ -32,6 +32,8 @@ public interface PolicyServerService {
 
     void triggerPolicyServerDeployment(Experiment experiment);
 
+    void destroyPolicyServerDeployment(Experiment experiment);
+
     String getPolicyServerUrl(Experiment experiment);
 
     DeploymentStatus getPolicyServerStatus(Experiment experiment);

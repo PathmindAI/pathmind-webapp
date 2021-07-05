@@ -127,27 +127,12 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
 
     @Override
     public void triggerPolicyServerDeployment(Experiment experiment) {
-        bestPolicyIfCompleted(experiment)
-                .ifPresent(policy -> {
-                    final Run run = policy.getRun();
-                    DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
-                    if (DeploymentStatus.DEPLOYABLE.contains(deploymentStatus)) {
+        operatePolicyServer(experiment, false);
+    }
 
-                        PolicyServerService.PolicyServerSchema schema = generateSchemaYaml(run);
-                        saveSchemaYamlFile(run.getJobId(), schema);
-
-                        final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
-                        DeploymentMessage message = DeploymentMessage.builder()
-                                .jobId(run.getJobId())
-                                .s3ModelPath(policyFile)
-                                .s3SchemaPath(run.getJobId() + "/schema.yaml")
-                                .build();
-
-                        awsApiClient.deployPolicyServer(message);
-                        deploymentStatus = runDAO.updatePolicyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
-                    }
-                    run.setPolicyServerStatus(deploymentStatus);
-                });
+    @Override
+    public void destroyPolicyServerDeployment(Experiment experiment) {
+        operatePolicyServer(experiment, true);
     }
 
     @Override
@@ -180,6 +165,36 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
         return Optional.of(experiment)
                 .filter(e -> e.getTrainingStatusEnum() == RunStatus.Completed)
                 .map(Experiment::getBestPolicy);
+    }
+
+    private void operatePolicyServer(Experiment experiment, boolean destroy) {
+        bestPolicyIfCompleted(experiment)
+                .ifPresent(policy -> {
+                    final Run run = policy.getRun();
+                    DeploymentStatus deploymentStatus = runDAO.policyServerDeployedStatus(run.getId());
+
+                    DeploymentMessage.DeploymentMessageBuilder message =
+                            DeploymentMessage.builder()
+                                    .jobId(run.getJobId());
+
+                    if (DeploymentStatus.DEPLOYABLE.contains(deploymentStatus)) {
+
+                        PolicyServerService.PolicyServerSchema schema = generateSchemaYaml(run);
+                        saveSchemaYamlFile(run.getJobId(), schema);
+
+                        final String policyFile = policyFileService.getPolicyFileLocation(policy.getId());
+                        message
+                                .s3ModelPath(policyFile)
+                                .s3SchemaPath(run.getJobId() + "/schema.yaml");;
+
+                        deploymentStatus = runDAO.updatePolicyServerDeployedStatus(run.getId(), DeploymentStatus.PENDING);
+                        run.setPolicyServerStatus(deploymentStatus);
+                    } else if (DeploymentStatus.DEPLOYED == deploymentStatus && destroy) {
+                        message.destroy("1");
+                    }
+
+                    awsApiClient.operatePolicyServer(message.build());
+                });
     }
 
 }

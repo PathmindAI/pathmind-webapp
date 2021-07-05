@@ -36,6 +36,7 @@ import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.shared.constants.ModelType;
+import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Observation;
@@ -346,8 +347,20 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             List<Observation> observationList = new ArrayList<>();
             if (result != null) {
                 Hyperparams alResult = result.getParams();
+
+                // this is for policy server to support action masking model
+                Observation actionMasking = null;
+                if (alResult.isActionMask()) {
+                    actionMasking = new Observation();
+                    actionMasking.setVariable("actionMask");
+                    actionMasking.setDataTypeEnum(ObservationDataType.BOOLEAN_ARRAY);
+                    actionMasking.setArrayIndex(0);
+                    actionMasking.setMaxItems(alResult.getNumAction());
+                }
+
                 rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
-                observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes());
+                observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes(), actionMasking);
+
                 model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setModelType(ModelType.fromName(alResult.getModelType()).getValue());
