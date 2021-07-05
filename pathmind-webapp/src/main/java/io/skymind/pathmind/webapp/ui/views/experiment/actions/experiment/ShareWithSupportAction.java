@@ -37,7 +37,7 @@ public class ShareWithSupportAction {
         shareButton.setVisible(!experiment.isSharedWithSupport());
     }
 
-    private static void createInstructionDialog(ExperimentView experimentView) {
+    public static void createInstructionDialog(ExperimentView experimentView) {
         Dialog dialog = new Dialog();
         experimentView.getElement().executeJs("return window.location.href;").then(String.class, url -> {
             Div dialogContent = new Div();
