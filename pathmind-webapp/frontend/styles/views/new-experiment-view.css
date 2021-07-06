@@ -58,7 +58,7 @@
 }
 
 .new-experiment-view .reward-function-wrapper {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     margin-top: 0;
 }
 
@@ -127,11 +127,6 @@
 .new-experiment-view .errors-wrapper {
     display: flex;
     flex-direction: column;
-    flex: 2;
-}
-
-.new-experiment-view .notes-wrapper {
-    flex: 1;
 }
 
 .new-experiment-view .error-message-wrapper {

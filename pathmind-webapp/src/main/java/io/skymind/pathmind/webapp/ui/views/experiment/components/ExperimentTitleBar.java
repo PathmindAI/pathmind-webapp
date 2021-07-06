@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -24,7 +25,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
-import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
@@ -92,7 +92,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                               Supplier<Object> getLockSupplier, Supplier<Optional<UI>> getUISupplier,
                               RunDAO runDAO, FeatureManager featureManager, PolicyDAO policyDAO, PolicyFileService policyFileService, PolicyServerService policyServerService,
                               TrainingService trainingService, ModelService modelService, boolean isExportPolicyButtonOnly) {
-        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, null, false);
+        this(experimentView, updateExperimentViewRunnable, getLockSupplier, getUISupplier, runDAO, featureManager, policyDAO, policyFileService, policyServerService, trainingService, modelService, null, isExportPolicyButtonOnly);
     }
 
     /**
@@ -128,6 +128,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
             titleWithStar.add(actionDropdown);
         }
 
+        sharedWithSupportLabel.addClassName("shared-with-support-label");
+        sharedWithSupportLabel.getElement().addEventListener("click", click -> 
+                ShareWithSupportAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
                 new HorizontalLayout(archivedLabel, sharedWithSupportLabel),
@@ -146,20 +149,17 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new ServePolicyButton(policyServerService, userDAO);
+        servePolicyButton = new ServePolicyButton(policyServerService, userDAO, experimentView.getSegmentIntegrator());
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelLink = new DownloadModelLink(modelService, experimentView.getSegmentIntegrator(), true, isPythonModel);
 
-        // Even though in this case we're constructing extra buttons for nothing they should be very lightweight and it makes the code a lot easier to manage.
+        // isExportPolicyButtonOnly is true for SharedExperimentView only
         if (isExportPolicyButtonOnly) {
             return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
-            List<Button> actionButtons = new ArrayList<Button>();
-            actionButtons.add(shareButton);
-            actionButtons.add(archiveButton);
-            actionButtons.add(unarchiveButton);
+            List<Button> actionButtons = new ArrayList<Button>(Arrays.asList(shareButton, archiveButton, unarchiveButton));
             actionDropdown = new ActionDropdown(actionButtons);
             return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
@@ -171,7 +171,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         return buttonsWrapper;
     }
 
-    private void updateComponentEnablements() {
+    public void updateComponentEnablements() {
         archivedLabel.setVisible(experiment.isArchived());
         sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
 

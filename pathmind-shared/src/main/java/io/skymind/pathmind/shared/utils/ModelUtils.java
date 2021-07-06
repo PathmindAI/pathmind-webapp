@@ -62,8 +62,12 @@ public class ModelUtils {
         return ModelUtils.LIB_MODEL_MATCH.test(filename);
     }
 
-    public static List<Observation> convertToObservations(List<String> observationNames, List<String> observationTypes) {
+    public static List<Observation> convertToObservations(List<String> observationNames, List<String> observationTypes, Observation actionMasking) {
         Map<String, Observation> auxObservations = new LinkedHashMap<>();
+        if (actionMasking != null) {
+            auxObservations.put(actionMasking.getVariable(), actionMasking);
+        }
+
         for (int i = 0; i < observationNames.size(); i++) {
             String name = observationNames.get(i);
             String type = observationTypes.get(i);

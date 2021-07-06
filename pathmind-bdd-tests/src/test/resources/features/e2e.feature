@@ -69,6 +69,25 @@ Feature: E2E
     #Check export policy
     When Click in 'Export Policy' button
     When Check export policy filename '<project name>', '-M1-simplestochasticmodel-E2-Policy.zip'
+    #    ------------------------
+    #Check policy server deploying
+    When Click in 'Start Policy Server' button
+    When Check deploying policy server overlay
+    Then Check policy server live with 10 minutes
+    Then Click in 'Policy Server Live' button
+    When Check policy server live overlay
+    When Click pop-up dialog close btn
+    #Check policy server api requests
+    #TODO
+    #Check policy server stop server
+    When Click in 'Shut Down Policy Server' button
+    When Check shutdown policy server confirmation popup
+    When Click pop-up dialog id 'cancel'
+    Then Click in 'Policy Server Live' button
+    When Check policy server live overlay
+    When Click in 'Shut Down Policy Server' button
+    When Click pop-up dialog id 'confirm'
+
     When Check side bar experiments list Experiment #1,Experiment #2
     Then Check page title is Experiment #2
     When Click model breadcrumb btn

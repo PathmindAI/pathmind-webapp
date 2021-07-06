@@ -1,5 +1,6 @@
 package io.skymind.pathmind.bddtests.steps;
 
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import io.skymind.pathmind.bddtests.page.ExperimentPage;
@@ -248,5 +249,30 @@ public class ExperimentPageSteps {
     @Step
     public void checkExperimentPageStartRunBtnIsActiveTrue(Boolean shown) {
         experimentPage.checkExperimentPageStartRunBtnIsActiveTrue(shown);
+    }
+
+    @Step
+    public void checkDeployingPolicyServerOverlay() {
+        experimentPage.checkDeployingPolicyServerOverlay();
+    }
+
+    @Step
+    public void checkPolicyServerLiveWithMinutes(int timeout) {
+        experimentPage.checkPolicyServerLiveWithMinutes(timeout);
+    }
+
+    @Step
+    public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
+        experimentPage.checkPolicyServerLiveOverlay();
+    }
+
+    @Step
+    public void checkShutdownPolicyServerConfirmationPopup() {
+        experimentPage.checkShutdownPolicyServerConfirmationPopup();
+    }
+
+    @Step
+    public void clickPopUpDialogIdCancel(String id) {
+        experimentPage.clickPopUpDialogIdCancel(id);
     }
 }

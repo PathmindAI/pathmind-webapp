@@ -150,17 +150,21 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        HorizontalLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapWidthFullHorizontal(
-                rewardFunctionEditor,
+        SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(rewardFunctionEditor,
                 rewardVariablesPanel,
-                observationsPanel);
+                80);
+        rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardFunctionEditorWrapper,
+                observationsPanel,
+                75);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
-        rewardFunctionAndObservationsWrapper.setSpacing(false);
-        HorizontalLayout errorAndNotesContainer = WrapperUtils.wrapWidthFullHorizontal(
+        rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditor.getRewardFunctionErrorPanel(),
-                notesField);
+                notesField,
+                70);
         errorAndNotesContainer.setClassName("error-and-notes-container");
-        errorAndNotesContainer.setSpacing(false);
 
         splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
