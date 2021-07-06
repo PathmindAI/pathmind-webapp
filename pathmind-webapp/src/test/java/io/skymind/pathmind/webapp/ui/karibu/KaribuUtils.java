@@ -48,10 +48,11 @@ public class KaribuUtils {
         MockVaadin.setup(new Routes(), () -> new MockedUI());
     }
 
-    public static void setup(Component component) {
+    public static UI setup(Component component) {
         Function0<UI> uiFactory = () -> new MockedUI();
         MockVaadin.setup(new Routes(), uiFactory);
         new ParentComponent(uiFactory, component);
+        return uiFactory.invoke();
     }
 
     public static void setupRoutes(Class<? extends Component>... routes) {

@@ -3,16 +3,20 @@ package io.skymind.pathmind.webapp.ui.layouts.components;
 import java.util.Optional;
 
 import com.github.mvysny.kaributesting.v10.ContextMenuKt;
+import com.github.mvysny.kaributesting.v10.mock.MockedUI;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Page;
+
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import io.skymind.pathmind.webapp.ui.karibu.KaribuUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
+import kotlin.jvm.functions.Function0;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,57 +32,60 @@ public class AccountHeaderPanelTest {
     private AccountHeaderPanel accountHeaderPanel;
     private UI ui;
 
-    // @Before
-    // public void setUp() {
-    //     PathmindUser user = new PathmindUser();
-    //     user.setFirstname("Joe");
-    //     user.setLastname("Cool");
+    @Before
+    public void setUp() {
+        PathmindUser user = new PathmindUser();
+        user.setFirstname("Joe");
+        user.setLastname("Cool");
 
-    //     TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
-    //     SecurityContextHolder.getContext().setAuthentication(auth);
+        TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-    //     KaribuUtils.setup();
-    //     accountHeaderPanel = new AccountHeaderPanel(() -> UI.getCurrent().getUI(), user, new FeatureManager(false, false, false));
-    //     ui = UI.getCurrent();
-    // }
+        accountHeaderPanel = new AccountHeaderPanel(() -> UI.getCurrent().getUI(), user, new FeatureManager(false, false, false));
+        ui = KaribuUtils.setup(accountHeaderPanel);
+    }
 
-    // @After
-    // public void tearDown() {
-    //     SecurityContextHolder.clearContext();
-    //     KaribuUtils.tearDown();
-    // }
+    @After
+    public void tearDown() {
+        SecurityContextHolder.clearContext();
+        KaribuUtils.tearDown();
+    }
 
-    // @Test
-    // public void searchBoxIsVisible() {
-    //     _get(accountHeaderPanel, SearchBox.class);
-    // }
+    @Test
+    public void searchBoxIsVisible() {
+        _get(accountHeaderPanel, SearchBox.class);
+    }
 
-    // @Test
-    // public void nameIsFormattedCorrectly() {
-    //     MenuBar menuBar = _get(accountHeaderPanel, MenuBar.class);
+    @Test
+    public void nameIsFormattedCorrectly() {
+        MenuBar menuBar = _get(accountHeaderPanel, MenuBar.class);
 
-    //     HorizontalLayout rootItemComponent = (HorizontalLayout) menuBar.getItems().get(0).getChildren().findFirst().orElse(null);
-    //     Span usernameSpan = (Span) rootItemComponent.getComponentAt(1);
+        HorizontalLayout rootItemComponent = (HorizontalLayout) menuBar.getItems().get(0).getChildren().findFirst().orElse(null);
+        Span usernameSpan = (Span) rootItemComponent.getComponentAt(1);
 
-    //     assertEquals("Joe Cool", usernameSpan.getText());
-    // }
+        assertEquals("Joe Cool", usernameSpan.getText());
+    }
 
-    // @Test
-    // public void clickingOnAccountNavigatesToAccountView() {
-    //     Mockito.doNothing().when(ui).navigate(AccountView.class);
+    // TODO -> TO BE fIXED
+    @Test
+    public void clickingOnAccountNavigatesToAccountView() {
+        Mockito.doNothing().when(ui).navigate(AccountView.class);
 
-    //     ContextMenuKt._clickItemWithCaption(_get(accountHeaderPanel, MenuBar.class), "Account");
+        ContextMenuKt._clickItemWithCaption(_get(accountHeaderPanel, MenuBar.class), "Account");
 
-    //     Mockito.verify(ui, Mockito.times(1)).navigate(AccountView.class);
-    // }
+        _get(AccountView.class);
 
-    // @Test
-    // public void clickingOnSignOutNavigatesToSignOutLocation() {
-    //     Page pageMock = Mockito.mock(Page.class);
-    //     // Mockito.when(ui.getPage()).thenReturn(pageMock);
+        Mockito.verify(ui, Mockito.times(1)).navigate(AccountView.class);
+    }
 
-    //     ContextMenuKt._clickItemWithCaption(_get(accountHeaderPanel, MenuBar.class), "Sign out");
+    // TODO -> TO BE fIXED
+    @Test
+    public void clickingOnSignOutNavigatesToSignOutLocation() {
+        Page pageMock = Mockito.mock(Page.class);
+        Mockito.when(ui.getPage()).thenReturn(pageMock);
 
-    //     Mockito.verify(pageMock, Mockito.times(1)).setLocation("sign-out");
-    // }
+        ContextMenuKt._clickItemWithCaption(_get(accountHeaderPanel, MenuBar.class), "Sign out");
+
+        Mockito.verify(pageMock, Mockito.times(1)).setLocation("sign-out");
+    }
 } 
