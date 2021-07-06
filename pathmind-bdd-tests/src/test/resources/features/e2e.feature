@@ -73,7 +73,7 @@ Feature: E2E
     #Check policy server deploying
     When Click in 'Start Policy Server' button
     When Check deploying policy server overlay
-    Then Check policy server live with 10 minutes
+    Then Check policy server live with 20 minutes
     Then Click in 'Policy Server Live' button
     When Check policy server live overlay
     When Click pop-up dialog close btn
