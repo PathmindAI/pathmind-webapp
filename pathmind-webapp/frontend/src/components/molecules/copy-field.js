@@ -80,11 +80,11 @@ class CopyField extends PolymerElement {
     ready() {
         super.ready();
 
-        window.checkUrl = this.checkUrl.bind(this);
+        this.checkUrl = this.checkUrl.bind(this);
 
         if (this.checkUrlReady) {
             this.showSpinner();
-            checkUrl();
+            this.checkUrl();
         } else {
             this.$.spinner.setAttribute("hidden", true);
         }
@@ -114,7 +114,7 @@ class CopyField extends PolymerElement {
             .then(response => {
                 if (response.status != 200) {
                     this.showSpinner();
-                    requestAnimationFrame(checkUrl);
+                    requestAnimationFrame(this.checkUrl);
                 } else {
                     this.$.spinner.setAttribute("hidden", true);
                     this.$.copy.removeAttribute("hidden");
