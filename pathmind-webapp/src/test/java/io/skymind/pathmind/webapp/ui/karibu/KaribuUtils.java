@@ -15,6 +15,8 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.page.KaribuExtendedClientDetails;
 import org.mockito.Mockito;
 
+import kotlin.jvm.functions.Function0;
+
 import static org.junit.Assert.assertSame;
 
 public class KaribuUtils {
@@ -23,8 +25,8 @@ public class KaribuUtils {
 
         private final UI ui;
 
-        public ParentComponent(UI ui, Component component) {
-            this.ui = ui;
+        public ParentComponent(Function0<UI> uiFactory, Component component) {
+            this.ui = uiFactory.invoke().getCurrent();
             add(component);
         }
 
@@ -43,21 +45,18 @@ public class KaribuUtils {
 
 
     public static void setup() {
-        MockedUI ui = Mockito.spy(new MockedUI());
-        MockVaadin.setup(new Routes(), () -> ui);
+        MockVaadin.setup(new Routes(), () -> new MockedUI());
     }
 
-    public static UI setup(Component component) {
-        MockedUI ui = Mockito.spy(new MockedUI());
-        MockVaadin.setup(new Routes(), () -> ui);
-        new ParentComponent(ui, component);
-        return ui;
+    public static void setup(Component component) {
+        Function0<UI> uiFactory = () -> new MockedUI();
+        MockVaadin.setup(new Routes(), uiFactory);
+        new ParentComponent(uiFactory, component);
     }
 
     public static void setupRoutes(Class<? extends Component>... routes) {
         HashSet<Class<? extends Component>> routesSet = new HashSet<>(Arrays.asList(routes));
-        // MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
-        MockVaadin.setup(discoverRoutes());
+        MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> new MockedUI());
     }
 
     public static void tearDown() {
