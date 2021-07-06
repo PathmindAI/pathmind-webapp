@@ -116,7 +116,7 @@ public class ServePolicyButton extends Button {
                 }
                 case DEPLOYED: {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
-                    final Anchor docsLink = new Anchor(url + "/docs", url + "/docs");
+                    final Anchor docsLink = new Anchor(url + "/redoc", url + "/redoc");
                     docsLink.setTarget("_blank");
                     final Button shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> {
                         dialog.close();
