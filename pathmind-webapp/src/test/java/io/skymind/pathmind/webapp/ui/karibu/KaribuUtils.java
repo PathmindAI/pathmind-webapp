@@ -13,6 +13,7 @@ import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.page.KaribuExtendedClientDetails;
+
 import org.mockito.Mockito;
 
 import kotlin.jvm.functions.Function0;
@@ -25,8 +26,8 @@ public class KaribuUtils {
 
         private final UI ui;
 
-        public ParentComponent(Function0<UI> uiFactory, Component component) {
-            this.ui = uiFactory.invoke().getCurrent();
+        public ParentComponent(UI ui, Component component) {
+            this.ui = ui;
             add(component);
         }
 
@@ -36,23 +37,15 @@ public class KaribuUtils {
         }
     }
 
-    public static Routes discoverRoutes() {
-        // Route discovery involves classpath scanning and is an expensive operation.
-        // Running the discovery process only once per test run speeds up the test runtime considerably.
-        // Discover the routes once and cache the result.
-        return new Routes().autoDiscoverViews("package io.skymind.pathmind.webapp.ui.views");
-    }
-
-
     public static void setup() {
         MockVaadin.setup(new Routes(), () -> new MockedUI());
     }
 
     public static UI setup(Component component) {
-        Function0<UI> uiFactory = () -> new MockedUI();
-        MockVaadin.setup(new Routes(), uiFactory);
-        new ParentComponent(uiFactory, component);
-        return uiFactory.invoke();
+        MockedUI ui = Mockito.spy(new MockedUI());
+        MockVaadin.setup(new Routes(), () -> ui);
+        new ParentComponent(ui, component);
+        return ui;
     }
 
     public static void setupRoutes(Class<? extends Component>... routes) {

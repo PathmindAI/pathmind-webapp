@@ -1,9 +1,6 @@
 package io.skymind.pathmind.webapp.ui.layouts.components;
 
-import java.util.Optional;
-
 import com.github.mvysny.kaributesting.v10.ContextMenuKt;
-import com.github.mvysny.kaributesting.v10.mock.MockedUI;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -15,7 +12,6 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import io.skymind.pathmind.webapp.ui.karibu.KaribuUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
-import kotlin.jvm.functions.Function0;
 
 import org.junit.After;
 import org.junit.Before;
@@ -66,19 +62,15 @@ public class AccountHeaderPanelTest {
         assertEquals("Joe Cool", usernameSpan.getText());
     }
 
-    // TODO -> TO BE fIXED
     @Test
     public void clickingOnAccountNavigatesToAccountView() {
         Mockito.doNothing().when(ui).navigate(AccountView.class);
 
         ContextMenuKt._clickItemWithCaption(_get(accountHeaderPanel, MenuBar.class), "Account");
 
-        _get(AccountView.class);
-
         Mockito.verify(ui, Mockito.times(1)).navigate(AccountView.class);
     }
 
-    // TODO -> TO BE fIXED
     @Test
     public void clickingOnSignOutNavigatesToSignOutLocation() {
         Page pageMock = Mockito.mock(Page.class);
