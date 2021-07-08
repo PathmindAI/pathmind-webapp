@@ -26,7 +26,7 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
 
     public ObservationsViewOnlyPanel(List<Observation> modelObservations) {
         this.modelObservations = modelObservations.stream()
-            .filter(obs -> !obs.getVariable().equals("actionMask"))
+            .filter(obs -> !obs.getVariable().equals(Observation.ACTION_MASKING))
             .collect(Collectors.toList());
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
         checkboxGroupWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
