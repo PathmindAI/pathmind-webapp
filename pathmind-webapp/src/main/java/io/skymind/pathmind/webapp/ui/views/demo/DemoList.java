@@ -5,9 +5,8 @@ import java.util.Map;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.QueryParameters;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -24,8 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Tag("demo-list")
-@JsModule("./src/components/organisms/demo-list.js")
-public class DemoList extends PolymerTemplate<DemoList.Model> {
+@JsModule("./src/components/organisms/demo-list.ts")
+public class DemoList extends LitTemplate {
 
     private final SegmentIntegrator segmentIntegrator;
     private final DemoProjectService demoProjectService;
@@ -46,7 +45,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
                 createdDemoProject = true;
                 try {
                     ExperimentManifest targetDemo;
-                    String name = getModel().getName();
+                    String name = getElement().getAttribute("name");
                     if (name != null) {
                         targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(name)).findFirst().orElse(null);
                         segmentIntegrator.createProjectFromExample(name);
@@ -83,16 +82,7 @@ public class DemoList extends PolymerTemplate<DemoList.Model> {
     }
 
     public void setIsVertical(Boolean isVertical) {
-        getModel().setIsVertical(isVertical);
-    }
-
-    public interface Model extends TemplateModel {
-
-        String getName();
-        void setName(String name);
-
-        void setIsVertical(Boolean isVertical);
-
+        getElement().setProperty("isvertical", isVertical);
     }
 
 }
