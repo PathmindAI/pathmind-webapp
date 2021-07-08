@@ -32,6 +32,7 @@ public class NotesFieldTest {
     
     @Test
     public void notesFieldSaveButtonTest() {
+        // https://github.com/mvysny/karibu-testing/tree/master/karibu-testing-v10#polymer-templates--lit-templates
         // Check save button is clickable on the server side. This is not 100% reliable because the button may still be invisible on the client side.
         // The Karibu _click method would throw IllegalStateException if the button was not visible or not enabled on the server side.
         // For example, if the test is run after this line is executed: notesField.save.setEnabled(false);
