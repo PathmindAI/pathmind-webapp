@@ -1,5 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../atoms/loading-spinner.js";
+import "../atoms/loading-spinner.ts";
 
 class DemoList extends PolymerElement {
     static get is() {

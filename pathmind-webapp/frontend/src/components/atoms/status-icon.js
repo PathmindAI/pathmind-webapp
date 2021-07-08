@@ -1,6 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "./icon-stopped.ts";
-import "./loading-spinner.js";
+import "./loading-spinner.ts";
 
 class StatusIcon extends PolymerElement {
     static get is() {
