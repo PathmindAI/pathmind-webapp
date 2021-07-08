@@ -2,7 +2,7 @@ import { LitElement, html, css, property } from "lit-element";
 
 class TagLabel extends LitElement {
 
-    @property({type: String})
+    @property({type: String, reflect: true})
     text = "";
 
     @property({type: Boolean, reflect: true})
