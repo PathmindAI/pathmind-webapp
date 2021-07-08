@@ -13,6 +13,7 @@ import io.skymind.pathmind.shared.services.training.versions.JDK;
 import io.skymind.pathmind.shared.services.training.versions.NativeRL;
 import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.shared.services.training.versions.VersionEnum;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class AWSFileManager {
     private static AWSFileManager instance;
@@ -55,6 +56,16 @@ public class AWSFileManager {
                 .stream()
                 .map(it -> buildS3CopyCmd(STATIC_BUCKET, it, it))
                 .collect(Collectors.toList());
+    }
+
+    public Pair<String, String> libFilePaths(VersionEnum version) {
+        return versions.get(currentMode).getOrDefault(version, List.of())
+            .stream()
+            .map(it -> Pair.of(
+                it,
+                version instanceof NativeRL ? NativeRL.simpleFileName : new File(it).getName()))
+            .findFirst()
+            .orElse(null);
     }
 
     public String buildS3CopyCmd(String bucketName, String filePath, String fileName) {
