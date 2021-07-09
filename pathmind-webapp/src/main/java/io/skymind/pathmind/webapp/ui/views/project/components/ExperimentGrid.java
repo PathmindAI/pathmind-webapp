@@ -64,7 +64,10 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true);
         Grid.Column<Experiment> selectedObsColumn = addColumn(experiment ->
-                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream().map(Observation::getVariable).collect(Collectors.joining(", ")))
+                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream()
+                    .filter(obs -> !obs.getVariable().equals(Observation.ACTION_MASKING))
+                    .map(Observation::getVariable)
+                    .collect(Collectors.joining(", ")))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)
