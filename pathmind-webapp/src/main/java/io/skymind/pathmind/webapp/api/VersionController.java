@@ -136,17 +136,11 @@ public class VersionController {
         if (oldLibVersion == null || !oldLibVersion.equals(libVersion)) {
             SimpleDateFormat format = new SimpleDateFormat("MMddyyyy");
             String backupPath = libS3Path + "/backup_" + format.format(new Date());
-            if (awsApiClient.fileExists(libS3Path, VERSION_FILE)) {
-                awsApiClient.copyFile(libS3Path, VERSION_FILE, backupPath, VERSION_FILE);
-                log.info("Made a backup of {} to {}", (libS3Path + "/" + VERSION_FILE), (backupPath + "/" + VERSION_FILE));
-            }
+            backupIfNecessary(libS3Path, VERSION_FILE, backupPath, VERSION_FILE);
 
             libVersion.toList().parallelStream().forEach(v -> {
                 Pair<String, String> fileSrcAndDesc = fileManager.libFilePaths(v);
-                if (awsApiClient.fileExists(libS3Path, fileSrcAndDesc.getRight())) {
-                    awsApiClient.copyFile(libS3Path, fileSrcAndDesc.getRight(), backupPath, fileSrcAndDesc.getRight());
-                    log.info("Made a backup of {} to {}", (libS3Path + "/" + fileSrcAndDesc.getRight()), (backupPath + "/" + fileSrcAndDesc.getRight()));
-                }
+                backupIfNecessary(libS3Path, fileSrcAndDesc.getRight(), backupPath, fileSrcAndDesc.getRight());
                 awsApiClient.copyFile(staticBucketName, fileSrcAndDesc.getLeft(), libS3Path, fileSrcAndDesc.getRight());
                 log.info("{} is copied to {}", (staticBucketName + "/" + fileSrcAndDesc.getLeft()), (libS3Path + "/" + fileSrcAndDesc.getRight()));
             });
@@ -155,5 +149,12 @@ public class VersionController {
         }
 
         return new Response(String.format("The MA libraries in %s are up-to-date", libS3Path));
+    }
+
+    public void backupIfNecessary(String srcPath, String srcFile, String desPath, String desFile) {
+        if (awsApiClient.fileExists(srcPath, srcFile)) {
+            awsApiClient.copyFile(srcPath, srcFile, desPath, desFile);
+            log.info("Made a backup of {} to {}", (srcPath + "/" + srcFile), (desPath + "/" + desFile));
+        }
     }
 }
