@@ -24,7 +24,6 @@ import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;

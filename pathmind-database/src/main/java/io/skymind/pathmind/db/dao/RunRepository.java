@@ -244,7 +244,6 @@ class RunRepository {
                         PolicyServerService.DeploymentStatus.PENDING,
                         PolicyServerService.DeploymentStatus.DEPLOYED
                     ).and(PROJECT.PATHMIND_USER_ID.eq(userId))
-                )
                 ).fetch(expIdWithRunId-> new PolicyServerService.ActivePolicyServerInfo(expIdWithRunId.value1(), expIdWithRunId.value2()));
 
     }
