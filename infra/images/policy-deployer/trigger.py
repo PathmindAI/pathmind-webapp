@@ -75,8 +75,6 @@ def process_message(message):
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
-    S3ModelPath=body['S3ModelPath']
-    S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
     IntJobId=JobId.replace("id","")
     policy_server_status = -1
@@ -101,6 +99,8 @@ def process_message(message):
         except Exception as e:
             app_logger.error(traceback.format_exc())
     else:
+        S3ModelPath=body['S3ModelPath']
+        S3SchemaPath=body['S3SchemaPath']
         policy_server_status=2
         try:
             app_logger.info('Clonning repository')
