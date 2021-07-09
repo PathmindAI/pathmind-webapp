@@ -9,6 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Observation {
+    // this is the name of action masking in observations
+    public static final String ACTION_MASKING = "actionMask";
+
     private long id = -1;
     private long modelId;
     private int arrayIndex;

@@ -3,12 +3,11 @@ package io.skymind.pathmind.webapp.ui.components.atoms;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 
 @Tag("tag-label")
-@JsModule("./src/components/atoms/tag-label.js")
-public class TagLabel extends PolymerTemplate<TagLabel.Model> implements HasStyle {
+@JsModule("./src/components/atoms/tag-label.ts")
+public class TagLabel extends LitTemplate implements HasStyle {
     public TagLabel() {
         this("", false, "");
     }
@@ -23,20 +22,13 @@ public class TagLabel extends PolymerTemplate<TagLabel.Model> implements HasStyl
 
     public TagLabel(String text, Boolean outlineStyle, String size) {
         super();
-        setText(text);
-        getModel().setOutline(outlineStyle);
-        getModel().setSize(size);
+        getElement().setProperty("text", text);
+        getElement().setProperty("outline", outlineStyle);
+        getElement().setProperty("size", size);
     }
 
     public void setText(String text) {
-        getModel().setText(text);
+        getElement().setProperty("text", text);
     }
 
-    public interface Model extends TemplateModel {
-        void setText(String text);
-
-        void setOutline(Boolean outlineStyle);
-
-        void setSize(String size);
-    }
 }
