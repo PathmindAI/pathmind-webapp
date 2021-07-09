@@ -100,7 +100,7 @@ public class ExperimentService {
                 Observation actionMasking = null;
                 if (alResult.isActionMask()) {
                     actionMasking = new Observation();
-                    actionMasking.setVariable("actionMask");
+                    actionMasking.setVariable(Observation.ACTION_MASKING);
                     actionMasking.setDataTypeEnum(ObservationDataType.BOOLEAN_ARRAY);
                     actionMasking.setArrayIndex(0);
                     actionMasking.setMaxItems(alResult.getNumAction());
