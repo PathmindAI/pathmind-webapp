@@ -18,6 +18,10 @@ env:
   TEST_APP_URL: "https://test.devpathmind.com/"
   STAGING_APP_URL: "https://staging.devpathmind.com/"
   PROD_APP_URL: "https://app.pathmind.com/"
+  DEV_POLICY_SERVER_QUEUE: "https://queue.amazonaws.com/839270835622/dev-policy-server.fifo"
+  TEST_POLICY_SERVER_QUEUE: "https://queue.amazonaws.com/839270835622/test-policy-server.fifo"
+  STAGING_POLICY_SERVER_QUEUE: "https://queue.amazonaws.com/839270835622/staging-policy-server.fifo"
+  PROD_POLICY_SERVER_QUEUE: "https://queue.amazonaws.com/839270835622/prod-policy-server.fifo"
   SPRING_PROFILES_ACTIVE: dev
   APP_DOMAIN: .dev.devpathmind.com
   AWS_ADMIN_USERS_TABLE: AdminUsersDev

@@ -11,12 +11,21 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
+import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServePolicyButton extends Button {
 
@@ -25,13 +34,48 @@ public class ServePolicyButton extends Button {
     private Dialog dialog;
     private Button closeButton;
     private UserDAO userDAO;
+    private RunDAO runDAO;
+    private SegmentIntegrator segmentIntegrator;
 
-    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, RunDAO runDAO, SegmentIntegrator segmentIntegrator) {
         super();
         this.policyServerService = policyServerService;
         this.userDAO = userDAO;
+        this.runDAO = runDAO;
+        this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
-        addClickListener(click -> openDialog());
+        addClickListener(click -> {
+            try {
+                policyServerService.verifyDeploy(experiment);
+            } catch (PolicyServerService.NumberOfActivePolicyServersExceededException e) {
+                openUndeployableDialog(e.getExperimentsWithPolicyServers().get(0).getExperimentId());
+                return;
+            }
+            openDeploymentDialog();
+        });
+    }
+
+    private void openUndeployableDialog(long experimentIdWithActivePolicyServer) {
+        Dialog undeployableDialog = new Dialog();
+        Button upgradeButton = GuiUtils.getPrimaryButton("Upgrade to Pro now", click -> {
+            segmentIntegrator.navigatedToPricingFromPolicyServerLimitPopup();
+            getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
+            undeployableDialog.close();
+        });
+        Button checkExistingPolicyServerButton = new Button("Review and shut down your existing policy server", click -> {
+            getUI().ifPresent(ui -> ui.navigate(ExperimentView.class, "" + experimentIdWithActivePolicyServer));
+            undeployableDialog.close();
+        });
+        Button cancelButton = new Button("Cancel", click -> undeployableDialog.close());
+        undeployableDialog.add(
+            new Paragraph("You've reached the limit for your free plan."),
+            WrapperUtils.wrapVerticalWithNoPadding(
+                upgradeButton,
+                checkExistingPolicyServerButton,
+                cancelButton
+            )
+        );
+        undeployableDialog.open();
     }
 
     public void setServePolicyButtonText(Boolean isCompletedWithPolicy) {
@@ -60,7 +104,7 @@ public class ServePolicyButton extends Button {
         setText(servePolicyButtonText);
     }
 
-    private void openDialog() {
+    private void openDeploymentDialog() {
         dialog = new Dialog();
         closeButton.addClickListener(event -> {
             dialog.close();
@@ -75,6 +119,12 @@ public class ServePolicyButton extends Button {
 
         updateDialogContent();
 
+        PolicyServerService.DeploymentStatus deploymentStatus = policyServerService.getPolicyServerStatus(experiment);
+        if (deploymentStatus == PolicyServerService.DeploymentStatus.NOT_DEPLOYED) {
+            policyServerService.triggerPolicyServerDeployment(experiment);
+            segmentIntegrator.deployPolicyServer();
+        }
+
         dialog.open();
     }
 
@@ -87,6 +137,7 @@ public class ServePolicyButton extends Button {
                 case FAILED: {
                     final Button retryButton = GuiUtils.getPrimaryButton("Redeploy Now", click -> {
                         policyServerService.triggerPolicyServerDeployment(experiment);
+                        segmentIntegrator.redeployPolicyServer();
                         updateDialogContent();
                         setServePolicyButtonText(true);
                     });
@@ -105,8 +156,20 @@ public class ServePolicyButton extends Button {
                 }
                 case DEPLOYED: {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
-                    final Anchor docsLink = new Anchor(url + "/docs", url + "/docs");
+                    final Anchor docsLink = new Anchor(url + "/redoc", url + "/redoc");
                     docsLink.setTarget("_blank");
+                    final Button shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> {
+                        dialog.close();
+                        ConfirmationUtils.confirmationPopupDialog(
+                            "Shut down policy server",
+                            "This will shut down the deployed policy server for this experiment (id: "+experiment.getId()+"). You will be able to redeploy the policy server.",
+                            "Shut down",
+                            () -> {
+                                policyServerService.destroyPolicyServerDeployment(experiment);
+                                segmentIntegrator.shutDownPolicyServer();
+                                setServePolicyButtonText(true);
+                            });
+                        });
                     dialogContent.add(
                             new H3("The Policy is Live"),
                             new Span("The policy is being served at this URL:"),
@@ -122,12 +185,15 @@ public class ServePolicyButton extends Button {
                     dialogContent.add(
                         new Paragraph(new Span("Read the docs for more details:"),
                                     new Html("<br/>"),
-                                    docsLink)
+                                    docsLink),
+                        WrapperUtils.wrapWidthFullBetweenHorizontal(
+                            shutDownPolicyServerButton,
+                            GuiUtils.getPrimaryButton("Close", click -> dialog.close()))
                     );
                     break;
                 }
                 case NOT_DEPLOYED: {
-                    policyServerService.triggerPolicyServerDeployment(experiment);
+
                     // intentional fallthrough to PENDING state
                 }
                 case PENDING:

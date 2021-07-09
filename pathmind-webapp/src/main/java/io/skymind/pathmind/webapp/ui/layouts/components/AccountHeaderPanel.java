@@ -48,12 +48,12 @@ public class AccountHeaderPanel extends HorizontalLayout {
         menuBar.addClassName("account-menu");
 
         MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER)));
-        account.getSubMenu().addItem("Account", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
-        account.getSubMenu().addItem("Access Token", e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
+        account.getSubMenu().addItem("Account", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(AccountView.class)));
+        account.getSubMenu().addItem("Access Token", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(AccountView.class)));
         if (VaadinSecurityUtils.isAuthorityGranted(SettingsView.class)) {
-            account.getSubMenu().addItem("Settings", e -> getUI().ifPresent(ui -> ui.navigate(SettingsView.class)));
+            account.getSubMenu().addItem("Settings", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(SettingsView.class)));
         }
-        account.getSubMenu().addItem("Sign out", e -> getUI().ifPresent(ui -> VaadinUtils.signout(ui, false)));
+        account.getSubMenu().addItem("Sign out", e -> getUISupplier.get().ifPresent(ui -> VaadinUtils.signout(ui, false)));
     }
 
     private HorizontalLayout createItem(Icon icon) {
