@@ -17,7 +17,7 @@ public class StatusIcon extends LitTemplate {
         RunStatus overallExperimentStatus = experiment.getTrainingStatusEnum();
         statusIconType = getIconStatus(experiment, overallExperimentStatus);
         getElement().setProperty("status", statusIconType);
-        getElement().setProperty("statustext", overallExperimentStatus.toString());
+        getElement().setProperty("statusText", overallExperimentStatus.toString());
     }
 
     private String getIconStatus(Experiment experiment, RunStatus status) {
