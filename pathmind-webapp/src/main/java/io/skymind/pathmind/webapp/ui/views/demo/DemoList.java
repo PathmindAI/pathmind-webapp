@@ -29,7 +29,6 @@ public class DemoList extends LitTemplate {
     private final SegmentIntegrator segmentIntegrator;
     private final DemoProjectService demoProjectService;
     private final List<ExperimentManifest> manifests;
-    private Boolean createdDemoProject = false;
 
     public DemoList(DemoProjectService demoProjectService, ExperimentManifestRepository repo, SegmentIntegrator segmentIntegrator) {
         this.demoProjectService = demoProjectService;
@@ -40,25 +39,22 @@ public class DemoList extends LitTemplate {
     }
 
     private void setUpButtonClickedHandler() {
-        getElement().addPropertyChangeListener("name", event -> {
-            if (!createdDemoProject) {
-                createdDemoProject = true;
-                try {
-                    ExperimentManifest targetDemo;
-                    String name = getElement().getAttribute("name");
-                    if (name != null) {
-                        targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(name)).findFirst().orElse(null);
-                        segmentIntegrator.createProjectFromExample(name);
-                        if (targetDemo != null) {
-                            Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
-                            QueryParameters queryParam = QueryParameters.simple(Map.of("productTour",targetDemo.getName().replaceAll(" ", "").toLowerCase()));
-                            getUI().ifPresent(ui -> ui.navigate(Routes.NEW_EXPERIMENT+"/"+experiment.getId(), queryParam));
-                        }
+        getElement().addPropertyChangeListener("name", "namechange", event -> {
+            try {
+                ExperimentManifest targetDemo;
+                String name = getElement().getProperty("name");
+                if (name != null) {
+                    targetDemo = manifests.stream().filter(manifest -> manifest.getName().equals(name)).findFirst().orElse(null);
+                    segmentIntegrator.createProjectFromExample(name);
+                    if (targetDemo != null) {
+                        Experiment experiment = demoProjectService.createExperiment(targetDemo, SecurityUtils.getUserId());
+                        QueryParameters queryParam = QueryParameters.simple(Map.of("productTour",targetDemo.getName().replaceAll(" ", "").toLowerCase()));
+                        getUI().ifPresent(ui -> ui.navigate(Routes.NEW_EXPERIMENT+"/"+experiment.getId(), queryParam));
                     }
-                } catch (Exception e) {
-                    log.error("Failed to handle project creation from demo chosen", e);
-                    NotificationUtils.showError("Something went wrong. Please try again or contact Pathmind support.");
                 }
+            } catch (Exception e) {
+                log.error("Failed to handle project creation from demo chosen", e);
+                NotificationUtils.showError("Something went wrong. Please try again or contact Pathmind support.");
             }
         });
     }
@@ -82,7 +78,7 @@ public class DemoList extends LitTemplate {
     }
 
     public void setIsVertical(Boolean isVertical) {
-        getElement().setProperty("isvertical", isVertical);
+        getElement().setProperty("isVertical", isVertical);
     }
 
 }
