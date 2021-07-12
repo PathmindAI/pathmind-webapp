@@ -11,10 +11,7 @@ import io.skymind.pathmind.shared.services.training.versions.*;
 import io.skymind.pathmind.shared.utils.ObjectMapperHolder;
 import io.skymind.pathmind.webapp.ActiveSessionsRegistry;
 import io.skymind.pathmind.webapp.ui.utils.NotificationUtils;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,19 +39,12 @@ public class VersionController {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     private static class LibraryVersion {
         private NativeRL nativeRL;
         private Conda conda;
         private PathmindHelper pathmindHelper;
         private AnyLogic anyLogic;
-
-        @Override
-        public boolean equals(Object obj) {
-            return this.nativeRL == ((LibraryVersion)obj).nativeRL &&
-                this.conda == ((LibraryVersion)obj).conda &&
-                this.pathmindHelper == ((LibraryVersion)obj).pathmindHelper &&
-                this.anyLogic == ((LibraryVersion)obj).anyLogic;
-        }
 
         public List<VersionEnum> toList() {
             return List.of(nativeRL, conda, pathmindHelper, anyLogic);
@@ -69,18 +59,20 @@ public class VersionController {
     private final AWSApiClient awsApiClient;
     private final ExecutionEnvironmentManager environmentManager;
     private final AWSFileManager fileManager;
-    private @Value("${pathmind.aws.s3.bucket.static}") String staticBucketName;
+    private final String staticBucketName;
 
     private ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
 
     @Autowired
     public VersionController(ActiveSessionsRegistry activeSessionsRegistry,
                              AWSApiClient awsApiClient,
-                             ExecutionEnvironmentManager environmentManager) {
+                             ExecutionEnvironmentManager environmentManager,
+                             @Value("${pathmind.aws.s3.bucket.static}") String staticBucketName) {
         this.activeSessionsRegistry = activeSessionsRegistry;
         this.awsApiClient = awsApiClient;
         this.environmentManager = environmentManager;
         this.fileManager = AWSFileManager.getInstance();
+        this.staticBucketName = staticBucketName;
     }
 
     /**
@@ -139,10 +131,12 @@ public class VersionController {
             backupIfNecessary(libS3Path, VERSION_FILE, backupPath, VERSION_FILE);
 
             libVersion.toList().parallelStream().forEach(v -> {
-                Pair<String, String> fileSrcAndDesc = fileManager.libFilePaths(v);
-                backupIfNecessary(libS3Path, fileSrcAndDesc.getRight(), backupPath, fileSrcAndDesc.getRight());
-                awsApiClient.copyFile(staticBucketName, fileSrcAndDesc.getLeft(), libS3Path, fileSrcAndDesc.getRight());
-                log.info("{} is copied to {}", (staticBucketName + "/" + fileSrcAndDesc.getLeft()), (libS3Path + "/" + fileSrcAndDesc.getRight()));
+                Pair<String, String> fileSrcAndDesc = fileManager.libFilePathsWithFileName(v);
+                final String srcFile = fileSrcAndDesc.getLeft();
+                final String descFile = fileSrcAndDesc.getRight();
+                backupIfNecessary(libS3Path, descFile, backupPath, descFile);
+                awsApiClient.copyFile(staticBucketName, srcFile, libS3Path, descFile);
+                log.info("{} is copied to {}", (staticBucketName + "/" + srcFile), (libS3Path + "/" + descFile));
             });
 
             awsApiClient.fileUpload(libS3Path, VERSION_FILE, objectMapper.writeValueAsBytes(libVersion));

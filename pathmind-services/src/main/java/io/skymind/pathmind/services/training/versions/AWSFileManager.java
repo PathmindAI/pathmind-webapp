@@ -32,38 +32,34 @@ public class AWSFileManager {
         setData();
     }
 
-    private static final Map<String, Map<VersionEnum, List<String>>> versions = new HashMap<>();
-    private String currentMode = "PROD";
+    private static final Map<VersionEnum, List<String>> versions = new HashMap<>();
 
     private void setData() {
-        Map<VersionEnum, List<String>> vTable = new HashMap<>();
         Arrays.stream(AnyLogic.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(Conda.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(JDK.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(NativeRL.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(PathmindHelper.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
-
-        versions.put("PROD", vTable);
+                .forEach(v -> versions.put(v, v.convertPath()));
     }
 
     public List<String> getFiles(VersionEnum version) {
-        return versions.get(currentMode).getOrDefault(version, List.of())
+        return versions.getOrDefault(version, List.of())
                 .stream()
                 .map(it -> buildS3CopyCmd(STATIC_BUCKET, it, it))
                 .collect(Collectors.toList());
     }
 
-    public Pair<String, String> libFilePaths(VersionEnum version) {
-        return versions.get(currentMode).getOrDefault(version, List.of())
+    public Pair<String, String> libFilePathsWithFileName(VersionEnum version) {
+        return versions.getOrDefault(version, List.of())
             .stream()
-            .map(it -> Pair.of(
-                it,
-                version instanceof NativeRL ? NativeRL.simpleFileName : new File(it).getName()))
+            .map(path -> Pair.of(
+                path,
+                version instanceof NativeRL ? NativeRL.simpleFileName : new File(path).getName()))
             .findFirst()
             .orElse(null);
     }
