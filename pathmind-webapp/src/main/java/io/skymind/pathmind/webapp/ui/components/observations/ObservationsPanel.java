@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
@@ -58,6 +59,10 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         observationsTable = new ObservationsTable(isReadOnly);
 
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
+
+        modelObservations = modelObservations.stream()
+            .filter(obs -> !obs.getVariable().equals(Observation.ACTION_MASKING))
+            .collect(Collectors.toList());
         
         if (hideCheckboxes) {
             add(createObservationsList(modelObservations));
