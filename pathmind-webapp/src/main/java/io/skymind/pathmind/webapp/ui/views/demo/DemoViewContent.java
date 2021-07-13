@@ -2,7 +2,6 @@ package io.skymind.pathmind.webapp.ui.views.demo;
 
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.services.project.demo.DemoProjectService;
 import io.skymind.pathmind.services.project.demo.ExperimentManifestRepository;

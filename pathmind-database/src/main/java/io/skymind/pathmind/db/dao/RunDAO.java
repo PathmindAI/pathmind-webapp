@@ -19,7 +19,6 @@ import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.PolicyUpdateInfo;
 import io.skymind.pathmind.shared.data.ProviderJobStatus;
 import io.skymind.pathmind.shared.data.RewardScore;
-import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.data.user.UserMetrics;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -337,5 +336,9 @@ public class RunDAO {
 
     public PolicyServerService.DeploymentStatus policyServerDeployedStatus(long experimentId) {
         return RunRepository.fetchPolicyServerStatus(ctx, experimentId);
+    }
+
+    public List<PolicyServerService.ActivePolicyServerInfo> fetchExperimentIdWithActivePolicyServer(long userId) {
+        return RunRepository.fetchActivePolicyServerInfo(ctx, userId);
     }
 }

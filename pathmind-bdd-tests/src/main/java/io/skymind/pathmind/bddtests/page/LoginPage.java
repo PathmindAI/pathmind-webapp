@@ -279,6 +279,7 @@ public class LoginPage extends PageObject {
     }
 
     public void checkHeaderUsername(String name) {
+        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.cssSelector(".account-menu")), (name)));
         assertThat(getDriver().findElement(By.cssSelector(".account-menu")).getText(), is(name));
     }
 
