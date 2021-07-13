@@ -25,7 +25,9 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
     private String highlightClassName = "highlight-label";
 
     public ObservationsViewOnlyPanel(List<Observation> modelObservations) {
-        this.modelObservations = modelObservations;
+        this.modelObservations = modelObservations.stream()
+            .filter(obs -> !obs.getVariable().equals(Observation.ACTION_MASKING))
+            .collect(Collectors.toList());
         add(LabelFactory.createLabel("Observations", BOLD_LABEL));
         checkboxGroupWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         checkboxGroupWrapper.addClassName("observations-table");

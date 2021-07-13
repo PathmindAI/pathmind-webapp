@@ -70,6 +70,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TrainingService trainingService;
     private ModelService modelService;
     private UserDAO userDAO;
+    private RunDAO runDAO;
     private Runnable updateExperimentViewRunnable;
     private Supplier<Object> getLockSupplier;
     private PolicyDAO policyDAO;
@@ -110,6 +111,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         this.trainingService = trainingService;
         this.modelService = modelService;
         this.userDAO = userDAO;
+        this.runDAO = runDAO;
         this.featureManager = featureManager;
         this.policyDAO = policyDAO;
         this.policyFileService = policyFileService;
@@ -128,6 +130,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
             titleWithStar.add(actionDropdown);
         }
 
+        sharedWithSupportLabel.addClassName("shared-with-support-label");
+        sharedWithSupportLabel.getElement().addEventListener("click", click -> 
+                ShareWithSupportAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
                 new HorizontalLayout(archivedLabel, sharedWithSupportLabel),
@@ -146,7 +151,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
-        servePolicyButton = new ServePolicyButton(policyServerService, userDAO, experimentView.getSegmentIntegrator());
+        servePolicyButton = new ServePolicyButton(policyServerService, userDAO, runDAO, experimentView.getSegmentIntegrator());
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation

@@ -6,14 +6,17 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.MockedUI;
+import com.github.mvysny.kaributesting.v10.mock.MockedUI;
 import com.github.mvysny.kaributesting.v10.Routes;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasElement;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.page.KaribuExtendedClientDetails;
+
 import org.mockito.Mockito;
+
+import kotlin.jvm.functions.Function0;
 
 import static org.junit.Assert.assertSame;
 
@@ -35,8 +38,7 @@ public class KaribuUtils {
     }
 
     public static void setup() {
-        MockedUI ui = Mockito.spy(new MockedUI());
-        MockVaadin.setup(new Routes(), () -> ui);
+        MockVaadin.setup(new Routes(), () -> new MockedUI());
     }
 
     public static UI setup(Component component) {
@@ -48,7 +50,7 @@ public class KaribuUtils {
 
     public static void setupRoutes(Class<? extends Component>... routes) {
         HashSet<Class<? extends Component>> routesSet = new HashSet<>(Arrays.asList(routes));
-        MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> Mockito.spy(new MockedUI()));
+        MockVaadin.setup(new Routes(routesSet, Collections.emptySet(), true), () -> new MockedUI());
     }
 
     public static void tearDown() {

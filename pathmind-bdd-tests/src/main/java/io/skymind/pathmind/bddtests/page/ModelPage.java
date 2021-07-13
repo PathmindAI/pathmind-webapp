@@ -119,7 +119,7 @@ public class ModelPage extends PageObject {
     }
 
     public void checkExperimentModelStatusIsStarting(String experiment, String status) {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status-text"), is(status));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("statustext"), is(status));
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("status"), is("loading"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[2]/descendant::status-icon")).getAttribute("title"), is(status));
     }

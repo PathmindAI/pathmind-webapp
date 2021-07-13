@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.io.IOException;
 import java.util.*;
@@ -37,6 +38,8 @@ public interface PolicyServerService {
     String getPolicyServerUrl(Experiment experiment);
 
     DeploymentStatus getPolicyServerStatus(Experiment experiment);
+
+    void verifyDeploy(Experiment experiment) throws NumberOfActivePolicyServersExceededException;
 
     @Getter
     class ObservationWrapper {
@@ -168,6 +171,18 @@ public interface PolicyServerService {
             }
             jsonGenerator.writeEndObject();
         }
+    }
+
+    @AllArgsConstructor
+    class NumberOfActivePolicyServersExceededException extends Exception {
+        @Getter
+        private final List<ActivePolicyServerInfo> experimentsWithPolicyServers;
+    }
+
+    @Value
+    class ActivePolicyServerInfo {
+        long experimentId;
+        long runId;
     }
 
 }
