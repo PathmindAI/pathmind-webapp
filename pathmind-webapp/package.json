@@ -54,6 +54,7 @@
   "devDependencies": {
     "@babel/core": "^7.10.3",
     "@storybook/polymer": "^5.3.19",
+    "@types/stripe-v3": "^3.1.25",
     "babel-loader": "^8.1.0",
     "chokidar": "^3.5.0",
     "compression-webpack-plugin": "4.0.1",
@@ -152,6 +153,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "60652a5fd808584cd4359c6381078c2b4f9a336d359155774f8de3a5baa3aef4"
+    "hash": "512e07bd0dab7ed961b9057fd52d4c8db4d5bb98a56292208446825fae207bab"
   }
 }
