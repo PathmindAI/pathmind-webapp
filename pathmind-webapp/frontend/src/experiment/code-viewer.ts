@@ -17,11 +17,12 @@ class CodeViewer extends LitElement {
   @property({type: String})
   rewardVariables = "";
 
-  attributeChangedCallback(name, oldval, newval) {
-    super.attributeChangedCallback(name, oldval, newval);
-    if (name === "codesnippet" || name === "comparisoncodesnippet") {
-      this.renderCode();
-    }
+  updated(changedProperties) {
+    changedProperties.forEach((oldValue, name) => {
+        if (name === "codeSnippet" || name === "comparisonCodeSnippet") {
+            this.renderCode();
+        }
+    });
   }
 
   firstUpdated() {
@@ -56,7 +57,6 @@ class CodeViewer extends LitElement {
         checkmarkIcon.removeAttribute("active");
       }, 800);
     });
-    this.renderCode();
   }
 
   renderCode() {
