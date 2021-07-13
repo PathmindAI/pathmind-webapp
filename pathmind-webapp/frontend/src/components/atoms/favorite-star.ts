@@ -4,13 +4,6 @@ class FavoriteStar extends LitElement {
     @property({type: Boolean, reflect: true, attribute: "is-favorite"})
     isFavorite = false;
 
-    attributeChangedCallback(name, oldval, newval) {
-      super.attributeChangedCallback(name, oldval, newval);
-      if (name === "is-favorite") {
-        this._isFavoriteChanged(newval);
-      }
-    }
-
     static get styles() {
         return css`
             :host {
@@ -31,8 +24,8 @@ class FavoriteStar extends LitElement {
 
     render() {
         return html`
-            <vaadin-button theme="tertiary-inline" title="Favorite">
-                <iron-icon icon="vaadin:star-o"></iron-icon>
+            <vaadin-button theme="tertiary-inline" title="${this.isFavorite ? 'Unfavorite' : 'Favorite'}">
+                <iron-icon icon="${this.isFavorite ? 'vaadin:star' : 'vaadin:star-o'}"></iron-icon>
             </vaadin-button>
         `;
     }
@@ -45,20 +38,15 @@ class FavoriteStar extends LitElement {
     _onClick(event) {
         event.preventDefault();
         event.stopPropagation();
-        this.toggleFavorite();
+        if ((this as any).$server && (this as any).$server.toggleFavorite) {
+            (this as any).$server.toggleFavorite();
+        } else {
+            this.toggleFavorite();
+        }
     }
 
     toggleFavorite() {
-        // for server-side event handler
-    }
-
-    _isFavoriteChanged(newValue) {
-        const buttonElement = this.shadowRoot.querySelector("vaadin-button");
-        const iconElement = this.shadowRoot.querySelector("iron-icon");
-        const iconType = newValue ? "vaadin:star" : "vaadin:star-o";
-        const titleText = newValue ? "Unfavorite" : "Favorite";
-        buttonElement.setAttribute("title", titleText);
-        iconElement.setAttribute("icon", iconType);
+        // for experiment-navbar-item
     }
 }
 

@@ -2,10 +2,10 @@ package io.skymind.pathmind.webapp.ui.components;
 
 import java.util.function.Consumer;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 
 @Tag("favorite-star")
@@ -29,8 +29,8 @@ public class FavoriteStar extends LitTemplate implements HasStyle {
         return isFavorite;
     }
 
-    @EventHandler
-    private void _onClick() {
+    @ClientCallable
+    private void toggleFavorite() {
         boolean newValue = !isFavorite;
         onToggleFavorite.accept(newValue);
         setValue(newValue);
