@@ -19,8 +19,6 @@ import io.skymind.pathmind.webapp.ui.components.PathmindTrainingProgress;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 
-import static io.skymind.pathmind.shared.constants.RunStatus.Completed;
-import static io.skymind.pathmind.shared.constants.RunStatus.Running;
 import static io.skymind.pathmind.shared.constants.RunStatus.isRunning;
 
 public class TrainingStatusDetailsPanel extends HorizontalLayout implements ExperimentComponent {
