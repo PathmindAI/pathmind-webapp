@@ -34,6 +34,14 @@
     margin-left: var(--lumo-space-m);
 }
 
+.experiment-view .shared-with-support-label {
+    cursor: pointer;
+}
+
+.experiment-view .shared-with-support-label:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .experiment-view .simulation-metrics-panel-header {
     background: var(--pm-app-bg-color);
     padding-right: var(--lumo-space-xs);
@@ -525,6 +533,6 @@
     margin: 0;
 }
 
-.serve-policy-instructions vaadin-button {
-    width: 100%;
+.serve-policy-instructions vaadin-button:first-child {
+    margin-right: var(--lumo-space-m);
 }

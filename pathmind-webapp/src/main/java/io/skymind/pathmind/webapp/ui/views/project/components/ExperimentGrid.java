@@ -40,9 +40,9 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setAutoWidth(true)
                 .setFlexGrow(0)
                 .setResizable(true);
-        Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.draft]]'></tag-label>")
+        Grid.Column<Experiment> nameColumn = addColumn(TemplateRenderer.<Experiment>of("[[item.name]] <tag-label size='small' text='[[item.shared]]'></tag-label>")
                 .withProperty("name", Experiment::getName)
-                .withProperty("draft", experiment -> experiment.isDraft() ? "Draft" : ""))
+                .withProperty("shared", experiment -> experiment.isSharedWithSupport() ? "Shared" : ""))
                 .setSortProperty("name")
                 .setHeader("#")
                 .setAutoWidth(true)
@@ -64,7 +64,10 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true);
         Grid.Column<Experiment> selectedObsColumn = addColumn(experiment ->
-                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream().map(Observation::getVariable).collect(Collectors.joining(", ")))
+                CollectionUtils.emptyIfNull(experiment.getSelectedObservations()).stream()
+                    .filter(obs -> !obs.getVariable().equals(Observation.ACTION_MASKING))
+                    .map(Observation::getVariable)
+                    .collect(Collectors.joining(", ")))
                 .setHeader("Selected Observations")
                 .setWidth("16rem")
                 .setFlexGrow(0)

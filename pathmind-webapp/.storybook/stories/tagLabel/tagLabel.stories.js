@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/polymer";
 import { hljs, hlJava, hlConfig, copyCodeBlock, storyParamConfig } from "../../utils";
 
-import "../../../frontend/src/components/atoms/tag-label.js";
+import "../../../frontend/src/components/atoms/tag-label.ts";
 
 import code from "./codeSnippets";
 

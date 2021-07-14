@@ -17,43 +17,7 @@ import io.skymind.pathmind.shared.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ACCOUNT_UPGRADE_PRO;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_NEW_EXPERIMENT_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ADDED_NOTES_UPLOAD_MODEL_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ARCHIVED;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CANCEL_SUBSCRIPTION;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHOSE_PRO_PLAN;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CHANGE_PW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_FIRST_PROJECT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_CREATE_PROJECT_FROM_EXAMPLE;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_DOWNLOAD_MODEL_ALP;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EDIT_INFO;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ERROR_PAGE;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_EXPORT_POLICY;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPLOAD_MODEL_ERROR;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_IMPORT_MODEL;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_LOGIN;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_MARKETING_SITE_LEAD;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NEW_EXPERIMENT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_TUTORIAL;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_OBSERVATIONS_SELECTED;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_ZIP;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_EXPERIMENT_DRAFT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SAVE_MODEL_DRAFT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SEARCHED_SITE;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_SIGN_UP;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_START_TRAINING;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_STOP_TRAINING;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UNARCHIVED;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENTS_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_EXPERIMENT_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_UPDATED_NOTES_MODELS_VIEW;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_USER_RUN_CAP_LIMIT;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFICATION_EMAIL;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_VERIFY_EMAIL;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.*;
 
 /**
  * SegmentIntegrator component is client side counter part of <code>SegmentTrackerService</code>
@@ -180,6 +144,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER);
     }
 
+    public void navigatedToPricingFromPolicyServerLimitPopup() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_POLICY_SERVER_LIMIT_POPUP);
+    }
+
     public void subscriptionCancelled() {
         track(EVENT_CANCEL_SUBSCRIPTION);
     }
@@ -222,6 +190,18 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
 
     public void downloadedALP() {
         track(EVENT_DOWNLOAD_MODEL_ALP);
+    }
+
+    public void deployPolicyServer() {
+        track(EVENT_POLICY_SERVER_DEPLOYMENT_STARTED);
+    }
+
+    public void redeployPolicyServer() {
+        track(EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED);
+    }
+
+    public void shutDownPolicyServer() {
+        track(EVENT_POLICY_SERVER_SHUT_DOWN);
     }
 
     public void archived(Class<? extends ArchivableData> objectClass, boolean isArchived) {

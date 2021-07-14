@@ -75,16 +75,14 @@ def process_message(message):
     app_logger.info('Received {message}'.format(message=message['Body']))
     body=json.loads(message['Body'])
     s3bucket=body['S3Bucket']
-    S3ModelPath=body['S3ModelPath']
-    S3SchemaPath=body['S3SchemaPath']
     JobId=body['JobId']
     IntJobId=JobId.replace("id","")
+    policy_server_status = -1
     if 'UrlPath' not in body:
         UrlPath=JobId
     else:
         UrlPath=body['UrlPath']
     helm_name="policy-"+JobId
-    domain_name="devpathmind.com"
     ReceiptHandle=message['ReceiptHandle']
     tag=ENVIRONMENT+JobId
     sns=boto3.client('sns')
@@ -97,9 +95,12 @@ def process_message(message):
         try:
             app_logger.info('Deleting helm {helm_name}'.format(helm_name=helm_name))
             sh.helm('delete',helm_name,'-n',NAMESPACE)
+            policy_server_status = 0
         except Exception as e:
             app_logger.error(traceback.format_exc())
     else:
+        S3ModelPath=body['S3ModelPath']
+        S3SchemaPath=body['S3SchemaPath']
         policy_server_status=2
         try:
             app_logger.info('Clonning repository')
@@ -123,13 +124,14 @@ def process_message(message):
                 policy_server_status=3
             else:
                 app_logger.info('Creating helm {helm_name}'.format(helm_name=helm_name))
-                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,domain_name,UrlPath,NAMESPACE)
+                output=sh.bash("run_helm.sh",helm_name,ENVIRONMENT,JobId,UrlPath,NAMESPACE)
                 if output.exit_code != 0:
                     policy_server_status=3
         except Exception as e:
             policy_server_status=3
             app_logger.error(traceback.format_exc())
 
+    if policy_server_status != -1:
         try:
             #update the deployment status of run
             sql_script=""" 

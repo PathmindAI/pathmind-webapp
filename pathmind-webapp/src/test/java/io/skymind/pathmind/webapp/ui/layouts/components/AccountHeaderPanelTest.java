@@ -1,18 +1,18 @@
 package io.skymind.pathmind.webapp.ui.layouts.components;
 
-import java.util.Optional;
-
 import com.github.mvysny.kaributesting.v10.ContextMenuKt;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.page.Page;
+
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.webapp.ui.components.SearchBox;
 import io.skymind.pathmind.webapp.ui.karibu.KaribuUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,13 +37,14 @@ public class AccountHeaderPanelTest {
         TestingAuthenticationToken auth = new TestingAuthenticationToken(null, null);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        accountHeaderPanel = new AccountHeaderPanel(() -> Optional.of(ui), user, new FeatureManager(false, false, false));
+        accountHeaderPanel = new AccountHeaderPanel(() -> UI.getCurrent().getUI(), user, new FeatureManager(false, false, false));
         ui = KaribuUtils.setup(accountHeaderPanel);
     }
 
     @After
     public void tearDown() {
         SecurityContextHolder.clearContext();
+        KaribuUtils.tearDown();
     }
 
     @Test

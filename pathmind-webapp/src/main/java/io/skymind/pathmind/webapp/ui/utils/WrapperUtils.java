@@ -13,6 +13,12 @@ public class WrapperUtils {
         wrapper.setSpacing(false);
         return wrapper;
     }
+    public static VerticalLayout wrapVerticalWithNoPadding(Component... components) {
+        VerticalLayout wrapper = new VerticalLayout(components);
+        wrapper.setPadding(false);
+        wrapper.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.STRETCH);
+        return wrapper;
+    }
 
     public static VerticalLayout wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(Component... components) {
         VerticalLayout wrapper = new VerticalLayout(components);
@@ -22,14 +28,9 @@ public class WrapperUtils {
         return wrapper;
     }
 
-    public static VerticalLayout wrapWidthFullVertical(Component... components) {
-        VerticalLayout wrapper = new VerticalLayout(components);
-        wrapper.setWidthFull();
-        return wrapper;
-    }
-
     public static VerticalLayout wrapWidthFullCenterVertical(Component... components) {
-        VerticalLayout verticalLayout = wrapWidthFullVertical(components);
+        VerticalLayout verticalLayout = new VerticalLayout(components);
+        verticalLayout.setWidthFull();
         verticalLayout.setDefaultHorizontalComponentAlignment(FlexComponent.Alignment.CENTER);
         return verticalLayout;
     }

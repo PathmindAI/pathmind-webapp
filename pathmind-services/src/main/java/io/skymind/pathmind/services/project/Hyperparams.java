@@ -10,6 +10,8 @@ import lombok.Getter;
 @Builder
 public class Hyperparams {
 
+    private final int numAction;
+
     private final int numObservation;
 
     private final String rewardVariableFunction;
