@@ -2036,4 +2036,21 @@
         </update>
     </changeSet>
 
+    <changeSet id="3330-01" author="daehyun@pathmind.com">
+        <insert tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="RuntimeError: java.lang.RuntimeException: Could not get observations."/>
+            <column name="DESCRIPTION" value="RuntimeError: Could not get observations. Click here for solution."/>
+            <column name="RESTARTABLE" value="false"/>
+            <column name="SUPPORT_ARTICLE" value="https://help.pathmind.com/en/articles/5322845-runtime-error-could-not-do-actions-or-get-observations"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3330-02" author="daehyun@pathmind.com">
+        <update tableName="TRAINING_ERROR">
+            <column name="KEYWORD" value="Segmentation fault"/>
+            <column name="DESCRIPTION" value="Internal Pathmind error. Please restart your training."/>
+            <where>ID = 3</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>
