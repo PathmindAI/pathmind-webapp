@@ -1,0 +1,18 @@
+name: Trigger PR test jenkins job
+on:
+  pull_request:
+    branches: 
+      - dev
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    name: Trigger Jenkins
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger PR tests
+      uses: appleboy/jenkins-action@master
+      with:
+        url: "https://jenkins.dev.devpathmind.com"
+        user: "admin"
+        token: ${{ secrets.JENKINS_TOKEN }}
+        job: "Test_PRs"
