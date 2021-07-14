@@ -28,11 +28,27 @@ public class AccountPage extends PageObject {
     private WebElement accountEditView;
     @FindBy(id = "accessToken")
     private WebElement accessToken;
+    @FindBy(css = ".section-title-label")
+    private WebElement titleLabelLocator;
+    @FindBy(id = "editInfoBtn")
+    private WebElement accountInfoEditBtn;
+    @FindBy(id = "changePasswordBtn")
+    private WebElement accountPasswordEditBtn;
+    @FindBy(css = ".support")
+    private WebElement footerSupportBtn;
+    @FindBy(xpath = "//confirm-popup")
+    private WebElement popupShadow;
+    @FindBy(xpath = "//div[@class='data subscription-hint']")
+    private WebElement subscriptionHint;
+    private By inputLocator = By.cssSelector("input");
+
+    private static final String ACCOUNT_PAGE_TITLE = "Pathmind | Account";
+    private static final String ACCOUNT_PAGE_TITLE_LABEL = "Account";
 
     public void checkThatAccountPageOpened() {
-        waitABit(2500);
-        assertThat(getDriver().getTitle(), containsString("Pathmind | Account"));
-        assertThat(getDriver().findElement(By.cssSelector(".section-title-label")).getText(), containsString("Account"));
+        waitFor(ExpectedConditions.textToBePresentInElement(titleLabelLocator, ACCOUNT_PAGE_TITLE_LABEL));
+        assertThat(getDriver().getTitle(), containsString(ACCOUNT_PAGE_TITLE));
+        assertThat(titleLabelLocator.getText(), containsString(ACCOUNT_PAGE_TITLE_LABEL));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(1)")).getText(), containsString("User Email"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(3)")).getText(), containsString("First Name"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(1) .info div:nth-child(5)")).getText(), containsString("Last Name"));
@@ -40,19 +56,19 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Access Token"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Basic"));
-        assertThat(getDriver().findElement(By.id("editInfoBtn")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.id("editInfoBtn")).getText(), containsString("Edit"));
-        assertThat(getDriver().findElement(By.id("changePasswordBtn")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.id("changePasswordBtn")).getText(), containsString("Change"));
+        assertThat(accountInfoEditBtn.isDisplayed(), is(true));
+        assertThat(accountInfoEditBtn.getText(), containsString("Edit"));
+        assertThat(accountPasswordEditBtn.isDisplayed(), is(true));
+        assertThat(accountPasswordEditBtn.getText(), containsString("Change"));
     }
 
     public void clickAccountEditBtn() {
-        getDriver().findElement(By.id("editInfoBtn")).click();
+        accountInfoEditBtn.click();
     }
 
     public void inputNewEmail(String email) {
         WebElement inputShadow = utils.expandRootElement(accountEditView.findElement(By.id("email")));
-        WebElement input = inputShadow.findElement(By.cssSelector("input"));
+        WebElement input = inputShadow.findElement(inputLocator);
         input.click();
         input.clear();
         input.sendKeys(email);
@@ -90,10 +106,11 @@ public class AccountPage extends PageObject {
     public void clickAccountPageApiCopyBtnAndPasteToTheSearchField() {
         getDriver().findElement(By.id("apiCopyBtn")).click();
         WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector(".search-box_text-field")));
-        WebElement input = e.findElement(By.cssSelector("input"));
+        WebElement input = e.findElement(inputLocator);
         input.click();
         input.sendKeys(Keys.CONTROL + "V");
         waitABit(2500);
+        waitFor(ExpectedConditions.attributeToBe(input, "value", accessToken.getText()));
         assertThat(accessToken.getText(), is(input.getAttribute("value")));
     }
 
@@ -112,9 +129,9 @@ public class AccountPage extends PageObject {
     public void checkAccountPageFooterComponents() {
         assertThat(getDriver().findElement(By.xpath("(//app-footer/descendant::ul/li/a)[1]")).getAttribute("href"), containsString("https://pathmind.com/privacy"));
         assertThat(getDriver().findElement(By.xpath("(//app-footer/descendant::ul/li/a)[2]")).getAttribute("href"), containsString("https://pathmind.com/subscription-agreement"));
-        assertThat(getDriver().findElement(By.cssSelector(".support")).isDisplayed(), is(true));
-        assertThat(getDriver().findElement(By.cssSelector(".support")).getText(), containsString("Support"));
-        assertThat(getDriver().findElement(By.cssSelector(".support")).getAttribute("href"), containsString("mailto:support@pathmind.com"));
+        assertThat(footerSupportBtn.isDisplayed(), is(true));
+        assertThat(footerSupportBtn.getText(), containsString("Support"));
+        assertThat(footerSupportBtn.getAttribute("href"), containsString("mailto:support@pathmind.com"));
         assertThat(getDriver().findElement(By.cssSelector(".copyright")).getText(), containsString("© " + Calendar.getInstance().get(Calendar.YEAR) + " Pathmind"));
     }
 
@@ -168,15 +185,15 @@ public class AccountPage extends PageObject {
 
     public void fillPaymentFormWithStripeTestCard() {
         WebElement nameOnCardShadow = utils.expandRootElement(getDriver().findElement(By.id("name")));
-        nameOnCardShadow.findElement(By.cssSelector("input")).sendKeys("Test Name");
+        nameOnCardShadow.findElement(inputLocator).sendKeys("Test Name");
         WebElement billingAddressShadow = utils.expandRootElement(getDriver().findElement(By.id("address")));
-        billingAddressShadow.findElement(By.cssSelector("input")).sendKeys("Jl. Pantai Kedonganan, Kedonganan, Kuta, Kabupaten Badung, Bali");
+        billingAddressShadow.findElement(inputLocator).sendKeys("Jl. Pantai Kedonganan, Kedonganan, Kuta, Kabupaten Badung, Bali");
         WebElement cityShadow = utils.expandRootElement(getDriver().findElement(By.id("city")));
-        cityShadow.findElement(By.cssSelector("input")).sendKeys("Kuta");
+        cityShadow.findElement(inputLocator).sendKeys("Kuta");
         WebElement stateShadow = utils.expandRootElement(getDriver().findElement(By.id("state")));
-        stateShadow.findElement(By.cssSelector("input")).sendKeys("Kedonganan");
+        stateShadow.findElement(inputLocator).sendKeys("Kedonganan");
         WebElement zipShadow = utils.expandRootElement(getDriver().findElement(By.id("zip")));
-        zipShadow.findElement(By.cssSelector("input")).sendKeys("80361");
+        zipShadow.findElement(inputLocator).sendKeys("80361");
         getDriver().switchTo().frame(getDriver().findElement(By.xpath("//iframe[@title='Secure card payment input frame']")));
         getDriver().findElement(By.cssSelector("div[class='CardNumberField-input-wrapper'] input")).sendKeys("4242424242424242");
         getDriver().findElement(By.cssSelector("span[class='CardField-expiry CardField-child'] input")).sendKeys("1222");
@@ -198,7 +215,6 @@ public class AccountPage extends PageObject {
     }
 
     public void checkCancelSubscriptionPopUp() {
-        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         WebElement header = popupShadowRoot.findElement(By.cssSelector("h3"));
@@ -207,7 +223,6 @@ public class AccountPage extends PageObject {
     }
 
     public void clickPopUpDialogYesCancel() {
-        WebElement popupShadow = getDriver().findElement(By.xpath("//confirm-popup"));
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         popupShadowRoot.findElement(By.cssSelector("#confirm")).click();
@@ -218,7 +233,7 @@ public class AccountPage extends PageObject {
         DateTimeFormatter dtfMonth = DateTimeFormatter.ofPattern("MM");
         LocalDateTime now = LocalDateTime.now();
         String[] shortMonths = new DateFormatSymbols().getShortMonths();
-        waitFor(ExpectedConditions.textToBePresentInElement(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")), "Subscription will be cancelled on "));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='data subscription-hint']")).getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
+        waitFor(ExpectedConditions.textToBePresentInElement(subscriptionHint, "Subscription will be cancelled on "));
+        assertThat(subscriptionHint.getText(), containsString("Subscription will be cancelled on " + shortMonths[Integer.parseInt(dtfMonth.format(now))] + " " + dtf.format(now)));
     }
 }

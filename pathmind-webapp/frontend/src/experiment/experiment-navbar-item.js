@@ -1,5 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../components/atoms/status-icon.js";
+import "../components/atoms/status-icon.ts";
 
 class ExperimentNavbarItem extends PolymerElement {
     static get is() {

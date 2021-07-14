@@ -100,11 +100,15 @@ public class AWSApiClient {
     }
 
     public String fileUpload(String keyId, byte[] bytes) {
+        return fileUpload(bucketName, keyId, bytes);
+    }
+
+    public String fileUpload(String destinationBucketName, String keyId, byte[] bytes) {
         long contentLength = bytes.length;
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(contentLength);
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        return s3Client.putObject(bucketName, keyId, bis, metadata).getETag();
+        return s3Client.putObject(destinationBucketName, keyId, bis, metadata).getETag();
     }
 
     public byte[] fileContents(String keyId) {
@@ -112,8 +116,12 @@ public class AWSApiClient {
     }
 
     public byte[] fileContents(String keyId, boolean checkExists) {
+        return fileContents(bucketName, keyId, checkExists);
+    }
+
+    public byte[] fileContents(String bucketName, String keyId, boolean checkExists) {
         if (checkExists) {
-            if (!fileExists(keyId)) {
+            if (!fileExists(bucketName, keyId)) {
                 return null;
             }
         }
@@ -136,6 +144,10 @@ public class AWSApiClient {
     }
 
     public boolean fileExists(String keyId) {
+        return fileExists(bucketName, keyId);
+    }
+
+    public boolean fileExists(String bucketName, String keyId) {
         return s3Client.doesObjectExist(bucketName, keyId);
     }
 
@@ -205,6 +217,12 @@ public class AWSApiClient {
 
         SendMessageResult result = sqsClient.sendMessage(send_msg_request);
         return result.getMessageId();
+    }
+
+    public String copyFile(String sourceBucketName, String sourceKey,
+                             String destinationBucketName, String destinationKey) {
+        return s3Client.copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey)
+            .getETag();
     }
 
 }
