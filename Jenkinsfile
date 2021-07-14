@@ -48,7 +48,7 @@ def backupDb(identifier) {
     echo "Testing db backup"
     sh """
     aws rds create-db-snapshot --db-instance-identifier ${identifier} --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}
-    timeout 900 bash -c "while ! aws rds describe-db-snapshots --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}  | jq -r '.[][].Status' | grep available; do sleep 5; done"
+    timeout 1800 bash -c "while ! aws rds describe-db-snapshots --db-snapshot-identifier ${identifier}-`date '+%Y%m%d'`-${env.BUILD_NUMBER}  | jq -r '.[][].Status' | grep available; do sleep 5; done"
     """
 }
 
