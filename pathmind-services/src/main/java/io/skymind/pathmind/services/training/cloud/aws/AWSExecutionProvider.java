@@ -578,7 +578,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         ));
 
         if (job.getEnv().isLongerTraining()) {
-            instructions.add(var("MAX_ITERATIONS", "1500"));
+            instructions.add(var("MAX_ITERATIONS", "2000"));
             instructions.add(var("EPISODE_REWARD_RANGE", "0.005"));
             instructions.add(var("CONVERGENCE_CHECK_START_ITERATION", String.valueOf(job.getEnv().getStartCheckIterationForLongerTraining())));
         } else {
