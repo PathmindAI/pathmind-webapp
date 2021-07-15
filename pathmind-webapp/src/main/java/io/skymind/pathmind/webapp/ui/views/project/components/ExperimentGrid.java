@@ -121,7 +121,11 @@ public class ExperimentGrid extends Grid<Experiment> {
                     Span columnSpan = new Span();
                     Policy bestPolicy = experiment.getBestPolicy();
                     if (bestPolicy != null) {
-                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
+                        Double score = null;
+                        if (!experiment.getRewardVariablesScores().isEmpty()) {
+                            score = experiment.getRewardVariablesScores().get(rewardVarIndex);
+                        }
+                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex) + " score(" + score + ")");
                     } else {
                         columnSpan.add("—");
                     }
