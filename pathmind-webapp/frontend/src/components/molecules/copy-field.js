@@ -116,6 +116,7 @@ class CopyField extends PolymerElement {
                     this.showSpinner();
                     requestAnimationFrame(this.checkUrl);
                 } else {
+                    this.dispatchEvent(new CustomEvent("url-ready", { composed: true }));
                     this.$.spinner.setAttribute("hidden", true);
                     this.$.copy.removeAttribute("hidden");
                 }
