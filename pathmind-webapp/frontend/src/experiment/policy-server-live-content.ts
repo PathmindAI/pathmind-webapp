@@ -48,7 +48,6 @@ class PolicyServerLiveContent extends LitElement {
 
     firstUpdated() {
         (this.querySelector("copy-field") as any).addEventListener("url-ready", async event => {
-            console.log("%cHEREEEEEE", "background-color: yellow")
             this.ready = true;
         });
     }
