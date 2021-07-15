@@ -97,7 +97,8 @@ def setGitHubStatus(state) {
     isDraft = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}?access_token=${token}\" | | jq -r '.draft'").trim()
     if (isDraft=="true"){
         //Exit on draft PR
-        reuturn false
+        currentBuild.result = 'ABORTED'
+        error('Aborting a Draft PR')
     }
     commitSha = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}/commits?access_token=${token}\" | grep '^    \"sha\"' | cut -f4 -d'\"' | tail -1").trim()
     status="error"
@@ -211,10 +212,7 @@ pipeline {
                 }
             }
             steps {
-                if (!setGitHubStatus("PENDING")) {
-		    currentBuild.result = 'ABORTED'
-		    error('Abarting a Draft PR')
-		}
+                setGitHubStatus("PENDING")
                 echo "Check out code"
                 checkout scm
                 script {
