@@ -94,7 +94,7 @@ Set the github status
 def setGitHubStatus(state) {
     repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
     token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
-    isDraft = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}?access_token=${token}\" | | jq -r '.draft'").trim()
+    isDraft = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}?access_token=${token}\" | jq -r '.draft'").trim()
     if (isDraft=="true"){
         //Exit on draft PR
         currentBuild.result = 'ABORTED'
