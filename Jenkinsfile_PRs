@@ -92,6 +92,14 @@ def notifySlack(text, channel, attachments) {
 Set the github status
 */
 def setGitHubStatus(state) {
+    repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
+    token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
+    isDraft = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}?access_token=${token}\" | | jq -r '.draft'").trim()
+    if (isDraft=="true"){
+        //Exit on draft PR
+        reuturn false
+    }
+    commitSha = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}/commits?access_token=${token}\" | grep '^    \"sha\"' | cut -f4 -d'\"' | tail -1").trim()
     status="error"
     if (state=="SUCCESS"){
         status="success"
@@ -99,9 +107,6 @@ def setGitHubStatus(state) {
     if (state=="PENDING"){
         status="pending"
     }
-    repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
-    token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
-    commitSha = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}/commits?access_token=${token}\" | grep '^    \"sha\"' | cut -f4 -d'\"' | tail -1").trim()
     sh """
         set -x
         curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
@@ -206,7 +211,10 @@ pipeline {
                 }
             }
             steps {
-                setGitHubStatus("PENDING")
+                if (!setGitHubStatus("PENDING")) {
+		    currentBuild.result = 'ABORTED'
+		    error('Abarting a Draft PR')
+		}
                 echo "Check out code"
                 checkout scm
                 script {
