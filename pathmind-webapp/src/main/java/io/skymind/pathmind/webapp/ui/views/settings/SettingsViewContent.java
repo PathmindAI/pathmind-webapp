@@ -250,7 +250,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         });
 
         // init start check iteration
-        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500");
+        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500", "2000");
 
         startCheckIteration.setItems(startCheckIterations);
         startCheckIteration.setLabel("Early Stopper Start Iter");
