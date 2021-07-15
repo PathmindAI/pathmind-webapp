@@ -156,8 +156,6 @@ public class ServePolicyButton extends Button {
                 }
                 case DEPLOYED: {
                     final String url = policyServerService.getPolicyServerUrl(experiment);
-                    final Anchor docsLink = new Anchor(url + "/redoc", url + "/redoc");
-                    docsLink.setTarget("_blank");
                     final Button shutDownPolicyServerButton = new Button("Shut Down Policy Server", click -> {
                         dialog.close();
                         ConfirmationUtils.confirmationPopupDialog(
@@ -170,22 +168,13 @@ public class ServePolicyButton extends Button {
                                 setServePolicyButtonText(true);
                             });
                         });
-                    dialogContent.add(
-                            new H3("The Policy is Live"),
-                            new Span("The policy is being served at this URL:"),
-                            new CopyField(url, true)
-                    );
+                    PolicyServerLiveContent policyServerLiveContent = new PolicyServerLiveContent(url);
                     if (userDAO != null) {
                         PathmindUser user = userDAO.findById(experiment.getProject().getPathmindUserId());
-                        dialogContent.add(
-                            new Span("Your access token:"),
-                            new CopyField(user.getApiKey())
-                        );
+                        policyServerLiveContent.setUserApiKey(user.getApiKey());
                     }
+                    dialogContent.add(policyServerLiveContent);
                     dialogContent.add(
-                        new Paragraph(new Span("Read the docs for more details:"),
-                                    new Html("<br/>"),
-                                    docsLink),
                         WrapperUtils.wrapWidthFullBetweenHorizontal(
                             shutDownPolicyServerButton,
                             GuiUtils.getPrimaryButton("Close", click -> dialog.close()))
@@ -193,7 +182,6 @@ public class ServePolicyButton extends Button {
                     break;
                 }
                 case NOT_DEPLOYED: {
-
                     // intentional fallthrough to PENDING state
                 }
                 case PENDING:
