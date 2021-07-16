@@ -2,41 +2,22 @@ package io.skymind.pathmind.webapp.ui.components.atoms;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.server.Command;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
+import com.vaadin.flow.dom.DomEventListener;
 
 @Tag("floating-close-button")
-@JsModule("/src/components/atoms/floating-close-button.js")
-public class FloatingCloseButton extends PolymerTemplate<FloatingCloseButton.Model> {
-
-    Command handleClick;
-
+@JsModule("/src/components/atoms/floating-close-button.ts")
+public class FloatingCloseButton extends LitTemplate {
     public FloatingCloseButton() {
         this("Close");
     }
 
     public FloatingCloseButton(String text) {
-        this(text, () -> {});
+        this(text, click -> {});
     }
 
-    public FloatingCloseButton(String text, Command clickHandler) {
-        getModel().setText(text);
-        setClickHandler(clickHandler);
+    public FloatingCloseButton(String text, DomEventListener clickHandler) {
+        getElement().setProperty("text", text);
+        getElement().addEventListener("click", clickHandler);
     }
-
-    public void setClickHandler(Command clickHandler) {
-        handleClick = clickHandler;
-    }
-
-    @EventHandler
-    private void onClick() {
-        handleClick.execute();
-    }
-
-    public interface Model extends TemplateModel {
-        void setText(String text);
-    }
-
 }

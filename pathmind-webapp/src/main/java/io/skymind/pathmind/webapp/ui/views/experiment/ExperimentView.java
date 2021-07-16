@@ -205,7 +205,7 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     private VerticalLayout getComparisonExperimentPanel() {
-        comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", () -> {
+        comparisonModeCloseButton = new FloatingCloseButton("Exit Comparison Mode", click -> {
             leaveComparisonMode();
             resizeChart();
         });

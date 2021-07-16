@@ -254,6 +254,7 @@ Feature: Experiment page compare feature
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
+    When Wait a bit 5000 ms
     Then Experiment page Check 'primary' observation 'orderQueueSize' is highlighted 'false'
     Then Experiment page Check 'primary' observation 'collectQueueSize' is highlighted 'true'
     Then Experiment page Check 'primary' observation 'payBillQueueSize' is highlighted 'false'
