@@ -176,6 +176,14 @@ pipeline {
                         buildDockerImage("policy-deployer", "Dockerfile", "${WORKSPACE}/infra/images/policy-deployer/")
                     }
                 }
+                stage('Build pathmind-ma image') {
+                    steps {
+		        script {
+			    git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl
+			}
+                        buildDockerImage("pathmind-ma", "Dockerfile", "${WORKSPACE}/nativerl/nativerl-analyzer")
+                    }
+                }
             }
         }
 
@@ -207,6 +215,11 @@ pipeline {
                 stage('Publish policy-deployer image') {
                     steps {
                         publishDockerImage("policy-deployer", "${DOCKER_TAG}")
+                    }
+                }
+                stage('Publish pathmind-ma image') {
+                    steps {
+                        publishDockerImage("pathmind-ma", "${DOCKER_TAG}")
                     }
                 }
             }
@@ -260,6 +273,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying pathmind-ma') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
@@ -333,6 +353,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml"
+                        }
+                    }
+                }
+                stage('Deploying pathmind-ma') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
