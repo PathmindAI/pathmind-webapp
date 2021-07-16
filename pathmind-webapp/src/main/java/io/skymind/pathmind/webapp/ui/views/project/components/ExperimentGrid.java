@@ -121,15 +121,26 @@ public class ExperimentGrid extends Grid<Experiment> {
                     Span columnSpan = new Span();
                     Policy bestPolicy = experiment.getBestPolicy();
                     if (bestPolicy != null) {
-                        Double score = null;
-                        if (!experiment.getRewardVariablesScores().isEmpty()) {
-                            score = experiment.getRewardVariablesScores().get(rewardVarIndex);
-                        }
-                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex) + " score(" + score + ")");
+                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
                     } else {
                         columnSpan.add("—");
                     }
                     return columnSpan;
+                })
+                .setClassNameGenerator(experiment -> {
+                    Policy bestPolicy = experiment.getBestPolicy();
+                    if (bestPolicy != null) {
+                        Double score = null;
+                        if (!experiment.getRewardVariablesScores().isEmpty()) {
+                            score = experiment.getRewardVariablesScores().get(rewardVarIndex);
+                            // format score to 0 - 100
+                            if (score != null) {
+                                Long formattedScore = Math.round(score * 100);
+                                return "metric-cell-step-" + formattedScore;
+                            }
+                        }
+                    }
+                    return "";
                 })
                 .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
                 .setHeader(rewardVariableName)
