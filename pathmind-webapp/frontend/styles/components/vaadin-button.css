@@ -83,7 +83,7 @@
 :host(.action-button[title="Archive"]) [part] ::slotted(iron-icon) {
     width: var(--lumo-font-size-m);
     height: var(--lumo-font-size-m);
-    padding: 0;
+    padding: 0 !important;
 }
 
 /* Search box button*/
