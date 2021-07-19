@@ -17,7 +17,7 @@ class AccountViewContent extends PolymerElement {
                 .info {
                     position: relative;
                 }
-                vaadin-button[theme~="small"] {
+                account-view-content vaadin-button[theme~="small"] {
                     height: 1.8rem;
                 }
                 #rotateApiMenu {

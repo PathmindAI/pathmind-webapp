@@ -532,3 +532,8 @@
 .serve-policy-instructions vaadin-button:first-child {
     margin-right: var(--lumo-space-m);
 }
+
+policy-server-live-content {
+    display: block;
+    margin-bottom: var(--lumo-space-s);
+}

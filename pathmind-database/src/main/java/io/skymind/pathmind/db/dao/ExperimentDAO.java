@@ -1,13 +1,10 @@
 package io.skymind.pathmind.db.dao;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -27,14 +24,10 @@ import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -42,25 +35,13 @@ import org.springframework.stereotype.Repository;
 public class ExperimentDAO {
 
     private final DSLContext ctx;
-    protected final String statement;
-    protected final MetricsDAO metricsDAO;
 
-    ExperimentDAO(DSLContext ctx, @Value("classpath:/sql/best-policy.sql") Resource resourceFile, MetricsDAO metricsDAO) throws IOException {
+    ExperimentDAO(DSLContext ctx) {
         this.ctx = ctx;
-        this.statement = String.join(" ", IOUtils.readLines(resourceFile.getInputStream(), Charset.defaultCharset()));
-        this.metricsDAO = metricsDAO;
     }
 
-    public Map<Long, Long> bestPoliciesForExperiment(long modelId) {
-        return ctx.fetchStream(statement, modelId)
-                .filter(Objects::nonNull)
-                .map(r -> Pair.of(
-                        r.get("experiment_id", Long.class),
-                        r.get("policy_id", Long.class)
-                        )
-                )
-                .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    public Map<Long, Long> bestPoliciesForExperimentByModelId(long modelId) {
+        return ExperimentRepository.bestPoliciesForExperimentByModelId(ctx, modelId);
     }
 
     public Optional<Experiment> getExperiment(long experimentId) {
@@ -150,7 +131,7 @@ public class ExperimentDAO {
     }
 
     private List<Experiment> setSelectedObservationsAndMetricsValues(DSLContext ctx, List<Experiment> experiments, Long modelId, Long userId) {
-        Map<Long, Long> bestPoliciesId = new ConcurrentHashMap<>(this.bestPoliciesForExperiment(modelId));
+        Map<Long, Long> bestPoliciesId = new ConcurrentHashMap<>(this.bestPoliciesForExperimentByModelId(modelId));
         CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
             final Long policyId = bestPoliciesId.get(experiment.getId());
             experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
@@ -159,7 +140,7 @@ public class ExperimentDAO {
                 bestPolicy.ifPresent(bp -> {
                     experiment.setBestPolicy(bp);
 
-                    List<Pair<Double, Double>> rawMetricsAvgVar = metricsDAO.getMetricsRawForPolicy(policyId);
+                    List<Pair<Double, Double>> rawMetricsAvgVar = MetricsRawRepository.getMetricsRawForPolicyOptimized(ctx, policyId);
 
                     if (rawMetricsAvgVar != null && !rawMetricsAvgVar.isEmpty()) {
                         bp.setMetricDisplayValues(rawMetricsAvgVar.stream()
@@ -167,7 +148,7 @@ public class ExperimentDAO {
                                 .collect(Collectors.toList()));
                     } else {
                         bp.getMetricDisplayValues().clear();
-                        for (Double metric : metricsDAO.getLastIterationMetricsMeanForPolicy(policyId)) {
+                        for (Double metric : MetricsRawRepository.getLastIterationMetricsMeanForPolicy(ctx, policyId)) {
                             bp.getMetricDisplayValues().add(PathmindNumberUtils.formatNumber(metric));
                         }
                     }
@@ -302,6 +283,7 @@ public class ExperimentDAO {
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
         });
+
     }
 
     public void setDeployPolicyOnSuccess(long id, boolean value) {
