@@ -244,7 +244,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                 List<String> columnList = experimentGrid.getColumnList().keySet().stream()
                         .filter(col -> experimentGrid.getColumnList().get(col).isVisible())
                         .collect(Collectors.toList());
-                localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "columns", columnList);
+                localstorageHelper.setArrayItemInObjectOfObject("project_models", ""+projectId, "columns", columnList);
             }
         };
     }
@@ -253,14 +253,14 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         return () -> {
             List<String> additionalColumnList = new ArrayList<>();
             additionalColumnList.addAll(experimentGrid.getAdditionalColumnList().keySet());
-            localstorageHelper.setArrayItemInObjectOfObject("project_model", projectId+"_"+modelId, "additional_columns", additionalColumnList);
+            localstorageHelper.setArrayItemInObjectOfObject("project_models", ""+projectId, "additional_columns", additionalColumnList);
         };
     }
 
     private void getAndSetColumns() {
-        localstorageHelper.getObject("project_model", result -> {
+        localstorageHelper.getObject("project_models", result -> {
             JsonObject resultObject = (JsonObject) result;
-            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            JsonObject modelDetails = resultObject.getObject(""+projectId);
             if (modelDetails != null) {
                 JsonArray modelColumnsJsonArray = modelDetails.getArray("columns");
                 localStorageColumnsList.clear();
@@ -283,10 +283,10 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         columnMultiSelect.setValue(experimentGrid.getColumnList().keySet());
     }
 
-    private void getAndSetMetricColumns() {
-        localstorageHelper.getObject("project_model", result -> {
+    public void getAndSetMetricColumns() {
+        localstorageHelper.getObject("project_models", result -> {
             JsonObject resultObject = (JsonObject) result;
-            JsonObject modelDetails = resultObject.getObject(projectId+"_"+modelId);
+            JsonObject modelDetails = resultObject.getObject(""+projectId);
             if (modelDetails != null) {
                 JsonArray modelColumnsJsonArray = modelDetails.getArray("additional_columns");
                 Set<RewardVariable> localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
@@ -301,7 +301,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                             .ifPresent(rv -> 
                                 localStorageMetricColumnsListForColumnValue.add(rv));
                     }
-                    metricMultiSelect.setValue(localStorageMetricColumnsListForColumnValue);
+                    if (new HashSet<>(rewardVariables).containsAll(localStorageMetricColumnsListForColumnValue) && localStorageMetricColumnsListForColumnValue.size() > 0) {
+                        metricMultiSelect.setValue(localStorageMetricColumnsListForColumnValue);
+                    }
                 } else {
                     setDefaultForMetricMultiSelect();
                 }
@@ -430,6 +432,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             dataProvider.setFilter(false);
             if (isInit) {
                 experimentGrid.setDataProvider(dataProvider);
+                updateComponents(false);
             } else {
                 dataProvider.refreshAll();
             }
