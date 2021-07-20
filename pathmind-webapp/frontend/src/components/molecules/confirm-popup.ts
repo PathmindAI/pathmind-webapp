@@ -88,7 +88,7 @@ class ConfirmPopup extends LitElement {
                     ${this.message}
                 </div>
                 <div class="buttons-wrapper">
-                    <vaadin-button id="cancel" tabindex="0" role="button" @click="${this.onCancel}" hidden="${this.cancelText == null || this.cancelText === ''}">${this.cancelText}</vaadin-button>
+                    <vaadin-button id="cancel" tabindex="0" role="button" @click="${this.onCancel}" ?hidden="${!this.cancelText}">${this.cancelText}</vaadin-button>
                     <vaadin-button id="confirm" theme="${this.confirmButtonThemes}" tabindex="0" role="button" @click="${this.onConfirm}">${this.confirmText}</vaadin-button>
                 </div>
             </popup-content>
