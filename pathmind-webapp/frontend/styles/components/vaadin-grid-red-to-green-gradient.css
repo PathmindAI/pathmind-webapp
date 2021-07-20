@@ -1,0 +1,306 @@
+:host #items [part~="cell"][class*="metric-cell-step"] {
+  color: black;
+}
+:host #items .metric-cell-step-0 {
+  background-color: rgba(226, 106, 106, calc(1 - 0*2 / 100));
+}
+:host #items .metric-cell-step-1 {
+  background-color: rgba(226, 106, 106, calc(1 - 1*2 / 100));
+}
+:host #items .metric-cell-step-2 {
+  background-color: rgba(226, 106, 106, calc(1 - 2*2 / 100));
+}
+:host #items .metric-cell-step-3 {
+  background-color: rgba(226, 106, 106, calc(1 - 3*2 / 100));
+}
+:host #items .metric-cell-step-4 {
+  background-color: rgba(226, 106, 106, calc(1 - 4*2 / 100));
+}
+:host #items .metric-cell-step-5 {
+  background-color: rgba(226, 106, 106, calc(1 - 5*2 / 100));
+}
+:host #items .metric-cell-step-6 {
+  background-color: rgba(226, 106, 106, calc(1 - 6*2 / 100));
+}
+:host #items .metric-cell-step-7 {
+  background-color: rgba(226, 106, 106, calc(1 - 7*2 / 100));
+}
+:host #items .metric-cell-step-8 {
+  background-color: rgba(226, 106, 106, calc(1 - 8*2 / 100));
+}
+:host #items .metric-cell-step-9 {
+  background-color: rgba(226, 106, 106, calc(1 - 9*2 / 100));
+}
+:host #items .metric-cell-step-10 {
+  background-color: rgba(226, 106, 106, calc(1 - 10*2 / 100));
+}
+:host #items .metric-cell-step-11 {
+  background-color: rgba(226, 106, 106, calc(1 - 11*2 / 100));
+}
+:host #items .metric-cell-step-12 {
+  background-color: rgba(226, 106, 106, calc(1 - 12*2 / 100));
+}
+:host #items .metric-cell-step-13 {
+  background-color: rgba(226, 106, 106, calc(1 - 13*2 / 100));
+}
+:host .metric-cell-step-14 {
+  background-color: rgba(226, 106, 106, calc(1 - 14*2 / 100));
+}
+:host .metric-cell-step-15 {
+  background-color: rgba(226, 106, 106, calc(1 - 15*2 / 100));
+}
+:host .metric-cell-step-16 {
+  background-color: rgba(226, 106, 106, calc(1 - 16*2 / 100));
+}
+:host .metric-cell-step-17 {
+  background-color: rgba(226, 106, 106, calc(1 - 17*2 / 100));
+}
+:host .metric-cell-step-18 {
+  background-color: rgba(226, 106, 106, calc(1 - 18*2 / 100));
+}
+:host .metric-cell-step-19 {
+  background-color: rgba(226, 106, 106, calc(1 - 19*2 / 100));
+}
+:host .metric-cell-step-20 {
+  background-color: rgba(226, 106, 106, calc(1 - 20*2 / 100));
+}
+:host .metric-cell-step-21 {
+  background-color: rgba(226, 106, 106, calc(1 - 21*2 / 100));
+}
+:host .metric-cell-step-22 {
+  background-color: rgba(226, 106, 106, calc(1 - 22*2 / 100));
+}
+:host .metric-cell-step-23 {
+  background-color: rgba(226, 106, 106, calc(1 - 23*2 / 100));
+}
+:host .metric-cell-step-24 {
+  background-color: rgba(226, 106, 106, calc(1 - 24*2 / 100));
+}
+:host .metric-cell-step-25 {
+  background-color: rgba(226, 106, 106, calc(1 - 25*2 / 100));
+}
+:host .metric-cell-step-26 {
+  background-color: rgba(226, 106, 106, calc(1 - 26*2 / 100));
+}
+:host .metric-cell-step-27 {
+  background-color: rgba(226, 106, 106, calc(1 - 27*2 / 100));
+}
+:host .metric-cell-step-28 {
+  background-color: rgba(226, 106, 106, calc(1 - 28*2 / 100));
+}
+:host .metric-cell-step-29 {
+  background-color: rgba(226, 106, 106, calc(1 - 29*2 / 100));
+}
+:host .metric-cell-step-30 {
+  background-color: rgba(226, 106, 106, calc(1 - 30*2 / 100));
+}
+:host .metric-cell-step-31 {
+  background-color: rgba(226, 106, 106, calc(1 - 31*2 / 100));
+}
+:host .metric-cell-step-32 {
+  background-color: rgba(226, 106, 106, calc(1 - 32*2 / 100));
+}
+:host .metric-cell-step-33 {
+  background-color: rgba(226, 106, 106, calc(1 - 33*2 / 100));
+}
+:host .metric-cell-step-34 {
+  background-color: rgba(226, 106, 106, calc(1 - 34*2 / 100));
+}
+:host .metric-cell-step-35 {
+  background-color: rgba(226, 106, 106, calc(1 - 35*2 / 100));
+}
+:host .metric-cell-step-36 {
+  background-color: rgba(226, 106, 106, calc(1 - 36*2 / 100));
+}
+:host .metric-cell-step-37 {
+  background-color: rgba(226, 106, 106, calc(1 - 37*2 / 100));
+}
+:host .metric-cell-step-38 {
+  background-color: rgba(226, 106, 106, calc(1 - 38*2 / 100));
+}
+:host .metric-cell-step-39 {
+  background-color: rgba(226, 106, 106, calc(1 - 39*2 / 100));
+}
+:host .metric-cell-step-40 {
+  background-color: rgba(226, 106, 106, calc(1 - 40*2 / 100));
+}
+:host .metric-cell-step-41 {
+  background-color: rgba(226, 106, 106, calc(1 - 41*2 / 100));
+}
+:host .metric-cell-step-42 {
+  background-color: rgba(226, 106, 106, calc(1 - 42*2 / 100));
+}
+:host .metric-cell-step-43 {
+  background-color: rgba(226, 106, 106, calc(1 - 43*2 / 100));
+}
+:host .metric-cell-step-44 {
+  background-color: rgba(226, 106, 106, calc(1 - 44*2 / 100));
+}
+:host .metric-cell-step-45 {
+  background-color: rgba(226, 106, 106, calc(1 - 45*2 / 100));
+}
+:host .metric-cell-step-46 {
+  background-color: rgba(226, 106, 106, calc(1 - 46*2 / 100));
+}
+:host .metric-cell-step-47 {
+  background-color: rgba(226, 106, 106, calc(1 - 47*2 / 100));
+}
+:host .metric-cell-step-48 {
+  background-color: rgba(226, 106, 106, calc(1 - 48*2 / 100));
+}
+:host .metric-cell-step-49 {
+  background-color: rgba(226, 106, 106, calc(1 - 49*2 / 100));
+}
+:host .metric-cell-step-50 {
+  background-color: rgba(102, 204, 153, calc((50 - 50) / 50));
+}
+:host .metric-cell-step-51 {
+  background-color: rgba(102, 204, 153, calc((51 - 50) / 50));
+}
+:host .metric-cell-step-52 {
+  background-color: rgba(102, 204, 153, calc((52 - 50) / 50));
+}
+:host .metric-cell-step-53 {
+  background-color: rgba(102, 204, 153, calc((53 - 50) / 50));
+}
+:host .metric-cell-step-54 {
+  background-color: rgba(102, 204, 153, calc((54 - 50) / 50));
+}
+:host .metric-cell-step-55 {
+  background-color: rgba(102, 204, 153, calc((55 - 50) / 50));
+}
+:host .metric-cell-step-56 {
+  background-color: rgba(102, 204, 153, calc((56 - 50) / 50));
+}
+:host .metric-cell-step-57 {
+  background-color: rgba(102, 204, 153, calc((57 - 50) / 50));
+}
+:host .metric-cell-step-58 {
+  background-color: rgba(102, 204, 153, calc((58 - 50) / 50));
+}
+:host .metric-cell-step-59 {
+  background-color: rgba(102, 204, 153, calc((59 - 50) / 50));
+}
+:host .metric-cell-step-60 {
+  background-color: rgba(102, 204, 153, calc((60 - 50) / 50));
+}
+:host .metric-cell-step-61 {
+  background-color: rgba(102, 204, 153, calc((61 - 50) / 50));
+}
+:host .metric-cell-step-62 {
+  background-color: rgba(102, 204, 153, calc((62 - 50) / 50));
+}
+:host .metric-cell-step-63 {
+  background-color: rgba(102, 204, 153, calc((63 - 50) / 50));
+}
+:host .metric-cell-step-64 {
+  background-color: rgba(102, 204, 153, calc((64 - 50) / 50));
+}
+:host .metric-cell-step-65 {
+  background-color: rgba(102, 204, 153, calc((65 - 50) / 50));
+}
+:host .metric-cell-step-66 {
+  background-color: rgba(102, 204, 153, calc((66 - 50) / 50));
+}
+:host .metric-cell-step-67 {
+  background-color: rgba(102, 204, 153, calc((67 - 50) / 50));
+}
+:host .metric-cell-step-68 {
+  background-color: rgba(102, 204, 153, calc((68 - 50) / 50));
+}
+:host .metric-cell-step-69 {
+  background-color: rgba(102, 204, 153, calc((69 - 50) / 50));
+}
+:host .metric-cell-step-70 {
+  background-color: rgba(102, 204, 153, calc((70 - 50) / 50));
+}
+:host .metric-cell-step-71 {
+  background-color: rgba(102, 204, 153, calc((71 - 50) / 50));
+}
+:host .metric-cell-step-72 {
+  background-color: rgba(102, 204, 153, calc((72 - 50) / 50));
+}
+:host .metric-cell-step-73 {
+  background-color: rgba(102, 204, 153, calc((73 - 50) / 50));
+}
+:host .metric-cell-step-74 {
+  background-color: rgba(102, 204, 153, calc((74 - 50) / 50));
+}
+:host .metric-cell-step-75 {
+  background-color: rgba(102, 204, 153, calc((75 - 50) / 50));
+}
+:host .metric-cell-step-76 {
+  background-color: rgba(102, 204, 153, calc((76 - 50) / 50));
+}
+:host .metric-cell-step-77 {
+  background-color: rgba(102, 204, 153, calc((77 - 50) / 50));
+}
+:host .metric-cell-step-78 {
+  background-color: rgba(102, 204, 153, calc((78 - 50) / 50));
+}
+:host .metric-cell-step-79 {
+  background-color: rgba(102, 204, 153, calc((79 - 50) / 50));
+}
+:host .metric-cell-step-80 {
+  background-color: rgba(102, 204, 153, calc((80 - 50) / 50));
+}
+:host .metric-cell-step-81 {
+  background-color: rgba(102, 204, 153, calc((81 - 50) / 50));
+}
+:host .metric-cell-step-82 {
+  background-color: rgba(102, 204, 153, calc((82 - 50) / 50));
+}
+:host .metric-cell-step-83 {
+  background-color: rgba(102, 204, 153, calc((83 - 50) / 50));
+}
+:host .metric-cell-step-84 {
+  background-color: rgba(102, 204, 153, calc((84 - 50) / 50));
+}
+:host .metric-cell-step-85 {
+  background-color: rgba(102, 204, 153, calc((85 - 50) / 50));
+}
+:host .metric-cell-step-86 {
+  background-color: rgba(102, 204, 153, calc((86 - 50) / 50));
+}
+:host .metric-cell-step-87 {
+  background-color: rgba(102, 204, 153, calc((87 - 50) / 50));
+}
+:host .metric-cell-step-88 {
+  background-color: rgba(102, 204, 153, calc((88 - 50) / 50));
+}
+:host .metric-cell-step-89 {
+  background-color: rgba(102, 204, 153, calc((89 - 50) / 50));
+}
+:host .metric-cell-step-90 {
+  background-color: rgba(102, 204, 153, calc((90 - 50) / 50));
+}
+:host .metric-cell-step-91 {
+  background-color: rgba(102, 204, 153, calc((91 - 50) / 50));
+}
+:host .metric-cell-step-92 {
+  background-color: rgba(102, 204, 153, calc((92 - 50) / 50));
+}
+:host .metric-cell-step-93 {
+  background-color: rgba(102, 204, 153, calc((93 - 50) / 50));
+}
+:host .metric-cell-step-94 {
+  background-color: rgba(102, 204, 153, calc((94 - 50) / 50));
+}
+:host .metric-cell-step-95 {
+  background-color: rgba(102, 204, 153, calc((95 - 50) / 50));
+}
+:host .metric-cell-step-96 {
+  background-color: rgba(102, 204, 153, calc((96 - 50) / 50));
+}
+:host .metric-cell-step-97 {
+  background-color: rgba(102, 204, 153, calc((97 - 50) / 50));
+}
+:host .metric-cell-step-98 {
+  background-color: rgba(102, 204, 153, calc((98 - 50) / 50));
+}
+:host .metric-cell-step-99 {
+  background-color: rgba(102, 204, 153, calc((99 - 50) / 50));
+}
+:host .metric-cell-step-100 {
+  background-color: rgba(102, 204, 153, calc((100 - 50) / 50));
+}
