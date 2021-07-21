@@ -10,4 +10,4 @@ helm upgrade --install ${helm_name} \
 	--set image.tag=${ENVIRONMENT}${JobId} \
 	--set 'ingress.hosts[0].paths[0]'="/policy/${UrlPath}(/|\$)(.*)" \
 	--set 'ingress.tls[0].secretName'=letsencrypt-${ENVIRONMENT} \
-	-n ${ENVIRONMENT}
+	-n ${NAMESPACE}
