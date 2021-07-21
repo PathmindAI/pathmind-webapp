@@ -30,7 +30,6 @@ class DatetimeDisplay extends LitElement {
     }
 
     updated(changedProperties) {
-        console.log(changedProperties)
         changedProperties.forEach((oldValue, name) => {
             if (name === "datetime" || name === "serverTimeZoneOffsetFromUTC") {
               this.datetimeWithTimezone = this._computeDatetimeWithTimezone();
