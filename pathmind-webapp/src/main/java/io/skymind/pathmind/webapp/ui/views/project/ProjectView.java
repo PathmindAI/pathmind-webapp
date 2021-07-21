@@ -108,6 +108,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private String pageTitle;
     private boolean isPythonModel = false;
     private Set<String> localStorageColumnsList = new HashSet<String>();
+    private Set<RewardVariable> localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
 
     private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
@@ -231,7 +232,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         multiSelectGroup.setItems(rewardVariables);
         multiSelectGroup.setPlaceholder("Select simulation metrics to show on the table");
         multiSelectGroup.addSelectionListener(event -> {
-            event.getAddedSelection().stream().forEach(experimentGrid::addAdditionalColumn);
+            event.getAddedSelection().stream().forEach(addedSelection -> {
+                experimentGrid.addAdditionalColumn(addedSelection, true);
+            });
             event.getRemovedSelection().stream().forEach(experimentGrid::removeAdditionalColumn);
             afterHideOrShowAdditionalColumn().execute();
         });
@@ -252,7 +255,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Command afterHideOrShowAdditionalColumn() {
         return () -> {
             List<String> additionalColumnList = new ArrayList<>();
-            additionalColumnList.addAll(experimentGrid.getAdditionalColumnList().keySet());
+            additionalColumnList = experimentGrid.getAdditionalColumnList().keySet().stream()
+                    .filter(col -> experimentGrid.getAdditionalColumnList().get(col).isVisible())
+                    .collect(Collectors.toList());
             localstorageHelper.setArrayItemInObjectOfObject("project_models", ""+projectId, "additional_columns", additionalColumnList);
         };
     }
@@ -289,7 +294,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             JsonObject modelDetails = resultObject.getObject(""+projectId);
             if (modelDetails != null) {
                 JsonArray modelColumnsJsonArray = modelDetails.getArray("additional_columns");
-                Set<RewardVariable> localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
+                localStorageMetricColumnsListForColumnValue = new HashSet<RewardVariable>();
                 if (modelColumnsJsonArray != null) {
                     int len = modelColumnsJsonArray.length();
                     for (int i = 0; i < len; i++) {
@@ -301,7 +306,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                             .ifPresent(rv -> 
                                 localStorageMetricColumnsListForColumnValue.add(rv));
                     }
-                    if (new HashSet<>(rewardVariables).containsAll(localStorageMetricColumnsListForColumnValue) && localStorageMetricColumnsListForColumnValue.size() > 0) {
+                    if (new HashSet<>(rewardVariables).containsAll(localStorageMetricColumnsListForColumnValue) && 
+                            localStorageMetricColumnsListForColumnValue.size() > 0) {
                         metricMultiSelect.setValue(localStorageMetricColumnsListForColumnValue);
                     }
                 } else {
