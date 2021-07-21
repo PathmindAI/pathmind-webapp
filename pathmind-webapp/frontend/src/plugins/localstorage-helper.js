@@ -1,9 +1,6 @@
 import { LitElement, html } from "lit-element";
 
 class LocalstorageHelper extends LitElement {
-  connectedCallback() {
-    super.connectedCallback();
-  }
   render() {
       return html``;
   }

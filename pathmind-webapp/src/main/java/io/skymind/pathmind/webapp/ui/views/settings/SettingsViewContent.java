@@ -77,6 +77,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("rayDebugCB")
     private ComboBox<String> rayDebug;
 
+    @Id("maxTrainingTimeCB")
+    private ComboBox<String> maxTrainingTime;
+
     @Id("longerTrainingCB")
     private ComboBox<String> longerTraining;
 
@@ -113,6 +116,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
             env.setScheduler(scheduler.getValue());
             env.setFreezing(Boolean.valueOf(freezing.getValue()));
             env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
+            env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
             env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
             env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
 
@@ -238,6 +242,14 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         rayDebug.setPlaceholder(String.valueOf(env.isRayDebug()));
         rayDebug.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
 
+        // init max training time
+        List<String> maxTrainingTimes = List.of("12", "24", "48");
+
+        maxTrainingTime.setItems(maxTrainingTimes);
+        maxTrainingTime.setLabel("Max Training Time(hour)");
+        maxTrainingTime.setPlaceholder(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+        maxTrainingTime.setValue(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+
         // init longer training
         List<String> longerTrainings = List.of("TRUE", "FALSE");
 
@@ -250,7 +262,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         });
 
         // init start check iteration
-        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500");
+        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500", "2000");
 
         startCheckIteration.setItems(startCheckIterations);
         startCheckIteration.setLabel("Early Stopper Start Iter");
