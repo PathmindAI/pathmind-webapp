@@ -3,6 +3,8 @@ package io.skymind.pathmind.db.dao;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.jooq.Tables;
@@ -13,17 +15,29 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Project;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jooq.CommonTableExpression;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.OrderField;
 import org.jooq.Record;
+import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.SortOrder;
+import org.jooq.Table;
 
 import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
+import static io.skymind.pathmind.db.jooq.Tables.POLICY;
+import static io.skymind.pathmind.db.jooq.Tables.REWARD_SCORE;
+import static io.skymind.pathmind.db.jooq.Tables.RUN;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
+import static org.jooq.impl.DSL.field;
+import static org.jooq.impl.DSL.name;
+import static org.jooq.impl.DSL.select;
 
 @Slf4j
 class ExperimentRepository {
@@ -266,5 +280,62 @@ class ExperimentRepository {
                 .set(EXPERIMENT.DEPLOY_POLICY_ON_SUCCESS, value)
                 .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
+    }
+
+    /**
+     with E as (
+        select id  from experiment E where E.model_id = ?
+     )
+     select distinct on (experiment_id) experiment_id, run_id, policy_id, score, iteration
+     from (
+         select
+         distinct on (P.id) P.id as policy_id, R.experiment_id, R.id as run_id, RW.mean as score, RW.iteration
+         from
+         E left join run R on (E.id = R.experiment_id)
+         left join policy P on (R.id = P.run_id)
+         left join reward_score RW on (P.id = RW.policy_id)
+         order by P.id, RW.iteration desc
+     ) T
+     order by experiment_id, score desc
+     */
+    public static Map<Long, Long> bestPoliciesForExperimentByModelId(DSLContext ctx, long modelId) {
+
+        final String ID_FIELD = "id";
+
+        CommonTableExpression<Record1<Long>> E =
+                name("E")
+                        .fields(ID_FIELD)
+                        .as(select(EXPERIMENT.ID).from(EXPERIMENT).where(EXPERIMENT.MODEL_ID.eq(modelId)));
+
+        final String EXPERIMENT_ID = "experiment_id";
+        final String RUN_ID = "run_id";
+        final String POLICY_ID = "policy_id";
+        final String SCORE = "score";
+        final String ITERATION = "iteration";
+
+        Table<?> nested = ctx
+                .select(POLICY.ID.as(POLICY_ID), RUN.EXPERIMENT_ID.as(EXPERIMENT_ID), RUN.ID.as(RUN_ID), REWARD_SCORE.MEAN.as(SCORE), REWARD_SCORE.ITERATION.as(ITERATION))
+                .distinctOn(POLICY.ID)
+                .from(E)
+                .leftJoin(RUN).on(RUN.EXPERIMENT_ID.eq(E.field(ID_FIELD, Long.class)))
+                .leftJoin(POLICY).on(RUN.ID.eq(POLICY.RUN_ID))
+                .leftJoin(REWARD_SCORE).on(POLICY.ID.eq(REWARD_SCORE.POLICY_ID))
+                .orderBy(POLICY.ID, REWARD_SCORE.ITERATION.desc())
+                .asTable("T");
+
+        final Field<Long> experimentId = field(EXPERIMENT_ID, Long.class);
+        final Field<Long> policyId = field(POLICY_ID, Long.class);
+        final Field<?> score = field(SCORE, REWARD_SCORE.MEAN.getDataType());
+
+        return ctx.with(E)
+                .select(experimentId, field(RUN_ID), policyId, score, field(ITERATION))
+                .distinctOn(experimentId)
+                .from(nested)
+                .orderBy(experimentId, score.desc())
+                .fetchStream()
+                .filter(Objects::nonNull)
+                .map(r -> Pair.of(r.get(experimentId),r.get(policyId)))
+                .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 }

@@ -20,6 +20,7 @@ public enum NativeRL implements VersionEnum {
     VERSION_1_6_2;
 
     private static final String baseFileName = "nativerl-%s-SNAPSHOT-bin.zip";
+    public static final String simpleFileName = "nativerl-bin.zip";
 
     private static final EnumSet<NativeRL> OLD_VERSION = EnumSet.of(VERSION_1_0_7, VERSION_1_1_0, VERSION_1_1_1);
 

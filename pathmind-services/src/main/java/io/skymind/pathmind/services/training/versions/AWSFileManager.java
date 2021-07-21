@@ -13,6 +13,7 @@ import io.skymind.pathmind.shared.services.training.versions.JDK;
 import io.skymind.pathmind.shared.services.training.versions.NativeRL;
 import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.shared.services.training.versions.VersionEnum;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class AWSFileManager {
     private static AWSFileManager instance;
@@ -31,30 +32,36 @@ public class AWSFileManager {
         setData();
     }
 
-    private static final Map<String, Map<VersionEnum, List<String>>> versions = new HashMap<>();
-    private String currentMode = "PROD";
+    private static final Map<VersionEnum, List<String>> versions = new HashMap<>();
 
     private void setData() {
-        Map<VersionEnum, List<String>> vTable = new HashMap<>();
         Arrays.stream(AnyLogic.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(Conda.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(JDK.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(NativeRL.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
+                .forEach(v -> versions.put(v, v.convertPath()));
         Arrays.stream(PathmindHelper.values())
-                .forEach(v -> vTable.put(v, v.convertPath()));
-
-        versions.put("PROD", vTable);
+                .forEach(v -> versions.put(v, v.convertPath()));
     }
 
     public List<String> getFiles(VersionEnum version) {
-        return versions.get(currentMode).getOrDefault(version, List.of())
+        return versions.getOrDefault(version, List.of())
                 .stream()
                 .map(it -> buildS3CopyCmd(STATIC_BUCKET, it, it))
                 .collect(Collectors.toList());
+    }
+
+    public Pair<String, String> libFilePathsWithFileName(VersionEnum version) {
+        return versions.getOrDefault(version, List.of())
+            .stream()
+            .map(path -> Pair.of(
+                path,
+                version instanceof NativeRL ? NativeRL.simpleFileName : new File(path).getName()))
+            .findFirst()
+            .orElse(null);
     }
 
     public String buildS3CopyCmd(String bucketName, String filePath, String fileName) {
