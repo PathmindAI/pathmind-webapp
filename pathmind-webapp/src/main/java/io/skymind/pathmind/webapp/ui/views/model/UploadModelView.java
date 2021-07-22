@@ -57,6 +57,8 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
@@ -75,6 +77,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
+import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
@@ -148,7 +151,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-        rewardVariablesPanel = new RewardVariablesPanel();
+        rewardVariablesPanel = new RewardVariablesPanel(false);
 
         modelBinder.readBean(model);
 
@@ -156,7 +159,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 uploadModelWizardPanel,
                 uploadALPWizardPanel,
                 modelDetailsWizardPanel,
-                rewardVariablesPanel);
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                    LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL),
+                    GuiUtils.getFullWidthHr(),
+                    rewardVariablesPanel));
 
         if (isResumeUpload()) {
             setVisibleWizardPanel(uploadALPWizardPanel);
@@ -254,7 +260,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             model.setProjectId(projectId);
         }
         project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + projectId));
+                .orElseThrow(() -> new InvalidDataException("Attempted to access project: " + projectId));
     }
 
     private boolean isResumeUpload() {
