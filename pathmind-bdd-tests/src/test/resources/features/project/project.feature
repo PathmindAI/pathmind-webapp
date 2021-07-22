@@ -35,6 +35,24 @@ Feature: Project page
     When Open project AutotestProject on projects page
     Then Project page check that models count is 2
 
+  Scenario: Check metrics columns when switching between models
+    Given Login to the pathmind
+    When Create new CoffeeShop project with draft experiment
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment AutotestProject page is opened
+    When Open projects page
+    When Open project AutotestProject on projects page
+    When Click project page 'metric' dropdown 'successfulCustomers'
+    When Click project page 'column' dropdown 'Favorite'
+    Then Click the model name 1
+
   Scenario: Check model page archive btn, move model to archived
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment

@@ -89,4 +89,9 @@ public class ProjectPageStepDefinition {
     public void checkThatProjectPageTitleIs(String title) {
         projectPageSteps.checkThatProjectPageTitleIs(title + Serenity.sessionVariableCalled("randomNumber"));
     }
+
+    @When("^Click project page '(.*)' dropdown '(.*)'$")
+    public void clickProjectPageMetricDropdown(String dropdown, String value) {
+        projectPageSteps.clickProjectPageMetricDropdown(dropdown, value);
+    }
 }
