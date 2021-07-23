@@ -50,8 +50,26 @@ Feature: Project page
     When Open projects page
     When Open project AutotestProject on projects page
     When Click project page 'metric' dropdown 'successfulCustomers'
+    When Click project page 'metric' dropdown 'balkedCustomers'
+    When Click project page 'metric' dropdown 'avgServiceTime'
     When Click project page 'column' dropdown 'Favorite'
+    When Click project page 'column' dropdown 'Created'
+    When Click project page 'column' dropdown 'Selected Observations'
+    When Click project page 'column' dropdown 'Notes'
     Then Click the model name 1
+    Then Check project page 'metric' dropdown 'successfulCustomers'
+    Then Check project page 'metric' dropdown 'balkedCustomers'
+    Then Check project page 'metric' dropdown 'avgServiceTime'
+    Then Check project page 'column' dropdown 'Id #'
+    Then Check project page 'column' dropdown 'Reward Function'
+    Then Check project page 'column' dropdown 'Status'
+    Then Click the model name 2
+    Then Check project page 'metric' dropdown 'successfulCustomers'
+    Then Check project page 'metric' dropdown 'balkedCustomers'
+    Then Check project page 'metric' dropdown 'avgServiceTime'
+    Then Check project page 'column' dropdown 'Id #'
+    Then Check project page 'column' dropdown 'Reward Function'
+    Then Check project page 'column' dropdown 'Status'
 
   Scenario: Check model page archive btn, move model to archived
     Given Login to the pathmind

@@ -94,4 +94,9 @@ public class ProjectPageStepDefinition {
     public void clickProjectPageMetricDropdown(String dropdown, String value) {
         projectPageSteps.clickProjectPageMetricDropdown(dropdown, value);
     }
+
+    @Then("^Check project page '(.*)' dropdown '(.*)'$")
+    public void checkProjectPageDropdown(String dropdown, String value) {
+        projectPageSteps.checkProjectPageDropdown(dropdown, value);
+    }
 }

@@ -8,12 +8,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class ProjectPage extends PageObject {
 
@@ -175,5 +175,21 @@ public class ProjectPage extends PageObject {
             }
         }
         getDriver().findElement(By.xpath("//body")).sendKeys(Keys.ESCAPE);
+    }
+
+    public void checkProjectPageDropdown(String dropdown, String value) {
+        String className;
+        if (dropdown.equals("metric")) {
+            className = "metric-selection-row";
+        } else {
+            className = "column-selection-row";
+        }
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//*[@class='" + className + "']/multiselect-combo-box")));
+        WebElement multiSelect = utils.expandRootElement(e.findElement(By.cssSelector("multiselect-combo-box-input")));
+        List<String> actual = new ArrayList<>();
+        waitABit(4000);
+        for (WebElement webElement : multiSelect.findElements(By.cssSelector("div[part='token-label']"))) {
+            actual.add(webElement.getText());        }
+        assertThat(actual, hasItem(value));
     }
 }
