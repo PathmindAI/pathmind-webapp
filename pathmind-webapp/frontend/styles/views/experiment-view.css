@@ -189,6 +189,7 @@
 .experiment-view .histograms-wrapper {
     flex: 1 0 0;
     width: auto !important;
+    min-width: 5.625rem;
     line-height: 2rem;
 }
 
