@@ -354,10 +354,6 @@
     right: 0;
 }
 
-.experiment-view .buttons-wrapper button-with-loading {
-    display: inline-block;
-}
-
 .experiment-view .buttons-wrapper vaadin-button {
     min-width: auto;
     height: var(--lumo-size-s);
