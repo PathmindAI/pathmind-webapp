@@ -177,10 +177,8 @@ pipeline {
                     }
                 }
                 stage('Build pathmind-ma image') {
-                    steps {
-		        script {
-			    git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl
-			}
+                    steps {                        
+                        sh "git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl"                        
                         buildDockerImage("pathmind-ma", "Dockerfile", "${WORKSPACE}/nativerl/nativerl-analyzer")
                     }
                 }
