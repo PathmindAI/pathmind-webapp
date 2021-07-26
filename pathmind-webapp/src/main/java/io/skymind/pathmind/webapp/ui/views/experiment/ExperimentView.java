@@ -83,7 +83,6 @@ public class ExperimentView extends AbstractExperimentView {
 
     @Autowired
     private ModelCheckerService modelCheckerService;
-
     @Autowired
     private UserDAO userDAO;
 
@@ -229,11 +228,6 @@ public class ExperimentView extends AbstractExperimentView {
         return comparisonPanel;
     }
 
-    /**
-     * This is a temporary solution until the experiment view refactoring is completed. It's done this way because until the subscribers
-     * are properly broken up it's almost impossible to break out the navbar specific eventbus handling and as a result all navbar
-     * code is going to be wrapped around if's which the SharedExperimentView will override to false.
-     */
     protected boolean isShowNavBar() {
         return true;
     }
@@ -249,6 +243,12 @@ public class ExperimentView extends AbstractExperimentView {
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
+        middlePanel.addSplitterDragendListener(dragend -> {
+            getElement().executeJs("const exp23Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
+                "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_23', exp23Styles);");
+            
+            resizeChartOnDrag();
+        });
         return middlePanel;
     }
 
@@ -313,6 +313,15 @@ public class ExperimentView extends AbstractExperimentView {
 
     public void showCompareExperimentComponents(boolean isCompareVisible) {
         compareExperimentVerticalLayout.setVisible(isCompareVisible);
+    }
+
+    @Override
+    protected void initComponents() {
+        updateComponents();
+        getElement().executeJs("const panelSplits = document.querySelector('localstorage-helper').getItemAsObject('panels_split');"+
+            "const exp_23 = panelSplits['exp_23'];"+
+            "document.querySelector('.middle-panel > [slot=\"primary\"]').style.flex = exp_23['primary'];"+
+            "document.querySelector('.middle-panel > [slot=\"secondary\"]').style.flex = exp_23['secondary'];");
     }
 
     @Override
