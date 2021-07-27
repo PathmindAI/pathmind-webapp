@@ -30,20 +30,27 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
 
     @Autowired
     public AccountUpgradeViewContent(CurrentUser currentUser,
+                                     @Value("${pathmind.pathmind-api.url}") String apiUrl,
                                      @Value("${pathmind.contact-support.address}") String contactLink,
+                                     @Value("${pathmind.stripe.public.key}") String publicKey,
                                      SegmentIntegrator segmentIntegrator) {
         getModel().setContactLink(contactLink);
         user = currentUser.getUser();
         this.segmentIntegrator = segmentIntegrator;
+        getModel().setKey(publicKey);
+        getModel().setUserApiKey(user.getApiKey());
+        getModel().setApiUrl(apiUrl);
 
         proBtn.addClickListener(e -> getUI().ifPresent(ui -> {
             segmentIntegrator.upgradeToProPlanClicked();
-            ui.navigate(PaymentView.class);
         }));
     }
 
     public interface Model extends TemplateModel {
         void setContactLink(String contactLink);
+        void setKey(String key);
+        void setUserApiKey(String key);
+        void setApiUrl(String pathmindApiUrl);
     }
 
 }

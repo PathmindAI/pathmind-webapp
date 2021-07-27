@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @RestController
@@ -66,14 +67,20 @@ public class StripeAPIService {
     }
 
     @PostMapping(path = "/create-checkout-session", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HashMap<String, String> createCheckoutSession(@AuthenticationPrincipal PathmindApiUser pmUser) {
+    public HashMap<String, String> createCheckoutSession(@RequestParam("type") String type,
+                                                        @AuthenticationPrincipal PathmindApiUser pmUser) {
+        Boolean isOnboarding = type.equals("onboarding");
+        String successUrlPath = isOnboarding ? "/onboarding-payment-success" : "/upgrade-done";
+        String cancelUrl = isOnboarding ? webappDomainUrl : webappDomainUrl +  "/account/upgrade";
+        SessionCreateParams.Mode paymentMode = isOnboarding ? SessionCreateParams.Mode.PAYMENT : SessionCreateParams.Mode.SUBSCRIPTION;
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(webappDomainUrl + "/onboarding-payment-success")
-                .setCancelUrl(webappDomainUrl)
+                .setMode(paymentMode)
+                .putExtraParam("allow_promotion_codes", true)
+                .setSuccessUrl(webappDomainUrl + successUrlPath)
+                .setCancelUrl(cancelUrl)
                 .setCustomerEmail(user.getStripeCustomerId() != null ? null : user.getEmail())
                 .setCustomer(user.getStripeCustomerId())
                 .addLineItem(

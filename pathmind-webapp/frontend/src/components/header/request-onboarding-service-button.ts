@@ -49,7 +49,7 @@ class RequestOnboardingServiceButton extends LitElement {
   }
 
   handleClick() {
-    fetch(`${this.apiUrl}/create-checkout-session`, {
+    fetch(`${this.apiUrl}/create-checkout-session?type=onboarding`, {
       method: "POST",
       headers: {
         'X-PM-API-TOKEN': this.userAPIKey

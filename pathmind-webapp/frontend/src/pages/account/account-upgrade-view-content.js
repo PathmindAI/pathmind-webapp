@@ -184,7 +184,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <li>Unlimited Policy Export</li>
                 <li>Technical Support Included</li>
             </ul>
-            <vaadin-button id="proBtn" theme="primary">Choose Pro</vaadin-button>
+            <vaadin-button id="proBtn" theme="primary" on-click="handleProClick">Choose Pro</vaadin-button>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
@@ -215,13 +215,51 @@ class AccountUpgradeViewContent extends PolymerElement {
     this.appendChild(dom);
   }
 
+  ready() {
+      super.ready();
+      this.stripeObj = window.Stripe(this.key);
+  }
+
+  handleProClick() {
+      console.log("%chandle pro click","background-color: yellow")
+    fetch(`${this.apiUrl}/create-checkout-session?type=pro`, {
+      method: "POST",
+      headers: {
+        'X-PM-API-TOKEN': this.userApiKey
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    })
+    .then(session => 
+      this.stripeObj.redirectToCheckout({ sessionId: session.id })
+    )
+    .then(result => {
+      // If redirectToCheckout fails due to a browser or network
+      // error, you should display the localized error message to your
+      // customer using error.message.
+      if (result.error) {
+        alert(result.error.message);
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      window.location.pathname = "/page-not-found";
+    });
+  }
+
   static get is() {
     return "account-upgrade-view-content";
   }
 
   static get properties() {
     return {
-      // Declare your properties here.
+      stripeObj: Object,
+      userApiKey: String,
+      apiUrl: String,
     };
   }
 }
