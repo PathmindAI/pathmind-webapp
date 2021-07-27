@@ -2,6 +2,13 @@
   "compilerOptions": {
     "target": "es2015",
     "experimentalDecorators": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "stripe-v3"
+    ]
   }
 }

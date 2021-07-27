@@ -1,25 +1,23 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, css } from "lit-element";
 import "cookieconsent";
 
-class CookieConsentBox extends PolymerElement {
-    static get is() {
-        return "cookie-consent-box";
+class CookieConsentBox extends LitElement {
+    static get styles() {
+        return css`
+            :host {
+                display: none;
+            }
+        `
     }
 
-    static get template() {
-        return html`
-            <style>
-                :host {
-                    display: none;
-                }
-            </style>
-        `;
+    render() {
+        return html``;
     }
 
-    ready() {
-        super.ready();
+    constructor() {
+        super();
         if (document.querySelectorAll(".cc-window[aria-label~='cookieconsent']").length === 0) {
-            window.cookieconsent.initialise({
+            (window as any).cookieconsent.initialise({
                 container: document.querySelector("vaadin-app-layout"),
                 content: {
                   message: "This website uses cookies to ensure you get the best experience.",
@@ -33,4 +31,4 @@ class CookieConsentBox extends PolymerElement {
     }
 }
 
-customElements.define(CookieConsentBox.is, CookieConsentBox);
+customElements.define("cookie-consent-box", CookieConsentBox);

@@ -52,6 +52,7 @@ dependencies:
 devDependencies:
   '@babel/core': 7.14.0
   '@storybook/polymer': 5.3.21_1f76a15a1c9864826e1ce985c9e75572
+  '@types/stripe-v3': 3.1.25
   babel-loader: 8.2.2_070149d105dc8d3e72f1c7508cfe6664
   chokidar: 3.5.1
   compression-webpack-plugin: 4.0.1_webpack@4.42.0
@@ -2138,6 +2139,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
+  /@types/stripe-v3/3.1.25:
+    dev: true
+    resolution:
+      integrity: sha512-M6U2x+NyD3Sn8FF7OrAFKQH2RYRLXUhnmd6UQi8FJL7gkELUbugemuNWUzYywpb2/Jzl0+mucup5zt32R3nuJg==
   /@types/tapable/1.0.7:
     dev: true
     resolution:
@@ -11205,6 +11210,7 @@ specifiers:
   '@polymer/polymer': 3.2.0
   '@storybook/addon-backgrounds': ^6.0.5
   '@storybook/polymer': ^5.3.19
+  '@types/stripe-v3': ^3.1.25
   '@vaadin/vaadin-accordion': 1.2.0
   '@vaadin/vaadin-app-layout': 2.2.0
   '@vaadin/vaadin-avatar': 1.0.4

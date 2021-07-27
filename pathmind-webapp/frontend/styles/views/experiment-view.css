@@ -189,6 +189,7 @@
 .experiment-view .histograms-wrapper {
     flex: 1 0 0;
     width: auto !important;
+    min-width: 5.625rem;
     line-height: 2rem;
 }
 
@@ -351,10 +352,6 @@
     position: absolute;
     bottom: 0;
     right: 0;
-}
-
-.experiment-view .buttons-wrapper button-with-loading {
-    display: inline-block;
 }
 
 .experiment-view .buttons-wrapper vaadin-button {
@@ -535,4 +532,9 @@
 
 .serve-policy-instructions vaadin-button:first-child {
     margin-right: var(--lumo-space-m);
+}
+
+policy-server-live-content {
+    display: block;
+    margin-bottom: var(--lumo-space-s);
 }

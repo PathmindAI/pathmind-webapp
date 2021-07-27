@@ -1,17 +1,16 @@
 package io.skymind.pathmind.webapp.ui.components.molecules;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.server.Command;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 
 @Tag("confirm-popup")
-@JsModule("./src/components/molecules/confirm-popup.js")
-public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
+@JsModule("./src/components/molecules/confirm-popup.ts")
+public class ConfirmPopup extends LitTemplate {
     private Command confirmHandler = () -> {
     };
     private Command cancelHandler = () -> {
@@ -40,11 +39,11 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
     }
 
     public void setHeader(String text) {
-        getModel().setHeaderText(text);
+        getElement().setProperty("headerText", text);
     }
 
     public void setMessage(String message) {
-        getModel().setMessage(message);
+        getElement().setProperty("message", message);
     }
 
     public void setMessage(Component component) {
@@ -75,50 +74,37 @@ public class ConfirmPopup extends PolymerTemplate<ConfirmPopup.Model> {
 
     public void open() {
         attachToDOM();
-        getModel().setOpened(true);
+        getElement().setProperty("opened", true);
     }
 
-    @EventHandler
+    @ClientCallable
     public void closePopup() {
         getElement().removeFromParent();
-        getModel().setOpened(false);
+        getElement().setProperty("opened", false);
     }
 
-    @EventHandler
+    @ClientCallable
     private void onConfirm() {
         this.confirmHandler.execute();
         closePopup();
     }
 
-    @EventHandler
+    @ClientCallable
     private void onCancel() {
         this.cancelHandler.execute();
         closePopup();
     }
 
     public void setConfirmButtonText(String confirmText) {
-        getModel().setConfirmText(confirmText);
+        getElement().setProperty("confirmText", confirmText);
     }
 
     public void setCancelButtonText(String cancelText) {
-        getModel().setCancelText(cancelText);
+        getElement().setProperty("cancelText", cancelText);
     }
 
     public void setConfirmButtonThemes(String confirmThemes) {
-        getModel().setConfirmButtonThemes(confirmThemes);
+        getElement().setProperty("confirmButtonThemes", confirmThemes);
     }
 
-    public interface Model extends TemplateModel {
-        void setHeaderText(String headerText);
-
-        void setMessage(String message);
-
-        void setCancelText(String cancelText);
-
-        void setConfirmText(String confirmText);
-
-        void setConfirmButtonThemes(String confirmButtonThemes);
-
-        void setOpened(Boolean opened);
-    }
 }
