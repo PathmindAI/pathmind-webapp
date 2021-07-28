@@ -7,6 +7,7 @@ import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
+
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
@@ -26,8 +27,6 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
 
     private PathmindUser user;
 
-    private SegmentIntegrator segmentIntegrator;
-
     @Autowired
     public AccountUpgradeViewContent(CurrentUser currentUser,
                                      @Value("${pathmind.pathmind-api.url}") String apiUrl,
@@ -36,7 +35,6 @@ public class AccountUpgradeViewContent extends PolymerTemplate<AccountUpgradeVie
                                      SegmentIntegrator segmentIntegrator) {
         getModel().setContactLink(contactLink);
         user = currentUser.getUser();
-        this.segmentIntegrator = segmentIntegrator;
         getModel().setKey(publicKey);
         getModel().setUserApiKey(user.getApiKey());
         getModel().setApiUrl(apiUrl);
