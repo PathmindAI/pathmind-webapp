@@ -184,9 +184,9 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    stoppedTrainingNotification,
-                    experimentTitleBar,
-                    panelsSplitWrapper),
+                        stoppedTrainingNotification,
+                        experimentTitleBar,
+                        panelsSplitWrapper),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         experimentContent.addSplitterDragendListener(resizeChartOnDrag());
@@ -195,13 +195,14 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            modelNeedToBeUpdatedLabel, experimentContent
+                modelNeedToBeUpdatedLabel, experimentContent
         );
         experimentContentWrapper.setWidthFull();
 
-        HorizontalLayout pageWrapper = isShowNavBar() ? 
+        HorizontalLayout pageWrapper = !isReadOnly() ?
                 WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContentWrapper)
                 : WrapperUtils.wrapSizeFullHorizontal(experimentContentWrapper);
+
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
@@ -218,22 +219,27 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 60);
         simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            simulationMetricsAndObservationsPanel,
-            generateRewardFunctionGroup(comparisonCodeViewer),
-            comparisonChartsPanel,
-            comparisonNotesField);
+                simulationMetricsAndObservationsPanel,
+                generateRewardFunctionGroup(comparisonCodeViewer),
+                comparisonChartsPanel,
+                comparisonNotesField);
         comparisonComponents.addClassName("comparison-panel");
         comparisonComponents.setPadding(false);
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            comparisonStoppedTrainingNotification,
-            comparisonTitleBar,
-            comparisonComponents,
-            comparisonModeCloseButton);
+                comparisonStoppedTrainingNotification,
+                comparisonTitleBar,
+                comparisonComponents,
+                comparisonModeCloseButton);
         return comparisonPanel;
     }
 
-    protected boolean isShowNavBar() {
-        return true;
+    /**
+     * This is a temporary solution until the experiment view refactoring is completed. It's done this way because until the subscribers
+     * are properly broken up it's almost impossible to break out the navbar specific eventbus handling and as a result all navbar
+     * code is going to be wrapped around if's which the SharedExperimentView will override to false.
+     */
+    public boolean isReadOnly() {
+        return false;
     }
 
     private SplitLayout getMiddlePanel() {
@@ -244,7 +250,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         simulationMetricsAndObservationsPanel.addSplitterDragendListener(dragend -> {
             simulationMetricsAndObservationsPanel.getElement().executeJs("const exp12Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
                 "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_12', exp12Styles);");
-            
+
             resizeChart();
         });
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
@@ -255,7 +261,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         middlePanel.addSplitterDragendListener(dragend -> {
             middlePanel.getElement().executeJs("const exp23Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
                 "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_23', exp23Styles);");
-            
+
             resizeChart();
         });
         return middlePanel;
@@ -271,7 +277,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
         String simulationMetricsHeaderText = "Simulation Metrics";
         HorizontalLayout simulationMetricsHeader = WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), 
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL),
                 new SimulationMetricsInfoLink());
         simulationMetricsHeader.addClassName("simulation-metrics-panel-header");
         return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
