@@ -101,6 +101,8 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Selected Observations", selectedObsColumn);
         columnList.put("Reward Function", rewardFunctionColumn);
         columnList.put("Notes", notesColumn);
+
+        rewardVariables.forEach(this::addAdditionalColumn);
     }
 
     public Map<String, Column<Experiment>> getColumnList() {
@@ -111,49 +113,65 @@ public class ExperimentGrid extends Grid<Experiment> {
         return additionalColumnList;
     }
 
-    public void addAdditionalColumn(RewardVariable rewardVar) {
+    private void addAdditionalColumn(RewardVariable rewardVar) {
+        addAdditionalColumn(rewardVar, false);
+    }
+
+    public void addAdditionalColumn(RewardVariable rewardVar, boolean show) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
         // there's no way to get the values of a particular grid column
         // because vaadin grid is designed to deal with a large number of rows
         // need to get the list from the data source and then compare
-        Grid.Column<Experiment> newColumn = addComponentColumn(experiment -> {
-                    Span columnSpan = new Span();
-                    Policy bestPolicy = experiment.getBestPolicy();
-                    if (bestPolicy != null) {
-                        columnSpan.add(bestPolicy.getMetricDisplayValues().get(rewardVarIndex));
-                    } else {
-                        columnSpan.add("—");
-                    }
-                    return columnSpan;
-                })
-                .setClassNameGenerator(experiment -> {
-                    Policy bestPolicy = experiment.getBestPolicy();
-                    if (bestPolicy != null) {
-                        Double score = null;
-                        if (!experiment.getRewardVariablesScores().isEmpty()) {
-                            score = experiment.getRewardVariablesScores().get(rewardVarIndex);
-                            // format score to 0 - 100
-                            if (score != null) {
-                                Long formattedScore = Math.round(score * 100);
-                                return "metric-cell-step-" + formattedScore;
+        if (!additionalColumnList.containsKey(rewardVar.getName())) {
+            Grid.Column<Experiment> newColumn = addColumn(experiment -> {
+                        Policy bestPolicy = experiment.getBestPolicy();
+                        if (bestPolicy != null) {
+                            return bestPolicy.getMetricDisplayValues().get(rewardVarIndex);
+                        }
+                        return "—";
+                    })
+                    .setClassNameGenerator(experiment -> {
+                        Policy bestPolicy = experiment.getBestPolicy();
+                        if (bestPolicy != null) {
+                            Double score = null;
+                            if (!experiment.getRewardVariablesScores().isEmpty()) {
+                                score = experiment.getRewardVariablesScores().get(rewardVarIndex);
+                                // format score to 0 - 100
+                                if (score != null) {
+                                    Long formattedScore = Math.round(score * 100);
+                                    return "metric-cell-step-" + formattedScore;
+                                }
                             }
                         }
-                    }
-                    return "";
-                })
-                .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
-                .setHeader(rewardVariableName)
-                .setAutoWidth(true)
-                .setFlexGrow(0)
-                .setResizable(true)
-                .setSortable(true);
-        additionalColumnList.put(rewardVariableName, newColumn);
+                        return "";
+                    })
+                    .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
+                    .setHeader(rewardVariableName)
+                    .setAutoWidth(true)
+                    .setFlexGrow(0)
+                    .setResizable(true)
+                    .setSortable(true);
+            newColumn.setVisible(show);
+            additionalColumnList.put(rewardVariableName, newColumn);
+        } else {
+            showAdditionalColumn(rewardVar);
+        }
+    }
+
+    public void showAdditionalColumn(RewardVariable rewardVar) {
+        additionalColumnList.get(rewardVar.getName()).setVisible(true);
     }
 
     public void removeAdditionalColumn(RewardVariable rewardVar) {
         Optional.ofNullable(rewardVar)
                 .map(RewardVariable::getName)
+                .map(additionalColumnList::remove)
+                .ifPresent(this::removeColumn);
+    }
+
+    public void removeAdditionalColumn(String rewardVarName) {
+        Optional.ofNullable(rewardVarName)
                 .map(additionalColumnList::remove)
                 .ifPresent(this::removeColumn);
     }
