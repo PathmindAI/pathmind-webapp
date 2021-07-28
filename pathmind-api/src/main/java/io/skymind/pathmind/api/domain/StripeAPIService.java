@@ -79,7 +79,7 @@ public class StripeAPIService {
         String successUrlPath = isOnboarding ? "/onboarding-payment-success" : "/upgrade-done";
         String cancelUrl = isOnboarding ? webappDomainUrl : webappDomainUrl +  "/account/upgrade";
         SessionCreateParams.Mode paymentMode = isOnboarding ? SessionCreateParams.Mode.PAYMENT : SessionCreateParams.Mode.SUBSCRIPTION;
-        String priceId = isOnboarding ? "price_1JHlLOIP4jq3EOOXzvyWtcsd" : "price_1Iq50jIP4jq3EOOXOvHPYJHr"; 
+        String priceId = isOnboarding ? stripeOnboardingPriceId : stripeProPriceId; 
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
