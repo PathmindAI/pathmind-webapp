@@ -51,6 +51,12 @@ public class StripeAPIService {
     @Value("${pathmind.stripe.webhook.signing.secret}")
     private String stripeWebhookSecret;
 
+    @Value("${pathmind.stripe.professional-price-id}")
+    private String stripeProPriceId;
+
+    @Value("${pathmind.stripe.onboarding-price-id}")
+    private String stripeOnboardingPriceId;
+
     @Autowired(required = false)
     private SegmentTrackerService segmentTrackerService;
 
@@ -73,30 +79,21 @@ public class StripeAPIService {
         String successUrlPath = isOnboarding ? "/onboarding-payment-success" : "/upgrade-done";
         String cancelUrl = isOnboarding ? webappDomainUrl : webappDomainUrl +  "/account/upgrade";
         SessionCreateParams.Mode paymentMode = isOnboarding ? SessionCreateParams.Mode.PAYMENT : SessionCreateParams.Mode.SUBSCRIPTION;
+        String priceId = isOnboarding ? "price_1JHlLOIP4jq3EOOXzvyWtcsd" : "price_1Iq50jIP4jq3EOOXOvHPYJHr"; 
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(paymentMode)
                 .putExtraParam("allow_promotion_codes", true)
-                .setSuccessUrl(webappDomainUrl + successUrlPath)
+                .setSuccessUrl(webappDomainUrl + successUrlPath + "?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(cancelUrl)
                 .setCustomerEmail(user.getStripeCustomerId() != null ? null : user.getEmail())
                 .setCustomer(user.getStripeCustomerId())
-                .addLineItem(
-                SessionCreateParams.LineItem.builder()
-                    .setQuantity(1L)
-                    .setPriceData(
-                    SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency("usd")
-                        .setUnitAmount(49900L)
-                        .setProductData(
-                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Concierge Onboarding Service")
-                            .setDescription("A dedicated Pathmind Engineer to help retrofit your existing simulation for reinforcement learning.")
-                            .build())
+                .addLineItem(SessionCreateParams.LineItem.builder()
+                        .setQuantity(1L)
+                        .setPrice(priceId)
                         .build())
-                    .build())
                 .build();
         Session session;
         HashMap<String, String> responseData = new HashMap<String, String>();

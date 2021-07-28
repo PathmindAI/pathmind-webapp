@@ -32,7 +32,7 @@ class AccountUpgradeViewContent extends PolymerElement {
             margin: auto auto var(--lumo-space-m);
         }
         account-upgrade-view-content .inner-content:nth-child(2) {
-          margin: 0 var(--lumo-space-l) 0;
+          margin: 0 var(--lumo-space-xl) 0;
         }
         @media screen and (max-width: 1023px) {
             account-upgrade-view-content {
@@ -58,7 +58,7 @@ class AccountUpgradeViewContent extends PolymerElement {
             width: calc(100% + 2 * var(--lumo-space-l));
             padding: var(--lumo-space-l) var(--lumo-space-l);
             margin: calc(-1 * var(--lumo-space-l)) calc(-1 * var(--lumo-space-l)) 0;
-            border-radius: var(--lumo-border-radius);
+            border-radius: var(--lumo-border-radius) var(--lumo-border-radius) 0 0;
         }
         account-upgrade-view-content .popular-tag {
             position: absolute;
