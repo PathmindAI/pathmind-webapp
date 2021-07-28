@@ -12,12 +12,14 @@ import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
+@Slf4j
 @Tag("upgrade-done-view-content")
 @JsModule("./src/pages/account/upgrade-done-view-content.js")
 @SpringComponent
@@ -50,7 +52,7 @@ public class UpgradeDoneViewContent extends PolymerTemplate<UpgradeDoneViewConte
                 user.setStripeCustomerId(customerId);
                 userService.update(user);
             } catch (StripeException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         });
     }
