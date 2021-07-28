@@ -1,17 +1,31 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, css, property } from "lit-element";
 import * as diff from "diff";
 
-class CodeViewer extends PolymerElement {
-  static get is() {
-    return "code-viewer";
+class CodeViewer extends LitElement {
+  @property({type: String})
+  codeSnippet = "";
+
+  @property({type: String})
+  comparisonCodeSnippet;
+
+  @property({type: Boolean, reflect: true, attribute: "show-copy-button"})
+  showCopyButton = true;
+
+  @property({type: Boolean, reflect: true, attribute: "show-border"})
+  showBorder = true;
+  
+  @property({type: String})
+  rewardVariables = "";
+
+  updated(changedProperties) {
+    changedProperties.forEach((oldValue, name) => {
+        if (name === "codeSnippet" || name === "comparisonCodeSnippet") {
+            this.renderCode();
+        }
+    });
   }
 
-  constructor() {
-    super();
-  }
-
-  ready() {
-    super.ready();
+  firstUpdated() {
     const codeElement = this.shadowRoot.querySelector("code");
     codeElement.addEventListener("copy", event => {
       // This will handle the clipboard data to eliminate extra linebreak at the end of the string
@@ -19,7 +33,7 @@ class CodeViewer extends PolymerElement {
       if (event.clipboardData) {
         event.clipboardData.setData("text/plain", selection);
       } else {
-        window.clipboardData.setData("text", selection);
+        (window as any).clipboardData.setData("text", selection);
       }
       event.preventDefault();
     });
@@ -37,9 +51,9 @@ class CodeViewer extends PolymerElement {
       select.removeAllRanges();
 
       copyIcon.removeAttribute("active");
-      checkmarkIcon.setAttribute("active", true);
+      checkmarkIcon.setAttribute("active", "true");
       setTimeout(function() {
-        copyIcon.setAttribute("active", true);
+        copyIcon.setAttribute("active", "true");
         checkmarkIcon.removeAttribute("active");
       }, 800);
     });
@@ -47,70 +61,43 @@ class CodeViewer extends PolymerElement {
 
   renderCode() {
     const codeElement = this.shadowRoot.querySelector("code");
-    const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
-    const numberRe = /[0-9]+/g;
-    let codeSnippet = this.codeSnippet;
-
-    if (this.comparisonCodeSnippet) {
-        this.classList.add("comparison");
-    } else {
-        this.classList.remove("comparison");
-    }
-
-    if (this.codeSnippet && this.comparisonCodeSnippet) {
-      const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
-      const codeDiff = diff.diffWords(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
-      let processedCodeSnippet = "";
-      codeDiff.forEach(part => {
-        if (part.removed) {
-          processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
-        } else if (!part.added) {
-          processedCodeSnippet += part.value;
+    if (codeElement) {
+        const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
+        const numberRe = /[0-9]+/g;
+        let codeSnippet = this.codeSnippet;
+    
+        if (this.comparisonCodeSnippet) {
+            this.classList.add("comparison");
+        } else {
+            this.classList.remove("comparison");
         }
-      });
-      codeSnippet = processedCodeSnippet;
+    
+        if (this.codeSnippet && this.comparisonCodeSnippet) {
+          const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
+          const codeDiff = diff.diffWords(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
+          let processedCodeSnippet = "";
+          codeDiff.forEach(part => {
+            if (part.removed) {
+              processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
+            } else if (!part.added) {
+              processedCodeSnippet += part.value;
+            }
+          });
+          codeSnippet = processedCodeSnippet;
+        }
+    
+        codeSnippet = renderToken(codeSnippet, commentRe, "comment");
+        codeSnippet = renderToken(codeSnippet, numberRe, "number");
+        codeElement.innerHTML = codeSnippet;
     }
-
-    codeSnippet = renderToken(codeSnippet, commentRe, "comment");
-    codeSnippet = renderToken(codeSnippet, numberRe, "number");
-    codeElement.innerHTML = codeSnippet;
 
     function renderToken(target, regexCondition, className) {
       return target.replace(regexCondition, `<span class="token-${className}">$&</span>`);
     }
   }
 
-  static get properties() {
-    return {
-      codeSnippet: {
-        type: String,
-        value: "",
-        observer: "renderCode",
-      },
-      comparisonCodeSnippet: {
-        type: String,
-        observer: "renderCode",
-      },
-      rewardVariables: {
-        type: String,
-        value: "",
-      },
-      showCopyButton: {
-        type: Boolean,
-        value: true,
-        reflectToAttribute: true,
-      },
-      showBorder: {
-        type: Boolean,
-        value: true,
-        reflectToAttribute: true,
-      },
-    };
-  }
-
-  static get template() {
-    return html`
-      <style>
+  static get styles() {
+      return css`
         /* Customized Scrollbar for WebKit Browsers */
         ::-webkit-scrollbar {
             width: 6px;
@@ -191,7 +178,11 @@ class CodeViewer extends PolymerElement {
         .highlight-label {
             background-color: var(--pm-yellow-color);
         }
-      </style>
+      `;
+  }
+
+  render() {
+    return html`
       <code></code>
       <vaadin-button>
           <iron-icon icon="vaadin:copy-o" active></iron-icon>
@@ -201,4 +192,4 @@ class CodeViewer extends PolymerElement {
   }
 }
 
-customElements.define(CodeViewer.is, CodeViewer);
+customElements.define("code-viewer", CodeViewer);

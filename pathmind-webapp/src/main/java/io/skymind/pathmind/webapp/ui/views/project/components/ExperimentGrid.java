@@ -127,6 +127,21 @@ public class ExperimentGrid extends Grid<Experiment> {
                     }
                     return columnSpan;
                 })
+                .setClassNameGenerator(experiment -> {
+                    Policy bestPolicy = experiment.getBestPolicy();
+                    if (bestPolicy != null) {
+                        Double score = null;
+                        if (!experiment.getRewardVariablesScores().isEmpty()) {
+                            score = experiment.getRewardVariablesScores().get(rewardVarIndex);
+                            // format score to 0 - 100
+                            if (score != null) {
+                                Long formattedScore = Math.round(score * 100);
+                                return "metric-cell-step-" + formattedScore;
+                            }
+                        }
+                    }
+                    return "";
+                })
                 .setSortProperty("reward_var_"+Integer.toString(rewardVarIndex))
                 .setHeader(rewardVariableName)
                 .setAutoWidth(true)

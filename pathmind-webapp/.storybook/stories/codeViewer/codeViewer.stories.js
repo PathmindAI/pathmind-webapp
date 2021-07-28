@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/polymer";
 import { storyParamConfig } from "../../utils";
 
-import "../../../frontend/src/experiment/code-viewer.js";
+import "../../../frontend/src/experiment/code-viewer.ts";
 
 const single = `reward -= after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel;
 // processhead

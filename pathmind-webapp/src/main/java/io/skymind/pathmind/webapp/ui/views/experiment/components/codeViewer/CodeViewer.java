@@ -3,15 +3,13 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 @Tag("code-viewer")
-@JsModule("./src/experiment/code-viewer.js")
-public class CodeViewer extends PolymerTemplate<CodeViewer.Model> implements HasStyle, ExperimentComponent {
-
+@JsModule("./src/experiment/code-viewer.ts")
+public class CodeViewer extends LitTemplate implements HasStyle, ExperimentComponent {
     public CodeViewer() {
         super();
     }
@@ -23,8 +21,8 @@ public class CodeViewer extends PolymerTemplate<CodeViewer.Model> implements Has
     public CodeViewer(Experiment experiment, Boolean showCopyButton, Boolean showBorder) {
         super();
         setExperiment(experiment);
-        getModel().setShowCopyButton(showCopyButton);
-        getModel().setShowBorder(showBorder);
+        getElement().setProperty("showCopyButton", showCopyButton);
+        getElement().setProperty("showBorder", showBorder);
     }
 
     public void setExperiment(Experiment experiment) {
@@ -32,20 +30,10 @@ public class CodeViewer extends PolymerTemplate<CodeViewer.Model> implements Has
     }
 
     public void setComparisonModeTheOtherRewardFunction(String comparisonModeTheOtherRewardFunction) {
-        getModel().setComparisonCodeSnippet(comparisonModeTheOtherRewardFunction);
+        getElement().setProperty("comparisonCodeSnippet", comparisonModeTheOtherRewardFunction);
     }
 
     public void setValue(String rewardFunction) {
-        getModel().setCodeSnippet(rewardFunction);
-    }
-
-    public interface Model extends TemplateModel {
-        void setCodeSnippet(String codeSnippet);
-
-        void setComparisonCodeSnippet(String codeSnippet);
-
-        void setShowCopyButton(Boolean showCopyButton);
-
-        void setShowBorder(Boolean showBorder);
+        getElement().setProperty("codeSnippet", rewardFunction);
     }
 }

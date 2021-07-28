@@ -1,14 +1,15 @@
+@import "vaadin-grid-red-to-green-gradient.css";
 /* Customized Scrollbar for WebKit Browsers */
 ::-webkit-scrollbar {
     width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-background-color: var(--pm-app-bg-color);
+    background-color: var(--pm-app-bg-color);
 }
 
 ::-webkit-scrollbar-thumb {
-background-color: var(--pm-grey-color-light);
+    background-color: var(--pm-grey-color-light);
 }
 
 #header [part~="cell"] {
@@ -31,7 +32,7 @@ background-color: var(--pm-grey-color-light);
     text-align: right;
 }
 
-:host(:not(.search-results)) #items [part~="row"]:hover [part~="body-cell"] {
+:host(:not(.search-results)) #items [part~="row"]:hover [part~="body-cell"]:not([class*="metric-cell-step"]) {
     background: var(--lumo-shade-5pct);
 }
 
