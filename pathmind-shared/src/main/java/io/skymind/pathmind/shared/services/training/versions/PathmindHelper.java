@@ -10,7 +10,8 @@ public enum PathmindHelper implements VersionEnum {
     VERSION_1_4_0,
     VERSION_1_5_0,
     VERSION_1_6_0,
-    VERSION_1_6_1;
+    VERSION_1_6_1,
+    VERSION_1_7_0;
 
     @Override
     public List<String> fileNames() {
