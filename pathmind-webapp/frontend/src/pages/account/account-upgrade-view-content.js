@@ -221,7 +221,6 @@ class AccountUpgradeViewContent extends PolymerElement {
   }
 
   handleProClick() {
-      console.log("%chandle pro click","background-color: yellow")
     fetch(`${this.apiUrl}/create-checkout-session?type=pro`, {
       method: "POST",
       headers: {
