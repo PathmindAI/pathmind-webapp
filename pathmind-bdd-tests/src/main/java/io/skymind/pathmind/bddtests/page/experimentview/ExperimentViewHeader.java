@@ -22,7 +22,7 @@ public class ExperimentViewHeader extends PageObject {
     private String elapsedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-horizontal-layout[@class='training-status-details-panel']/descendant::span[4]";
     private String stopTrainingBtnXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[1]";
     private String getStopTrainingBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Stop Training']";
-    private String shareSupportBtnXpath = "//vaadin-item[text()='Share with support']";
+    private String shareSupportBtnXpath = "//vaadin-item[text()='Share Experiment']";
     private String shareSupportBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Share with support']";
     private String shareSupportLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::tag-label[not(@hidden='true')]";
     private String dropDownBtn = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-select";
@@ -31,9 +31,9 @@ public class ExperimentViewHeader extends PageObject {
     private static final String ELAPSED_LABEL = "Elapsed";
     private static final String STOP_TRAINING_BTN_LABEL = "Stop Training";
     private static final String SHARE_SUPPORT_BTN_LABEL = "Share with support";
-    private static final String SHARE_SUPPORT_LABEL = "Shared with Support";
+    private static final String SHARE_SUPPORT_LABEL = "Shared";
 
-    public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel) {
+    public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel, boolean experimentShared) {
         assertThat(getDriver().findElement(By.xpath(String.format(titleLabelXpath, slot))).getText(), is(header));
         assertThat(getDriver().findElement(By.xpath(String.format(statusLabelXpath, slot))).getText(), is(STATUS_LABEL));
         if (status.equals("Starting Cluster")) {
@@ -53,7 +53,11 @@ public class ExperimentViewHeader extends PageObject {
         actions.moveToElement(dropdownBtn).build().perform();
         waitABit(2500);
         actions.click(dropdownBtn).build().perform();
-        genericPage.checkElement(shareWithSpBtn, String.format(shareSupportBtnXpath, slot), SHARE_SUPPORT_BTN_LABEL);
+        if (experimentShared){
+            genericPage.checkElement(shareWithSpBtn, "//vaadin-item[text()='Unshare Experiment']", "Unshare Experiment");
+        }else {
+            genericPage.checkElement(shareWithSpBtn, String.format(shareSupportBtnXpath, slot), SHARE_SUPPORT_BTN_LABEL);
+        }
 
         genericPage.checkElement(shareWithSpLabel, String.format(shareSupportLabelXpath, slot), SHARE_SUPPORT_LABEL);
     }
