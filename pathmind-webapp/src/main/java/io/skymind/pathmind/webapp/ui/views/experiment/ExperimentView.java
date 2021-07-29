@@ -3,14 +3,20 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout.SplitterDragendEvent;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -45,7 +51,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 @Route(value = Routes.EXPERIMENT, layout = MainLayout.class)
 @Slf4j
-public class ExperimentView extends AbstractExperimentView {
+public class ExperimentView extends AbstractExperimentView implements AfterNavigationObserver, BeforeLeaveObserver {
 
     // Similar to DefaultExperimentView in that we have to use a lock object rather
     // than the (comparison) experiment because we are changing it's reference which
@@ -237,17 +243,22 @@ public class ExperimentView extends AbstractExperimentView {
                 generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                 experimentObservationsPanel,
                 70);
-        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(dragend -> {
+            simulationMetricsAndObservationsPanel.getElement().executeJs("const exp12Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
+                "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_12', exp12Styles);");
+            
+            resizeChart();
+        });
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
         middlePanel.addSplitterDragendListener(dragend -> {
-            getElement().executeJs("const exp23Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
+            middlePanel.getElement().executeJs("const exp23Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
                 "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_23', exp23Styles);");
             
-            resizeChartOnDrag();
+            resizeChart();
         });
         return middlePanel;
     }
@@ -316,12 +327,42 @@ public class ExperimentView extends AbstractExperimentView {
     }
 
     @Override
+    protected void onAttach(AttachEvent attachEvent) {
+    }
+
+    @Override
+    protected void onDetach(DetachEvent event) {
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        getElement().executeJs(
+                "window.experimentViewLoadListener = function(event) {"+
+                "const panelSplits = document.querySelector('localstorage-helper').getItemAsObject('panels_split');"+
+                "const exp_12 = panelSplits['exp_12'];"+
+                "if (exp_12) {"+
+                    "document.querySelector('.middle-panel > [slot=\"primary\"] > [slot=\"primary\"]').style.flex = exp_12['primary'];"+
+                    "document.querySelector('.middle-panel > [slot=\"primary\"] > [slot=\"secondary\"]').style.flex = exp_12['secondary'];"+
+                "}"+
+                "const exp_23 = panelSplits['exp_23'];"+
+                "if (exp_23) {"+
+                    "document.querySelector('.middle-panel > [slot=\"primary\"]').style.flex = exp_23['primary'];"+
+                    "document.querySelector('.middle-panel > [slot=\"secondary\"]').style.flex = exp_23['secondary'];"+
+                "}"+
+            "};"+
+            "window.addEventListener('load', window.experimentViewLoadListener);"
+            );
+        // getElement().executeJs("window.dispatchEvent(new CustomEvent('load'));")
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        getElement().executeJs("window.removeEventListener('load', window.experimentViewLoadListener)");
+    }
+
+    @Override
     protected void initComponents() {
         updateComponents();
-        getElement().executeJs("const panelSplits = document.querySelector('localstorage-helper').getItemAsObject('panels_split');"+
-            "const exp_23 = panelSplits['exp_23'];"+
-            "document.querySelector('.middle-panel > [slot=\"primary\"]').style.flex = exp_23['primary'];"+
-            "document.querySelector('.middle-panel > [slot=\"secondary\"]').style.flex = exp_23['secondary'];");
     }
 
     @Override
