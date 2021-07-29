@@ -44,6 +44,7 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.buttons.EditGoalsButton;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
@@ -113,6 +114,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
+    private EditGoalsButton editGoalsButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
     private MultiselectComboBox<String> columnMultiSelect;
     private ExperimentGrid experimentGrid;
@@ -150,6 +152,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         experimentGrid = new ExperimentGrid(experimentDAO, rewardVariables);
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
+        editGoalsButton = new EditGoalsButton(modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
         modelNotesField = createModelNotesField();
@@ -174,7 +177,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, editGoalsButton, newExperimentButton);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -422,6 +425,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             modelNotesField.setNotesText(model.getUserNotes());
         });
         newExperimentButton.setModelId(selectedModel.getId());
+        editGoalsButton.setModelId(selectedModel.getId());
         experimentGridDataProvider.setModelId(modelId);
         if (dataProvider == null) {
             dataProvider = experimentGridDataProvider.withConfigurableFilter();
