@@ -41,7 +41,7 @@ Feature: Experiment page compare feature
 
     Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
     Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt'
-@debug
+
   Scenario: Check compare feature check elements of two stopped experiments
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
