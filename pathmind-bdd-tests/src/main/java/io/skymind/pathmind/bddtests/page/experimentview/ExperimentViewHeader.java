@@ -30,7 +30,7 @@ public class ExperimentViewHeader extends PageObject {
     private static final String STATUS_LABEL = "Status";
     private static final String ELAPSED_LABEL = "Elapsed";
     private static final String STOP_TRAINING_BTN_LABEL = "Stop Training";
-    private static final String SHARE_SUPPORT_BTN_LABEL = "Share with support";
+    private static final String SHARE_SUPPORT_BTN_LABEL = "Share Experiment";
     private static final String SHARE_SUPPORT_LABEL = "Shared";
 
     public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel, boolean experimentShared) {
