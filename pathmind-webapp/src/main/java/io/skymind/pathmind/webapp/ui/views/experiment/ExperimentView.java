@@ -330,11 +330,6 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     }
 
     @Override
-    protected void initComponents() {
-        updateComponents();
-    }
-
-    @Override
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         experimentsNavbar.setVisible(!experiment.isArchived());
