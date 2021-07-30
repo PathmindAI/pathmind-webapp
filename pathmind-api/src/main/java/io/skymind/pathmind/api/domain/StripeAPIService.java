@@ -75,11 +75,19 @@ public class StripeAPIService {
     @PostMapping(path = "/create-checkout-session", produces = MediaType.APPLICATION_JSON_VALUE)
     public HashMap<String, String> createCheckoutSession(@RequestParam("type") String type,
                                                         @AuthenticationPrincipal PathmindApiUser pmUser) {
-        Boolean isOnboarding = type.equals("onboarding");
-        String successUrlPath = isOnboarding ? "/onboarding-payment-success" : "/upgrade-done";
-        String cancelUrl = isOnboarding ? webappDomainUrl : webappDomainUrl +  "/account/upgrade";
-        SessionCreateParams.Mode paymentMode = isOnboarding ? SessionCreateParams.Mode.PAYMENT : SessionCreateParams.Mode.SUBSCRIPTION;
-        String priceId = isOnboarding ? stripeOnboardingPriceId : stripeProPriceId; 
+        
+        String successUrlPath = "/upgrade-done";
+        String cancelUrl = webappDomainUrl +  "/account/upgrade";
+        SessionCreateParams.Mode paymentMode = SessionCreateParams.Mode.SUBSCRIPTION;
+        String priceId = stripeProPriceId;
+
+        if ("onboarding".equalsIgnoreCase(type)) {
+            successUrlPath = "/onboarding-payment-success";
+            cancelUrl = webappDomainUrl;
+            paymentMode = SessionCreateParams.Mode.PAYMENT;
+            priceId = stripeOnboardingPriceId;
+        }
+
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
