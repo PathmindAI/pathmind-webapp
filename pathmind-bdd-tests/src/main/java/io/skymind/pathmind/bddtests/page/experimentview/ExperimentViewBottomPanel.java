@@ -49,6 +49,6 @@ public class ExperimentViewBottomPanel extends PageObject {
     }
 
     public void experimentPageCheckRewardFunction(String slot, String rewardFunctionFilePath) throws IOException {
-        assertThat(getDriver().findElement(By.xpath(String.format(rewardFunctionXpath, slot, genericPage.definePanel(slot)))).getText(), is(FileUtils.readFileToString(new File("models/" + rewardFunctionFilePath), StandardCharsets.UTF_8).replaceAll("\\r\\n", "")));
+        assertThat(getDriver().findElement(By.xpath(String.format(rewardFunctionXpath, slot, genericPage.definePanel(slot)))).getText().replaceAll("\\n", ""), is(FileUtils.readFileToString(new File("models/" + rewardFunctionFilePath), StandardCharsets.UTF_8).replaceAll("\\r\\n", "")));
     }
 }
