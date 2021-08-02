@@ -35,13 +35,13 @@ class SettingsViewContent extends PolymerElement {
                 <div class="content">
                     <span class="section-title-label">Settings</span>
                     <vaadin-vertical-layout style="width: 100%;" class="inner-content">
-                        <vaadin-vertical-layout class="grid-wrapper">
+                        <vaadin-vertical-layout class="grid-wrapper" id="paidSettings">
                             <vaadin-combo-box id="hiddenNodeCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="hiddenLayerCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="longerTrainingCB" style="width: 100%;"> </vaadin-combo-box>
                         </vaadin-vertical-layout>
-                        <h4>Internal Users Only</h4>
-                        <vaadin-vertical-layout class="grid-wrapper">
+                        <h4 hidden="{{!isInternalUser}}">Internal Users Only</h4>
+                        <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="{{!isInternalUser}}">
                             <vaadin-combo-box id="userLogCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="ec2InstanceTypeCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="condaVersionCB" style="width: 100%;"> </vaadin-combo-box>
@@ -56,7 +56,7 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-combo-box id="maxTrainingTimeCB" style="width: 100%;"> </vaadin-combo-box>
                             <vaadin-combo-box id="startCheckIterationCB" style="width: 100%;"> </vaadin-combo-box>
                         </vaadin-vertical-layout>
-                        <vaadin-vertical-layout id="buttonsCont">
+                        <vaadin-vertical-layout id="buttonsCont" hidden="{{hideSaveButton}}">
                             <vaadin-button id="saveBtn" theme="primary">
                                 Save
                             </vaadin-button>
@@ -73,6 +73,38 @@ class SettingsViewContent extends PolymerElement {
 
     _attachDom(dom) {
         this.appendChild(dom);
+    }
+
+    _isInternalUserChanged(newValue) {
+
+    }
+
+    _isPaidUserChanged(newValue) {
+        
+    }
+
+    ready() {
+        super.ready();
+        // this._isInternalUserChanged();
+    }
+
+    static get properties() {
+        return {
+            hideSaveButton: {
+                type: Boolean,
+                value: false,
+            },
+            isInternalUser: {
+                type: Boolean,
+                value: false,
+                observer: "_isInternalUserChanged",
+            },
+            isPaidUser: {
+                type: Boolean,
+                value: false,
+                observer: "_isPaidUserChanged",
+            }
+        }
     }
 }
 

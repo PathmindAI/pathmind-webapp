@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -15,6 +13,7 @@ import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
+import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
@@ -91,12 +90,20 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     @Autowired
     public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
-        this.user = currentUser.getUser();
-        this.env = environmentManager.getEnvironment(this.user.getId());
+        this(currentUser.getUser(), environmentManager, false);
     }
 
-    @PostConstruct
+    public SettingsViewContent(PathmindUser currentUser, ExecutionEnvironmentManager environmentManager, Boolean hideSaveButton) {
+        this.user = currentUser;
+        this.env = environmentManager.getEnvironment(this.user.getId());
+        getModel().setHideSaveButton(hideSaveButton);
+        init();
+    }
+
     private void init() {
+        UserRole accountType = user.getAccountType();
+        getModel().setIsPaidUser(UserRole.isPaidUser(accountType));
+        getModel().setIsInternalUser(UserRole.isInternalUser(accountType));
         initContent();
         initBtns();
     }
@@ -272,7 +279,8 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     }
 
     public interface Model extends TemplateModel {
-//        void setEc2InstanceType(EC2InstanceType ec2InstanceType);
-//        void setEc2InstanceType(String ec2InstanceType);
+        void setIsInternalUser(Boolean isInternalUser);
+        void setIsPaidUser(Boolean isPaidUser);
+        void setHideSaveButton(Boolean hideSaveButton);
     }
 }
