@@ -22,7 +22,8 @@
     width: 100%;
     padding: 0.4em;
 }
-.upload-model-view .reward-variables-table .header-row span:last-child {
+.upload-model-view .reward-variables-table .header-row span:last-child,
+.edit-goals-view .reward-variables-table .header-row span:last-child {
     box-sizing: border-box;
     padding-left: calc(var(--lumo-space-m));
 }
@@ -55,7 +56,8 @@
     color: white;
     border-color: transparent;
 }
-.upload-model-view .reward-variables-table .reward-variable-name {
+.upload-model-view .reward-variables-table .reward-variable-name,
+.edit-goals-view .reward-variables-table .reward-variable-name {
     width: 100%;
 }
 .reward-variables-table.compact .header-row {
