@@ -27,7 +27,15 @@ public enum UserRole {
     public static final EnumSet<UserRole> serviceRoles = EnumSet.of(Admin, Master, Support);
 
     public static boolean isInternalOrEnterpriseOrPartnerUser(UserRole role) {
-        return role == Enterprise || serviceRoles.contains(role) || role == Partner;
+        return isPaidUser(role) || isInternalUser(role);
+    }
+
+    public static boolean isInternalUser(UserRole role) {
+        return serviceRoles.contains(role);
+    }
+
+    public static boolean isPaidUser(UserRole role) {
+        return role == Enterprise || role == Partner;
     }
 
     UserRole(int id, String name, Set<ViewPermission> permissions) {
