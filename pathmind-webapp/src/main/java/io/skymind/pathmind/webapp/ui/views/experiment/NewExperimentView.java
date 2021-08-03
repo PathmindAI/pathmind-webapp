@@ -157,7 +157,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(rewardFunctionEditor,
                 rewardVariablesPanel,
-                80);
+                70);
         rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditorWrapper,
@@ -166,7 +166,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
         rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
 
-        settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, true);
+        settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
         SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditor.getRewardFunctionErrorPanel(),
@@ -177,7 +177,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 errorAndNotesContainer,
                 settingsPanel,
-                70);
+                75);
         bottomPanel.setClassName("bottom-panel");
 
         splitButton = createSplitButton();
