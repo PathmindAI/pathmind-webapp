@@ -20,15 +20,15 @@ Feature: Check Subscription Plans
     When Open user account page
     When Click in 'Upgrade' button
     When Click in 'Choose Pro' button
-    When Click account breadcrumb btn
-    Then Check that user account page opened
+    When Click Request Onboarding Service back btn
+    Then Check subscription plans page
 
-  Scenario: Check Subscription Plans upgrade page elements
-    Given Register and login with new user
-    When Open user account page
-    When Click in 'Upgrade' button
-    When Click in 'Choose Pro' button
-    Then Check subscription plans upgrade page
+#  Scenario: Check Subscription Plans upgrade page elements
+#    Given Register and login with new user
+#    When Open user account page
+#    When Click in 'Upgrade' button
+#    When Click in 'Choose Pro' button
+#    Then Check subscription plans upgrade page
 
   Scenario: Subscribe free plan to professional
     Given Register and login with new user
