@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -23,6 +24,8 @@ import io.skymind.pathmind.shared.services.training.versions.NativeRL;
 import io.skymind.pathmind.shared.services.training.versions.PathmindHelper;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -36,6 +39,7 @@ import org.springframework.context.annotation.Scope;
 public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Model> {
     private final PathmindUser user;
     private final ExecutionEnvironment env;
+    private final SegmentIntegrator segmentIntegrator;
 
     @Id("userLogCB")
     private ComboBox<String> userLog;
@@ -88,51 +92,72 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("saveBtn")
     private Button saveBtn;
 
+    @Id("ctaOverlay")
+    private VerticalLayout overlay;
+
+    @Id("upgradeBtn")
+    private Button upgradeBtn;
+
+    private Boolean isPaidUser = false;
+    private Boolean isInternalUser = false;
+    private Boolean hideSaveButton = false;
+
     @Autowired
-    public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager) {
-        this(currentUser.getUser(), environmentManager, false);
+    public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator) {
+        this(currentUser.getUser(), environmentManager, segmentIntegrator, false);
     }
 
-    public SettingsViewContent(PathmindUser currentUser, ExecutionEnvironmentManager environmentManager, Boolean hideSaveButton) {
+    public SettingsViewContent(PathmindUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator, Boolean hideSaveButton) {
         this.user = currentUser;
         this.env = environmentManager.getEnvironment(this.user.getId());
-        getModel().setHideSaveButton(hideSaveButton);
+        this.segmentIntegrator = segmentIntegrator;
+        this.hideSaveButton = hideSaveButton;
         init();
     }
 
     private void init() {
         UserRole accountType = user.getAccountType();
-        getModel().setIsPaidUser(UserRole.isPaidUser(accountType));
-        getModel().setIsInternalUser(UserRole.isInternalUser(accountType));
+        isPaidUser = UserRole.isPaidUser(accountType);
+        isInternalUser = UserRole.isInternalUser(accountType);
+        getModel().setIsPaidUser(isPaidUser);
+        getModel().setIsInternalUser(isInternalUser);
+        getModel().setHideSaveButton(hideSaveButton);
         initContent();
         initBtns();
     }
 
     private void initBtns() {
-        saveBtn.addClickListener(e -> {
-            env.setUserLog(Boolean.valueOf(userLog.getValue()));
-            env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
-            env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
-            env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
-            env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
-            env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
-            env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
-            env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
-            env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
-            env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
-            env.setScheduler(scheduler.getValue());
-            env.setFreezing(Boolean.valueOf(freezing.getValue()));
-            env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
-            env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
-            env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
-            env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
-
-            String text = "Current settings are saved!";
-            CloseableNotification notification = new CloseableNotification(text);
-            notification.setDuration(-1);
-            notification.open();
-        });
-
+        if (!hideSaveButton) {
+            saveBtn.addClickListener(e -> {
+                env.setUserLog(Boolean.valueOf(userLog.getValue()));
+                env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+                env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
+                env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
+                env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
+                env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
+                env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
+                env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+                env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
+                env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
+                env.setScheduler(scheduler.getValue());
+                env.setFreezing(Boolean.valueOf(freezing.getValue()));
+                env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
+                env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
+                env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
+                env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
+    
+                String text = "Current settings are saved!";
+                CloseableNotification notification = new CloseableNotification(text);
+                notification.setDuration(-1);
+                notification.open();
+            });
+        }
+        if (!isPaidUser && !isInternalUser) {
+            upgradeBtn.addClickListener(click -> {
+                segmentIntegrator.navigatedToPricingFromNewExpViewSettings();
+                getUI().ifPresent(ui -> ui.navigate(AccountUpgradeView.class));
+            });
+        }
     }
 
     private void initContent() {
@@ -143,7 +168,45 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         userLog.setLabel("Enable User Log");
         userLog.setPlaceholder(String.valueOf(env.isUserLog()));
         userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
+        
+        /* ------------------------ For both paid & internal users ------------------------ */
+        // init hidden node
+        List<String> hiddenNodes = List.of("64", "128", "256", "512", "1024");
 
+        hiddenNode.setItems(hiddenNodes);
+        hiddenNode.setLabel("Number of hidden nodes");
+        hiddenNode.setPlaceholder(String.valueOf(env.getHiddenNode()));
+        hiddenNode.setValue(String.valueOf(env.getHiddenNode()));
+
+        // init hidden layer
+        List<String> hiddenLayers = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
+
+        hiddenLayer.setItems(hiddenLayers);
+        hiddenLayer.setLabel("Number of hidden layers");
+        hiddenLayer.setPlaceholder(String.valueOf(env.getHiddenLayer()));
+        hiddenLayer.setValue(String.valueOf(env.getHiddenLayer()));
+
+        // init longer training
+        List<String> longerTrainings = List.of("TRUE", "FALSE");
+
+        longerTraining.setItems(longerTrainings);
+        longerTraining.setLabel("Enable Longer Training");
+        longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
+        longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
+        longerTraining.addValueChangeListener(event -> {
+            startCheckIteration.setVisible(event.getValue().equals("TRUE"));
+        });
+
+        if (!isPaidUser && !isInternalUser) {
+            hiddenNode.setEnabled(false);
+            hiddenLayer.setEnabled(false);
+            longerTraining.setEnabled(false);
+        }
+
+        /* ------------------------ For internal users only ------------------------ */
+        if (!isInternalUser) {
+            return;
+        }
         // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)
@@ -209,22 +272,6 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
 
-        // init hidden node
-        List<String> hiddenNodes = List.of("64", "128", "256", "512", "1024");
-
-        hiddenNode.setItems(hiddenNodes);
-        hiddenNode.setLabel("Number of hidden nodes");
-        hiddenNode.setPlaceholder(String.valueOf(env.getHiddenNode()));
-        hiddenNode.setValue(String.valueOf(env.getHiddenNode()));
-
-        // init hidden layer
-        List<String> hiddenLayers = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
-
-        hiddenLayer.setItems(hiddenLayers);
-        hiddenLayer.setLabel("Number of hidden layers");
-        hiddenLayer.setPlaceholder(String.valueOf(env.getHiddenLayer()));
-        hiddenLayer.setValue(String.valueOf(env.getHiddenLayer()));
-
         // init scheduler
         List<String> schedulers = List.of("PBT", "PB2");
 
@@ -256,17 +303,6 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxTrainingTime.setLabel("Max Training Time(hour)");
         maxTrainingTime.setPlaceholder(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
         maxTrainingTime.setValue(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
-
-        // init longer training
-        List<String> longerTrainings = List.of("TRUE", "FALSE");
-
-        longerTraining.setItems(longerTrainings);
-        longerTraining.setLabel("Enable Longer Training");
-        longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
-        longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
-        longerTraining.addValueChangeListener(event -> {
-            startCheckIteration.setVisible(event.getValue().equals("TRUE"));
-        });
 
         // init start check iteration
         List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500", "2000");

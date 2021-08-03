@@ -35,7 +35,7 @@ public enum UserRole {
     }
 
     public static boolean isPaidUser(UserRole role) {
-        return role == Enterprise || role == Partner;
+        return role == Professional || role == Enterprise || role == Partner;
     }
 
     UserRole(int id, String name, Set<ViewPermission> permissions) {
