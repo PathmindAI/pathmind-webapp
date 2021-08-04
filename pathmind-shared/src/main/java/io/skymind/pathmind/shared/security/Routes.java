@@ -32,6 +32,7 @@ public class Routes {
     public static final String NEW_EXPERIMENT = "newExperiment";
     public static final String SHARED_EXPERIMENT = "sharedExperiment";
     public static final String UPLOAD_MODEL = "uploadModel";
+    public static final String EDIT_GOALS = "editGoals";
     public static final String RESUME_UPLOAD_MODEL = "resumeUploadModel";
     public static final String ERROR = "error";
     public static final String UPLOAD_MODEL_ERROR = "uploadModelError";
