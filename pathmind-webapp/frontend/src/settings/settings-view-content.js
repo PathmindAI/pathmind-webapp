@@ -27,6 +27,7 @@ class SettingsViewContent extends PolymerElement {
                     display: grid;
                     grid-template-columns: repeat(3, auto);
                     gap: var(--lumo-space-s);
+                    text-align: left;
                     padding: 0 var(--lumo-space-l);
                 }
                 settings-view-content h4 {
@@ -66,30 +67,30 @@ class SettingsViewContent extends PolymerElement {
             <vaadin-horizontal-layout class="panel-wrapper">
                 <div class="content">
                     <div class="settings-header">
-                        <span class="section-title-label">Settings</span>
+                        <span class="section-title-label">Advanced Settings</span>
                         <a class="helper-icon" href="" title="Learn more about Settings" target="_blank"><iron-icon icon="vaadin:info-circle-o"></iron-icon></a>
                     </div>
                     <vaadin-vertical-layout class="inner-content">
                         <vaadin-vertical-layout class="grid-wrapper" id="paidSettings">
-                            <vaadin-combo-box id="hiddenNodeCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="hiddenLayerCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="longerTrainingCB"></vaadin-combo-box>
+                            <vaadin-select id="hiddenNodeCB"></vaadin-select>
+                            <vaadin-select id="hiddenLayerCB"></vaadin-select>
+                            <vaadin-select id="longerTrainingCB"></vaadin-select>
+                            <vaadin-select id="startCheckIterationCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <h4 hidden="{{!isInternalUser}}">Internal Users Only</h4>
                         <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="{{!isInternalUser}}">
-                            <vaadin-combo-box id="userLogCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="ec2InstanceTypeCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="condaVersionCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="anylogicVersionCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="nativerlVersionCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="helperVersionCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="numSampleCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="maxMemoryCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="schedulerCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="freezingCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="rayDebugCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="maxTrainingTimeCB"></vaadin-combo-box>
-                            <vaadin-combo-box id="startCheckIterationCB"></vaadin-combo-box>
+                            <vaadin-select id="userLogCB"></vaadin-select>
+                            <vaadin-select id="ec2InstanceTypeCB"></vaadin-select>
+                            <vaadin-select id="condaVersionCB"></vaadin-select>
+                            <vaadin-select id="anylogicVersionCB"></vaadin-select>
+                            <vaadin-select id="nativerlVersionCB"></vaadin-select>
+                            <vaadin-select id="helperVersionCB"></vaadin-select>
+                            <vaadin-select id="numSampleCB"></vaadin-select>
+                            <vaadin-select id="maxMemoryCB"></vaadin-select>
+                            <vaadin-select id="schedulerCB"></vaadin-select>
+                            <vaadin-select id="freezingCB"></vaadin-select>
+                            <vaadin-select id="rayDebugCB"></vaadin-select>
+                            <vaadin-select id="maxTrainingTimeCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <vaadin-vertical-layout id="buttonsCont" hidden="{{hideSaveButton}}">
                             <vaadin-button id="saveBtn" theme="primary">
@@ -98,7 +99,7 @@ class SettingsViewContent extends PolymerElement {
                         </vaadin-vertical-layout>
                         <vaadin-vertical-layout id="ctaOverlay" class="cta-overlay" hidden="{{!isFreeUser}}">
                             <vaadin-vertical-layout class="cta-overlay-content">
-                                <span>This is a paid feature.</span>
+                                <span>Advanced settings are available for Professional Plan subscribers.</span>
                                 <vaadin-button id="upgradeBtn" theme="primary small">Upgrade Now</vaadin-button>
                             </vaadin-vertical-layout>
                         </vaadin-vertical-layout>
