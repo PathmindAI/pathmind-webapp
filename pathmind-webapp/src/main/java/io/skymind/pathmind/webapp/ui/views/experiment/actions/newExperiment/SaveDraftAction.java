@@ -8,6 +8,7 @@ public class SaveDraftAction {
         synchronized (newExperimentView.getExperimentLock()) {
             // update the internal values of the experiment from the components as in some cases there may not be a binder, etc.
             newExperimentView.updateExperimentFromComponents();
+            newExperimentView.saveAdvancedSettings();
             newExperimentView.getExperimentDAO().saveExperiment(newExperimentView.getExperiment());
             newExperimentView.getSegmentIntegrator().draftSaved();
             newExperimentView.disableSaveNeeded();

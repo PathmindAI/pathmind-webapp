@@ -295,6 +295,14 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return experiment;
     }
 
+    public void saveAdvancedSettings() {
+        settingsPanel.saveSettings();
+    }
+
+    public String getSettingsText() {
+        return settingsPanel.getSettingsText();
+    }
+
     private void handleSaveDraftClicked(Command afterClickedCallback) {
         SaveDraftAction.saveDraft(this);
         afterClickedCallback.execute();
