@@ -58,8 +58,10 @@ class SettingsViewContent extends PolymerElement {
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    max-width: 90%;
                     background-color: white;
                     padding: var(--lumo-space-m);
+                    text-align: justify;
                     border-radius: var(--lumo-border-radius-l);
                     box-shadow: 0 3px 5px var(--lumo-shade-10pct);
                 }
@@ -68,7 +70,7 @@ class SettingsViewContent extends PolymerElement {
                 <div class="content">
                     <div class="settings-header">
                         <span class="section-title-label">Advanced Settings</span>
-                        <a class="helper-icon" href="" title="Learn more about Settings" target="_blank"><iron-icon icon="vaadin:info-circle-o"></iron-icon></a>
+                        <a class="helper-icon" href="http://help.pathmind.com/en/articles/5464077-pathmind-experiment-settings" title="Learn more about Settings" target="_blank"><iron-icon icon="vaadin:info-circle-o"></iron-icon></a>
                     </div>
                     <vaadin-vertical-layout class="inner-content">
                         <vaadin-vertical-layout class="grid-wrapper" id="paidSettings">
