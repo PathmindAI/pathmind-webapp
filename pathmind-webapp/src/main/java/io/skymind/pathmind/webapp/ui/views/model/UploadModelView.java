@@ -130,6 +130,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     private UploadALPWizardPanel uploadALPWizardPanel;
     private ModelDetailsWizardPanel modelDetailsWizardPanel;
     private RewardVariablesPanel rewardVariablesPanel;
+    private VerticalLayout rewardVariablesPanelWrapper;
 
     private List<Component> wizardPanels;
 
@@ -152,6 +153,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
         rewardVariablesPanel = new RewardVariablesPanel(false);
+        rewardVariablesPanelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL),
+            GuiUtils.getFullWidthHr(),
+            rewardVariablesPanel);
+        rewardVariablesPanelWrapper.setVisible(false);
 
         modelBinder.readBean(model);
 
@@ -159,10 +165,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 uploadModelWizardPanel,
                 uploadALPWizardPanel,
                 modelDetailsWizardPanel,
-                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                    LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL),
-                    GuiUtils.getFullWidthHr(),
-                    rewardVariablesPanel));
+                rewardVariablesPanelWrapper);
 
         if (isResumeUpload()) {
             setVisibleWizardPanel(uploadALPWizardPanel);
@@ -201,7 +204,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         }
         sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
-        sections.add(rewardVariablesPanel);
+        sections.add(rewardVariablesPanelWrapper);
         VerticalLayout wrapper = new VerticalLayout(
                 sections.toArray(new Component[0]));
 
@@ -288,7 +291,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
         modelService.updateDraftModel(model, modelNotes);
         rewardVariablesPanel.setupRewardVariables(rewardVariables);
-        setVisibleWizardPanel(rewardVariablesPanel);
+        setVisibleWizardPanel(rewardVariablesPanelWrapper);
     }
 
     private void saveAndNavigateToNewExperiment() {
