@@ -298,6 +298,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
         env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
         env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
+        env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
         if (!isInternalUser) {
             return;
         }
@@ -313,11 +314,22 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         env.setFreezing(Boolean.valueOf(freezing.getValue()));
         env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
         env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
-        env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
     }
 
     public String getSettingsText() {
-        return "";
+        if (!isPaidUser && !isInternalUser) {
+            return "";
+        }
+        String completeSettings = "";
+        for (Map.Entry<Select<String>, String> entry : settingsList.entrySet()) {
+            if (entry.getKey().getValue() != null) {
+                if (!completeSettings.isEmpty()) {
+                    completeSettings += ", ";
+                }
+                completeSettings += entry.getValue() + ": " + entry.getKey().getValue();
+            }
+        }
+        return completeSettings;
     }
 
     public interface Model extends TemplateModel {
