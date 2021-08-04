@@ -231,7 +231,7 @@
     grid-row-gap: 0;
 }
 
-.new-experiment-view settings-view-content .grid-wrapper vaadin-combo-box {
+.new-experiment-view settings-view-content .grid-wrapper vaadin-select {
     flex: 1 0 auto;
 }
 

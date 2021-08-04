@@ -1,16 +1,18 @@
 package io.skymind.pathmind.webapp.ui.views.settings;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
@@ -42,52 +44,52 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private final SegmentIntegrator segmentIntegrator;
 
     @Id("userLogCB")
-    private ComboBox<String> userLog;
+    private Select<String> userLog;
 
     @Id("ec2InstanceTypeCB")
-    private ComboBox<String> ec2InstanceType;
+    private Select<String> ec2InstanceType;
 
     @Id("condaVersionCB")
-    private ComboBox<String> condaVersion;
+    private Select<String> condaVersion;
 
     @Id("anylogicVersionCB")
-    private ComboBox<String> anylogicVersion;
+    private Select<String> anylogicVersion;
 
     @Id("nativerlVersionCB")
-    private ComboBox<String> nativerlVersion;
+    private Select<String> nativerlVersion;
 
     @Id("helperVersionCB")
-    private ComboBox<String> helperVersion;
+    private Select<String> helperVersion;
 
     @Id("numSampleCB")
-    private ComboBox<String> numSample;
+    private Select<String> numSample;
 
     @Id("maxMemoryCB")
-    private ComboBox<String> maxMemory;
+    private Select<String> maxMemory;
 
     @Id("hiddenNodeCB")
-    private ComboBox<String> hiddenNode;
+    private Select<String> hiddenNode;
 
     @Id("hiddenLayerCB")
-    private ComboBox<String> hiddenLayer;
+    private Select<String> hiddenLayer;
 
     @Id("schedulerCB")
-    private ComboBox<String> scheduler;
+    private Select<String> scheduler;
 
     @Id("freezingCB")
-    private ComboBox<String> freezing;
+    private Select<String> freezing;
 
     @Id("rayDebugCB")
-    private ComboBox<String> rayDebug;
+    private Select<String> rayDebug;
 
     @Id("maxTrainingTimeCB")
-    private ComboBox<String> maxTrainingTime;
+    private Select<String> maxTrainingTime;
 
     @Id("longerTrainingCB")
-    private ComboBox<String> longerTraining;
+    private Select<String> longerTraining;
 
     @Id("startCheckIterationCB")
-    private ComboBox<String> startCheckIteration;
+    private Select<String> startCheckIteration;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -101,6 +103,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     private Boolean isPaidUser = false;
     private Boolean isInternalUser = false;
     private Boolean hideSaveButton = false;
+    private Map<Select<String>, String> settingsList = new HashMap<Select<String>, String>();
 
     @Autowired
     public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator) {
@@ -122,30 +125,34 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         getModel().setIsPaidUser(isPaidUser);
         getModel().setIsInternalUser(isInternalUser);
         getModel().setHideSaveButton(hideSaveButton);
+        initSettingsMap();
         initContent();
         initBtns();
+    }
+
+    private void initSettingsMap() {
+        settingsList.put(hiddenNode, "Number of Hidden Nodes");
+        settingsList.put(hiddenLayer, "Number of Hidden Layers");
+        settingsList.put(longerTraining, "Enable Longer Training");
+        settingsList.put(startCheckIteration, "Early Stopper Start Iteration");
+        settingsList.put(userLog, "Enable User Log");
+        settingsList.put(ec2InstanceType, "Instance Type");
+        settingsList.put(nativerlVersion, "NativeRL Version");
+        settingsList.put(anylogicVersion, "AnyLogic Version");
+        settingsList.put(condaVersion, "Conda Version");
+        settingsList.put(helperVersion, "PM Helper Version");
+        settingsList.put(numSample, "Number of PBT samples");
+        settingsList.put(maxMemory, "Max Memory Size in MB");
+        settingsList.put(scheduler, "Scheduler");
+        settingsList.put(freezing, "Enable Freezing");
+        settingsList.put(rayDebug, "Enable Ray Debug");
+        settingsList.put(maxTrainingTime, "Max Training Time (hour)");
     }
 
     private void initBtns() {
         if (!hideSaveButton) {
             saveBtn.addClickListener(e -> {
-                env.setUserLog(Boolean.valueOf(userLog.getValue()));
-                env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
-                env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
-                env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
-                env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
-                env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
-                env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
-                env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
-                env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
-                env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
-                env.setScheduler(scheduler.getValue());
-                env.setFreezing(Boolean.valueOf(freezing.getValue()));
-                env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
-                env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
-                env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
-                env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
-    
+                saveSettings();
                 String text = "Current settings are saved!";
                 CloseableNotification notification = new CloseableNotification(text);
                 notification.setDuration(-1);
@@ -161,157 +168,156 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     }
 
     private void initContent() {
-        // init user log
-        List<String> userLogs = List.of("TRUE", "FALSE");
-
-        userLog.setItems(userLogs);
-        userLog.setLabel("Enable User Log");
-        userLog.setPlaceholder(String.valueOf(env.isUserLog()));
-        userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
-        
         /* ------------------------ For both paid & internal users ------------------------ */
         // init hidden node
         List<String> hiddenNodes = List.of("64", "128", "256", "512", "1024");
-
         hiddenNode.setItems(hiddenNodes);
-        hiddenNode.setLabel("Number of hidden nodes");
-        hiddenNode.setPlaceholder(String.valueOf(env.getHiddenNode()));
+        hiddenNode.setLabel(settingsList.get(hiddenNode));
         hiddenNode.setValue(String.valueOf(env.getHiddenNode()));
 
         // init hidden layer
         List<String> hiddenLayers = List.of("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
-
         hiddenLayer.setItems(hiddenLayers);
-        hiddenLayer.setLabel("Number of hidden layers");
-        hiddenLayer.setPlaceholder(String.valueOf(env.getHiddenLayer()));
+        hiddenLayer.setLabel(settingsList.get(hiddenLayer));
         hiddenLayer.setValue(String.valueOf(env.getHiddenLayer()));
 
         // init longer training
         List<String> longerTrainings = List.of("TRUE", "FALSE");
-
         longerTraining.setItems(longerTrainings);
-        longerTraining.setLabel("Enable Longer Training");
-        longerTraining.setPlaceholder(String.valueOf(env.isLongerTraining()));
+        longerTraining.setLabel(settingsList.get(longerTraining));
         longerTraining.setValue(String.valueOf(env.isLongerTraining()).toUpperCase());
         longerTraining.addValueChangeListener(event -> {
             startCheckIteration.setVisible(event.getValue().equals("TRUE"));
         });
 
+        // init start check iteration
+        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500", "2000");
+        startCheckIteration.setItems(startCheckIterations);
+        startCheckIteration.setLabel(settingsList.get(startCheckIteration));
+        startCheckIteration.setValue(String.valueOf(env.getStartCheckIterationForLongerTraining()).toUpperCase());
+        startCheckIteration.setVisible(longerTraining.getValue().equals("TRUE"));
+
         if (!isPaidUser && !isInternalUser) {
             hiddenNode.setEnabled(false);
             hiddenLayer.setEnabled(false);
             longerTraining.setEnabled(false);
+            startCheckIteration.setEnabled(false);
         }
 
         /* ------------------------ For internal users only ------------------------ */
         if (!isInternalUser) {
             return;
         }
+        // init user log
+        List<String> userLogs = List.of("TRUE", "FALSE");
+        userLog.setItems(userLogs);
+        userLog.setLabel(settingsList.get(userLog));
+        userLog.setValue(String.valueOf(env.isUserLog()).toUpperCase());
+        
         // init EC2 instance types
         List<String> ec2Instances = Arrays.stream(EC2InstanceType.values())
                 .map(EC2InstanceType::toString)
                 .collect(Collectors.toList());
         ec2InstanceType.setItems(ec2Instances);
-        ec2InstanceType.setLabel("Instance Type");
-        ec2InstanceType.setPlaceholder(env.getEc2InstanceType().toString());
+        ec2InstanceType.setLabel(settingsList.get(ec2InstanceType));
         ec2InstanceType.setValue(env.getEc2InstanceType().toString());
 
         // init NativeRL versions
         List<String> nativerlVersions = NativeRL.activeValues().stream()
                 .map(NativeRL::toString)
                 .collect(Collectors.toList());
-
         nativerlVersion.setItems(nativerlVersions);
-        nativerlVersion.setLabel("NativeRL Version");
-        nativerlVersion.setPlaceholder(env.getNativerlVersion().toString());
+        nativerlVersion.setLabel(settingsList.get(nativerlVersion));
         nativerlVersion.setValue(env.getNativerlVersion().toString());
 
         // init AnyLogic versions
         List<String> anyLogicVersions = Arrays.stream(AnyLogic.values())
                 .map(AnyLogic::toString)
                 .collect(Collectors.toList());
-
         anylogicVersion.setItems(anyLogicVersions);
-        anylogicVersion.setLabel("AnyLogic Version");
-        anylogicVersion.setPlaceholder(env.getAnylogicVersion().toString());
+        anylogicVersion.setLabel(settingsList.get(anylogicVersion));
         anylogicVersion.setValue(env.getAnylogicVersion().toString());
 
         // init conda versions
         List<String> condaVersions = Arrays.stream(Conda.values())
                 .map(Conda::toString)
                 .collect(Collectors.toList());
-
         condaVersion.setItems(condaVersions);
-        condaVersion.setLabel("Conda Version");
-        condaVersion.setPlaceholder(env.getCondaVersion().toString());
+        condaVersion.setLabel(settingsList.get(condaVersion));
         condaVersion.setValue(env.getCondaVersion().toString());
 
         // init pathmind helper versions
         List<String> helperVersions = Arrays.stream(PathmindHelper.values())
                 .map(PathmindHelper::toString)
                 .collect(Collectors.toList());
-
         helperVersion.setItems(helperVersions);
-        helperVersion.setLabel("PM helper Version");
-        helperVersion.setPlaceholder(env.getPathmindHelperVersion().toString());
+        helperVersion.setLabel(settingsList.get(helperVersion));
         helperVersion.setValue(env.getPathmindHelperVersion().toString());
 
         // init number of samples
         List<String> numSamples = List.of("1", "2", "3", "4", "8");
-
         numSample.setItems(numSamples);
-        numSample.setLabel("Number of PBT samples");
-        numSample.setPlaceholder(String.valueOf(env.getPBT_NUM_SAMPLES()));
+        numSample.setLabel(settingsList.get(numSample));
         numSample.setValue(String.valueOf(env.getPBT_NUM_SAMPLES()));
 
         // init max memory
         List<String> maxMemories = List.of("4096", "16384");
-
         maxMemory.setItems(maxMemories);
-        maxMemory.setLabel("Max memory size in MB");
-        maxMemory.setPlaceholder(String.valueOf(env.getMaxMemory()));
+        maxMemory.setLabel(settingsList.get(maxMemory));
         maxMemory.setValue(String.valueOf(env.getMaxMemory()));
 
         // init scheduler
         List<String> schedulers = List.of("PBT", "PB2");
-
         scheduler.setItems(schedulers);
-        scheduler.setLabel("Scheduler");
-        scheduler.setPlaceholder(env.getScheduler());
+        scheduler.setLabel(settingsList.get(scheduler));
         scheduler.setValue(env.getScheduler());
 
         // init freezing
         List<String> freezings = List.of("TRUE", "FALSE");
-
         freezing.setItems(freezings);
-        freezing.setLabel("Enable Freezing");
-        freezing.setPlaceholder(String.valueOf(env.isFreezing()));
+        freezing.setLabel(settingsList.get(freezing));
         freezing.setValue(String.valueOf(env.isFreezing()).toUpperCase());
 
         // init ray debug
         List<String> rayDebugs = List.of("TRUE", "FALSE");
-
         rayDebug.setItems(rayDebugs);
-        rayDebug.setLabel("Enable Ray Debug");
-        rayDebug.setPlaceholder(String.valueOf(env.isRayDebug()));
+        rayDebug.setLabel(settingsList.get(rayDebug));
         rayDebug.setValue(String.valueOf(env.isRayDebug()).toUpperCase());
 
         // init max training time
         List<String> maxTrainingTimes = List.of("12", "24", "48");
-
         maxTrainingTime.setItems(maxTrainingTimes);
-        maxTrainingTime.setLabel("Max Training Time(hour)");
-        maxTrainingTime.setPlaceholder(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+        maxTrainingTime.setLabel(settingsList.get(maxTrainingTime));
         maxTrainingTime.setValue(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+    }
 
-        // init start check iteration
-        List<String> startCheckIterations = List.of("250", "500", "750", "1000", "1250", "1500", "2000");
+    public void saveSettings() {
+        if (!isPaidUser && !isInternalUser) {
+            return;
+        }
+        env.setHiddenNode(Integer.parseInt(hiddenNode.getValue()));
+        env.setHiddenLayer(Integer.parseInt(hiddenLayer.getValue()));
+        env.setLongerTraining(Boolean.valueOf(longerTraining.getValue()));
+        if (!isInternalUser) {
+            return;
+        }
+        env.setUserLog(Boolean.valueOf(userLog.getValue()));
+        env.setEc2InstanceType(EC2InstanceType.fromName(ec2InstanceType.getValue()));
+        env.setAnylogicVersion(AnyLogic.valueOf(anylogicVersion.getValue()));
+        env.setCondaVersion(Conda.valueOf(condaVersion.getValue()));
+        env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
+        env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
+        env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
+        env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
+        env.setScheduler(scheduler.getValue());
+        env.setFreezing(Boolean.valueOf(freezing.getValue()));
+        env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
+        env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
+        env.setStartCheckIterationForLongerTraining(Integer.parseInt(startCheckIteration.getValue()));
+    }
 
-        startCheckIteration.setItems(startCheckIterations);
-        startCheckIteration.setLabel("Early Stopper Start Iter");
-        startCheckIteration.setPlaceholder(String.valueOf(env.getStartCheckIterationForLongerTraining()));
-        startCheckIteration.setValue(String.valueOf(env.getStartCheckIterationForLongerTraining()).toUpperCase());
-        startCheckIteration.setVisible(longerTraining.getValue().equals("TRUE"));
+    public String getSettingsText() {
+        return "";
     }
 
     public interface Model extends TemplateModel {
