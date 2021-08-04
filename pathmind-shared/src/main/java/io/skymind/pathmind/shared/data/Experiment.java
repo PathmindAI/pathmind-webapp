@@ -3,7 +3,6 @@ package io.skymind.pathmind.shared.data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.skymind.pathmind.shared.constants.RunStatus;
@@ -33,7 +32,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private boolean isFavorite;
     private boolean hasGoals;
     private int trainingStatus;
-    private boolean sharedWithSupport;
+    private boolean shared;
 
     // Helper GUI attributes not stored in the database
     private Project project;
@@ -122,7 +121,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
                 .isFavorite(isFavorite)
                 .trainingStatus(trainingStatus)
                 .hasGoals(hasGoals)
-                .sharedWithSupport(sharedWithSupport)
+                .shared(shared)
                 .build());
     }
 
