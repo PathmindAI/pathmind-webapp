@@ -44,7 +44,7 @@ class SettingsViewContent extends PolymerElement {
                     border-radius: 0;
                 }
                 settings-view-content .cta-overlay {
-                    display: flex;
+                    display: none;
                     justify-content: center;
                     align-items: center;
                     position: absolute;
@@ -53,6 +53,9 @@ class SettingsViewContent extends PolymerElement {
                     top: 0;
                     left: 0;
                     background-color: rgba(0,0,0,0.12);
+                }
+                settings-view-content .cta-overlay.show {
+                    display: flex;
                 }
                 settings-view-content .cta-overlay-content {
                     display: flex;
@@ -74,10 +77,10 @@ class SettingsViewContent extends PolymerElement {
                     </div>
                     <vaadin-vertical-layout class="inner-content">
                         <vaadin-vertical-layout class="grid-wrapper" id="paidSettings">
-                            <vaadin-select id="hiddenNodeCB"></vaadin-select>
-                            <vaadin-select id="hiddenLayerCB"></vaadin-select>
                             <vaadin-select id="longerTrainingCB"></vaadin-select>
                             <vaadin-select id="startCheckIterationCB"></vaadin-select>
+                            <vaadin-select id="hiddenNodeCB"></vaadin-select>
+                            <vaadin-select id="hiddenLayerCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <h4 hidden="{{!isInternalUser}}">Internal Users Only</h4>
                         <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="{{!isInternalUser}}">
@@ -123,6 +126,14 @@ class SettingsViewContent extends PolymerElement {
         return !(isPaidUser || isInternalUser);
     }
 
+    _isFreeUserChanged(newValue) {
+        if (newValue) {
+            this.addEventListener("click", event => {
+                this.querySelector("#ctaOverlay").classList.add("show");
+            });
+        }
+    }
+
     static get properties() {
         return {
             hideSaveButton: {
@@ -132,6 +143,7 @@ class SettingsViewContent extends PolymerElement {
             isFreeUser: {
                 type: Boolean,
                 computed: 'setIsFreeUser(isPaidUser, isInternalUser)',
+                observer: '_isFreeUserChanged',
             }
         }
     }
