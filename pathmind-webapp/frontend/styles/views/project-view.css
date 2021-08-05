@@ -183,7 +183,8 @@
 }
 
 .project-view .model-wrapper .edit-goals-button,
-.project-view .model-wrapper .new-experiment-button {
+.project-view .model-wrapper .new-experiment-button,
+.project-view .model-wrapper .download-policies-button {
     flex: 1 0 auto;
     padding: 0 var(--lumo-space-s);
     border-radius: 0;

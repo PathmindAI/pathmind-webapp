@@ -12,6 +12,8 @@ import java.util.zip.ZipOutputStream;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.services.PolicyFileService;
@@ -33,7 +35,9 @@ public class ExportAllPoliciesButton extends Anchor {
         this.policyFileService = policyFileService;
         this.experimentDAO = experimentDAO;
         Button exportButton = new Button("Export Policies");
-        exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        exportButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        exportButton.setIcon(new Icon(VaadinIcon.DOWNLOAD_ALT));
+        exportButton.addClassName("download-policies-button");
         add(exportButton);
     }
 
