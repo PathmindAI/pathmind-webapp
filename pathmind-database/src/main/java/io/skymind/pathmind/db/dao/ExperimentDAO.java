@@ -107,6 +107,7 @@ public class ExperimentDAO {
 
     /**
      * This is for Project/Model page to show experiments with metric values and observations
+     *
      * @param userId
      * @param modelId
      * @param offset
@@ -182,8 +183,8 @@ public class ExperimentDAO {
                 .forEach(experiment -> experiment.setRuns(new ArrayList<>()));
     }
 
-    public void shareExperimentWithSupport(long experimentId) {
-        ExperimentRepository.shareExperimentWithSupport(ctx, experimentId);
+    public void shareExperiment(long experimentId, boolean share) {
+        ExperimentRepository.shareExperiment(ctx, experimentId, share);
     }
 
     public void updateRewardFunction(Experiment experiment) {
@@ -267,12 +268,12 @@ public class ExperimentDAO {
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()
                 .ifPresent(run -> {
-                        Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
-                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-                            experiment.setTrainingErrorId(run.getTrainingErrorId());
-                            experiment.setSupportArticle(trainingError.getSupportArticle());
-                        });
+                    Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
+                        experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
+                        experiment.setTrainingErrorId(run.getTrainingErrorId());
+                        experiment.setSupportArticle(trainingError.getSupportArticle());
                     });
+                });
     }
 
     public void saveExperiment(Experiment experiment) {
