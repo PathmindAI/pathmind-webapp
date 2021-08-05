@@ -57,7 +57,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private final TagLabel sharedLabel = new TagLabel("Shared", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
-    private SharedByUsername sharedByTag;
+    private HorizontalLayout titleWithStar;
 
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
@@ -126,16 +126,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
         if (!isExportPolicyButtonOnly) {
             titleWithStar.add(actionDropdown);
-        }
-        if (experimentView.isReadOnly()) {
-            PathmindUser sharedByUser = experimentView.getExperimentDAO().getSharedByUsername(experimentView.getExperimentId());
-            sharedByTag = new SharedByUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
-            titleWithStar.add(sharedByTag);
         }
 
         sharedLabel.addClassName("shared-with-support-label");
@@ -237,8 +232,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         exportPolicyButton.setExperiment(experiment);
         setExperimentForServePolicyButton(experiment);
         if (experimentView.isReadOnly()) {
-            PathmindUser sharedByUser = experimentView.getExperimentDAO().getSharedByUsername(experiment.getId());
-            sharedByTag.setUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
+            PathmindUser sharedByUser = experimentView.getExperimentDAO().getUserOfExperiment(experiment.getId());
+            SharedByUsername sharedByTag = new SharedByUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
+            titleWithStar.add(sharedByTag);
         }
         updateComponentEnablements();
     }

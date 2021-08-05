@@ -82,7 +82,7 @@ class ExperimentRepository {
         return experiment;
     }
 
-    protected static PathmindUser getSharedByUsername(DSLContext ctx, long experimentId) {
+    protected static PathmindUser getUserByExperimentId(DSLContext ctx, long experimentId) {
         Record record = ctx
                 .select(EXPERIMENT.ID, EXPERIMENT.MODEL_ID)
                 .select(MODEL.ID, MODEL.PROJECT_ID)
@@ -93,8 +93,12 @@ class ExperimentRepository {
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
                 .where(EXPERIMENT.ID.eq(experimentId))
-                .and(EXPERIMENT.SHARED.eq(true))
                 .fetchOne();
+
+        if (record == null) {
+            return null;
+        }
+
         return record.into(PATHMIND_USER).into(PathmindUser.class);
     }
 
