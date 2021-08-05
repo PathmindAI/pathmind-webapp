@@ -16,16 +16,13 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.util.CollectionUtils;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
@@ -59,33 +56,39 @@ public class ExportAllPoliciesButton extends Anchor {
         return new StreamResource(removeInvalidChars(filename),
                 () -> {
 
-                    try {
+                    ByteArrayInputStream zip = null;
 
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        ZipOutputStream zos = new ZipOutputStream(baos);
+                    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                         ZipOutputStream zos = new ZipOutputStream(baos)) {
 
-                        for (Policy policy : policies) {
-                            String policyFilename = PolicyUtils.generatePolicyFileName(policy);
-                            policyFilename = removeInvalidChars(policyFilename);
+                        List<Pair<String, byte[]>> data = policies.parallelStream()
+                                .map(policy -> {
+                                    String policyFilename = PolicyUtils.generatePolicyFileName(policy);
+                                    policyFilename = removeInvalidChars(policyFilename);
+                                    byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy);
+                                    return Pair.of(policyFilename, bytes);
+                                })
+                                .collect(Collectors.toList());
 
-                            byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy);
 
+                        for (Pair<String, byte[]> nameBytes : data) {
+                            String policyFilename = nameBytes.getLeft();
+                            byte[] bytes = nameBytes.getRight();
                             ZipEntry entry = new ZipEntry(policyFilename);
                             entry.setSize(bytes.length);
                             zos.putNextEntry(entry);
                             zos.write(bytes);
                             zos.closeEntry();
-
                         }
 
                         zos.close();
-                        return new ByteArrayInputStream(baos.toByteArray());
+                        zip =  new ByteArrayInputStream(baos.toByteArray());
+
                     } catch (IOException e) {
                         log.error("Failed to compress list of policies for model", e);
                     }
 
-                    return null;
-
+                    return zip;
 
                 });
     }
