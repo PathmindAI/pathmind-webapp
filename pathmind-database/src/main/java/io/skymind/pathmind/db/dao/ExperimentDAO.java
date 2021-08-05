@@ -17,6 +17,7 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
@@ -57,6 +58,10 @@ public class ExperimentDAO {
             e.setRuns(runsForExperiment);
         });
         return result;
+    }
+
+    public PathmindUser getSharedByUsername(long experimentId) {
+        return ExperimentRepository.getSharedByUsername(ctx, experimentId);
     }
 
     public void markAsFavorite(long experimentId, boolean isFavorite) {
