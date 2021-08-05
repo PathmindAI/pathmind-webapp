@@ -1,5 +1,7 @@
 package io.skymind.pathmind.services;
 
+import io.skymind.pathmind.shared.data.Policy;
+
 public interface PolicyFileService {
     boolean hasPolicyFile(long policyId);
 
@@ -11,7 +13,7 @@ public interface PolicyFileService {
 
     String getPolicyFileLocation(long policyId);
 
-    byte[] getFreezingOrPolicyFile(long runId);
+    byte[] getFreezingOrPolicyFile(Policy policy);
 
     byte[] getFreezingPolicyFile(long runId);
 

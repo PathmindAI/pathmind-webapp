@@ -55,7 +55,7 @@ public class ExportAllPoliciesButton extends Anchor {
                             String policyFilename = PolicyUtils.generatePolicyFileName(policy);
                             policyFilename = removeInvalidChars(policyFilename);
 
-                            byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy.getRunId());
+                            byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy);
 
                             ZipEntry entry = new ZipEntry(policyFilename);
                             entry.setSize(bytes.length);
