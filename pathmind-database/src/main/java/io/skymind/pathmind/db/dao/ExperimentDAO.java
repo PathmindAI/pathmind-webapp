@@ -173,6 +173,12 @@ public class ExperimentDAO {
         return experiments;
     }
 
+    public List<Experiment> getExperimentsForModelWithPolicies(long modelId, long userId) {
+        List<Experiment> experiments = getExperimentsForModel(modelId, false);
+        setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+        return experiments;
+    }
+
     private void addRunsToExperiments(List<Experiment> experiments) {
         Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
         experiments.stream().forEach(experiment ->

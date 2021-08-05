@@ -48,6 +48,7 @@
     "lit-html": "1.4.1",
     "lodash": "^4.17.20",
     "multiselect-combo-box": "2.4.2",
+    "timeago.js": "4.0.2",
     "to-string-loader": "^1.1.6"
   },
   "devDependencies": {
@@ -152,6 +153,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "4ed56f1c42d04aaebf3147ab630b3d70c3e28c2cf5f80efb96bc650a777f1513"
+    "hash": "920b304bb1f3bb9e1d3e4b0b9ab881c3cbb5d2bdc058c6093a03194dae8877d3"
   }
 }
