@@ -23,6 +23,7 @@ Feature: Experiment share
     When Login to the pathmind
     When Open page sharedExperimentUrl
     Then Check that experiment page title is 'Experiment #1'
+    Then Check experiment shared by <First Name>, <Last Name>
 
     Examples:
       | First Name | Last Name | Password   |
