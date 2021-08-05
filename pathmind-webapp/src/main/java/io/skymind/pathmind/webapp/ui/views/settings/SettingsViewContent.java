@@ -320,16 +320,10 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         if (!isPaidUser && !isInternalUser) {
             return "";
         }
-        String completeSettings = "";
-        for (Map.Entry<Select<String>, String> entry : settingsList.entrySet()) {
-            if (entry.getKey().getValue() != null) {
-                if (!completeSettings.isEmpty()) {
-                    completeSettings += ", ";
-                }
-                completeSettings += entry.getValue() + ": " + entry.getKey().getValue();
-            }
-        }
-        return completeSettings;
+        return settingsList.entrySet().stream()
+                .filter(e -> e.getKey().getValue() != null)
+                .map(e -> e.getValue() + ": " + e.getKey().getValue())
+                .collect(Collectors.joining(", "));
     }
 
     public interface Model extends TemplateModel {
