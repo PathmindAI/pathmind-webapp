@@ -48,6 +48,15 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     }
 
     @Override
+    public byte[] getFreezingOrPolicyFile(long runId) {
+        byte[] bytes = getFreezingPolicyFile(runId);
+        if (bytes == null) {
+            bytes = getPolicyFile(runId);
+        }
+        return bytes;
+    }
+
+    @Override
     public byte[] getSnapshotFile(long policyId) {
         return awsApiClient.fileContents(POLICY_CHECKPOINT + policyId, true);
     }

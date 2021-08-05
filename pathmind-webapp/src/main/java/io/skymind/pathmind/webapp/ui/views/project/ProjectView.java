@@ -115,6 +115,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private EditGoalsButton editGoalsButton;
+    private ExportAllPoliciesButton exportAllPoliciesButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
     private MultiselectComboBox<String> columnMultiSelect;
     private ExperimentGrid experimentGrid;
@@ -153,6 +154,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         editGoalsButton = new EditGoalsButton(modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
+        exportAllPoliciesButton = new ExportAllPoliciesButton(policyFileService, experimentDAO);
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
                 segmentIntegrator);
         modelNotesField = createModelNotesField();
@@ -177,7 +179,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, editGoalsButton, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, exportAllPoliciesButton, editGoalsButton, newExperimentButton);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -426,6 +428,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         });
         newExperimentButton.setModelId(selectedModel.getId());
         editGoalsButton.setModelId(selectedModel.getId());
+        exportAllPoliciesButton.setModelId(selectedModel.getId());
         experimentGridDataProvider.setModelId(modelId);
         if (dataProvider == null) {
             dataProvider = experimentGridDataProvider.withConfigurableFilter();

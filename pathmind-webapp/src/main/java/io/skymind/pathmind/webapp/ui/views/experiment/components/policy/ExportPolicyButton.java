@@ -74,10 +74,7 @@ public class ExportPolicyButton extends Anchor {
     private StreamResource getResourceStream(String filename) {
         return new StreamResource(removeInvalidChars(filename),
                 () -> {
-                    byte[] bytes = policyFileService.getFreezingPolicyFile(policy.getRunId());
-                    if (bytes == null) {
-                        bytes = policyFileService.getPolicyFile(policy.getId());
-                    }
+                    byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy.getRunId());
                     return new ByteArrayInputStream(bytes);
                 });
     }
