@@ -16,14 +16,20 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.server.StreamResource;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.db.dao.ModelDAO;
+import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
+import static io.skymind.pathmind.shared.utils.PathmindStringUtils.toCamelCase;
 
 @Slf4j
 public class ExportAllPoliciesButton extends Anchor {
@@ -41,8 +47,15 @@ public class ExportAllPoliciesButton extends Anchor {
         add(exportButton);
     }
 
-    private StreamResource getResourceStream(long modelId, List<Policy> policies) {
-        String filename = "policies-for-model-" + modelId;
+    private StreamResource getResourceStream(List<Policy> policies) {
+
+        if (CollectionUtils.isEmpty(policies)) {
+            return null;
+        }
+
+        Policy p0 = policies.get(0);
+        String filename = removeInvalidChars(String.format("%s-M%s-%s-Policies.zip", toCamelCase(p0.getProject().getName()), p0.getModel().getName(), p0.getModel().getPackageName()));
+
         return new StreamResource(removeInvalidChars(filename),
                 () -> {
 
@@ -68,7 +81,7 @@ public class ExportAllPoliciesButton extends Anchor {
                         zos.close();
                         return new ByteArrayInputStream(baos.toByteArray());
                     } catch (IOException e) {
-                        log.error("Failed to compress list of policies for model {}", modelId, e);
+                        log.error("Failed to compress list of policies for model", e);
                     }
 
                     return null;
@@ -91,7 +104,7 @@ public class ExportAllPoliciesButton extends Anchor {
             return;
         }
 
-        getElement().setAttribute("href", getResourceStream(modelId, bestPolicies));
+        getElement().setAttribute("href", getResourceStream(bestPolicies));
         getElement().setAttribute("download", true);
 
     }

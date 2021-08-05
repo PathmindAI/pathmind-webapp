@@ -428,7 +428,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         });
         newExperimentButton.setModelId(selectedModel.getId());
         editGoalsButton.setModelId(selectedModel.getId());
-        exportAllPoliciesButton.setModelId(selectedModel.getId());
+        exportAllPoliciesButton.setModelId(modelId);
         experimentGridDataProvider.setModelId(modelId);
         if (dataProvider == null) {
             dataProvider = experimentGridDataProvider.withConfigurableFilter();
