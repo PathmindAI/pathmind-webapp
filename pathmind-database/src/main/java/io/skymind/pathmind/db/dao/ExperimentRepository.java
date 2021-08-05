@@ -88,7 +88,7 @@ class ExperimentRepository {
                 .select(MODEL.ID, MODEL.PROJECT_ID)
                 .select(PROJECT.ID, PROJECT.PATHMIND_USER_ID)
                 .select(PATHMIND_USER.asterisk())
-                .from(PATHMIND_USER)
+                .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
                 .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
