@@ -13,9 +13,9 @@ public class ExperimentViewStepDefinitions {
     @Steps
     private ExperimentViewSteps experimentViewSteps;
 
-    @When("^Experiment page Check '(.*)' experiment-header '(.*)', '(.*)', Stop Training btn shown '(.*)', Share with support btn shown '(.*)', Share with support label shown '(.*)'$")
-    public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel) {
-        experimentViewSteps.experimentViewCheckExperimentHeader(slot, header, status, stopTrainingBtn, shareWithSpBtn, shareWithSpLabel);
+    @When("^Experiment page Check '(.*)' experiment-header '(.*)', '(.*)', Stop Training btn shown '(.*)', Share with support btn shown '(.*)', Share with support label shown '(.*)', experiment shared '(.*)'$")
+    public void experimentViewCheckExperimentHeader(String slot, String header, String status, boolean stopTrainingBtn, boolean shareWithSpBtn, boolean shareWithSpLabel, boolean experimentShared) {
+        experimentViewSteps.experimentViewCheckExperimentHeader(slot, header, status, stopTrainingBtn, shareWithSpBtn, shareWithSpLabel, experimentShared);
     }
 
     @Then("^Experiment page Check '(.*)' middle panel$")

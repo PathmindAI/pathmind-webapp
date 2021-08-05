@@ -357,7 +357,7 @@ public class ExperimentPage extends PageObject {
         waitABit(3000);
         getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
         waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='Share with support']")).click();
+        getDriver().findElement(By.xpath("//vaadin-item[text()='Share Experiment']")).click();
     }
 
     public void clickExperimentPageActionsBtn(String btn) {
