@@ -60,8 +60,8 @@ public class ExperimentDAO {
         return result;
     }
 
-    public PathmindUser getSharedByUsername(long experimentId) {
-        return ExperimentRepository.getSharedByUsername(ctx, experimentId);
+    public PathmindUser getUserOfExperiment(long experimentId) {
+        return ExperimentRepository.getUserByExperimentId(ctx, experimentId);
     }
 
     public void markAsFavorite(long experimentId, boolean isFavorite) {
