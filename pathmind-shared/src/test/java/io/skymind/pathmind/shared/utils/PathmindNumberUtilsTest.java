@@ -17,8 +17,8 @@ public class PathmindNumberUtilsTest {
         Assert.assertEquals("10", PathmindNumberUtils.formatNumber(10.349));
         Assert.assertEquals("11", PathmindNumberUtils.formatNumber(10.6496));
         Assert.assertEquals("197", PathmindNumberUtils.formatNumber(196.78));
-        Assert.assertEquals("2799", PathmindNumberUtils.formatNumber(2799.141));
-        Assert.assertEquals("42372", PathmindNumberUtils.formatNumber(42371.95234));
+        Assert.assertEquals("2,799", PathmindNumberUtils.formatNumber(2799.141));
+        Assert.assertEquals("42,372", PathmindNumberUtils.formatNumber(42371.95234));
     }
 
     @Test
@@ -116,6 +116,18 @@ public class PathmindNumberUtilsTest {
 
         List<Double> list5 = Arrays.asList();
         Assert.assertEquals(0, PathmindNumberUtils.calculateVariance(list5), 0.0001);
+    }
+
+    @Test
+    public void testAddThousandsSeparatorToNumber() {
+        Assert.assertEquals("0.000079", PathmindNumberUtils.addThousandsSeparatorToNumber("0.000079"));
+        Assert.assertEquals("0.56", PathmindNumberUtils.addThousandsSeparatorToNumber("0.56"));
+        Assert.assertEquals("282", PathmindNumberUtils.addThousandsSeparatorToNumber("282"));
+        Assert.assertEquals("2,290,000", PathmindNumberUtils.addThousandsSeparatorToNumber("2290000"));
+        Assert.assertEquals("880,000", PathmindNumberUtils.addThousandsSeparatorToNumber("880000"));
+        Assert.assertEquals("1,040", PathmindNumberUtils.addThousandsSeparatorToNumber("1040"));
+        Assert.assertEquals("150,000", PathmindNumberUtils.addThousandsSeparatorToNumber("150000"));
+        Assert.assertEquals("46,000", PathmindNumberUtils.addThousandsSeparatorToNumber("46000"));
     }
 
 }

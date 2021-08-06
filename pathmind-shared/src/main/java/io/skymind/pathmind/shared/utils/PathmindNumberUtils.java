@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.utils;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class PathmindNumberUtils {
     public static String calculateUncertainty(double avg, double variance) {
         double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
         double uncertainty = 2 * sd;
-        return setSigFigBasedOnAnotherDouble(avg, uncertainty, 2) + "\u2800\u00B1\u2800" + formatToSigFig(uncertainty, 2);
+        return addThousandsSeparatorToNumber(setSigFigBasedOnAnotherDouble(avg, uncertainty, 2)) + "\u2800\u00B1\u2800" + addThousandsSeparatorToNumber(formatToSigFig(uncertainty, 2));
     }
 
     /**
@@ -49,7 +50,7 @@ public class PathmindNumberUtils {
      */
     public static String formatNumber(Double originalNumber) {
         if (originalNumber >= 10) {
-            return String.valueOf((int) Math.rint(originalNumber));
+            return addThousandsSeparatorToNumber(String.valueOf((int) Math.rint(originalNumber)));
         }
         BigDecimal bd = BigDecimal.valueOf(originalNumber);
         int newScale = 2 - bd.precision() + bd.scale();
@@ -132,5 +133,17 @@ public class PathmindNumberUtils {
             str =  String.valueOf(Double.NEGATIVE_INFINITY);
         }
         return Double.valueOf(str);
+    }
+
+    public static String addThousandsSeparatorToNumber(String numberText) {
+        double number = Double.parseDouble(numberText);
+        if (number < 1000) {
+            return numberText;
+        }
+        return NumberFormat.getInstance().format(number);
+    }
+
+    public static String removeThousandsSeparatorFromNumber(String numberText) {
+        return numberText.replace(",", "");
     }
 }
