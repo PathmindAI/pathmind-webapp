@@ -7,7 +7,7 @@ replicaCount_node: 8
 image_node:
   repository: selenium/node-chrome-debug
   pullPolicy: IfNotPresent
-  tag: "3.141"
+  tag: "3.141.59-20210713"
 
 imagePullSecrets: []
 nameOverride: ""
