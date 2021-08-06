@@ -12,6 +12,7 @@ import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -30,6 +31,7 @@ import org.jooq.Table;
 import static io.skymind.pathmind.db.jooq.Tables.POLICY;
 import static io.skymind.pathmind.db.jooq.Tables.REWARD_SCORE;
 import static io.skymind.pathmind.db.jooq.Tables.RUN;
+import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
@@ -78,6 +80,26 @@ class ExperimentRepository {
         Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
         addParentDataModelObjects(record, experiment);
         return experiment;
+    }
+
+    protected static PathmindUser getUserByExperimentId(DSLContext ctx, long experimentId) {
+        Record record = ctx
+                .select(EXPERIMENT.ID, EXPERIMENT.MODEL_ID)
+                .select(MODEL.ID, MODEL.PROJECT_ID)
+                .select(PROJECT.ID, PROJECT.PATHMIND_USER_ID)
+                .select(PATHMIND_USER.asterisk())
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+                .where(EXPERIMENT.ID.eq(experimentId))
+                .fetchOne();
+
+        if (record == null) {
+            return null;
+        }
+
+        return record.into(PATHMIND_USER).into(PathmindUser.class);
     }
 
     protected static Experiment getExperimentIfAllowed(DSLContext ctx, long experimentId, long userId) {
