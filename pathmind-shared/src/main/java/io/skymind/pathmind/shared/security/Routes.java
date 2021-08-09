@@ -23,7 +23,6 @@ public class Routes {
     public static final String ACCOUNT = "account";
     public static final String ACCOUNT_CHANGE_PASS = "account/change-password";
     public static final String ACCOUNT_UPGRADE = "account/upgrade";
-    public static final String PAYMENT = "payment";
     public static final String UPGRADE_DONE = "upgrade-done";
 
     public static final String NEW_PROJECT = "newProject";

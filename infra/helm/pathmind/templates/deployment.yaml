@@ -126,6 +126,8 @@ spec:
                   key: PATHMINDSTRIPEWEBHOOKSIGNINGSECRET
             - name: PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID
               value: "{{ .Values.env.PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID }}"
+            - name: PATHMIND_STRIPE_ONBOARDING_PRICE_ID
+              value: "{{ .Values.env.PATHMIND_STRIPE_ONBOARDING_PRICE_ID }}"
             - name: POLICY_SERVING
               value: "{{ .Values.env.POLICY_SERVING }}"
           resources:

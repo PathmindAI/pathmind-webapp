@@ -1,4 +1,5 @@
 def DOCKER_TAG
+def MA_BRANCH
 def SLACK_URL = "https://hooks.slack.com/services/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"
 def icon = ":heavy_check_mark:"
 /*
@@ -191,9 +192,15 @@ pipeline {
                 }
                 stage('Build pathmind-ma image') {
                     steps {                        
+                        script {
+                            MA_BRANCH = env.BRANCH_NAME
+                            if (env.BRANCH_NAME == 'staging') {
+                                MA_BRANCH = "dev"
+                            }
+                        }
                         sh "rm -rf ${WORKSPACE}/nativerl || true"
                         sh "git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl"                        
-                        sh "cd ${WORKSPACE}/nativerl && git checkout ${env.BRANCH_NAME}"
+                        sh "cd ${WORKSPACE}/nativerl && git checkout ${MA_BRANCH}"
                         buildDockerImageMA("pathmind-ma", "Dockerfile", "${WORKSPACE}/nativerl/nativerl-analyzer", "${env.BRANCH_NAME}")
                     }
                 }
