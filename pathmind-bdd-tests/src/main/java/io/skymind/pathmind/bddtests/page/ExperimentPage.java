@@ -442,4 +442,8 @@ public class ExperimentPage extends PageObject {
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         popupShadowRoot.findElement(By.cssSelector("#" + id)).click();
     }
+
+    public void checkExperimentSharedBy(String firstName, String lastName) {
+        assertThat(getDriver().findElement(By.xpath("//shared-by-username")).getText(), is(firstName + " " + lastName));
+    }
 }

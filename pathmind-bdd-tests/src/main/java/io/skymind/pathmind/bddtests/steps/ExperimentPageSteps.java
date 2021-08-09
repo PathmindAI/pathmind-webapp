@@ -275,4 +275,9 @@ public class ExperimentPageSteps {
     public void clickPopUpDialogIdCancel(String id) {
         experimentPage.clickPopUpDialogIdCancel(id);
     }
+
+    @Step
+    public void checkExperimentSharedBy(String firstName, String lastName) {
+        experimentPage.checkExperimentSharedBy(firstName, lastName);
+    }
 }

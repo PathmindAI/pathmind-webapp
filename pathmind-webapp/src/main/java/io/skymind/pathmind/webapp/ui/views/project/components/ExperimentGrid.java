@@ -126,7 +126,7 @@ public class ExperimentGrid extends Grid<Experiment> {
             Grid.Column<Experiment> newColumn = addColumn(experiment -> {
 
                 Policy bestPolicy = experiment.getBestPolicy();
-                if (bestPolicy != null) {
+                if (bestPolicy != null && bestPolicy.getMetricDisplayValues().size() > 0) {
                     return bestPolicy.getMetricDisplayValues().get(rewardVarIndex);
                 }
                 return "—";

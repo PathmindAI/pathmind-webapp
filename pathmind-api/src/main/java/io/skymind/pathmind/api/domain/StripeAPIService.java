@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @RestController
@@ -49,6 +50,12 @@ public class StripeAPIService {
 
     @Value("${pathmind.stripe.webhook.signing.secret}")
     private String stripeWebhookSecret;
+
+    @Value("${pathmind.stripe.professional-price-id}")
+    private String stripeProPriceId;
+
+    @Value("${pathmind.stripe.onboarding-price-id}")
+    private String stripeOnboardingPriceId;
 
     @Autowired(required = false)
     private SegmentTrackerService segmentTrackerService;
@@ -66,30 +73,35 @@ public class StripeAPIService {
     }
 
     @PostMapping(path = "/create-checkout-session", produces = MediaType.APPLICATION_JSON_VALUE)
-    public HashMap<String, String> createCheckoutSession(@AuthenticationPrincipal PathmindApiUser pmUser) {
+    public HashMap<String, String> createCheckoutSession(@RequestParam("type") String type,
+                                                        @AuthenticationPrincipal PathmindApiUser pmUser) {
+        
+        String successUrlPath = "/upgrade-done";
+        String cancelUrl = webappDomainUrl +  "/account/upgrade";
+        SessionCreateParams.Mode paymentMode = SessionCreateParams.Mode.SUBSCRIPTION;
+        String priceId = stripeProPriceId;
+
+        if ("onboarding".equalsIgnoreCase(type)) {
+            successUrlPath = "/onboarding-payment-success";
+            cancelUrl = webappDomainUrl;
+            paymentMode = SessionCreateParams.Mode.PAYMENT;
+            priceId = stripeOnboardingPriceId;
+        }
+
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
             SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(webappDomainUrl + "/onboarding-payment-success")
-                .setCancelUrl(webappDomainUrl)
+                .setMode(paymentMode)
+                .putExtraParam("allow_promotion_codes", true)
+                .setSuccessUrl(webappDomainUrl + successUrlPath + "?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(cancelUrl)
                 .setCustomerEmail(user.getStripeCustomerId() != null ? null : user.getEmail())
                 .setCustomer(user.getStripeCustomerId())
-                .addLineItem(
-                SessionCreateParams.LineItem.builder()
-                    .setQuantity(1L)
-                    .setPriceData(
-                    SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency("usd")
-                        .setUnitAmount(49900L)
-                        .setProductData(
-                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Concierge Onboarding Service")
-                            .setDescription("A dedicated Pathmind Engineer to help retrofit your existing simulation for reinforcement learning.")
-                            .build())
+                .addLineItem(SessionCreateParams.LineItem.builder()
+                        .setQuantity(1L)
+                        .setPrice(priceId)
                         .build())
-                    .build())
                 .build();
         Session session;
         HashMap<String, String> responseData = new HashMap<String, String>();

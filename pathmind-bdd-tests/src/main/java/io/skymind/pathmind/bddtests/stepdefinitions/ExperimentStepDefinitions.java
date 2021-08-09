@@ -285,4 +285,9 @@ public class ExperimentStepDefinitions {
     public void clickPopUpDialogIdCancel(String id) {
         experimentPageSteps.clickPopUpDialogIdCancel(id);
     }
+
+    @Then("^Check experiment shared by (.*), (.*)$")
+    public void checkExperimentSharedBy(String firstName, String lastName) {
+        experimentPageSteps.checkExperimentSharedBy(firstName, lastName);
+    }
 }

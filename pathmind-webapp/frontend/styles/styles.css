@@ -175,6 +175,7 @@ background-color: var(--pm-grey-color-light);
 }
 
 .internal-banner {
+    font-size: var(--lumo-font-size-s);
     color: var(--lumo-body-text-color);
     background-color: var(--pm-gold-color);
 }

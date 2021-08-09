@@ -44,7 +44,7 @@ public class StripeService {
     @Value("${pathmind.stripe.secret.key}")
     private String secretKey;
 
-    @Value("${pathmind.stripe.professional-plan-id}")
+    @Value("${pathmind.stripe.professional-price-id}")
     private String professionalPlanId;
 
     private final UserDAO userDAO;

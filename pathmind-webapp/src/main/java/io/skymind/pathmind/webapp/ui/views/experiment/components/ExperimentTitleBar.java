@@ -21,12 +21,14 @@ import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
+import io.skymind.pathmind.webapp.ui.components.atoms.SharedByUsername;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -55,6 +57,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private final TagLabel sharedLabel = new TagLabel("Shared", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+    private HorizontalLayout titleWithStar;
 
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
@@ -123,7 +126,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
         if (!isExportPolicyButtonOnly) {
@@ -228,6 +231,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         downloadModelLink.setExperiment(experiment);
         exportPolicyButton.setExperiment(experiment);
         setExperimentForServePolicyButton(experiment);
+        if (experimentView.isReadOnly()) {
+            PathmindUser sharedByUser = experimentView.getExperimentDAO().getUserOfExperiment(experiment.getId());
+            SharedByUsername sharedByTag = new SharedByUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
+            titleWithStar.add(sharedByTag);
+        }
         updateComponentEnablements();
     }
 
