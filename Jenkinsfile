@@ -1,4 +1,5 @@
 def DOCKER_TAG
+def MA_BRANCH
 def SLACK_URL = "https://hooks.slack.com/services/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"
 def icon = ":heavy_check_mark:"
 /*
