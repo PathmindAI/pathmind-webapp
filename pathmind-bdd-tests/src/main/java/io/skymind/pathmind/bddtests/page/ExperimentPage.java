@@ -78,7 +78,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentNotesIs(String note) {
         WebElement notesShadow = utils.expandRootElement(notesBlock);
-        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), is(note.replaceAll("/n", "\n")));
+        assertThat(notesShadow.findElement(notesTextarea).getAttribute("value"), containsString(note.replaceAll("/n", "\n")));
     }
 
     public void checkExperimentStatusCompletedWithLimitMinutes(int limit) {

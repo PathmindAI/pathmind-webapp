@@ -126,7 +126,7 @@ public class ModelPage extends PageObject {
 
     public void checkOnTheModelPageExperimentNotesIs(String experiment, String note) {
         waitABit(3000);
-        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[5]")), is(note));
+        assertThat(utils.getStringRepeatIfStaleException(By.xpath("//vaadin-grid-cell-content[text()='" + experiment + " ']/following-sibling::vaadin-grid-cell-content[5]")), containsString(note));
     }
 
     public void checkModelPageModelBreadcrumbPackageNameIs(String packageName) {
