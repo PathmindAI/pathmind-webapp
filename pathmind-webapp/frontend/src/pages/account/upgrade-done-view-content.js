@@ -1,13 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 
-/**
- * `upgrade-done-view-content`
- *
- * UpgradeDoneView element.
- *
- * @customElement
- * @polymer
- */
 class UpgradeDoneViewContent extends PolymerElement {
   static get template() {
     return html`
@@ -50,8 +42,26 @@ class UpgradeDoneViewContent extends PolymerElement {
     return "upgrade-done-view-content";
   }
 
+  static get properties() {
+      return {
+          sessionId: {
+              type: String,
+              value: "",
+          }
+      };
+  }
+
   _attachDom(dom) {
     this.appendChild(dom);
+  }
+
+  ready() {
+      super.ready();
+      const SESSION_ID = "session_id=";
+      if (window.location.href.indexOf(SESSION_ID)) {
+        this.sessionId = window.location.href.split(SESSION_ID)[1];
+        this.dispatchEvent(new Event("sessionidchange"));
+      }
   }
 
 }
