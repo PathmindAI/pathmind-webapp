@@ -17,6 +17,7 @@ import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.RewardScore;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
@@ -57,6 +58,10 @@ public class ExperimentDAO {
             e.setRuns(runsForExperiment);
         });
         return result;
+    }
+
+    public PathmindUser getUserOfExperiment(long experimentId) {
+        return ExperimentRepository.getUserByExperimentId(ctx, experimentId);
     }
 
     public void markAsFavorite(long experimentId, boolean isFavorite) {
@@ -107,6 +112,7 @@ public class ExperimentDAO {
 
     /**
      * This is for Project/Model page to show experiments with metric values and observations
+     *
      * @param userId
      * @param modelId
      * @param offset
@@ -172,6 +178,12 @@ public class ExperimentDAO {
         return experiments;
     }
 
+    public List<Experiment> getExperimentsForModelWithPolicies(long modelId, long userId) {
+        List<Experiment> experiments = getExperimentsForModel(modelId, false);
+        setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+        return experiments;
+    }
+
     private void addRunsToExperiments(List<Experiment> experiments) {
         Map<Long, List<Run>> runsGroupedByExperiment = RunRepository.getRunsForExperiments(ctx, DataUtils.convertToIds(experiments));
         experiments.stream().forEach(experiment ->
@@ -182,8 +194,8 @@ public class ExperimentDAO {
                 .forEach(experiment -> experiment.setRuns(new ArrayList<>()));
     }
 
-    public void shareExperimentWithSupport(long experimentId) {
-        ExperimentRepository.shareExperimentWithSupport(ctx, experimentId);
+    public void shareExperiment(long experimentId, boolean share) {
+        ExperimentRepository.shareExperiment(ctx, experimentId, share);
     }
 
     public void updateRewardFunction(Experiment experiment) {
@@ -267,12 +279,12 @@ public class ExperimentDAO {
                 .filter(r -> RunStatus.isError(r.getStatusEnum()))
                 .findAny()
                 .ifPresent(run -> {
-                        Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
-                            experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
-                            experiment.setTrainingErrorId(run.getTrainingErrorId());
-                            experiment.setSupportArticle(trainingError.getSupportArticle());
-                        });
+                    Optional.ofNullable(TrainingErrorRepository.getErrorById(ctx, run.getTrainingErrorId())).ifPresent(trainingError -> {
+                        experiment.setTrainingError(run.getRllibError() != null ? run.getRllibError() : trainingError.getDescription());
+                        experiment.setTrainingErrorId(run.getTrainingErrorId());
+                        experiment.setSupportArticle(trainingError.getSupportArticle());
                     });
+                });
     }
 
     public void saveExperiment(Experiment experiment) {

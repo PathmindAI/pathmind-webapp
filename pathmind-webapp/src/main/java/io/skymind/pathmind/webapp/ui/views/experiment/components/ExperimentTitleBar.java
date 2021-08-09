@@ -13,7 +13,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -22,17 +21,19 @@ import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
 import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
+import io.skymind.pathmind.webapp.ui.components.atoms.SharedByUsername;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareWithSupportAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
@@ -54,8 +55,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private FavoriteStar favoriteStar;
     private ActionDropdown actionDropdown;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
-    private TagLabel sharedWithSupportLabel = new TagLabel("Shared with Support", true, "small");
+    private final TagLabel sharedLabel = new TagLabel("Shared", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
+    private HorizontalLayout titleWithStar;
 
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
@@ -64,6 +66,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button unarchiveButton;
     private DownloadModelLink downloadModelLink;
     private Button shareButton;
+    private Button unshareButton;
     private boolean isPythonModel;
 
     private ExperimentView experimentView;
@@ -123,19 +126,19 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         favoriteStar = new FavoriteStar(false, newIsFavorite -> experimentView.onFavoriteToggled(newIsFavorite, experiment));
         trainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier);
 
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
+        titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
         if (!isExportPolicyButtonOnly) {
             titleWithStar.add(actionDropdown);
         }
 
-        sharedWithSupportLabel.addClassName("shared-with-support-label");
-        sharedWithSupportLabel.getElement().addEventListener("click", click -> 
-                ShareWithSupportAction.createInstructionDialog(experimentView));
+        sharedLabel.addClassName("shared-with-support-label");
+        sharedLabel.getElement().addEventListener("click", click ->
+                ShareExperimentAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
-                new HorizontalLayout(archivedLabel, sharedWithSupportLabel),
+                new HorizontalLayout(archivedLabel, sharedLabel),
                 trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
@@ -147,7 +150,12 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
-        shareButton = new Button("Share with support", click -> ShareWithSupportAction.shareWithSupport(experimentView, getExperimentSupplier, sharedWithSupportLabel, shareButton));
+        shareButton = GuiUtils.getPrimaryButton("Share Experiment", click -> {
+            ShareExperimentAction.shareExperiment(experimentView, getExperimentSupplier, true, this::updateComponentEnablements);
+        });
+        unshareButton = GuiUtils.getPrimaryButton("Unshare Experiment", click -> {
+            ShareExperimentAction.shareExperiment(experimentView, getExperimentSupplier, false, this::updateComponentEnablements);
+        });
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
@@ -161,7 +169,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         if (isExportPolicyButtonOnly) {
             return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
-            List<Button> actionButtons = new ArrayList<Button>(Arrays.asList(shareButton, archiveButton, unarchiveButton));
+            List<Button> actionButtons = new ArrayList<>(Arrays.asList(shareButton, unshareButton, archiveButton, unarchiveButton));
             actionDropdown = new ActionDropdown(actionButtons);
             return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
@@ -174,19 +182,22 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     }
 
     public void updateComponentEnablements() {
-        archivedLabel.setVisible(experiment.isArchived());
-        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
 
         if (actionDropdown != null) {
-            actionDropdown.setItemEnabledProvider(item -> {
-                if (experiment.isArchived()) {
-                    return !archiveButton.getText().equals(item);
+            actionDropdown.setItemEnabledProvider(buttonText -> {
+                if (archiveButton.getText().equals(buttonText)) {
+                    return !experiment.isArchived();
+                } else if (unarchiveButton.getText().equals(buttonText)) {
+                    return experiment.isArchived();
+                } else if (shareButton.getText().equals(buttonText)) {
+                    return !experiment.isShared();
+                } else if (unshareButton.getText().equals(buttonText)) {
+                    return experiment.isShared();
                 }
-                return !unarchiveButton.getText().equals(item);
+                return false;
             });
         }
 
-        unarchiveButton.setVisible(experiment.isArchived());
         boolean isCompletedWithPolicy =
                 experiment.isTrainingCompleted()
                         && experiment.getBestPolicy() != null
@@ -200,10 +211,15 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
         archivedLabel.setVisible(experiment.isArchived());
+        sharedLabel.setVisible(experiment.isShared());
 
-        // Update components with SharedExperimentView (share through support).
-        sharedWithSupportLabel.setVisible(experiment.isSharedWithSupport());
-        shareButton.setVisible(!experiment.isSharedWithSupport());
+        if (experimentView.isReadOnly()) {
+            favoriteStar.setVisible(false);
+            servePolicyButton.setVisible(false);
+            exportPolicyButton.setVisible(false);
+            sharedLabel.setVisible(false);
+        }
+
     }
 
     public void setExperiment(Experiment experiment) {
@@ -215,6 +231,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         downloadModelLink.setExperiment(experiment);
         exportPolicyButton.setExperiment(experiment);
         setExperimentForServePolicyButton(experiment);
+        if (experimentView.isReadOnly()) {
+            PathmindUser sharedByUser = experimentView.getExperimentDAO().getUserOfExperiment(experiment.getId());
+            SharedByUsername sharedByTag = new SharedByUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
+            titleWithStar.add(sharedByTag);
+        }
         updateComponentEnablements();
     }
 

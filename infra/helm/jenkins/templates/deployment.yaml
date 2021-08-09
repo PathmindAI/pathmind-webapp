@@ -84,6 +84,11 @@ spec:
                 secretKeyRef:
                   name: githubsecret
                   key: GITHUB_SECRET
+            - name: GH_PAT
+              valueFrom:
+                secretKeyRef:
+                  name: ghpat
+                  key: GH_PAT
           volumeMounts:
             - name: jenkins-storage
               mountPath: /var/jenkins_home

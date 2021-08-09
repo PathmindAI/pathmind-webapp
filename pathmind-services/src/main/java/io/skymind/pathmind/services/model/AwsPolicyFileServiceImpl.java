@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.model;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
+import io.skymind.pathmind.shared.data.Policy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,15 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     @Override
     public byte[] getFreezingPolicyFile(long runId) {
         return awsApiClient.fileContents(POLICY_FILE_FREEZING + runId, true);
+    }
+
+    @Override
+    public byte[] getFreezingOrPolicyFile(Policy policy) {
+        byte[] bytes = getFreezingPolicyFile(policy.getRunId());
+        if (bytes == null) {
+            bytes = getPolicyFile(policy.getId());
+        }
+        return bytes;
     }
 
     @Override

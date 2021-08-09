@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentRecord;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
-import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.Project;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,10 +28,10 @@ import org.jooq.Result;
 import org.jooq.SortOrder;
 import org.jooq.Table;
 
-import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.db.jooq.Tables.POLICY;
 import static io.skymind.pathmind.db.jooq.Tables.REWARD_SCORE;
 import static io.skymind.pathmind.db.jooq.Tables.RUN;
+import static io.skymind.pathmind.db.jooq.Tables.PATHMIND_USER;
 import static io.skymind.pathmind.db.jooq.tables.Experiment.EXPERIMENT;
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
@@ -69,9 +69,8 @@ class ExperimentRepository {
                 .from(EXPERIMENT)
                 .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
                 .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
-                .join(PATHMIND_USER).on(PATHMIND_USER.ID.eq(userId).and(PATHMIND_USER.ACCOUNT_TYPE.eq(UserRole.Support.getId())))
                 .where(EXPERIMENT.ID.eq(experimentId))
-                .and(EXPERIMENT.SHARED_WITH_SUPPORT.eq(true).or(PROJECT.PATHMIND_USER_ID.eq(userId)))
+                .and(EXPERIMENT.SHARED.eq(true).or(PROJECT.PATHMIND_USER_ID.eq(userId)))
                 .fetchOne();
 
         if (record == null) {
@@ -81,6 +80,26 @@ class ExperimentRepository {
         Experiment experiment = record.into(EXPERIMENT).into(Experiment.class);
         addParentDataModelObjects(record, experiment);
         return experiment;
+    }
+
+    protected static PathmindUser getUserByExperimentId(DSLContext ctx, long experimentId) {
+        Record record = ctx
+                .select(EXPERIMENT.ID, EXPERIMENT.MODEL_ID)
+                .select(MODEL.ID, MODEL.PROJECT_ID)
+                .select(PROJECT.ID, PROJECT.PATHMIND_USER_ID)
+                .select(PATHMIND_USER.asterisk())
+                .from(EXPERIMENT)
+                .leftJoin(MODEL).on(MODEL.ID.eq(EXPERIMENT.MODEL_ID))
+                .leftJoin(PROJECT).on(PROJECT.ID.eq(MODEL.PROJECT_ID))
+                .leftJoin(PATHMIND_USER).on(PATHMIND_USER.ID.eq(PROJECT.PATHMIND_USER_ID))
+                .where(EXPERIMENT.ID.eq(experimentId))
+                .fetchOne();
+
+        if (record == null) {
+            return null;
+        }
+
+        return record.into(PATHMIND_USER).into(PathmindUser.class);
     }
 
     protected static Experiment getExperimentIfAllowed(DSLContext ctx, long experimentId, long userId) {
@@ -268,9 +287,9 @@ class ExperimentRepository {
                 .execute();
     }
 
-    protected static void shareExperimentWithSupport(DSLContext ctx, long experimentId) {
+    protected static void shareExperiment(DSLContext ctx, long experimentId, boolean share) {
         ctx.update(EXPERIMENT)
-                .set(EXPERIMENT.SHARED_WITH_SUPPORT, true)
+                .set(EXPERIMENT.SHARED, share)
                 .where(Tables.EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
@@ -283,20 +302,20 @@ class ExperimentRepository {
     }
 
     /**
-     with E as (
-        select id  from experiment E where E.model_id = ?
-     )
-     select distinct on (experiment_id) experiment_id, run_id, policy_id, score, iteration
-     from (
-         select
-         distinct on (P.id) P.id as policy_id, R.experiment_id, R.id as run_id, RW.mean as score, RW.iteration
-         from
-         E left join run R on (E.id = R.experiment_id)
-         left join policy P on (R.id = P.run_id)
-         left join reward_score RW on (P.id = RW.policy_id)
-         order by P.id, RW.iteration desc
-     ) T
-     order by experiment_id, score desc
+     * with E as (
+     * select id  from experiment E where E.model_id = ?
+     * )
+     * select distinct on (experiment_id) experiment_id, run_id, policy_id, score, iteration
+     * from (
+     * select
+     * distinct on (P.id) P.id as policy_id, R.experiment_id, R.id as run_id, RW.mean as score, RW.iteration
+     * from
+     * E left join run R on (E.id = R.experiment_id)
+     * left join policy P on (R.id = P.run_id)
+     * left join reward_score RW on (P.id = RW.policy_id)
+     * order by P.id, RW.iteration desc
+     * ) T
+     * order by experiment_id, score desc
      */
     public static Map<Long, Long> bestPoliciesForExperimentByModelId(DSLContext ctx, long modelId) {
 
@@ -334,7 +353,7 @@ class ExperimentRepository {
                 .orderBy(experimentId, score.desc())
                 .fetchStream()
                 .filter(Objects::nonNull)
-                .map(r -> Pair.of(r.get(experimentId),r.get(policyId)))
+                .map(r -> Pair.of(r.get(experimentId), r.get(policyId)))
                 .filter(pair -> ObjectUtils.allNotNull(pair.getLeft(), pair.getRight()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }

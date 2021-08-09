@@ -357,7 +357,7 @@ public class ExperimentPage extends PageObject {
         waitABit(3000);
         getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
         waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='Share with support']")).click();
+        getDriver().findElement(By.xpath("//vaadin-item[text()='Share Experiment']")).click();
     }
 
     public void clickExperimentPageActionsBtn(String btn) {
@@ -441,5 +441,9 @@ public class ExperimentPage extends PageObject {
         waitFor(ExpectedConditions.visibilityOf(popupShadow));
         WebElement popupShadowRoot = utils.expandRootElement(popupShadow);
         popupShadowRoot.findElement(By.cssSelector("#" + id)).click();
+    }
+
+    public void checkExperimentSharedBy(String firstName, String lastName) {
+        assertThat(getDriver().findElement(By.xpath("//shared-by-username")).getText(), is(firstName + " " + lastName));
     }
 }
