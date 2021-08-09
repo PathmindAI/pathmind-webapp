@@ -47,7 +47,10 @@
 
 .new-experiment-view .bold-label {
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
     width: 100%;
+    font-family: var(--lumo-font-family);
     font-size: var(--lumo-font-size-s);
     font-weight: normal;
     color: var(--lumo-secondary-text-color);
@@ -55,6 +58,7 @@
     background: var(--pm-app-bg-color);
     padding: var(--lumo-space-xs);
     border-bottom: 1px solid var(--pm-grey-color-lightest);
+    z-index: 1;
 }
 
 .new-experiment-view .reward-function-wrapper {
@@ -65,10 +69,6 @@
 .new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,
 .new-experiment-view .errors-wrapper {
     border-left: 1px solid var(--pm-grey-color-lightest);
-}
-
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
-    flex: 1 0 50%;
 }
 
 .new-experiment-view .reward-fn-panel-container {
@@ -119,7 +119,7 @@
     padding: var(--lumo-space-xs) 0;
 }
 
-.new-experiment-view .error-and-notes-container {
+.new-experiment-view .bottom-panel {
     flex: 0 0 18rem;
     overflow: auto;
 }
@@ -197,4 +197,63 @@
 .new-experiment-view .new-experiment-split-button {
     align-items: flex-start;
     height: auto;
+}
+
+/* Settings */
+.new-experiment-view settings-view-content .panel-wrapper {
+    padding: 0;
+    overflow: visible;
+}
+
+.new-experiment-view settings-view-content .inner-content {
+    flex: 1 0 auto;
+    padding: 0 0 var(--lumo-space-s);
+    margin-top: 0;
+    border-radius: 0;
+}
+
+.new-experiment-view settings-view-content h4 {
+    font-family: var(--lumo-font-family);
+    font-weight: normal;
+    font-size: var(--lumo-font-size-xs);
+    color: var(--pm-grey-color-dark);
+    padding: var(--lumo-space-xxs) var(--lumo-space-xs);
+    text-align: left;
+}
+
+.new-experiment-view settings-view-content .grid-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    grid-column-gap: var(--lumo-space-s);
+    grid-row-gap: 0;
+}
+
+.new-experiment-view settings-view-content .grid-wrapper vaadin-select {
+    flex: 1 0 auto;
+}
+
+.new-experiment-view settings-view-content .settings-header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: var(--pm-app-bg-color);
+    border-bottom: 1px solid var(--pm-grey-color-lightest);
+    z-index: 1;
+}
+
+.new-experiment-view settings-view-content .settings-header .section-title-label {
+    box-sizing: border-box;
+    font-family: var(--lumo-font-family);
+    font-size: var(--lumo-font-size-s);
+    font-weight: normal;
+    color: var(--lumo-secondary-text-color);
+    line-height: 1;
+    padding: var(--lumo-space-xs);
+}
+
+.new-experiment-view settings-view-content iron-icon {
+    display: inline-block;
 }

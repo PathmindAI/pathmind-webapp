@@ -28,6 +28,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
+import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import io.skymind.pathmind.shared.utils.ModelUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.security.UserService;
@@ -50,6 +51,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveEx
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +64,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private ObservationsPanel observationsPanel;
+    private SettingsViewContent settingsPanel;
     private FavoriteStar favoriteStar;
     private Div upgradeBannerExpCt;
     private Div upgradeBannerActMask;
@@ -84,6 +87,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private ModelCheckerService modelCheckerService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private ExecutionEnvironmentManager environmentManager;
 
     public NewExperimentView(
             @Value("${pm.allowed_run_no_verified}") int allowedRunsNoVerified,
@@ -152,7 +157,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(rewardFunctionEditor,
                 rewardVariablesPanel,
-                80);
+                70);
         rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditorWrapper,
@@ -160,11 +165,20 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 75);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
         rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+
+        settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
+
         SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditor.getRewardFunctionErrorPanel(),
                 notesField,
                 70);
         errorAndNotesContainer.setClassName("error-and-notes-container");
+
+        SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                errorAndNotesContainer,
+                settingsPanel,
+                75);
+        bottomPanel.setClassName("bottom-panel");
 
         splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
@@ -178,7 +192,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 errorDescriptionLabel,
                 rewardFunctionAndObservationsWrapper
             ),
-            errorAndNotesContainer,
+            bottomPanel,
             60);
         splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
 
@@ -279,6 +293,14 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
         experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
         return experiment;
+    }
+
+    public void saveAdvancedSettings() {
+        settingsPanel.saveSettings();
+    }
+
+    public String getSettingsText() {
+        return settingsPanel.getSettingsText();
     }
 
     private void handleSaveDraftClicked(Command afterClickedCallback) {

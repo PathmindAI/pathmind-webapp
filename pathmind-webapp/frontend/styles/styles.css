@@ -644,6 +644,10 @@ change-password-view-content .inner-content {
     align-self: center;
 }
 
+.helper-icon:hover {
+    color: var(--pm-secondary-text-color);
+}
+
 /* Typography Styles */
 h1, h2, h3, h4 {
     font-family: var(--lumo-font-family-header);
