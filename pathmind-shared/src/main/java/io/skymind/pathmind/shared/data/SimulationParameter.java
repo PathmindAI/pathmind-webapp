@@ -1,14 +1,12 @@
 package io.skymind.pathmind.shared.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class SimulationParameter extends Data implements DeepCloneableInterface<SimulationParameter> {
 
     private static final long serialVersionUID = 1963529929934242024L;

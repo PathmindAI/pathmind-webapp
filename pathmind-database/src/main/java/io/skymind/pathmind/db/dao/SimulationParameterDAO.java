@@ -17,4 +17,8 @@ public class SimulationParameterDAO {
     public void insertSimulationParameters(List<SimulationParameter> simParams) {
         SimulationParameterRepository.insertSimulationParameter(ctx, simParams);
     }
+
+    public List<SimulationParameter> getSimulationParametersForModel(long modelId) {
+        return SimulationParameterRepository.getSimulationParametersForModel(ctx, modelId);
+    }
 }

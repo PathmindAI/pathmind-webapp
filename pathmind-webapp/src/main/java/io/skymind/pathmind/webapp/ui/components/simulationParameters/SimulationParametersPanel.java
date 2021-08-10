@@ -8,9 +8,11 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
+@Slf4j
 public class SimulationParametersPanel extends VerticalLayout implements ExperimentComponent {
 
     private Experiment experiment;
@@ -36,6 +38,7 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
     @Override
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+        log.info("kepricondebug : {}", experiment.getSimulationParameters());
         // setSimulationParameters(experiment.getSimulationParameters());
     }
 

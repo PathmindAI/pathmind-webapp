@@ -22,4 +22,12 @@ public class SimulationParameterRepository {
 
         ctx.batch(saveQueries).execute();
     }
+
+    protected static List<SimulationParameter> getSimulationParametersForModel(DSLContext ctx, long modelId) {
+        return ctx.select(SIMULATION_PARAMETER.asterisk())
+            .from(SIMULATION_PARAMETER)
+            .where(SIMULATION_PARAMETER.MODEL_ID.eq(modelId).and(SIMULATION_PARAMETER.EXPERIMENT_ID.isNull()))
+            .orderBy(SIMULATION_PARAMETER.INDEX)
+            .fetchInto(SimulationParameter.class);
+    }
 }

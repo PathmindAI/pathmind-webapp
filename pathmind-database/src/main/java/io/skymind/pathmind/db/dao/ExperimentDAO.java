@@ -107,6 +107,7 @@ public class ExperimentDAO {
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
+        experiment.setSimulationParameters(SimulationParameterRepository.getSimulationParametersForModel(ctx, experiment.getModelId()));
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
