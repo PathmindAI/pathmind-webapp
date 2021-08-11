@@ -379,7 +379,7 @@ pipeline {
                 stage('Deploying pathmind-ma') {
                     steps {
                         script {
-                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
                         }
                     }
                 }
