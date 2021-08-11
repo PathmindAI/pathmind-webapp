@@ -30,9 +30,11 @@
     z-index: 1;
 }
 .observations-table > vaadin-checkbox {
+    font-size: var(--lumo-font-size-s);
     font-weight: bold;
     color: var(--lumo-primary-color);
 }
 .observations-table vaadin-checkbox-group vaadin-checkbox {
+    font-size: var(--lumo-font-size-s);
     margin: var(--lumo-space-xxxs) 0;
 }

@@ -17,20 +17,6 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
     private String key;
     private String value;
 
-//    public SimulationParameter(long modelId, String name, int arrayIndex, String dataType) {
-//        this.modelId = modelId;
-//        this.arrayIndex = arrayIndex;
-//        this.dataType = dataType;
-//        setName(name);
-//    }
-//
-    // Used for the cloning method.
-//    private SimulationParameter(long modelId, int arrayIndex, String dataType) {
-//        this.modelId = modelId;
-//        this.arrayIndex = arrayIndex;
-//        this.dataType = dataType;
-//    }
-
     public SimulationParameter shallowClone() {
         return super.shallowClone(new SimulationParameter(
                 modelId,
