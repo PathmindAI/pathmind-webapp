@@ -30,4 +30,12 @@ public class SimulationParameterRepository {
             .orderBy(SIMULATION_PARAMETER.INDEX)
             .fetchInto(SimulationParameter.class);
     }
+
+    protected static List<SimulationParameter> getSimulationParametersForExperiment(DSLContext ctx, long experimentId) {
+        return ctx.select(SIMULATION_PARAMETER.asterisk())
+            .from(SIMULATION_PARAMETER)
+            .where(SIMULATION_PARAMETER.EXPERIMENT_ID.eq(experimentId))
+            .orderBy(SIMULATION_PARAMETER.INDEX)
+            .fetchInto(SimulationParameter.class);
+    }
 }

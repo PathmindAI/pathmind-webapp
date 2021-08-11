@@ -14,12 +14,7 @@ import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Policy;
-import io.skymind.pathmind.shared.data.PathmindUser;
-import io.skymind.pathmind.shared.data.RewardScore;
-import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
@@ -107,7 +102,12 @@ public class ExperimentDAO {
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
-        experiment.setSimulationParameters(SimulationParameterRepository.getSimulationParametersForModel(ctx, experiment.getModelId()));
+        List<SimulationParameter> simulationParameterList = SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experiment.getId());
+        // if there's no sim param lists for the given exp, it will use default sim params
+        if (simulationParameterList == null || simulationParameterList.size() == 0) {
+            simulationParameterList = SimulationParameterRepository.getSimulationParametersForModel(ctx, experiment.getModelId());
+        }
+        experiment.setSimulationParameters(simulationParameterList);
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
