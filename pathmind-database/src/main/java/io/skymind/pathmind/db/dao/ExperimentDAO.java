@@ -295,6 +295,7 @@ public class ExperimentDAO {
             ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
+            SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, experiment.getSimulationParameters());
         });
 
     }

@@ -22,6 +22,7 @@ import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.TableOptions;
+import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
@@ -119,6 +120,11 @@ public class SimulationParameter extends TableImpl<SimulationParameterRecord> {
     @Override
     public List<Index> getIndexes() {
         return Arrays.<Index>asList(Indexes.SIMULATION_PARAMETER_MODEL_ID_EXP_ID_INDEX);
+    }
+
+    @Override
+    public List<UniqueKey<SimulationParameterRecord>> getKeys() {
+        return Arrays.<UniqueKey<SimulationParameterRecord>>asList(Keys.SIMULATION_PARAMETER_MODEL_ID_EXPERIMENT_ID_INDEX_KEY_KEY);
     }
 
     @Override

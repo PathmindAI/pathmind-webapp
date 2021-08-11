@@ -16,7 +16,7 @@ public class SimulationParameterUtils {
                 String key = param.getKey();
                 Object value = param.getValue();
                 return new SimulationParameter(modelId, experimentId, index.getAndIncrement(),
-                    ParamType.getEnumFromClass(value.getClass()).getValue(), key, value.toString());
+                    key, value.toString(), ParamType.getEnumFromClass(value.getClass()).getValue());
             })
             .collect(Collectors.toList());
     }

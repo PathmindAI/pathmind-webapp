@@ -13,17 +13,17 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
     private Long modelId;
     private Long experimentId;
     private Integer index;
-    private Integer dataType;
     private String key;
     private String value;
+    private Integer type;
 
     public SimulationParameter shallowClone() {
         return super.shallowClone(new SimulationParameter(
                 modelId,
                 experimentId,
                 index,
-                dataType,
                 key,
-                value));
+                value,
+                type));
     }
 }

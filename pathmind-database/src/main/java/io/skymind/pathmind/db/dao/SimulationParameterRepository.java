@@ -10,14 +10,17 @@ import java.util.stream.Collectors;
 import static io.skymind.pathmind.db.jooq.Tables.SIMULATION_PARAMETER;
 
 public class SimulationParameterRepository {
-    protected static void insertSimulationParameter(DSLContext ctx, List<SimulationParameter> simParams) {
+    protected static void insertOrUpdateSimulationParameter(DSLContext ctx, List<SimulationParameter> simParams) {
         final List<Query> saveQueries = simParams.stream()
             .map(param ->
                 ctx.insertInto(SIMULATION_PARAMETER)
                     .columns(SIMULATION_PARAMETER.MODEL_ID, SIMULATION_PARAMETER.EXPERIMENT_ID, SIMULATION_PARAMETER.INDEX,
                         SIMULATION_PARAMETER.KEY, SIMULATION_PARAMETER.VALUE, SIMULATION_PARAMETER.TYPE)
                     .values(param.getModelId(), param.getExperimentId(), param.getIndex(),
-                        param.getKey(), param.getValue(), param.getDataType()))
+                        param.getKey(), param.getValue(), param.getType())
+                    .onConflict(SIMULATION_PARAMETER.MODEL_ID, SIMULATION_PARAMETER.EXPERIMENT_ID, SIMULATION_PARAMETER.INDEX, SIMULATION_PARAMETER.KEY)
+                    .doUpdate()
+                    .set(SIMULATION_PARAMETER.VALUE, param.getValue()))
             .collect(Collectors.toList());
 
         ctx.batch(saveQueries).execute();

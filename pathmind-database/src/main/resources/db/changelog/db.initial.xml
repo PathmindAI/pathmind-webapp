@@ -2088,4 +2088,8 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="3410-02" author="daehyun@pathmind.com">
+        <addUniqueConstraint tableName="SIMULATION_PARAMETER" columnNames="MODEL_ID, EXPERIMENT_ID, INDEX, KEY"/>
+    </changeSet>
+
 </databaseChangeLog>
