@@ -159,8 +159,9 @@ public class ModelUploadController {
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
             URI experimentUri = builder
-                .path("newExperiment").path("/{experimentId}")
-                .buildAndExpand(Map.of("experimentId", experimentId))
+                .path("editGoals").path("/{modelId}")
+                .queryParam("experiment", experimentId)
+                .buildAndExpand(Map.of("modelId", experiment.getModelId()))
                 .toUri();
 
             if (request.isStartOnUpload() && StringUtils.isNoneEmpty(request.getObsSelection()) && StringUtils.isNoneEmpty(request.getRewFctName())) {

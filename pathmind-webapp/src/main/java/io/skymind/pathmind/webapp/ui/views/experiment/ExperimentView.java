@@ -5,11 +5,14 @@ import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.GeneratedVaadinSplitLayout.SplitterDragendEvent;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import io.skymind.pathmind.db.dao.UserDAO;
@@ -44,8 +47,9 @@ import org.springframework.beans.factory.annotation.Value;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
 
 @Route(value = Routes.EXPERIMENT, layout = MainLayout.class)
+@JavaScript("./src/pages/experiment/experiment-view.js")
 @Slf4j
-public class ExperimentView extends AbstractExperimentView {
+public class ExperimentView extends AbstractExperimentView implements AfterNavigationObserver {
 
     // Similar to DefaultExperimentView in that we have to use a lock object rather
     // than the (comparison) experiment because we are changing it's reference which
@@ -83,7 +87,6 @@ public class ExperimentView extends AbstractExperimentView {
 
     @Autowired
     private ModelCheckerService modelCheckerService;
-
     @Autowired
     private UserDAO userDAO;
 
@@ -181,9 +184,9 @@ public class ExperimentView extends AbstractExperimentView {
 
         SplitLayout experimentContent = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-                    stoppedTrainingNotification,
-                    experimentTitleBar,
-                    panelsSplitWrapper),
+                        stoppedTrainingNotification,
+                        experimentTitleBar,
+                        panelsSplitWrapper),
                 compareExperimentVerticalLayout);
         experimentContent.addClassName("view-section");
         experimentContent.addSplitterDragendListener(resizeChartOnDrag());
@@ -192,13 +195,14 @@ public class ExperimentView extends AbstractExperimentView {
         showCompareExperimentComponents(isComparisonMode);
 
         VerticalLayout experimentContentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            modelNeedToBeUpdatedLabel, experimentContent
+                modelNeedToBeUpdatedLabel, experimentContent
         );
         experimentContentWrapper.setWidthFull();
 
-        HorizontalLayout pageWrapper = isShowNavBar() ? 
+        HorizontalLayout pageWrapper = !isReadOnly() ?
                 WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, experimentContentWrapper)
                 : WrapperUtils.wrapSizeFullHorizontal(experimentContentWrapper);
+
         pageWrapper.addClassName("page-content");
         pageWrapper.setSpacing(false);
         return pageWrapper;
@@ -215,17 +219,17 @@ public class ExperimentView extends AbstractExperimentView {
                 60);
         simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            simulationMetricsAndObservationsPanel,
-            generateRewardFunctionGroup(comparisonCodeViewer),
-            comparisonChartsPanel,
-            comparisonNotesField);
+                simulationMetricsAndObservationsPanel,
+                generateRewardFunctionGroup(comparisonCodeViewer),
+                comparisonChartsPanel,
+                comparisonNotesField);
         comparisonComponents.addClassName("comparison-panel");
         comparisonComponents.setPadding(false);
         VerticalLayout comparisonPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
-            comparisonStoppedTrainingNotification,
-            comparisonTitleBar,
-            comparisonComponents,
-            comparisonModeCloseButton);
+                comparisonStoppedTrainingNotification,
+                comparisonTitleBar,
+                comparisonComponents,
+                comparisonModeCloseButton);
         return comparisonPanel;
     }
 
@@ -234,8 +238,8 @@ public class ExperimentView extends AbstractExperimentView {
      * are properly broken up it's almost impossible to break out the navbar specific eventbus handling and as a result all navbar
      * code is going to be wrapped around if's which the SharedExperimentView will override to false.
      */
-    protected boolean isShowNavBar() {
-        return true;
+    public boolean isReadOnly() {
+        return false;
     }
 
     private SplitLayout getMiddlePanel() {
@@ -243,12 +247,23 @@ public class ExperimentView extends AbstractExperimentView {
                 generateSimulationsMetricsPanelGroup(experimentSimulationMetricsPanel),
                 experimentObservationsPanel,
                 70);
-        simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
+        simulationMetricsAndObservationsPanel.addSplitterDragendListener(dragend -> {
+            simulationMetricsAndObservationsPanel.getElement().executeJs("const exp12Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
+                "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_12', exp12Styles);");
+
+            resizeChart();
+        });
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(experimentCodeViewer),
                 40);
         middlePanel.addClassName("middle-panel");
+        middlePanel.addSplitterDragendListener(dragend -> {
+            middlePanel.getElement().executeJs("const exp23Styles = { 'primary': this.children[0].style.flex, 'secondary': this.children[1].style.flex };"+
+                "document.querySelector('localstorage-helper').setItemInObject('panels_split', 'exp_23', exp23Styles);");
+
+            resizeChart();
+        });
         return middlePanel;
     }
 
@@ -262,7 +277,7 @@ public class ExperimentView extends AbstractExperimentView {
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
         String simulationMetricsHeaderText = "Simulation Metrics";
         HorizontalLayout simulationMetricsHeader = WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL), 
+                LabelFactory.createLabel(simulationMetricsHeaderText, BOLD_LABEL),
                 new SimulationMetricsInfoLink());
         simulationMetricsHeader.addClassName("simulation-metrics-panel-header");
         return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -313,6 +328,11 @@ public class ExperimentView extends AbstractExperimentView {
 
     public void showCompareExperimentComponents(boolean isCompareVisible) {
         compareExperimentVerticalLayout.setVisible(isCompareVisible);
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        getElement().executeJs("experimentViewLoad()");
     }
 
     @Override

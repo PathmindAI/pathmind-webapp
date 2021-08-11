@@ -20,7 +20,7 @@ public class StripeServiceTest extends PathmindApplicationTests {
 
     @Autowired
     private StripeService stripeService;
-    @Value("${pathmind.stripe.professional-plan-id}")
+    @Value("${pathmind.stripe.professional-price-id}")
     private String professionalPlanId;
 
     private String customerEmail = "test_pathmind@skymind.io";

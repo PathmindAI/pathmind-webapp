@@ -17,12 +17,13 @@ Feature: Experiment share
     When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
     When Click pop-up dialog close btn
-    Then Check experiment name tag label 'Shared with Support'
+    Then Check experiment name tag label 'Shared'
     When Save experiment url into the variable 'sharedExperimentUrl'
     When Delete all cookies
     When Login to the pathmind
     When Open page sharedExperimentUrl
-    Then Check experiment name tag label 'Shared with Support'
+    Then Check that experiment page title is 'Experiment #1'
+    Then Check experiment shared by <First Name>, <Last Name>
 
     Examples:
       | First Name | Last Name | Password   |
@@ -36,7 +37,7 @@ Feature: Experiment share
     When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
     When Click pop-up dialog close btn
-    Then Check experiment name tag label 'Shared with Support'
+    Then Check experiment name tag label 'Shared'
     When Save experiment url into the variable 'sharedExperimentUrl'
     When Delete all cookies
     Given Open page sign-up
@@ -49,7 +50,7 @@ Feature: Experiment share
     Then Login with new user email and <Password>
     Then Check that user <First Name> <Last Name> successfully logged in
     When Open page sharedExperimentUrl
-    Then Check that Oops page opened
+    Then Check that experiment page title is 'Experiment #1'
 
     Examples:
       | First Name | Last Name | Password   |
@@ -72,7 +73,7 @@ Feature: Experiment share
     Then Login with new user email and <Password>
     Then Check that user <First Name> <Last Name> successfully logged in
     When Open page sharedExperimentUrl
-    Then Check that Oops page opened
+    Then Check that Invalid data error page opened
 
     Examples:
       | First Name | Last Name | Password   |

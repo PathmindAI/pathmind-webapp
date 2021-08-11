@@ -2053,4 +2053,8 @@
         </update>
     </changeSet>
 
+    <changeSet id="3378-01" author="alexander.makarov@toptal.com">
+        <renameColumn tableName="EXPERIMENT" oldColumnName="shared_with_support" newColumnName="shared"/>
+    </changeSet>
+
 </databaseChangeLog>

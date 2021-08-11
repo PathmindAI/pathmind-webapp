@@ -82,4 +82,14 @@ public class ProjectPageSteps {
     public void checkThatProjectPageTitleIs(String title) {
         projectPage.checkThatProjectPageTitleIs(title);
     }
+
+    @Step
+    public void clickProjectPageMetricDropdown(String dropdown, String value) {
+        projectPage.clickProjectPageMetricDropdown(dropdown, value);
+    }
+
+    @Step
+    public void checkProjectPageDropdown(String dropdown, String value) {
+        projectPage.checkProjectPageDropdown(dropdown, value);
+    }
 }

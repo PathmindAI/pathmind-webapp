@@ -6,6 +6,9 @@
     "lib": [
       "esnext",
       "dom"
+    ],
+    "types": [
+      "stripe-v3"
     ]
   }
 }

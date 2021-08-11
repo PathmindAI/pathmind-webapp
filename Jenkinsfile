@@ -1,4 +1,5 @@
 def DOCKER_TAG
+def MA_BRANCH
 def SLACK_URL = "https://hooks.slack.com/services/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"
 def icon = ":heavy_check_mark:"
 /*
@@ -16,6 +17,19 @@ def icon = ":heavy_check_mark:"
 def buildDockerImage(image_name, dockerfile, basedir) {
     echo "Building the pathmind Docker Image"
     sh "docker build -t ${image_name} -f ${basedir}/${dockerfile} ${basedir}/"
+}
+
+/*
+    Build a docker image
+*/
+def buildDockerImageMA(image_name, dockerfile, basedir, docker_tag) {
+    echo "Building the pathmind Docker Image"
+    //Dont quit if there is an error
+    sh """
+    set +x
+    docker image ls | grep pathmind-ma | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+    docker build -t ${image_name} -f ${basedir}/${dockerfile} --build-arg S3BUCKET='${docker_tag}-model-analyzer-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${basedir}/
+    """
 }
 
 /*
@@ -176,6 +190,20 @@ pipeline {
                         buildDockerImage("policy-deployer", "Dockerfile", "${WORKSPACE}/infra/images/policy-deployer/")
                     }
                 }
+                stage('Build pathmind-ma image') {
+                    steps {                        
+                        script {
+                            MA_BRANCH = env.BRANCH_NAME
+                            if (env.BRANCH_NAME == 'staging') {
+                                MA_BRANCH = "dev"
+                            }
+                        }
+                        sh "rm -rf ${WORKSPACE}/nativerl || true"
+                        sh "git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl"                        
+                        sh "cd ${WORKSPACE}/nativerl && git checkout ${MA_BRANCH}"
+                        buildDockerImageMA("pathmind-ma", "Dockerfile", "${WORKSPACE}/nativerl/nativerl-analyzer", "${env.BRANCH_NAME}")
+                    }
+                }
             }
         }
 
@@ -207,6 +235,11 @@ pipeline {
                 stage('Publish policy-deployer image') {
                     steps {
                         publishDockerImage("policy-deployer", "${DOCKER_TAG}")
+                    }
+                }
+                stage('Publish pathmind-ma image') {
+                    steps {
+                        publishDockerImage("pathmind-ma", "${DOCKER_TAG}")
                     }
                 }
             }
@@ -260,6 +293,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+                        }
+                    }
+                }
+                stage('Deploying pathmind-ma') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }
@@ -333,6 +373,13 @@ pipeline {
                     steps {
                         script {
                             sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_${DOCKER_TAG}.yaml"
+                        }
+                    }
+                }
+                stage('Deploying pathmind-ma') {
+                    steps {
+                        script {
+                            sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
                         }
                     }
                 }

@@ -12,6 +12,7 @@ import com.vaadin.flow.component.page.Page;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.HasDynamicTitle;
+import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.training.cloud.aws.api.AWSApiClient;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
@@ -42,6 +43,8 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
     protected FeatureManager featureManager;
     @Autowired
     protected PolicyServerService policyServerService;
+    @Autowired
+    protected PolicyFileService policyFileService;
 
     private int previousWindowWidth = 0;
 

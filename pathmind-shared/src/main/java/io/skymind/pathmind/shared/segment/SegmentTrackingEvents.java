@@ -30,6 +30,7 @@ public class SegmentTrackingEvents {
     public static final String EVENT_ACCOUNT_UPGRADE_ENT = "Account Upgraded to Enterprise";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW = "Navigated to Pricing View from Account View";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER = "Navigated to Pricing View from New Experiment View Banner";
+    public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_SETTINGS = "Navigated to Pricing View from New Experiment View Settings";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_POLICY_SERVER_LIMIT_POPUP = "Navigated to Pricing View from Policy Server limit popup";
     public static final String EVENT_CHOSE_PRO_PLAN = "Pro Plan Chosen on Pricing Page";
     public static final String EVENT_CANCEL_SUBSCRIPTION = "Subscription Cancelled";
@@ -43,7 +44,9 @@ public class SegmentTrackingEvents {
     public static final String EVENT_ERROR_PAGE = "Error Page Displayed";
     public static final String EVENT_ARCHIVED = "Archived";
     public static final String EVENT_UNARCHIVED = "Unarchived";
+    public static final String EVENT_EDIT_GOALS = "Goals Edited";
     public static final String EVENT_NEW_EXPERIMENT = "New Experiment Created";
+    public static final String EVENT_NAVIGATED_TO_EDIT_GOALS_FROM_PROJECT_VIEW = "Navigated to Edit Goals View from Project View";
     public static final String EVENT_POLICY_SERVER_DEPLOYMENT_STARTED = "Policy Server Deployment Started";
     public static final String EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED = "Policy Server Redeployment Started After Failure";
     public static final String EVENT_POLICY_SERVER_SHUT_DOWN = "Policy Server Deployment Shut Down";

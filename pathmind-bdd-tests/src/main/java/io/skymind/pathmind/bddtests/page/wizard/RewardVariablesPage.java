@@ -18,8 +18,8 @@ public class RewardVariablesPage extends PageObject {
     private Utils utils;
 
     public void clickWizardRewardVariableNamesNextBtn() {
-        utils.moveToElementRepeatIfStaleException(By.xpath("//span[text()='Goals']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button"));
-        getDriver().findElement(By.xpath("//span[text()='Goals']/parent::vaadin-horizontal-layout/parent::vaadin-vertical-layout/descendant::vaadin-button")).click();
+        utils.moveToElementRepeatIfStaleException(By.xpath("//p[contains(text(),'Set the goals for')]/parent::vaadin-vertical-layout/descendant::vaadin-button"));
+        getDriver().findElement(By.xpath("//p[contains(text(),'Set the goals for')]/parent::vaadin-vertical-layout/descendant::vaadin-button")).click();
     }
 
     public void checkThatThereIsAVariableNamed(String variableName) {
