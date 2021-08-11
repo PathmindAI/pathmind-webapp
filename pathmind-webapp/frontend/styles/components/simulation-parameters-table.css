@@ -1,0 +1,18 @@
+.simulation-parameters-table {
+    font-size: var(--lumo-font-size-s);
+}
+
+.simulation-parameters-table .header-row {
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    line-height: 1.3;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+    z-index: 1;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout {
+    margin-bottom: var(--lumo-space-xs);
+}
