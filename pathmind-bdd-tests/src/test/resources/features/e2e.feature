@@ -76,7 +76,7 @@ Feature: E2E
     Then Check policy server live with 20 minutes
     Then Click in 'Policy Server Live' button
     When Check policy server live overlay
-    When Click pop-up dialog close btn
+    When Check policy server overlay token with account page
     #Check policy server api requests
     #TODO
     #Check policy server stop server

@@ -407,11 +407,11 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkPolicyServerLiveOverlay() throws IOException, UnsupportedFlavorException {
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/h3")).getText(), is("The Policy is Live"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/span")).getText(), is("The policy is being served at this URL:"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/span")).getText(), is("Read the docs for more details:"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/p/a")).getAttribute("href"), containsString("https://api.dev.devpathmind.com/policy/"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/h3")).getText(), is("The Policy is Live"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/span[1]")).getText(), is("The policy is being served at this URL:"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/p/span")).getText(), is("Read the docs for more details:"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/p/a")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/p/a")).getAttribute("href"), containsString("https://api.dev.devpathmind.com/policy/"));
         WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::copy-field")));
         String copyFieldUrl = e.findElement(By.id("textToCopy")).getText();
         assertThat(e.findElement(By.id("textToCopy")).getText(), containsString("https://api.dev.devpathmind.com/policy/"));
@@ -431,9 +431,10 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkShutdownPolicyServerConfirmationPopup() {
+        String experimentId = getDriver().getCurrentUrl().split("experiment/")[1];
         WebElement e = utils.expandRootElement(getDriver().findElement(By.xpath("//confirm-popup")));
         assertThat(e.findElement(By.cssSelector("h3")).getText(), is("Shut down policy server"));
-        assertThat(e.findElement(By.cssSelector(".message")).getText(), containsString("This will shut down the deployed policy server for this experiment (id: 33042). You will be able to redeploy the policy server."));
+        assertThat(e.findElement(By.cssSelector(".message")).getText(), containsString("This will shut down the deployed policy server for this experiment (id: " + experimentId + "). You will be able to redeploy the policy server."));
     }
 
     public void clickPopUpDialogIdCancel(String id) {
@@ -445,5 +446,19 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentSharedBy(String firstName, String lastName) {
         assertThat(getDriver().findElement(By.xpath("//shared-by-username")).getText(), is(firstName + " " + lastName));
+    }
+
+    public void checkPolicyServerOverlayTokenWithAccountPage() {
+        String policyServerToken = getDriver().findElement(By.xpath("//vaadin-dialog-overlay/descendant::div[@class='serve-policy-instructions']/policy-server-live-content/copy-field[2]")).getAttribute("text");
+        String url = getDriver().getCurrentUrl();
+        ((JavascriptExecutor) getDriver()).executeScript("window.open('about:blank','_blank');");
+        waitABit(3000);
+        ArrayList<String> tabs = new ArrayList<String>(getDriver().getWindowHandles());
+        getDriver().switchTo().window(tabs.get(1));
+        getDriver().navigate().to(url);
+        getDriver().findElement(By.xpath("//vaadin-menu-bar[@class='account-menu']")).click();
+        getDriver().findElement(By.xpath("//vaadin-context-menu-item[@role='menuitem' and text()='Account']")).click();
+        assertThat(getDriver().findElement(By.id("accessToken")).getText(), is(policyServerToken));
+        getDriver().switchTo().window(tabs.get(0));
     }
 }

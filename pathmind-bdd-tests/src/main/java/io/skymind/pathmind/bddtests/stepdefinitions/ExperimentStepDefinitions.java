@@ -290,4 +290,9 @@ public class ExperimentStepDefinitions {
     public void checkExperimentSharedBy(String firstName, String lastName) {
         experimentPageSteps.checkExperimentSharedBy(firstName, lastName);
     }
+
+    @When("^Check policy server overlay token with account page$")
+    public void checkPolicyServerOverlayTokenWithAccountPage() {
+        experimentPageSteps.checkPolicyServerOverlayTokenWithAccountPage();
+    }
 }
