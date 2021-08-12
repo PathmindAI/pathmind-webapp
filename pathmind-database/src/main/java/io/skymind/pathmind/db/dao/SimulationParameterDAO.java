@@ -23,6 +23,6 @@ public class SimulationParameterDAO {
     }
 
     public List<SimulationParameter> getSimulationParametersForExperiment(long experimentId) {
-        return SimulationParameterRepository.getSimulationParametersForModel(ctx, experimentId);
+        return SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experimentId);
     }
 }
