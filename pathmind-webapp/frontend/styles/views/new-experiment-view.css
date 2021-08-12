@@ -79,8 +79,7 @@
     max-height: none;
 }
 
-.new-experiment-view .reward-variables-panel > vaadin-vertical-layout,
-.new-experiment-view .simulation-parameters-table {
+.new-experiment-view .reward-variables-panel > vaadin-vertical-layout {
     box-sizing: border-box;
     flex: 1 1 19rem;
     line-height: 1;

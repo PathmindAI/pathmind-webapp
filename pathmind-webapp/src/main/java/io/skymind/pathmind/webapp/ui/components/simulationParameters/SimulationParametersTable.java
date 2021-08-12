@@ -22,8 +22,10 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
 
     private VerticalLayout container;
     private Set<SimulationParameter> simulationParameters = new HashSet<SimulationParameter>();
+    private Boolean isReadOnly = false;
 
-    public SimulationParametersTable() {
+    public SimulationParametersTable(Boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
         container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         container.setClassName("simulation-parameters-table");
 
@@ -42,7 +44,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         container.add(headerRow);
 
         simulationParameters.forEach(simulationParam -> {
-            SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, false);
+            SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly);
             container.add(row);
         });
     }

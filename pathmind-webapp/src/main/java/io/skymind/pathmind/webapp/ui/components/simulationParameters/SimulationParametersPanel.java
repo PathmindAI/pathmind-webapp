@@ -21,19 +21,23 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private List<SimulationParameter> simulationParameters;
 
-    public SimulationParametersPanel() { //List<SimulationParameter> simulationParameters
+    public SimulationParametersPanel(Boolean isReadOnly) { //List<SimulationParameter> simulationParameters
         add(LabelFactory.createLabel("Simulation Parameters", BOLD_LABEL));
-        setupSimulationParametersTable();
+        setupSimulationParametersTable(isReadOnly);
         add(simulationParametersTable);
         addClassName("simulation-parameters-panel");
+
+        if (isReadOnly) {
+            addClassName("readonly");
+        }
 
         setWidthFull();
         setPadding(false);
         setSpacing(false);
     }
 
-    private void setupSimulationParametersTable() {
-        simulationParametersTable = new SimulationParametersTable();
+    private void setupSimulationParametersTable(Boolean isReadOnly) {
+        simulationParametersTable = new SimulationParametersTable(isReadOnly);
         simulationParametersTable.setSimulationParameters(getMockSimulationParameters());
     }
 

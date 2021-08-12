@@ -384,7 +384,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         rewardVariablesTable = new RewardVariablesTable();
-        simulationParametersPanel = new SimulationParametersPanel();
+        simulationParametersPanel = new SimulationParametersPanel(false);
 
         experimentComponentList.addAll(List.of(
                 notesField,
