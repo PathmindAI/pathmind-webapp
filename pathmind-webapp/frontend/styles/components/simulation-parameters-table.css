@@ -14,5 +14,21 @@
 }
 
 .simulation-parameters-table vaadin-horizontal-layout {
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     margin-bottom: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table .simulation-parameter-name {
+    margin-right: var(--lumo-space-xs);
+    word-break: break-all;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout vaadin-text-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-select,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-number-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field {
+    width: 55%;
+    padding: 0;
 }
