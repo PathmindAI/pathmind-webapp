@@ -39,12 +39,13 @@ env:
   SNS_UPDATER_SQS_FILTER_ATTR: staging
   NEW_RUN_DAILY_LIMIT: 100
   NEW_RUN_MONTHLY_LIMIT: 2000
-  API_WEBAPP_URL: https://staging.devpathmind.com/
+  API_WEBAPP_URL: https://staging.devpathmind.com
   API_FILE_SIZE: 500MB
   API_REQUEST_SIZE: 500MB
   SQS_POLICY_SERVER_URL: https://queue.amazonaws.com/839270835622/staging-policy-server.fifo
   PATHMIND_STRIPE_PUBLIC_KEY: pk_test_52b1olVNNEYJ3425191xXgxl00FNHDa3KY
   PATHMIND_STRIPE_PROFESSIONAL_PLAN_ID: price_1Iq50jIP4jq3EOOXOvHPYJHr
+  PATHMIND_STRIPE_ONBOARDING_PRICE_ID: price_1JHlKpIP4jq3EOOXYwkrN5yu
 
 readinessprobe: {}
 
