@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.components.simulationParameters;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -23,9 +22,11 @@ public class SimulationParametersRowField extends HorizontalLayout {
 
     private Component inputField;
     private Span nameSpan;
+    private Boolean isReadOnly = false;
 
     public SimulationParametersRowField(SimulationParameter simulationParameter, 
                                         Boolean isReadOnly) {
+        this.isReadOnly = isReadOnly;
         setSimulationParameter(simulationParameter);
         nameSpan = LabelFactory.createLabel(simulationParameter.getKey(), "simulation-parameter-name");
         add(nameSpan);
@@ -49,22 +50,26 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 booleanSelect.setItems("TRUE", "FALSE");
                 booleanSelect.setValue(simulationParameter.getValue().toUpperCase());
                 booleanSelect.getElement().setAttribute("theme", "small");
+                booleanSelect.setReadOnly(isReadOnly);
                 return booleanSelect;
             case 1:
                 IntegerField integerField = new IntegerField();
                 integerField.setHasControls(true);
                 integerField.setValue(Integer.parseInt(simulationParameter.getValue()));
                 integerField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+                integerField.setReadOnly(isReadOnly);
                 return integerField;
             case 2:
                 NumberField doubleField = new NumberField();
                 doubleField.setValue(Double.parseDouble(simulationParameter.getValue()));
                 doubleField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_CENTER);
+                doubleField.setReadOnly(isReadOnly);
                 return doubleField;
             case 3:
                 TextField stringField = new TextField();
                 stringField.setValue(simulationParameter.getValue());
                 stringField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+                stringField.setReadOnly(isReadOnly);
                 return stringField;
             case 4:
             default:
@@ -72,6 +77,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 othersField.setValue(simulationParameter.getValue());
                 othersField.setReadOnly(true);
                 othersField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+                othersField.setReadOnly(isReadOnly);
                 return othersField;
         }
     }

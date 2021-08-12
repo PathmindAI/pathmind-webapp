@@ -1,5 +1,14 @@
 .simulation-parameters-table {
+    box-sizing: border-box;
+    flex: 1 1 19rem;
     font-size: var(--lumo-font-size-s);
+    line-height: 1;
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
+    overflow-y: auto;
+}
+
+.readonly .simulation-parameters-table {
+    padding-top: var(--lumo-space-xs);
 }
 
 .simulation-parameters-table .header-row {
@@ -11,6 +20,10 @@
     color: var(--pm-secondary-text-color);
     background-color: white;
     z-index: 1;
+}
+
+.readonly .simulation-parameters-table .header-row {
+    display: none;
 }
 
 .simulation-parameters-table vaadin-horizontal-layout {
