@@ -8,7 +8,6 @@ import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
-import com.vaadin.flow.data.binder.Binder;
 
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -17,8 +16,6 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 public class SimulationParametersRowField extends HorizontalLayout {
 
     private SimulationParameter simulationParameter;
-
-    private Binder<SimulationParameter> binder;
 
     private Component inputField;
     private Span nameSpan;
@@ -32,15 +29,8 @@ public class SimulationParametersRowField extends HorizontalLayout {
         add(nameSpan);
         int dataType = simulationParameter.getType();
         inputField = getUserInputField(dataType);
-        initBinder(this.simulationParameter);
         add(inputField);
         GuiUtils.removeMarginsPaddingAndSpacing(this);
-    }
-
-    private void initBinder(SimulationParameter simulationParameter) {
-        binder = new Binder<>();
-        // TODO -> binder.bind()
-        binder.setBean(simulationParameter);
     }
 
     private Component getUserInputField(int parameterType) {
@@ -51,6 +41,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 booleanSelect.setValue(simulationParameter.getValue().toUpperCase());
                 booleanSelect.getElement().setAttribute("theme", "small");
                 booleanSelect.setReadOnly(isReadOnly);
+                booleanSelect.addValueChangeListener(changeEvent -> simulationParameter.setValue(changeEvent.getValue()));
                 return booleanSelect;
             case 1:
                 IntegerField integerField = new IntegerField();
@@ -58,26 +49,28 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 integerField.setValue(Integer.parseInt(simulationParameter.getValue()));
                 integerField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
                 integerField.setReadOnly(isReadOnly);
+                integerField.addValueChangeListener(changeEvent -> simulationParameter.setValue(""+changeEvent.getValue()));
                 return integerField;
             case 2:
                 NumberField doubleField = new NumberField();
                 doubleField.setValue(Double.parseDouble(simulationParameter.getValue()));
                 doubleField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_CENTER);
                 doubleField.setReadOnly(isReadOnly);
+                doubleField.addValueChangeListener(changeEvent -> simulationParameter.setValue(""+changeEvent.getValue()));
                 return doubleField;
             case 3:
                 TextField stringField = new TextField();
                 stringField.setValue(simulationParameter.getValue());
                 stringField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
                 stringField.setReadOnly(isReadOnly);
+                stringField.addValueChangeListener(changeEvent -> simulationParameter.setValue(changeEvent.getValue()));
                 return stringField;
             case 4:
             default:
                 TextField othersField = new TextField();
                 othersField.setValue(simulationParameter.getValue());
-                othersField.setReadOnly(true);
                 othersField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-                othersField.setReadOnly(isReadOnly);
+                othersField.setReadOnly(true);
                 return othersField;
         }
     }

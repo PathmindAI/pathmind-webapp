@@ -1,8 +1,6 @@
 package io.skymind.pathmind.webapp.ui.components.simulationParameters;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -21,7 +19,7 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private List<SimulationParameter> simulationParameters;
 
-    public SimulationParametersPanel(Boolean isReadOnly) { //List<SimulationParameter> simulationParameters
+    public SimulationParametersPanel(Boolean isReadOnly) {
         add(LabelFactory.createLabel("Simulation Parameters", BOLD_LABEL));
         setupSimulationParametersTable(isReadOnly);
         add(simulationParametersTable);
@@ -38,31 +36,9 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private void setupSimulationParametersTable(Boolean isReadOnly) {
         simulationParametersTable = new SimulationParametersTable(isReadOnly);
-        simulationParametersTable.setSimulationParameters(getMockSimulationParameters());
-    }
-
-    private List<SimulationParameter> getMockSimulationParameters() {
-        List<SimulationParameter> simulationParameters = new ArrayList<SimulationParameter>();
-        simulationParameters.add(new SimulationParameter(
-            34972L, 32228L, 0,
-            "usePolicy", "true", 0));
-        simulationParameters.add(new SimulationParameter(
-            34972L, 32228L, 1,
-            "maxRawWaiting", "5.0", 2));
-        simulationParameters.add(new SimulationParameter(
-            34972L, 32228L, 2,
-            "testOthersType", "something else", 4));
-        simulationParameters.add(new SimulationParameter(
-            34972L, 32228L, 3,
-            "numberAGVs", "3", 1));
-        simulationParameters.add(new SimulationParameter(
-            34972L, 32228L, 4,
-            "aString", "some text here", 3));
-        return simulationParameters;
     }
 
     public List<SimulationParameter> getSimulationParameters() {
-        //return new ArrayList<>(simulationParametersTable.getValue());
         return this.simulationParameters;
     }
 
@@ -70,8 +46,8 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         this.simulationParameters = experiment.getSimulationParameters();
-        this.simulationParameters.forEach(param -> param.setExperimentId(this.experiment.getId()));;
-        // setSimulationParameters(experiment.getSimulationParameters());
+        this.simulationParameters.forEach(param -> param.setExperimentId(this.experiment.getId()));
+        simulationParametersTable.setSimulationParameters(simulationParameters);
     }
 
     @Override
