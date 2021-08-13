@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.data;
 
+import io.skymind.pathmind.shared.constants.ParamType;
 import lombok.*;
 
 @Getter
@@ -13,17 +14,21 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
     private Long modelId;
     private Long experimentId;
     private Integer index;
-    private Integer dataType;
     private String key;
     private String value;
+    private Integer type;
 
     public SimulationParameter shallowClone() {
         return super.shallowClone(new SimulationParameter(
                 modelId,
                 experimentId,
                 index,
-                dataType,
                 key,
-                value));
+                value,
+                type));
+    }
+
+    public String getWrappedValue() {
+        return type == ParamType.STRING.getValue() ? "\"" + value + "\"" : value;
     }
 }

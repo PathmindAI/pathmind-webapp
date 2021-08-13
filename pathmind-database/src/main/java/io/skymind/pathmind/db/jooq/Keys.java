@@ -17,6 +17,7 @@ import io.skymind.pathmind.db.jooq.tables.RewardScore;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
+import io.skymind.pathmind.db.jooq.tables.SimulationParameter;
 import io.skymind.pathmind.db.jooq.tables.TrainerJob;
 import io.skymind.pathmind.db.jooq.tables.TrainingError;
 import io.skymind.pathmind.db.jooq.tables.records.ExperimentObservationRecord;
@@ -32,6 +33,7 @@ import io.skymind.pathmind.db.jooq.tables.records.RewardScoreRecord;
 import io.skymind.pathmind.db.jooq.tables.records.RewardVariableRecord;
 import io.skymind.pathmind.db.jooq.tables.records.RunAdminNoteRecord;
 import io.skymind.pathmind.db.jooq.tables.records.RunRecord;
+import io.skymind.pathmind.db.jooq.tables.records.SimulationParameterRecord;
 import io.skymind.pathmind.db.jooq.tables.records.TrainerJobRecord;
 import io.skymind.pathmind.db.jooq.tables.records.TrainingErrorRecord;
 
@@ -70,6 +72,7 @@ public class Keys {
     public static final UniqueKey<RunRecord> POLICY_SERVER_URL_UNIQUE = Internal.createUniqueKey(Run.RUN, DSL.name("policy_server_url_unique"), new TableField[] { Run.RUN.POLICY_SERVER_URL }, true);
     public static final UniqueKey<RunRecord> RUN_PKEY = Internal.createUniqueKey(Run.RUN, DSL.name("run_pkey"), new TableField[] { Run.RUN.ID }, true);
     public static final UniqueKey<RunAdminNoteRecord> PM_RUN_ADMIN_NOTES_RUN_ID_UNQ = Internal.createUniqueKey(RunAdminNote.RUN_ADMIN_NOTE, DSL.name("pm_run_admin_notes_run_id_unq"), new TableField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, true);
+    public static final UniqueKey<SimulationParameterRecord> SIMULATION_PARAMETER_MODEL_ID_EXPERIMENT_ID_INDEX_KEY_KEY = Internal.createUniqueKey(SimulationParameter.SIMULATION_PARAMETER, DSL.name("simulation_parameter_model_id_experiment_id_index_key_key"), new TableField[] { SimulationParameter.SIMULATION_PARAMETER.MODEL_ID, SimulationParameter.SIMULATION_PARAMETER.EXPERIMENT_ID, SimulationParameter.SIMULATION_PARAMETER.INDEX, SimulationParameter.SIMULATION_PARAMETER.KEY }, true);
     public static final UniqueKey<TrainerJobRecord> TRAINER_JOB_PKEY = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, DSL.name("trainer_job_pkey"), new TableField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
     public static final UniqueKey<TrainerJobRecord> UNIQUE_JOB_ID_S3BUCKET = Internal.createUniqueKey(TrainerJob.TRAINER_JOB, DSL.name("unique_job_id_s3bucket"), new TableField[] { TrainerJob.TRAINER_JOB.JOB_ID, TrainerJob.TRAINER_JOB.S3BUCKET }, true);
     public static final UniqueKey<TrainingErrorRecord> TRAINING_ERROR_PKEY = Internal.createUniqueKey(TrainingError.TRAINING_ERROR, DSL.name("training_error_pkey"), new TableField[] { TrainingError.TRAINING_ERROR.ID }, true);
@@ -92,4 +95,6 @@ public class Keys {
     public static final ForeignKey<RunRecord, ExperimentRecord> RUN__PM_FK_RUN_EXPERIMENT = Internal.createForeignKey(Run.RUN, DSL.name("pm_fk_run_experiment"), new TableField[] { Run.RUN.EXPERIMENT_ID }, Keys.EXPERIMENT_PKEY, new TableField[] { Experiment.EXPERIMENT.ID }, true);
     public static final ForeignKey<RunRecord, TrainingErrorRecord> RUN__PM_FK_TRAINING_ERROR = Internal.createForeignKey(Run.RUN, DSL.name("pm_fk_training_error"), new TableField[] { Run.RUN.TRAINING_ERROR_ID }, Keys.TRAINING_ERROR_PKEY, new TableField[] { TrainingError.TRAINING_ERROR.ID }, true);
     public static final ForeignKey<RunAdminNoteRecord, RunRecord> RUN_ADMIN_NOTE__PM_FK_RUN_ADMIN_NOTES = Internal.createForeignKey(RunAdminNote.RUN_ADMIN_NOTE, DSL.name("pm_fk_run_admin_notes"), new TableField[] { RunAdminNote.RUN_ADMIN_NOTE.RUN_ID }, Keys.RUN_PKEY, new TableField[] { Run.RUN.ID }, true);
+    public static final ForeignKey<SimulationParameterRecord, ExperimentRecord> SIMULATION_PARAMETER__FK_SIMULATION_PARAMETER_EXPERIMENT = Internal.createForeignKey(SimulationParameter.SIMULATION_PARAMETER, DSL.name("fk_simulation_parameter_experiment"), new TableField[] { SimulationParameter.SIMULATION_PARAMETER.EXPERIMENT_ID }, Keys.EXPERIMENT_PKEY, new TableField[] { Experiment.EXPERIMENT.ID }, true);
+    public static final ForeignKey<SimulationParameterRecord, ModelRecord> SIMULATION_PARAMETER__FK_SIMULATION_PARAMETER_MODEL = Internal.createForeignKey(SimulationParameter.SIMULATION_PARAMETER, DSL.name("fk_simulation_parameter_model"), new TableField[] { SimulationParameter.SIMULATION_PARAMETER.MODEL_ID }, Keys.MODEL_PKEY, new TableField[] { Model.MODEL.ID }, true);
 }

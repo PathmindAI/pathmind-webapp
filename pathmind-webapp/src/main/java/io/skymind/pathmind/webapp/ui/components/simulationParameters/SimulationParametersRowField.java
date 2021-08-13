@@ -30,7 +30,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
         setSimulationParameter(simulationParameter);
         nameSpan = LabelFactory.createLabel(simulationParameter.getKey(), "simulation-parameter-name");
         add(nameSpan);
-        int dataType = simulationParameter.getDataType();
+        int dataType = simulationParameter.getType();
         inputField = getUserInputField(dataType);
         initBinder(this.simulationParameter);
         add(inputField);
