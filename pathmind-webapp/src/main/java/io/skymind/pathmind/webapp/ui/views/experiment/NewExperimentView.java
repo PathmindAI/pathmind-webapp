@@ -39,6 +39,7 @@ import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
+import io.skymind.pathmind.webapp.ui.components.simulationParameters.SimulationParametersPanel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -63,6 +64,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected ExperimentNotesField notesField;
     private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
+    private SimulationParametersPanel simulationParametersPanel;
     private ObservationsPanel observationsPanel;
     private SettingsViewContent settingsPanel;
     private FavoriteStar favoriteStar;
@@ -155,14 +157,22 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                         rewardVariablesTable);
         rewardVariablesPanel.addClassName("reward-variables-panel");
 
-        SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(rewardFunctionEditor,
+        SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardFunctionEditor,
                 rewardVariablesPanel,
                 70);
         rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        
+        SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                simulationParametersPanel,
+                observationsPanel,
+                50);
+        simulationParametersAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        
         SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionEditorWrapper,
-                observationsPanel,
-                75);
+                simulationParametersAndObservationsWrapper,
+                60);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
         rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
 
@@ -374,11 +384,13 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         rewardVariablesTable = new RewardVariablesTable();
+        simulationParametersPanel = new SimulationParametersPanel(false);
 
         experimentComponentList.addAll(List.of(
                 notesField,
                 rewardFunctionEditor,
                 observationsPanel,
-                rewardVariablesTable));
+                rewardVariablesTable,
+                simulationParametersPanel));
     }
 }

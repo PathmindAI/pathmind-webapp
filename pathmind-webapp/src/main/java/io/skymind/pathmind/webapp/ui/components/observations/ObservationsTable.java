@@ -11,6 +11,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 @CssImport(value = "./styles/components/observations-table.css")
 public class ObservationsTable extends CustomField<Set<Observation>> implements HasStyle {
@@ -19,9 +20,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
 
     public ObservationsTable(Boolean isReadOnly) {
-        VerticalLayout container = new VerticalLayout();
-        container.setPadding(false);
-        container.setSpacing(false);
+        VerticalLayout container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         container.setClassName("observations-table");
 
         Checkbox checkboxSelectAll = new Checkbox("Select All");
