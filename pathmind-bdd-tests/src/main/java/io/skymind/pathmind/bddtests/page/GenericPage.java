@@ -61,13 +61,11 @@ public class GenericPage extends PageObject {
     public void clickTextContainsLink(String text) {
         String xpath = String.format("//*[contains(text(), '%s')]", text);
         utils.clickElementRepeatIfStaleException(By.xpath(xpath));
-        System.out.println("user dir " + System.getProperty("user.dir"));
     }
 
     public void clickInButton(String buttonText) {
         String xpath = String.format("//*[normalize-space(text())='%s']", buttonText);
         utils.clickElementRepeatIfStaleException(By.xpath(xpath));
-        System.out.println("user dir " + System.getProperty("user.dir"));
     }
 
     public void checkThatNotificationIsShown(String notificationText) {
