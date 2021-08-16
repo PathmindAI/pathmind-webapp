@@ -46,7 +46,6 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         this.simulationParameters = experiment.getSimulationParameters();
-        this.simulationParameters.forEach(param -> param.setExperimentId(this.experiment.getId()));
         simulationParametersTable.setSimulationParameters(simulationParameters);
     }
 

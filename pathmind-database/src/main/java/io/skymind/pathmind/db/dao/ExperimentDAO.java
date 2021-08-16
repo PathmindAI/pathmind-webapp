@@ -102,12 +102,7 @@ public class ExperimentDAO {
         experiment.setSelectedObservations(ObservationRepository.getObservationsForExperiment(ctx, experiment.getId()));
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
-        List<SimulationParameter> simulationParameterList = SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experiment.getId());
-        // if there's no sim param lists for the given exp, it will use default sim params
-        if (simulationParameterList == null || simulationParameterList.size() == 0) {
-            simulationParameterList = SimulationParameterRepository.getSimulationParametersForModel(ctx, experiment.getModelId());
-        }
-        experiment.setSimulationParameters(simulationParameterList);
+        experiment.setSimulationParameters(SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experiment.getId()));
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
@@ -230,6 +225,10 @@ public class ExperimentDAO {
             Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
             exp.setSelectedObservations(observations);
+            List<SimulationParameter> simulationParameters = SimulationParameterRepository.getSimulationParametersForModel(ctx, exp.getModelId());
+            simulationParameters.forEach(p -> p.setExperimentId(exp.getId()));
+            SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, simulationParameters);
+            exp.setSimulationParameters(simulationParameters);
             return exp;
         });
     }
