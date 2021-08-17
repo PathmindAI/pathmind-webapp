@@ -29,6 +29,12 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
     }
 
     public String getWrappedValue() {
-        return type == ParamType.STRING.getValue() ? "\"" + value + "\"" : value;
+        if (type == ParamType.STRING.getValue())
+            return "\"" + value + "\"";
+
+        if (type == ParamType.BOOLEAN.getValue())
+            return String.valueOf(Boolean.parseBoolean(value));
+
+        return value;
     }
 }
