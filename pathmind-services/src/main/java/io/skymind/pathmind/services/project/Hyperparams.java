@@ -1,7 +1,9 @@
 package io.skymind.pathmind.services.project;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -33,5 +35,8 @@ public class Hyperparams {
 
     @Builder.Default
     private final List<String> observationTypes = new ArrayList<>();
+
+    @Builder.Default
+    private final Map<String, Object> simulationParams = new HashMap<>();
 
 }

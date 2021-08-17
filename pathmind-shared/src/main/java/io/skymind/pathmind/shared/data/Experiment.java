@@ -42,6 +42,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private transient List<Run> runs;
     private List<Observation> modelObservations;
     private List<Observation> selectedObservations;
+    private List<SimulationParameter> simulationParameters;
 
     // Helper attributes for error handling to prevent extra processing with training
     private String trainingError;

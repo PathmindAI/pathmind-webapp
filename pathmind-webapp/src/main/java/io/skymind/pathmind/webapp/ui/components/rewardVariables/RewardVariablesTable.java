@@ -76,8 +76,8 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         rewardVariables.forEach(rewardVariable -> {
             if (rewardVariableNameFields.size() < rewardVariables.size()) {
                 RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, experimentView, actAsMultiSelect);
-                    container.add(row);
-                    rewardVariableNameFields.add(row);
+                container.add(row);
+                rewardVariableNameFields.add(row);
             } else {
                 RewardVariablesRowField row = rewardVariableNameFields.get(rewardVariable.getArrayIndex());
                 row.setSelected(false);

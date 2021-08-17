@@ -5,6 +5,7 @@ import java.util.List;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.RunType;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class JobSpec {
     private final String metrics; // Disabled for now. Proper Metrics support will probably need a bit of
     // re-engineering across the webapp, Pathmind Helper and NativeRL
     private final List<Observation> selectedObservations;
+    private final List<SimulationParameter> simulationParameters;
     private final int iterations;
 
     private final ExecutionEnvironment env;
