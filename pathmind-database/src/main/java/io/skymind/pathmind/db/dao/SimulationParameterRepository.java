@@ -1,5 +1,6 @@
 package io.skymind.pathmind.db.dao;
 
+import io.skymind.pathmind.shared.constants.ParamType;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import org.jooq.DSLContext;
 import org.jooq.Query;
@@ -11,6 +12,11 @@ import static io.skymind.pathmind.db.jooq.Tables.SIMULATION_PARAMETER;
 
 public class SimulationParameterRepository {
     protected static void insertOrUpdateSimulationParameter(DSLContext ctx, List<SimulationParameter> simParams) {
+        simParams.forEach(p -> {
+            if (p.getType() == ParamType.BOOLEAN.getValue()) {
+                p.setValue(String.valueOf(Boolean.parseBoolean(p.getValue())));
+            }
+        });
         final List<Query> saveQueries = simParams.stream()
             .map(param ->
                 ctx.insertInto(SIMULATION_PARAMETER)
