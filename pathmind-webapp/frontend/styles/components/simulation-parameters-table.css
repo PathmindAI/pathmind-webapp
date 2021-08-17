@@ -42,6 +42,7 @@
 .simulation-parameters-table vaadin-horizontal-layout vaadin-select,
 .simulation-parameters-table vaadin-horizontal-layout vaadin-number-field,
 .simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field {
-    width: 55%;
+    flex: 0 0 40%;
+    width: 40%;
     padding: 0;
 }
