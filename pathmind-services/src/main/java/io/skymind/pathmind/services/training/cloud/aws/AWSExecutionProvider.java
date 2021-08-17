@@ -51,6 +51,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
     public static final String SUCCESS_MESSAGE_PREFIX = "x-success_message";
     public static final String WARNING_MESSAGE_PREFIX = "x-warning_message";
     private static final String OBS_SNIPPET_FILE = "obs.txt";
+    private static final String SIM_PARAM_SNIPPET_FILE = "simulationParameter.txt";
     
     public static final int RLLIB_MAX_LEN = 1024;
     public static final int SUCCESS_MAX_LEN = 1024;
@@ -82,6 +83,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         installModel(job.getModelFileId(), instructions, files);
         installCheckpoint(job.getCheckpointFileId(), instructions, files);
         installObsSnippet(buildJobId(job.getRunId()) + "/" + OBS_SNIPPET_FILE, instructions, files);
+        installSimParamSnippet(buildJobId(job.getRunId()) + "/" + SIM_PARAM_SNIPPET_FILE, instructions, files);
 
         // Set up variables
         setupVariables(job, instructions);
@@ -385,6 +387,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_6_1:
             case VERSION_1_6_2:
             case VERSION_1_7_0:
+            case VERSION_1_7_1:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -549,12 +552,21 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
     }
 
+    private void installSimParamSnippet(String simParamS3Path, List<String> instructions, List<String> files) {
+        if (simParamS3Path != null) {
+            files.add(fileManager.buildS3CopyCmd(client.getBucketName(), simParamS3Path, SIM_PARAM_SNIPPET_FILE));
+
+            instructions.add("mv ../simulationParameter.txt .");
+        }
+    }
+
     private void setupVariables(JobSpec job, List<String> instructions) {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
                 var("REWARD_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
+                var("SIMULATION_PARAMETER_SNIPPET", "file:" + SIM_PARAM_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
                 var("TEST_ITERATIONS", "0"), // disabled for now
                 var("MAX_TIME_IN_SEC", String.valueOf(job.getMaxTimeInSec())),
@@ -624,10 +636,12 @@ public class AWSExecutionProvider implements ExecutionProvider {
         File script = null;
         File errChecker = null;
         File obsSnippet = null;
+        File simParamSnippet = null;
         try {
             script = File.createTempFile("pathmind", UUID.randomUUID().toString());
             errChecker = File.createTempFile("pathmind", UUID.randomUUID().toString());
             obsSnippet = File.createTempFile("pathmind", UUID.randomUUID().toString());
+            simParamSnippet = File.createTempFile("pathmind", UUID.randomUUID().toString());
 
             // generate script.sh
             List<String> finalInstruction = new ArrayList<>();
@@ -647,11 +661,16 @@ public class AWSExecutionProvider implements ExecutionProvider {
             scriptStr = BashScriptCreatorUtil.createObservationSnippet(job.getSelectedObservations());
             FileUtils.writeStringToFile(obsSnippet, scriptStr, Charset.defaultCharset());
 
+            // generate simulationParameter.txt
+            scriptStr = BashScriptCreatorUtil.createSimulationParameterSnippet(job.getSimulationParameters());
+            FileUtils.writeStringToFile(simParamSnippet, scriptStr, Charset.defaultCharset());
+
             String jobId = buildJobId(job.getRunId());
 
             client.fileUpload(jobId + "/script.sh", script);
             client.fileUpload(jobId + "/errorCheck.sh", errChecker);
             client.fileUpload(jobId + "/" + OBS_SNIPPET_FILE, obsSnippet);
+            client.fileUpload(jobId + "/" + SIM_PARAM_SNIPPET_FILE, simParamSnippet);
             return client.jobSubmit(jobId, job.getType(), ec2InstanceType);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -138,6 +138,7 @@ public class ProjectFileCheckService {
                 .observationTypes(params.getObservationTypes())
                 .modelType(params.getMode())
                 .actionMask(params.isActionMask())
+                .simulationParams(params.getAgentParams())
                 .numberOfAgents(Integer.parseInt(params.getAgents())).build();
 
     }

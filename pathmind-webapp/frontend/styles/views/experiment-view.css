@@ -332,6 +332,16 @@
     z-index: 1;
 }
 
+.experiment-view.comparison-mode .bottom-panel .row-2-of-3 + vaadin-split-layout {
+    flex-direction: column;
+    width: 100% !important;
+    height: auto !important;
+}
+
+.experiment-view.comparison-mode .bottom-panel .row-2-of-3 + vaadin-split-layout .simulation-parameters-panel {
+    width: 100% !important;
+}
+
 .experiment-view .bottom-panel histogram-chart {
     flex: 0 1 calc(100% - 5.5rem);
 }
@@ -533,4 +543,14 @@
 policy-server-live-content {
     display: block;
     margin-bottom: var(--lumo-space-s);
+}
+
+.experiment-view .simulation-parameters-panel .bold-label {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.experiment-view .simulation-parameters-panel vaadin-custom-field {
+    width: 100%;
 }
