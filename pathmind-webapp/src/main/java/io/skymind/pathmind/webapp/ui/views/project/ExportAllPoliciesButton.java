@@ -105,6 +105,8 @@ public class ExportAllPoliciesButton extends Anchor {
         if (bestPolicies.isEmpty()) {
             setVisible(false);
             return;
+        } else {
+            setVisible(true);
         }
 
         getElement().setAttribute("href", getResourceStream(bestPolicies));
