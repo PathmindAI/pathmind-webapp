@@ -39,9 +39,5 @@ public class ChooseProjectForModelView extends PathMindDefaultView {
     protected Component getTitlePanel() {
         return null;
     }
-
-    @Override
-    protected void initScreen(BeforeEnterEvent event) {
-    }
     
 }

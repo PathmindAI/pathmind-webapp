@@ -4,16 +4,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.security.SecurityUtils;
@@ -27,10 +26,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("choose-project-for-model-view-content")
-@JsModule("./src/pages/choose-project-for-model-view-content.js")
+@JsModule("./src/pages/choose-project-for-model-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProjectForModelViewContent.Model> {
+public class ChooseProjectForModelViewContent extends LitTemplate {
 
     @Id("projectDropdown")
     private ComboBox<Project> projectDropdown;
@@ -69,11 +68,11 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
         projectDropdown.setItems(projects);
         if (projects.size() == 1) {
             projectDropdown.setValue(projects.get(0));
-            getModel().setIsCreateNewProject(true);
+            getElement().setProperty("isCreateNewProject", true);
         }
     }
 
-    @EventHandler
+    @ClientCallable
     private void handleSubmitButtonClicked() {
 
         chosenProject = projectDropdown.getValue();
@@ -105,7 +104,7 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
 
     }
 
-    @EventHandler
+    @ClientCallable
     private void selectOnChange() {
     }
 
@@ -119,10 +118,6 @@ public class ChooseProjectForModelViewContent extends PolymerTemplate<ChooseProj
         binder.readBean(newProject);
 
         binder.setBean(newProject);
-    }
-
-    public interface Model extends TemplateModel {
-        void setIsCreateNewProject(Boolean isCreateNewProject);
     }
 
 }
