@@ -1,0 +1,48 @@
+.simulation-parameters-table {
+    box-sizing: border-box;
+    flex: 1 1 19rem;
+    font-size: var(--lumo-font-size-s);
+    line-height: 1;
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
+    overflow-y: auto;
+}
+
+.readonly .simulation-parameters-table {
+    padding-top: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table .header-row {
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    line-height: 1.3;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+    z-index: 1;
+}
+
+.readonly .simulation-parameters-table .header-row {
+    display: none;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout {
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table .simulation-parameter-name {
+    margin-right: var(--lumo-space-xs);
+    word-break: break-all;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout vaadin-text-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-select,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-number-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field {
+    flex: 0 0 40%;
+    width: 40%;
+    padding: 0;
+}

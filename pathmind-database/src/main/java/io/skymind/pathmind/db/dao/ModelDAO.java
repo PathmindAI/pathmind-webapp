@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -64,6 +65,10 @@ public class ModelDAO {
             Experiment experiment = ExperimentRepository.createNewExperiment(transactionCtx, model.getId(), model.isHasGoals());
             experiment.setSelectedObservations(ObservationRepository.getObservationsForModel(transactionCtx, model.getId()));
             ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());
+            List<SimulationParameter> simulationParameters = SimulationParameterRepository.getSimulationParametersForModel(ctx, model.getId());
+            simulationParameters.forEach(p -> p.setExperimentId(experiment.getId()));
+            SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, simulationParameters);
+            experiment.setSimulationParameters(simulationParameters);
             return experiment;
         });
     }

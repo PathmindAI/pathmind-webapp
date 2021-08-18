@@ -2057,4 +2057,39 @@
         <renameColumn tableName="EXPERIMENT" oldColumnName="shared_with_support" newColumnName="shared"/>
     </changeSet>
 
+    <changeSet id="3410-01" author="daehyun@pathmind.com">
+        <createTable tableName="SIMULATION_PARAMETER">
+            <column name="MODEL_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_SIMULATION_PARAMETER_MODEL" references="MODEL(ID)"/>
+            </column>
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="true" foreignKeyName="FK_SIMULATION_PARAMETER_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="KEY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VALUE" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="SIMULATION_PARAMETER" indexName="SIMULATION_PARAMETER_MODEL_ID_EXP_ID_INDEX">
+            <column name="MODEL_ID"/>
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+        <rollback>
+            <dropIndex tableName="SIMULATION_PARAMETER" indexName="SIMULATION_PARAMETER_MODEL_ID_EXP_ID_INDEX"/>
+            <dropTable tableName="SIMULATION_PARAMETER"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3410-02" author="daehyun@pathmind.com">
+        <addUniqueConstraint tableName="SIMULATION_PARAMETER" columnNames="MODEL_ID, EXPERIMENT_ID, INDEX, KEY"/>
+    </changeSet>
+
 </databaseChangeLog>

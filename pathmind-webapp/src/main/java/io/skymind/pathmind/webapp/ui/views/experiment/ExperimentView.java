@@ -24,6 +24,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsViewOnlyPanel;
+import io.skymind.pathmind.webapp.ui.components.simulationParameters.SimulationParametersPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
@@ -74,6 +75,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private ObservationsViewOnlyPanel experimentObservationsPanel;
     private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
     private SimulationMetricsPanel experimentSimulationMetricsPanel;
+    private SimulationParametersPanel experimentSimulationParametersPanel;
 
     // Experiment Comparison Components
     private Boolean isComparisonMode = false;
@@ -83,6 +85,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private ObservationsViewOnlyPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
+    private SimulationParametersPanel comparisonSimulationParametersPanel;
     private FloatingCloseButton comparisonModeCloseButton;
 
     @Autowired
@@ -222,6 +225,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 simulationMetricsAndObservationsPanel,
                 generateRewardFunctionGroup(comparisonCodeViewer),
                 comparisonChartsPanel,
+                comparisonSimulationParametersPanel,
                 comparisonNotesField);
         comparisonComponents.addClassName("comparison-panel");
         comparisonComponents.setPadding(false);
@@ -308,10 +312,15 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     }
 
     private SplitLayout getBottomPanel() {
+        SplitLayout notesAndSimulationParamsPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+            experimentSimulationParametersPanel,
+            experimentNotesField,
+            50
+        );
         SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 experimentChartsPanel,
-                experimentNotesField,
-                70);
+                notesAndSimulationParamsPanel,
+                60);
         bottomPanel.addClassName("bottom-panel");
         return bottomPanel;
     }
@@ -356,6 +365,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
+        experimentSimulationParametersPanel = new SimulationParametersPanel(true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
@@ -366,6 +376,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 experimentCodeViewer,
                 experimentSimulationMetricsPanel,
                 experimentObservationsPanel,
+                experimentSimulationParametersPanel,
                 stoppedTrainingNotification));
 
         // We also need to create the experiment comparison components.
@@ -381,6 +392,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
+        comparisonSimulationParametersPanel = new SimulationParametersPanel(true);
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         comparisonExperimentComponents.addAll(List.of(
@@ -390,6 +402,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonCodeViewer,
                 comparisonSimulationMetricsPanel,
                 comparisonObservationsPanel,
+                comparisonSimulationParametersPanel,
                 comparisonStoppedTrainingNotification));
     }
 

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -18,6 +19,10 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "isEnabled cannot be blank")
     private boolean isEnabled;
+
+    //todo after 1 release, we need to uncomment it. it's for supporting previous MA.
+    //@NotBlank(message = "agentParams cannot be blank")
+    private Map<String, Object> agentParams;
 
     @NotBlank(message = "oldVersionFound cannot be blank")
     private boolean oldVersionFound;
