@@ -233,7 +233,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="details">For Students & Academics*</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$99</span>/Month</span>
+                <span><span class="price">$99</span></span>
             </span>
             <ul class="features">
                 <li><b>Unlimited Concurrent</b> Experiments</li>
@@ -252,7 +252,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="popular-tag">POPULAR</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$499</span>/Month</span>
+                <span><span class="price">$499</span></span>
             </span>
             <ul class="features">
                 <li><b>Unlimited Concurrent</b> Experiments</li>
@@ -267,7 +267,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <span class="details">For Consultancies & Corporate Teams</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$999</span>/Month</span>
+                <span><span class="price">$999</span></span>
             </span>
             <ul class="features">
                 <li><b>Unlimited Concurrent</b> Experiments</li>
