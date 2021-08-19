@@ -134,7 +134,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 ShareExperimentAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
-                new HorizontalLayout(archivedLabel, sharedLabel),
+                WrapperUtils.wrapWidthFullHorizontalNoSpacing(archivedLabel, sharedLabel),
                 trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
