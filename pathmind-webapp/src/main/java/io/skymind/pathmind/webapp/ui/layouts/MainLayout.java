@@ -57,7 +57,7 @@ public class MainLayout extends AppLayout implements PageConfigurator {
             @Value("${pathmind.pathmind-api.url}") String pathmindApiUrl) {
         setId("pathmind-app-layout");
         boolean hasLoginUser = user != null && user.getUser() != null;
-        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey, pathmindApiUrl));
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user));
         if (hasLoginUser) {
             accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
             addToNavbar(accountHeaderPanel);
