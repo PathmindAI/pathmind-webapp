@@ -146,6 +146,7 @@ public class AccountPage extends PageObject {
 
     public void checkSubscriptionPlansPage() {
         assertThat(getDriver().findElement(By.xpath("//h1")).getText(), is("Subscription Plans"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='header']/span")).getText(), is("Billed monthly per user"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::h2")).getText(), is("Basic"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='details']")).getText(), is("For Students and Hobbyists"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='price']")).getText(), is("Free"));
