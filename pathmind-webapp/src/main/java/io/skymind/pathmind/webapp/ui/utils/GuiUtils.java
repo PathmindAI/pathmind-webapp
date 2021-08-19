@@ -49,4 +49,10 @@ public class GuiUtils {
         button.setVisible(isVisible);
         return button;
     }
+
+    public static Button getIconButton(Component icon, ComponentEventListener<ClickEvent<Button>> clickListener) {
+        Button button = new Button(icon, clickListener);
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        return button;
+    }
 }
