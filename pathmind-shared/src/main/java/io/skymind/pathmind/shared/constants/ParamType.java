@@ -1,13 +1,15 @@
 package io.skymind.pathmind.shared.constants;
 
 import java.util.Arrays;
+import java.util.Date;
 
 public enum ParamType {
     BOOLEAN(0, "boolean"),
     INTEGER(1, "integer"),
     DOUBLE(2, "double"),
     STRING(3, "String"),
-    OTHERS(4, "others");
+    OTHERS(4, "others"),
+    DATE(5, "Date");
 
     private int id;
     private String name;
@@ -40,6 +42,8 @@ public enum ParamType {
             return DOUBLE;
         } else if (klass == String.class) {
             return STRING;
+        } else if (klass == Date.class) {
+            return DATE;
         } else {
             return OTHERS;
         }
