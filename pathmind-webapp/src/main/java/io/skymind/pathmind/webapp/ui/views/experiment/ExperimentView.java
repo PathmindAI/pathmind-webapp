@@ -15,6 +15,7 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
@@ -365,7 +366,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        experimentSimulationParametersPanel = new SimulationParametersPanel(true);
+        experimentSimulationParametersPanel = new SimulationParametersPanel(this, true);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
@@ -392,7 +393,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        comparisonSimulationParametersPanel = new SimulationParametersPanel(true);
+        comparisonSimulationParametersPanel = new SimulationParametersPanel(this, true);
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         comparisonExperimentComponents.addAll(List.of(

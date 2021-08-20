@@ -7,6 +7,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
@@ -19,7 +20,10 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private List<SimulationParameter> simulationParameters;
 
-    public SimulationParametersPanel(Boolean isReadOnly) {
+    private AbstractExperimentView abstractExperimentView;
+
+    public SimulationParametersPanel(AbstractExperimentView abstractExperimentView, Boolean isReadOnly) {
+        this.abstractExperimentView = abstractExperimentView;
         add(LabelFactory.createLabel("Simulation Parameters", BOLD_LABEL));
         setupSimulationParametersTable(isReadOnly);
         add(simulationParametersTable);
@@ -46,7 +50,7 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         this.simulationParameters = experiment.getSimulationParameters();
-        simulationParametersTable.setSimulationParameters(simulationParameters);
+        simulationParametersTable.setSimulationParameters(simulationParameters, abstractExperimentView.getModelSimulationParameters());
     }
 
     @Override

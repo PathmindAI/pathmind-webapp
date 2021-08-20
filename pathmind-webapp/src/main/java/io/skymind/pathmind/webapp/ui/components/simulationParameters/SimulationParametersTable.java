@@ -26,6 +26,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
 
     private VerticalLayout container;
     private Set<SimulationParameter> simulationParameters = new HashSet<SimulationParameter>();
+    private Set<SimulationParameter> modelSimulationParameters = new HashSet<SimulationParameter>();
     private Boolean isReadOnly = false;
 
     public SimulationParametersTable(Boolean isReadOnly) {
@@ -36,9 +37,11 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         add(container);
     }
 
-    public void setSimulationParameters(List<SimulationParameter> simulationParameters) {
-        Collections.sort(simulationParameters, Comparator.comparing(SimulationParameter::getIndex));
-        this.simulationParameters = new HashSet<SimulationParameter>(simulationParameters);
+    public void setSimulationParameters(List<SimulationParameter> experimentSimulationParameters, List<SimulationParameter> modelSimulationParameters) {
+        Collections.sort(experimentSimulationParameters, Comparator.comparing(SimulationParameter::getIndex));
+        this.simulationParameters = new HashSet<SimulationParameter>(experimentSimulationParameters);
+        Collections.sort(modelSimulationParameters, Comparator.comparing(SimulationParameter::getIndex));
+        this.modelSimulationParameters = new HashSet<SimulationParameter>(modelSimulationParameters);
 
         container.removeAll();
 
@@ -61,13 +64,20 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
     
             simulationParameters.forEach(simulationParam -> {
                 SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly);
+                if (this.modelSimulationParameters.contains(simulationParam)) {
+                    row.setIsDifferentFromDefault(true);
+                }
                 container.add(row);
             });
         }
     }
 
+    public void setSimulationParameters(Set<SimulationParameter> simulationParameters, Set<SimulationParameter> modelSimulationParameters) {
+        setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters), new ArrayList<SimulationParameter>(modelSimulationParameters));
+    }
+
     public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {
-        setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters));
+        setSimulationParameters(simulationParameters, modelSimulationParameters);
     }
 
     @Override

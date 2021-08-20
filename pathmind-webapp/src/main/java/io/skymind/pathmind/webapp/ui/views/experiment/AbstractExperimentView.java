@@ -13,10 +13,12 @@ import com.vaadin.flow.router.Location;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.SimulationParameterDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.shared.data.user.UserCaps;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
@@ -50,6 +52,8 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     protected PolicyFileService policyFileService;
     @Autowired
     protected RunDAO runDAO;
+    @Autowired
+    protected SimulationParameterDAO simulationParameterDAO;
     @Autowired
     protected TrainingService trainingService;
     @Autowired
@@ -222,6 +226,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
 
     public RunDAO getRunDAO() {
         return runDAO;
+    }
+
+    public List<SimulationParameter> getModelSimulationParameters() {
+        return simulationParameterDAO.getSimulationParametersForModel(experiment.getModelId());
     }
 
     public TrainingService getTrainingService() {

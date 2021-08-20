@@ -20,6 +20,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
     private Component inputField;
     private Span nameSpan;
     private Boolean isReadOnly = false;
+    private Boolean isDifferentFromDefault = false;
 
     public SimulationParametersRowField(SimulationParameter simulationParameter, 
                                         Boolean isReadOnly) {
@@ -77,6 +78,11 @@ public class SimulationParametersRowField extends HorizontalLayout {
 
     public SimulationParameter getSimulationParameter() {
         return simulationParameter;
+    }
+
+    public void setIsDifferentFromDefault(Boolean isDifferent) {
+        isDifferentFromDefault = isDifferent;
+        addClassName("different-from-default");
     }
 
     public void setSimulationParameter(SimulationParameter simulationParameter) {
