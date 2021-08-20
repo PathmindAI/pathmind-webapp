@@ -355,10 +355,17 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickExperimentPageActionsBtn(String btn) {
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
+        switch (btn){
+            case "Archive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:archive']/ancestor::vaadin-button")).click();
+                break;
+            case "Unarchive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:arrow-backward']/ancestor::vaadin-button")).click();
+                break;
+            case "Share":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button")).click();
+                break;
+        }
     }
 
     public void experimentPageClickComparisonFloatingCloseBtn() {
