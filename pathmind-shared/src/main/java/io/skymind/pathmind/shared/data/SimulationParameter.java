@@ -35,6 +35,10 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
         if (type == ParamType.BOOLEAN.getValue())
             return String.valueOf(Boolean.parseBoolean(value));
 
+        if (type == ParamType.DATE.getValue()) {
+            return String.format("new java.util.Date(%sL)", value);
+        }
+
         return value;
     }
 }

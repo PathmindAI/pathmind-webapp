@@ -68,7 +68,7 @@ public class BashScriptCreatorUtil {
         assert simulationParameters != null && !simulationParameters.isEmpty();
         List<String> statements = simulationParameters.stream()
             .filter(p -> p.getType() != ParamType.OTHERS.getValue())
-            .filter(p -> p.getType() == ParamType.STRING.getValue() && !p.getValue().equals("NULL_VALUE"))
+            .filter(p -> p.getType() != ParamType.STRING.getValue() || !p.getValue().equals("NULL_VALUE"))
             .map(p -> String.format("agent.setParameter(\"%s\", %s, false);", p.getKey(), p.getWrappedValue()))
             .collect(Collectors.toList());
 
