@@ -48,9 +48,9 @@
     "lit-html": "1.4.1",
     "lodash": "^4.17.20",
     "multiselect-combo-box": "2.4.2",
-    "to-string-loader": "^1.1.6",
+    "sortablejs": "1.10.2",
     "timeago.js": "4.0.2",
-    "sortablejs": "1.10.2"
+    "to-string-loader": "^1.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",
@@ -133,9 +133,9 @@
       "construct-style-sheets-polyfill": "2.4.16",
       "lit-element": "2.5.1",
       "lit-html": "1.4.1",
-      "timeago.js": "4.0.2",
       "multiselect-combo-box": "2.4.2",
-      "sortablejs": "1.10.2"
+      "sortablejs": "1.10.2",
+      "timeago.js": "4.0.2"
     },
     "devDependencies": {
       "chokidar": "^3.5.0",
@@ -155,6 +155,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "f3bbef072e33a90a287d6abc211b75a9656d846f9d41b82232d8a8aba909e901"
+    "hash": "d003e02847072adf575e9b8a811da7da64372120da7b19a27d27c67c9ddd29fd"
   }
 }
