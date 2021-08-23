@@ -58,9 +58,12 @@ public class ShareExperimentAction {
                     new CopyField(url.replace("experiment", "sharedExperiment")),
                     WrapperUtils.wrapWidthFullBetweenHorizontal(
                         new Button("Unshare Experiment", event -> {
+                            dialog.close();
                             ShareExperimentAction.shareExperiment(experimentView, () -> experimentView.getExperiment(), false, () -> {
                                 experimentView.getExperimentTitleBar().updateComponentEnablements();
-                                experimentView.getComparisonTitleBar().updateComponentEnablements();
+                                if (experimentView.isComparisonMode()) {
+                                    experimentView.getComparisonTitleBar().updateComponentEnablements();
+                                }
                             });
                         }),
                         GuiUtils.getPrimaryButton("Close", event -> dialog.close())
