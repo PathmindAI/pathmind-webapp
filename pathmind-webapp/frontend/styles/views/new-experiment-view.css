@@ -138,12 +138,6 @@
     padding: var(--lumo-space-xs) 0;
 }
 
-.new-experiment-view .bottom-panel,
-.new-experiment-view .error-and-notes-container {
-    flex: 0 0 18rem;
-    overflow: auto;
-}
-
 .new-experiment-view .errors-wrapper {
     display: flex;
     flex-direction: column;
@@ -291,8 +285,15 @@
   position: relative;
   width: calc(100% + 2px);
   padding: var(--lumo-space-xs);
-  margin: -1px;
   overflow: hidden;
+}
+
+.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:nth-child(even) {
+  background-color: var(--pm-highlight-light);
+}
+
+.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover {
+  background-color: var(--pm-highlight-medium);
 }
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper > *:first-child::before {
@@ -314,10 +315,6 @@
 .new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
   justify-content: space-between;
   margin: -1px -1px -1px 0;
-}
-
-.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-select {
-  width: 14rem;
 }
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {

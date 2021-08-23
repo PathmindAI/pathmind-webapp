@@ -8,11 +8,9 @@ class SortableRowWrapper extends LitElement {
         display: flex;
         width: 100%;
         font-size: var(--lumo-font-size-s);
-        border: 1px solid transparent;
       }
       :host(:hover:not(.onDrag)),
       :host(.sortable-chosen) {
-        border-color: var(--pm-grey-color);
         z-index: 1;
       }
       .draggable-icon {
