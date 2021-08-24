@@ -65,9 +65,8 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
     }
 
     private boolean isReadOnly(SimulationParameter simulationParameter) {
-        if (simulationParameter.getType() == ParamType.OTHERS.getValue()) {
-            return true;
-        } else if (simulationParameter.getType() == ParamType.STRING.getValue() && simulationParameter.getValue().equals("NULL_VALUE")){
+        if (simulationParameter.getType().equals(ParamType.OTHERS.getValue()) ||
+            simulationParameter.getType().equals(ParamType.STRING.getValue()) && simulationParameter.getValue().equals("NULL_VALUE")) {
             return true;
         }
         return false;

@@ -25,7 +25,9 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
         add(simulationParametersTable);
         addClassName("simulation-parameters-panel");
 
-        addClassName("readonly");
+        if (isReadOnly) {
+            addClassName("readonly");
+        }
 
         setWidthFull();
         setPadding(false);

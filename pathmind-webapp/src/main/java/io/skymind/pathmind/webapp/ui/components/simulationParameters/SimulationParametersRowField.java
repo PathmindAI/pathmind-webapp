@@ -1,6 +1,12 @@
 package io.skymind.pathmind.webapp.ui.components.simulationParameters;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -65,6 +71,15 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 stringField.setReadOnly(isReadOnly);
                 stringField.addValueChangeListener(changeEvent -> simulationParameter.setValue(changeEvent.getValue()));
                 return stringField;
+            case 5:
+                DatePicker datePicker = new DatePicker();
+                LocalDate dateValue = Instant.ofEpochMilli(Long.parseLong(simulationParameter.getValue())).atZone(ZoneId.of("Etc/GMT")).toLocalDate();
+                datePicker.setValue(dateValue);
+                datePicker.getElement().setAttribute("theme", "small");
+                datePicker.setReadOnly(isReadOnly);
+                datePicker.addValueChangeListener(changeEvent -> 
+                        simulationParameter.setValue(""+changeEvent.getValue().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()));
+                return datePicker;
             case 4:
             default:
                 TextField othersField = new TextField();
