@@ -382,7 +382,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
             observationDAO.updateModelObservations(model.getId(), observationList);
 
-            List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeSureSimulationParameter(model.getId(), null, alResult.getSimulationParams());
+            List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeValidSimulationParameter(model.getId(), null, alResult.getSimulationParams());
             simulationParameterDAO.insertSimulationParameters(simulationParameterList);
 
             segmentIntegrator.modelImported(true);

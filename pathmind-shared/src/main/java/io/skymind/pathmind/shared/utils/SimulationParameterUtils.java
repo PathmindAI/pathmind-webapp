@@ -8,7 +8,7 @@ import java.util.List;
 
 public class SimulationParameterUtils {
 
-    public static List<SimulationParameter> makeSureSimulationParameter(Long modelId, Long experimentId, List<SimulationParameter> simulationParameters) {
+    public static List<SimulationParameter> makeValidSimulationParameter(Long modelId, Long experimentId, List<SimulationParameter> simulationParameters) {
         simulationParameters.forEach(p -> {
             p.setModelId(modelId);
             p.setExperimentId(experimentId);
