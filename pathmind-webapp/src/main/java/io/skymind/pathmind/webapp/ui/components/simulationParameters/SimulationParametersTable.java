@@ -7,8 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -39,15 +43,28 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
 
         container.removeAll();
 
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Name"), new Span("Value"));
-        headerRow.addClassName("header-row");
-        GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
-        container.add(headerRow);
-
-        simulationParameters.forEach(simulationParam -> {
-            SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
-            container.add(row);
-        });
+        if (simulationParameters.isEmpty()) {
+            Button readMoreButton = new Button("Learn More");
+            readMoreButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+            Anchor intercomArticleLink = new Anchor("http://help.pathmind.com/en/articles/5506514-simulation-parameters", readMoreButton);
+            intercomArticleLink.setTarget("_blank");
+            VerticalLayout text = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                new Paragraph("This model does not contain any simulation parameters."),
+                intercomArticleLink
+            );
+            text.addClassName("simulation-parameters-instructions");
+            container.add(text);
+        } else {
+            HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Name"), new Span("Value"));
+            headerRow.addClassName("header-row");
+            GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
+            container.add(headerRow);
+    
+            simulationParameters.forEach(simulationParam -> {
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
+                container.add(row);
+            });
+        }
     }
 
     public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {

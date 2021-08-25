@@ -46,3 +46,11 @@
     width: 45%;
     padding: 0;
 }
+
+.simulation-parameters-table .simulation-parameters-instructions {
+    line-height: 1.3;
+}
+
+.simulation-parameters-table .simulation-parameters-instructions a {
+    align-self: center;
+}
