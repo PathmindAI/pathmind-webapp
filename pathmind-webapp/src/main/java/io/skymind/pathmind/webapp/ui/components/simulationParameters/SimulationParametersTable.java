@@ -17,6 +17,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import io.skymind.pathmind.shared.constants.ParamType;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -60,7 +61,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
             container.add(headerRow);
     
             simulationParameters.forEach(simulationParam -> {
-                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly);
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
                 container.add(row);
             });
         }
@@ -80,4 +81,11 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         setSimulationParameters(newPresentationValue);
     }
 
+    private boolean isReadOnly(SimulationParameter simulationParameter) {
+        if (simulationParameter.getType().equals(ParamType.OTHERS.getValue()) ||
+            simulationParameter.getType().equals(ParamType.STRING.getValue()) && simulationParameter.getValue().equals("NULL_VALUE")) {
+            return true;
+        }
+        return false;
+    }
 }

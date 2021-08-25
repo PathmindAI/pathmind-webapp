@@ -116,8 +116,7 @@ public class ExperimentService {
                 rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
                 observationDAO.updateModelObservations(model.getId(), observationList);
 
-                List<SimulationParameter> simulationParameterList
-                    = SimulationParameterUtils.convertToSimulationParams(model.getId(), null, alResult.getSimulationParams());
+                List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeValidSimulationParameter(model.getId(), null, alResult.getSimulationParams());
                 simulationParameterDAO.insertSimulationParameters(simulationParameterList);
                 break;
             }
