@@ -17,7 +17,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <vaadin.version>14.6.5</vaadin.version>
+        <vaadin.version>14.6.8</vaadin.version>
         <jooq.version>3.14.9</jooq.version>
     </properties>
 
