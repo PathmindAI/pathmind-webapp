@@ -217,4 +217,14 @@ public class HomePageStepDefinitions {
     public void clickSearchResultResult(String searchResult) {
         homePageSteps.clickSearchResultResult(searchResult);
     }
+
+    @Then("^Check that button Upgrade to Pro btn is shown '(.*)'$")
+    public void checkThatButtonUpgradeToProBtnIsShown(Boolean btnShown) {
+        homePageSteps.checkThatButtonUpgradeToProBtnIsShown(btnShown);
+    }
+
+    @When("^Click in Upgrade to Pro button$")
+    public void clickInUpgradeToProButton() {
+        homePageSteps.clickInUpgradeToProButton();
+    }
 }

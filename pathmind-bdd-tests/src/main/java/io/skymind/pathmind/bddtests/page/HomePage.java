@@ -42,6 +42,8 @@ public class HomePage extends PageObject {
     @FindBy(css = ".navbar-logo")
     private WebElement navBarLogo;
 
+    private By upgradeToProBtn = By.xpath("//upgrade-to-pro-button");
+
     public void checkNavAccLinkVisible(String name) {
         assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout[@id='nav-main-links']//a[2]")).getText(), is("Projects"));
     }
@@ -253,5 +255,20 @@ public class HomePage extends PageObject {
     public void clickSearchResultResult(String searchResult) {
         String xpath = String.format("//vaadin-vertical-layout[@class='search-result-item']/descendant::span[contains(text(), '%s')]", searchResult);
         utils.clickElementRepeatIfStaleException(By.xpath(xpath));
+    }
+
+    public void checkThatButtonUpgradeToProBtnIsShown(Boolean btnShown) {
+        if (btnShown){
+            assertThat(getDriver().findElements(upgradeToProBtn).size(), is(1));
+            assertThat(getDriver().findElement(upgradeToProBtn).getText(), is("Upgrade to Pro"));
+            WebElement e = utils.expandRootElement(getDriver().findElement(upgradeToProBtn));
+            assertThat(e.findElement(By.cssSelector("a")).getAttribute("href"), containsString("/account/upgrade"));
+        }else {
+            assertThat(getDriver().findElements(upgradeToProBtn).size(), is(0));
+        }
+    }
+
+    public void clickInUpgradeToProButton() {
+        getDriver().findElement(upgradeToProBtn).click();
     }
 }
