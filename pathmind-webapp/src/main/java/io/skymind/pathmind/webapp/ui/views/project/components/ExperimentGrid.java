@@ -105,8 +105,6 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Selected Observations", selectedObsColumn);
         columnList.put("Reward Function", rewardFunctionColumn);
         columnList.put("Notes", notesColumn);
-
-        rewardVariables.forEach(this::addAdditionalColumn);
     }
 
     public Map<String, Column<Experiment>> getColumnList() {
@@ -117,11 +115,7 @@ public class ExperimentGrid extends Grid<Experiment> {
         return additionalColumnList;
     }
 
-    private void addAdditionalColumn(RewardVariable rewardVar) {
-        addAdditionalColumn(rewardVar, false);
-    }
-
-    public void addAdditionalColumn(RewardVariable rewardVar, boolean show) {
+    public void addAdditionalColumn(RewardVariable rewardVar) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
 
@@ -161,7 +155,6 @@ public class ExperimentGrid extends Grid<Experiment> {
                     .setFlexGrow(0)
                     .setResizable(true)
                     .setSortable(true);
-            newColumn.setVisible(show);
             additionalColumnList.put(rewardVariableName, newColumn);
         } else {
             showAdditionalColumn(rewardVar);

@@ -3,26 +3,21 @@ package io.skymind.pathmind.shared.utils;
 import io.skymind.pathmind.shared.constants.ParamType;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class SimulationParameterUtils {
-    public static List<SimulationParameter> convertToSimulationParams(Long modelId, Long experimentId, Map<String, Object> paramMap) {
-        if (paramMap == null || paramMap.isEmpty()) {
-            return new ArrayList<>();
-        }
 
-        AtomicInteger index = new AtomicInteger();
-        return paramMap.entrySet().stream()
-            .map(param -> {
-                String key = param.getKey();
-                Object value = param.getValue();
-                return new SimulationParameter(modelId, experimentId, index.getAndIncrement(),
-                    key, value.toString(), ParamType.getEnumFromClass(value.getClass()).getValue());
-            })
-            .collect(Collectors.toList());
+    public static List<SimulationParameter> makeValidSimulationParameter(Long modelId, Long experimentId, List<SimulationParameter> simulationParameters) {
+        simulationParameters.forEach(p -> {
+            p.setModelId(modelId);
+            p.setExperimentId(experimentId);
+
+            if (p.getType() == ParamType.DATE.getValue()) {
+                // Fri Feb 14 00:00:00 GMT 2020 -> "1581638400000"
+                p.setValue(String.valueOf(new Date(p.getValue()).getTime()));
+            }
+        });
+        return simulationParameters;
     }
 }

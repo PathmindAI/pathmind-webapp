@@ -4,7 +4,6 @@
     font-size: var(--lumo-font-size-s);
     line-height: 1;
     padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
-    overflow-y: auto;
 }
 
 .readonly .simulation-parameters-table {
@@ -41,8 +40,17 @@
 .simulation-parameters-table vaadin-horizontal-layout vaadin-text-field,
 .simulation-parameters-table vaadin-horizontal-layout vaadin-select,
 .simulation-parameters-table vaadin-horizontal-layout vaadin-number-field,
-.simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field {
-    flex: 0 0 40%;
-    width: 40%;
+.simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-date-time-picker {
+    flex: 0 0 45%;
+    width: 45%;
     padding: 0;
+}
+
+.simulation-parameters-table .simulation-parameters-instructions {
+    line-height: 1.3;
+}
+
+.simulation-parameters-table .simulation-parameters-instructions a {
+    align-self: center;
 }

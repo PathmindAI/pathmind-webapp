@@ -1,0 +1,7 @@
+.slot-container {
+    flex-direction: column;
+}
+
+.slot-container ::slotted([slot="date-picker"]) {
+    margin-right: 0;
+}

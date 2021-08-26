@@ -106,6 +106,7 @@
 
 .new-experiment-view .simulation-parameters-panel vaadin-custom-field {
     width: 100%;
+    overflow: auto;
 }
 
 .new-experiment-view .reward-variables-table .header-row,
