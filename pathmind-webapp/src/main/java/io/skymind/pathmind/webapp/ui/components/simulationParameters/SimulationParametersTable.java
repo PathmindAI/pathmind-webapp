@@ -65,7 +65,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
 
             for (int i = 0; i < experimentSimulationParameters.size(); i++) {
                 SimulationParameter simulationParam = experimentSimulationParameters.get(i);
-                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam));
                 if (!modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
                     row.setIsDifferentFromDefault(true);
                 }
@@ -92,7 +92,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         setSimulationParameters(newPresentationValue);
     }
 
-    private boolean isReadOnly(SimulationParameter simulationParameter) {
+    private boolean isSpecialType(SimulationParameter simulationParameter) {
         if (simulationParameter.getType().equals(ParamType.OTHERS.getValue()) ||
             simulationParameter.getType().equals(ParamType.STRING.getValue()) && simulationParameter.getValue().equals("NULL_VALUE")) {
             return true;

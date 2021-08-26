@@ -32,7 +32,15 @@
     margin-bottom: var(--lumo-space-xs);
 }
 
-.simulation-parameters-table .different-from-default {
+.simulation-parameters-table vaadin-horizontal-layout:not(.header-row) span:last-child {
+    max-width: 45%;
+    word-break: break-all;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
+    border: 1px solid var(--pm-grey-color);
+    border-radius: var(--lumo-border-radius);
+}
+
+.simulation-parameters-table .different-from-default span:last-child {
     color: var(--lumo-primary-text-color);
 }
 
