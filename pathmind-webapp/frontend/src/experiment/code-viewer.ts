@@ -74,7 +74,7 @@ class CodeViewer extends LitElement {
     
         if (this.codeSnippet && this.comparisonCodeSnippet) {
           const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
-          const codeDiff = diff.diffWords(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
+          const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
           let processedCodeSnippet = "";
           codeDiff.forEach(part => {
             if (part.removed) {

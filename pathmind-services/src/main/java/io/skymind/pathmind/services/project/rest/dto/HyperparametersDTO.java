@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.project.rest.dto;
 
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -22,7 +22,7 @@ public class HyperparametersDTO {
 
     //todo after 1 release, we need to uncomment it. it's for supporting previous MA.
     //@NotBlank(message = "agentParams cannot be blank")
-    private Map<String, Object> agentParams;
+    private List<SimulationParameter> agentParams;
 
     @NotBlank(message = "oldVersionFound cannot be blank")
     private boolean oldVersionFound;
