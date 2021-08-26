@@ -32,6 +32,10 @@
     margin-bottom: var(--lumo-space-xs);
 }
 
+.simulation-parameters-table .different-from-default {
+    color: var(--lumo-primary-text-color);
+}
+
 .simulation-parameters-table .simulation-parameter-name {
     margin-right: var(--lumo-space-xs);
     word-break: break-all;

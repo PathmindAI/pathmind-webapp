@@ -62,14 +62,15 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
             headerRow.addClassName("header-row");
             GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
             container.add(headerRow);
-    
-            simulationParameters.forEach(simulationParam -> {
+
+            for (int i = 0; i < experimentSimulationParameters.size(); i++) {
+                SimulationParameter simulationParam = experimentSimulationParameters.get(i);
                 SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
-                if (this.modelSimulationParameters.contains(simulationParam)) {
+                if (!modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
                     row.setIsDifferentFromDefault(true);
                 }
                 container.add(row);
-            });
+            }
         }
     }
 
