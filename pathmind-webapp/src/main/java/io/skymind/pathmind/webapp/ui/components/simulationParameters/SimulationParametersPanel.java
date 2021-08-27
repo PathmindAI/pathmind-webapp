@@ -46,6 +46,10 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
         return this.simulationParameters;
     }
 
+    public void setComparisonModeTheOtherParameters(List<SimulationParameter> comparisonSimulationParameters) {
+        simulationParametersTable.setComparisonParameters(comparisonSimulationParameters);
+    }
+
     @Override
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;

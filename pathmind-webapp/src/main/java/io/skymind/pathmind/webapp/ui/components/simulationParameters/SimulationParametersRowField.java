@@ -26,8 +26,8 @@ public class SimulationParametersRowField extends HorizontalLayout {
     private Component inputField;
     private Span nameSpan;
     private Boolean isReadOnly = false;
-    private Boolean isDifferentFromDefault = false;
     private String differentFromDefaultClassname = "different-from-default";
+    private String differentFromComparisonClassname = "different-from-comparison";
 
     public SimulationParametersRowField(SimulationParameter simulationParameter, 
                                         Boolean isReadOnly,
@@ -129,7 +129,6 @@ public class SimulationParametersRowField extends HorizontalLayout {
     }
 
     public void setIsDifferentFromDefault(Boolean isDifferent) {
-        isDifferentFromDefault = isDifferent;
         if (isDifferent) {
             addClassName(differentFromDefaultClassname);
         } else {
@@ -139,6 +138,22 @@ public class SimulationParametersRowField extends HorizontalLayout {
 
     public void setSimulationParameter(SimulationParameter simulationParameter) {
         this.simulationParameter = simulationParameter;
+    }
+
+    public void setComparisonParameter(SimulationParameter comparisonParameter) {
+        if (comparisonParameter == null || simulationParameter.getValue().equals(comparisonParameter.getValue())) {
+            unhighlight();
+        } else {
+            highlight();
+        }
+    }
+
+    private void highlight() {
+        addClassName(differentFromComparisonClassname);
+    }
+
+    public void unhighlight() {
+        removeClassName(differentFromComparisonClassname);
     }
 
 }

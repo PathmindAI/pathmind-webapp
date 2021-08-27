@@ -129,6 +129,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
                 comparisonExperiment.getRewardFunction());
+        experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
+                comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -144,6 +146,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
+        experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }
@@ -353,6 +356,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 experiment.getSelectedObservations());
         comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(
                 experiment.getRewardFunction());
+        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(
+                experiment.getSimulationParameters());
     }
 
     @Override

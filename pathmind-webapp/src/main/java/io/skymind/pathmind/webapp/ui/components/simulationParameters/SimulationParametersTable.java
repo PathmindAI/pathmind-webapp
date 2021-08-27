@@ -28,6 +28,8 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
     private VerticalLayout container;
     private Set<SimulationParameter> simulationParameters = new HashSet<SimulationParameter>();
     private Set<SimulationParameter> modelSimulationParameters = new HashSet<SimulationParameter>();
+    private List<SimulationParametersRowField> simulationParametersRowFields = new ArrayList<SimulationParametersRowField>();
+    private List<SimulationParameter> comparisonSimulationParameters = new ArrayList<SimulationParameter>();
     private Boolean isReadOnly = false;
 
     public SimulationParametersTable(Boolean isReadOnly) {
@@ -45,6 +47,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         this.modelSimulationParameters = new HashSet<SimulationParameter>(modelSimulationParameters);
 
         container.removeAll();
+        simulationParametersRowFields.clear();
 
         if (simulationParameters.isEmpty()) {
             Button readMoreButton = new Button("Learn More");
@@ -69,17 +72,30 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
                 if (!modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
                     row.setIsDifferentFromDefault(true);
                 }
+                if (!comparisonSimulationParameters.isEmpty()) {
+                    row.setComparisonParameter(comparisonSimulationParameters.get(i));
+                }
                 container.add(row);
+                simulationParametersRowFields.add(row);
             }
         }
     }
 
-    public void setSimulationParameters(Set<SimulationParameter> simulationParameters, Set<SimulationParameter> modelSimulationParameters) {
+    public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {
         setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters), new ArrayList<SimulationParameter>(modelSimulationParameters));
     }
 
-    public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {
-        setSimulationParameters(simulationParameters, modelSimulationParameters);
+    public void setComparisonParameters(List<SimulationParameter> comparisonSimulationParameters) {
+        this.comparisonSimulationParameters = comparisonSimulationParameters;
+        if (!simulationParametersRowFields.isEmpty()) {
+            for (int i = 0; i < simulationParametersRowFields.size(); i++) {
+                if (comparisonSimulationParameters == null || comparisonSimulationParameters.isEmpty()) {
+                    simulationParametersRowFields.get(i).setComparisonParameter(null);
+                } else {
+                    simulationParametersRowFields.get(i).setComparisonParameter(comparisonSimulationParameters.get(i));
+                }
+            }
+        }
     }
 
     @Override
