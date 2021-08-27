@@ -41,6 +41,7 @@ class SortableRowWrapper extends LitElement {
             4px 12px 0 var(--pm-grey-color);
       }
       iron-icon {
+        flex-shrink: 0;
         width: 14px;
         height: 14px;
         color: var(--pm-grey-color);

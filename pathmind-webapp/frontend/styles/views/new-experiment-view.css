@@ -71,10 +71,6 @@
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
-  flex: 2;
-}
-
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel > vaadin-vertical-layout {
   overflow-x: hidden;
   overflow-y: auto;
@@ -284,9 +280,9 @@
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper {
   counter-increment: number;
   position: relative;
-  width: calc(100% + 2px);
+  width: 100%;
   padding: var(--lumo-space-xs);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:nth-child(even) {
@@ -315,7 +311,6 @@
 
 .new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
   justify-content: space-between;
-  margin: -1px -1px -1px 0;
 }
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
@@ -325,7 +320,7 @@
 
 .new-experiment-view .goal-fields-wrapper {
   justify-content: flex-end;
-  width: 21rem !important;
+  width: auto !important;
 }
 
 .new-experiment-view .goal-fields-wrapper.ignore vaadin-number-field {

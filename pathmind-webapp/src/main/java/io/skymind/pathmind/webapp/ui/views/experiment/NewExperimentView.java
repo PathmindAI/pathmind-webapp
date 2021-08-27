@@ -38,7 +38,6 @@ import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.components.simulationParameters.SimulationParametersPanel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -65,7 +64,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected ExperimentNotesField notesField;
     private RewardFunctionBuilder rewardFunctionBuilder;
     // private RewardFunctionEditor rewardFunctionEditor;
-    private RewardVariablesTable rewardVariablesTable;
     private SimulationParametersPanel simulationParametersPanel;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
     private ObservationsPanel observationsPanel;
@@ -138,32 +136,18 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         panelTitle.setClassName("panel-title");
 
         Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-
-        VerticalLayout rewardVariablesPanel = WrapperUtils
-                .wrapVerticalWithNoPaddingOrSpacing(
-                        LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
-                        rewardVariablesTable);
-        rewardVariablesPanel.addClassName("reward-variables-panel");
         rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
-
-        SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionBuilder,
-                rewardVariablesPanel,
-                70);
-        // rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         
         SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationParametersPanel,
                 observationsPanel,
                 50);
-        // simulationParametersAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
         
         SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionEditorWrapper,
+                rewardFunctionBuilder,
                 simulationParametersAndObservationsWrapper,
-                60);
+                52.5);
         rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
-        // rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
 
         settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
@@ -171,13 +155,13 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 rewardFunctionErrorPanel,
                 notesField,
-                70);
+                68.85);
         errorAndNotesContainer.setClassName("error-and-notes-container");
 
         SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 errorAndNotesContainer,
                 settingsPanel,
-                75);
+                76.25);
         bottomPanel.setClassName("bottom-panel");
 
         splitButton = createSplitButton();
@@ -370,14 +354,12 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         rewardFunctionBuilder = new RewardFunctionBuilder(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
-        rewardVariablesTable = new RewardVariablesTable();
         simulationParametersPanel = new SimulationParametersPanel(false);
 
         experimentComponentList.addAll(List.of(
                 notesField,
                 rewardFunctionBuilder,
                 observationsPanel,
-                rewardVariablesTable,
                 simulationParametersPanel));
     }
 }
