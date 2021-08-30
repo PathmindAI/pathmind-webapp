@@ -70,6 +70,18 @@ Feature: E2E
     When Click in 'Export Policy' button
     When Check export policy filename '<project name>', '-M1-simplestochasticmodel-E2-Policy.zip'
     #    ------------------------
+    #Check export policy button from project page
+    When Click model breadcrumb btn
+    When Click upload model btn from project page
+    When Upload model CoffeeShop/CoffeeShop.zip
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    Then Click wizard model details next btn
+    Then Click wizard reward variables next btn
+    When Click model breadcrumb btn
+    When Click the model name 1
+    Then Check that button 'Export Policies' exists
+    #    ------------------------
     #Check policy server deploying
     When Click in 'Start Policy Server' button
     When Check deploying policy server overlay

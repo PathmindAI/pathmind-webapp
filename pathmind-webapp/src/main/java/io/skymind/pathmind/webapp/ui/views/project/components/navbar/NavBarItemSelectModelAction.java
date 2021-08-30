@@ -7,8 +7,6 @@ import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 public class NavBarItemSelectModelAction {
     public static void selectModel(Model model, ProjectView projectView) {
         projectView.getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.PROJECT + "/" + model.getProjectId() + "/model/" + model.getId()));
-        synchronized (projectView.getModelLock()) {
-            projectView.setModel(model);
-        }
+        projectView.setModel(model);
     }
 }
