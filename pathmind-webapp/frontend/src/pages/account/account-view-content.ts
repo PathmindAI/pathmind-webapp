@@ -1,8 +1,31 @@
-import {html, PolymerElement} from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
+import { ButtonElement } from "@vaadin/vaadin-button/src/vaadin-button.js";
 import "../../components/organisms/app-footer.ts";
 
-class AccountViewContent extends PolymerElement {
-    static get template() {
+class AccountViewContent extends LitElement {
+
+    @property({type: String})
+    email = "";
+    @property({type: String})
+    firstName = "";
+    @property({type: String})
+    lastName = "";
+    @property({type: String})
+    privacyLink = "";
+    @property({type: String})
+    apiKey = "";
+    @property({type: String})
+    apiKeyExpiresPhrase = "";
+    @property({type: String})
+    subscription = "";
+    @property({type: String})
+    subscriptionCancellationNote = "";
+    @property({type: String})
+    termsOfUseLink = "";
+    @property({type: String})
+    contactLink = "";
+
+    render() {
         return html`
             <style>
                 account-view-content .block {
@@ -84,11 +107,11 @@ class AccountViewContent extends PolymerElement {
                     <vaadin-horizontal-layout style="width: 100%;" class="block">
                         <vaadin-vertical-layout class="info">
                             <div class="title">User Email</div>
-                            <div class="data">{{email}}</div>
+                            <div class="data">${this.email}</div>
                             <div class="title">First Name</div>
-                            <div class="data">{{firstName}}</div>
+                            <div class="data">${this.firstName}</div>
                             <div class="title">Last Name</div>
-                            <div class="data">{{lastName}}</div>
+                            <div class="data">${this.lastName}</div>
                         </vaadin-vertical-layout>
                         <vaadin-button id="editInfoBtn" theme="small">
                             Edit
@@ -107,7 +130,7 @@ class AccountViewContent extends PolymerElement {
                         <vaadin-vertical-layout class="info" style="width: 100%;">
                             <vaadin-horizontal-layout class="api-title-wrapper">
                                 <div class="title">Access Token</div>
-                                <div id="apiExpiryDate">{{apiKeyExpiresPhrase}}</div>
+                                <div id="apiExpiryDate">${this.apiKeyExpiresPhrase}</div>
                                 <vaadin-context-menu id="rotateApiMenu">
                                     <template>
                                         <vaadin-context-menu-list-box>
@@ -123,8 +146,8 @@ class AccountViewContent extends PolymerElement {
                                 </vaadin-context-menu>
                             </vaadin-horizontal-layout>
                             <vaadin-vertical-layout class="data" style="width: 100%">
-                                <div id="accessToken">{{apiKey}}</div>
-                                <vaadin-button id="apiCopyBtn" theme="small" on-click="copyApi">
+                                <div id="accessToken">${this.apiKey}</div>
+                                <vaadin-button id="apiCopyBtn" theme="small" @click="copyApi">
                                     <span active>
                                         <iron-icon icon="vaadin:copy-o"></iron-icon>Copy
                                     </span>
@@ -140,7 +163,7 @@ class AccountViewContent extends PolymerElement {
                             <vaadin-horizontal-layout class="subscription-wrapper">
                                 <vaadin-vertical-layout class="info">
                                     <div class="title">Current Subscription</div>
-                                    <div class="data">{{subscription}}</div>
+                                    <div class="data">${this.subscription}</div>
                                 </vaadin-vertical-layout>
                                 <vaadin-button id="upgradeBtn" theme="small">
                                     Upgrade
@@ -149,26 +172,25 @@ class AccountViewContent extends PolymerElement {
                                     Cancel
                                 </vaadin-button>
                             </vaadin-horizontal-layout>
-                            <div class="data subscription-hint">{{subscriptionCancellationNote}}</div>
+                            <div class="data subscription-hint">${this.subscriptionCancellationNote}</div>
                         </vaadin-vertical-layout>
                     </vaadin-horizontal-layout>
                 </vaadin-vertical-layout>
             </div>
         </vaadin-horizontal-layout>
         <app-footer 
-            privacylink="{{privacyLink}}"
-            termslink="{{termsOfUseLink}}"
-            contactlink="{{contactLink}}"
+            privacylink="${this.privacyLink}"
+            termslink="${this.termsOfUseLink}"
+            contactlink="${this.contactLink}"
         ></app-footer>`;
     }
 
-    _attachDom(dom) {
-        this.appendChild(dom);
+    createRenderRoot() {
+      return this;
     }
 
-    ready() {
-        super.ready();
-        document.getElementById("rotateApiMenu")._setProperty("openOn", "click");
+    firstUpdated() {
+        (document.getElementById("rotateApiMenu") as ButtonElement)._setProperty("openOn", "click");
 
         document.getElementById("accessToken").addEventListener("copy", event => {
             // This will handle the clipboard data to eliminate extra linebreak at the end of the string
@@ -176,12 +198,12 @@ class AccountViewContent extends PolymerElement {
             if (event.clipboardData) {
                 event.clipboardData.setData("text/plain", selection);
             } else {
-                window.clipboardData.setData("text", selection);
+                (window as any).clipboardData.setData("text", selection);
             }
             event.preventDefault();
         });
 
-        this.$server.setSubscriptionEndDate();
+        (this as any).$server.setSubscriptionEndDate();
     }
 
     triggerRotateBtn() {
@@ -201,16 +223,12 @@ class AccountViewContent extends PolymerElement {
         select.removeAllRanges();
 
         copyIcon.removeAttribute("active");
-        checkmarkIcon.setAttribute("active", true);
+        checkmarkIcon.setAttribute("active", "true");
         setTimeout(function() {
-            copyIcon.setAttribute("active", true);
+            copyIcon.setAttribute("active", "true");
             checkmarkIcon.removeAttribute("active");
         }, 1200);
     }
-
-    static get is() {
-        return "account-view-content";
-    }
 }
 
-customElements.define(AccountViewContent.is, AccountViewContent);
+customElements.define("account-view-content", AccountViewContent);
