@@ -1,5 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../../components/organisms/app-footer.js";
+import "../../components/organisms/app-footer.ts";
 
 class AccountEditViewContent extends PolymerElement {
     static get template() {
