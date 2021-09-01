@@ -196,4 +196,14 @@ public class HomePageSteps {
     public void clickSearchResultResult(String searchResult) {
         homePage.clickSearchResultResult(searchResult);
     }
+
+    @Step
+    public void checkThatButtonUpgradeToProBtnIsShown(Boolean btnShown) {
+        homePage.checkThatButtonUpgradeToProBtnIsShown(btnShown);
+    }
+
+    @Step
+    public void clickInUpgradeToProButton() {
+        homePage.clickInUpgradeToProButton();
+    }
 }
