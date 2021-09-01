@@ -57,3 +57,14 @@ Feature: Nav bar buttons
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
+
+  Scenario: Check that 'Upgrade to Pro' btn is shown to new user
+    Given Register and login with new user
+    Then Check that button Upgrade to Pro btn is shown 'true'
+    When Click in Upgrade to Pro button
+    Then Check subscription plans page
+
+  Scenario: Check that 'Upgrade to Pro' btn is not shown
+    Given Login to the pathmind
+    When Open projects page
+    Then Check that button Upgrade to Pro btn is shown 'false'
