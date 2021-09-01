@@ -1,5 +1,4 @@
 import { LitElement, html, property } from "lit-element";
-import { ButtonElement } from "@vaadin/vaadin-button/src/vaadin-button.js";
 import "../../components/organisms/app-footer.ts";
 
 class AccountViewContent extends LitElement {
@@ -43,12 +42,6 @@ class AccountViewContent extends LitElement {
                 account-view-content vaadin-button[theme~="small"] {
                     height: 1.8rem;
                 }
-                #rotateApiMenu {
-                    margin-right: calc(-1 * var(--lumo-space-xs));
-                }
-                #rotateApiKeyBtn {
-                    display: none;
-                }
                 .api-title-wrapper {
                     justify-content: flex-end;
                     align-items: center;
@@ -63,7 +56,7 @@ class AccountViewContent extends LitElement {
                     color: var(--lumo-secondary-text-color);
                     font-size: var(--lumo-font-size-xs);
                 }
-                #small-menu {
+                #rotateApiKeyBtn {
                     width: auto;
                     margin: 0;
                 }
@@ -131,23 +124,13 @@ class AccountViewContent extends LitElement {
                             <vaadin-horizontal-layout class="api-title-wrapper">
                                 <div class="title">Access Token</div>
                                 <div id="apiExpiryDate">${this.apiKeyExpiresPhrase}</div>
-                                <vaadin-context-menu id="rotateApiMenu">
-                                    <template>
-                                        <vaadin-context-menu-list-box>
-                                            <vaadin-item on-click="triggerRotateBtn">
-                                                Rotate
-                                            </vaadin-item>
-                                        </vaadin-context-menu-list-box>
-                                    </template>
-                                    <vaadin-button id="rotateApiKeyBtn" theme="small"></vaadin-button>
-                                    <vaadin-button id="small-menu" theme="tertiary small">
-                                        <iron-icon icon="vaadin:ellipsis-dots-h"></iron-icon>
-                                    </vaadin-button>
-                                </vaadin-context-menu>
+                                <vaadin-button id="rotateApiKeyBtn" theme="tertiary action-button small">
+                                    <iron-icon icon="vaadin:refresh"></iron-icon>
+                                </vaadin-button>
                             </vaadin-horizontal-layout>
                             <vaadin-vertical-layout class="data" style="width: 100%">
                                 <div id="accessToken">${this.apiKey}</div>
-                                <vaadin-button id="apiCopyBtn" theme="small" @click="copyApi">
+                                <vaadin-button id="apiCopyBtn" theme="small" @click="${this.copyApi}">
                                     <span active>
                                         <iron-icon icon="vaadin:copy-o"></iron-icon>Copy
                                     </span>
@@ -168,7 +151,7 @@ class AccountViewContent extends LitElement {
                                 <vaadin-button id="upgradeBtn" theme="small">
                                     Upgrade
                                 </vaadin-button>
-                                <vaadin-button id="cancelSubscriptionBtn" theme="error small">
+                                <vaadin-button id="cancelSubscriptionBtn" theme="error small" @click="${event => (this as any).$server.cancelSubscription()}">
                                     Cancel
                                 </vaadin-button>
                             </vaadin-horizontal-layout>
@@ -190,11 +173,10 @@ class AccountViewContent extends LitElement {
     }
 
     firstUpdated() {
-        (document.getElementById("rotateApiMenu") as ButtonElement)._setProperty("openOn", "click");
 
         document.getElementById("accessToken").addEventListener("copy", event => {
             // This will handle the clipboard data to eliminate extra linebreak at the end of the string
-            const selection = document.getElementById("accessToken").innerHTML.replace(/\s/g, '');
+            const selection = document.getElementById("accessToken").innerHTML.replace(/\s/g, '').replace(/\W{2,}/g, '');
             if (event.clipboardData) {
                 event.clipboardData.setData("text/plain", selection);
             } else {
@@ -204,10 +186,6 @@ class AccountViewContent extends LitElement {
         });
 
         (this as any).$server.setSubscriptionEndDate();
-    }
-
-    triggerRotateBtn() {
-        document.getElementById("rotateApiKeyBtn").click();
     }
 
     copyApi(event) {

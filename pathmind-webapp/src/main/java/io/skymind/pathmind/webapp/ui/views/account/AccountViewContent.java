@@ -24,6 +24,7 @@ import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,11 +50,11 @@ public class AccountViewContent extends LitTemplate {
     @Id("upgradeBtn")
     private Button upgradeBtn;
 
-    @Id("cancelSubscriptionBtn")
-    private Button cancelSubscriptionBtn;
-
     @Id("rotateApiKeyBtn")
     private Button rotateApiKeyBtn;
+
+    @Id("cancelSubscriptionBtn")
+    private Button cancelSubscriptionBtn;
 
     private StripeService stripeService;
 
@@ -98,13 +99,19 @@ public class AccountViewContent extends LitTemplate {
         upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && !UserRole.isInternalOrEnterpriseOrPartnerUser(user.getAccountType()));
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
+        rotateApiKeyBtn.addClickListener(e -> {
+            ConfirmationUtils.confirmationPopupDialog(
+                "Refresh Access Token",
+                "Are you sure you would like to refresh the access token?",
+                "Refresh",
+                () -> rotateApiKey()
+            );
+        });
 
         upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> {
             segmentIntegrator.navigatedToPricingFromAccountView();
             ui.navigate(AccountUpgradeView.class);
         }));
-        cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription());
-        rotateApiKeyBtn.addClickListener(evt -> rotateApiKey());
     }
 
     private void rotateApiKey() {
@@ -130,6 +137,7 @@ public class AccountViewContent extends LitTemplate {
     }
 
     // This part will probably move to a separate view, but for now implementing it as a confirmation dialog
+    @ClientCallable
     private void cancelSubscription() {
         getUI().ifPresent(ui -> {
             SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
