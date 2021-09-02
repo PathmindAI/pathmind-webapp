@@ -116,8 +116,9 @@ public class AccountPage extends PageObject {
 
     public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
         String beforeRefreshToken = accessToken.getText();
-        getDriver().findElement(By.id("small-menu")).click();
-        getDriver().findElement(By.xpath("//vaadin-item[normalize-space(text()='Rotate')]")).click();
+        getDriver().findElement(By.id("rotateApiKeyBtn")).click();
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector("confirm-popup")));
+        e.findElement(By.cssSelector("#confirm")).click();
         waitABit(2500);
         assertThat(beforeRefreshToken, is(not(accessToken.getText())));
     }
