@@ -27,7 +27,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
 
     private VerticalLayout container;
     private Set<SimulationParameter> simulationParameters = new HashSet<SimulationParameter>();
-    private Set<SimulationParameter> modelSimulationParameters = new HashSet<SimulationParameter>();
+    private List<SimulationParameter> modelSimulationParameters = new ArrayList<SimulationParameter>();
     private List<SimulationParametersRowField> simulationParametersRowFields = new ArrayList<SimulationParametersRowField>();
     private List<SimulationParameter> comparisonSimulationParameters = new ArrayList<SimulationParameter>();
     private Boolean isReadOnly = false;
@@ -44,7 +44,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
         Collections.sort(experimentSimulationParameters, Comparator.comparing(SimulationParameter::getIndex));
         this.simulationParameters = new HashSet<SimulationParameter>(experimentSimulationParameters);
         Collections.sort(modelSimulationParameters, Comparator.comparing(SimulationParameter::getIndex));
-        this.modelSimulationParameters = new HashSet<SimulationParameter>(modelSimulationParameters);
+        this.modelSimulationParameters = modelSimulationParameters;
 
         container.removeAll();
         simulationParametersRowFields.clear();
@@ -82,7 +82,7 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
     }
 
     public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {
-        setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters), new ArrayList<SimulationParameter>(modelSimulationParameters));
+        setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters), modelSimulationParameters);
     }
 
     public void setComparisonParameters(List<SimulationParameter> comparisonSimulationParameters) {
