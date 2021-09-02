@@ -91,6 +91,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
     @Id("startCheckIterationCB")
     private Select<String> startCheckIteration;
 
+    @Id("gammaCB")
+    private Select<String> gamma;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -147,6 +150,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         settingsList.put(freezing, "Enable Freezing");
         settingsList.put(rayDebug, "Enable Ray Debug");
         settingsList.put(maxTrainingTime, "Max Training Time (hour)");
+        settingsList.put(gamma, "Gamma value");
     }
 
     private void initBtns() {
@@ -289,6 +293,12 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxTrainingTime.setItems(maxTrainingTimes);
         maxTrainingTime.setLabel(settingsList.get(maxTrainingTime));
         maxTrainingTime.setValue(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+
+        // init gamma value
+        List<String> gammas = List.of("0.0", "0.5", "0.9", "0.99");
+        gamma.setItems(gammas);
+        gamma.setLabel(settingsList.get(gamma));
+        gamma.setValue(String.valueOf(env.getGamma()));
     }
 
     public void saveSettings() {
@@ -314,6 +324,7 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         env.setFreezing(Boolean.valueOf(freezing.getValue()));
         env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
         env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
+        env.setGamma(Double.parseDouble(gamma.getValue()));
     }
 
     public String getSettingsText() {
