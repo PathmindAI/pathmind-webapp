@@ -41,7 +41,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
             add(getReadonlySpan(dataType));
         } else {
             if (isSpecialType) {
-                isReadOnly = true;
+                this.isReadOnly = true;
             }
             inputField = getUserInputField(dataType);
             add(inputField);
