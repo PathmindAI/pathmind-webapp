@@ -96,6 +96,7 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-select id="freezingCB"></vaadin-select>
                             <vaadin-select id="rayDebugCB"></vaadin-select>
                             <vaadin-select id="maxTrainingTimeCB"></vaadin-select>
+                            <vaadin-select id="gammaCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <vaadin-vertical-layout id="buttonsCont" hidden="{{hideSaveButton}}">
                             <vaadin-button id="saveBtn" theme="primary">

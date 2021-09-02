@@ -111,7 +111,7 @@ Feature: Experiment page compare feature
     When In confirmation dialog click in 'Stop Training' button
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
     Then Experiment page Check 'primary' experiment-header 'Experiment #2', 'Stopping', Stop Training btn shown 'false', Share with support btn shown 'true', Share with support label shown 'false', experiment shared 'true'
-    Then Experiment page Check 'secondary' experiment-header 'Experiment #1', 'Starting Cluster', Stop Training btn shown 'true', Share with support btn shown 'true', Share with support label shown 'true', experiment shared 'true'
+    Then Experiment page Check 'secondary' experiment-header 'Experiment #1', 'Starting Cluster', Stop Training btn shown 'true', Share with support btn shown 'false', Share with support label shown 'true', experiment shared 'true'
 
     Then Experiment page Check 'primary' middle panel
     Then Experiment page Check 'secondary' middle panel

@@ -131,7 +131,8 @@ class CopyField extends PolymerElement {
         const checkmarkIcon = copyButton.querySelector("span:last-child");
         const range = document.createRange();
         range.selectNode(this.$.textToCopy);
-        const select = this.shadowRoot.getSelection();
+        const select = navigator.userAgent.toLowerCase().indexOf('firefox') > -1 
+                ? window.getSelection() : this.shadowRoot.getSelection();
         select.removeAllRanges();
         select.addRange(range);
         document.execCommand("copy");

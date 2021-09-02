@@ -63,10 +63,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        getDriver().findElement(By.xpath("//*[@theme='action-dropdown align-center']")).click();
-        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
-        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        archiveButton.click();
+        getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:archive']/ancestor::vaadin-button")).click();
     }
 
     public void clickArchiveButtonForCurrentDraftExperiment() {
@@ -354,17 +351,21 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickExperimentPageShareWithSupportBtn() {
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='Share Experiment']")).click();
+        getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button")).click();
     }
 
     public void clickExperimentPageActionsBtn(String btn) {
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
+        switch (btn){
+            case "Archive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:archive']/ancestor::vaadin-button")).click();
+                break;
+            case "Unarchive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:arrow-backward']/ancestor::vaadin-button")).click();
+                break;
+            case "Share":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button")).click();
+                break;
+        }
     }
 
     public void experimentPageClickComparisonFloatingCloseBtn() {
