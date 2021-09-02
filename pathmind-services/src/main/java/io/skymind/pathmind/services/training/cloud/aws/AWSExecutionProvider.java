@@ -590,7 +590,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("RAY_DEBUG", String.valueOf(job.getEnv().isRayDebug())),
                 var("SCHEDULER", String.valueOf(job.getEnv().getScheduler())),
                 var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
-                var("ACTIONMASKS", String.valueOf(job.isActionMask()))
+                var("ACTIONMASKS", String.valueOf(job.isActionMask())),
+                var("GAMMA", String.valueOf(job.getEnv().getGamma()))
         ));
 
         if (job.getEnv().isLongerTraining()) {
