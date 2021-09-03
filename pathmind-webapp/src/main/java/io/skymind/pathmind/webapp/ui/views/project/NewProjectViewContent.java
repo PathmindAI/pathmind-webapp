@@ -1,14 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.project;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ProjectDAO;
 import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.webapp.data.utils.ProjectUtils;
@@ -21,10 +20,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("new-project-view")
-@JsModule("./src/pages/new-project-view-content.js")
+@JsModule("./src/pages/new-project-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class NewProjectViewContent extends PolymerTemplate<TemplateModel> {
+public class NewProjectViewContent extends LitTemplate {
 
     @Id("projectName")
     private TextField projectNameTextField;
@@ -41,7 +40,7 @@ public class NewProjectViewContent extends PolymerTemplate<TemplateModel> {
         initBinder();
     }
 
-    @EventHandler
+    @ClientCallable
     private void handleNewProjectClicked() {
         if (!FormUtils.isValidForm(binder, project)) {
             return;
