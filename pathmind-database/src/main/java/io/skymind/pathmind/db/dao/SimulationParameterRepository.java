@@ -13,7 +13,7 @@ import static io.skymind.pathmind.db.jooq.Tables.SIMULATION_PARAMETER;
 public class SimulationParameterRepository {
     protected static void insertOrUpdateSimulationParameter(DSLContext ctx, List<SimulationParameter> simParams) {
         simParams.forEach(p -> {
-            if (p.getType() == ParamType.BOOLEAN.getValue()) {
+            if (p.getType() == ParamType.BOOLEAN) {
                 p.setValue(String.valueOf(Boolean.parseBoolean(p.getValue())));
             }
         });
