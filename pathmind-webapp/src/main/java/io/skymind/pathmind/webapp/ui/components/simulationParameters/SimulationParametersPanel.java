@@ -22,7 +22,7 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private AbstractExperimentView abstractExperimentView;
 
-    public SimulationParametersPanel(AbstractExperimentView abstractExperimentView, Boolean isReadOnly) {
+    public SimulationParametersPanel(AbstractExperimentView abstractExperimentView, boolean isReadOnly) {
         this.abstractExperimentView = abstractExperimentView;
         add(LabelFactory.createLabel("Simulation Parameters", BOLD_LABEL));
         setupSimulationParametersTable(isReadOnly);
@@ -38,7 +38,7 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
         setSpacing(false);
     }
 
-    private void setupSimulationParametersTable(Boolean isReadOnly) {
+    private void setupSimulationParametersTable(boolean isReadOnly) {
         simulationParametersTable = new SimulationParametersTable(isReadOnly);
     }
 

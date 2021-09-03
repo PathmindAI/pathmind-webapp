@@ -41,4 +41,9 @@ public class SimulationParameter extends Data implements DeepCloneableInterface<
 
         return value;
     }
+
+    public boolean isNullString() {
+        return this.getType().equals(ParamType.STRING.getValue()) && ParamType.NULL_VALUE.equals(this.getValue());
+    }
+
 }
