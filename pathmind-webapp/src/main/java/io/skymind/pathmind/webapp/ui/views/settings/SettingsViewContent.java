@@ -9,12 +9,11 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -34,11 +33,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("settings-view-content")
-@JsModule("./src/settings/settings-view-content.js")
+@JsModule("./src/settings/settings-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
-public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Model> {
+public class SettingsViewContent extends LitTemplate {
     private final PathmindUser user;
     private final ExecutionEnvironment env;
     private final SegmentIntegrator segmentIntegrator;
@@ -125,9 +124,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         UserRole accountType = user.getAccountType();
         isPaidUser = UserRole.isPaidUser(accountType);
         isInternalUser = UserRole.isInternalUser(accountType);
-        getModel().setIsPaidUser(isPaidUser);
-        getModel().setIsInternalUser(isInternalUser);
-        getModel().setHideSaveButton(hideSaveButton);
+        getElement().setProperty("isPaidUser", isPaidUser);
+        getElement().setProperty("isInternalUser", isInternalUser);
+        getElement().setProperty("hideSaveButton", hideSaveButton);
         initSettingsMap();
         initContent();
         initBtns();
@@ -335,11 +334,5 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
                 .filter(e -> e.getKey().getValue() != null)
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
                 .collect(Collectors.joining(", "));
-    }
-
-    public interface Model extends TemplateModel {
-        void setIsInternalUser(Boolean isInternalUser);
-        void setIsPaidUser(Boolean isPaidUser);
-        void setHideSaveButton(Boolean hideSaveButton);
     }
 }
