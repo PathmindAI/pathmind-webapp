@@ -21,6 +21,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -91,6 +92,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
 
     @Autowired
     private ModelCheckerService modelCheckerService;
+    @Autowired
+    private UserService userService;
     @Autowired
     private UserDAO userDAO;
 
@@ -371,7 +374,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        experimentSimulationParametersPanel = new SimulationParametersPanel(this, true);
+        experimentSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
@@ -398,7 +401,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        comparisonSimulationParametersPanel = new SimulationParametersPanel(this, true);
+        comparisonSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         comparisonExperimentComponents.addAll(List.of(
