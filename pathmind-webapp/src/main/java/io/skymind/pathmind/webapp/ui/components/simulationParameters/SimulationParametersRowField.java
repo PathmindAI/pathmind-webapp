@@ -1,13 +1,11 @@
 package io.skymind.pathmind.webapp.ui.components.simulationParameters;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -28,16 +26,26 @@ public class SimulationParametersRowField extends HorizontalLayout {
     private Component inputField;
     private Span nameSpan;
     private Boolean isReadOnly = false;
+    private String differentFromDefaultClassname = "different-from-default";
+    private String differentFromComparisonClassname = "different-from-comparison";
 
     public SimulationParametersRowField(SimulationParameter simulationParameter, 
-                                        Boolean isReadOnly) {
+                                        Boolean isReadOnly,
+                                        Boolean isSpecialType) {
         this.isReadOnly = isReadOnly;
         setSimulationParameter(simulationParameter);
         nameSpan = LabelFactory.createLabel(simulationParameter.getKey(), "simulation-parameter-name");
         add(nameSpan);
         int dataType = simulationParameter.getType();
-        inputField = getUserInputField(dataType);
-        add(inputField);
+        if (isReadOnly) {
+            add(getReadonlySpan(dataType));
+        } else {
+            if (isSpecialType) {
+                this.isReadOnly = true;
+            }
+            inputField = getUserInputField(dataType);
+            add(inputField);
+        }
         GuiUtils.removeMarginsPaddingAndSpacing(this);
     }
 
@@ -94,12 +102,58 @@ public class SimulationParametersRowField extends HorizontalLayout {
         }
     }
 
+    private Span getReadonlySpan(int parameterType) {
+        Span textSpan = new Span();
+        switch(parameterType) {
+            case 0:
+                textSpan.add(simulationParameter.getValue().toUpperCase());
+                break;
+            case 5:
+                LocalDateTime dateTime = Instant.ofEpochMilli(Long.parseLong(simulationParameter.getValue())).atZone(ZoneId.of("Etc/GMT")).toLocalDateTime();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm");
+                textSpan.add(dateTime.format(formatter));
+                break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            default:
+                textSpan.add(simulationParameter.getValue());
+                break;
+        }
+        return textSpan;
+    }
+
     public SimulationParameter getSimulationParameter() {
         return simulationParameter;
     }
 
+    public void setIsDifferentFromDefault(Boolean isDifferent) {
+        if (isDifferent) {
+            addClassName(differentFromDefaultClassname);
+        } else {
+            removeClassName(differentFromDefaultClassname);
+        }
+    }
+
     public void setSimulationParameter(SimulationParameter simulationParameter) {
         this.simulationParameter = simulationParameter;
+    }
+
+    public void setComparisonParameter(SimulationParameter comparisonParameter) {
+        if (comparisonParameter == null || simulationParameter.getValue().equals(comparisonParameter.getValue())) {
+            unhighlight();
+        } else {
+            highlight();
+        }
+    }
+
+    private void highlight() {
+        addClassName(differentFromComparisonClassname);
+    }
+
+    public void unhighlight() {
+        removeClassName(differentFromComparisonClassname);
     }
 
 }
