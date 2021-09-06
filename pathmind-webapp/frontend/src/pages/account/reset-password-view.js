@@ -1,6 +1,6 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
-import "../../components/organisms/public-header-menu.js";
+import "../../components/organisms/public-header-menu.ts";
 
 /**
  * `forgot-password-view`

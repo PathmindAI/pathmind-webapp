@@ -1,11 +1,7 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html } from "lit-element";
 
-class AppFooter extends PolymerElement {
-    static get is() {
-        return "app-footer";
-    }
-
-    static get template() {
+class AppFooter extends LitElement {
+    render() {
         return html`
             <style>
                 app-footer {
@@ -77,51 +73,30 @@ class AppFooter extends PolymerElement {
             <vaadin-horizontal-layout>
                 <ul>
                     <li>
-                        <a href="{{privacylink}}" target="_blank">
+                        <a href="https://pathmind.com/privacy" target="_blank">
                             Privacy Policy
                         </a>
                     </li>
                     <li>
-                        <a href="{{termslink}}" target="_blank">
+                        <a href="https://pathmind.com/subscription-agreement" target="_blank">
                             Terms of Use
                         </a>
                     </li>
                     <li>
-                        <a class="support" href="{{contactlink}}">
+                        <a class="support" href="mailto:support@pathmind.com">
                             <iron-icon icon="vaadin:envelope-o"></iron-icon><span>Support</span>
                         </a>
                     </li>
                 </ul>
                 <span class="copyright">
-                    © {{year}} Pathmind
+                    © ${this._getYear()} Pathmind
                 </span>
             </vaadin-horizontal-layout>
         `;
     }
 
-    _attachDom(dom) {
-      this.appendChild(dom);
-    }
-
-    static get properties() {
-      return {
-          privacylink: {
-              type: String,
-              value: "https://pathmind.com/privacy",
-          },
-          termslink: {
-              type: String,
-              value: "https://pathmind.com/subscription-agreement",
-          },
-          contactlink: {
-              type: String,
-              value: "mailto:support@pathmind.com",
-          },
-          year: {
-              type: String,
-              computed: "_getYear()",
-          },
-      };
+    createRenderRoot() {
+        return this;
     }
 
     _getYear() {
@@ -129,4 +104,4 @@ class AppFooter extends PolymerElement {
     }
 }
 
-customElements.define(AppFooter.is, AppFooter);
+customElements.define("app-footer", AppFooter);

@@ -189,7 +189,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiments-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
     }
 
     public void clickCopyRewardFunctionBtn() {
@@ -203,7 +203,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiments-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
     }
 
     public void checkThatExperimentStatusIconIs(String experimentName, String icon) {
@@ -238,7 +238,7 @@ public class ExperimentPage extends PageObject {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         List<String> items = Arrays.asList(commaSeparatedExperimentNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//experiments-navbar-item"))) {
             WebElement experimentNavbarItemShadow = utils.expandRootElement(webElement);
             String experimentNameText = experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText();
             actual.add(experimentNameText);
@@ -332,7 +332,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
-        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiments-navbar-item")).size(), is(experimentsNumber));
     }
 
     public void checkLearningProgressBlockTabs(String tabs) {
@@ -370,7 +370,7 @@ public class ExperimentPage extends PageObject {
 
     public void experimentPageClickComparisonFloatingCloseBtn() {
         getDriver().findElement(By.xpath("//floating-close-button")).click();
-        assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
+        assertThat(getDriver().findElements(By.xpath("//experiments-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
     }
 
     public void checkLearningProgressBlockHistogramXAxisIsShown() {

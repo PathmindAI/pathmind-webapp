@@ -46,7 +46,7 @@ class FavoriteStar extends LitElement {
     }
 
     toggleFavorite() {
-        // for experiment-navbar-item
+        // for experiments-navbar-item
     }
 }
 

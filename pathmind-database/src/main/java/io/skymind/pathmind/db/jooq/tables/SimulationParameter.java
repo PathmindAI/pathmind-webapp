@@ -8,6 +8,7 @@ import io.skymind.pathmind.db.jooq.Indexes;
 import io.skymind.pathmind.db.jooq.Keys;
 import io.skymind.pathmind.db.jooq.Public;
 import io.skymind.pathmind.db.jooq.tables.records.SimulationParameterRecord;
+import io.skymind.pathmind.shared.constants.ParamType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,7 @@ import org.jooq.TableField;
 import org.jooq.TableOptions;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
+import org.jooq.impl.EnumConverter;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
@@ -77,7 +79,7 @@ public class SimulationParameter extends TableImpl<SimulationParameterRecord> {
     /**
      * The column <code>public.simulation_parameter.type</code>.
      */
-    public final TableField<SimulationParameterRecord, Integer> TYPE = createField(DSL.name("type"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SimulationParameterRecord, ParamType> TYPE = createField(DSL.name("type"), SQLDataType.INTEGER.nullable(false), this, "", new EnumConverter<Integer, ParamType>(Integer.class, ParamType.class));
 
     private SimulationParameter(Name alias, Table<SimulationParameterRecord> aliased) {
         this(alias, aliased, null);
@@ -180,7 +182,7 @@ public class SimulationParameter extends TableImpl<SimulationParameterRecord> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Long, Long, Integer, String, String, Integer> fieldsRow() {
+    public Row6<Long, Long, Integer, String, String, ParamType> fieldsRow() {
         return (Row6) super.fieldsRow();
     }
 }
