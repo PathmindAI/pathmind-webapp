@@ -44,6 +44,7 @@ public class NotesField extends LitTemplate {
 
     public void setNotesText(String notesText) {
         this.notesText = notesText;
+        getElement().setProperty("notes", notesText);
         getElement().callJsFunction("_notesChanged", notesText);
     }
 

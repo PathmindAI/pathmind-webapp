@@ -239,6 +239,7 @@ class NotesField extends LitElement {
         }, 300));
         this._allowAutoSaveChanged(this.allowautosave);
         this._notesChanged(this.notes);
+        textarea.value = this.notes;
     }
 
     updated(changedProperties) {
@@ -264,7 +265,7 @@ class NotesField extends LitElement {
         const textarea: HTMLTextAreaElement = this.shadowRoot.getElementById("textarea") as HTMLTextAreaElement;
         const saveIcon = this.shadowRoot.getElementById("saveIcon");
         if (this.canSave(textarea.value)) {
-            this.notes = this.notes ? textarea.value.slice(0) : "";
+            this.notes = textarea.value ? textarea.value.slice(0) : "";
             this.unsaved = false;
             saveIcon.classList.add('fade-in');
             setTimeout(() => {
