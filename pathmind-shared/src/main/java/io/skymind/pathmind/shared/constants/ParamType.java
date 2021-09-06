@@ -4,22 +4,20 @@ import java.util.Arrays;
 import java.util.Date;
 
 public enum ParamType {
-    BOOLEAN(0, "boolean"),
-    INTEGER(1, "integer"),
-    DOUBLE(2, "double"),
-    STRING(3, "String"),
-    OTHERS(4, "others"),
-    DATE(5, "Date");
 
-    private int id;
-    private String name;
+    BOOLEAN(0),
+    INTEGER(1),
+    DOUBLE(2),
+    STRING(3),
+    OTHERS(4),
+    DATE(5);
 
-    ParamType(int id, String name) {
+    public static final String NULL_VALUE = "NULL_VALUE";
+
+    private final int id;
+
+    ParamType(int id) {
         this.id = id;
-    }
-
-    public String toString() {
-        return this.name;
     }
 
     public int getValue() {

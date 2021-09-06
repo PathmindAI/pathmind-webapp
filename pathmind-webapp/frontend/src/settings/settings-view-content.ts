@@ -1,7 +1,27 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 
-class SettingsViewContent extends PolymerElement {
-    static get template() {
+class SettingsViewContent extends LitElement {
+    
+    @property({type: Boolean})
+    isPaidUser = false;
+    
+    @property({type: Boolean})
+    isInternalUser = false;
+    
+    @property({type: Boolean})
+    hideSaveButton = false;
+
+    updated(changedProperties) {
+      changedProperties.forEach((oldValue, name) => {
+          if (name === "isPaidUser" || name === "isInternalUser") {
+              if (this._isFreeUser()) {
+                  this._isFreeUserChanged();
+              }
+          }
+      });
+    }
+
+    render() {
         return html`
             <style>
                 settings-view-content .settings-header {
@@ -82,8 +102,8 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-select id="hiddenNodeCB"></vaadin-select>
                             <vaadin-select id="hiddenLayerCB"></vaadin-select>
                         </vaadin-vertical-layout>
-                        <h4 hidden="{{!isInternalUser}}">Internal Users Only</h4>
-                        <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="{{!isInternalUser}}">
+                        <h4 hidden="${!this.isInternalUser}">Internal Users Only</h4>
+                        <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="${!this.isInternalUser}">
                             <vaadin-select id="userLogCB"></vaadin-select>
                             <vaadin-select id="ec2InstanceTypeCB"></vaadin-select>
                             <vaadin-select id="condaVersionCB"></vaadin-select>
@@ -96,13 +116,14 @@ class SettingsViewContent extends PolymerElement {
                             <vaadin-select id="freezingCB"></vaadin-select>
                             <vaadin-select id="rayDebugCB"></vaadin-select>
                             <vaadin-select id="maxTrainingTimeCB"></vaadin-select>
+                            <vaadin-select id="gammaCB"></vaadin-select>
                         </vaadin-vertical-layout>
-                        <vaadin-vertical-layout id="buttonsCont" hidden="{{hideSaveButton}}">
+                        <vaadin-vertical-layout id="buttonsCont" ?hidden="${this.hideSaveButton}">
                             <vaadin-button id="saveBtn" theme="primary">
                                 Save
                             </vaadin-button>
                         </vaadin-vertical-layout>
-                        <vaadin-vertical-layout id="ctaOverlay" class="cta-overlay" hidden="{{!isFreeUser}}">
+                        <vaadin-vertical-layout id="ctaOverlay" class="cta-overlay" ?hidden="${!this._isFreeUser()}">
                             <vaadin-vertical-layout class="cta-overlay-content">
                                 <span>Advanced settings are available for Professional Plan subscribers.</span>
                                 <vaadin-button id="upgradeBtn" theme="primary small">Upgrade Now</vaadin-button>
@@ -114,39 +135,21 @@ class SettingsViewContent extends PolymerElement {
         `;
     }
 
-    static get is() {
-        return "settings-view-content";
+    createRenderRoot() {
+        return this;
     }
 
-    _attachDom(dom) {
-        this.appendChild(dom);
+    _isFreeUser() {
+        return !(this.isPaidUser || this.isInternalUser);
     }
 
-    setIsFreeUser(isPaidUser, isInternalUser) {
-        return !(isPaidUser || isInternalUser);
+    _settingsPanelClickHandlerForFreeUsers(event) {
+        this.querySelector("#ctaOverlay").classList.add("show");
     }
 
-    _isFreeUserChanged(newValue) {
-        if (newValue) {
-            this.addEventListener("click", event => {
-                this.querySelector("#ctaOverlay").classList.add("show");
-            });
-        }
-    }
-
-    static get properties() {
-        return {
-            hideSaveButton: {
-                type: Boolean,
-                value: false,
-            },
-            isFreeUser: {
-                type: Boolean,
-                computed: 'setIsFreeUser(isPaidUser, isInternalUser)',
-                observer: '_isFreeUserChanged',
-            }
-        }
+    _isFreeUserChanged() {
+        this.addEventListener("click", this._settingsPanelClickHandlerForFreeUsers);
     }
 }
 
-customElements.define(SettingsViewContent.is, SettingsViewContent);
+customElements.define("settings-view-content", SettingsViewContent);

@@ -1,5 +1,5 @@
 import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../../components/organisms/public-header-menu.js";
+import "../../components/organisms/public-header-menu.ts";
 
 /**
  * `verification-email-sent-view`

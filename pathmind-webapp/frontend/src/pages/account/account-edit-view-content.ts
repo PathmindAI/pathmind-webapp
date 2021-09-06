@@ -1,8 +1,11 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../../components/organisms/app-footer.js";
+import { LitElement, html, property } from "lit-element";
+import "../../components/organisms/app-footer.ts";
 
-class AccountEditViewContent extends PolymerElement {
-    static get template() {
+class AccountEditViewContent extends LitElement {
+    @property({type: String})
+    contactLink = "";
+
+    render() {
         return html`
             <vaadin-horizontal-layout class="panel-wrapper">
                 <div class="content">
@@ -23,17 +26,13 @@ class AccountEditViewContent extends PolymerElement {
                 </div>
             </vaadin-horizontal-layout>
             <app-footer 
-                contactlink="{{contactLink}}"
+                contactlink="${this.contactLink}"
             ></app-footer>`;
     }
 
-    _attachDom(dom) {
-        this.appendChild(dom);
-    }
-
-    static get is() {
-        return "account-edit-view-content";
+    createRenderRoot() {
+      return this;
     }
 }
 
-customElements.define(AccountEditViewContent.is, AccountEditViewContent);
+customElements.define("account-edit-view-content", AccountEditViewContent);

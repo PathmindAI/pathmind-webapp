@@ -4,11 +4,10 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
@@ -25,10 +24,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Tag("account-edit-view-content")
-@JsModule("./src/pages/account/account-edit-view-content.js")
+@JsModule("./src/pages/account/account-edit-view-content.ts")
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AccountEditViewContent extends PolymerTemplate<AccountEditViewContent.Model> {
+public class AccountEditViewContent extends LitTemplate {
 
     @Id("lastName")
     private TextField lastName;
@@ -58,7 +57,7 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
     @Autowired
     public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService,
                                   @Value("${pathmind.contact-support.address}") String contactLink) {
-        getModel().setContactLink(contactLink);
+        getElement().setProperty("contactLink", contactLink);
         user = currentUser.getUser();
         this.userService = userService;
         this.emailNotificationService = emailNotificationService;
@@ -103,9 +102,5 @@ public class AccountEditViewContent extends PolymerTemplate<AccountEditViewConte
         PathmindUserBinders.bindLastName(binder, lastName);
 
         binder.setBean(user);
-    }
-
-    public interface Model extends TemplateModel {
-        void setContactLink(String contactLink);
     }
 }
