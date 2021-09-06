@@ -33,6 +33,7 @@ public class ExecutionEnvironment {
     private boolean rayDebug;
     private boolean longerTraining;
     private int startCheckIterationForLongerTraining;
+    private double gamma;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;

@@ -64,7 +64,7 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.name</code>.
      */
-    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<ProjectRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(255).nullable(false), this, "");
 
     /**
      * The column <code>public.project.date_created</code>.
@@ -79,12 +79,12 @@ public class Project extends TableImpl<ProjectRecord> {
     /**
      * The column <code>public.project.archived</code>.
      */
-    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ProjectRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.project.user_notes</code>.
      */
-    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR(1000).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<ProjectRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR.nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     private Project(Name alias, Table<ProjectRecord> aliased) {
         this(alias, aliased, null);

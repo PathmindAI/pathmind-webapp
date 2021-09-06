@@ -27,11 +27,16 @@
 }
 
 .experiment-view .experiment-header tag-label {
-    margin: var(--lumo-space-xs) 0 var(--lumo-space-xs) var(--lumo-space-m);
+    margin: var(--lumo-space-xs) var(--lumo-space-xs) var(--lumo-space-xs) 0;
 }
 
-.experiment-view .experiment-header tag-label:not([hidden]):first-of-type {
-    margin-left: var(--lumo-space-m);
+.experiment-view .experiment-header favorite-star {
+    margin-right: 3px;
+}
+
+.experiment-view .experiment-header vaadin-button[theme~="tertiary-inline"] {
+    --lumo-icon-size-m: 1.4rem;
+    color: var(--lumo-secondary-text-color);
 }
 
 .experiment-view .shared-with-support-label {
@@ -526,6 +531,10 @@
     margin-top: 0;
 }
 
+.share-with-support-instructions copy-field {
+    max-width: none;
+}
+
 .share-with-support-instructions ~ vaadin-button,
 .serve-policy-instructions ~ vaadin-button {
     position: absolute;
@@ -536,8 +545,13 @@
     margin: 0;
 }
 
+.share-with-support-instructions vaadin-button:first-child,
 .serve-policy-instructions vaadin-button:first-child {
     margin-right: var(--lumo-space-m);
+}
+
+.share-with-support-instructions vaadin-horizontal-layout {
+    margin: var(--lumo-space-m) auto 0;
 }
 
 policy-server-live-content {
