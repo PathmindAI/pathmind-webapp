@@ -1,4 +1,4 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 import "@vaadin/vaadin-text-field/src/vaadin-email-field.js";
 import "../../components/organisms/public-header-menu.ts";
 
@@ -8,13 +8,18 @@ import "../../components/organisms/public-header-menu.ts";
  * ResetPasswordView element.
  *
  * @customElement
- * @polymer
  */
-class ResetPasswordView extends PolymerElement {
-  static get template() {
+class ResetPasswordView extends LitElement {
+
+  @property({type: String})
+  contactLink = "";
+
+  @property({type: String})
+  message = "";
+
+  render() {
     return html`
-      <style include="shared-styles pathmind-dialog-view"></style>
-      <public-header-menu contactlink="{{contactLink}}" linktowebapp></public-header-menu>
+      <public-header-menu contactlink="${this.contactLink}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
         <vaadin-vertical-layout id="prePart" class="inner-content">
@@ -23,7 +28,7 @@ class ResetPasswordView extends PolymerElement {
             Enter your work email and we'll send you a link to set a new
             password.
           </p>
-          <div class="error-message">{{message}}</div>
+          <div class="error-message">${this.message}</div>
           <vaadin-email-field
             id="email"
             label="Email"
@@ -66,15 +71,9 @@ class ResetPasswordView extends PolymerElement {
     </vaadin-horizontal-layout>`;
   }
 
-  static get is() {
-    return "reset-password-view";
-  }
-
-  static get properties() {
-    return {
-      // Declare your properties here.
-    };
+  createRenderRoot() {
+      return this;
   }
 }
 
-customElements.define(ResetPasswordView.is, ResetPasswordView);
+customElements.define("reset-password-view", ResetPasswordView);
