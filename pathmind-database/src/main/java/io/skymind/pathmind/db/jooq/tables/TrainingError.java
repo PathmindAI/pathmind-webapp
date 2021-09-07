@@ -56,12 +56,12 @@ public class TrainingError extends TableImpl<TrainingErrorRecord> {
     /**
      * The column <code>public.training_error.keyword</code>.
      */
-    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), SQLDataType.VARCHAR(255).nullable(false), this, "");
+    public final TableField<TrainingErrorRecord, String> KEYWORD = createField(DSL.name("keyword"), SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.training_error.description</code>.
      */
-    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.VARCHAR(255), this, "");
+    public final TableField<TrainingErrorRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.training_error.restartable</code>.

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.shared.services.training.environment;
 
+import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
 import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
@@ -34,6 +35,8 @@ public class ExecutionEnvironment {
     private boolean longerTraining;
     private int startCheckIterationForLongerTraining;
     private double gamma;
+    private BatchMode batchMode;
+    private int rolloutFragmentLength;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;

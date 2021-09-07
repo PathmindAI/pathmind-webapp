@@ -11,10 +11,9 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -25,6 +24,7 @@ import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.dialog.SubscriptionCancelDialog;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,10 +32,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("account-view-content")
-@JsModule("./src/pages/account/account-view-content.js")
+@JsModule("./src/pages/account/account-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model> {
+public class AccountViewContent extends LitTemplate {
 
     private final FeatureManager featureManager;
 
@@ -50,11 +50,11 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     @Id("upgradeBtn")
     private Button upgradeBtn;
 
-    @Id("cancelSubscriptionBtn")
-    private Button cancelSubscriptionBtn;
-
     @Id("rotateApiKeyBtn")
     private Button rotateApiKeyBtn;
+
+    @Id("cancelSubscriptionBtn")
+    private Button cancelSubscriptionBtn;
 
     private StripeService stripeService;
 
@@ -77,9 +77,9 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
             SegmentIntegrator segmentIntegrator, FeatureManager featureManager) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
-        getModel().setContactLink(contactLink);
-        getModel().setPrivacyLink(privacyPolicyLink);
-        getModel().setTermsOfUseLink(termsOfUseLink);
+        getElement().setProperty("contactLink", contactLink);
+        getElement().setProperty("privacyLink", privacyPolicyLink);
+        getElement().setProperty("termsOfUseLink", termsOfUseLink);
         user = currentUser.getUser();
         this.featureManager = featureManager;
         this.userService = userService;
@@ -99,13 +99,19 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && user.isBasicPlanUser());
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
+        rotateApiKeyBtn.addClickListener(e -> {
+            ConfirmationUtils.confirmationPopupDialog(
+                "Refresh Access Token",
+                "Are you sure you would like to refresh the access token?",
+                "Refresh",
+                () -> rotateApiKey()
+            );
+        });
 
         upgradeBtn.addClickListener(e -> getUI().ifPresent(ui -> {
             segmentIntegrator.navigatedToPricingFromAccountView();
             ui.navigate(AccountUpgradeView.class);
         }));
-        cancelSubscriptionBtn.addClickListener(evt -> cancelSubscription());
-        rotateApiKeyBtn.addClickListener(evt -> rotateApiKey());
     }
 
     private void rotateApiKey() {
@@ -115,7 +121,7 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     }
 
     private void setApiKey(String apiKey) {
-        getModel().setApiKey(apiKey);
+        getElement().setProperty("apiKey", apiKey);
         String expiresPhrase;
         long daysToExpire = LocalDateTime.now().until(user.getApiKeyCreatedAt().plus(keyValidityDuration), ChronoUnit.DAYS);
         if (daysToExpire < 0) {
@@ -127,10 +133,11 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
         } else {
             expiresPhrase = "Expires in " + daysToExpire + " days";
         }
-        getModel().setApiKeyExpiresPhrase(expiresPhrase);
+        getElement().setProperty("apiKeyExpiresPhrase", expiresPhrase);
     }
 
     // This part will probably move to a separate view, but for now implementing it as a confirmation dialog
+    @ClientCallable
     private void cancelSubscription() {
         getUI().ifPresent(ui -> {
             SubscriptionCancelDialog subscriptionCancelDialog = new SubscriptionCancelDialog(ui, subscription.getCurrentPeriodEnd(), () -> {
@@ -148,39 +155,17 @@ public class AccountViewContent extends PolymerTemplate<AccountViewContent.Model
     private void setSubscriptionEndDate() {
         if (subscription != null && subscription.getCancelAtPeriodEnd()) {
             getUI().ifPresent(ui -> VaadinDateAndTimeUtils.withUserTimeZoneId(ui, userTimeZoneId -> {
-                getModel().setSubscriptionCancellationNote("Subscription will be cancelled on " +
+                getElement().setProperty("subscriptionCancellationNote", "Subscription will be cancelled on " +
                         DateAndTimeUtils.formatDateAndTimeShortFormatter(DateAndTimeUtils.fromEpoch(subscription.getCurrentPeriodEnd()), userTimeZoneId));
             }));
         }
     }
 
     private void initContent() {
-        getModel().setEmail(user.getEmail());
-        getModel().setFirstName(user.getFirstname());
-        getModel().setLastName(user.getLastname());
+        getElement().setProperty("email", user.getEmail());
+        getElement().setProperty("firstName", user.getFirstname());
+        getElement().setProperty("lastName", user.getLastname());
         setApiKey(user.getApiKey());
-        getModel().setSubscription(user.getAccountType().equals(UserRole.Partner) ? "Professional" : user.getAccountType().toString());
-    }
-
-    public interface Model extends TemplateModel {
-        void setEmail(String email);
-
-        void setFirstName(String firstName);
-
-        void setLastName(String lastName);
-
-        void setApiKey(String apiKey);
-
-        void setApiKeyExpiresPhrase(String apiKeyExpiresPhrase);
-
-        void setSubscription(String subscription);
-
-        void setSubscriptionCancellationNote(String cancellationNote);
-
-        void setContactLink(String contactLink);
-
-        void setPrivacyLink(String privacyPolicyLink);
-
-        void setTermsOfUseLink(String termsOfUseLink);
+        getElement().setProperty("subscription", user.getAccountType().equals(UserRole.Partner) ? "Professional" : user.getAccountType().toString());
     }
 }

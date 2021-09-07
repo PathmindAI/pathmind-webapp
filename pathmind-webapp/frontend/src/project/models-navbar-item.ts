@@ -1,48 +1,24 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, css, property } from "lit-element";
 
-class ModelsNavbarItem extends PolymerElement {
-    static get is() {
-        return "models-navbar-item";
-    }
+class ModelsNavbarItem extends LitElement {
 
-    static get properties() {
-        return {
-            modelName: {
-                type: String,
-            },
-            modelPackageName: {
-                type: String,
-            },
-            modelPackageNameInBrackets: {
-                type: String,
-                computed: 'modelPackageNameText(modelPackageName)',
-            },
-            modelLink: {
-                type: String,
-            },
-            isCurrent: {
-                type: Boolean,
-                value: false,
-                notify: true,
-                reflectToAttribute: true,
-            },
-            isDraft: {
-                type: Boolean,
-            },
-            isArchived: {
-                type: Boolean,
-                reflectToAttribute: true,
-            },
-            tagDraftText: {
-                type: String,
-                computed: 'tagLabelDraftText(isDraft)',
-            },
-        }
-    }
+    @property({type: String})
+    modelName = "";
+    @property({type: String})
+    modelPackageName = "";
+    @property({type: String})
+    modelPackageNameInBrackets = "";
+    @property({type: String})
+    modelLink = "";
+    @property({type: Boolean})
+    isDraft = "";
+    @property({type: Boolean, reflect: true, attribute: "is-archived"})
+    isArchived = false;
+    @property({type: Boolean, reflect: true, attribute: "is-current"})
+    isCurrent = false;
 
-    static get template() {
-        return html`
-        <style>
+    static get styles() {
+        return css`
             :host {
                 box-sizing: border-box;
                 display: flex;
@@ -96,25 +72,28 @@ class ModelsNavbarItem extends PolymerElement {
                 font-size: var(--lumo-font-size-xs);
                 line-height: 1;
                 margin-left: 0;
+                margin-bottom: 1px;
             }
-            tag-label[hidden="true"] {
+            tag-label[hidden] {
                 display: none;
             }
-        </style>
-        <a on-click="handleRowClicked">
+        `;
+    }
+
+    render() {
+        return html`
+        <a @click="${this.handleRowClicked}">
             <div class="model-name">
-                <div>
-                    <tag-label text="[[tagDraftText]]" size="small" outline="true"></tag-label>
-                </div>
-                <p>Model #[[modelName]] [[modelPackageNameInBrackets]]</p>
+                <tag-label text="${this.isDraft ? "Draft" : ""}" size="small" outline="true"></tag-label>
+                <p>Model #${this.modelName} ${this.modelPackageName ? `(${this.modelPackageName})` : ""}</p>
                 <p>Created <slot></slot></p>
             </div>
             <vaadin-button
                 class="action-button"
                 theme="tertiary-inline icon"
                 title="Archive"
-                on-click="onArchiveButtonClicked"
-                hidden="[[isArchived]]"
+                @click="${event => this.handleArchiveOrUnarchive(event, true)}"
+                ?hidden="${this.isArchived}"
             >
                 <iron-icon icon="vaadin:archive" slot="prefix"></iron-icon>
             </vaadin-button>
@@ -122,39 +101,24 @@ class ModelsNavbarItem extends PolymerElement {
                 class="action-button"
                 theme="tertiary-inline icon"
                 title="Unarchive"
-                on-click="onUnarchiveButtonClicked"
-                hidden="[[!isArchived]]"
+                @click="${event => this.handleArchiveOrUnarchive(event, false)}"
+                ?hidden="${!this.isArchived}"
             >
                 <iron-icon icon="vaadin:arrow-backward" slot="prefix"></iron-icon>
             </vaadin-button>
         </a>`;
     }
 
-    ready() {
-        super.ready();
-    }
-
-    tagLabelDraftText(isDraft) {
-        return isDraft ? "Draft" : "";
-    }
-
-    modelPackageNameText(modelPackageName) {
-        return modelPackageName ? `(${modelPackageName})` : "";
-    }
-
     handleRowClicked(event) {
         event.preventDefault();
+        (this as any).$server.handleRowClicked();
     }
 
-    onArchiveButtonClicked(event) {
+    handleArchiveOrUnarchive(event, isArchive) {
         event.preventDefault();
         event.stopPropagation();
-    }
-
-    onUnarchiveButtonClicked(event) {
-        event.preventDefault();
-        event.stopPropagation();
+        (this as any).$server.archiveOrUnarchiveEventHandler(isArchive);
     }
 }
 
-customElements.define(ModelsNavbarItem.is, ModelsNavbarItem);
+customElements.define("models-navbar-item", ModelsNavbarItem);
