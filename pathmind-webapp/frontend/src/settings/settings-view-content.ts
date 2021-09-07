@@ -102,8 +102,8 @@ class SettingsViewContent extends LitElement {
                             <vaadin-select id="hiddenNodeCB"></vaadin-select>
                             <vaadin-select id="hiddenLayerCB"></vaadin-select>
                         </vaadin-vertical-layout>
-                        <h4 hidden="${!this.isInternalUser}">Internal Users Only</h4>
-                        <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" hidden="${!this.isInternalUser}">
+                        <h4 ?hidden="${!this.isInternalUser}">Internal Users Only</h4>
+                        <vaadin-vertical-layout class="grid-wrapper" id="internalSettings" ?hidden="${!this.isInternalUser}">
                             <vaadin-select id="userLogCB"></vaadin-select>
                             <vaadin-select id="ec2InstanceTypeCB"></vaadin-select>
                             <vaadin-select id="condaVersionCB"></vaadin-select>
@@ -117,6 +117,8 @@ class SettingsViewContent extends LitElement {
                             <vaadin-select id="rayDebugCB"></vaadin-select>
                             <vaadin-select id="maxTrainingTimeCB"></vaadin-select>
                             <vaadin-select id="gammaCB"></vaadin-select>
+                            <vaadin-select id="rolloutFragmentLengthCB"></vaadin-select>
+                            <vaadin-select id="batchModeCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <vaadin-vertical-layout id="buttonsCont" ?hidden="${this.hideSaveButton}">
                             <vaadin-button id="saveBtn" theme="primary">

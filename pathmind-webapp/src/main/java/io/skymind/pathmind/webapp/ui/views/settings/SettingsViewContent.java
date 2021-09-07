@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.spring.annotation.SpringComponent;
+import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -93,6 +94,12 @@ public class SettingsViewContent extends LitTemplate {
     @Id("gammaCB")
     private Select<String> gamma;
 
+    @Id("rolloutFragmentLengthCB")
+    private Select<String> rolloutFragmentLength;
+
+    @Id("batchModeCB")
+    private Select<String> batchMode;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -150,6 +157,8 @@ public class SettingsViewContent extends LitTemplate {
         settingsList.put(rayDebug, "Enable Ray Debug");
         settingsList.put(maxTrainingTime, "Max Training Time (hour)");
         settingsList.put(gamma, "Gamma value");
+        settingsList.put(rolloutFragmentLength, "Rollout Fragment Length");
+        settingsList.put(batchMode, "Batch Mode");
     }
 
     private void initBtns() {
@@ -298,6 +307,18 @@ public class SettingsViewContent extends LitTemplate {
         gamma.setItems(gammas);
         gamma.setLabel(settingsList.get(gamma));
         gamma.setValue(String.valueOf(env.getGamma()));
+
+        // init rollout fragment length
+        List<String> rolloutFragmentLengths = List.of("200", "500", "1000", "2000");
+        rolloutFragmentLength.setItems(rolloutFragmentLengths);
+        rolloutFragmentLength.setLabel(settingsList.get(rolloutFragmentLength));
+        rolloutFragmentLength.setValue(String.valueOf(env.getRolloutFragmentLength()));
+
+        // init batch mode
+        List<String> batchModes = Arrays.stream(BatchMode.values()).map(BatchMode::toString).collect(Collectors.toList());
+        batchMode.setItems(batchModes);
+        batchMode.setLabel(settingsList.get(batchMode));
+        batchMode.setValue(env.getBatchMode().toString());
     }
 
     public void saveSettings() {
@@ -324,6 +345,8 @@ public class SettingsViewContent extends LitTemplate {
         env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
         env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
         env.setGamma(Double.parseDouble(gamma.getValue()));
+        env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
+        env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
     }
 
     public String getSettingsText() {
