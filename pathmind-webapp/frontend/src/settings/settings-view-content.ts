@@ -111,6 +111,7 @@ class SettingsViewContent extends LitElement {
                             <vaadin-select id="nativerlVersionCB"></vaadin-select>
                             <vaadin-select id="helperVersionCB"></vaadin-select>
                             <vaadin-select id="numSampleCB"></vaadin-select>
+                            <vaadin-select id="numWorkerCB"></vaadin-select>
                             <vaadin-select id="maxMemoryCB"></vaadin-select>
                             <vaadin-select id="schedulerCB"></vaadin-select>
                             <vaadin-select id="freezingCB"></vaadin-select>
