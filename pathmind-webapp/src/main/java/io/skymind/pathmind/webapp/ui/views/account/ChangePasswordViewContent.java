@@ -5,12 +5,11 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.security.UserService;
@@ -22,10 +21,10 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("change-password-view-content")
-@JsModule("./src/pages/account/change-password-view-content.js")
+@JsModule("./src/pages/account/change-password-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordViewContent.Model> {
+public class ChangePasswordViewContent extends LitTemplate {
     @Id("currentPassword")
     private PasswordField currentPassword;
 
@@ -56,8 +55,7 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
     private SegmentIntegrator segmentIntegrator;
 
     @Autowired
-    public ChangePasswordViewContent(CurrentUser currentUser, @Value("${pathmind.contact-support.address}") String contactLink) {
-        getModel().setContactLink(contactLink);
+    public ChangePasswordViewContent(CurrentUser currentUser) {
         user = currentUser.getUser();
 
         passwordValidationNotes.setPadding(false);
@@ -66,7 +64,6 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
         currentPasswordValidationNotes.setSpacing(false);
 
         cancelBtn.addClickShortcut(Key.ESCAPE);
-
 
         cancelBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountView.class)));
         updateBtn.addClickListener(e -> {
@@ -108,9 +105,5 @@ public class ChangePasswordViewContent extends PolymerTemplate<ChangePasswordVie
         validateCurrentPassword();
         validateNewPassword();
         return !currentPassword.isInvalid() && !newPassword.isInvalid();
-    }
-
-    public interface Model extends TemplateModel {
-        void setContactLink(String contactLink);
     }
 }
