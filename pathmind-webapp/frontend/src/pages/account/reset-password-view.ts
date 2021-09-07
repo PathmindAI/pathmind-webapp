@@ -19,6 +19,17 @@ class ResetPasswordView extends LitElement {
 
   render() {
     return html`
+      <style>
+        reset-password-view {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        reset-password-view .panel-wrapper {
+            flex-grow: 1;
+            min-height: auto;
+        }
+      </style>
       <public-header-menu contactlink="${this.contactLink}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
