@@ -59,6 +59,10 @@ public class ExperimentDAO {
         return ExperimentRepository.getUserByExperimentId(ctx, experimentId);
     }
 
+    public Boolean getExperimentIsShared(long experimentId) {
+        return ExperimentRepository.getExperimentIsShared(ctx, experimentId);
+    }
+
     public void markAsFavorite(long experimentId, boolean isFavorite) {
         ExperimentRepository.markAsFavorite(ctx, experimentId, isFavorite);
     }
