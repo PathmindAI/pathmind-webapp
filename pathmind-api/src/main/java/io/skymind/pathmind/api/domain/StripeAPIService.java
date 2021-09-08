@@ -54,9 +54,6 @@ public class StripeAPIService {
     @Value("${pathmind.stripe.professional-price-id}")
     private String stripeProPriceId;
 
-    @Value("${pathmind.stripe.onboarding-price-id}")
-    private String stripeOnboardingPriceId;
-
     @Autowired(required = false)
     private SegmentTrackerService segmentTrackerService;
 
@@ -80,13 +77,6 @@ public class StripeAPIService {
         String cancelUrl = webappDomainUrl +  "/account/upgrade";
         SessionCreateParams.Mode paymentMode = SessionCreateParams.Mode.SUBSCRIPTION;
         String priceId = stripeProPriceId;
-
-        if ("onboarding".equalsIgnoreCase(type)) {
-            successUrlPath = "/onboarding-payment-success";
-            cancelUrl = webappDomainUrl;
-            paymentMode = SessionCreateParams.Mode.PAYMENT;
-            priceId = stripeOnboardingPriceId;
-        }
 
         PathmindUser user = userDAO.findById(pmUser.getUserId());
         SessionCreateParams params = 
@@ -173,9 +163,9 @@ public class StripeAPIService {
                         Map<String, String> properties = new HashMap<>();
                         properties.put("payment_status", paymentStatus);
                         if (user != null) {
-                            segmentTrackerService.onboardingServicePaid(user.getId(), properties);
+                            segmentTrackerService.paid(user.getId(), properties);
                         } else {
-                            log.error("User who paid for onboarding service with email "+customerEmail+" is not found.");
+                            log.error("User who paid with email "+customerEmail+" is not found.");
                         }
                         response.setStatus(200);
                     } else {

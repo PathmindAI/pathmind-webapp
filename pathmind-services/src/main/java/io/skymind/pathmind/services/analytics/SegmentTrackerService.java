@@ -15,7 +15,7 @@ import io.skymind.pathmind.shared.constants.RunType;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_TRAINING_COMPLETED;
-import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_ONBOARDING_SERVICE_PAID;
+import static io.skymind.pathmind.shared.segment.SegmentTrackingEvents.EVENT_PAID;
 
 /**
  * SegmentTrackerService is server side counter part of <code>SegmentIntegrator</code>
@@ -33,8 +33,8 @@ public class SegmentTrackerService {
 		this.enabled = enabled;
 	}
 
-    public void onboardingServicePaid(long userId, Map<String, String> properties) {
-        track(EVENT_ONBOARDING_SERVICE_PAID, Long.toString(userId), properties);
+    public void paid(long userId, Map<String, String> properties) {
+        track(EVENT_PAID, Long.toString(userId), properties);
     }
 
     public void trainingCompleted(long userId, Run run) {
