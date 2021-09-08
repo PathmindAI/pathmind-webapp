@@ -8,9 +8,9 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -20,7 +20,6 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
@@ -32,10 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 @Tag("reset-password-view")
-@JsModule("./src/pages/account/reset-password-view.js")
+@JsModule("./src/pages/account/reset-password-view.ts")
 @Route(value = Routes.RESET_PASSWORD)
 @Slf4j
-public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
+public class ResetPasswordView extends LitTemplate
         implements PublicView, HasUrlParameter<String>, AfterNavigationObserver {
 
     private static final String EMAIL_REGEX = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
@@ -86,7 +85,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
 
 
     public ResetPasswordView(@Value("${pathmind.contact-support.address}") String contactLink) {
-        getModel().setContactLink(contactLink);
+        getElement().setProperty("contactLink", contactLink);
     }
 
     @Override
@@ -164,7 +163,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
     }
 
     private void linkIsNotValid() {
-        getModel().setMessage(LINK_IS_NOT_VALID);
+        getElement().setProperty("message", LINK_IS_NOT_VALID);
         token = null;
         initPreStep();
     }
@@ -172,7 +171,7 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
     private void startResetProcess(String email) {
         PathmindUser user = userService.findByEmailIgnoreCase(email);
         NotificationUtils.showSuccess(SEND_CONFIRMATION);
-        getModel().setMessage("");
+        getElement().setProperty("message", "");
 
         if (user == null) {
             log.info("Attempt to restore password of not existing user, with email: " + email);
@@ -194,11 +193,5 @@ public class ResetPasswordView extends PolymerTemplate<ResetPasswordView.Model>
     @Override
     public void setParameter(BeforeEvent beforeEvent, @OptionalParameter String param) {
         token = param;
-    }
-
-    public interface Model extends TemplateModel {
-        void setMessage(String message);
-
-        void setContactLink(String contactLink);
     }
 }
