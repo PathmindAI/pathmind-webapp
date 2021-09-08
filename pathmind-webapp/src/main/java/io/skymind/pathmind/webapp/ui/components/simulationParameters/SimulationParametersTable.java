@@ -15,7 +15,10 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.constants.ParamType;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.SimulationParameter;
+import io.skymind.pathmind.webapp.ui.components.molecules.UpgradeCtaOverlay;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
@@ -24,15 +27,20 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
 
     private final VerticalLayout container;
 
+    private final SegmentIntegrator segmentIntegrator;
+
     private final List<SimulationParameter> simulationParameters = new ArrayList<>();
     private final List<SimulationParameter> modelSimulationParameters = new ArrayList<>();
     private final List<SimulationParameter> comparisonSimulationParameters = new ArrayList<>();
 
     private final List<SimulationParametersRowField> simulationParametersRowFields = new ArrayList<>();
     private final boolean isReadOnly;
+    private final boolean isBasicPlanUser;
 
-    public SimulationParametersTable(boolean isReadOnly) {
+    public SimulationParametersTable(boolean isReadOnly, PathmindUser currentUser, SegmentIntegrator segmentIntegrator) {
+        this.isBasicPlanUser = currentUser.isBasicPlanUser();
         this.isReadOnly = isReadOnly;
+        this.segmentIntegrator = segmentIntegrator;
         container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         container.setClassName("simulation-parameters-table");
 
@@ -76,7 +84,7 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
 
             for (int i = 0; i < this.simulationParameters.size(); i++) {
                 SimulationParameter simulationParam = this.simulationParameters.get(i);
-                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam));
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam), isBasicPlanUser);
                 if (!this.modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
                     row.setIsDifferentFromDefault(true);
                 }
@@ -85,6 +93,12 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
                 }
                 container.add(row);
                 simulationParametersRowFields.add(row);
+            }
+
+            if (isBasicPlanUser && !isReadOnly) {
+                UpgradeCtaOverlay upgradeCtaOverlay = new UpgradeCtaOverlay("Simulation Parameters", segmentIntegrator);
+                getElement().addEventListener("click", event -> upgradeCtaOverlay.open());
+                container.add(upgradeCtaOverlay);
             }
         }
     }

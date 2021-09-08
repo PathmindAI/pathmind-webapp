@@ -1,6 +1,7 @@
 .simulation-parameters-table {
     box-sizing: border-box;
     flex: 1 1 19rem;
+    position: relative;
     font-size: var(--lumo-font-size-s);
     line-height: 1;
     padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);

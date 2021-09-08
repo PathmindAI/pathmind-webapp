@@ -5,8 +5,10 @@ import java.util.List;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.experiment.AbstractExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 
@@ -22,10 +24,14 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
 
     private AbstractExperimentView abstractExperimentView;
 
-    public SimulationParametersPanel(AbstractExperimentView abstractExperimentView, boolean isReadOnly) {
+    private SegmentIntegrator segmentIntegrator;
+
+    public SimulationParametersPanel(AbstractExperimentView abstractExperimentView, boolean isReadOnly, 
+            PathmindUser currentUser, SegmentIntegrator segmentIntegrator) {
         this.abstractExperimentView = abstractExperimentView;
+        this.segmentIntegrator = segmentIntegrator;
         add(LabelFactory.createLabel("Simulation Parameters", BOLD_LABEL));
-        setupSimulationParametersTable(isReadOnly);
+        setupSimulationParametersTable(isReadOnly, currentUser);
         add(simulationParametersTable);
         addClassName("simulation-parameters-panel");
 
@@ -38,8 +44,8 @@ public class SimulationParametersPanel extends VerticalLayout implements Experim
         setSpacing(false);
     }
 
-    private void setupSimulationParametersTable(boolean isReadOnly) {
-        simulationParametersTable = new SimulationParametersTable(isReadOnly);
+    private void setupSimulationParametersTable(boolean isReadOnly, PathmindUser currentUser) {
+        simulationParametersTable = new SimulationParametersTable(isReadOnly, currentUser, segmentIntegrator);
     }
 
     public List<SimulationParameter> getSimulationParameters() {
