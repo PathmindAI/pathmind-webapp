@@ -64,6 +64,9 @@ public class SettingsViewContent extends LitTemplate {
     @Id("numSampleCB")
     private Select<String> numSample;
 
+    @Id("numWorkerCB")
+    private Select<String> numWorker;
+
     @Id("maxMemoryCB")
     private Select<String> maxMemory;
 
@@ -151,6 +154,7 @@ public class SettingsViewContent extends LitTemplate {
         settingsList.put(condaVersion, "Conda Version");
         settingsList.put(helperVersion, "PM Helper Version");
         settingsList.put(numSample, "Number of PBT samples");
+        settingsList.put(numWorker, "Number of Workers per sample");
         settingsList.put(maxMemory, "Max Memory Size in MB");
         settingsList.put(scheduler, "Scheduler");
         settingsList.put(freezing, "Enable Freezing");
@@ -272,6 +276,12 @@ public class SettingsViewContent extends LitTemplate {
         numSample.setLabel(settingsList.get(numSample));
         numSample.setValue(String.valueOf(env.getPBT_NUM_SAMPLES()));
 
+        // init number of workers
+        List<String> numWorkers = List.of("1", "2", "4", "8", "16", "32");
+        numWorker.setItems(numWorkers);
+        numWorker.setLabel(settingsList.get(numWorker));
+        numWorker.setValue(String.valueOf(env.getNumWorker()));
+
         // init max memory
         List<String> maxMemories = List.of("4096", "16384");
         maxMemory.setItems(maxMemories);
@@ -339,6 +349,7 @@ public class SettingsViewContent extends LitTemplate {
         env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
         env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
         env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
+        env.setNumWorker(Integer.parseInt(numWorker.getValue()));
         env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
         env.setScheduler(scheduler.getValue());
         env.setFreezing(Boolean.valueOf(freezing.getValue()));
