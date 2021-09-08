@@ -225,9 +225,9 @@ public class ExperimentDAO {
             Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
             exp.setSelectedObservations(observations);
-            List<SimulationParameter> simulationParameters = SimulationParameterRepository.getSimulationParametersForModel(ctx, exp.getModelId());
+            List<SimulationParameter> simulationParameters = SimulationParameterRepository.getSimulationParametersForExperiment(transactionCtx, lastExperiment.getId());
             simulationParameters.forEach(p -> p.setExperimentId(exp.getId()));
-            SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, simulationParameters);
+            SimulationParameterRepository.insertOrUpdateSimulationParameter(transactionCtx, simulationParameters);
             exp.setSimulationParameters(simulationParameters);
             return exp;
         });
