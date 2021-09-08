@@ -62,7 +62,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         // IMPORTANT -> This is needed because the UI needed for component rendering is not always available on time.
         ui = event.getUI();
 
-        initLoadData();
+        initLoadData(event);
 
         // This is used to determine if the view is correct URL such as newExperimentView and ExperimentView. If we're at the wrong
         // URL then we want to event.forwardTo() the correct URL.
@@ -113,7 +113,7 @@ public abstract class PathMindDefaultView extends VerticalLayout implements Befo
         });
     }
 
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData(BeforeEnterEvent event) throws InvalidDataException {
         // Do nothing by default.
     }
 
