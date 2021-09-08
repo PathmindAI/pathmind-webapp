@@ -120,6 +120,7 @@ class SettingsViewContent extends LitElement {
                             <vaadin-select id="gammaCB"></vaadin-select>
                             <vaadin-select id="rolloutFragmentLengthCB"></vaadin-select>
                             <vaadin-select id="batchModeCB"></vaadin-select>
+                            <vaadin-select id="batchSizeCB"></vaadin-select>
                         </vaadin-vertical-layout>
                         <vaadin-vertical-layout id="buttonsCont" ?hidden="${this.hideSaveButton}">
                             <vaadin-button id="saveBtn" theme="primary">

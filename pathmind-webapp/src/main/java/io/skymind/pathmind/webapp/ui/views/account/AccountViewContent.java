@@ -70,16 +70,10 @@ public class AccountViewContent extends LitTemplate {
     public AccountViewContent(
             @Value("${pm.api.key-validity-duration}") Duration keyValidityDuration,
             CurrentUser currentUser, UserService userService,
-            @Value("${pathmind.contact-support.address}") String contactLink,
-            @Value("${pathmind.privacy-policy.url}") String privacyPolicyLink,
-            @Value("${pathmind.terms-of-use.url}") String termsOfUseLink,
             StripeService stripeService,
             SegmentIntegrator segmentIntegrator, FeatureManager featureManager) {
         this.stripeService = stripeService;
         this.segmentIntegrator = segmentIntegrator;
-        getElement().setProperty("contactLink", contactLink);
-        getElement().setProperty("privacyLink", privacyPolicyLink);
-        getElement().setProperty("termsOfUseLink", termsOfUseLink);
         user = currentUser.getUser();
         this.featureManager = featureManager;
         this.userService = userService;

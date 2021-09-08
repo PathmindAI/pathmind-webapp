@@ -10,8 +10,6 @@ class AccountViewContent extends LitElement {
     @property({type: String})
     lastName = "";
     @property({type: String})
-    privacyLink = "";
-    @property({type: String})
     apiKey = "";
     @property({type: String})
     apiKeyExpiresPhrase = "";
@@ -19,10 +17,6 @@ class AccountViewContent extends LitElement {
     subscription = "";
     @property({type: String})
     subscriptionCancellationNote = "";
-    @property({type: String})
-    termsOfUseLink = "";
-    @property({type: String})
-    contactLink = "";
 
     render() {
         return html`
@@ -161,11 +155,7 @@ class AccountViewContent extends LitElement {
                 </vaadin-vertical-layout>
             </div>
         </vaadin-horizontal-layout>
-        <app-footer 
-            privacylink="${this.privacyLink}"
-            termslink="${this.termsOfUseLink}"
-            contactlink="${this.contactLink}"
-        ></app-footer>`;
+        <app-footer></app-footer>`;
     }
 
     createRenderRoot() {

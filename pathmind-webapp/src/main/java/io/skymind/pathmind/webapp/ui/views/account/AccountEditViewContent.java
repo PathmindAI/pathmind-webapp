@@ -18,7 +18,6 @@ import io.skymind.pathmind.webapp.ui.binders.PathmindUserBinders;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -55,9 +54,7 @@ public class AccountEditViewContent extends LitTemplate {
     private EmailNotificationService emailNotificationService;
 
     @Autowired
-    public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService,
-                                  @Value("${pathmind.contact-support.address}") String contactLink) {
-        getElement().setProperty("contactLink", contactLink);
+    public AccountEditViewContent(CurrentUser currentUser, UserService userService, EmailNotificationService emailNotificationService) {
         user = currentUser.getUser();
         this.userService = userService;
         this.emailNotificationService = emailNotificationService;

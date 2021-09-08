@@ -1,10 +1,7 @@
-import { LitElement, html, property } from "lit-element";
+import { LitElement, html } from "lit-element";
 import "../../components/organisms/app-footer.ts";
 
 class AccountEditViewContent extends LitElement {
-    @property({type: String})
-    contactLink = "";
-
     render() {
         return html`
             <vaadin-horizontal-layout class="panel-wrapper">
@@ -25,9 +22,7 @@ class AccountEditViewContent extends LitElement {
                     </vaadin-vertical-layout>
                 </div>
             </vaadin-horizontal-layout>
-            <app-footer 
-                contactlink="${this.contactLink}"
-            ></app-footer>`;
+            <app-footer></app-footer>`;
     }
 
     createRenderRoot() {

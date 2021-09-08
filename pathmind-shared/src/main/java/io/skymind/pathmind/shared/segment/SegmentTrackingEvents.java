@@ -11,7 +11,6 @@ public class SegmentTrackingEvents {
     public static final String EVENT_OBSERVATIONS_SELECTED = "Observations Selected Different From Default";
     public static final String EVENT_ONBOARDING_TUTORIAL = "Onboarding Tutorial Link Clicked";
     public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
-    public static final String EVENT_ONBOARDING_SERVICE_PAID = "Onboarding Service Paid on Stripe";
     public static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
     public static final String EVENT_CREATE_PROJECT = "Project Created";
     public static final String EVENT_CREATE_PROJECT_FROM_EXAMPLE = "Project Created from Example Project";
@@ -51,5 +50,6 @@ public class SegmentTrackingEvents {
     public static final String EVENT_POLICY_SERVER_DEPLOYMENT_STARTED = "Policy Server Deployment Started";
     public static final String EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED = "Policy Server Redeployment Started After Failure";
     public static final String EVENT_POLICY_SERVER_SHUT_DOWN = "Policy Server Deployment Shut Down";
+    public static final String EVENT_PAID = "Payment Made By User";
 
 }

@@ -21,7 +21,6 @@ Feature: Check Subscription Plans
     When Open user account page
     When Click in 'Upgrade' button
     When Click in 'Choose Pro' button
-    When Click Request Onboarding Service back btn
     Then Check subscription plans page
 
   @disabled
