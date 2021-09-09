@@ -1,5 +1,5 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../../components/organisms/public-header-menu.js";
+import { LitElement, html, property } from "lit-element";
+import "../../components/organisms/public-header-menu.ts";
 
 /**
  * `verification-email-sent-view`
@@ -7,10 +7,13 @@ import "../../components/organisms/public-header-menu.js";
  * VerificationEmailSentView element.
  *
  * @customElement
- * @polymer
  */
-class VerificationEmailSentView extends PolymerElement {
-  static get template() {
+class VerificationEmailSentView extends LitElement {
+
+  @property({type: String})
+  contactLink = "";
+
+  render() {
     return html`
       <style>
         verification-email-sent-view .icon {
@@ -20,7 +23,7 @@ class VerificationEmailSentView extends PolymerElement {
           color: var(--lumo-success-color);
         }
       </style>
-      <public-header-menu contactlink="{{contactLink}}" linktowebapp></public-header-menu>
+      <public-header-menu contactlink="${this.contactLink}" linktowebapp></public-header-menu>
       <vaadin-horizontal-layout class="panel-wrapper">
         <div class="content">
             <span class="welcome-text">Welcome to</span>
@@ -41,19 +44,9 @@ class VerificationEmailSentView extends PolymerElement {
       </vaadin-horizontal-layout>`;
   }
 
-  _attachDom(dom) {
-    this.appendChild(dom);
-  }
-
-  static get is() {
-    return "verification-email-sent-view";
-  }
-
-  static get properties() {
-    return {
-      // Declare your properties here.
-    };
+  createRenderRoot() {
+    return this;
   }
 }
 
-customElements.define(VerificationEmailSentView.is, VerificationEmailSentView);
+customElements.define("verification-email-sent-view", VerificationEmailSentView);

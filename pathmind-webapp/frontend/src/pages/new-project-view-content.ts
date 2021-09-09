@@ -1,7 +1,7 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html } from "lit-element";
 
-class NewProjectView extends PolymerElement {
-  static get template() {
+class NewProjectView extends LitElement {
+  render() {
     return html`
     <style>
         new-project-view .panel-wrapper {
@@ -29,7 +29,7 @@ class NewProjectView extends PolymerElement {
             required
           ></vaadin-text-field>
           <vaadin-vertical-layout id="buttonsCont">
-            <vaadin-button id="createProject" theme="primary" on-click="handleNewProjectClicked">
+            <vaadin-button id="createProject" theme="primary" @click="${event => (this as any).$server.handleNewProjectClicked()}">
               Create Project
             </vaadin-button>
           </vaadin-vertical-layout>
@@ -38,25 +38,20 @@ class NewProjectView extends PolymerElement {
     </vaadin-horizontal-layout>`;
   }
 
-  _attachDom(dom) {
-    this.appendChild(dom);
+  createRenderRoot() {
+    return this;
   }
 
-  ready() {
-      super.ready();
-      const projectNameTextField = this.$.projectName;
+  firstUpdated() {
+      const projectNameTextField = document.getElementById("projectName");
       projectNameTextField.focus();
       projectNameTextField.addEventListener("keyup", event => {
           if (event.keyCode === 13) { // Enter key
             event.preventDefault();
-            this.$.createProject.click();
+            document.getElementById("createProject").click();
           }
       });
   }
-
-  static get is() {
-    return "new-project-view";
-  }
 }
 
-customElements.define(NewProjectView.is, NewProjectView);
+customElements.define("new-project-view", NewProjectView);

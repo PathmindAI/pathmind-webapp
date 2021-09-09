@@ -1,6 +1,7 @@
 .simulation-parameters-table {
     box-sizing: border-box;
     flex: 1 1 19rem;
+    position: relative;
     font-size: var(--lumo-font-size-s);
     line-height: 1;
     padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
@@ -30,6 +31,22 @@
     align-items: center;
     width: 100%;
     margin-bottom: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table vaadin-horizontal-layout:not(.header-row) span:last-child {
+    max-width: 45%;
+    word-break: break-all;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
+    border: 1px solid var(--pm-grey-color);
+    border-radius: var(--lumo-border-radius);
+}
+
+.simulation-parameters-table .different-from-default span:last-child {
+    color: var(--lumo-primary-text-color);
+}
+
+.simulation-parameters-table .different-from-comparison span:last-child {
+    background-color: var(--pm-yellow-color);
 }
 
 .simulation-parameters-table .simulation-parameter-name {

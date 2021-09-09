@@ -84,12 +84,12 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.archived</code>.
      */
-    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+    public final TableField<ModelRecord, Boolean> ARCHIVED = createField(DSL.name("archived"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.model.user_notes</code>.
      */
-    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR(1000).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<ModelRecord, String> USER_NOTES = createField(DSL.name("user_notes"), SQLDataType.VARCHAR.nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.model.reward_variables_count</code>.

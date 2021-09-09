@@ -17,6 +17,7 @@ import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironment;
 import io.skymind.pathmind.shared.services.training.versions.*;
+import liquibase.pro.packaged.S;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -590,8 +591,17 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("RAY_DEBUG", String.valueOf(job.getEnv().isRayDebug())),
                 var("SCHEDULER", String.valueOf(job.getEnv().getScheduler())),
                 var("TUNE_DISABLE_AUTO_CALLBACK_LOGGERS", "1"),
-                var("ACTIONMASKS", String.valueOf(job.isActionMask()))
+                var("ACTIONMASKS", String.valueOf(job.isActionMask())),
+                var("GAMMA", String.valueOf(job.getEnv().getGamma())),
+                var("TRAIN_BATCH_MODE", job.getEnv().getBatchMode().toString()),
+                var("ROLLOUT_FRAGMENT_LENGTH", String.valueOf(job.getEnv().getRolloutFragmentLength())),
+                var("NUM_WORKERS", String.valueOf(job.getEnv().getNumWorker())),
+                var("NUM_CPUS", String.valueOf(2))
         ));
+
+        if (job.getEnv().getTrainBatchSize() != 0) {
+            instructions.add(var("TRAIN_BATCH_SIZE", String.valueOf(job.getEnv().getTrainBatchSize())));
+        }
 
         if (job.getEnv().isLongerTraining()) {
             instructions.add(var("MAX_ITERATIONS", "2000"));

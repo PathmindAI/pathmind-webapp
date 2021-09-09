@@ -22,7 +22,7 @@ public class ExperimentViewHeader extends PageObject {
     private String elapsedXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-horizontal-layout[@class='training-status-details-panel']/descendant::span[4]";
     private String stopTrainingBtnXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[1]";
     private String getStopTrainingBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Stop Training']";
-    private String shareSupportBtnXpath = "//vaadin-item[text()='Share Experiment']";
+    private String shareSupportBtnXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button";
     private String shareSupportBtnByTextXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::div[@class='buttons-wrapper']/vaadin-button[text()='Share with support']";
     private String shareSupportLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::tag-label[not(@hidden='true')]";
     private String dropDownBtn = "//vaadin-vertical-layout[@slot='%s']/descendant::vaadin-select";
@@ -48,15 +48,10 @@ public class ExperimentViewHeader extends PageObject {
             assertThat(getDriver().findElement(By.xpath(String.format(stopTrainingBtnXpath, slot))).getAttribute("hidden"), is("true"));
         }
 
-        WebElement dropdownBtn = getDriver().findElement(By.xpath(String.format(dropDownBtn, slot)));
-        Actions actions = new Actions(getDriver());
-        actions.moveToElement(dropdownBtn).build().perform();
-        waitABit(2500);
-        actions.click(dropdownBtn).build().perform();
-        if (experimentShared){
-            genericPage.checkElement(shareWithSpBtn, "//vaadin-item[text()='Unshare Experiment']", "Unshare Experiment");
+        if (shareWithSpBtn){
+            assertThat(getDriver().findElements(By.xpath(String.format(shareSupportBtnXpath, slot))).size(), is(not(0)));
         }else {
-            genericPage.checkElement(shareWithSpBtn, String.format(shareSupportBtnXpath, slot), SHARE_SUPPORT_BTN_LABEL);
+            assertThat(getDriver().findElements(By.xpath(String.format(shareSupportBtnXpath, slot))).size(), is(0));
         }
 
         genericPage.checkElement(shareWithSpLabel, String.format(shareSupportLabelXpath, slot), SHARE_SUPPORT_LABEL);

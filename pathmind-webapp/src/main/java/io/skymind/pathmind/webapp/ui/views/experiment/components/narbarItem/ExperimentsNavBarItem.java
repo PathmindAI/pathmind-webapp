@@ -1,14 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -28,9 +27,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subs
 import io.skymind.pathmind.webapp.ui.views.experiment.components.narbarItem.subscribers.main.NavBarItemRunUpdateSubscriber;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.navbar.ExperimentsNavBar;
 
-@Tag("experiment-navbar-item")
-@JsModule("./src/experiment/experiment-navbar-item.js")
-public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem.Model> {
+@Tag("experiments-navbar-item")
+@JsModule("./src/experiment/experiments-navbar-item.ts")
+public class ExperimentsNavBarItem extends LitTemplate {
 
     @Id("experimentLink")
     private Anchor experimentLink;
@@ -62,19 +61,19 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
         return experimentLock;
     }
 
-    @EventHandler
+    @ClientCallable
     private void onFavoriteToggled() {
         ExperimentGuiUtils.favoriteExperiment(experimentDAO, experiment, !experiment.isFavorite());
     }
 
-    @EventHandler
+    @ClientCallable
     private void handleRowClicked() {
         Experiment selectedExperiment = experimentDAO.getFullExperiment(experiment.getId()).orElseThrow(() -> new RuntimeException("I can't happen"));
         experimentsNavbar.setCurrentExperiment(selectedExperiment);
         NavBarItemSelectExperimentAction.selectExperiment(selectedExperiment, abstractExperimentView);
     }
 
-    @EventHandler
+    @ClientCallable
     private void onCompareButtonClicked() {
         ExperimentView experimentView = (ExperimentView) abstractExperimentView;
         if (experimentView.isComparisonMode() && ExperimentUtils.isSameExperiment(experiment, experimentView.getComparisonExperiment())) {
@@ -91,8 +90,8 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     private void setExperimentDetails(Experiment experiment) {
-        getModel().setIsDraft(experiment.isDraft());
-        getModel().setExperimentName(experiment.getName());
+        getElement().setProperty("isDraft", experiment.isDraft());
+        getElement().setProperty("experimentName", experiment.getName());
         getElement().appendChild(new DatetimeDisplay(experiment.getDateCreated()).getElement());
         updateVariableComponentValues();
     }
@@ -120,23 +119,23 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     public void setAsCurrent() {
-        getModel().setIsCurrent(true);
+        getElement().setProperty("isCurrent", true);
     }
 
     public void removeAsCurrent() {
-        getModel().setIsCurrent(false);
+        getElement().setProperty("isCurrent", false);
     }
 
     public Boolean isCurrentComparison() {
-        return getModel().getIsCurrentComparisonExperiment();
+        return Boolean.parseBoolean(getElement().getProperty("isCurrentComparisonExperiment"));
     }
 
     public void setIsCurrentComparison(boolean isCurrentComparisonExperiment) {
-        getModel().setIsCurrentComparisonExperiment(isCurrentComparisonExperiment);
+        getElement().setProperty("isCurrentComparisonExperiment", isCurrentComparisonExperiment);
     }
 
     public void setIsOnDraftExperimentView(boolean isOnDraftExperimentView) {
-        getModel().setIsOnDraftExperimentView(isOnDraftExperimentView);
+        getElement().setProperty("isOnDraftExperimentView", isOnDraftExperimentView);
     }
 
     public Experiment getExperiment() {
@@ -154,31 +153,9 @@ public class ExperimentsNavBarItem extends PolymerTemplate<ExperimentsNavBarItem
     }
 
     public void updateVariableComponentValues() {
-        getModel().setIsDraft(experiment.isDraft());
-        getModel().setStatus(getIconStatus(experiment.getTrainingStatusEnum()));
-        getModel().setStatusText(experiment.getTrainingStatusEnum().toString());
-        getModel().setIsFavorite(experiment.isFavorite());
-    }
-
-    public interface Model extends TemplateModel {
-        void setExperimentStatus(String experimentStatus);
-
-        void setExperimentName(String experimentName);
-
-        void setIsCurrent(boolean isCurrent);
-
-        Boolean getIsCurrentComparisonExperiment();
-        void setIsCurrentComparisonExperiment(boolean isCurrentComparisonExperiment);
-
-        void setIsDraft(boolean isDraft);
-
-        void setIsFavorite(boolean isFavorite);
-
-        void setIsOnDraftExperimentView(boolean isOnDraftExperimentView);
-
-        void setStatus(String iconStatus);
-
-        void setStatusText(String statusText);
-
+        getElement().setProperty("isDraft", experiment.isDraft());
+        getElement().setProperty("status", getIconStatus(experiment.getTrainingStatusEnum()));
+        getElement().setProperty("statusText", experiment.getTrainingStatusEnum().toString());
+        getElement().setProperty("isFavorite", experiment.isFavorite());
     }
 }

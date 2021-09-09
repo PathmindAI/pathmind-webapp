@@ -11,6 +11,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 
 public class ShareExperimentAction {
@@ -53,7 +55,19 @@ public class ShareExperimentAction {
             dialogContent.add(
                     new H3("Shared"),
                     new Paragraph("Share this URL with other Pathmind users."),
-                    new CopyField(url.replace("experiment", "sharedExperiment"))
+                    new CopyField(url.replace("experiment", "sharedExperiment")),
+                    WrapperUtils.wrapWidthFullBetweenHorizontal(
+                        new Button("Unshare Experiment", event -> {
+                            dialog.close();
+                            ShareExperimentAction.shareExperiment(experimentView, () -> experimentView.getExperiment(), false, () -> {
+                                experimentView.getExperimentTitleBar().updateComponentEnablements();
+                                if (experimentView.isComparisonMode()) {
+                                    experimentView.getComparisonTitleBar().updateComponentEnablements();
+                                }
+                            });
+                        }),
+                        GuiUtils.getPrimaryButton("Close", event -> dialog.close())
+                    )
             );
             dialogContent.addClassName("share-with-support-instructions");
             dialog.add(dialogContent, closeButton);

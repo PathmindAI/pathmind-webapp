@@ -16,6 +16,6 @@
     overflow-y: auto;
 }
 
-experiment-navbar-item:first-of-type {
+experiments-navbar-item:first-of-type {
     margin-top: 0;
 }

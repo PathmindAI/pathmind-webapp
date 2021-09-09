@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.services.training.environment;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
 import io.skymind.pathmind.shared.services.training.versions.Conda;
@@ -36,7 +37,12 @@ public class ExecutionEnvironmentManager {
                 false,
                 false,
                 false,
-                750);
+                750,
+                0.99,
+                BatchMode.COMPLETE_EPISODES,
+                200,
+                4,
+                0);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

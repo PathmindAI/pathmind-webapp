@@ -13,7 +13,7 @@ public class SimulationParameterUtils {
             p.setModelId(modelId);
             p.setExperimentId(experimentId);
 
-            if (p.getType() == ParamType.DATE.getValue()) {
+            if (p.getType() == ParamType.DATE) {
                 // Fri Feb 14 00:00:00 GMT 2020 -> "1581638400000"
                 p.setValue(String.valueOf(new Date(p.getValue()).getTime()));
             }

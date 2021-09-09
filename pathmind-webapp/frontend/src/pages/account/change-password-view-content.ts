@@ -1,5 +1,5 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
-import "../../components/organisms/app-footer.js";
+import { LitElement, html } from "lit-element";
+import "../../components/organisms/app-footer.ts";
 
 /**
  * `change-password-view`
@@ -7,10 +7,9 @@ import "../../components/organisms/app-footer.js";
  * ChangePasswordView element.
  *
  * @customElement
- * @polymer
  */
-class ChangePasswordViewContent extends PolymerElement {
-    static get template() {
+class ChangePasswordViewContent extends LitElement {
+    render() {
         return html`
             <style>
                 change-password-view-content .notes {
@@ -44,18 +43,12 @@ class ChangePasswordViewContent extends PolymerElement {
                     </vaadin-vertical-layout>
                 </div>
             </vaadin-horizontal-layout>
-            <app-footer 
-                contactlink="{{contactLink}}"
-            ></app-footer>`;
+            <app-footer></app-footer>`;
     }
 
-    _attachDom(dom) {
-        this.appendChild(dom);
-    }
-
-    static get is() {
-        return "change-password-view-content";
+    createRenderRoot() {
+        return this;
     }
 }
 
-customElements.define(ChangePasswordViewContent.is, ChangePasswordViewContent);
+customElements.define("change-password-view-content", ChangePasswordViewContent);

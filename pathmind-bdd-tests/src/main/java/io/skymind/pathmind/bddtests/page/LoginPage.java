@@ -206,14 +206,14 @@ public class LoginPage extends PageObject {
 
     public void checkPasswordRecoveryPageElements() {
         WebElement resetPassView = utils.expandRootElement(resetPassViewShadow);
-        assertThat(resetPassView.findElement(By.cssSelector("h3")).getText(), containsString("Reset Your Password"));
-        assertThat(resetPassView.findElement(By.cssSelector("p")).getText(), containsString("Enter your work email and we'll send you a link to set a new password."));
-        WebElement emailView = utils.expandRootElement(resetPassView.findElement(By.id("email")));
+        assertThat(getDriver().findElement(By.cssSelector("h3")).getText(), containsString("Reset Your Password"));
+        assertThat(getDriver().findElement(By.cssSelector("p")).getText(), containsString("Enter your work email and we'll send you a link to set a new password."));
+        WebElement emailView = utils.expandRootElement(getDriver().findElement(By.xpath("//vaadin-email-field")));
         assertThat(emailView.findElement(By.cssSelector("label")).getText(), containsString("Email"));
         assertThat(emailView.findElement(By.cssSelector("input")).isDisplayed(), is(true));
-        WebElement sendBtnView = utils.expandRootElement(resetPassView.findElement(By.id("sendBtn")));
+        WebElement sendBtnView = utils.expandRootElement(getDriver().findElement(By.id("sendBtn")));
         assertThat(sendBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
-        WebElement cancelBtnView = utils.expandRootElement(resetPassView.findElement(By.cssSelector("#cancelBtn")));
+        WebElement cancelBtnView = utils.expandRootElement(getDriver().findElement(By.cssSelector("#cancelBtn")));
         assertThat(cancelBtnView.findElement(By.cssSelector(".vaadin-button-container")).isDisplayed(), is(true));
     }
 

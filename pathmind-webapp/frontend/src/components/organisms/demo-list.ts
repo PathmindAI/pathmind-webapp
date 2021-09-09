@@ -1,4 +1,4 @@
-import { LitElement, html, css, property } from "lit-element";
+import { LitElement, html, property } from "lit-element";
 import "../atoms/loading-spinner.ts";
 
 class DemoList extends LitElement {

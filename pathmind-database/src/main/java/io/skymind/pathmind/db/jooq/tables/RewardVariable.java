@@ -63,7 +63,7 @@ public class RewardVariable extends TableImpl<RewardVariableRecord> {
     /**
      * The column <code>public.reward_variable.name</code>.
      */
-    public final TableField<RewardVariableRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<RewardVariableRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.reward_variable.array_index</code>.
