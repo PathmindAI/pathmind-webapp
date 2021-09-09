@@ -1,0 +1,149 @@
+openapi: 3.0.3
+info:
+  description: |
+
+  version: "1.0.0"
+  title: Pathmind API
+  # termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: slin@pathmind.com
+    # license:
+    # name: Apache 2.0
+    # url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+externalDocs:
+  description: Find out more about Pathmind
+  url: 'https://help.pathmind.com/'
+
+servers:
+  - description: (PROD) Pathmind API
+    url: 'https://api.pathmind.com'
+  - description: (TEST) Pathmind API
+    url: 'https://api.test.devpathmind.com'
+  - description: (DEV) Pathmind API
+    url: 'https://api.dev.devpathmind.com'
+tags:
+  - name: "Model Upload"
+    description: ""
+    externalDocs:
+      description: ""
+      url: ''
+  - name: Projects
+    description: ""
+    externalDocs:
+      description: ""
+      url: ''
+paths:
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: Add a new pet to the store
+      operationId: getProjects
+      responses:
+        '200':
+          description: List of available projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfProjects'
+
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - api_key: []
+
+  /al/upload:
+    post:
+      tags:
+        - "Model Upload"
+      summary: Add a new pet to the store
+      operationId: uploadAlModel
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                projectId:
+                  type: integer
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Upload succeeded
+          headers:
+            location:
+              description: "Link to the web app to proceed with editing created experiment from upload"
+              schema:
+                type: string
+              example: 'https://app.pathmind.com//editGoals/35323?experiment=33093'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - api_key: []
+
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        error:
+          type: string
+        status:
+          type: integer
+        path:
+          type: string
+      example:
+        timestamp: "2021-09-09T15:12:16.380365+02:00"
+        error: "no pathmind api user for api key"
+        status: 401
+        path: "/al/upload"
+
+    ArrayOfProjects:
+      type: array
+      items:
+        $ref: '#/components/schemas/Project'
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_archived:
+          type: boolean
+        date_created:
+          type: string
+        date_last_activity:
+          type: string
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-PM-API-TOKEN
+      in: header
