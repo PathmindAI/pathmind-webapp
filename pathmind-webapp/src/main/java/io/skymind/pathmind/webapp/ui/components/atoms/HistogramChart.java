@@ -42,7 +42,7 @@ public class HistogramChart extends LitTemplate implements HasStyle {
         getElement().setPropertyJson("colors", createJsonStringArray(colors));
     }
 
-    private void setData(JsonArray cols, JsonArray rows) {// JsonObject and JsonArray are not allowed types for TemplateModel methods
+    private void setData(JsonArray cols, JsonArray rows) {
         // JsonObject and JsonArray are not allowed types for TemplateModel methods
         // So we have to set it through calling the JS function
         getElement().callJsFunction("setData", cols, rows);
