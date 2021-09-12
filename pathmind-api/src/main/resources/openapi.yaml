@@ -37,7 +37,7 @@ paths:
     get:
       tags:
         - Projects
-      summary: Add a new pet to the store
+      summary: Gets the list of the user's projects
       operationId: getProjects
       responses:
         '200':
