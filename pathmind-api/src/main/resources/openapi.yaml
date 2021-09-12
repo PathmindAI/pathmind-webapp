@@ -15,7 +15,7 @@ externalDocs:
   url: 'https://help.pathmind.com/'
 
 servers:
-  - description: (PROD) Pathmind API
+  - description: Pathmind API
     url: 'https://api.pathmind.com'
 tags:
   - name: "Model Upload"
@@ -75,6 +75,8 @@ paths:
                 file:
                   type: string
                   format: binary
+              required:
+                - file
       responses:
         '201':
           description: Upload succeeded
