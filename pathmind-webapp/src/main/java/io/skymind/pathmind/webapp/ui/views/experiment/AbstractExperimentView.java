@@ -161,7 +161,7 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
       * from the database we just update the experiment instance with the latest data and then re-render the components.
      */
     public void updateExperimentFromComponents() {
-        experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());
+        experimentComponentList.forEach(ExperimentComponent::updateExperiment);
     }
 
     public void updateComponents() {

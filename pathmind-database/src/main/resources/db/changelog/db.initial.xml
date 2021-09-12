@@ -2092,4 +2092,25 @@
         <addUniqueConstraint tableName="SIMULATION_PARAMETER" columnNames="MODEL_ID, EXPERIMENT_ID, INDEX, KEY"/>
     </changeSet>
 
+    <changeSet id="2652-01" author="alexander.makarov@toptal.com">
+        <createTable tableName="REWARD_TERM">
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_REWARD_TERMS_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WEIGHT" type="DOUBLE" defaultValue="1" defaultOnNull="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REWARD_VARIABLE_ARRAY_INDEX" type="INT"/>
+            <column name="GOAL_CONDITION_TYPE" type="VARCHAR(16)"/>
+            <column name="SNIPPET" type="TEXT"/>
+        </createTable>
+        <addUniqueConstraint tableName="REWARD_TERM" columnNames="EXPERIMENT_ID,INDEX"/>
+        <createIndex tableName="REWARD_TERM" indexName="REWARD_TERM_EXPERIMENT_ID">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

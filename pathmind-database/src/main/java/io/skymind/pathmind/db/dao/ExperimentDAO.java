@@ -103,6 +103,7 @@ public class ExperimentDAO {
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
         experiment.setSimulationParameters(SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experiment.getId()));
+        experiment.setRewardTerms(RewardTermsRepository.getRewardTerms(ctx, experiment.getId()));
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
@@ -239,9 +240,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getFullExperiment(long experimentId) {
         Optional<Experiment> optionalExperiment = getExperiment(experimentId);
-        optionalExperiment.ifPresent(experiment -> {
-            updateExperimentInternalValues(experiment);
-        });
+        optionalExperiment.ifPresent(this::updateExperimentInternalValues);
         return optionalExperiment;
     }
 
@@ -295,6 +294,7 @@ public class ExperimentDAO {
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
             SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, experiment.getSimulationParameters());
+            RewardTermsRepository.flushAndSaveTerms(ctx, experiment.getId(), experiment.getRewardTerms());
         });
 
     }

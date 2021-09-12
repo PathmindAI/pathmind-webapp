@@ -301,7 +301,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     public void beforeLeave(BeforeLeaveEvent event) {
         ContinueNavigationAction action = event.postpone();
         if (isNeedsSaving) {
-            handleSaveDraftClicked(() -> action.proceed());
+            handleSaveDraftClicked(action::proceed);
         } else {
             action.proceed();
         }

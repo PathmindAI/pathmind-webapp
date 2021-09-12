@@ -56,6 +56,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
     private List<RewardVariable> rewardVariables;
     private List<RewardVariable> selectedRewardVariables = new ArrayList<>();
     private List<Double> rewardVariablesScores = new ArrayList<>();
+    private List<RewardTerm> rewardTerms = new ArrayList<>();
 
     public RunStatus getTrainingStatusEnum() {
         return RunStatus.getEnumFromValue(trainingStatus);
@@ -134,6 +135,7 @@ public class Experiment extends ArchivableData implements DeepCloneableInterface
         experiment.setPolicies(CloneUtils.shallowCloneList(policies));
         experiment.setRuns(CloneUtils.shallowCloneList(runs));
         experiment.setRewardVariables(CloneUtils.shallowCloneList(rewardVariables));
+        experiment.setRewardTerms(CloneUtils.shallowCloneList(rewardTerms));
         return experiment;
     }
 

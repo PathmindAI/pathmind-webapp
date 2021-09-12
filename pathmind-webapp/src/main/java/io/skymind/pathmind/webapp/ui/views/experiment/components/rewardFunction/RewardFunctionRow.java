@@ -12,22 +12,24 @@ import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import lombok.Getter;
 
 public class RewardFunctionRow extends HorizontalLayout {
 
-    private NumberField goalField;
-    private Select<RewardVariable> rewardVariableSelect;
-    private Select<GoalConditionType> conditionType;
-    private HorizontalLayout goalFieldsWrapper;
+    private static final String goalOperatorSelectThemeNames = "small align-center";
+
+    @Getter
+    private RewardVariable rewardVariable;
+
+    private final HorizontalLayout goalFieldsWrapper;
+    private final Select<RewardVariable> rewardVariableSelect = new Select<>();
+    private final Select<GoalConditionType> conditionType;
+    private final NumberField goalField;
 
     private Binder<RewardVariable> binder;
-    private String goalOperatorSelectThemeNames = "small align-center";
-
-    private RewardVariable rewardVariable;
 
     protected RewardFunctionRow(List<RewardVariable> rvars) {
         setAlignItems(Alignment.CENTER);
-        rewardVariableSelect = new Select<>();
         rewardVariableSelect.setPlaceholder("Choose a reward variable");
         rewardVariableSelect.setItems(rvars);
         rewardVariableSelect.setItemLabelGenerator(rv -> rv.getName());
@@ -82,11 +84,24 @@ public class RewardFunctionRow extends HorizontalLayout {
         goalField.setEnabled(conditionType.getValue() != null);
     }
 
-    public RewardVariable getRewardVariable() {
-        return rewardVariable;
+    public Double getWeight() {
+        return this.goalField.getValue();
+    }
+
+    public void setWeight(Double weight) {
+        this.goalField.setValue(weight);
+    }
+
+    public GoalConditionType getGoalCondition() {
+        return this.conditionType.getValue();
+    }
+
+    public void setGoalCondition(GoalConditionType goalCondition) {
+        this.conditionType.setValue(goalCondition);
     }
 
     public void setRewardVariable(RewardVariable rewardVariable) {
         this.rewardVariable = rewardVariable;
+        this.rewardVariableSelect.setValue(this.rewardVariable);
     }
 }
