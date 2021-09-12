@@ -17,10 +17,6 @@ externalDocs:
 servers:
   - description: (PROD) Pathmind API
     url: 'https://api.pathmind.com'
-  - description: (TEST) Pathmind API
-    url: 'https://api.test.devpathmind.com'
-  - description: (DEV) Pathmind API
-    url: 'https://api.dev.devpathmind.com'
 tags:
   - name: "Model Upload"
     description: ""
