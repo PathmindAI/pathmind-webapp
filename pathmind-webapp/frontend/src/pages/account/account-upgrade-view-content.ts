@@ -1,9 +1,20 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 
-class AccountUpgradeViewContent extends PolymerElement {
-  static get template() {
+class AccountUpgradeViewContent extends LitElement {
+  @property({type: String})
+  apiUrl = "";
+  @property({type: String})
+  contactLink = "";
+  @property({type: String})
+  key = "";
+  @property({type: Object})
+  stripeObj;
+  @property({type: String})
+  userApiKey = "";
+
+  render() {
     return html`
-      <style include="shared-styles pathmind-dialog-view">
+      <style>
         account-upgrade-view-content {
             box-sizing: border-box;
             width: 100%;
@@ -241,7 +252,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <li>Technical Support Included</li>
             </ul>
             <i class="additional-info">*Promo code required. Contact us for more info.</i>
-            <a href="{{contactLink}}">
+            <a href="${this.contactLink}">
                 <vaadin-button id="studentBtn" theme="primary">Get in touch</vaadin-button>
             </a>
         </vaadin-vertical-layout>
@@ -259,7 +270,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <li>Unlimited Policy Export</li>
                 <li>Technical Support Included</li>
             </ul>
-            <vaadin-button id="proBtn" theme="primary" on-click="handleProClick">Upgrade now</vaadin-button>
+            <vaadin-button id="proBtn" theme="primary" @click="${this.handleProClick}">Upgrade now</vaadin-button>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
@@ -276,7 +287,7 @@ class AccountUpgradeViewContent extends PolymerElement {
                 <li>Policy Serving Enabled</li>
                 <li>RL Advisory and Training</li>
             </ul>
-            <a href="{{contactLink}}">
+            <a href="${this.contactLink}">
                 <vaadin-button id="enterpriseBtn" theme="primary">Get in touch</vaadin-button>
             </a>
         </vaadin-vertical-layout>
@@ -284,13 +295,12 @@ class AccountUpgradeViewContent extends PolymerElement {
     `;
   }
 
-  _attachDom(dom) {
-    this.appendChild(dom);
+  createRenderRoot() {
+    return this;
   }
 
-  ready() {
-      super.ready();
-      this.stripeObj = window.Stripe(this.key);
+  firstUpdated() {
+      (this.stripeObj as stripe.Stripe) = window.Stripe(this.key);
   }
 
   handleProClick() {
@@ -322,18 +332,6 @@ class AccountUpgradeViewContent extends PolymerElement {
       window.location.pathname = "/page-not-found";
     });
   }
-
-  static get is() {
-    return "account-upgrade-view-content";
-  }
-
-  static get properties() {
-    return {
-      stripeObj: Object,
-      userApiKey: String,
-      apiUrl: String,
-    };
-  }
 }
 
-customElements.define(AccountUpgradeViewContent.is, AccountUpgradeViewContent);
+customElements.define("account-upgrade-view-content", AccountUpgradeViewContent);
