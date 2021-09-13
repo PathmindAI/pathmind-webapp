@@ -12,13 +12,9 @@ import java.util.UUID;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
@@ -27,8 +23,6 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
-import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
-import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
@@ -39,7 +33,6 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.vaadin.jchristophe.SortableConfig;
 import org.vaadin.jchristophe.SortableLayout;
-
 
 @Slf4j
 public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
@@ -123,20 +116,20 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewBoxRow(String snippet, Double weight) {
-        JuicyAceEditor rewardFunctionEditor = setupRewardFunctionJuicyAceEditor();
-        NumberField weightField = new NumberField();
-        weightField.setPlaceholder("Weight");
-        weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
-        weightField.addValueChangeListener(event -> {
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, changeEvent -> {
+            if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
+                // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
+                experiment.setRewardFunction(changeEvent.getValue());
+                // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
+                // reused in multiple parts of the code.
+                NeedsSavingAction.setNeedsSaving(newExperimentView);
+            }
         });
-        HorizontalLayout boxRowWrapper = WrapperUtils.wrapWidthFullHorizontal(
-                rewardFunctionEditor, new Span("x"), weightField);
-        boxRowWrapper.setSpacing(false);
-        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(boxRowWrapper, false);
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
 
         String id = UUID.randomUUID().toString();
         sortableRowWrapper.setId(id);
-        rewardTermsRows.put(id, rewardFunctionEditor);
+        rewardTermsRows.put(id, row);
 
         sortableRowWrapper.setRemoveRowCallback(() -> {
             rewardTermsRows.remove(id);
@@ -144,8 +137,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.add(sortableRowWrapper);
 
         if (StringUtils.isNotEmpty(snippet)) {
-            rewardFunctionEditor.setValue(snippet);
-            weightField.setValue(weight);
+            row.setSnippet(snippet);
+            row.setWeight(weight);
         }
 
     }
@@ -169,29 +162,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void setRewardVariables(List<RewardVariable> rewardVariables) {
         this.rewardVariables = ListUtils.emptyIfNull(experiment.getRewardVariables());
         rewardVariables.sort(Comparator.comparing(RewardVariable::getArrayIndex));
-    }
-
-    private JuicyAceEditor setupRewardFunctionJuicyAceEditor() {
-        JuicyAceEditor rewardFunctionJuicyAceEditor = new JuicyAceEditor();
-        setupValueChangeListener(rewardFunctionJuicyAceEditor, newExperimentView);
-        rewardFunctionJuicyAceEditor.setSizeFull();
-        rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
-        rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
-        rewardFunctionJuicyAceEditor.setWrapmode(false);
-        rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
-        return rewardFunctionJuicyAceEditor;
-    }
-
-    private void setupValueChangeListener(JuicyAceEditor editor, NewExperimentView newExperimentView) {
-        editor.addValueChangeListener(changeEvent -> {
-            if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
-                // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
-                experiment.setRewardFunction(changeEvent.getValue());
-                // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
-                // reused in multiple parts of the code.
-                NeedsSavingAction.setNeedsSaving(newExperimentView);
-            }
-        });
     }
 
     public boolean isValidForTraining(JuicyAceEditor rewardFunctionJuicyAceEditor) {
@@ -222,19 +192,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         List<RewardTerm> terms = new ArrayList<>();
 
-        rowsWrapper.getChildren()// todo: if reorder elements - order is not updated in the container.
+        rowsWrapper.getChildren()
                 .map(Component::getId)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(rewardTermsRows::get)
                 .map(termComponent -> {
-                    if (termComponent instanceof JuicyAceEditor) {
-                        String snippet = StringUtils.trimToEmpty(((JuicyAceEditor) termComponent).getValue());
-                        if (StringUtils.isEmpty(snippet)) {
-                            return null;
-                        }
-                        Double weight = 1d; // todo: make component returning value and weight
-                        return new RewardTerm(terms.size(), weight, snippet);
+                    if (termComponent instanceof RewardFunctionEditorRow) {
+                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
+                        return new RewardTerm(terms.size(), row.getWeight(), row.getSnippet());
                     }
                     if (termComponent instanceof RewardFunctionRow) {
                         RewardFunctionRow row = (RewardFunctionRow) termComponent;

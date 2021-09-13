@@ -110,7 +110,6 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
         JsonObject autocompleteOption = Json.createObject();
         autocompleteOption.put("caption", variable);
         autocompleteOption.put("value", variable);
-//        autocompleteOption.put("meta", "");
         return autocompleteOption;
     }
 }

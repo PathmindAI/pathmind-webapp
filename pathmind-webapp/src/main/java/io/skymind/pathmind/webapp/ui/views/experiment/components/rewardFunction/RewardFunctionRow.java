@@ -51,8 +51,9 @@ public class RewardFunctionRow extends HorizontalLayout {
 
         goalField = new NumberField();
         goalField.setPlaceholder("Weight");
-        goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
+        goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
         goalField.addValueChangeListener(event -> {});
+        goalField.setHasControls(true);
 
         goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, new Span("x"), goalField);
         goalFieldsWrapper.addClassName("goal-fields-wrapper");
