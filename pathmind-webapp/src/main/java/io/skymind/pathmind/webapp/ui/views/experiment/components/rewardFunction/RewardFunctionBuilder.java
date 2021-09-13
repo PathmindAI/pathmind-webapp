@@ -49,9 +49,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final NewExperimentView newExperimentView;
 
-    private final List<RewardFunctionRow> rewardFunctionRows = new ArrayList<>();
-    private final List<JuicyAceEditor> rewardFunctionJuicyAceEditors = new ArrayList<>();
-
     private Binder<Experiment> binder;
 
     private final VerticalLayout rowsWrapper;
@@ -102,8 +99,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
-        int newIndexOfRow = rewardFunctionRows.size();
-        rewardFunctionRows.add(newIndexOfRow, row);
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row);
 
         String id = UUID.randomUUID().toString();
@@ -111,9 +106,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardTermsRows.put(id, row);
 
         sortableRowWrapper.setRemoveRowCallback(() -> {
-            rewardFunctionRows.remove(newIndexOfRow);
             rewardTermsRows.remove(id);
         });
+
         rowsWrapper.add(sortableRowWrapper);
 
         if (variable != null) {
@@ -129,8 +124,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private void createNewBoxRow(String snippet, Double weight) {
         JuicyAceEditor rewardFunctionEditor = setupRewardFunctionJuicyAceEditor();
-        int newIndexOfEditor = rewardFunctionJuicyAceEditors.size();
-        rewardFunctionJuicyAceEditors.add(newIndexOfEditor, rewardFunctionEditor);
         NumberField weightField = new NumberField();
         weightField.setPlaceholder("Weight");
         weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_RIGHT);
@@ -146,7 +139,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardTermsRows.put(id, rewardFunctionEditor);
 
         sortableRowWrapper.setRemoveRowCallback(() -> {
-            rewardFunctionJuicyAceEditors.remove(newIndexOfEditor);
             rewardTermsRows.remove(id);
         });
         rowsWrapper.add(sortableRowWrapper);
@@ -161,9 +153,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void setRewardTerms(List<RewardTerm> rewardTerms) {
 
         rowsWrapper.removeAll();
-
-        rewardFunctionRows.clear();
-        rewardFunctionJuicyAceEditors.clear();
         rewardTermsRows.clear();
 
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
@@ -261,6 +250,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
 
         experiment.setRewardTerms(terms);
+        setRewardTerms(experiment.getRewardTerms());
 
     }
 }
