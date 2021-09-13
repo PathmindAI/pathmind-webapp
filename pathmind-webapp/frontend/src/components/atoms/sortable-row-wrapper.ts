@@ -1,6 +1,11 @@
 import {LitElement, html, css, property} from 'lit-element';
 
 class SortableRowWrapper extends LitElement {
+  @property({type: Boolean, reflect: true})
+  sortable = true;
+  @property({type: Object})
+  sortableNode;
+
   static get styles() {
     return css`
       :host {
@@ -22,9 +27,9 @@ class SortableRowWrapper extends LitElement {
         cursor: pointer;
         opacity: 0;
       }
-      :host(:hover:not(.onDrag)) .draggable-icon,
-      :host(:hover:not(.onDrag)) .draggable-icon,
-      :host(.sortable-chosen) .draggable-icon {
+      :host([sortable]:hover:not(.onDrag)) .draggable-icon,
+      :host([sortable]:hover:not(.onDrag)) .draggable-icon,
+      :host([sortable].sortable-chosen) .draggable-icon {
         opacity: 1;
       }
       .draggable-icon:after {
@@ -53,14 +58,13 @@ class SortableRowWrapper extends LitElement {
       }
     `;
   }
-  constructor() {
-    super();
-  }
   connectedCallback() {
     super.connectedCallback();
-    this.sortableNode = this.parentNode.parentNode;
-    this._getConnector = this._getConnector.bind(this);
-    window.requestAnimationFrame(this._getConnector);
+    if (this.sortable) {
+      this.sortableNode = this.parentNode.parentNode;
+      this._getConnector = this._getConnector.bind(this);
+      window.requestAnimationFrame(this._getConnector);
+    }
   }
   _getConnector() {
     const onDragClassName = "onDrag";
@@ -68,16 +72,16 @@ class SortableRowWrapper extends LitElement {
     const sortableRows = this.parentNode.childNodes;
     const sortableConnecter = sortableNode.$connector;
     if (typeof sortableConnecter === "undefined") {
-      window.requestAnimationFrame(this.getConnector);
+      window.requestAnimationFrame(this._getConnector);
     } else {
       sortableConnecter.setOption("onStart", function(event) {
         sortableNode.classList.add(onDragClassName);
-        sortableRows.forEach(el => el.classList.add(onDragClassName));
+        sortableRows.forEach((el: HTMLElement) => el.classList.add(onDragClassName));
       });
       sortableConnecter.setOption("onEnd", function(event) {
         if (sortableNode.classList.contains(onDragClassName)) {
           sortableNode.classList.remove(onDragClassName);
-          sortableRows.forEach(el => el.classList.remove(onDragClassName));
+          sortableRows.forEach((el: HTMLElement) => el.classList.remove(onDragClassName));
         }
       });
     }
@@ -86,7 +90,7 @@ class SortableRowWrapper extends LitElement {
     return html`
       <span class="draggable-icon"></span>
       <slot></slot>
-      <iron-icon icon="vaadin:close-big" @click="${e => this.$server.removeRow()}"></iron-icon>
+      <iron-icon icon="vaadin:close-big" @click="${e => (this as any).$server.removeRow()}"></iron-icon>
     `;
   }
 }

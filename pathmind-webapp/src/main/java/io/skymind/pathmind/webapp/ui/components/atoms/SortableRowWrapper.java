@@ -8,13 +8,14 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.server.Command;
 
 @Tag("sortable-row-wrapper")
-@JsModule("./src/components/atoms/sortable-row-wrapper.js")
+@JsModule("./src/components/atoms/sortable-row-wrapper.ts")
 public class SortableRowWrapper extends Component implements HasComponents {
 
     private Command removeRowCallback = () -> {};
 
-    public SortableRowWrapper(Component component) {
+    public SortableRowWrapper(Component component, boolean sortable) {
         add(component);
+        getElement().setProperty("sortable", sortable);
     }
 
     public void setRemoveRowCallback(Command callback) {

@@ -99,7 +99,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
-        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row);
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
 
         String id = UUID.randomUUID().toString();
         sortableRowWrapper.setId(id);
@@ -132,7 +132,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         HorizontalLayout boxRowWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 rewardFunctionEditor, new Span("x"), weightField);
         boxRowWrapper.setSpacing(false);
-        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(boxRowWrapper);
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(boxRowWrapper, false);
 
         String id = UUID.randomUUID().toString();
         sortableRowWrapper.setId(id);

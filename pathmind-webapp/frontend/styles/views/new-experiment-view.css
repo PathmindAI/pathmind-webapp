@@ -301,10 +301,6 @@
   color: var(--pm-grey-color);
 }
 
-.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover > *:first-child::before {
-  display: none;
-}
-
 .new-experiment-view sortable + vaadin-horizontal-layout {
   margin: var(--lumo-space-s) auto;
 }
