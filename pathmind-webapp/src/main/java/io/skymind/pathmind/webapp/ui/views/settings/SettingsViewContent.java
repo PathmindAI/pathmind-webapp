@@ -103,6 +103,9 @@ public class SettingsViewContent extends LitTemplate {
     @Id("batchModeCB")
     private Select<String> batchMode;
 
+    @Id("batchSizeCB")
+    private Select<String> batchSize;
+
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -162,7 +165,8 @@ public class SettingsViewContent extends LitTemplate {
         settingsList.put(maxTrainingTime, "Max Training Time (hour)");
         settingsList.put(gamma, "Gamma value");
         settingsList.put(rolloutFragmentLength, "Rollout Fragment Length");
-        settingsList.put(batchMode, "Batch Mode");
+        settingsList.put(batchMode, "Train Batch Mode");
+        settingsList.put(batchSize, "Train Batch Size");
     }
 
     private void initBtns() {
@@ -324,11 +328,17 @@ public class SettingsViewContent extends LitTemplate {
         rolloutFragmentLength.setLabel(settingsList.get(rolloutFragmentLength));
         rolloutFragmentLength.setValue(String.valueOf(env.getRolloutFragmentLength()));
 
-        // init batch mode
+        // init train batch mode
         List<String> batchModes = Arrays.stream(BatchMode.values()).map(BatchMode::toString).collect(Collectors.toList());
         batchMode.setItems(batchModes);
         batchMode.setLabel(settingsList.get(batchMode));
         batchMode.setValue(env.getBatchMode().toString());
+
+        // init train batch size
+        List<String> batchSizes = List.of("no selection", "3000", "4000", "6000", "8000", "10000", "12000");
+        batchSize.setItems(batchSizes);
+        batchSize.setLabel(settingsList.get(batchSize));
+        batchSize.setValue(env.getTrainBatchSize() == 0 ? "no selection" : String.valueOf(env.getTrainBatchSize()));
     }
 
     public void saveSettings() {
@@ -358,6 +368,7 @@ public class SettingsViewContent extends LitTemplate {
         env.setGamma(Double.parseDouble(gamma.getValue()));
         env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
         env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
+        env.setTrainBatchSize(batchSize.getValue().equals("no selection") ? 0 : Integer.valueOf(batchSize.getValue()));
     }
 
     public String getSettingsText() {

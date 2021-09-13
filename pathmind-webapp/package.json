@@ -55,6 +55,7 @@
   "devDependencies": {
     "@babel/core": "^7.10.3",
     "@storybook/polymer": "^5.3.19",
+    "@types/intercom-web": "^2.8.13",
     "@types/stripe-v3": "^3.1.25",
     "babel-loader": "^8.1.0",
     "chokidar": "^3.5.0",
@@ -155,6 +156,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "d07c15e712284b6ce3711afdcd8cdca203c0fe5cb383d1a7f084d17719c7498c"
+    "hash": "aaa1c275c567aa69e11d2fc3143d0525f892e867dc61f1107afde31ab238683d"
   }
 }

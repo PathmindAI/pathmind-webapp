@@ -38,6 +38,7 @@ public class ExecutionEnvironment {
     private BatchMode batchMode;
     private int rolloutFragmentLength;
     private int numWorker;
+    private int trainBatchSize;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;
