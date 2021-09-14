@@ -63,7 +63,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected ExperimentNotesField notesField;
     private RewardFunctionBuilder rewardFunctionBuilder;
-    // private RewardFunctionEditor rewardFunctionEditor;
     private SimulationParametersPanel simulationParametersPanel;
     private RewardFunctionErrorPanel rewardFunctionErrorPanel;
     private ObservationsPanel observationsPanel;
@@ -254,7 +253,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return ModelUtils.isValidModel(model)
                 && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
                 && (!isBasicPlanUser || (isBasicPlanUser && !model.isActionmask()))
-                && (isPyModel) //|| rewardFunctionEditor.isValidForTraining())
+                && (isPyModel || rewardFunctionBuilder.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
                 && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
@@ -272,12 +271,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
-    }
-
-    public Experiment getUpdatedExperiment() {
-        // TODO -> set new reward function rows
-        experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
-        return experiment;
     }
 
     public void saveAdvancedSettings() {

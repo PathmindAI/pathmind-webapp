@@ -147,11 +147,12 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardVariables.sort(Comparator.comparing(RewardVariable::getArrayIndex));
     }
 
-    public boolean isValidForTraining(JuicyAceEditor rewardFunctionJuicyAceEditor) {
-        return rewardFunctionJuicyAceEditor.getOptionalValue().isPresent()
-                && !rewardFunctionJuicyAceEditor.getValue().isEmpty()
-                && rewardFunctionErrors.size() == 0;
-        // && isRewardFunctionLessThanMaxLength();
+    public boolean isValidForTraining() {
+        // TODO -> implement reward terms error checking
+        return true;
+        // rewardFunctionJuicyAceEditor.getOptionalValue().isPresent()
+        //         && !rewardFunctionJuicyAceEditor.getValue().isEmpty()
+        //         && rewardFunctionErrors.size() == 0;
     }
 
     public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
