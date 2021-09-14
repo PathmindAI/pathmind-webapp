@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -47,7 +49,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final VerticalLayout rowsWrapper;
 
-    private final Map<String, Object> rewardTermsRows = new HashMap<>();
+    private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
@@ -88,8 +90,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
-        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
-        rowsWrapper.add(sortableRowWrapper);
         putRewardTermsRow(row);
 
         if (variable != null) {
@@ -113,8 +113,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 NeedsSavingAction.setNeedsSaving(newExperimentView);
             }
         });
-        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
-        rowsWrapper.add(sortableRowWrapper);
         putRewardTermsRow(row);
 
         if (StringUtils.isNotEmpty(snippet)) {
@@ -124,8 +122,14 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     }
 
-    private void putRewardTermsRow(Component row) {
+    private void putRewardTermsRow(RewardTermRow row) {
         String id = UUID.randomUUID().toString();
+        SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
+        sortableRowWrapper.setRemoveRowCallback(() -> {
+            rewardTermsRows.remove(id);
+        });
+        sortableRowWrapper.setId(id);
+        rowsWrapper.add(sortableRowWrapper);
         rewardTermsRows.put(id, row);
     }
 
@@ -138,7 +142,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
         rowsWrapper.add(headerRow);
-        putRewardTermsRow(headerRow);
 
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
 

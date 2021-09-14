@@ -3,6 +3,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.util.List;
 
 import com.vaadin.flow.component.AbstractField.ComponentValueChangeEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,7 +17,7 @@ import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 
-public class RewardFunctionEditorRow extends HorizontalLayout {
+public class RewardFunctionEditorRow extends HorizontalLayout implements RewardTermRow{
     private final NumberField goalField;
     private JuicyAceEditor rewardFunctionJuicyAceEditor;
 
@@ -59,5 +60,10 @@ public class RewardFunctionEditorRow extends HorizontalLayout {
             return null;
         }
         return snippet;
+    }
+
+    @Override
+    public Component asComponent() {
+        return this;
     }
 }

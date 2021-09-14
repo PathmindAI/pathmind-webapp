@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 
 import java.util.List;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -14,7 +15,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import lombok.Getter;
 
-public class RewardFunctionRow extends HorizontalLayout {
+public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow {
 
     private static final String goalOperatorSelectThemeNames = "small align-center";
 
@@ -105,4 +106,10 @@ public class RewardFunctionRow extends HorizontalLayout {
         this.rewardVariable = rewardVariable;
         this.rewardVariableSelect.setValue(this.rewardVariable);
     }
+
+    @Override
+    public Component asComponent() {
+        return this;
+    }
+
 }
