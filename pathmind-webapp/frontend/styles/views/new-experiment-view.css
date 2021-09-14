@@ -71,6 +71,10 @@
     border-left: 1px solid var(--pm-grey-color-lightest);
 }
 
+.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
+  min-width: 37rem;
+}
+
 .new-experiment-view .reward-function-wrapper .reward-fn-editor-panel > vaadin-vertical-layout {
   overflow-x: hidden;
   overflow-y: auto;
@@ -269,15 +273,32 @@
     display: inline-block;
 }
 
-.new-experiment-view sortable {
-  width: 100%;
+.new-experiment-view .reward-terms-wrapper .header-row {
+  position: sticky;
+  top: 0;
+  line-height: 1;
+  font-size: var(--lumo-font-size-s);
+  color: var(--pm-secondary-text-color);
+  background-color: white;
+  padding: var(--lumo-space-xs);
+  border-bottom: 1px solid var(--pm-grey-color-lightest);
+  z-index: 1;
 }
 
-.new-experiment-view sortable vaadin-vertical-layout {
-  counter-reset: number;
+.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(1) {
+  flex: 1 0 auto;
+  padding-left: 1.5rem;
 }
 
-.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper {
+.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(2) {
+  width: calc(var(--lumo-font-size-s) * 15);
+}
+
+.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(3) {
+  width: 9rem;
+}
+
+.new-experiment-view .reward-terms-wrapper sortable-row-wrapper {
   counter-increment: number;
   position: relative;
   width: 100%;
@@ -285,15 +306,15 @@
   overflow: auto;
 }
 
-.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:nth-child(even) {
+.new-experiment-view .reward-terms-wrapper sortable-row-wrapper:nth-of-type(even) {
   background-color: var(--pm-highlight-light);
 }
 
-.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper:hover {
+.new-experiment-view .reward-terms-wrapper sortable-row-wrapper:hover {
   background-color: var(--pm-highlight-medium);
 }
 
-.new-experiment-view sortable vaadin-vertical-layout sortable-row-wrapper > *:first-child::before {
+.new-experiment-view .reward-terms-wrapper sortable-row-wrapper > *:first-child::before {
   content: counter(number);
   position: absolute;
   top: .4rem;
@@ -301,17 +322,19 @@
   color: var(--pm-grey-color);
 }
 
-.new-experiment-view sortable + vaadin-horizontal-layout {
-  margin: var(--lumo-space-s) auto;
-}
-
 .new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
   justify-content: space-between;
+}
+
+.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-select {
+  flex: 1 0 auto;
 }
 
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
   min-height: 8em;
   border: 1px solid var(--pm-grey-color);
+  border-radius: var(--lumo-border-radius-m);
+  overflow: hidden;
 }
 
 .new-experiment-view .goal-fields-wrapper {

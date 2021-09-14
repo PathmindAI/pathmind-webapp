@@ -50,11 +50,15 @@ class SortableRowWrapper extends LitElement {
         width: 14px;
         height: 14px;
         color: var(--pm-grey-color);
-        margin: 7px var(--lumo-space-s);
+        margin: 7px var(--lumo-space-xs) 7px var(--lumo-space-s);
         cursor: pointer;
+        visibility: hidden;
       }
       iron-icon:hover {
         color: var(--lumo-primary-color);
+      }
+      :host(:hover) iron-icon {
+        visibility: visible;
       }
     `;
   }

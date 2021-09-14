@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
@@ -24,6 +25,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
+import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
@@ -31,8 +33,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.vaadin.jchristophe.SortableConfig;
-import org.vaadin.jchristophe.SortableLayout;
 
 @Slf4j
 public class RewardFunctionBuilder extends VerticalLayout implements ExperimentComponent {
@@ -57,29 +57,24 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         setSpacing(false);
         setPadding(false);
 
-        Button newRowButton = new Button("New Reward Variable Row", new Icon(VaadinIcon.PLUS), click -> createNewRow());
+        Button newRowButton = new Button("Reward Term", new Icon(VaadinIcon.PLUS), click -> createNewRow());
         newRowButton.setIconAfterText(false);
         newRowButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-        Button newBoxButton = new Button("New Code Editor Row", new Icon(VaadinIcon.PLUS), click -> createNewBoxRow());
+        Button newBoxButton = new Button("Custom", new Icon(VaadinIcon.PLUS), click -> createNewBoxRow());
         newBoxButton.setIconAfterText(false);
         newBoxButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
         rowsWrapper = new VerticalLayout();
+        rowsWrapper.addClassName("reward-terms-wrapper");
         rowsWrapper.setSpacing(false);
         rowsWrapper.setPadding(false);
-
-        SortableConfig sortableConfig = new SortableConfig();
-        sortableConfig.setAnimation(300);
-
-        SortableLayout sortableLayout = new SortableLayout(rowsWrapper, sortableConfig);
-        sortableLayout.setHandle("draggable-icon");
 
         add(WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL)));
 
         add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                sortableLayout,
+                rowsWrapper,
                 WrapperUtils.wrapWidthFullCenterHorizontal(
                         newRowButton, newBoxButton)));
 
@@ -93,15 +88,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
-
-        String id = UUID.randomUUID().toString();
-        sortableRowWrapper.setId(id);
-        rewardTermsRows.put(id, row);
-
-        sortableRowWrapper.setRemoveRowCallback(() -> {
-            rewardTermsRows.remove(id);
-        });
-
         rowsWrapper.add(sortableRowWrapper);
 
         if (variable != null) {
@@ -126,14 +112,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
             }
         });
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
-
-        String id = UUID.randomUUID().toString();
-        sortableRowWrapper.setId(id);
-        rewardTermsRows.put(id, row);
-
-        sortableRowWrapper.setRemoveRowCallback(() -> {
-            rewardTermsRows.remove(id);
-        });
         rowsWrapper.add(sortableRowWrapper);
 
         if (StringUtils.isNotEmpty(snippet)) {
@@ -147,6 +125,11 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         rowsWrapper.removeAll();
         rewardTermsRows.clear();
+
+        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"), new Span("Weight"));
+        headerRow.addClassName("header-row");
+        GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
+        rowsWrapper.add(headerRow);
 
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
 
