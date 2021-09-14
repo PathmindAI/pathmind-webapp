@@ -110,7 +110,7 @@ def setGitHubStatus(state) {
     }
     sh """
         set -x
-        curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
+        curl -H \"Authorization: token ${token}\"  \"${repoUrl}/statuses/${commitSha}" \
         -H \"Content-Type: application/json\"   \
         -X POST -d '{\"state\": \"${status}\", \"description\": \"BDD tests\", \"target_url\": \"${env.RUN_DISPLAY_URL}\", \"context\": \"Jenkins\" }'
     """
