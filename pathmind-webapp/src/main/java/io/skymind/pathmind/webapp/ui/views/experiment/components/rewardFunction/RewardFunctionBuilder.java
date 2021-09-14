@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -89,6 +90,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
         rowsWrapper.add(sortableRowWrapper);
+        putRewardTermsRow(row);
 
         if (variable != null) {
             row.setRewardVariable(variable);
@@ -113,12 +115,18 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         });
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row, false);
         rowsWrapper.add(sortableRowWrapper);
+        putRewardTermsRow(row);
 
         if (StringUtils.isNotEmpty(snippet)) {
             row.setSnippet(snippet);
             row.setWeight(weight);
         }
 
+    }
+
+    private void putRewardTermsRow(Component row) {
+        String id = UUID.randomUUID().toString();
+        rewardTermsRows.put(id, row);
     }
 
     private void setRewardTerms(List<RewardTerm> rewardTerms) {
@@ -130,6 +138,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
         rowsWrapper.add(headerRow);
+        putRewardTermsRow(headerRow);
 
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
 
@@ -197,7 +206,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 })
                 .filter(Objects::nonNull)
                 .forEach(terms::add);
-
 
         experiment.setRewardTerms(terms);
         setRewardTerms(experiment.getRewardTerms());
