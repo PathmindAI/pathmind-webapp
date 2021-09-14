@@ -7,6 +7,7 @@ import java.util.Map;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Location;
@@ -104,7 +105,7 @@ public class EditGoalsView extends PathMindDefaultView implements HasUrlParamete
     }
 
     @Override
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData(BeforeEnterEvent event) throws InvalidDataException {
         this.model = modelService.getModel(modelId)
                 .orElseThrow(() -> new InvalidDataException("Attempted to access model: " + modelId));
         this.projectId = model.getProjectId();
