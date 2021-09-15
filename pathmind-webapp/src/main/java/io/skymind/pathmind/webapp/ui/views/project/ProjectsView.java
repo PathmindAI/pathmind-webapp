@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -203,7 +204,7 @@ public class ProjectsView extends PathMindDefaultView {
     }
 
     @Override
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData(BeforeEnterEvent event) throws InvalidDataException {
         projectCount = projectDAO.countProjects(SecurityUtils.getUserId());
     }
 

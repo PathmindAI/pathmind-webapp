@@ -15,6 +15,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
@@ -250,7 +251,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     }
 
     @Override
-    protected void initLoadData() throws InvalidDataException {
+    protected void initLoadData(BeforeEnterEvent event) throws InvalidDataException {
         if (isResumeUpload()) {
             this.model = modelService.getModel(modelId)
                     .orElseThrow(() -> new InvalidDataException("Attempted to access Invalid model: " + modelId));
