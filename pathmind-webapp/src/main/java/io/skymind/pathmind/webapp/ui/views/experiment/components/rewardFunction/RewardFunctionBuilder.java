@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -125,9 +123,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void putRewardTermsRow(RewardTermRow row) {
         String id = UUID.randomUUID().toString();
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
-        sortableRowWrapper.setRemoveRowCallback(() -> {
-            rewardTermsRows.remove(id);
-        });
         sortableRowWrapper.setId(id);
         rowsWrapper.add(sortableRowWrapper);
         rewardTermsRows.put(id, row);
