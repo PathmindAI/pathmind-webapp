@@ -16,19 +16,22 @@ import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 public class RewardFunctionEditorRow extends HorizontalLayout implements RewardTermRow{
     private final NumberField goalField;
     private JuicyAceEditor rewardFunctionJuicyAceEditor;
+    private RewardCodeErrorPanel rewardCodeErrorPanel;
 
-    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, ValueChangeListener<ComponentValueChangeEvent<JuicyAceEditor, String>> valueChangeListener) {
+    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables) {
         rewardFunctionJuicyAceEditor = new JuicyAceEditor();
         rewardFunctionJuicyAceEditor.setSizeFull();
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
         rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
-        rewardFunctionJuicyAceEditor.addValueChangeListener(valueChangeListener);
+
+        rewardCodeErrorPanel = new RewardCodeErrorPanel();
 
         goalField = new NumberField();
         goalField.setPlaceholder("Weight");
@@ -39,7 +42,20 @@ public class RewardFunctionEditorRow extends HorizontalLayout implements RewardT
         setWidthFull();
         setSpacing(false);
 
-        add(rewardFunctionJuicyAceEditor, new Span("x"), goalField);
+        add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                rewardFunctionJuicyAceEditor,
+                rewardCodeErrorPanel
+            ),
+            new Span("x"),
+            goalField);
+    }
+
+    public void addEditorValueChangeListener(ValueChangeListener<ComponentValueChangeEvent<JuicyAceEditor, String>> valueChangeListener) {
+        rewardFunctionJuicyAceEditor.addValueChangeListener(valueChangeListener);
+    }
+
+    public void setErrors(List<String> errors) {
+        rewardCodeErrorPanel.setErrors(String.join("\n", errors));
     }
 
     public Double getWeight() {
@@ -55,11 +71,7 @@ public class RewardFunctionEditorRow extends HorizontalLayout implements RewardT
     }
 
     public String getSnippet() {
-        String snippet = StringUtils.trimToEmpty(this.rewardFunctionJuicyAceEditor.getValue());
-        if (StringUtils.isEmpty(snippet)) {
-            return null;
-        }
-        return snippet;
+        return StringUtils.trimToEmpty(this.rewardFunctionJuicyAceEditor.getValue());
     }
 
     @Override

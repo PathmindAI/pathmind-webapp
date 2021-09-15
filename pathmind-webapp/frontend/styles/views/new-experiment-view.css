@@ -276,26 +276,28 @@
 .new-experiment-view .reward-terms-wrapper .header-row {
   position: sticky;
   top: 0;
+  width: calc(100% - var(--lumo-space-xs) * 2);
   line-height: 1;
   font-size: var(--lumo-font-size-s);
   color: var(--pm-secondary-text-color);
   background-color: white;
   padding: var(--lumo-space-xs);
   border-bottom: 1px solid var(--pm-grey-color-lightest);
+  margin: 0 var(--lumo-space-xs);
   z-index: 1;
 }
 
 .new-experiment-view .reward-terms-wrapper .header-row span:nth-child(1) {
   flex: 1 0 auto;
-  padding-left: 1.5rem;
+  padding-left: 1.1rem;
 }
 
 .new-experiment-view .reward-terms-wrapper .header-row span:nth-child(2) {
-  width: calc(var(--lumo-font-size-s) * 15);
+  width: calc(var(--lumo-font-size-s) * 12);
 }
 
 .new-experiment-view .reward-terms-wrapper .header-row span:nth-child(3) {
-  width: 9rem;
+  width: 8.6rem;
 }
 
 .new-experiment-view .reward-terms-wrapper sortable-row-wrapper {
@@ -330,16 +332,22 @@
   flex: 1 0 auto;
 }
 
+.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-vertical-layout + span {
+  margin: 7px var(--lumo-space-s);
+}
+
 .new-experiment-view sortable-row-wrapper juicy-ace-editor {
+  box-sizing: border-box;
   min-height: 8em;
   border: 1px solid var(--pm-grey-color);
-  border-radius: var(--lumo-border-radius-m);
+  border-radius: var(--lumo-border-radius-m) var(--lumo-border-radius-m) 0 0;
   overflow: hidden;
 }
 
 .new-experiment-view .goal-fields-wrapper {
   justify-content: flex-end;
   width: auto !important;
+  margin-left: var(--lumo-space-xxl);
 }
 
 .new-experiment-view .goal-fields-wrapper.ignore vaadin-number-field {
@@ -351,10 +359,10 @@
   visibility: hidden;
 }
 
-.new-experiment-view .goal-fields-wrapper vaadin-select + span {
-  margin: 0 var(--lumo-space-m);
+.new-experiment-view .goal-fields-wrapper vaadin-select {
+  max-width: 8.5rem;
 }
 
-.new-experiment-view juicy-ace-editor + span {
-  margin: 7px var(--lumo-space-m);
+.new-experiment-view .goal-fields-wrapper vaadin-select + span {
+  margin: 0 var(--lumo-space-s);
 }

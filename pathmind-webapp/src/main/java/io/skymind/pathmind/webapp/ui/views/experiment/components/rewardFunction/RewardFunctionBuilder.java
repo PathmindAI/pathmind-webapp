@@ -17,7 +17,8 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.Binder;
+
+import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
@@ -43,7 +44,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final NewExperimentView newExperimentView;
 
-    private Binder<Experiment> binder;
+    private RewardValidationService rewardValidationService;
 
     private final VerticalLayout rowsWrapper;
 
@@ -51,9 +52,10 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private List<String> rewardFunctionErrors = new ArrayList<>();
 
-    public RewardFunctionBuilder(NewExperimentView newExperimentView) {
+    public RewardFunctionBuilder(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
         this.newExperimentView = newExperimentView;
+        this.rewardValidationService = rewardValidationService;
 
         setSpacing(false);
         setPadding(false);
@@ -102,7 +104,10 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewBoxRow(String snippet, Double weight) {
-        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, changeEvent -> {
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables);
+        row.addEditorValueChangeListener(changeEvent -> {
+            List<String> rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), experiment.getRewardVariables());
+            row.setErrors(rewardFunctionErrors);
             if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
                 // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
                 experiment.setRewardFunction(changeEvent.getValue());
@@ -133,7 +138,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.removeAll();
         rewardTermsRows.clear();
 
-        HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"), new Span("Weight"));
+        HorizontalLayout headerRow = new HorizontalLayout(new Span("Metric"), new Span("Goal"), new Span("Weight"));
         headerRow.addClassName("header-row");
         GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
         rowsWrapper.add(headerRow);
@@ -191,6 +196,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 .map(termComponent -> {
                     if (termComponent instanceof RewardFunctionEditorRow) {
                         RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
+                        if (StringUtils.isEmpty(row.getSnippet())) {
+                            return null;
+                        }
                         return new RewardTerm(terms.size(), row.getWeight(), row.getSnippet());
                     }
                     if (termComponent instanceof RewardFunctionRow) {
