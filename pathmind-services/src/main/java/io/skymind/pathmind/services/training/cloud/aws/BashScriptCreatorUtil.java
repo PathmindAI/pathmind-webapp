@@ -1,10 +1,13 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
 import io.skymind.pathmind.shared.constants.ObservationDataType;
+import io.skymind.pathmind.shared.constants.ParamType;
 import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 // TODO: we should consider refactoring the whole AWSExecutionProvider code related with script.sh creation and move
 // the operations to a BashScriptCreator class. I won't do that now because it will generate a lot of changes and my
@@ -58,6 +61,17 @@ public class BashScriptCreatorUtil {
         for (int i = 0; i < selectedObservationsVars.size(); i++) {
             statements.add(String.format("out[%s] = in.%s;", i, selectedObservationsVars.get(i)));
         }
+        return String.join("\n", statements);
+    }
+
+    public static String createSimulationParameterSnippet(List<SimulationParameter> simulationParameters) {
+        assert simulationParameters != null && !simulationParameters.isEmpty();
+        List<String> statements = simulationParameters.stream()
+            .filter(p -> p.getType() != ParamType.OTHERS)
+            .filter(p -> !p.isNullString())
+            .map(p -> String.format("agent.setParameter(\"%s\", %s, false);", p.getKey(), p.getWrappedValue()))
+            .collect(Collectors.toList());
+
         return String.join("\n", statements);
     }
 }

@@ -9,7 +9,6 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -24,29 +23,20 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
 
     private List<RewardVariablesRowField> rewardVariableNameFields = new ArrayList<>();
     private VerticalLayout container;
-    private Command goalFieldValueChangeHandler;
     private Boolean actAsMultiSelect = false;
     // Yes the experiment can be had from the ExperimentView but that is more for the actions for now.
     private ExperimentView experimentView;
     private Experiment experiment;
 
     /**
-     * This constructor is used by the NewExperimentView and has no selection logic.
-     */
-    public RewardVariablesTable() {
-        this(() -> {});
-    }
-
-    /**
      * This constructor is used by the ExperimentView and the selection logic.
      */
     public RewardVariablesTable(ExperimentView experimentView) {
-        this(() -> {});
+        this();
         this.experimentView = experimentView;
     }
 
-    public RewardVariablesTable(Command goalFieldValueChangeHandler) {
-        this.goalFieldValueChangeHandler = goalFieldValueChangeHandler;
+    public RewardVariablesTable() {
         setPadding(false);
         setSpacing(false);
         container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
@@ -85,9 +75,9 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
         Collections.sort(rewardVariables, Comparator.comparing(RewardVariable::getArrayIndex));
         rewardVariables.forEach(rewardVariable -> {
             if (rewardVariableNameFields.size() < rewardVariables.size()) {
-                RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, goalFieldValueChangeHandler, experimentView, actAsMultiSelect);
-                    container.add(row);
-                    rewardVariableNameFields.add(row);
+                RewardVariablesRowField row = new RewardVariablesRowField(rewardVariable, experimentView, actAsMultiSelect);
+                container.add(row);
+                rewardVariableNameFields.add(row);
             } else {
                 RewardVariablesRowField row = rewardVariableNameFields.get(rewardVariable.getArrayIndex());
                 row.setSelected(false);

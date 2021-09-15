@@ -1,11 +1,14 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 
-class PublicHeaderMenu extends PolymerElement {
-    static get is() {
-        return "public-header-menu";
-    }
+class PublicHeaderMenu extends LitElement {
 
-    static get template() {
+    @property({type: String})
+    contactlink = "";
+
+    @property({type: Boolean})
+    linktowebapp = false;
+
+    render() {
         return html`
             <style>
                 public-header-menu {
@@ -101,11 +104,15 @@ class PublicHeaderMenu extends PolymerElement {
                 }
             </style>
             <vaadin-horizontal-layout>
-                <a href="{{logoLink}}" class="logo-wrapper"><img
-                    class="logo"
-                    src="frontend/images/pathmind-logo.svg"
-                    alt="Pathmind logo"
-                /></a>
+                <a href="${this.getLogoLink()}"
+                    class="logo-wrapper"
+                    target="${this.linktowebapp ? '_self' : '_blank'}">
+                    <img
+                        class="logo"
+                        src="frontend/images/pathmind-logo.svg"
+                        alt="Pathmind logo"
+                    />
+                </a>
                 <ul>
                     <li>
                         <a href="https://pathmind.com/" target="_blank">
@@ -119,7 +126,7 @@ class PublicHeaderMenu extends PolymerElement {
                     </li>
                 </ul>
                 <div class="right-cta">
-                    <a class="support" href="{{contactlink}}">
+                    <a class="support" href="${this.contactlink}">
                         <iron-icon icon="vaadin:envelope-o"></iron-icon><span>Support</span>
                     </a>
                 </div>
@@ -127,29 +134,13 @@ class PublicHeaderMenu extends PolymerElement {
         `;
     }
 
-    _attachDom(dom) {
-      this.appendChild(dom);
+    createRenderRoot() {
+      return this;
     }
 
-    getLogoLink(isLogoLinkToWebapp) {
-        return isLogoLinkToWebapp ? "/" : "https://pathmind.com/";
-    }
-
-    static get properties() {
-      return {
-          contactlink: {
-              type: String,
-          },
-          linktowebapp: {
-              type: Boolean,
-              value: false,
-          },
-          logoLink: {
-              type: String,
-              computed: 'getLogoLink(linktowebapp)',
-          },
-      };
+    getLogoLink() {
+        return this.linktowebapp ? "/" : "https://pathmind.com/";
     }
 }
 
-customElements.define(PublicHeaderMenu.is, PublicHeaderMenu);
+customElements.define("public-header-menu", PublicHeaderMenu);

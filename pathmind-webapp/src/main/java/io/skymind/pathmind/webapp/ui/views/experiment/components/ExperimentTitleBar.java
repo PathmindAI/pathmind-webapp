@@ -1,8 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -10,6 +7,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,7 +26,6 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.PolicyServerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
-import io.skymind.pathmind.webapp.ui.components.atoms.ActionDropdown;
 import io.skymind.pathmind.webapp.ui.components.atoms.SharedByUsername;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -53,7 +51,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Experiment experiment;
     private ExperimentPanelTitle experimentPanelTitle;
     private FavoriteStar favoriteStar;
-    private ActionDropdown actionDropdown;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private final TagLabel sharedLabel = new TagLabel("Shared", true, "small");
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
@@ -66,7 +63,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private Button unarchiveButton;
     private DownloadModelLink downloadModelLink;
     private Button shareButton;
-    private Button unshareButton;
     private boolean isPythonModel;
 
     private ExperimentView experimentView;
@@ -130,7 +126,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         titleWithStar.setSpacing(false);
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
         if (!isExportPolicyButtonOnly) {
-            titleWithStar.add(actionDropdown);
+            titleWithStar.add(shareButton, archiveButton, unarchiveButton);
         }
 
         sharedLabel.addClassName("shared-with-support-label");
@@ -138,7 +134,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                 ShareExperimentAction.createInstructionDialog(experimentView));
         VerticalLayout titleBarWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 titleWithStar,
-                new HorizontalLayout(archivedLabel, sharedLabel),
+                WrapperUtils.wrapWidthFullHorizontalNoSpacing(archivedLabel, sharedLabel),
                 trainingStatusDetailsPanel);
         titleBarWrapper.setPadding(true);
         add(titleBarWrapper, getButtonsWrapper(buttons));
@@ -150,14 +146,11 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
     private Component[] createButtons(boolean isExportPolicyButtonOnly) {
         stopTrainingButton = new Button("Stop Training", click -> StopTrainingAction.stopTraining(experimentView, getExperimentSupplier, updateExperimentViewRunnable, getLockSupplier, trainingService, stopTrainingButton));
-        shareButton = GuiUtils.getPrimaryButton("Share Experiment", click -> {
+        shareButton = GuiUtils.getIconButton(new Icon(VaadinIcon.SHARE_SQUARE), click -> {
             ShareExperimentAction.shareExperiment(experimentView, getExperimentSupplier, true, this::updateComponentEnablements);
         });
-        unshareButton = GuiUtils.getPrimaryButton("Unshare Experiment", click -> {
-            ShareExperimentAction.shareExperiment(experimentView, getExperimentSupplier, false, this::updateComponentEnablements);
-        });
-        archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, experimentView));
-        unarchiveButton = GuiUtils.getPrimaryButton("Unarchive", click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
+        archiveButton = GuiUtils.getIconButton(new Icon(VaadinIcon.ARCHIVE), click -> ArchiveExperimentAction.archive(experiment, experimentView));
+        unarchiveButton = GuiUtils.getIconButton(new Icon(VaadinIcon.ARROW_BACKWARD), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
         servePolicyButton = new ServePolicyButton(policyServerService, userDAO, runDAO, experimentView.getSegmentIntegrator());
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -169,8 +162,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         if (isExportPolicyButtonOnly) {
             return new Component[]{exportPolicyButton, servePolicyButton};
         } else {
-            List<Button> actionButtons = new ArrayList<>(Arrays.asList(shareButton, unshareButton, archiveButton, unarchiveButton));
-            actionDropdown = new ActionDropdown(actionButtons);
             return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
@@ -182,21 +173,6 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     }
 
     public void updateComponentEnablements() {
-
-        if (actionDropdown != null) {
-            actionDropdown.setItemEnabledProvider(buttonText -> {
-                if (archiveButton.getText().equals(buttonText)) {
-                    return !experiment.isArchived();
-                } else if (unarchiveButton.getText().equals(buttonText)) {
-                    return experiment.isArchived();
-                } else if (shareButton.getText().equals(buttonText)) {
-                    return !experiment.isShared();
-                } else if (unshareButton.getText().equals(buttonText)) {
-                    return experiment.isShared();
-                }
-                return false;
-            });
-        }
 
         boolean isCompletedWithPolicy =
                 experiment.isTrainingCompleted()
@@ -211,7 +187,10 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         stopTrainingButton.setVisible(experiment.isTrainingRunning());
 
         archivedLabel.setVisible(experiment.isArchived());
+        archiveButton.setVisible(!experiment.isArchived());
+        unarchiveButton.setVisible(experiment.isArchived());
         sharedLabel.setVisible(experiment.isShared());
+        shareButton.setVisible(!experiment.isShared());
 
         if (experimentView.isReadOnly()) {
             favoriteStar.setVisible(false);

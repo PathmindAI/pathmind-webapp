@@ -1,11 +1,11 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 
-class UploadModelInstructions extends PolymerElement {
-    static get is() {
-        return "upload-model-instructions";
-    }
+class UploadModelInstructions extends LitElement {
 
-    static get template() {
+    @property({type: Boolean})
+    isZip = false;
+
+    render() {
         return html`
             <style>
                 upload-model-instructions ol > li,
@@ -18,11 +18,11 @@ class UploadModelInstructions extends PolymerElement {
             </style>
             <ol>
                 <li>
-                    <a href="{{anylogicExportGuide}}" target="_blank">
+                    <a href="https://anylogic.help/anylogic/running/export-java-application.html" target="_blank">
                         Export your model as a standalone Java application.
                     </a>
                 </li>
-                <div hidden="{{!isZip}}">
+                <div ?hidden="${!this.isZip}">
                     <li>*Using the exported folder, Create a zip file that contains:</li>
                     <ul>
                         <li>model.jar</li>
@@ -31,30 +31,17 @@ class UploadModelInstructions extends PolymerElement {
                     </ul>
                     <li>Upload the new zip file below.
                 </div>
-                <div hidden="{{isZip}}">
+                <div ?hidden="${this.isZip}">
                     <li>Upload the exported folder.</li>
                 </div>
             </ol>
-            <p hidden="{{!isZip}}">*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>
+            <p ?hidden="${!this.isZip}"">*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>
         `;
     }
 
-    static get properties() {
-        return {
-            anylogicExportGuide: {
-                type: String,
-                value: "https://anylogic.help/anylogic/running/export-java-application.html",
-            },
-            isZip: {
-                type: Boolean,
-                value: false,
-            },
-        };
-    }
-
-    _attachDom(dom) {
-      this.appendChild(dom);
+    createRenderRoot() {
+      return this;
     }
 }
 
-customElements.define(UploadModelInstructions.is, UploadModelInstructions);
+customElements.define("upload-model-instructions", UploadModelInstructions);

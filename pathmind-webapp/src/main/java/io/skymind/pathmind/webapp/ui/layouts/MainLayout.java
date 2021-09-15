@@ -21,6 +21,9 @@ import io.skymind.pathmind.webapp.ui.utils.PageConfigurationUtils;
 @Push
 @CssImport(value = "./styles/styles.css", id = "shared-styles")
 @CssImport(value = "./styles/components/vaadin-text-field.css", themeFor = "vaadin-text-field")
+@CssImport(value = "./styles/components/vaadin-date-time-picker.css", themeFor = "vaadin-date-time-picker")
+@CssImport(value = "./styles/components/vaadin-date-time-picker-date-text-field.css", themeFor = "vaadin-date-time-picker-date-text-field")
+@CssImport(value = "./styles/components/vaadin-date-time-picker-time-text-field.css", themeFor = "vaadin-date-time-picker-time-text-field")
 @CssImport(value = "./styles/components/vaadin-number-field.css", themeFor = "vaadin-number-field")
 @CssImport(value = "./styles/components/vaadin-item.css", themeFor = "vaadin-item")
 @CssImport(value = "./styles/components/vaadin-select.css", themeFor = "vaadin-select")
@@ -57,7 +60,7 @@ public class MainLayout extends AppLayout implements PageConfigurator {
             @Value("${pathmind.pathmind-api.url}") String pathmindApiUrl) {
         setId("pathmind-app-layout");
         boolean hasLoginUser = user != null && user.getUser() != null;
-        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user, publicKey, pathmindApiUrl));
+        addToNavbar(new SectionsHeaderPanel(hasLoginUser, user));
         if (hasLoginUser) {
             accountHeaderPanel = new AccountHeaderPanel(() -> getUI(), user.getUser(), featureManager);
             addToNavbar(accountHeaderPanel);

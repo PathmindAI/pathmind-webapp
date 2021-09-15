@@ -7,19 +7,24 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
+import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Observation;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.ui.components.FavoriteStar;
+import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
@@ -100,8 +105,6 @@ public class ExperimentGrid extends Grid<Experiment> {
         columnList.put("Selected Observations", selectedObsColumn);
         columnList.put("Reward Function", rewardFunctionColumn);
         columnList.put("Notes", notesColumn);
-
-        rewardVariables.forEach(this::addAdditionalColumn);
     }
 
     public Map<String, Column<Experiment>> getColumnList() {
@@ -112,16 +115,16 @@ public class ExperimentGrid extends Grid<Experiment> {
         return additionalColumnList;
     }
 
-    private void addAdditionalColumn(RewardVariable rewardVar) {
-        addAdditionalColumn(rewardVar, false);
-    }
-
-    public void addAdditionalColumn(RewardVariable rewardVar, boolean show) {
+    public void addAdditionalColumn(RewardVariable rewardVar) {
         String rewardVariableName = rewardVar.getName();
         int rewardVarIndex = rewardVar.getArrayIndex();
-        // there's no way to get the values of a particular grid column
-        // because vaadin grid is designed to deal with a large number of rows
-        // need to get the list from the data source and then compare
+
+        GoalConditionType rewardVariableGoal = rewardVar.getGoalConditionTypeEnum();
+        Div columnHeader = new Div(new Span(rewardVariableName));
+        if (rewardVariableGoal != null) {
+            columnHeader.add(new Html("<br>"));
+            columnHeader.add(LabelFactory.createLabel("("+rewardVariableGoal.getRewardFunctionComponent().getComment().toLowerCase()+")", "grid-col-goal-label"));
+        }
         if (!additionalColumnList.containsKey(rewardVar.getName())) {
             Grid.Column<Experiment> newColumn = addColumn(experiment -> {
 
@@ -147,12 +150,11 @@ public class ExperimentGrid extends Grid<Experiment> {
                         return "";
                     })
                     .setSortProperty("reward_var_" + Integer.toString(rewardVarIndex))
-                    .setHeader(rewardVariableName)
+                    .setHeader(columnHeader)
                     .setAutoWidth(true)
                     .setFlexGrow(0)
                     .setResizable(true)
                     .setSortable(true);
-            newColumn.setVisible(show);
             additionalColumnList.put(rewardVariableName, newColumn);
         } else {
             showAdditionalColumn(rewardVar);

@@ -1,5 +1,6 @@
 package io.skymind.pathmind.services.project.rest.dto;
 
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,10 @@ public class HyperparametersDTO {
 
     @NotBlank(message = "isEnabled cannot be blank")
     private boolean isEnabled;
+
+    //todo after 1 release, we need to uncomment it. it's for supporting previous MA.
+    //@NotBlank(message = "agentParams cannot be blank")
+    private List<SimulationParameter> agentParams;
 
     @NotBlank(message = "oldVersionFound cannot be blank")
     private boolean oldVersionFound;

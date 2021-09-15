@@ -1,10 +1,11 @@
 package io.skymind.pathmind.services.project;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -33,5 +34,8 @@ public class Hyperparams {
 
     @Builder.Default
     private final List<String> observationTypes = new ArrayList<>();
+
+    @Builder.Default
+    private final List<SimulationParameter> simulationParams = new ArrayList<>();
 
 }

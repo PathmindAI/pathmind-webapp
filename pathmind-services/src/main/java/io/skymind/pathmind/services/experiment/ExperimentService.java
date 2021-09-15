@@ -1,9 +1,6 @@
 package io.skymind.pathmind.services.experiment;
 
-import io.skymind.pathmind.db.dao.ExperimentDAO;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
@@ -16,12 +13,9 @@ import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.services.project.rest.dto.HyperparametersDTO;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -48,6 +42,8 @@ public class ExperimentService {
     private final RewardVariableDAO rewardVariableDAO;
 
     private final ObservationDAO observationDAO;
+
+    private final SimulationParameterDAO simulationParameterDAO;
 
     private final ModelFileVerifier modelFileVerifier;
 
@@ -119,6 +115,9 @@ public class ExperimentService {
                 RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
                 rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
                 observationDAO.updateModelObservations(model.getId(), observationList);
+
+                List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeValidSimulationParameter(model.getId(), null, alResult.getSimulationParams());
+                simulationParameterDAO.insertSimulationParameters(simulationParameterList);
                 break;
             }
             case PYTHON: {

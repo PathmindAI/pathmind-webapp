@@ -158,36 +158,6 @@ public class HomePageSteps {
     }
 
     @Step
-    public void clickRequestOnboardingServiceBtn() {
-        homePage.clickRequestOnboardingServiceBtn();
-    }
-
-    @Step
-    public void clickRequestOnboardingServiceBackBtn() {
-        homePage.clickRequestOnboardingServiceBackBtn();
-    }
-
-    @Step
-    public void checkRequestOnboardingServicePage() {
-        homePage.checkRequestOnboardingServicePage();
-    }
-
-    @Step
-    public void fillRequestOnboardingServicePaymentForm() {
-        homePage.fillRequestOnboardingServicePaymentForm();
-    }
-
-    @Step
-    public void clickRequestOnboardingServicePayBtn() {
-        homePage.clickRequestOnboardingServicePayBtn();
-    }
-
-    @Step
-    public void checkOnboardingSuccessPage() {
-        homePage.checkOnboardingSuccessPage();
-    }
-
-    @Step
     public void checkSearchResultPageProjectNameContainsModelTag(String project, String modelNumber) {
         homePage.checkSearchResultPageProjectNameContainsModelTag(project, modelNumber);
     }
@@ -195,5 +165,15 @@ public class HomePageSteps {
     @Step
     public void clickSearchResultResult(String searchResult) {
         homePage.clickSearchResultResult(searchResult);
+    }
+
+    @Step
+    public void checkThatButtonUpgradeToProBtnIsShown(Boolean btnShown) {
+        homePage.checkThatButtonUpgradeToProBtnIsShown(btnShown);
+    }
+
+    @Step
+    public void clickInUpgradeToProButton() {
+        homePage.clickInUpgradeToProButton();
     }
 }

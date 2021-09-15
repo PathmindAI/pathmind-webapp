@@ -22,10 +22,7 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
-import io.skymind.pathmind.db.dao.ModelDAO;
-import io.skymind.pathmind.db.dao.ObservationDAO;
-import io.skymind.pathmind.db.dao.ProjectDAO;
-import io.skymind.pathmind.db.dao.RewardVariableDAO;
+import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.model.analyze.ModelBytes;
@@ -37,14 +34,11 @@ import io.skymind.pathmind.services.project.StatusUpdater;
 import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
-import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.data.Observation;
-import io.skymind.pathmind.shared.data.Project;
-import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
@@ -101,6 +95,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     @Autowired
     private ObservationDAO observationDAO;
+
+    @Autowired
+    private SimulationParameterDAO simulationParameterDAO;
 
     @Autowired
     private ModelFileVerifier modelFileVerifier;
@@ -354,8 +351,9 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
             setVisibleWizardPanel(uploadALPWizardPanel);
             List<Observation> observationList = new ArrayList<>();
+            Hyperparams alResult = null;
             if (result != null) {
-                Hyperparams alResult = result.getParams();
+                alResult = result.getParams();
 
                 // this is for policy server to support action masking model
                 Observation actionMasking = null;
@@ -383,6 +381,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariablesDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
             rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
             observationDAO.updateModelObservations(model.getId(), observationList);
+
+            List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeValidSimulationParameter(model.getId(), null, alResult.getSimulationParams());
+            simulationParameterDAO.insertSimulationParameters(simulationParameterList);
+
             segmentIntegrator.modelImported(true);
         }));
     }

@@ -170,10 +170,6 @@ background-color: var(--pm-grey-color-light);
     background-color: var(--variable-color-9);
 }
 
-.row-2-of-3 {
-    width: calc(100% * 2 / 3) !important;
-}
-
 .internal-banner {
     font-size: var(--lumo-font-size-s);
     color: var(--lumo-body-text-color);

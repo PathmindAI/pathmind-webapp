@@ -280,4 +280,9 @@ public class ExperimentPageSteps {
     public void checkExperimentSharedBy(String firstName, String lastName) {
         experimentPage.checkExperimentSharedBy(firstName, lastName);
     }
+
+    @Step
+    public void checkPolicyServerOverlayTokenWithAccountPage() {
+        experimentPage.checkPolicyServerOverlayTokenWithAccountPage();
+    }
 }

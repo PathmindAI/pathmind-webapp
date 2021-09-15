@@ -1,0 +1,73 @@
+.simulation-parameters-table {
+    box-sizing: border-box;
+    flex: 1 1 19rem;
+    position: relative;
+    font-size: var(--lumo-font-size-s);
+    line-height: 1;
+    padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
+}
+
+.readonly .simulation-parameters-table {
+    padding-top: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table .header-row {
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    line-height: 1.3;
+    color: var(--pm-secondary-text-color);
+    background-color: white;
+    z-index: 1;
+}
+
+.readonly .simulation-parameters-table .header-row {
+    display: none;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout {
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: var(--lumo-space-xs);
+}
+
+.simulation-parameters-table vaadin-horizontal-layout:not(.header-row) span:last-child {
+    max-width: 45%;
+    word-break: break-all;
+    padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
+    border: 1px solid var(--pm-grey-color);
+    border-radius: var(--lumo-border-radius);
+}
+
+.simulation-parameters-table .different-from-default span:last-child {
+    color: var(--lumo-primary-text-color);
+}
+
+.simulation-parameters-table .different-from-comparison span:last-child {
+    background-color: var(--pm-yellow-color);
+}
+
+.simulation-parameters-table .simulation-parameter-name {
+    margin-right: var(--lumo-space-xs);
+    word-break: break-all;
+}
+
+.simulation-parameters-table vaadin-horizontal-layout vaadin-text-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-select,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-number-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-integer-field,
+.simulation-parameters-table vaadin-horizontal-layout vaadin-date-time-picker {
+    flex: 0 0 45%;
+    width: 45%;
+    padding: 0;
+}
+
+.simulation-parameters-table .simulation-parameters-instructions {
+    line-height: 1.3;
+}
+
+.simulation-parameters-table .simulation-parameters-instructions a {
+    align-self: center;
+}

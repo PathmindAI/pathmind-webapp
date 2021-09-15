@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.spring.annotation.SpringComponent;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.constants.UserRole;
 import io.skymind.pathmind.shared.data.PathmindUser;
@@ -34,11 +34,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
 @Tag("settings-view-content")
-@JsModule("./src/settings/settings-view-content.js")
+@JsModule("./src/settings/settings-view-content.ts")
 @SpringComponent
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Slf4j
-public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Model> {
+public class SettingsViewContent extends LitTemplate {
     private final PathmindUser user;
     private final ExecutionEnvironment env;
     private final SegmentIntegrator segmentIntegrator;
@@ -63,6 +63,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     @Id("numSampleCB")
     private Select<String> numSample;
+
+    @Id("numWorkerCB")
+    private Select<String> numWorker;
 
     @Id("maxMemoryCB")
     private Select<String> maxMemory;
@@ -90,6 +93,18 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
 
     @Id("startCheckIterationCB")
     private Select<String> startCheckIteration;
+
+    @Id("gammaCB")
+    private Select<String> gamma;
+
+    @Id("rolloutFragmentLengthCB")
+    private Select<String> rolloutFragmentLength;
+
+    @Id("batchModeCB")
+    private Select<String> batchMode;
+
+    @Id("batchSizeCB")
+    private Select<String> batchSize;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -122,9 +137,9 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         UserRole accountType = user.getAccountType();
         isPaidUser = UserRole.isPaidUser(accountType);
         isInternalUser = UserRole.isInternalUser(accountType);
-        getModel().setIsPaidUser(isPaidUser);
-        getModel().setIsInternalUser(isInternalUser);
-        getModel().setHideSaveButton(hideSaveButton);
+        getElement().setProperty("isPaidUser", isPaidUser);
+        getElement().setProperty("isInternalUser", isInternalUser);
+        getElement().setProperty("hideSaveButton", hideSaveButton);
         initSettingsMap();
         initContent();
         initBtns();
@@ -142,11 +157,16 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         settingsList.put(condaVersion, "Conda Version");
         settingsList.put(helperVersion, "PM Helper Version");
         settingsList.put(numSample, "Number of PBT samples");
+        settingsList.put(numWorker, "Number of Workers per sample");
         settingsList.put(maxMemory, "Max Memory Size in MB");
         settingsList.put(scheduler, "Scheduler");
         settingsList.put(freezing, "Enable Freezing");
         settingsList.put(rayDebug, "Enable Ray Debug");
         settingsList.put(maxTrainingTime, "Max Training Time (hour)");
+        settingsList.put(gamma, "Gamma value");
+        settingsList.put(rolloutFragmentLength, "Rollout Fragment Length");
+        settingsList.put(batchMode, "Train Batch Mode");
+        settingsList.put(batchSize, "Train Batch Size");
     }
 
     private void initBtns() {
@@ -260,6 +280,12 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         numSample.setLabel(settingsList.get(numSample));
         numSample.setValue(String.valueOf(env.getPBT_NUM_SAMPLES()));
 
+        // init number of workers
+        List<String> numWorkers = List.of("1", "2", "4", "8", "16", "32");
+        numWorker.setItems(numWorkers);
+        numWorker.setLabel(settingsList.get(numWorker));
+        numWorker.setValue(String.valueOf(env.getNumWorker()));
+
         // init max memory
         List<String> maxMemories = List.of("4096", "16384");
         maxMemory.setItems(maxMemories);
@@ -289,6 +315,30 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         maxTrainingTime.setItems(maxTrainingTimes);
         maxTrainingTime.setLabel(settingsList.get(maxTrainingTime));
         maxTrainingTime.setValue(String.valueOf(env.getPBT_MAX_TIME_IN_SEC() / 3600));
+
+        // init gamma value
+        List<String> gammas = List.of("0.0", "0.5", "0.9", "0.99");
+        gamma.setItems(gammas);
+        gamma.setLabel(settingsList.get(gamma));
+        gamma.setValue(String.valueOf(env.getGamma()));
+
+        // init rollout fragment length
+        List<String> rolloutFragmentLengths = List.of("200", "500", "1000", "2000");
+        rolloutFragmentLength.setItems(rolloutFragmentLengths);
+        rolloutFragmentLength.setLabel(settingsList.get(rolloutFragmentLength));
+        rolloutFragmentLength.setValue(String.valueOf(env.getRolloutFragmentLength()));
+
+        // init train batch mode
+        List<String> batchModes = Arrays.stream(BatchMode.values()).map(BatchMode::toString).collect(Collectors.toList());
+        batchMode.setItems(batchModes);
+        batchMode.setLabel(settingsList.get(batchMode));
+        batchMode.setValue(env.getBatchMode().toString());
+
+        // init train batch size
+        List<String> batchSizes = List.of("no selection", "3000", "4000", "6000", "8000", "10000", "12000");
+        batchSize.setItems(batchSizes);
+        batchSize.setLabel(settingsList.get(batchSize));
+        batchSize.setValue(env.getTrainBatchSize() == 0 ? "no selection" : String.valueOf(env.getTrainBatchSize()));
     }
 
     public void saveSettings() {
@@ -309,11 +359,16 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
         env.setNativerlVersion(NativeRL.valueOf(nativerlVersion.getValue()));
         env.setPathmindHelperVersion(PathmindHelper.valueOf(helperVersion.getValue()));
         env.setPBT_NUM_SAMPLES(Integer.parseInt(numSample.getValue()));
+        env.setNumWorker(Integer.parseInt(numWorker.getValue()));
         env.setMaxMemory(Integer.parseInt(maxMemory.getValue()));
         env.setScheduler(scheduler.getValue());
         env.setFreezing(Boolean.valueOf(freezing.getValue()));
         env.setRayDebug(Boolean.valueOf(rayDebug.getValue()));
         env.setPBT_MAX_TIME_IN_SEC(Integer.parseInt(maxTrainingTime.getValue()) * 60 * 60);
+        env.setGamma(Double.parseDouble(gamma.getValue()));
+        env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
+        env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
+        env.setTrainBatchSize(batchSize.getValue().equals("no selection") ? 0 : Integer.valueOf(batchSize.getValue()));
     }
 
     public String getSettingsText() {
@@ -324,11 +379,5 @@ public class SettingsViewContent extends PolymerTemplate<SettingsViewContent.Mod
                 .filter(e -> e.getKey().getValue() != null)
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
                 .collect(Collectors.joining(", "));
-    }
-
-    public interface Model extends TemplateModel {
-        void setIsInternalUser(Boolean isInternalUser);
-        void setIsPaidUser(Boolean isPaidUser);
-        void setHideSaveButton(Boolean hideSaveButton);
     }
 }

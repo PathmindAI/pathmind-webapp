@@ -3,19 +3,18 @@ package io.skymind.pathmind.webapp.ui.components.molecules;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.EventData;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.EventHandler;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.server.Command;
-import com.vaadin.flow.templatemodel.TemplateModel;
 
 @Tag("notes-field")
-@JsModule("./src/components/molecules/notes-field.js")
-public class NotesField extends PolymerTemplate<NotesField.Model> {
+@JsModule("./src/components/molecules/notes-field.ts")
+public class NotesField extends LitTemplate {
     @Id("save")
 	public Button save;
 
@@ -36,8 +35,8 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     public NotesField(String title, String notesText, Consumer<String> saveConsumer, Boolean compact, Boolean allowAutoSave, Boolean hideSaveButton) {
         this.saveConsumer = saveConsumer;
         setNotesText(notesText);
-        getModel().setTitle(title);
-        getModel().setMax(MAX_NOTES_SIZE);
+        getElement().setProperty("title", title);
+        getElement().setProperty("max", MAX_NOTES_SIZE);
         setCompact(compact);
         setAllowAutoSave(allowAutoSave);
         setHideSaveButton(hideSaveButton);
@@ -45,6 +44,7 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     public void setNotesText(String notesText) {
         this.notesText = notesText;
+        getElement().setProperty("notes", notesText);
         getElement().callJsFunction("_notesChanged", notesText);
     }
 
@@ -53,34 +53,35 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
     }
 
     public void setPlaceholder(String placeholder) {
-        getModel().setPlaceholder(placeholder);
+        getElement().setProperty("placeholder", placeholder);
     }
 
     public void setReadonly(Boolean readonly) {
-        getModel().setReadonly(readonly);
+        getElement().setProperty("readonly", readonly);
+        save.setEnabled(!readonly);
     }
 
     public void setAllowAutoSave(Boolean allowAutoSave) {
-        getModel().setAllowautosave(allowAutoSave);
+        getElement().setProperty("allowautosave", allowAutoSave);
     }
 
     public void setHideSaveButton(Boolean hideSaveButton) {
-        getModel().setHidesavebutton(hideSaveButton);
+        getElement().setProperty("hidesavebutton", hideSaveButton);
     }
 
     public void setCompact(Boolean compact) {
-        getModel().setCompact(compact);
+        getElement().setProperty("compact", compact);
     }
 
     public void setSecondaryStyle(Boolean secondaryStyle) {
-        getModel().setSecondaryStyle(secondaryStyle);
+        getElement().setProperty("secondaryStyle", secondaryStyle);
     }
 
     public void setOnNotesChangeHandler(Command onNotesChangeHandler) {
         this.onNotesChangeHandler = onNotesChangeHandler;
     }
 
-    @EventHandler
+    @ClientCallable
     private void onNotesChange(@EventData("event.target.value") String updatedNotesText) {
         if (canSave(updatedNotesText)) {
             notesText = updatedNotesText;
@@ -88,9 +89,8 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
         }
     }
 
-    @EventHandler
-    private void onSave(@EventData("event.target.parentElement.nextElementSibling.value") String updatedNotesText) {
-        // there is no easier way to get the value from the textarea so the lengthy event.target EventData is used
+    @ClientCallable
+    private void onSave(String updatedNotesText) {
         saveNotes(updatedNotesText);
     }
 
@@ -112,27 +112,5 @@ public class NotesField extends PolymerTemplate<NotesField.Model> {
 
     private boolean canSave(String updatedNotesText) {
         return !Objects.equals(updatedNotesText, notesText) && updatedNotesText.length() <= MAX_NOTES_SIZE;
-    }
-
-    public interface Model extends TemplateModel {
-        void setTitle(String title);
-
-        void setPlaceholder(String placerholder);
-
-        void setWarning(Boolean warning);
-
-        void setUnsaved(Boolean unsaved);
-
-        void setMax(Integer max);
-
-        void setReadonly(Boolean readonly);
-
-        void setAllowautosave(Boolean allowautosave);
-
-        void setHidesavebutton(Boolean hidesavebutton);
-
-        void setCompact(Boolean compact);
-
-        void setSecondaryStyle(Boolean secondaryStyle);
     }
 }

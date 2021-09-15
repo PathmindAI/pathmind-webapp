@@ -91,13 +91,20 @@
     max-height: none;
 }
 
-.new-experiment-view .reward-variables-table .header-row {
+.new-experiment-view .simulation-parameters-panel vaadin-custom-field {
+    width: 100%;
+    overflow: auto;
+}
+
+.new-experiment-view .reward-variables-table .header-row,
+.new-experiment-view .simulation-parameters-table .header-row {
     padding: var(--lumo-space-xs) 0;
     border-bottom: 1px solid var(--pm-grey-color-lightest);
     margin-bottom: var(--lumo-space-s);
 }
 
-.new-experiment-view .reward-variables-table .header-row span {
+.new-experiment-view .reward-variables-table .header-row span,
+.new-experiment-view .simulation-parameters-table .header-row span {
     width: auto;
     line-height: 1;
     padding: 0;
