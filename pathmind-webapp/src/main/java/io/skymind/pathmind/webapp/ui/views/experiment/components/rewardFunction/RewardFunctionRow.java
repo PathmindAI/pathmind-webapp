@@ -9,6 +9,8 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.server.Command;
+
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -29,7 +31,7 @@ public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow
 
     private Binder<RewardVariable> binder;
 
-    protected RewardFunctionRow(List<RewardVariable> rvars) {
+    protected RewardFunctionRow(List<RewardVariable> rvars, Command valueChangeCallback) {
         setAlignItems(Alignment.CENTER);
         rewardVariableSelect.setPlaceholder("Choose a reward variable");
         rewardVariableSelect.setItems(rvars);
@@ -41,6 +43,7 @@ public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow
                 binder.removeBean();
             }
             initBinder();
+            valueChangeCallback.execute();
         });
 
         conditionType = new Select<>();
@@ -48,12 +51,17 @@ public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow
         conditionType.setItemLabelGenerator(type -> type != null ? type.getRewardFunctionComponent().getComment() : "");
         conditionType.setPlaceholder("Choose goal");
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-        conditionType.addValueChangeListener(event -> setGoalFieldVisibility());
+        conditionType.addValueChangeListener(event -> {
+            setGoalFieldVisibility();
+            valueChangeCallback.execute();
+        });
 
         goalField = new NumberField();
         goalField.setPlaceholder("Weight");
         goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        goalField.addValueChangeListener(event -> {});
+        goalField.addValueChangeListener(event -> {
+            valueChangeCallback.execute();
+        });
         goalField.setHasControls(true);
 
         goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, new Span("x"), goalField);

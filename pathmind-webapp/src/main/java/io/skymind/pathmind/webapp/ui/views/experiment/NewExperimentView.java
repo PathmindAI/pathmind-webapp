@@ -50,7 +50,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExpe
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionBuilder;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionErrorPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
 
@@ -64,7 +63,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected ExperimentNotesField notesField;
     private RewardFunctionBuilder rewardFunctionBuilder;
     private SimulationParametersPanel simulationParametersPanel;
-    private RewardFunctionErrorPanel rewardFunctionErrorPanel;
     private ObservationsPanel observationsPanel;
     private SettingsViewContent settingsPanel;
     private FavoriteStar favoriteStar;
@@ -134,34 +132,24 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 titlePanel);
         panelTitle.setClassName("panel-title");
 
-        Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
-        rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
-        
         SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationParametersPanel,
                 observationsPanel,
                 50);
-        
-        SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionBuilder,
-                simulationParametersAndObservationsWrapper,
-                52.5);
-        rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
 
         settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
-        rewardFunctionErrorPanel = new RewardFunctionErrorPanel();
-        SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardFunctionErrorPanel,
-                notesField,
-                68.85);
-        errorAndNotesContainer.setClassName("error-and-notes-container");
-
         SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                errorAndNotesContainer,
+                notesField,
                 settingsPanel,
-                76.25);
+                50);
         bottomPanel.setClassName("bottom-panel");
+        
+        SplitLayout panelsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+                simulationParametersAndObservationsWrapper,
+                bottomPanel,
+                50);
+        panelsWrapper.setClassName("panels-wrapper");
 
         splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
@@ -169,20 +157,23 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
 
-        SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
-                modelCheckerService.createInvalidErrorLabel(experiment.getModel()),
-                rewardFunctionAndObservationsWrapper
-            ),
-            bottomPanel,
-            60);
+        SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+            rewardFunctionBuilder,
+            panelsWrapper,
+            53);
+        splitWrapper.setClassName("split-wrapper");
 
-        splitWrapper.setClassName("view-section");
+        VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
+            modelCheckerService.createInvalidErrorLabel(experiment.getModel()),
+            splitWrapper
+        );
 
-        HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, splitWrapper);
-        panelsWrapper.setSpacing(false);
-        return panelsWrapper;
+        viewSection.setClassName("view-section");
+
+        HorizontalLayout experimentViewWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, viewSection);
+        experimentViewWrapper.setSpacing(false);
+        return experimentViewWrapper;
     }
 
     @Override

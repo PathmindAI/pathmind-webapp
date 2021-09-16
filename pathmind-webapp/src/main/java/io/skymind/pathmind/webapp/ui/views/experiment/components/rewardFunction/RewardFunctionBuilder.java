@@ -50,7 +50,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
-    private List<String> rewardFunctionErrors = new ArrayList<>();
+    private List<RewardTerm> terms = new ArrayList<>();
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
@@ -89,7 +89,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
-        RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
+        RewardFunctionRow row = new RewardFunctionRow(rewardVariables, () -> setNeedsSaving());
         putRewardTermsRow(row);
 
         if (variable != null) {
@@ -108,13 +108,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         row.addEditorValueChangeListener(changeEvent -> {
             List<String> rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), experiment.getRewardVariables());
             row.setErrors(rewardFunctionErrors);
-            if (!experiment.getRewardFunction().equals(changeEvent.getValue())) {
-                // REFACTOR -> We're overwriting the binder's utility here. We should investigate why and adjust accordingly.
-                experiment.setRewardFunction(changeEvent.getValue());
-                // REFACTOR -> This whole listener should possibly be in it's own action class but for now we'll just put the NeedsSavingAction as it's
-                // reused in multiple parts of the code.
-                NeedsSavingAction.setNeedsSaving(newExperimentView);
-            }
+            setNeedsSaving();
         });
         putRewardTermsRow(row);
 
@@ -128,6 +122,10 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void putRewardTermsRow(RewardTermRow row) {
         String id = UUID.randomUUID().toString();
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
+        sortableRowWrapper.setRemoveRowCallback(() -> {
+            rewardTermsRows.remove(id);
+            setNeedsSaving();
+        });
         sortableRowWrapper.setId(id);
         rowsWrapper.add(sortableRowWrapper);
         rewardTermsRows.put(id, row);
@@ -160,33 +158,13 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public boolean isValidForTraining() {
-        // TODO -> implement reward terms error checking
-        return true;
-        // rewardFunctionJuicyAceEditor.getOptionalValue().isPresent()
-        //         && !rewardFunctionJuicyAceEditor.getValue().isEmpty()
-        //         && rewardFunctionErrors.size() == 0;
+        setRewardTermsWithInputValues();
+        return terms.size() > 0;
     }
 
-    public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
-        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
-    }
 
-    public void setExperiment(Experiment experiment) {
-        setEnabled(!experiment.isArchived());
-        this.experiment = experiment;
-//        binder.setBean(experiment);
-        setRewardVariables(experiment.getRewardVariables());
-        setRewardTerms(experiment.getRewardTerms());
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    @Override
-    public void updateExperiment() {
-
-        List<RewardTerm> terms = new ArrayList<>();
+    private void setRewardTermsWithInputValues() {
+        terms = new ArrayList<>();
 
         rowsWrapper.getChildren()
                 .map(Component::getId)
@@ -212,9 +190,38 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 })
                 .filter(Objects::nonNull)
                 .forEach(terms::add);
+    }
 
+    private void setNeedsSaving() {
+        setRewardTermsWithInputValues();
+        System.out.println("experiment.getRewardTerms(): "+terms);
+        System.out.println("terms: "+terms);
+        System.out.println("experiment.getRewardTerms().containsAll(terms): "+experiment.getRewardTerms().containsAll(terms));
+        if (!experiment.getRewardTerms().equals(terms)) {
+            experiment.setRewardTerms(terms);
+        }
+        NeedsSavingAction.setNeedsSaving(newExperimentView);
+    }
+
+    public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
+        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        setEnabled(!experiment.isArchived());
+        this.experiment = experiment;
+        setRewardVariables(experiment.getRewardVariables());
+        setRewardTerms(experiment.getRewardTerms());
+    }
+
+    public Experiment getExperiment() {
+        return experiment;
+    }
+
+    @Override
+    public void updateExperiment() {
+        setRewardTermsWithInputValues();
         experiment.setRewardTerms(terms);
         setRewardTerms(experiment.getRewardTerms());
-
     }
 }
