@@ -1,5 +1,7 @@
 package io.skymind.pathmind.shared.data;
 
+import java.util.Objects;
+
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import lombok.Getter;
 import lombok.ToString;
@@ -40,6 +42,30 @@ public class RewardTerm extends Data implements DeepCloneableInterface<RewardTer
     @Override
     public RewardTerm deepClone() {
         return new RewardTerm(index, weight, rewardVariableIndex, goalConditionType, rewardSnippet);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        RewardTerm term = (RewardTerm) o;
+        return Objects.equals(index, term.index) // todo: do we need to include index into equals
+                && Objects.equals(weight, term.weight)
+                && Objects.equals(rewardVariableIndex, term.rewardVariableIndex)
+                && goalConditionType == term.goalConditionType
+                && Objects.equals(rewardSnippet, term.rewardSnippet);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), index, weight, rewardVariableIndex, goalConditionType, rewardSnippet);
     }
 
 }
