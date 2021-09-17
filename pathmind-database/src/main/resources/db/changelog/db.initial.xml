@@ -2,9 +2,7 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
@@ -2111,6 +2109,14 @@
         <createIndex tableName="REWARD_TERM" indexName="REWARD_TERM_EXPERIMENT_ID">
             <column name="EXPERIMENT_ID"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet id="2652-02" author="alexander.makarov@toptal.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="with_reward_terms" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

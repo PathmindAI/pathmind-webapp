@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -115,6 +115,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.deploy_policy_on_success</code>.
      */
     public final TableField<ExperimentRecord, Boolean> DEPLOY_POLICY_ON_SUCCESS = createField(DSL.name("deploy_policy_on_success"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.experiment.with_reward_terms</code>.
+     */
+    public final TableField<ExperimentRecord, Boolean> WITH_REWARD_TERMS = createField(DSL.name("with_reward_terms"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     private Experiment(Name alias, Table<ExperimentRecord> aliased) {
         this(alias, aliased, null);
@@ -215,11 +220,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Boolean, Boolean> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row14<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Boolean, Boolean, Boolean> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }
