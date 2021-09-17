@@ -5,11 +5,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
@@ -19,7 +16,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import io.skymind.pathmind.services.RewardValidationService;
-import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -85,38 +81,29 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewRow() {
-        createNewRow(null, null, null);
+        createNewRow(new RewardTerm(terms.size()));
     }
 
-    private void createNewRow(RewardVariable variable, GoalConditionType goalCondition, Double weight) {
-        RewardFunctionRow row = new RewardFunctionRow(rewardVariables, () -> setNeedsSaving());
+    private void createNewRow(RewardTerm rewardTerm) {
+        RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
+        row.addValueChangeListener(change -> setNeedsSaving());
+        // TODO -> listen to inner fields change
+        row.setValue(rewardTerm);
         putRewardTermsRow(row);
-
-        if (variable != null) {
-            row.setRewardVariable(variable);
-            row.setGoalCondition(goalCondition);
-            row.setWeight(weight);
-        }
+        terms.add(rewardTerm);
     }
 
     private void createNewBoxRow() {
-        createNewBoxRow(null, null);
+        createNewBoxRow(new RewardTerm(terms.size()));
     }
 
-    private void createNewBoxRow(String snippet, Double weight) {
-        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables);
-        row.addEditorValueChangeListener(changeEvent -> {
-            List<String> rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), experiment.getRewardVariables());
-            row.setErrors(rewardFunctionErrors);
-            setNeedsSaving();
-        });
+    private void createNewBoxRow(RewardTerm rewardTerm) {
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService);
+        row.addValueChangeListener(change -> setNeedsSaving());
+        // TODO -> listen to inner fields change
+        row.setValue(rewardTerm);
         putRewardTermsRow(row);
-
-        if (StringUtils.isNotEmpty(snippet)) {
-            row.setSnippet(snippet);
-            row.setWeight(weight);
-        }
-
+        terms.add(rewardTerm);
     }
 
     private void putRewardTermsRow(RewardTermRow row) {
@@ -131,10 +118,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardTermsRows.put(id, row);
     }
 
-    private void setRewardTerms(List<RewardTerm> rewardTerms) {
-
+    private void setViewWithRewardTerms(List<RewardTerm> rewardTerms) {
         rowsWrapper.removeAll();
-        rewardTermsRows.clear();
 
         HorizontalLayout headerRow = new HorizontalLayout(new Span("Metric"), new Span("Goal"), new Span("Weight"));
         headerRow.addClassName("header-row");
@@ -145,9 +130,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         for (RewardTerm term : rewardTerms) {
             if (StringUtils.isNotEmpty(term.getRewardSnippet())) {
-                createNewBoxRow(term.getRewardSnippet(), term.getWeight());
+                createNewBoxRow(term);
             } else {
-                createNewRow(this.rewardVariables.get(term.getRewardVariableIndex()), term.getGoalConditionType(), term.getWeight());
+                createNewRow(term);
             }
         }
     }
@@ -158,49 +143,19 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public boolean isValidForTraining() {
-        setRewardTermsWithInputValues();
         return terms.size() > 0;
     }
 
-
-    private void setRewardTermsWithInputValues() {
-        terms = new ArrayList<>();
-
-        rowsWrapper.getChildren()
-                .map(Component::getId)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(rewardTermsRows::get)
-                .map(termComponent -> {
-                    if (termComponent instanceof RewardFunctionEditorRow) {
-                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
-                        if (StringUtils.isEmpty(row.getSnippet())) {
-                            return null;
-                        }
-                        return new RewardTerm(terms.size(), row.getWeight(), row.getSnippet());
-                    }
-                    if (termComponent instanceof RewardFunctionRow) {
-                        RewardFunctionRow row = (RewardFunctionRow) termComponent;
-                        if (row.getRewardVariable() == null || row.getGoalCondition() == null) {
-                            return null;
-                        }
-                        return new RewardTerm(terms.size(), row.getWeight(), row.getRewardVariable().getArrayIndex(), row.getGoalCondition());
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull)
-                .forEach(terms::add);
+    private List<RewardTerm> getRewardTermsList() {
+        return terms;
     }
 
     private void setNeedsSaving() {
-        setRewardTermsWithInputValues();
-        System.out.println("experiment.getRewardTerms(): "+terms);
-        System.out.println("terms: "+terms);
-        System.out.println("experiment.getRewardTerms().containsAll(terms): "+experiment.getRewardTerms().containsAll(terms));
-        if (!experiment.getRewardTerms().equals(terms)) {
-            experiment.setRewardTerms(terms);
+        System.out.println("experiment.getRewardTerms():" + experiment.getRewardTerms());
+        System.out.println("terms: "+getRewardTermsList());
+        if (!experiment.getRewardTerms().equals(getRewardTermsList())) {
+            NeedsSavingAction.setNeedsSaving(newExperimentView);
         }
-        NeedsSavingAction.setNeedsSaving(newExperimentView);
     }
 
     public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
@@ -211,7 +166,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
         setRewardVariables(experiment.getRewardVariables());
-        setRewardTerms(experiment.getRewardTerms());
+        setViewWithRewardTerms(experiment.getRewardTerms());
     }
 
     public Experiment getExperiment() {
@@ -220,8 +175,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     @Override
     public void updateExperiment() {
-        setRewardTermsWithInputValues();
         experiment.setRewardTerms(terms);
-        setRewardTerms(experiment.getRewardTerms());
     }
 }

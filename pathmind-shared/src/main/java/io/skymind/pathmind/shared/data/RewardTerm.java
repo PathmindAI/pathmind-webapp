@@ -4,19 +4,25 @@ import java.util.Objects;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+@Setter
 @ToString
 public class RewardTerm extends Data implements DeepCloneableInterface<RewardTerm> {
 
-    private final Integer index;
-    private final Double weight;
+    private Integer index;
+    private Double weight;
 
-    private final Integer rewardVariableIndex;
-    private final GoalConditionType goalConditionType;
+    private Integer rewardVariableIndex;
+    private GoalConditionType goalConditionType;
 
-    private final String rewardSnippet;
+    private String rewardSnippet;
+
+    public RewardTerm(Integer index) {
+        this(index, null, null, null, null);
+    }
 
     public RewardTerm(Integer index, Double weight, String rewardSnippet) {
         this(index, weight, null, null, rewardSnippet);

@@ -3,47 +3,41 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import lombok.Getter;
 
-public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow {
+public class RewardFunctionRow extends CustomField<RewardTerm> implements RewardTermRow {
 
     private static final String goalOperatorSelectThemeNames = "small align-center";
 
-    @Getter
-    private RewardVariable rewardVariable;
-
-    private final HorizontalLayout goalFieldsWrapper;
+    private final HorizontalLayout weightFieldsWrapper;
     private final Select<RewardVariable> rewardVariableSelect = new Select<>();
     private final Select<GoalConditionType> conditionType;
-    private final NumberField goalField;
+    private final NumberField weightField;
+    private List<RewardVariable> rewardVariables;
+    private RewardTerm rewardTerm;
+    private Binder<RewardTerm> binder;
 
-    private Binder<RewardVariable> binder;
-
-    protected RewardFunctionRow(List<RewardVariable> rvars, Command valueChangeCallback) {
-        setAlignItems(Alignment.CENTER);
+    protected RewardFunctionRow(List<RewardVariable> rvars) {
+        this.rewardVariables = rvars;
         rewardVariableSelect.setPlaceholder("Choose a reward variable");
         rewardVariableSelect.setItems(rvars);
         rewardVariableSelect.setItemLabelGenerator(rv -> rv.getName());
         rewardVariableSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         rewardVariableSelect.addValueChangeListener(event -> {
-            rewardVariable = event.getValue();
-            if (binder != null) {
-                binder.removeBean();
-            }
-            initBinder();
-            valueChangeCallback.execute();
+            this.rewardTerm.setRewardVariableIndex(event.getValue().getArrayIndex());
         });
 
         conditionType = new Select<>();
@@ -53,71 +47,71 @@ public class RewardFunctionRow extends HorizontalLayout implements RewardTermRow
         conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         conditionType.addValueChangeListener(event -> {
             setGoalFieldVisibility();
-            valueChangeCallback.execute();
         });
 
-        goalField = new NumberField();
-        goalField.setPlaceholder("Weight");
-        goalField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        goalField.addValueChangeListener(event -> {
-            valueChangeCallback.execute();
-        });
-        goalField.setHasControls(true);
+        weightField = new NumberField();
+        weightField.setPlaceholder("Weight");
+        weightField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        weightField.setHasControls(true);
 
-        goalFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, new Span("x"), goalField);
-        goalFieldsWrapper.addClassName("goal-fields-wrapper");
-        GuiUtils.removeMarginsPaddingAndSpacing(goalFieldsWrapper);
+        weightFieldsWrapper = WrapperUtils.wrapWidthFullHorizontal(conditionType, new Span("x"), weightField);
+        weightFieldsWrapper.addClassName("goal-fields-wrapper");
+        GuiUtils.removeMarginsPaddingAndSpacing(weightFieldsWrapper);
 
-        add(rewardVariableSelect, goalFieldsWrapper);
+        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
+            rewardVariableSelect, weightFieldsWrapper
+        );
+        wrapper.setAlignItems(Alignment.CENTER);
+
+        add(wrapper);
         setWidthFull();
-        GuiUtils.removeMarginsPaddingAndSpacing(this);
         setGoalFieldVisibility();
     }
 
     private void initBinder() {
         binder = new Binder<>();
-        binder.bind(conditionType, RewardVariable::getGoalConditionTypeEnum, RewardVariable::setGoalConditionTypeEnum);
-        binder.setBean(rewardVariable);
+        binder.bind(conditionType, RewardTerm::getGoalConditionType, RewardTerm::setGoalConditionType);
+        binder.bind(weightField, RewardTerm::getWeight, RewardTerm::setWeight);
+        binder.setBean(rewardTerm);
     }
-
+    
     private void setGoalFieldVisibility() {
         String ignoreClassName = "ignore";
         if (conditionType.getValue() != null) {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames + " not-none");
-            if (goalFieldsWrapper.hasClassName(ignoreClassName)) {
-                goalFieldsWrapper.removeClassName(ignoreClassName);
+            if (weightFieldsWrapper.hasClassName(ignoreClassName)) {
+                weightFieldsWrapper.removeClassName(ignoreClassName);
             }
         } else {
             conditionType.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
-            goalFieldsWrapper.addClassName(ignoreClassName);
+            weightFieldsWrapper.addClassName(ignoreClassName);
         }
-        goalField.setEnabled(conditionType.getValue() != null);
+        weightField.setEnabled(conditionType.getValue() != null);
     }
 
-    public Double getWeight() {
-        return this.goalField.getValue();
-    }
-
-    public void setWeight(Double weight) {
-        this.goalField.setValue(weight);
-    }
-
-    public GoalConditionType getGoalCondition() {
-        return this.conditionType.getValue();
-    }
-
-    public void setGoalCondition(GoalConditionType goalCondition) {
-        this.conditionType.setValue(goalCondition);
-    }
-
-    public void setRewardVariable(RewardVariable rewardVariable) {
-        this.rewardVariable = rewardVariable;
-        this.rewardVariableSelect.setValue(this.rewardVariable);
+    private void setRewardVariable(RewardVariable rewardVariable) {
+        this.rewardVariableSelect.setValue(rewardVariable);
     }
 
     @Override
     public Component asComponent() {
         return this;
+    }
+
+    @Override
+    protected RewardTerm generateModelValue() {
+        return rewardTerm;
+    }
+
+    @Override
+    protected void setPresentationValue(RewardTerm rewardTerm) {
+        this.rewardTerm = rewardTerm;
+        if (binder == null) {
+            initBinder();
+        }
+        if (rewardTerm.getRewardVariableIndex() != null) {
+            setRewardVariable(rewardVariables.get(rewardTerm.getRewardVariableIndex()));
+        }
     }
 
 }

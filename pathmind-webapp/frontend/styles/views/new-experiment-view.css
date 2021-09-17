@@ -317,23 +317,25 @@
   background-color: var(--pm-highlight-medium);
 }
 
-.new-experiment-view .reward-terms-wrapper sortable-row-wrapper > *:first-child::before {
+.new-experiment-view .reward-terms-wrapper sortable-row-wrapper vaadin-custom-field > *:first-child::before {
   content: counter(number);
   position: absolute;
-  top: .4rem;
+  top: .75rem;
   left: .6rem;
+  font-size: var(--lumo-font-size-s);
   color: var(--pm-grey-color);
 }
 
-.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout {
+.new-experiment-view sortable-row-wrapper vaadin-custom-field {
   justify-content: space-between;
+  width: 100%;
 }
 
-.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-select {
+.new-experiment-view sortable-row-wrapper vaadin-custom-field > vaadin-horizontal-layout vaadin-select {
   flex: 1 0 auto;
 }
 
-.new-experiment-view sortable-row-wrapper > vaadin-horizontal-layout > vaadin-vertical-layout + span {
+.new-experiment-view sortable-row-wrapper vaadin-custom-field > vaadin-horizontal-layout > vaadin-vertical-layout + span {
   margin: 7px var(--lumo-space-s);
 }
 
