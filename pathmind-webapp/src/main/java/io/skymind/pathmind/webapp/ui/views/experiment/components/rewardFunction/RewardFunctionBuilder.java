@@ -85,12 +85,11 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewRow(RewardTerm rewardTerm) {
-        RewardFunctionRow row = new RewardFunctionRow(rewardVariables);
-        row.addValueChangeListener(change -> setNeedsSaving());
-        // TODO -> listen to inner fields change
-        row.setValue(rewardTerm);
+        RewardFunctionRow row = new RewardFunctionRow(rewardVariables, () -> changeHandler());
+        RewardTerm clonedRewardTerm = rewardTerm.deepClone();
+        row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-        terms.add(rewardTerm);
+        terms.add(clonedRewardTerm);
     }
 
     private void createNewBoxRow() {
@@ -98,12 +97,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewBoxRow(RewardTerm rewardTerm) {
-        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService);
-        row.addValueChangeListener(change -> setNeedsSaving());
-        // TODO -> listen to inner fields change
-        row.setValue(rewardTerm);
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, () -> changeHandler());
+        RewardTerm clonedRewardTerm = rewardTerm.deepClone();
+        row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-        terms.add(rewardTerm);
+        terms.add(clonedRewardTerm);
+    }
+
+    private void changeHandler() {
+        setNeedsSaving();
     }
 
     private void putRewardTermsRow(RewardTermRow row) {
@@ -111,6 +113,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
         sortableRowWrapper.setRemoveRowCallback(() -> {
             rewardTermsRows.remove(id);
+            terms.remove(row.getValue());
             setNeedsSaving();
         });
         sortableRowWrapper.setId(id);
@@ -153,18 +156,32 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void setNeedsSaving() {
         System.out.println("experiment.getRewardTerms():" + experiment.getRewardTerms());
         System.out.println("terms: "+getRewardTermsList());
-        if (!experiment.getRewardTerms().equals(getRewardTermsList())) {
+        System.out.println("equals? "+checkRewardTermsListEquals());
+        if (checkRewardTermsListEquals()) {
+            newExperimentView.removeNeedsSaving();
+        } else {
             NeedsSavingAction.setNeedsSaving(newExperimentView);
         }
     }
 
-    public boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
+    private boolean checkRewardTermsListEquals() {
+        if (experiment.getRewardTerms().size() != terms.size()) {
+            return false;
+        }
+        return !experiment.getRewardTerms().stream()
+                .filter(rt ->  !rt.equals(terms.get(rt.getIndex())))
+                .findAny()
+                .isPresent();
+    }
+
+    private boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
         return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
     }
 
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
+        terms.clear();
         setRewardVariables(experiment.getRewardVariables());
         setViewWithRewardTerms(experiment.getRewardTerms());
     }

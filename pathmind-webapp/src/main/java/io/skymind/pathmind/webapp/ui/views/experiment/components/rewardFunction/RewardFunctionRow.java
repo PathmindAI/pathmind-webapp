@@ -11,6 +11,7 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
 import io.skymind.pathmind.shared.data.RewardTerm;
@@ -29,9 +30,11 @@ public class RewardFunctionRow extends CustomField<RewardTerm> implements Reward
     private List<RewardVariable> rewardVariables;
     private RewardTerm rewardTerm;
     private Binder<RewardTerm> binder;
+    private Command changeHandler;
 
-    protected RewardFunctionRow(List<RewardVariable> rvars) {
+    protected RewardFunctionRow(List<RewardVariable> rvars, Command changeHandler) {
         this.rewardVariables = rvars;
+        this.changeHandler = changeHandler;
         rewardVariableSelect.setPlaceholder("Choose a reward variable");
         rewardVariableSelect.setItems(rvars);
         rewardVariableSelect.setItemLabelGenerator(rv -> rv.getName());
@@ -72,6 +75,7 @@ public class RewardFunctionRow extends CustomField<RewardTerm> implements Reward
         binder = new Binder<>();
         binder.bind(conditionType, RewardTerm::getGoalConditionType, RewardTerm::setGoalConditionType);
         binder.bind(weightField, RewardTerm::getWeight, RewardTerm::setWeight);
+        binder.addValueChangeListener(event -> changeHandler.execute());
         binder.setBean(rewardTerm);
     }
     

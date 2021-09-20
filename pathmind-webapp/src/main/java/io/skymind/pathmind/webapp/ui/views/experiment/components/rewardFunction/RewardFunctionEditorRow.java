@@ -9,7 +9,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
-
+import com.vaadin.flow.server.Command;
 
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.RewardTerm;
@@ -25,8 +25,10 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
     private RewardCodeErrorPanel rewardCodeErrorPanel;
     private RewardTerm rewardTerm;
     private Binder<RewardTerm> binder;
+    private Command changeHandler;
 
-    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService) {
+    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService, Command changeHandler) {
+        this.changeHandler = changeHandler;
         rewardFunctionJuicyAceEditor = new JuicyAceEditor();
         rewardFunctionJuicyAceEditor.setSizeFull();
         rewardFunctionJuicyAceEditor.setTheme(JuicyAceTheme.eclipse);
@@ -61,6 +63,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         binder = new Binder<>();
         binder.bind(rewardFunctionJuicyAceEditor, RewardTerm::getRewardSnippet, RewardTerm::setRewardSnippet);
         binder.bind(weightField, RewardTerm::getWeight, RewardTerm::setWeight);
+        binder.addValueChangeListener(event -> changeHandler.execute());
         binder.setBean(rewardTerm);
     }
 

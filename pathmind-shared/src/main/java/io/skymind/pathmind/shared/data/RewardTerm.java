@@ -52,17 +52,11 @@ public class RewardTerm extends Data implements DeepCloneableInterface<RewardTer
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
         RewardTerm term = (RewardTerm) o;
-        return Objects.equals(index, term.index) // todo: do we need to include index into equals
+        return Objects.equals(index, term.index)
                 && Objects.equals(weight, term.weight)
                 && Objects.equals(rewardVariableIndex, term.rewardVariableIndex)
                 && goalConditionType == term.goalConditionType
