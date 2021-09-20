@@ -149,16 +149,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         return terms.size() > 0;
     }
 
-    private List<RewardTerm> getRewardTermsList() {
-        return terms;
-    }
-
     private void setNeedsSaving() {
-        System.out.println("experiment.getRewardTerms():" + experiment.getRewardTerms());
-        System.out.println("terms: "+getRewardTermsList());
-        System.out.println("equals? "+checkRewardTermsListEquals());
         if (checkRewardTermsListEquals()) {
-            newExperimentView.removeNeedsSaving();
+            newExperimentView.disableSaveNeeded();
         } else {
             NeedsSavingAction.setNeedsSaving(newExperimentView);
         }

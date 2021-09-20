@@ -230,7 +230,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private void createButtons() {
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
         startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this));
-        saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked());
+        saveDraftButton = new Button("Save Draft", click -> SaveDraftAction.saveDraft(this));
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
     }
 
@@ -272,12 +272,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         return settingsPanel.getSettingsText();
     }
 
-    private void handleSaveDraftClicked() {
-        SaveDraftAction.saveDraft(this);
-    }
-
     private void handleSaveDraftClicked(Command afterClickedCallback) {
-        handleSaveDraftClicked();
+        SaveDraftAction.saveDraft(this);
         afterClickedCallback.execute();
     }
 
@@ -308,8 +304,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     public void setExperiment(Experiment experiment) {
-        handleSaveDraftClicked();
-        // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
+        if (isNeedsSaving) {
+            SaveDraftAction.saveDraft(this);
+        }
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
