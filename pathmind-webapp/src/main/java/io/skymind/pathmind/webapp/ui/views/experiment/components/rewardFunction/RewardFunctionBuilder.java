@@ -21,6 +21,7 @@ import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
+import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
@@ -42,11 +43,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private RewardValidationService rewardValidationService;
 
+    private ToggleButton betaToggleButton;
+
     private final VerticalLayout rowsWrapper;
 
     private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
     private List<RewardTerm> terms = new ArrayList<>();
+
+    private boolean isWithRewardTerms = false;
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
         super();
@@ -69,8 +74,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.setSpacing(false);
         rowsWrapper.setPadding(false);
 
-        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL)));
+        betaToggleButton = new ToggleButton("Beta", "Live", () -> {
+            toggleBetweenBetaAndLive();
+        });
+
+        HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
+                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
+                betaToggleButton);
+        header.addClassName("reward-function-header");
+        add(header);
 
         add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 rowsWrapper,
@@ -78,6 +90,14 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                         newRowButton, newBoxButton)));
 
         addClassName("reward-fn-editor-panel");
+    }
+
+    private void toggleBetweenBetaAndLive() {
+        isWithRewardTerms = !isWithRewardTerms;
+        experiment.setWithRewardTerms(isWithRewardTerms);
+        newExperimentView.getExperimentDAO().updateWithRewardTerms(experiment);
+        betaToggleButton.setToggleButtonState(isWithRewardTerms);
+        // TODO -> update UI
     }
 
     private void createNewRow() {
@@ -174,6 +194,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
+        isWithRewardTerms = experiment.isWithRewardTerms();
+        betaToggleButton.setToggleButtonState(isWithRewardTerms);
         terms.clear();
         setRewardVariables(experiment.getRewardVariables());
         setViewWithRewardTerms(experiment.getRewardTerms());

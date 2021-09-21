@@ -207,6 +207,10 @@ public class ExperimentDAO {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }
 
+    public void updateWithRewardTerms(Experiment experiment) {
+        ExperimentRepository.updateWithRewardTerms(ctx, experiment);
+    }
+
     public void archive(long experimentId, boolean isArchive) {
         ExperimentRepository.archive(ctx, experimentId, isArchive);
     }

@@ -66,22 +66,14 @@
   margin-top: 0;
 }
 
+.new-experiment-view .reward-function-header {
+  background-color: var(--pm-app-bg-color);
+  padding-right: var(--lumo-space-xs);
+}
+
 .new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,
 .new-experiment-view .errors-wrapper {
     border-left: 1px solid var(--pm-grey-color-lightest);
-}
-
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel {
-  min-width: 37rem;
-}
-
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel > vaadin-vertical-layout {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.new-experiment-view .reward-function-wrapper .reward-fn-editor-panel + vaadin-vertical-layout {
-  flex: 1;
 }
 
 .new-experiment-view .reward-fn-panel-container {
@@ -98,10 +90,6 @@
     line-height: 1;
     padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
     overflow-y: auto;
-}
-
-.new-experiment-view .reward-function-wrapper .reward-variables-table {
-    max-height: none;
 }
 
 .new-experiment-view .simulation-parameters-panel vaadin-custom-field {

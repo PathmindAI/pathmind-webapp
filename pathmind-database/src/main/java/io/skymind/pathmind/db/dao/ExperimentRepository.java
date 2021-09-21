@@ -295,6 +295,13 @@ class ExperimentRepository {
                 .execute();
     }
 
+    protected static void updateWithRewardTerms(DSLContext ctx, Experiment experiment) {
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.WITH_REWARD_TERMS, experiment.isWithRewardTerms())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
+    }
+
     protected static void shareExperiment(DSLContext ctx, long experimentId, boolean share) {
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.SHARED, share)
