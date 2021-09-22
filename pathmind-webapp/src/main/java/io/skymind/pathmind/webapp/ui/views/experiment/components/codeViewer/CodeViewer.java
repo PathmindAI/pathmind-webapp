@@ -10,12 +10,9 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 @Tag("code-viewer")
 @JsModule("./src/experiment/code-viewer.ts")
 public class CodeViewer extends LitTemplate implements HasStyle, ExperimentComponent {
+
     public CodeViewer() {
         super();
-    }
-
-    public CodeViewer(Experiment experiment) {
-        this(experiment, false, true);
     }
 
     public CodeViewer(Experiment experiment, Boolean showCopyButton, Boolean showBorder) {
@@ -26,7 +23,8 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
     }
 
     public void setExperiment(Experiment experiment) {
-        setValue(experiment.getRewardFunction());
+        String snippet = experiment.isWithRewardTerms() ? experiment.getRewardFunctionFromTerms() : experiment.getRewardFunction();
+        setValue(snippet);
     }
 
     public void setComparisonModeTheOtherRewardFunction(String comparisonModeTheOtherRewardFunction) {

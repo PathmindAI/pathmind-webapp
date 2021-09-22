@@ -235,17 +235,28 @@ class ExperimentRepository {
                 .execute();
     }
 
-    protected static Experiment createNewExperiment(DSLContext ctx, long modelId, boolean hasGoals) {
-        return createNewExperiment(ctx, modelId, "1", "", hasGoals);
+    protected static void updateRewardFunctionFromTerms(DSLContext ctx, Experiment experiment) {
+        ctx.update(EXPERIMENT)
+                .set(EXPERIMENT.REWARD_FUNCTION_FROM_TERMS, experiment.getRewardFunctionFromTerms())
+                .where(EXPERIMENT.ID.eq(experiment.getId()))
+                .execute();
     }
 
-    protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName, String rewardFunction, boolean hasGoals) {
+    protected static Experiment createNewExperiment(DSLContext ctx, long modelId, boolean hasGoals) {
+        return createNewExperiment(ctx, modelId, "1", "", "", hasGoals, false);
+    }
+
+    protected static Experiment createNewExperiment(DSLContext ctx, long modelId, String experimentName,
+                                                    String rewardFunction, String rewardFunctionFromTerms,
+                                                    boolean hasGoals, boolean activateRewardTermsUI) {
         final ExperimentRecord ex = EXPERIMENT.newRecord();
         ex.attach(ctx.configuration());
         ex.setDateCreated(LocalDateTime.now());
         ex.setModelId(modelId);
         ex.setName(experimentName);
         ex.setRewardFunction(rewardFunction);
+        ex.setRewardFunctionFromTerms(rewardFunctionFromTerms);
+        ex.setWithRewardTerms(activateRewardTermsUI);
         ex.setHasGoals(hasGoals);
         ex.store();
         return ex.into(EXPERIMENT).into(Experiment.class);

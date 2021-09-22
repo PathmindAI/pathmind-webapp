@@ -67,7 +67,6 @@ public class AWSTrainingService extends TrainingService {
                 .checkpointFileId(null)
                 .variables("") // not collected via UI yet
                 .reset("") // not collected via UI yet
-                .reward(exp.getRewardFunction())
                 .metrics("")
                 .selectedObservations(observations)
                 .simulationParameters(simulationParameters)
@@ -98,6 +97,9 @@ public class AWSTrainingService extends TrainingService {
                     .map(String::valueOf)
                     .collect(Collectors.joining(","));
             spec.termsWeight(weights);
+            spec.reward(exp.getRewardFunctionFromTerms());
+        } else {
+            spec.reward(exp.getRewardFunction());
         }
 
         return executionProvider.execute(spec.build());

@@ -36,27 +36,6 @@ public class ExperimentUtils {
     private ExperimentUtils() {
     }
 
-    public static Experiment generateNewDefaultExperiment(long modelId, String name, String rewardFunction) {
-        Experiment newExperiment = new Experiment();
-        newExperiment.setDateCreated(LocalDateTime.now());
-        newExperiment.setModelId(modelId);
-        newExperiment.setName(name);
-        newExperiment.setRewardFunction(rewardFunction);
-        return newExperiment;
-    }
-
-    public static String getProjectName(Experiment experiment) {
-        return experiment.getProject().getName();
-    }
-
-    public static String getModelNumber(Experiment experiment) {
-        return experiment.getModel().getName();
-    }
-
-    public static String getExperimentNumber(Experiment experiment) {
-        return experiment.getName();
-    }
-
     public static LocalDateTime getTrainingStartedDate(Experiment experiment) {
         return experiment.getRuns().stream()
                 .map(Run::getStartedAt)
