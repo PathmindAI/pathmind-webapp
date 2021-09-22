@@ -44,11 +44,6 @@ public class RewardTerm extends Data implements DeepCloneableInterface<RewardTer
     }
 
     @Override
-    public RewardTerm deepClone() {
-        return new RewardTerm(index, weight, rewardVariableIndex, goalCondition, rewardSnippet);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
             return false;

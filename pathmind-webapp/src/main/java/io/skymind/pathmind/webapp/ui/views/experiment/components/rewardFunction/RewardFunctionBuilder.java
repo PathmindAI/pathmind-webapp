@@ -212,9 +212,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         String rewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
         experiment.setRewardTerms(terms);
-        experiment.setRewardFunction(rewardFunction);
-
-        log.info("\n {} \n", rewardFunction);
+        experiment.setRewardFunctionFromTerms(rewardFunction);
 
         setViewWithRewardTerms(experiment.getRewardTerms());
 

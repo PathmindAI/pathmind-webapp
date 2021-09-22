@@ -132,6 +132,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
                 comparisonExperiment.getRewardFunction());
+        // TODO: reward terms and function
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
                 comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
@@ -355,12 +356,10 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         experimentsNavbar.setVisible(!experiment.isArchived());
-        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(
-                experiment.getSelectedObservations());
-        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(
-                experiment.getRewardFunction());
-        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(
-                experiment.getSimulationParameters());
+        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(experiment.getSelectedObservations());
+        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(experiment.getRewardFunction());
+        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(experiment.getSimulationParameters());
+        // TODO: reward terms and generated function
     }
 
     @Override
