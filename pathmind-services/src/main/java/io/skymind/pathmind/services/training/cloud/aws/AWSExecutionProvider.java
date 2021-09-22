@@ -599,6 +599,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("NUM_CPUS", String.valueOf(2))
         ));
 
+        if (StringUtils.isNotEmpty(job.getTermsWeight())) {
+            instructions.add(var("REWARD_TERMS_WEIGHTS", job.getTermsWeight()));
+        }
+
         if (job.getEnv().getTrainBatchSize() != 0) {
             instructions.add(var("TRAIN_BATCH_SIZE", String.valueOf(job.getEnv().getTrainBatchSize())));
         }
