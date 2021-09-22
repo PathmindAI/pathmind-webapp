@@ -2119,4 +2119,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2652-03" author="alexander.makarov@toptal.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="reward_terms_on" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
