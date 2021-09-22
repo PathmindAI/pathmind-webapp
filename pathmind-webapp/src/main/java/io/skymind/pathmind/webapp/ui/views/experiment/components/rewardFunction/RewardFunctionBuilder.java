@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,11 +16,11 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
@@ -213,6 +212,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         List<RewardTerm> terms = new ArrayList<>();
 
+        List<String> rewardFunctionSnippets = new ArrayList<>();
+
         rowsWrapper.getChildren()
                 .map(Component::getId)
                 .filter(Optional::isPresent)
@@ -221,9 +222,24 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
                 .map(termComponent -> termComponent.convertToValueIfValid(terms.size()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .peek(term -> {
+                    String snippet = term.getRewardSnippet();
+                    if (StringUtils.isEmpty(snippet)) {
+                        snippet = ExperimentUtils.generateRewardFunction(
+                                rewardVariables.get(term.getRewardVariableIndex()),
+                                term.getGoalCondition()
+                        );
+                    }
+                    rewardFunctionSnippets.add(snippet);
+                })
                 .forEach(terms::add);
 
+        String rewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
         experiment.setRewardTerms(terms);
+        experiment.setRewardFunction(rewardFunction);
+
+        log.info("\n {} \n", rewardFunction);
+
         setViewWithRewardTerms(experiment.getRewardTerms());
 
     }

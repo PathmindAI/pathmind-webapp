@@ -4,11 +4,13 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import io.skymind.pathmind.shared.constants.GoalConditionType;
@@ -304,35 +306,61 @@ public class ExperimentUtils {
         StringBuilder sb = new StringBuilder("// Here's a suggested reward function to get started\n");
 
         for (RewardVariable rv : experiment.getRewardVariables()) {
-            GoalConditionType goal = rv.getGoalConditionTypeEnum();
-            if (goal != null) {
-                RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
-                switch (rv.getDataType()) {
-                    case "boolean": {
-                        sb.append(
-                                MessageFormat.format(
-                                        "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
-                                        rv.getName(), // 0
-                                        functionComponent.getMathOperation(), // 1
-                                        functionComponent.getComment() // 2
-                                )
-                        );
-                        break;
-                    }
-                    default: {
-                        sb.append(
-                                MessageFormat.format(
-                                        "reward {1}= after.{0} - before.{0}; // {2} {0}",
-                                        rv.getName(), // 0
-                                        functionComponent.getMathOperation(), // 1
-                                        functionComponent.getComment() // 2
-                                )
-                        );
-                    }
-                }
-                sb.append("\n");
-            }
+            sb.append(ExperimentUtils.generateRewardFunction(rv, rv.getGoalConditionTypeEnum()));
         }
         return sb.toString();
     }
+
+    public static String generateRewardFunction(RewardVariable rv, GoalConditionType goal) {
+        StringBuilder sb = new StringBuilder();
+        if (goal != null) {
+            RewardFunctionComponent functionComponent = goal.getRewardFunctionComponent();
+            switch (rv.getDataType()) {
+                case "boolean": {
+                    sb.append(
+                            MessageFormat.format(
+                                    "reward {1}= after.{0} ? 1 : 0; // {2} {0}",
+                                    rv.getName(), // 0
+                                    functionComponent.getMathOperation(), // 1
+                                    functionComponent.getComment() // 2
+                            )
+                    );
+                    break;
+                }
+                default: {
+                    sb.append(
+                            MessageFormat.format(
+                                    "reward {1}= after.{0} - before.{0}; // {2} {0}",
+                                    rv.getName(), // 0
+                                    functionComponent.getMathOperation(), // 1
+                                    functionComponent.getComment() // 2
+                            )
+                    );
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+    public static String collectRewardTermsToSnippet(List<String> rewardSnippets) {
+        List<String> tempRewardTermsSnippet = new ArrayList<>();
+
+        for (int i = 0; i < rewardSnippets.size(); i++) {
+            String varName = String.format("rewardTermsRaw[%d] +=", i);
+            for(String line: rewardSnippets.get(i).split("\n")) {
+                if (line.trim().startsWith("reward +=")) {
+                    line = line.replaceFirst("reward \\+=", varName);
+                } else if (line.trim().startsWith("reward -=")) {
+                    line = line.replaceFirst("reward \\-=", "");
+                    int index = line.lastIndexOf(";");
+                    line = varName + " -1*(" + line.substring(0, index).trim() + ")" + line.substring(index).trim();
+                }
+                tempRewardTermsSnippet.add(line);
+            }
+            tempRewardTermsSnippet.add("//----------------------------------");
+        }
+        return String.join("\n", tempRewardTermsSnippet);
+    }
+
 }

@@ -1,6 +1,8 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.ModelService;
@@ -56,7 +58,7 @@ public class AWSTrainingService extends TrainingService {
             rewFctName = !split[2].equals("null") ? split[2] : null;
         }
 
-        final JobSpec spec = JobSpec.builder()
+        final JobSpec.JobSpecBuilder spec = JobSpec.builder()
                 .userId(exp.getProject().getPathmindUserId())
                 .modelId(model.getId())
                 .experimentId(exp.getId())
@@ -87,9 +89,17 @@ public class AWSTrainingService extends TrainingService {
                 .environment(packageName)
                 .obsSelection(objSelection)
                 .rewFctName(rewFctName)
-                .actionMask(model.isActionmask())
-                .build();
+                .actionMask(model.isActionmask());
 
-        return executionProvider.execute(spec);
+        if (exp.isWithRewardTerms()) {
+            String weights = exp.getRewardTerms().stream()
+                    .sorted(Comparator.comparing(RewardTerm::getIndex))
+                    .map(RewardTerm::getWeight)
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+            spec.termsWeight(weights);
+        }
+
+        return executionProvider.execute(spec.build());
     }
 }
