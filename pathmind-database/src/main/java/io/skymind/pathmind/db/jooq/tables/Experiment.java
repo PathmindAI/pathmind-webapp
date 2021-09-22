@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row15;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -69,7 +69,7 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     /**
      * The column <code>public.experiment.reward_function</code>.
      */
-    public final TableField<ExperimentRecord, String> REWARD_FUNCTION = createField(DSL.name("reward_function"), SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<ExperimentRecord, String> REWARD_FUNCTION = createField(DSL.name("reward_function"), SQLDataType.VARCHAR, this, "");
 
     /**
      * The column <code>public.experiment.date_created</code>.
@@ -120,6 +120,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
      * The column <code>public.experiment.with_reward_terms</code>.
      */
     public final TableField<ExperimentRecord, Boolean> WITH_REWARD_TERMS = createField(DSL.name("with_reward_terms"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.experiment.reward_function_from_terms</code>.
+     */
+    public final TableField<ExperimentRecord, String> REWARD_FUNCTION_FROM_TERMS = createField(DSL.name("reward_function_from_terms"), SQLDataType.VARCHAR, this, "");
 
     private Experiment(Name alias, Table<ExperimentRecord> aliased) {
         this(alias, aliased, null);
@@ -220,11 +225,11 @@ public class Experiment extends TableImpl<ExperimentRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row15 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Boolean, Boolean, Boolean> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row15<Long, Long, String, String, LocalDateTime, LocalDateTime, Boolean, String, Boolean, Boolean, Integer, Boolean, Boolean, Boolean, String> fieldsRow() {
+        return (Row15) super.fieldsRow();
     }
 }
