@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -51,6 +52,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveEx
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionBuilder;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.settings.BetaFeatureSettingsView;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +70,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private FavoriteStar favoriteStar;
     private Div upgradeBannerExpCt;
     private Div upgradeBannerActMask;
+    private Button betaRewardTermsBanner;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -115,6 +118,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
         createUpgradeBanners();
+        createBetaRewardTermsBanner();
         favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
@@ -129,6 +133,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 verifyEmailReminder,
                 upgradeBannerExpCt,
                 upgradeBannerActMask,
+                betaRewardTermsBanner,
                 titlePanel);
         panelTitle.setClassName("panel-title");
 
@@ -225,6 +230,16 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         upgradeBannerActMask.add(upgradeLink1);
         upgradeBannerActMask.add(new Span("to enable action masking and more"));
         upgradeBannerActMask.addClassName(CssPathmindStyles.WARNING_LABEL);
+    }
+
+    private void createBetaRewardTermsBanner() {
+        betaRewardTermsBanner = new Button(new Div(new Span("Reward Terms UI"),
+            new Html("<sup>BETA</sup>"),
+            new Span("out now!")), click -> {
+                    segmentIntegrator.navigatedToBetaFeaturePageFromNewExpViewBanner();
+                    getUI().ifPresent(ui -> ui.navigate(BetaFeatureSettingsView.class));
+        });
+        betaRewardTermsBanner.addClassName("beta-feature-banner");
     }
 
     private void createButtons() {

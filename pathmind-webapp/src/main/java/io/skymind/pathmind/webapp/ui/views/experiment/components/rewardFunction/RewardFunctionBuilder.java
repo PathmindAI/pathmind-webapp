@@ -78,7 +78,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.setSpacing(false);
         rowsWrapper.setPadding(false);
 
-        betaToggleButton = new ToggleButton("Beta", "Live", this::toggleBetweenBetaAndLive);
+        betaToggleButton = new ToggleButton("Reward Terms BETA", "Reward Function", this::toggleBetweenBetaAndLive);
 
         HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),

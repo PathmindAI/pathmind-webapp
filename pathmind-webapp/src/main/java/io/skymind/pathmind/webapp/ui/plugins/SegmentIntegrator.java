@@ -160,6 +160,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_NAVIGATED_TO_EDIT_GOALS_FROM_PROJECT_VIEW);
     }
 
+    public void navigatedToBetaFeaturePageFromNewExpViewBanner() {
+        track(EVENT_NAVIGATED_TO_BETA_FEATURE_PAGE_FROM_NEW_EXPERIMENT_VIEW_BANNER);
+    }
+
     public void editGoals() {
         track(EVENT_EDIT_GOALS);
     }

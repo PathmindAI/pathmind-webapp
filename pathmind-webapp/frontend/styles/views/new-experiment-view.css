@@ -357,3 +357,16 @@
 .new-experiment-view .goal-fields-wrapper vaadin-select + span {
   margin: 0 var(--lumo-space-s);
 }
+
+.new-experiment-view .beta-feature-banner {
+  font-weight: normal;
+  background-color: var(--lumo-primary-color-20pct);
+  margin: var(--lumo-space-s) var(--lumo-space-m) 0;
+  border-radius: var(--lumo-border-radius-s);
+}
+
+.new-experiment-view .beta-feature-banner sup {
+  font-size: var(--lumo-font-size-xs);
+  font-weight: bold;
+  margin-right: var(--lumo-space-xs);
+}
