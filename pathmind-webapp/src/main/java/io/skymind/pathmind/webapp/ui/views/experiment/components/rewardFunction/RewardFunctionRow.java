@@ -1,23 +1,27 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.shared.constants.GoalConditionType;
+import io.skymind.pathmind.shared.data.Data;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import org.apache.commons.lang3.ObjectUtils;
+
+import javax.swing.text.html.Option;
 
 public class RewardFunctionRow extends CustomField<RewardTerm> implements RewardTermRow {
 
@@ -27,17 +31,17 @@ public class RewardFunctionRow extends CustomField<RewardTerm> implements Reward
     private final Select<RewardVariable> rewardVariableSelect = new Select<>();
     private final Select<GoalConditionType> conditionType;
     private final NumberField weightField;
-    private List<RewardVariable> rewardVariables;
+    private final List<RewardVariable> rewardVariables;
     private RewardTerm rewardTerm;
     private Binder<RewardTerm> binder;
-    private Command changeHandler;
+    private final Command changeHandler;
 
     protected RewardFunctionRow(List<RewardVariable> rvars, Command changeHandler) {
         this.rewardVariables = rvars;
         this.changeHandler = changeHandler;
         rewardVariableSelect.setPlaceholder("Choose a reward variable");
         rewardVariableSelect.setItems(rvars);
-        rewardVariableSelect.setItemLabelGenerator(rv -> rv.getName());
+        rewardVariableSelect.setItemLabelGenerator(Data::getName);
         rewardVariableSelect.getElement().setAttribute("theme", goalOperatorSelectThemeNames);
         rewardVariableSelect.addValueChangeListener(event -> {
             this.rewardTerm.setRewardVariableIndex(event.getValue().getArrayIndex());
@@ -73,7 +77,7 @@ public class RewardFunctionRow extends CustomField<RewardTerm> implements Reward
 
     private void initBinder() {
         binder = new Binder<>();
-        binder.bind(conditionType, RewardTerm::getGoalConditionType, RewardTerm::setGoalConditionType);
+        binder.bind(conditionType, RewardTerm::getGoalCondition, RewardTerm::setGoalCondition);
         binder.bind(weightField, RewardTerm::getWeight, RewardTerm::setWeight);
         binder.addValueChangeListener(event -> changeHandler.execute());
         binder.setBean(rewardTerm);
@@ -118,4 +122,14 @@ public class RewardFunctionRow extends CustomField<RewardTerm> implements Reward
         }
     }
 
+    @Override
+    public Optional<RewardTerm> convertToValueIfValid(int index) {
+        final Integer rewardVariableIndex = rewardTerm.getRewardVariableIndex();
+        final GoalConditionType conditionType = rewardTerm.getGoalCondition();
+        final Double weight = rewardTerm.getWeight();
+        if (ObjectUtils.allNotNull(rewardVariableIndex, conditionType, weight)) {
+            return Optional.of(new RewardTerm(index, weight, rewardVariableIndex, conditionType));
+        }
+        return Optional.empty();
+    }
 }

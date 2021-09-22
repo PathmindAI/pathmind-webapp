@@ -5,8 +5,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
@@ -49,7 +52,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
-    private List<RewardTerm> terms = new ArrayList<>();
+//    private List<RewardTerm> terms = new ArrayList<>();
 
     private boolean isWithRewardTerms = false;
 
@@ -74,9 +77,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.setSpacing(false);
         rowsWrapper.setPadding(false);
 
-        betaToggleButton = new ToggleButton("Beta", "Live", () -> {
-            toggleBetweenBetaAndLive();
-        });
+        betaToggleButton = new ToggleButton("Beta", "Live", this::toggleBetweenBetaAndLive);
 
         HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
@@ -101,27 +102,27 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewRow() {
-        createNewRow(new RewardTerm(terms.size()));
+        createNewRow(new RewardTerm());
     }
 
     private void createNewRow(RewardTerm rewardTerm) {
-        RewardFunctionRow row = new RewardFunctionRow(rewardVariables, () -> changeHandler());
         RewardTerm clonedRewardTerm = rewardTerm.deepClone();
+        RewardFunctionRow row = new RewardFunctionRow(rewardVariables, this::changeHandler);
         row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-        terms.add(clonedRewardTerm);
+//        terms.add(clonedRewardTerm);
     }
 
     private void createNewBoxRow() {
-        createNewBoxRow(new RewardTerm(terms.size()));
+        createNewBoxRow(new RewardTerm());
     }
 
     private void createNewBoxRow(RewardTerm rewardTerm) {
-        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, () -> changeHandler());
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, this::changeHandler);
         RewardTerm clonedRewardTerm = rewardTerm.deepClone();
         row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-        terms.add(clonedRewardTerm);
+//        terms.add(clonedRewardTerm);
     }
 
     private void changeHandler() {
@@ -133,7 +134,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
         sortableRowWrapper.setRemoveRowCallback(() -> {
             rewardTermsRows.remove(id);
-            terms.remove(row.getValue());
+//            terms.remove(row.getValue());
             setNeedsSaving();
         });
         sortableRowWrapper.setId(id);
@@ -166,7 +167,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public boolean isValidForTraining() {
-        return terms.size() > 0;
+        return true;
+//        return terms.size() > 0;
     }
 
     private void setNeedsSaving() {
@@ -178,13 +180,14 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private boolean checkRewardTermsListEquals() {
-        if (experiment.getRewardTerms().size() != terms.size()) {
-            return false;
-        }
-        return !experiment.getRewardTerms().stream()
-                .filter(rt ->  !rt.equals(terms.get(rt.getIndex())))
-                .findAny()
-                .isPresent();
+        return true;
+//        if (experiment.getRewardTerms().size() != terms.size()) {
+//            return false;
+//        }
+//        return !experiment.getRewardTerms().stream()
+//                .filter(rt ->  !rt.equals(terms.get(rt.getIndex())))
+//                .findAny()
+//                .isPresent();
     }
 
     private boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
@@ -196,7 +199,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         this.experiment = experiment;
         isWithRewardTerms = experiment.isWithRewardTerms();
         betaToggleButton.setToggleButtonState(isWithRewardTerms);
-        terms.clear();
+//        terms.clear();
         setRewardVariables(experiment.getRewardVariables());
         setViewWithRewardTerms(experiment.getRewardTerms());
     }
@@ -207,6 +210,21 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     @Override
     public void updateExperiment() {
+
+        List<RewardTerm> terms = new ArrayList<>();
+
+        rowsWrapper.getChildren()
+                .map(Component::getId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(rewardTermsRows::get)
+                .map(termComponent -> termComponent.convertToValueIfValid(terms.size()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(terms::add);
+
         experiment.setRewardTerms(terms);
+        setViewWithRewardTerms(experiment.getRewardTerms());
+
     }
 }

@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -10,7 +11,6 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.server.Command;
-
 import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
@@ -18,14 +18,19 @@ import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
-public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements RewardTermRow{
+public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements RewardTermRow {
+
     private final NumberField weightField;
-    private JuicyAceEditor rewardFunctionJuicyAceEditor;
-    private RewardCodeErrorPanel rewardCodeErrorPanel;
-    private RewardTerm rewardTerm;
+    private final JuicyAceEditor rewardFunctionJuicyAceEditor;
+    private final RewardCodeErrorPanel rewardCodeErrorPanel;
+
+    private final Command changeHandler;
+
     private Binder<RewardTerm> binder;
-    private Command changeHandler;
+    private RewardTerm rewardTerm;
 
     public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService, Command changeHandler) {
         this.changeHandler = changeHandler;
@@ -48,12 +53,12 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         weightField.setHasControls(true);
 
         HorizontalLayout wrapper = WrapperUtils.wrapWidthFullHorizontalNoSpacing(
-            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                rewardFunctionJuicyAceEditor,
-                rewardCodeErrorPanel
-            ),
-            new Span("x"),
-            weightField
+                WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                        rewardFunctionJuicyAceEditor,
+                        rewardCodeErrorPanel
+                ),
+                new Span("x"),
+                weightField
         );
 
         add(wrapper);
@@ -88,4 +93,15 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
             initBinder();
         }
     }
+
+    @Override
+    public Optional<RewardTerm> convertToValueIfValid(int index) {
+        final String snippet = StringUtils.trimToNull(rewardTerm.getRewardSnippet());
+        final Double weight = rewardTerm.getWeight();
+        if (ObjectUtils.allNotNull(snippet, weight)) {
+            return Optional.of(new RewardTerm(index, weight, snippet));
+        }
+        return Optional.empty();
+    }
+
 }

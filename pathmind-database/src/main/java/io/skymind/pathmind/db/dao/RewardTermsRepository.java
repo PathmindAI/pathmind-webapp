@@ -30,7 +30,7 @@ class RewardTermsRepository {
                     )
                     .values(
                             experimentId, term.getIndex(), term.getWeight(),
-                            term.getRewardVariableIndex(), term.getGoalConditionType() == null ? null : term.getGoalConditionType().getCode(),
+                            term.getRewardVariableIndex(), term.getGoalCondition() == null ? null : term.getGoalCondition().getCode(),
                             term.getRewardSnippet()
                     )
         ).forEach(queries::add);
