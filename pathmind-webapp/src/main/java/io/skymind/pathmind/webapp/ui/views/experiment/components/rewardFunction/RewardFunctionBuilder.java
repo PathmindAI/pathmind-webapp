@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -32,6 +33,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.NeedsSavingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +53,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
-//    private List<RewardTerm> terms = new ArrayList<>();
+    private List<RewardTerm> initState;
 
     private boolean isWithRewardTerms = false;
 
@@ -109,7 +111,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         RewardFunctionRow row = new RewardFunctionRow(rewardVariables, this::changeHandler);
         row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-//        terms.add(clonedRewardTerm);
     }
 
     private void createNewBoxRow() {
@@ -121,7 +122,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         RewardTerm clonedRewardTerm = rewardTerm.deepClone();
         row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
-//        terms.add(clonedRewardTerm);
     }
 
     private void changeHandler() {
@@ -133,7 +133,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         SortableRowWrapper sortableRowWrapper = new SortableRowWrapper(row.asComponent(), false);
         sortableRowWrapper.setRemoveRowCallback(() -> {
             rewardTermsRows.remove(id);
-//            terms.remove(row.getValue());
             setNeedsSaving();
         });
         sortableRowWrapper.setId(id);
@@ -142,6 +141,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void setViewWithRewardTerms(List<RewardTerm> rewardTerms) {
+
+        initState = ListUtils.emptyIfNull(rewardTerms).stream().map(RewardTerm::deepClone).collect(Collectors.toUnmodifiableList());
+
         rowsWrapper.removeAll();
 
         HorizontalLayout headerRow = new HorizontalLayout(new Span("Metric"), new Span("Goal"), new Span("Weight"));
@@ -166,8 +168,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public boolean isValidForTraining() {
-        return true;
-//        return terms.size() > 0;
+        return loadTermsFromComponent().size() > 0;
     }
 
     private void setNeedsSaving() {
@@ -179,14 +180,8 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private boolean checkRewardTermsListEquals() {
-        return true;
-//        if (experiment.getRewardTerms().size() != terms.size()) {
-//            return false;
-//        }
-//        return !experiment.getRewardTerms().stream()
-//                .filter(rt ->  !rt.equals(terms.get(rt.getIndex())))
-//                .findAny()
-//                .isPresent();
+        List<RewardTerm> actual = loadTermsFromComponent();
+        return CollectionUtils.isEqualCollection(actual, initState);
     }
 
     private boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
@@ -198,7 +193,6 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         this.experiment = experiment;
         isWithRewardTerms = experiment.isWithRewardTerms();
         betaToggleButton.setToggleButtonState(isWithRewardTerms);
-//        terms.clear();
         setRewardVariables(experiment.getRewardVariables());
         setViewWithRewardTerms(experiment.getRewardTerms());
     }
@@ -210,29 +204,11 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     @Override
     public void updateExperiment() {
 
-        List<RewardTerm> terms = new ArrayList<>();
+        List<RewardTerm> terms = loadTermsFromComponent();
 
-        List<String> rewardFunctionSnippets = new ArrayList<>();
-
-        rowsWrapper.getChildren()
-                .map(Component::getId)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(rewardTermsRows::get)
-                .map(termComponent -> termComponent.convertToValueIfValid(terms.size()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .peek(term -> {
-                    String snippet = term.getRewardSnippet();
-                    if (StringUtils.isEmpty(snippet)) {
-                        snippet = ExperimentUtils.generateRewardFunction(
-                                rewardVariables.get(term.getRewardVariableIndex()),
-                                term.getGoalCondition()
-                        );
-                    }
-                    rewardFunctionSnippets.add(snippet);
-                })
-                .forEach(terms::add);
+        List<String> rewardFunctionSnippets = terms.stream()
+                .map(this::generateSnippetForTerm)
+                .collect(Collectors.toList());
 
         String rewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
         experiment.setRewardTerms(terms);
@@ -242,5 +218,30 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
         setViewWithRewardTerms(experiment.getRewardTerms());
 
+    }
+
+    private List<RewardTerm> loadTermsFromComponent() {
+        List<RewardTerm> terms = new ArrayList<>();
+        rowsWrapper.getChildren()
+                .map(Component::getId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(rewardTermsRows::get)
+                .map(termComponent -> termComponent.convertToValueIfValid(terms.size()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(terms::add);
+        return terms;
+    }
+
+    private String generateSnippetForTerm(RewardTerm term) {
+        String snippet = term.getRewardSnippet();
+        if (StringUtils.isEmpty(snippet)) {
+            snippet = ExperimentUtils.generateRewardFunction(
+                    rewardVariables.get(term.getRewardVariableIndex()),
+                    term.getGoalCondition()
+            );
+        }
+        return snippet;
     }
 }
