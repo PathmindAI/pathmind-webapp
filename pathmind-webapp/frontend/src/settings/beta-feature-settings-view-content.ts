@@ -35,7 +35,7 @@ class BetaFeatureSettingsViewContent extends LitElement {
                         <vaadin-vertical-layout>
                           <h4>Reward Terms</h4>
                           <p>Replace the reward function editor with a low-code reward terms generator. You can continue to use the code editor with this new interface, or use a mix of helper-generated reward terms and your own code snippets.</p>
-                          <vaadin-button theme="small" @click="${event => (this as any).$server.toggleRewardTerms()}">${this.withRewardTerms ? "Disable" : "Enable"}</vaadin-button>
+                          <vaadin-button theme="small" @click="${this.toggleRewardTerms}">${this.withRewardTerms ? "Disable" : "Enable"}</vaadin-button>
                         </vaadin-vertical-layout>
                     </vaadin-vertical-layout>
                 </div>
@@ -45,6 +45,10 @@ class BetaFeatureSettingsViewContent extends LitElement {
 
     createRenderRoot() {
         return this;
+    }
+
+    toggleRewardTerms(event) {
+      (this as any).$server.toggleRewardTerms();
     }
 
 }

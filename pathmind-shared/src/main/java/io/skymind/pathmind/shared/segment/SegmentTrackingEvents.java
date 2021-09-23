@@ -52,5 +52,7 @@ public class SegmentTrackingEvents {
     public static final String EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED = "Policy Server Redeployment Started After Failure";
     public static final String EVENT_POLICY_SERVER_SHUT_DOWN = "Policy Server Deployment Shut Down";
     public static final String EVENT_PAID = "Payment Made By User";
+    public static final String EVENT_ENABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS = "Enabled Reward Terms Toggle in Beta Feature Settings";
+    public static final String EVENT_DISABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS = "Disabled Reward Terms Toggle in Beta Feature Settings";
 
 }
