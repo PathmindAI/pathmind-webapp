@@ -86,6 +86,10 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         experimentBinder.addValueChangeListener(event -> changeHandler.execute());
     }
 
+    private void setVariableNames(List<RewardVariable> rewardVariables) {
+        rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
+    }
+
     public void setErrors(List<String> errors) {
         rewardCodeErrorPanel.setErrors(String.join("\n", errors));
     }
@@ -107,6 +111,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         }
         setEnabled(!experiment.isArchived());
         experimentBinder.setBean(experiment);
+        setVariableNames(experiment.getRewardVariables());
         rewardFunctionJuicyAceEditor.setValue(experiment.getRewardFunction());
     }
 

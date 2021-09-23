@@ -210,6 +210,11 @@ public class ExperimentDAO {
         ExperimentRepository.updateRewardFunction(ctx, experiment);
     }
 
+    public void updateRewardFunctionFromTerms(Experiment experiment) {
+        RewardTermsRepository.flushAndSaveTerms(ctx, experiment.getId(), experiment.getRewardTerms());
+        ExperimentRepository.updateRewardFunctionFromTerms(ctx, experiment);
+    }
+
     public void updateTrainingStatus(DSLContext transactionCtx, Experiment experiment) {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
     }

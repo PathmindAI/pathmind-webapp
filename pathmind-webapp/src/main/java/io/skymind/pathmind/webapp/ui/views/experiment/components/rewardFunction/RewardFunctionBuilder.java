@@ -26,7 +26,6 @@ import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
-import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -97,11 +96,21 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void toggleBetweenBetaAndLive() {
+        if (experimentIsRewardTermsOn) {
+            // going to switch from beta to old UI, save reward terms
+            setRewardTermsToExperiment();
+            newExperimentView.getExperimentDAO().updateRewardFunctionFromTerms(experiment);
+            setupOldUI();
+        } else {
+            // going to switch from old UI to beta, save reward function
+            setRewardFunctionToExperiment();
+            newExperimentView.getExperimentDAO().updateRewardFunction(experiment);
+            setupBetaUI();
+        }
         experimentIsRewardTermsOn = !experimentIsRewardTermsOn;
         experiment.setWithRewardTerms(experimentIsRewardTermsOn);
         newExperimentView.getExperimentDAO().updateWithRewardTerms(experiment);
         betaToggleButton.setToggleButtonState(experimentIsRewardTermsOn);
-        // TODO -> update UI
     }
 
     private void setupBetaUI() {
@@ -245,20 +254,28 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     @Override
     public void updateExperiment() {
         if (experimentIsRewardTermsOn) {
-            List<RewardTerm> terms = loadTermsFromComponent();
-    
-            List<String> rewardFunctionSnippets = terms.stream()
-                    .map(this::generateSnippetForTerm)
-                    .collect(Collectors.toList());
-    
-            String generatedRewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
-            experiment.setRewardTerms(terms);
-            experiment.setRewardFunctionFromTerms(generatedRewardFunction);
+            setRewardTermsToExperiment();
             setViewWithRewardTerms(experiment.getRewardTerms());
         } else {
-            String rewardFunction = rewardFunctionEditorRow.getRewardFunctionValue();
-            experiment.setRewardFunction(rewardFunction);
+            setRewardFunctionToExperiment();
         }
+    }
+
+    private void setRewardTermsToExperiment() {
+        List<RewardTerm> terms = loadTermsFromComponent();
+
+        List<String> rewardFunctionSnippets = terms.stream()
+                .map(this::generateSnippetForTerm)
+                .collect(Collectors.toList());
+
+        String generatedRewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
+        experiment.setRewardTerms(terms);
+        experiment.setRewardFunctionFromTerms(generatedRewardFunction);
+    }
+
+    private void setRewardFunctionToExperiment() {
+        String rewardFunction = rewardFunctionEditorRow.getRewardFunctionValue();
+        experiment.setRewardFunction(rewardFunction);
     }
 
     private List<RewardTerm> loadTermsFromComponent() {
