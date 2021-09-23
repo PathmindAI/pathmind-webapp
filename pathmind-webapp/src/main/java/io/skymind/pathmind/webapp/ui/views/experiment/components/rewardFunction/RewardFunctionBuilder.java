@@ -53,12 +53,15 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private ToggleButton betaToggleButton;
 
     private final VerticalLayout rowsWrapper;
+    private final VerticalLayout editorWrapper;
+    private RewardFunctionEditorRow rewardFunctionEditorRow;
 
     private final Map<String, RewardTermRow> rewardTermsRows = new HashMap<>();
 
     private List<RewardTerm> initState;
 
-    private boolean isWithRewardTerms = false;
+    private boolean userAccountIsRewardTermsOn = false;
+    private boolean experimentIsRewardTermsOn = false;
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView,
                         RewardValidationService rewardValidationService,
@@ -67,9 +70,43 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         this.newExperimentView = newExperimentView;
         this.rewardValidationService = rewardValidationService;
         this.userService = userService;
+        this.userAccountIsRewardTermsOn = userService.getCurrentUser().isRewardTermsOn();
 
         setSpacing(false);
         setPadding(false);
+
+        rowsWrapper = new VerticalLayout();
+        rowsWrapper.addClassName("reward-terms-wrapper");
+        rowsWrapper.setSpacing(false);
+        rowsWrapper.setPadding(false);
+
+        betaToggleButton = new ToggleButton("Reward Terms BETA", "Reward Function", this::toggleBetweenBetaAndLive);
+        betaToggleButton.setVisible(userAccountIsRewardTermsOn);
+
+        HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
+                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
+                betaToggleButton);
+        header.addClassName("reward-function-header");
+        add(header);
+
+        editorWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+
+        add(editorWrapper);
+
+        addClassName("reward-fn-editor-panel");
+    }
+
+    private void toggleBetweenBetaAndLive() {
+        experimentIsRewardTermsOn = !experimentIsRewardTermsOn;
+        experiment.setWithRewardTerms(experimentIsRewardTermsOn);
+        newExperimentView.getExperimentDAO().updateWithRewardTerms(experiment);
+        betaToggleButton.setToggleButtonState(experimentIsRewardTermsOn);
+        // TODO -> update UI
+    }
+
+    private void setupBetaUI() {
+        editorWrapper.removeAll();
+        editorWrapper.removeClassName("reward-function-editor-wrapper");
 
         Button newRowButton = new Button("Reward Term", new Icon(VaadinIcon.PLUS), click -> createNewRow());
         newRowButton.setIconAfterText(false);
@@ -79,34 +116,22 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         newBoxButton.setIconAfterText(false);
         newBoxButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
 
-        rowsWrapper = new VerticalLayout();
-        rowsWrapper.addClassName("reward-terms-wrapper");
-        rowsWrapper.setSpacing(false);
-        rowsWrapper.setPadding(false);
+        editorWrapper.add(rowsWrapper,
+                WrapperUtils.wrapWidthFullCenterHorizontal(newRowButton, newBoxButton));
 
-        betaToggleButton = new ToggleButton("Reward Terms BETA", "Reward Function", this::toggleBetweenBetaAndLive);
-        betaToggleButton.setVisible(userService.getCurrentUser().isRewardTermsOn());
-
-        HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
-                LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),
-                betaToggleButton);
-        header.addClassName("reward-function-header");
-        add(header);
-
-        add(WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                rowsWrapper,
-                WrapperUtils.wrapWidthFullCenterHorizontal(
-                        newRowButton, newBoxButton)));
-
-        addClassName("reward-fn-editor-panel");
+        setViewWithRewardTerms(experiment.getRewardTerms());
     }
 
-    private void toggleBetweenBetaAndLive() {
-        isWithRewardTerms = !isWithRewardTerms;
-        experiment.setWithRewardTerms(isWithRewardTerms);
-        newExperimentView.getExperimentDAO().updateWithRewardTerms(experiment);
-        betaToggleButton.setToggleButtonState(isWithRewardTerms);
-        // TODO -> update UI
+    private void setupOldUI() {
+        editorWrapper.removeAll();
+
+        rewardFunctionEditorRow = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, this::changeHandler, true);
+
+        rewardFunctionEditorRow.setExperiment(experiment);
+
+        editorWrapper.add(rewardFunctionEditorRow);
+
+        editorWrapper.addClassName("reward-function-editor-wrapper");
     }
 
     private void createNewRow() {
@@ -125,7 +150,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     private void createNewBoxRow(RewardTerm rewardTerm) {
-        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, this::changeHandler);
+        RewardFunctionEditorRow row = new RewardFunctionEditorRow(rewardVariables, rewardValidationService, this::changeHandler, false);
         RewardTerm clonedRewardTerm = rewardTerm.deepClone();
         row.setValue(clonedRewardTerm);
         putRewardTermsRow(row);
@@ -175,12 +200,21 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     }
 
     public boolean isValidForTraining() {
-        return loadTermsFromComponent().size() > 0;
+        if (experimentIsRewardTermsOn) {
+            return loadTermsFromComponent().size() > 0;
+        }
+        return !rewardFunctionEditorRow.getRewardFunctionValue().isEmpty()
+                && rewardFunctionEditorRow.getRewardFunctionErrorsSize() == 0
+                && rewardFunctionEditorRow.isRewardFunctionLessThanMaxLength();
     }
 
     private void setNeedsSaving() {
-        if (checkRewardTermsListEquals()) {
-            newExperimentView.disableSaveNeeded();
+        if (experimentIsRewardTermsOn) {
+            if (checkRewardTermsListEquals()) {
+                newExperimentView.disableSaveNeeded();
+            } else {
+                NeedsSavingAction.setNeedsSaving(newExperimentView);
+            }
         } else {
             NeedsSavingAction.setNeedsSaving(newExperimentView);
         }
@@ -191,17 +225,17 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         return CollectionUtils.isEqualCollection(actual, initState);
     }
 
-    private boolean isRewardFunctionLessThanMaxLength(JuicyAceEditor rewardFunctionJuicyAceEditor) {
-        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
-    }
-
     public void setExperiment(Experiment experiment) {
         setEnabled(!experiment.isArchived());
         this.experiment = experiment;
-        isWithRewardTerms = experiment.isWithRewardTerms();
-        betaToggleButton.setToggleButtonState(isWithRewardTerms);
+        experimentIsRewardTermsOn = experiment.isWithRewardTerms();
+        betaToggleButton.setToggleButtonState(experimentIsRewardTermsOn);
         setRewardVariables(experiment.getRewardVariables());
-        setViewWithRewardTerms(experiment.getRewardTerms());
+        if (experimentIsRewardTermsOn) {
+            setupBetaUI();
+        } else {
+            setupOldUI();
+        }
     }
 
     public Experiment getExperiment() {
@@ -210,19 +244,21 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     @Override
     public void updateExperiment() {
-
-        List<RewardTerm> terms = loadTermsFromComponent();
-
-        List<String> rewardFunctionSnippets = terms.stream()
-                .map(this::generateSnippetForTerm)
-                .collect(Collectors.toList());
-
-        String rewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
-        experiment.setRewardTerms(terms);
-        experiment.setRewardFunctionFromTerms(rewardFunction);
-
-        setViewWithRewardTerms(experiment.getRewardTerms());
-
+        if (experimentIsRewardTermsOn) {
+            List<RewardTerm> terms = loadTermsFromComponent();
+    
+            List<String> rewardFunctionSnippets = terms.stream()
+                    .map(this::generateSnippetForTerm)
+                    .collect(Collectors.toList());
+    
+            String generatedRewardFunction = ExperimentUtils.collectRewardTermsToSnippet(rewardFunctionSnippets);
+            experiment.setRewardTerms(terms);
+            experiment.setRewardFunctionFromTerms(generatedRewardFunction);
+            setViewWithRewardTerms(experiment.getRewardTerms());
+        } else {
+            String rewardFunction = rewardFunctionEditorRow.getRewardFunctionValue();
+            experiment.setRewardFunction(rewardFunction);
+        }
     }
 
     private List<RewardTerm> loadTermsFromComponent() {

@@ -12,6 +12,7 @@ import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.server.Command;
 import io.skymind.pathmind.services.RewardValidationService;
+import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
@@ -30,9 +31,11 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
     private final Command changeHandler;
 
     private Binder<RewardTerm> binder;
+    private Binder<Experiment> experimentBinder;
     private RewardTerm rewardTerm;
+    private List<String> rewardFunctionErrors;
 
-    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService, Command changeHandler) {
+    public RewardFunctionEditorRow(List<RewardVariable> rewardVariables, RewardValidationService rewardValidationService, Command changeHandler, Boolean isRewardFunction) {
         this.changeHandler = changeHandler;
         rewardFunctionJuicyAceEditor = new JuicyAceEditor();
         rewardFunctionJuicyAceEditor.setSizeFull();
@@ -41,7 +44,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         rewardFunctionJuicyAceEditor.setWrapmode(false);
         rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
-            List<String> rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), rewardVariables);
+            rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), rewardVariables);
             setErrors(rewardFunctionErrors);
         });
 
@@ -61,6 +64,10 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
                 weightField
         );
 
+        if (isRewardFunction) {
+            weightField.setEnabled(false);
+        }
+
         add(wrapper);
     }
 
@@ -72,8 +79,39 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         binder.setBean(rewardTerm);
     }
 
+    private void initExperimentBinder() {
+        experimentBinder = new Binder<>(Experiment.class);
+        experimentBinder.forField(rewardFunctionJuicyAceEditor).bind(Experiment::getRewardFunction,
+        Experiment::setRewardFunction);
+        experimentBinder.addValueChangeListener(event -> changeHandler.execute());
+    }
+
     public void setErrors(List<String> errors) {
         rewardCodeErrorPanel.setErrors(String.join("\n", errors));
+    }
+
+    public int getRewardFunctionErrorsSize() {
+        if (rewardFunctionErrors == null) {
+            return 0;
+        }
+        return rewardFunctionErrors.size();
+    }
+
+    public boolean isRewardFunctionLessThanMaxLength() {
+        return rewardFunctionJuicyAceEditor.getValue().length() <= Experiment.REWARD_FUNCTION_MAX_LENGTH;
+    }
+
+    public void setExperiment(Experiment experiment) {
+        if (experimentBinder == null) {
+            initExperimentBinder();
+        }
+        setEnabled(!experiment.isArchived());
+        experimentBinder.setBean(experiment);
+        rewardFunctionJuicyAceEditor.setValue(experiment.getRewardFunction());
+    }
+
+    public String getRewardFunctionValue() {
+        return rewardFunctionJuicyAceEditor.getValue();
     }
 
     @Override
