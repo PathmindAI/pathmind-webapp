@@ -315,6 +315,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         splitButton.enableMainButton(canStartTraining());
         upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
         upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && experiment.getModel().isActionmask());
+        betaRewardTermsBanner.setVisible(!userService.getCurrentUser().isRewardTermsOn());
     }
 
     @Override
@@ -347,7 +348,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected void createExperimentComponents() {
         createAndSetupNotesField();
-        rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService);
+        rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService, userService);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         simulationParametersPanel = new SimulationParametersPanel(this, false, userService.getCurrentUser(), segmentIntegrator);

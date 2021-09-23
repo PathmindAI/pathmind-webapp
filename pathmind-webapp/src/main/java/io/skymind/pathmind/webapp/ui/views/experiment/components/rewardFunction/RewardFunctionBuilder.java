@@ -22,6 +22,7 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
@@ -45,7 +46,9 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final NewExperimentView newExperimentView;
 
-    private RewardValidationService rewardValidationService;
+    private final RewardValidationService rewardValidationService;
+
+    private final UserService userService;
 
     private ToggleButton betaToggleButton;
 
@@ -57,10 +60,13 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private boolean isWithRewardTerms = false;
 
-    public RewardFunctionBuilder(NewExperimentView newExperimentView, RewardValidationService rewardValidationService) {
+    public RewardFunctionBuilder(NewExperimentView newExperimentView,
+                        RewardValidationService rewardValidationService,
+                        UserService userService) {
         super();
         this.newExperimentView = newExperimentView;
         this.rewardValidationService = rewardValidationService;
+        this.userService = userService;
 
         setSpacing(false);
         setPadding(false);
@@ -79,6 +85,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rowsWrapper.setPadding(false);
 
         betaToggleButton = new ToggleButton("Reward Terms BETA", "Reward Function", this::toggleBetweenBetaAndLive);
+        betaToggleButton.setVisible(userService.getCurrentUser().isRewardTermsOn());
 
         HorizontalLayout header = WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Reward Function", CssPathmindStyles.BOLD_LABEL),

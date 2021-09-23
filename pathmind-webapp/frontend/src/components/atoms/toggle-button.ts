@@ -19,7 +19,7 @@ class ToggleButton extends LitElement {
                 align-items: center;
                 align-self: center;
                 position: relative;
-                width: 16rem;
+                width: 25rem;
                 font-size: var(--lumo-font-size-xs);
                 letter-spacing: .03rem;
                 color: var(--pm-grey-color-darker);
@@ -28,6 +28,7 @@ class ToggleButton extends LitElement {
                 overflow: hidden;
             }
             vaadin-horizontal-layout {
+              width: 100%;
               line-height: 1;
             }
             vaadin-horizontal-layout::before {
