@@ -5,7 +5,13 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.RewardTerm;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Tag("code-viewer")
 @JsModule("./src/experiment/code-viewer.ts")
@@ -25,6 +31,13 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
 
     public void setExperiment(Experiment experiment) {
         String snippet = experiment.isWithRewardTerms() ? experiment.getRewardFunctionFromTerms() : experiment.getRewardFunction();
+        if (experiment.isWithRewardTerms()) {
+            String weights = ExperimentUtils.rewardTermsWeights(experiment, ", ");
+
+            if (StringUtils.isNotEmpty(weights)) {
+                snippet += experiment.getRewardFunctionFromTerms() + "\n\n" + "reward_terms_weights=" + weights;
+            }
+        }
         setValue(snippet, experiment.isWithRewardTerms());
     }
 

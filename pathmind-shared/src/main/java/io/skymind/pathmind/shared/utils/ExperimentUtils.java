@@ -18,6 +18,7 @@ import io.skymind.pathmind.shared.constants.RewardFunctionComponent;
 import io.skymind.pathmind.shared.constants.RunStatus;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.Run;
 import io.skymind.pathmind.shared.services.training.constant.RunConstants;
@@ -346,9 +347,21 @@ public class ExperimentUtils {
                 }
                 tempRewardTermsSnippet.add(line);
             }
-            tempRewardTermsSnippet.add("//----------------------------------");
+//            tempRewardTermsSnippet.add("//----------------------------------");
         }
         return String.join("\n", tempRewardTermsSnippet);
+    }
+
+    public static String rewardTermsWeights(Experiment experiment) {
+        return rewardTermsWeights(experiment, ",");
+    }
+
+    public static String rewardTermsWeights(Experiment experiment, String delimiter) {
+        return experiment.getRewardTerms().stream()
+                .sorted(Comparator.comparing(RewardTerm::getIndex))
+                .map(RewardTerm::getWeight)
+                .map(String::valueOf)
+                .collect(Collectors.joining(delimiter));
     }
 
 }
