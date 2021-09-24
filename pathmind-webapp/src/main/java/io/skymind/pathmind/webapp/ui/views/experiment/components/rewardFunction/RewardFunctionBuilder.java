@@ -22,7 +22,6 @@ import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
-import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.SortableRowWrapper;
 import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
@@ -47,9 +46,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private final RewardValidationService rewardValidationService;
 
-    private final UserService userService;
-
-    private ToggleButton betaToggleButton;
+    private final ToggleButton betaToggleButton;
 
     private final VerticalLayout rowsWrapper;
     private final VerticalLayout editorWrapper;
@@ -59,17 +56,14 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     private List<RewardTerm> initState;
 
-    private boolean userAccountIsRewardTermsOn = false;
     private boolean experimentIsRewardTermsOn = false;
 
     public RewardFunctionBuilder(NewExperimentView newExperimentView,
-                        RewardValidationService rewardValidationService,
-                        UserService userService) {
+                                 RewardValidationService rewardValidationService,
+                                 boolean userAccountIsRewardTermsOn) {
         super();
         this.newExperimentView = newExperimentView;
         this.rewardValidationService = rewardValidationService;
-        this.userService = userService;
-        this.userAccountIsRewardTermsOn = userService.getCurrentUser().isRewardTermsOn();
 
         setSpacing(false);
         setPadding(false);
