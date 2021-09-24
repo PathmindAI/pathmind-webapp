@@ -2,24 +2,25 @@ import { LitElement, html, css, property } from "lit-element";
 import * as diff from "diff";
 
 class CodeViewer extends LitElement {
+  @property({type: Boolean})
+  isWithRewardTerms = false;
+  @property({type: Boolean})
+  comparisonIsWithRewardTerms = false;
   @property({type: String})
   codeSnippet = "";
-
   @property({type: String})
   comparisonCodeSnippet;
-
   @property({type: Boolean, reflect: true, attribute: "show-copy-button"})
   showCopyButton = true;
-
   @property({type: Boolean, reflect: true, attribute: "show-border"})
   showBorder = true;
-  
   @property({type: String})
   rewardVariables = "";
 
   updated(changedProperties) {
     changedProperties.forEach((oldValue, name) => {
-        if (name === "codeSnippet" || name === "comparisonCodeSnippet") {
+        if (name === "codeSnippet" || name === "comparisonCodeSnippet" ||
+            name === "isWithRewardTerms" || name === "comparisonIsWithRewardTerms") {
             this.renderCode();
         }
     });
@@ -72,7 +73,7 @@ class CodeViewer extends LitElement {
             this.classList.remove("comparison");
         }
     
-        if (this.codeSnippet && this.comparisonCodeSnippet) {
+        if (this.codeSnippet && this.comparisonCodeSnippet && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
           const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
           const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
           let processedCodeSnippet = "";

@@ -20,18 +20,21 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
         setExperiment(experiment);
         getElement().setProperty("showCopyButton", showCopyButton);
         getElement().setProperty("showBorder", showBorder);
+        getElement().setProperty("isWithRewardTerms", experiment.isWithRewardTerms());
     }
 
     public void setExperiment(Experiment experiment) {
         String snippet = experiment.isWithRewardTerms() ? experiment.getRewardFunctionFromTerms() : experiment.getRewardFunction();
-        setValue(snippet);
+        setValue(snippet, experiment.isWithRewardTerms());
     }
 
-    public void setComparisonModeTheOtherRewardFunction(String comparisonModeTheOtherRewardFunction) {
-        getElement().setProperty("comparisonCodeSnippet", comparisonModeTheOtherRewardFunction);
+    public void setComparisonModeTheOtherRewardFunction(String comparisonModeTheOtherRewardFunction, String comparisonModeTheOtherRewardFunctionFromTerms, Boolean isWithRewardTerms) {
+        getElement().setProperty("comparisonCodeSnippet", isWithRewardTerms ? comparisonModeTheOtherRewardFunctionFromTerms : comparisonModeTheOtherRewardFunction);
+        getElement().setProperty("comparisonIsWithRewardTerms", isWithRewardTerms);
     }
 
-    public void setValue(String rewardFunction) {
+    public void setValue(String rewardFunction, Boolean isWithRewardTerms) {
         getElement().setProperty("codeSnippet", rewardFunction);
+        getElement().setProperty("isWithRewardTerms", isWithRewardTerms);
     }
 }
