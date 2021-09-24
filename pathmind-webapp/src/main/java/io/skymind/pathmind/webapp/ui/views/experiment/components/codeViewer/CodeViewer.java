@@ -35,7 +35,7 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
             String weights = ExperimentUtils.rewardTermsWeights(experiment, ", ");
 
             if (StringUtils.isNotEmpty(weights)) {
-                snippet += experiment.getRewardFunctionFromTerms() + "\n\n" + "reward_terms_weights=" + weights;
+                snippet += "\n\n" + "reward_terms_weights=" + weights;
             }
         }
         setValue(snippet, experiment.isWithRewardTerms());
