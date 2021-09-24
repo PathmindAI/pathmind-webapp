@@ -16,15 +16,18 @@
 
 .new-experiment-view .view-section > vaadin-horizontal-layout:first-child {
     flex: 0 0 auto;
-    margin-bottom: var(--lumo-space-m);
 }
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
     flex: 1;
 }
 
+.new-experiment-view .panel-title > vaadin-horizontal-layout {
+  padding: var(--lumo-space-s);
+}
+
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
-    padding: var(--lumo-space-m) var(--lumo-space-m) 0 0;
+    padding: var(--lumo-space-s) var(--lumo-space-s) 0 0;
 }
 
 .new-experiment-view .warning-label {
@@ -41,6 +44,7 @@
 }
 
 .new-experiment-view .section-title-label {
+  font-size: var(--lumo-font-size-l);
   line-height: 1;
 }
 
@@ -69,6 +73,10 @@
 .new-experiment-view .reward-function-header {
   background-color: var(--pm-app-bg-color);
   padding-right: var(--lumo-space-xs);
+}
+
+.new-experiment-view .reward-function-header toggle-button {
+  width: 27rem;
 }
 
 .new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,

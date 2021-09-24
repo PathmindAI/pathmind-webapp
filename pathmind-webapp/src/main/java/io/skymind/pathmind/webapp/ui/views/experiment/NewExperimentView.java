@@ -39,6 +39,7 @@ import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.components.atoms.SplitButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
+import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesTable;
 import io.skymind.pathmind.webapp.ui.components.simulationParameters.SimulationParametersPanel;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
@@ -64,6 +65,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected ExperimentNotesField notesField;
     private RewardFunctionBuilder rewardFunctionBuilder;
+    private RewardVariablesTable rewardVariablesTable;
     private SimulationParametersPanel simulationParametersPanel;
     private ObservationsPanel observationsPanel;
     private SettingsViewContent settingsPanel;
@@ -144,10 +146,21 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
-        SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+        VerticalLayout rewardVariablesPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
+                rewardVariablesTable
+        );
+        rewardVariablesPanel.addClassName("reward-variables-panel");
+
+        SplitLayout notesAndSettings = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 notesField,
                 settingsPanel,
                 50);
+
+        SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardVariablesPanel,
+                notesAndSettings,
+                33);
         bottomPanel.setClassName("bottom-panel");
         
         SplitLayout panelsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
@@ -165,7 +178,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
             rewardFunctionBuilder,
             panelsWrapper,
-            53);
+            48);
         splitWrapper.setClassName("split-wrapper");
 
         VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
@@ -351,12 +364,14 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService, userService);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
+        rewardVariablesTable = new RewardVariablesTable();
         simulationParametersPanel = new SimulationParametersPanel(this, false, userService.getCurrentUser(), segmentIntegrator);
 
         experimentComponentList.addAll(List.of(
                 notesField,
                 rewardFunctionBuilder,
                 observationsPanel,
+                rewardVariablesTable,
                 simulationParametersPanel));
     }
 }

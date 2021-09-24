@@ -35,7 +35,6 @@
 
 .simulation-parameters-table vaadin-horizontal-layout:not(.header-row) span:last-child {
     max-width: 45%;
-    word-break: break-all;
     padding: var(--lumo-space-xxxs) var(--lumo-space-xxs);
     border: 1px solid var(--pm-grey-color);
     border-radius: var(--lumo-border-radius);

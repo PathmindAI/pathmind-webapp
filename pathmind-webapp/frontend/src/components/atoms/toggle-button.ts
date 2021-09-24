@@ -19,7 +19,6 @@ class ToggleButton extends LitElement {
                 align-items: center;
                 align-self: center;
                 position: relative;
-                width: 25rem;
                 font-size: var(--lumo-font-size-xs);
                 letter-spacing: .03rem;
                 color: var(--pm-grey-color-darker);
