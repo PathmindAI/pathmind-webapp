@@ -348,7 +348,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     protected void createExperimentComponents() {
         createAndSetupNotesField();
-        rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService, userService);
+        rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService, userService.getCurrentUser().isRewardTermsOn());
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         simulationParametersPanel = new SimulationParametersPanel(this, false, userService.getCurrentUser(), segmentIntegrator);
