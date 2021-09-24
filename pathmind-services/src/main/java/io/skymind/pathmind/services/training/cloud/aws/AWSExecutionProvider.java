@@ -389,6 +389,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_6_2:
             case VERSION_1_7_0:
             case VERSION_1_7_1:
+            case VERSION_1_7_2:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
