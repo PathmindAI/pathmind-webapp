@@ -111,6 +111,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         experiment.setWithRewardTerms(experimentIsRewardTermsOn);
         newExperimentView.getExperimentDAO().updateWithRewardTerms(experiment);
         betaToggleButton.setToggleButtonState(experimentIsRewardTermsOn);
+        newExperimentView.setButtonsEnablement();
     }
 
     private void setupBetaUI() {
@@ -210,7 +211,22 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     public boolean isValidForTraining() {
         if (experimentIsRewardTermsOn) {
-            return loadTermsFromComponent().size() > 0;
+            Boolean editorRowsHaveErrors = rowsWrapper.getChildren()
+                .map(Component::getId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(rewardTermsRows::get)
+                .filter(termComponent -> {
+                    if (termComponent instanceof RewardFunctionEditorRow) {
+                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
+                        return row.getRewardFunctionErrorsSize() > 0;
+                    }
+                    return false;
+                })
+                .findAny()
+                .isPresent();
+                
+            return !editorRowsHaveErrors && loadTermsFromComponent().size() > 0;
         }
         return !rewardFunctionEditorRow.getRewardFunctionValue().isEmpty()
                 && rewardFunctionEditorRow.getRewardFunctionErrorsSize() == 0

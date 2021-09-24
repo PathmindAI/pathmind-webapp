@@ -287,6 +287,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
+        setButtonsEnablement();
+    }
+
+    public void setButtonsEnablement() {
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());

@@ -44,7 +44,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         rewardFunctionJuicyAceEditor.setWrapmode(false);
         rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
-            rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), rewardVariables);
+            rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), rewardVariables, isRewardFunction);
             setErrors(rewardFunctionErrors);
         });
 
@@ -81,8 +81,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
 
     private void initExperimentBinder() {
         experimentBinder = new Binder<>(Experiment.class);
-        experimentBinder.forField(rewardFunctionJuicyAceEditor).bind(Experiment::getRewardFunction,
-        Experiment::setRewardFunction);
+        experimentBinder.forField(rewardFunctionJuicyAceEditor).bind(Experiment::getRewardFunction, Experiment::setRewardFunction);
         experimentBinder.addValueChangeListener(event -> changeHandler.execute());
     }
 
