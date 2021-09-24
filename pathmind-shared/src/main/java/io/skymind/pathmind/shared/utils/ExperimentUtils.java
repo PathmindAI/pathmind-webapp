@@ -278,6 +278,15 @@ public class ExperimentUtils {
         Collections.sort(experiment.getSelectedRewardVariables(), Comparator.comparing(RewardVariable::getArrayIndex));
     }
 
+    public static String generateRewardFunctionPlaceholder(List<RewardVariable> rewardVariables) {
+        StringBuilder sb = new StringBuilder();
+
+        for (RewardVariable rv : rewardVariables) {
+            sb.append(ExperimentUtils.generateRewardFunction(rv, rv.getGoalConditionTypeEnum()));
+        }
+        return sb.toString();
+    }
+
     public static String generateRewardFunction(Experiment experiment) {
         if (!experiment.isHasGoals())
             return "";

@@ -180,6 +180,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
             panelsWrapper,
             48);
         splitWrapper.setClassName("split-wrapper");
+        splitWrapper.addSplitterDragendListener(dragged -> rewardFunctionBuilder.resize());
 
         VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),

@@ -15,6 +15,7 @@ import io.skymind.pathmind.services.RewardValidationService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.components.juicy.JuicyAceEditor;
 import io.skymind.pathmind.webapp.ui.components.juicy.mode.JuicyAceMode;
 import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
@@ -43,6 +44,7 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         rewardFunctionJuicyAceEditor.setMode(JuicyAceMode.java);
         rewardFunctionJuicyAceEditor.setWrapmode(false);
         rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
+        rewardFunctionJuicyAceEditor.setPlaceholder(ExperimentUtils.generateRewardFunctionPlaceholder(rewardVariables));
         rewardFunctionJuicyAceEditor.addValueChangeListener(changeEvent -> {
             rewardFunctionErrors = rewardValidationService.validateRewardFunction(changeEvent.getValue(), rewardVariables, isRewardFunction);
             setErrors(rewardFunctionErrors);
@@ -87,6 +89,10 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
 
     private void setVariableNames(List<RewardVariable> rewardVariables) {
         rewardFunctionJuicyAceEditor.setAutoComplete(rewardVariables);
+    }
+
+    public void resize() {
+        rewardFunctionJuicyAceEditor.resize();
     }
 
     public void setErrors(List<String> errors) {

@@ -203,6 +203,24 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         rewardVariables.sort(Comparator.comparing(RewardVariable::getArrayIndex));
     }
 
+    public void resize() {
+        if (experimentIsRewardTermsOn) {
+            rowsWrapper.getChildren()
+                .map(Component::getId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(rewardTermsRows::get)
+                .forEach(termComponent -> {
+                    if (termComponent instanceof RewardFunctionEditorRow) {
+                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
+                        row.resize();
+                    }
+                });
+        } else {
+            rewardFunctionEditorRow.resize();
+        }
+    }
+
     public boolean isValidForTraining() {
         if (experimentIsRewardTermsOn) {
             Boolean editorRowsHaveErrors = rowsWrapper.getChildren()
