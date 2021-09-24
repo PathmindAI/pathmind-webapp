@@ -94,13 +94,13 @@ Set the github status
 def setGitHubStatus(state) {
     repoUrl = "https://api.github.com/repos/SkymindIO/pathmind-webapp"
     token = sh(returnStdout: true, script: 'kubectl get secret githubtoken -o=jsonpath=\'{.data.GITHUBTOKEN}\' | base64 --decode')
-    isDraft = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}?access_token=${token}\" | jq -r '.draft'").trim()
+    isDraft = sh(returnStdout: true, script: "curl -H \"Authorization: token ${token}\" \"${repoUrl}/pulls/${ghprbPullId}\" | jq -r '.draft'").trim()
     if (isDraft=="true"){
         //Exit on draft PR
         currentBuild.result = 'ABORTED'
         error('Aborting a Draft PR')
     }
-    commitSha = sh(returnStdout: true, script: "curl \"${repoUrl}/pulls/${ghprbPullId}/commits?access_token=${token}\" | grep '^    \"sha\"' | cut -f4 -d'\"' | tail -1").trim()
+    commitSha = sh(returnStdout: true, script: "curl -H \"Authorization: token ${token}\" \"${repoUrl}/pulls/${ghprbPullId}/commits\" | grep '^    \"sha\"' | cut -f4 -d'\"' | tail -1").trim()
     status="error"
     if (state=="SUCCESS"){
         status="success"
@@ -110,7 +110,7 @@ def setGitHubStatus(state) {
     }
     sh """
         set -x
-        curl \"${repoUrl}/statuses/${commitSha}?access_token=${token}\" \
+        curl -H \"Authorization: token ${token}\"  \"${repoUrl}/statuses/${commitSha}" \
         -H \"Content-Type: application/json\"   \
         -X POST -d '{\"state\": \"${status}\", \"description\": \"BDD tests\", \"target_url\": \"${env.RUN_DISPLAY_URL}\", \"context\": \"Jenkins\" }'
     """

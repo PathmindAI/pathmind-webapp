@@ -1,8 +1,15 @@
-import { html, PolymerElement } from "@polymer/polymer/polymer-element.js";
+import { LitElement, html, property } from "lit-element";
 import "../../components/organisms/public-header-menu.ts";
 
-class SignUpView extends PolymerElement {
-  static get template() {
+class SignUpView extends LitElement {
+    @property({type: String})
+    contactLink = "";
+    @property({type: Boolean})
+    hasCreatedPassword = false;
+    @property({type: Boolean})
+    isEmailUsed = false;
+
+  render() {
     return html`
     <style>
         body {
@@ -34,19 +41,6 @@ class SignUpView extends PolymerElement {
           max-width: 600px;
           font-size: var(--lumo-font-size-l);
           padding-top: var(--lumo-space-xl);
-        }
-        sign-up-view .video-wrapper {
-          position: relative;
-          width: 100%;
-          padding-bottom: 56.39%;
-          margin-bottom: var(--lumo-space-xl);
-        }
-        sign-up-view .video-wrapper iframe {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          top: 0;
-          left: 0;
         }
         sign-up-view .info h1 {
           color: var(--lumo-primary-color);
@@ -123,7 +117,7 @@ class SignUpView extends PolymerElement {
             }
         }
     </style>
-    <public-header-menu contactlink="{{contactLink}}"></public-header-menu>
+    <public-header-menu contactlink="${this.contactLink}"></public-header-menu>
       <div class="content">
         <vaadin-horizontal-layout class="content-wrapper">
           <vaadin-vertical-layout class="info">
@@ -137,9 +131,6 @@ class SignUpView extends PolymerElement {
                   <li>Get tips on how-to guide and reward your AI agents</li>
                   <li>Apply AI to your simulation and beat your heuristic</li>
               </ul>
-              <!--<div class="video-wrapper">
-                  <iframe src="//fast.wistia.net/embed/iframe/py4nssath2" allowtransparency="true" frameborder="0" scrolling="no" class="wistia_embed" name="wistia_embed" allowfullscreen mozallowfullscreen webkitallowfullscreen oallowfullscreen msallowfullscreen></iframe>
-              </div>-->
           </vaadin-vertical-layout>
           <vaadin-vertical-layout class="inner-content" id="emailPart">
               <h3>Make Better Decisions With AI</h3>
@@ -154,16 +145,16 @@ class SignUpView extends PolymerElement {
                   ></vaadin-text-field>
               </vaadin-horizontal-layout>
               <vaadin-text-field id="email" label="Work Email"></vaadin-text-field>
-              <p class="notes" hidden$="{{isEmailUsed}}">
+              <p class="notes" ?hidden="${this.isEmailUsed}">
               The email will be used as the User Email during sign in
               </p>
               <vaadin-vertical-layout
                 class="passwords-wrapper"
-                hidden$="{{isEmailUsed}}">
+                ?hidden="${this.isEmailUsed}">
                 <vaadin-password-field
                     id="newPassword"
                     label="Create Password"
-                    on-keyup="onCreatePasswordInput"
+                    @keyup="${this.onCreatePasswordInput}"
                 ></vaadin-password-field>
                 <vaadin-vertical-layout
                     id="newPassNotes"
@@ -173,13 +164,13 @@ class SignUpView extends PolymerElement {
                 <vaadin-password-field
                     id="confirmNewPassword"
                     label="Confirm Password"
-                    hidden$="{{!hasCreatedPassword}}"
+                    ?hidden="${!this.hasCreatedPassword}"
                 ></vaadin-password-field>
               </vaadin-vertical-layout>
               <vaadin-button
                 id="forgotPasswordBtn"
                 theme="tertiary small"
-                hidden$="{{!isEmailUsed}}"
+                ?hidden="${!this.isEmailUsed}"
                 onclick="window.location.href='/reset-password'"
               >Want to reset password?</vaadin-button>
               <vaadin-vertical-layout id="buttonsCont">
@@ -207,21 +198,19 @@ class SignUpView extends PolymerElement {
     </vaadin-horizontal-layout>`;
   }
 
-  _attachDom(dom) {
-    this.appendChild(dom);
+  createRenderRoot() {
+    return this;
   }
 
-  ready() {
-    super.ready();
+  firstUpdated() {
+    (window as any).detectIntercomAndFireTrackEventWhenLoaded = this.detectIntercomAndFireTrackEventWhenLoaded;
 
-    window.detectIntercomAndFireTrackEventWhenLoaded = this.detectIntercomAndFireTrackEventWhenLoaded;
-
-    detectIntercomAndFireTrackEventWhenLoaded();
+    (window as any).detectIntercomAndFireTrackEventWhenLoaded();
   }
 
   detectIntercomAndFireTrackEventWhenLoaded() {
     if (typeof Intercom === "undefined") {
-        requestAnimationFrame(detectIntercomAndFireTrackEventWhenLoaded);
+        requestAnimationFrame((window as any).detectIntercomAndFireTrackEventWhenLoaded);
     } else {
         Intercom('trackEvent', 'Sign Up Page Visited');
     }
@@ -231,19 +220,6 @@ class SignUpView extends PolymerElement {
     const passwordValue = event.target.value;
     this.hasCreatedPassword = (passwordValue.length > 0);
   }
-
-  static get is() {
-    return "sign-up-view";
-  }
-
-  static get properties() {
-    return {
-      hasCreatedPassword: {
-        type: Boolean,
-        value: false,
-      },
-    };
-  }
 }
 
-customElements.define(SignUpView.is, SignUpView);
+customElements.define("sign-up-view", SignUpView);

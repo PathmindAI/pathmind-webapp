@@ -3,8 +3,7 @@ package io.skymind.pathmind.webapp.ui.components.atoms;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
-import com.vaadin.flow.templatemodel.TemplateModel;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import io.skymind.pathmind.shared.data.MetricsRaw;
@@ -20,8 +19,8 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 
 @Tag("histogram-chart")
-@JsModule("./src/components/atoms/histogram-chart.js")
-public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implements HasStyle {
+@JsModule("./src/components/atoms/histogram-chart.ts")
+public class HistogramChart extends LitTemplate implements HasStyle {
     private List<RewardVariable> selectedRewardVariables;
     private Policy bestPolicy;
 
@@ -37,23 +36,21 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
             String vAxisTitle,
             List<String> colors
     ) {
-        getModel().setTitle(title);
-        getModel().setHaxistitle(hAxisTitle);
-        getModel().setVaxistitle(vAxisTitle);
-        getModel().setColors(colors);
+        getElement().setProperty("title", title);
+        getElement().setProperty("haxistitle", hAxisTitle);
+        getElement().setProperty("vaxistitle", vAxisTitle);
+        getElement().setPropertyJson("colors", createJsonStringArray(colors));
     }
 
-    public void setData(JsonArray cols, JsonArray rows) {
+    private void setData(JsonArray cols, JsonArray rows) {
         // JsonObject and JsonArray are not allowed types for TemplateModel methods
         // So we have to set it through calling the JS function
         getElement().callJsFunction("setData", cols, rows);
-        redraw();
     }
 
     public void setChartEmpty() {
         this.setupChart("", "Value", "Count", List.of("navy"));
         getElement().callJsFunction("setChartEmpty");
-        redraw();
     }
 
     public void setHistogramData(List<RewardVariable> selectedRewardVariables, Policy bestPolicy, Boolean showDetails) {
@@ -111,37 +108,33 @@ public class HistogramChart extends PolymerTemplate<HistogramChart.Model> implem
             .map(e -> e.getValue())
             .collect(Collectors.toList());
 
-
         List<Double> values = histogramData.get(0);
         for (int i = 0; i < values.size(); i++) {
             int finalI = i;
             List<Double> arr = new ArrayList<>();
             histogramData.forEach(list -> arr.add(list.get(finalI)));
-            rows.set(rows.length(), createRowItem(arr));
+            rows.set(rows.length(), createJsonDoubleArray(arr));
         }
         return rows;
     }
 
-    private JsonArray createRowItem(List<Double> rowValues) {
-        JsonArray rowItem = Json.createArray();
-        for (int i = 0; i < rowValues.size(); i++) {
-            rowItem.set(i, rowValues.get(i));
+    private JsonArray createJsonStringArray(List<String> list) {
+        JsonArray jsonArray = Json.createArray();
+        for (int i = 0; i < list.size(); i++) {
+            jsonArray.set(i, list.get(i));
         }
-        return rowItem;
+        return jsonArray;
+    }
+
+    private JsonArray createJsonDoubleArray(List<Double> list) {
+        JsonArray jsonArray = Json.createArray();
+        for (int i = 0; i < list.size(); i++) {
+            jsonArray.set(i, list.get(i));
+        }
+        return jsonArray;
     }
 
     public void redraw() {
         getElement().callJsFunction("redraw");
-    }
-
-    public interface Model extends TemplateModel {
-        void setTitle(String title);
-
-        void setHaxistitle(String hAxisTitle);
-
-        void setVaxistitle(String vAxisTitle);
-
-        void setColors(List<String> colors);
-
     }
 }

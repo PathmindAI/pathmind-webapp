@@ -102,6 +102,14 @@ class ExperimentRepository {
         return record.into(PATHMIND_USER).into(PathmindUser.class);
     }
 
+    protected static boolean getExperimentIsShared(DSLContext ctx, long experimentId) {
+        return ctx
+                .select(EXPERIMENT.SHARED)
+                .from(EXPERIMENT)
+                .where(EXPERIMENT.ID.eq(experimentId))
+                .fetchOneInto(Boolean.class);
+    }
+
     protected static Experiment getExperimentIfAllowed(DSLContext ctx, long experimentId, long userId) {
         Record record = ctx
                 .select(EXPERIMENT.asterisk())

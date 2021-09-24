@@ -6,14 +6,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.ParentLayout;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
@@ -47,7 +45,7 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("Oops!");
+        return null;
     }
 
     @Override
@@ -59,8 +57,9 @@ public class ErrorView extends PathMindDefaultView implements HasErrorParameter<
         });
 
         return WrapperUtils.wrapWidthFullCenterVertical(
+                new H3("Oops!"),
                 new Span(new Text("An unexpected error occurred. Try "), signOutButton, new Text(" of Pathmind and signing back in.")),
-                LabelFactory.createLabel(String.format("If you still see this error, please contact Pathmind for assistance (#%s).", errorId), CssPathmindStyles.NO_TOP_MARGIN_LABEL),
+                new Span(String.format("If you still see this error, please contact Pathmind for assistance (#%s).", errorId)),
                 StatusPageMessage.getMessage()
         );
     }
