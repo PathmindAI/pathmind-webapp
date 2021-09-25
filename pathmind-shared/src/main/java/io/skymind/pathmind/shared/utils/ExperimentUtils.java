@@ -338,6 +338,9 @@ public class ExperimentUtils {
         for (int i = 0; i < rewardSnippets.size(); i++) {
             String varName = String.format("rewardTermsRaw[%d] +=", i);
             for(String line: rewardSnippets.get(i).split("\n")) {
+                if(line.trim().startsWith("//")) {
+                    continue;
+                }
                 if (line.trim().startsWith("reward +=")) {
                     line = line.replaceFirst("reward \\+=", varName);
                 } else if (line.trim().startsWith("reward -=")) {
