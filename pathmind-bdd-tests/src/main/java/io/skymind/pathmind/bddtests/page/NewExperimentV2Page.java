@@ -29,4 +29,8 @@ public class NewExperimentV2Page extends PageObject {
         e.findElement(By.cssSelector("input")).clear();
         e.findElement(By.cssSelector("input")).sendKeys(weight);
     }
+
+    public void switchToRewardTermsBeta() {
+        getDriver().findElement(By.xpath("//toggle-button")).click();
+    }
 }

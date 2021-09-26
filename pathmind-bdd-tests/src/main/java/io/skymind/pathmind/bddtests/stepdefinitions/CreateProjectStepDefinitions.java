@@ -60,6 +60,7 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with single reward function$")
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
+        newExperimentV2Steps.switchToRewardTermsBeta();
         newExperimentV2Steps.addRewardTerm("kitchenCleanlinessLevel", "Maximize", "1");
         newExperimentV2Steps.addRewardTerm("successfulCustomers", "Minimize", "2");
         newExperimentV2Steps.addRewardTerm("balkedCustomers", "Maximize", "3");
