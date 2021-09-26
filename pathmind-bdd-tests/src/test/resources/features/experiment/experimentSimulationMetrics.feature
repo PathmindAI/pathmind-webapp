@@ -4,7 +4,7 @@ Feature: Experiment page Simulation Metrics
   @smoke
   Scenario: Check reward variables on experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Check experiment page simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
@@ -24,7 +24,7 @@ Feature: Experiment page Simulation Metrics
   @smoke
   Scenario: Check that simulation metrics block is shown when switch to other experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Click in 'New Experiment' button
     When Wait a bit 4000 ms

@@ -5,6 +5,8 @@ import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.FindBy;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+
 public class NewExperimentV2Page extends PageObject {
 
     private Utils utils;
@@ -32,5 +34,18 @@ public class NewExperimentV2Page extends PageObject {
 
     public void switchToRewardTermsBeta() {
         getDriver().findElement(By.xpath("//toggle-button")).click();
+    }
+
+    public void enableBetaFeature() {
+        setImplicitTimeout(3, SECONDS);
+        if(getDriver().findElements(By.xpath("//*[@class='beta-feature-banner']")).size() != 0){
+            String currentUrl = getDriver().getCurrentUrl();
+            getDriver().findElement(By.xpath("//*[@class='beta-feature-banner']")).click();
+            getDriver().findElement(By.xpath("//vaadin-button[text()='Enable']")).click();
+            WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector("confirm-popup")));
+            e.findElement(By.cssSelector("#confirm")).click();
+            getDriver().navigate().to(currentUrl);
+        }
+        resetImplicitTimeout();
     }
 }

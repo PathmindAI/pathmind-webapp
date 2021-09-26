@@ -17,4 +17,9 @@ public class NewExperimentV2Steps {
         newExperimentV2Page.clickRewardTermBtn();
         newExperimentV2Page.chooseRewardVar(rewardVariable, goal, weight);
     }
+
+    @Step
+    public void enableBetaFeature() {
+        newExperimentV2Page.enableBetaFeature();
+    }
 }
