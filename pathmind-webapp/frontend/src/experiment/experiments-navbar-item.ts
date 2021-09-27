@@ -24,7 +24,7 @@ class ExperimentsNavbarItem extends LitElement {
             :host {
                 box-sizing: border-box;
                 width: 100%;
-                padding: 0.45rem var(--lumo-space-s);
+                padding: 0.4rem var(--lumo-space-xs);
                 border-top: 1px solid transparent;
                 border-bottom: 1px solid transparent;
                 margin-top: -1px;
@@ -50,6 +50,7 @@ class ExperimentsNavbarItem extends LitElement {
             }
             .experiment-name p {
                 margin: 0;
+                white-space: nowrap;
             }
             .experiment-name p:nth-child(2) {
                 font-size: var(--lumo-font-size-xs);

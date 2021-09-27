@@ -47,11 +47,13 @@ dependencies:
   lit-html: 1.4.1
   lodash: 4.17.21
   multiselect-combo-box: 2.4.2
+  sortablejs: 1.10.2
   timeago.js: 4.0.2
   to-string-loader: 1.1.6
 devDependencies:
   '@babel/core': 7.15.0
   '@storybook/polymer': 5.3.21_e60988bf134136ad02fa3f3b854af78a
+  '@types/intercom-web': 2.8.13
   '@types/stripe-v3': 3.1.25
   babel-loader: 8.2.2_3b5f51d86b00c3770d461b39ebffde05
   chokidar: 3.5.2
@@ -2231,6 +2233,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-h4lTMgMJctJybDp8CQrxTUiiYmedihHWkjnF/8Pxseu2S6Nlfcy8kwboQ8yejh456rP2yWoEVm1sS/FVsfM48w==
+  /@types/intercom-web/2.8.13:
+    dev: true
+    resolution:
+      integrity: sha512-4bUW2zDddoFi0gvF6GBfZbcyBW8zBCnDsmB3Tmna4iLts/xeeQ89mmIzIbYpgTHjKqH/OKU1CA4kxPJje7kY2g==
   /@types/is-function/1.0.0:
     resolution:
       integrity: sha512-iTs9HReBu7evG77Q4EC8hZnqRt57irBDkK9nvmHroiOIVwYMQc4IvYvdRgwKfYepunIY7Oh/dBuuld+Gj9uo6w==
@@ -10057,6 +10063,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-SpmVOVpdq0DJc0qArhF3E5xsxvaiqGNb73XfgBpK1y3UD5gs8DSo8aCTsuT5pX8rssdc2NDIzANwP9eCAiSdTA==
+  /sortablejs/1.10.2:
+    dev: false
+    resolution:
+      integrity: sha512-YkPGufevysvfwn5rfdlGyrGjt7/CRHwvRPogD/lC+TnvcN29jDpCifKP+rBqf+LRldfXSTh+0CGLcSg0VIxq3A==
   /source-list-map/2.0.1:
     dev: true
     resolution:
@@ -11369,6 +11379,7 @@ specifiers:
   '@polymer/polymer': 3.2.0
   '@storybook/addon-backgrounds': ^6.0.5
   '@storybook/polymer': ^5.3.19
+  '@types/intercom-web': ^2.8.13
   '@types/stripe-v3': ^3.1.25
   '@vaadin/vaadin-accordion': 1.2.0
   '@vaadin/vaadin-app-layout': 2.2.0
@@ -11422,6 +11433,7 @@ specifiers:
   multiselect-combo-box: 2.4.2
   polymer-webpack-loader: ^2.0.3
   raw-loader: 3.1.0
+  sortablejs: 1.10.2
   terser: 4.6.7
   timeago.js: 4.0.2
   to-string-loader: ^1.1.6

@@ -35,6 +35,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
     private String stripeCustomerId;
     private String newEmailToVerify;
 	private String apiKey;
+    private boolean rewardTermsOn;
 	private LocalDateTime apiKeyCreatedAt;
 
     private List<Project> projects;
@@ -80,6 +81,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
                 .stripeCustomerId(stripeCustomerId)
                 .newEmailToVerify(newEmailToVerify)
                 .apiKey(apiKey)
+                .rewardTermsOn(rewardTermsOn)
                 .apiKeyCreatedAt(apiKeyCreatedAt)
                 .build();
     }

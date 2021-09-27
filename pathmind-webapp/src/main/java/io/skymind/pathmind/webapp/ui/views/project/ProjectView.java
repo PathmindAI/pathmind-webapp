@@ -479,7 +479,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     }
 
     @Override
-    protected void initLoadData() {
+    protected void initLoadData(BeforeEnterEvent event) {
         synchronized (modelLock) {
             project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access Project: " + projectId));
