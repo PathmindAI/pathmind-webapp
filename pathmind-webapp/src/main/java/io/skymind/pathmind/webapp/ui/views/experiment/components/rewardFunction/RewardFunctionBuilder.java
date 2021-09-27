@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -205,17 +206,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     public void resize() {
         if (experimentIsRewardTermsOn) {
-            rowsWrapper.getChildren()
-                .map(Component::getId)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(rewardTermsRows::get)
-                .forEach(termComponent -> {
-                    if (termComponent instanceof RewardFunctionEditorRow) {
-                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
-                        row.resize();
-                    }
-                });
+            allComponentsRows().forEach(RewardTermRow::resize);
         } else {
             rewardFunctionEditorRow.resize();
         }
@@ -223,21 +214,7 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
 
     public boolean isValidForTraining() {
         if (experimentIsRewardTermsOn) {
-            Boolean editorRowsHaveErrors = rowsWrapper.getChildren()
-                .map(Component::getId)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .map(rewardTermsRows::get)
-                .filter(termComponent -> {
-                    if (termComponent instanceof RewardFunctionEditorRow) {
-                        RewardFunctionEditorRow row = (RewardFunctionEditorRow) termComponent;
-                        return row.getRewardFunctionErrorsSize() > 0;
-                    }
-                    return false;
-                })
-                .findAny()
-                .isPresent();
-                
+            boolean editorRowsHaveErrors = allComponentsRows().anyMatch(RewardTermRow::hasErrors);
             return !editorRowsHaveErrors && loadTermsFromComponent().size() > 0;
         }
         return !rewardFunctionEditorRow.getRewardFunctionValue().isEmpty()
@@ -306,13 +283,17 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
         experiment.setRewardFunction(rewardFunction);
     }
 
-    private List<RewardTerm> loadTermsFromComponent() {
-        List<RewardTerm> terms = new ArrayList<>();
-        rowsWrapper.getChildren()
+    private Stream<RewardTermRow> allComponentsRows() {
+        return rowsWrapper.getChildren()
                 .map(Component::getId)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(rewardTermsRows::get)
+                .map(rewardTermsRows::get);
+    }
+
+    private List<RewardTerm> loadTermsFromComponent() {
+        List<RewardTerm> terms = new ArrayList<>();
+        allComponentsRows()
                 .map(termComponent -> termComponent.convertToValueIfValid(terms.size()))
                 .filter(Optional::isPresent)
                 .map(Optional::get)

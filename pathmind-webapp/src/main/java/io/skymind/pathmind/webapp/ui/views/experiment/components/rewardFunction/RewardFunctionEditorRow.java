@@ -152,4 +152,10 @@ public class RewardFunctionEditorRow extends CustomField<RewardTerm> implements 
         return Optional.empty();
     }
 
+
+    @Override
+    public boolean hasErrors() {
+        return this.getRewardFunctionErrorsSize() > 0;
+    }
+
 }

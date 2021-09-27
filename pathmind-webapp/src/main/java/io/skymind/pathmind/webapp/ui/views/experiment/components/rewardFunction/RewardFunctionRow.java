@@ -21,8 +21,6 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
-import javax.swing.text.html.Option;
-
 public class RewardFunctionRow extends CustomField<RewardTerm> implements RewardTermRow {
 
     private static final String goalOperatorSelectThemeNames = "small align-center";
