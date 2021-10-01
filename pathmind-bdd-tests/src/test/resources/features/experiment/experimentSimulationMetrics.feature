@@ -51,7 +51,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics are clickable
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'true'
     When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'
