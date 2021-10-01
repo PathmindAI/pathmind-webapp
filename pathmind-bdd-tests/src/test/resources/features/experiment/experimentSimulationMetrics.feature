@@ -13,7 +13,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics block is shown
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Check that simulation metrics block is shown
     Then Check running experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
@@ -37,7 +37,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics block is shown for archived experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Click archive button for current experiment
     When In confirmation dialog click in 'Archive' button
