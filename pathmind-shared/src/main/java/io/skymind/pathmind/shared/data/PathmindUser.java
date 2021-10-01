@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
+public class PathmindUser extends Data implements DeepCloneableInterface<PathmindUser> {
     private long id;
     private String email;
     private String password;
