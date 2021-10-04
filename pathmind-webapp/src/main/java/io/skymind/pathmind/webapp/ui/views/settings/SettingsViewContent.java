@@ -1,9 +1,11 @@
 package io.skymind.pathmind.webapp.ui.views.settings;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Tag;
@@ -30,6 +32,7 @@ import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -122,7 +125,7 @@ public class SettingsViewContent extends LitTemplate {
     private Boolean isPaidUser = false;
     private Boolean isInternalUser = false;
     private Boolean hideSaveButton = false;
-    private Map<Select<String>, String> settingsList = new HashMap<Select<String>, String>();
+    private Map<Select<String>, String> settingsList = new TreeMap<>((select1, select2) -> StringUtils.compareIgnoreCase(select1.getValue(), select2.getValue()));
 
     @Autowired
     public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator) {
