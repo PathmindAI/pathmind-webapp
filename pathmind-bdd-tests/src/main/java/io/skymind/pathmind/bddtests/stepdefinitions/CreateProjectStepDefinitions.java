@@ -69,6 +69,11 @@ public class CreateProjectStepDefinitions {
         newExperimentSteps.clickProjectSaveDraftBtn();
     }
 
+    @When("^Click new experiment reward terms beta switch$")
+    public void switchToRewardTermsBeta() {
+        newExperimentV2Steps.switchToRewardTermsBeta();
+    }
+
     @When("^Create new CoffeeShop project with 4 variables reward function$")
     public void createNewProjectWithModelAnd4VariablesReward() {
         createNewProjectWithModelAndDraftExperiment();

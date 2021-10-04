@@ -28,7 +28,7 @@ Feature: Experiment ALP
     Examples:
       | project name    | model                                 | reward function file                                | ALP                                   | alp file name             |
       | AutotestProject | MoonLanding/MoonLanding.zip           | MoonLanding/MoonLandingRewardFunction.txt           | MoonLanding/MoonLanding.alp           | moonLanding.alp           |
-      | AutotestProject | CoffeeShop/CoffeeShop.zip             | CoffeeShop/CoffeeShopRewardFunction.txt             | CoffeeShop/CoffeeShop.alp             | coffeeshop.alp            |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip             | CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt  | CoffeeShop/CoffeeShop.alp             | coffeeshop.alp            |
       | AutotestProject | SimpleStochastic/SimpleStochastic.zip | SimpleStochastic/SimpleStochasticRewardFunction.txt | SimpleStochastic/SimpleStochastic.alp | simplestochasticmodel.alp |
       | AutotestProject | ProductDelivery/ProductDelivery.zip   | ProductDelivery/ProductDeliveryRewardFunction.txt   | ProductDelivery/ProductDelivery.alp   | productdelivery.alp       |
       | AutotestProject | Warehouse/Warehouse.zip               | Warehouse/WarehouseRewardFunction.txt               | Warehouse/Warehouse.alp               | warehousepathminddemo.alp |
