@@ -42,7 +42,8 @@ public class ExecutionEnvironmentManager {
                 BatchMode.COMPLETE_EPISODES,
                 200,
                 4,
-                0);
+                0,
+                1);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

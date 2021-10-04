@@ -239,7 +239,8 @@
     padding: 0 var(--lumo-space-s);
 }
 
-.new-experiment-view settings-view-content .grid-wrapper vaadin-select {
+.new-experiment-view settings-view-content .grid-wrapper vaadin-select,
+.new-experiment-view settings-view-content .grid-wrapper vaadin-integer-field {
     flex: 1 0 auto;
 }
 
