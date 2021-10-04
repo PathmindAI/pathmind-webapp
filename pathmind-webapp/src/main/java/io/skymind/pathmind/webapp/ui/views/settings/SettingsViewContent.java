@@ -13,6 +13,7 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
@@ -105,6 +106,9 @@ public class SettingsViewContent extends LitTemplate {
 
     @Id("batchSizeCB")
     private Select<String> batchSize;
+
+    @Id("rewardBalancePeriodField")
+    private IntegerField rewardBalancePeriodField;
 
     @Id("saveBtn")
     private Button saveBtn;
@@ -339,6 +343,10 @@ public class SettingsViewContent extends LitTemplate {
         batchSize.setItems(batchSizes);
         batchSize.setLabel(settingsList.get(batchSize));
         batchSize.setValue(env.getTrainBatchSize() == 0 ? "no selection" : String.valueOf(env.getTrainBatchSize()));
+
+        // init reward balance period
+        rewardBalancePeriodField.setLabel("Reward Balance Period");
+        rewardBalancePeriodField.setValue(env.getRewardBalancePeriod());
     }
 
     public void saveSettings() {
@@ -378,6 +386,7 @@ public class SettingsViewContent extends LitTemplate {
         return settingsList.entrySet().stream()
                 .filter(e -> e.getKey().getValue() != null)
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining(", ")) +
+                "Reward Balance Period: " + rewardBalancePeriodField.getValue();
     }
 }

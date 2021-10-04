@@ -609,6 +609,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
             instructions.add(var("TRAIN_BATCH_SIZE", String.valueOf(job.getEnv().getTrainBatchSize())));
         }
 
+        if (job.getEnv().getRewardBalancePeriod() != 1) {
+            instructions.add(var("REWARD_BALANCE_PERIOD", String.valueOf(job.getEnv().getRewardBalancePeriod())));
+        }
+
         if (job.getEnv().isLongerTraining()) {
             instructions.add(var("MAX_ITERATIONS", "2000"));
             instructions.add(var("EPISODE_REWARD_RANGE", "0.005"));

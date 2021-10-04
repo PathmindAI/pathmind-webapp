@@ -1,3 +1,7 @@
+:host {
+  line-height: 1;
+}
+
 :host([value=""]:not([label="None"])) {
   display: none;
 }
