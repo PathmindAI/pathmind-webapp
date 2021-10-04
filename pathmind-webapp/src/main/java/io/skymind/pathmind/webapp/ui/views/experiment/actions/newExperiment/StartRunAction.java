@@ -6,6 +6,8 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentStartTrainingBusEven
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.experiment.utils.ExperimentCapLimitVerifier;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class StartRunAction {
 
@@ -17,15 +19,16 @@ public class StartRunAction {
         newExperimentView.updateExperimentFromComponents();
         newExperimentView.saveAdvancedSettings();
         Experiment newExperiment = newExperimentView.getExperiment();
-        if (!newExperimentView.getSettingsText().isEmpty()) {
+        final String settingsText = newExperimentView.getSettingsText();
+        if (StringUtils.isNotEmpty(settingsText)) {
             String userNotes = newExperiment.getUserNotes();
-            userNotes += "\n---Advanced Settings---\n" + newExperimentView.getSettingsText();
+            userNotes += "\n---Advanced Settings---\n" + settingsText;
             newExperiment.setUserNotes(userNotes);
         }
         newExperimentView.getExperimentDAO().saveExperiment(newExperiment);
         newExperimentView.getTrainingService().startRun(newExperiment);
         newExperimentView.getSegmentIntegrator().startTraining();
-        if (!org.apache.commons.collections4.CollectionUtils.isEqualCollection(
+        if (!CollectionUtils.isEqualCollection(
                 newExperiment.getModelObservations(),
                 newExperiment.getSelectedObservations())) {
             newExperimentView.getSegmentIntegrator().observationsSelected();
