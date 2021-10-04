@@ -338,16 +338,19 @@ public class ExperimentUtils {
         for (int i = 0; i < rewardSnippets.size(); i++) {
             String varName = String.format("rewardTermsRaw[%d] +=", i);
             for(String line: rewardSnippets.get(i).split("\n")) {
-                if (line.trim().startsWith("reward +=")) {
-                    line = line.replaceFirst("reward \\+=", varName);
-                } else if (line.trim().startsWith("reward -=")) {
-                    line = line.replaceFirst("reward \\-=", "");
+                if (line.trim().startsWith("//") || StringUtils.trimToEmpty(line).isEmpty()) {
+                    continue;
+                }
+                if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward+=")) {
+                    line = line.replaceFirst("reward[\\s\\t]*\\+=", varName);
+                } else if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward-=")) {
+                    String start = line.substring(0, line.indexOf("reward"));
+                    line = line.replaceFirst("reward[\\s\\t]*\\-=", "");
                     int index = line.lastIndexOf(";");
-                    line = varName + " -1*(" + line.substring(0, index).trim() + ")" + line.substring(index).trim();
+                    line = start + varName + " -1*(" + line.substring(0, index).trim() + ")" + line.substring(index).trim();
                 }
                 tempRewardTermsSnippet.add(line);
             }
-//            tempRewardTermsSnippet.add("//----------------------------------");
         }
         return String.join("\n", tempRewardTermsSnippet);
     }
