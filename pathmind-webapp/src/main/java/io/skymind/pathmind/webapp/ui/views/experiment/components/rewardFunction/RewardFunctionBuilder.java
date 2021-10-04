@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -281,6 +282,10 @@ public class RewardFunctionBuilder extends VerticalLayout implements ExperimentC
     private void setRewardFunctionToExperiment() {
         String rewardFunction = rewardFunctionEditorRow.getRewardFunctionValue();
         experiment.setRewardFunction(rewardFunction);
+
+        String generatedRewardFunction = ExperimentUtils.collectRewardTermsToSnippet(Collections.singletonList(rewardFunction));
+        experiment.setRewardFunctionFromTerms(generatedRewardFunction);
+
     }
 
     private Stream<RewardTermRow> allComponentsRows() {
