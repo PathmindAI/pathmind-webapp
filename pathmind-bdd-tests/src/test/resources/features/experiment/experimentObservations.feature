@@ -30,6 +30,7 @@ Feature: Experiment observations
       | project name    | model                       | reward function file                      | observations                   |
       | AutotestProject | MoonLanding/MoonLanding.zip | MoonLanding/MoonLandingRewardFunction.txt | powerXYZ,moduleXYZ,distanceXYZ |
 
+
   Scenario Outline: Check CoffeeShop.zip observations checkboxes status
     Given Login to the pathmind
     When Open projects page
@@ -59,8 +60,8 @@ Feature: Experiment observations
     Then Check experiment '1' observations list contains payBillQueueSize,orderQueueSize
 
     Examples:
-      | project name    | model                     | reward function file                    | observations                                                                       |
-      | AutotestProject | CoffeeShop/CoffeeShop.zip | CoffeeShop/CoffeeShopRewardFunction.txt | orderQueueSize,collectQueueSize,payBillQueueSize,kitchenCleanlinessLevel,timeOfDay |
+      | project name    | model                     | reward function file                               | observations                                                                       |
+      | AutotestProject | CoffeeShop/CoffeeShop.zip | CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt | orderQueueSize,collectQueueSize,payBillQueueSize,kitchenCleanlinessLevel,timeOfDay |
 
   Scenario Outline: Check ProductDelivery.zip observations checkboxes status
     Given Login to the pathmind
