@@ -60,6 +60,7 @@ public class AWSTrainingService extends TrainingService {
         }
 
         final JobSpec.JobSpecBuilder spec = JobSpec.builder()
+                .reward(exp.getRewardFunctionFromTerms())
                 .userId(exp.getProject().getPathmindUserId())
                 .modelId(model.getId())
                 .experimentId(exp.getId())
@@ -93,9 +94,6 @@ public class AWSTrainingService extends TrainingService {
 
         if (exp.isWithRewardTerms()) {
             spec.termsWeight(ExperimentUtils.rewardTermsWeights(exp));
-            spec.reward(exp.getRewardFunctionFromTerms());
-        } else {
-            spec.reward(exp.getRewardFunction());
         }
 
         return executionProvider.execute(spec.build());
