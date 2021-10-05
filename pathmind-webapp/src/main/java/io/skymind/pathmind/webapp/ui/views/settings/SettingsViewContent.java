@@ -380,6 +380,7 @@ public class SettingsViewContent extends LitTemplate {
         env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
         env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
         env.setTrainBatchSize(batchSize.getValue().equals("no selection") ? 0 : Integer.valueOf(batchSize.getValue()));
+        env.setRewardBalancePeriod(rewardBalancePeriodField.getValue() != null ? rewardBalancePeriodField.getValue() : 1);
     }
 
     public String getSettingsText() {
