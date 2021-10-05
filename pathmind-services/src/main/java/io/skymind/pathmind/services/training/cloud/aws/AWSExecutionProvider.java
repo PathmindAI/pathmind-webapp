@@ -566,7 +566,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
-                var("REWARD_SNIPPET", job.getReward()),
                 var("REWARD_TERMS_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("SIMULATION_PARAMETER_SNIPPET", "file:" + SIM_PARAM_SNIPPET_FILE),
