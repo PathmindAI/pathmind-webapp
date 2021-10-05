@@ -52,6 +52,7 @@ public class BetaFeatureSettingsViewContent extends LitTemplate {
             getElement().setProperty("withRewardTerms", newRewardTermsOn);
             if (newRewardTermsOn) {
                 segmentIntegrator.enabledRewardTermsToggle();
+                getUI().ifPresent(ui -> ui.getPage().getHistory().back());
             } else {
                 segmentIntegrator.disabledRewardTermsToggle();
             }
