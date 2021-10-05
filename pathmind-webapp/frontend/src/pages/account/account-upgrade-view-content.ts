@@ -11,6 +11,8 @@ class AccountUpgradeViewContent extends LitElement {
   stripeObj;
   @property({type: String})
   userApiKey = "";
+  @property({type: Boolean})
+  isTrialUser = true;
 
   render() {
     return html`
@@ -26,6 +28,7 @@ class AccountUpgradeViewContent extends LitElement {
             justify-content: center;
             align-items: stretch;
             width: 100%;
+            padding: 0 var(--lumo-space-m);
         }
         account-upgrade-view-content .header {
             margin: 0 auto var(--lumo-space-xl);
@@ -34,14 +37,16 @@ class AccountUpgradeViewContent extends LitElement {
             margin: 0 auto var(--lumo-space-xxs);
         }
         account-upgrade-view-content .inner-content {
-          flex: 1 0 calc((100% - var(--lumo-space-l) * 3) / 4);
-          width: calc((100% - var(--lumo-space-l) * 3) / 4);
+          flex: 1 0 calc((100% - var(--lumo-space-m) * 3) / 4);
+          max-width: 340px;
+          width: calc((100% - var(--lumo-space-m) * 3) / 4);
           font-size: var(--lumo-font-size-m);
-          padding: var(--lumo-space-l);
+          padding: var(--lumo-space-m);
           border: 1px solid var(--pm-grey-color-lighter);
           margin-top: 0;
         }
-        account-upgrade-view-content .inner-content > :last-child {
+        account-upgrade-view-content .inner-content > a,
+        account-upgrade-view-content .inner-content > vaadin-button {
             width: 100%;
             margin: auto auto var(--lumo-space-m);
         }
@@ -56,26 +61,27 @@ class AccountUpgradeViewContent extends LitElement {
                 padding: var(--lumo-space-m) var(--lumo-space-l) var(--lumo-space-l);
             }
             account-upgrade-view-content > vaadin-horizontal-layout {
-                flex-direction: column;
+                flex-wrap: wrap;
             }
             account-upgrade-view-content .inner-content {
-                flex: 1 1 auto;
+                flex: 1 0 280px;
                 max-width: 100%;
                 width: 100%;
                 margin: 0;
             }
+            account-upgrade-view-content .inner-content:nth-child(1),
             account-upgrade-view-content .inner-content:nth-child(2),
             account-upgrade-view-content .inner-content:nth-child(3),
             account-upgrade-view-content .inner-content:nth-child(4) {
-                margin: var(--lumo-space-xxl) 0 0 0;
+                margin: var(--lumo-space-m);
             }
         }
         account-upgrade-view-content .card-header {
             position: relative;
             align-items: center;
-            width: calc(100% + 2 * var(--lumo-space-l));
-            padding: var(--lumo-space-l) var(--lumo-space-l);
-            margin: calc(-1 * var(--lumo-space-l)) calc(-1 * var(--lumo-space-l)) 0;
+            width: calc(100% + 2 * var(--lumo-space-m));
+            padding: var(--lumo-space-m) var(--lumo-space-m);
+            margin: calc(-1 * var(--lumo-space-m)) calc(-1 * var(--lumo-space-m)) 0;
             border-radius: var(--lumo-border-radius) var(--lumo-border-radius) 0 0;
         }
         account-upgrade-view-content .popular-tag {
@@ -162,18 +168,25 @@ class AccountUpgradeViewContent extends LitElement {
             margin: 0 auto;
         }
         account-upgrade-view-content .price-cont {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: var(--lumo-font-size-xl);
-            line-height: 1.3;
-          margin: var(--lumo-space-l) auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          font-size: var(--lumo-font-size-xl);
+          line-height: 1.1;
+          margin: var(--lumo-space-l) auto var(--lumo-space-s);
         }
         account-upgrade-view-content .price {
             font-size: 4rem;
             font-family: var(--lumo-font-family-header);
             font-weight: 500;
             letter-spacing: -.03rem;
+            margin-right: var(--lumo-space-xxxs);
+        }
+        account-upgrade-view-content .price-period {
+            font-size: var(--lumo-font-size-s);
+            font-family: var(--lumo-font-family-header);
+            font-weight: 500;
+            letter-spacing: -.02rem;
             margin-right: var(--lumo-space-xxxs);
         }
         account-upgrade-view-content .additional-info {
@@ -184,11 +197,12 @@ class AccountUpgradeViewContent extends LitElement {
         account-upgrade-view-content .features {
             text-align: left;
             padding: 0;
-            margin: var(--lumo-space-m) 0 var(--lumo-space-xl) var(--lumo-space-l);
+            margin: var(--lumo-space-m) 0 var(--lumo-space-m) var(--lumo-space-m);
         }
         account-upgrade-view-content li {
             list-style: none;
             position: relative;
+            font-size: var(--lumo-font-size-s);
             padding-left: var(--lumo-font-size-xl);
             margin-bottom: var(--lumo-space-s);
         }
@@ -218,6 +232,17 @@ class AccountUpgradeViewContent extends LitElement {
           color: var(--lumo-secondary-text-color);
           margin-top: var(--lumo-space-xl);
         }
+        account-upgrade-view-content .pro-service-wrapper {
+          align-items: center;
+          max-width: 800px;
+          padding: var(--lumo-space-l);
+          margin: calc(var(--lumo-space-xxl) * 1.25) auto;
+          border-radius: var(--lumo-border-radius-m);
+          box-shadow: 0 8px 26px rgb(0 0 0 / 14%);
+        }
+        account-upgrade-view-content .pro-service-wrapper h2 {
+          margin: 0 auto var(--lumo-space-m);
+        }
       </style>
     <div class="header">
       <h1>Subscription Plans</h1>
@@ -226,51 +251,52 @@ class AccountUpgradeViewContent extends LitElement {
     <vaadin-horizontal-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
-                <h2 class="title">Basic</h2>
-                <span class="details">For Students and Hobbyists</span>
+                <h2 class="title">Trial</h2>
+                <span class="details">For Hobbyists</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span class="price">Free</span>
+                <span class="price">$0</span>
+                <span class="price-period">per month</span>
             </span>
             <ul class="features">
-                <li><b>One Concurrent</b> Experiment</li>
-                <li>Unlimited Policy Export</li>
+                <li>1 Concurrent Experiment</li>
+                <li>Unlimited Policy File Export</li>
             </ul>
-            <vaadin-button id="freeBtn" theme="tertiary" disabled>Current plan</vaadin-button>
+            ${this.isTrialUser ? html`<vaadin-button id="freeBtn" theme="tertiary" disabled>Current Plan</vaadin-button>` : null}
         </vaadin-vertical-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
-                <h2 class="title">Educational</h2>
-                <span class="details">For Students & Academics*</span>
+                <h2 class="title">Academic</h2>
+                <span class="details">For Students & Academics</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$99</span></span>
+                <span class="price">$99</span>
+                <span class="price-period">per month</span>
             </span>
             <ul class="features">
-                <li><b>Unlimited Concurrent</b> Experiments</li>
-                <li>Unlimited Policy Export</li>
-                <li>Technical Support Included</li>
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
             </ul>
-            <i class="additional-info">*Promo code required. Contact us for more info.</i>
-            <a href="${this.contactLink}">
-                <vaadin-button id="studentBtn" theme="primary">Get in touch</vaadin-button>
-            </a>
+            ${this.isTrialUser ? html`<a href="${this.contactLink}">
+                <vaadin-button id="studentBtn" theme="primary">Contact Us</vaadin-button>
+            </a>` : null}
         </vaadin-vertical-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
-                <h2 class="title">Professional</h2>
-                <span class="details">For Professional Simulation Engineers</span>
+                <h2 class="title">Pro</h2>
+                <span class="details">For Simulation Engineers</span>
                 <span class="popular-tag">POPULAR</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$499</span></span>
+              <span class="price">$499</span>
+              <span class="price-period">per month</span>
             </span>
             <ul class="features">
-                <li><b>Unlimited Concurrent</b> Experiments</li>
-                <li>Unlimited Policy Export</li>
-                <li>Technical Support Included</li>
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
+                <li>Premium Technical Support</li>
             </ul>
-            <vaadin-button id="proBtn" theme="primary" @click="${this.handleProClick}">Upgrade now</vaadin-button>
+            <vaadin-button id="proBtn" theme="primary" @click="${this.handleProClick}">Upgrade Now</vaadin-button>
         </vaadin-vertical-layout>
         <vaadin-vertical-layout class="inner-content">
             <vaadin-vertical-layout class="card-header">
@@ -278,20 +304,27 @@ class AccountUpgradeViewContent extends LitElement {
                 <span class="details">For Consultancies & Corporate Teams</span>
             </vaadin-vertical-layout>
             <span class="price-cont">
-                <span><span class="price">$999</span></span>
+                <span class="price">$999</span>
+                <span class="price-period">per month</span>
             </span>
             <ul class="features">
-                <li><b>Unlimited Concurrent</b> Experiments</li>
-                <li>Unlimited Policy Export</li>
-                <li>Technical Support Included</li>
-                <li>Policy Serving Enabled</li>
-                <li>RL Advisory and Training</li>
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
+                <li>Premium Technical Support</li>
+                <li>Full Deployment Options Available</li>
             </ul>
-            <a href="${this.contactLink}">
-                <vaadin-button id="enterpriseBtn" theme="primary">Get in touch</vaadin-button>
-            </a>
+            ${this.isTrialUser ? html`<a href="${this.contactLink}">
+                <vaadin-button id="enterpriseBtn" theme="primary">Contact Us</vaadin-button>
+            </a>` : null}
         </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
+    <vaadin-vertical-layout class="pro-service-wrapper">
+        <h2>Professional Services</h2>
+        <p>Don’t have a simulation model? Pathmind can build a simulation for your real-world use case. Our team is also available for proof of concepts to showcase reinforcement learning to your organization.</p>
+        <a href="${this.contactLink}">
+          <vaadin-button id="proServicesBtn" theme="primary">Contact Us</vaadin-button>
+        </a>
+    </vaadin-vertical-layout>
     `;
   }
 
