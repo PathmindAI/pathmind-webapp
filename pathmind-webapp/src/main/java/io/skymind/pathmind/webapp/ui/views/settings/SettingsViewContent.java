@@ -125,7 +125,7 @@ public class SettingsViewContent extends LitTemplate {
     private Boolean isPaidUser = false;
     private Boolean isInternalUser = false;
     private Boolean hideSaveButton = false;
-    private Map<Select<String>, String> settingsList = new TreeMap<>((select1, select2) -> StringUtils.compareIgnoreCase(select1.getValue(), select2.getValue()));
+    private final Map<Select<String>, String> settingsList = new HashMap<>();
 
     @Autowired
     public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator) {
@@ -386,10 +386,13 @@ public class SettingsViewContent extends LitTemplate {
         if (!isPaidUser && !isInternalUser) {
             return "";
         }
-        return settingsList.entrySet().stream()
+        List<String> settingsStrings = settingsList.entrySet().stream()
                 .filter(e -> e.getKey().getValue() != null)
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
-                .collect(Collectors.joining(", ")) +
-                "Reward Balance Period: " + rewardBalancePeriodField.getValue();
+                .sorted()
+                .collect(Collectors.toList());
+        settingsStrings.add("Reward Balance Period: " + rewardBalancePeriodField.getValue());
+        settingsStrings.sort(StringUtils::compareIgnoreCase);
+        return String.join(", ", settingsStrings);
     }
 }
