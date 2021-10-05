@@ -194,9 +194,6 @@ pipeline {
                     steps {                        
                         script {
                             MA_BRANCH = env.BRANCH_NAME
-                            if (env.BRANCH_NAME == 'staging') {
-                                MA_BRANCH = "dev"
-                            }
                         }
                         sh "rm -rf ${WORKSPACE}/nativerl || true"
                         sh "git clone https://foo:${env.GH_PAT}@github.com/SkymindIO/nativerl.git ${WORKSPACE}/nativerl"                        
