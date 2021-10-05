@@ -82,7 +82,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private boolean isNeedsSaving = false;
     private boolean isPythonModel = false;
     private boolean hasRunningExperiments = false;
-    private boolean isBasicPlanUser = true;
+    private boolean isTrialPlanUser = true;
 
     private final int allowedRunsNoVerified;
 
@@ -271,8 +271,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         Model model = experiment.getModel();
         boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
         return ModelUtils.isValidModel(model)
-                && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
-                && (!isBasicPlanUser || (isBasicPlanUser && !model.isActionmask()))
+                && (!isTrialPlanUser || (isTrialPlanUser && !hasRunningExperiments))
+                && (!isTrialPlanUser || (isTrialPlanUser && !model.isActionmask()))
                 && (isPyModel || rewardFunctionBuilder.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
@@ -323,7 +323,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void updateComponents() {
         super.updateComponents();
-        isBasicPlanUser = userService.getCurrentUser().isBasicPlanUser();
+        isTrialPlanUser = userService.getCurrentUser().isTrialPlanUser();
         hasRunningExperiments = experimentDAO.getExperimentsWithRunStatusCountForUser(userService.getCurrentUserId(), RunStatus.RUNNING_STATES_CODES) > 0;
         splitButton.setVisible(!experiment.isArchived());
         favoriteStar.setValue(experiment.isFavorite());
@@ -331,8 +331,8 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
-        upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
-        upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && experiment.getModel().isActionmask());
+        upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && hasRunningExperiments);
+        upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && experiment.getModel().isActionmask());
         betaRewardTermsBanner.setVisible(!userService.getCurrentUser().isRewardTermsOn());
     }
 
