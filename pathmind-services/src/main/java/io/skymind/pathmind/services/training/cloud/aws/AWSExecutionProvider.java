@@ -599,7 +599,8 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("TRAIN_BATCH_MODE", job.getEnv().getBatchMode().toString()),
                 var("ROLLOUT_FRAGMENT_LENGTH", String.valueOf(job.getEnv().getRolloutFragmentLength())),
                 var("NUM_WORKERS", String.valueOf(job.getEnv().getNumWorker())),
-                var("NUM_CPUS", String.valueOf(2))
+                var("NUM_CPUS", String.valueOf(2)),
+                var("USE_AUTO_NORM", String.valueOf(job.getEnv().isUseAutoNorm()))
         ));
 
         if (StringUtils.isNotEmpty(job.getTermsWeight())) {
