@@ -420,6 +420,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_7_4:
             case VERSION_8_7_5:
             case VERSION_8_7_6:
+            case VERSION_8_7_7:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
