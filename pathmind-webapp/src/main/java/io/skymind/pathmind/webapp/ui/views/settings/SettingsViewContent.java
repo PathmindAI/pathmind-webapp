@@ -392,8 +392,10 @@ public class SettingsViewContent extends LitTemplate {
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
                 .sorted()
                 .collect(Collectors.toList());
-        settingsStrings.add("Reward Balance Period: " + env.getRewardBalancePeriod());
-        settingsStrings.sort(StringUtils::compareIgnoreCase);
+        if (isInternalUser) {
+            settingsStrings.add("Reward Balance Period: " + env.getRewardBalancePeriod());
+            settingsStrings.sort(StringUtils::compareIgnoreCase);
+        }
         return String.join(", ", settingsStrings);
     }
 }
