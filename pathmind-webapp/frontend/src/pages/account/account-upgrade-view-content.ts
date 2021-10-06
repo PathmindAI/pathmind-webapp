@@ -21,7 +21,8 @@ class AccountUpgradeViewContent extends LitElement {
             box-sizing: border-box;
             width: 100%;
             justify-content: center;
-            padding: var(--lumo-space-xl) var(--lumo-space-m);
+            background: white;
+            padding: var(--lumo-space-xl) var(--lumo-space-xxl);
             text-align: center;
         }
         account-upgrade-view-content > vaadin-horizontal-layout {
@@ -38,11 +39,10 @@ class AccountUpgradeViewContent extends LitElement {
         }
         account-upgrade-view-content .inner-content {
           flex: 1 0 calc((100% - var(--lumo-space-m) * 3) / 4);
-          max-width: 340px;
+          max-width: 310px;
           width: calc((100% - var(--lumo-space-m) * 3) / 4);
           font-size: var(--lumo-font-size-m);
           padding: var(--lumo-space-m);
-          border: 1px solid var(--pm-grey-color-lighter);
           margin-top: 0;
         }
         account-upgrade-view-content .inner-content > a,
@@ -53,7 +53,7 @@ class AccountUpgradeViewContent extends LitElement {
         account-upgrade-view-content .inner-content:nth-child(2),
         account-upgrade-view-content .inner-content:nth-child(3),
         account-upgrade-view-content .inner-content:nth-child(4) {
-          margin: 0 0 0 var(--lumo-space-l);
+          margin: 0 0 0 var(--lumo-space-m);
         }
         @media screen and (max-width: 1023px) {
             account-upgrade-view-content {
@@ -240,8 +240,89 @@ class AccountUpgradeViewContent extends LitElement {
           border-radius: var(--lumo-border-radius-m);
           box-shadow: 0 8px 26px rgb(0 0 0 / 14%);
         }
-        account-upgrade-view-content .pro-service-wrapper h2 {
-          margin: 0 auto var(--lumo-space-m);
+        account-upgrade-view-content h2 {
+          margin: 0 auto;
+        }
+        account-upgrade-view-content .pro-service-wrapper p {
+          margin: var(--lumo-space-m) auto;
+        }
+        account-upgrade-view-content .feature-breakdown-wrapper {
+          align-items: center;
+          background: var(--pm-app-bg-color);
+          padding-top: calc(var(--lumo-space-xxl) * 3);
+          margin: calc(var(--lumo-space-xxl) * -1.5) auto calc(var(--lumo-space-xxl) * 1.5);
+          box-shadow: 0 2rem 1.5rem var(--pm-app-bg-color);
+        }
+        account-upgrade-view-content .feature-breakdown-table {
+          max-width: 1000px;
+          width: 80vw;
+          margin: var(--lumo-space-l) auto;
+        }
+        account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout {
+          align-items: center;
+          width: 100%;
+          padding: var(--lumo-space-xs);
+        }
+        account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout:not(.header-row):not(.section-row):nth-child(odd) {
+          background-color: var(--lumo-primary-color-10pct);
+        }
+        account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout div:first-child {
+          flex: 1 0 20%;
+          text-align: left;
+        }
+        account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout div:not(:first-child) {
+          flex: 0 0 20%;
+        }
+        account-upgrade-view-content .feature-breakdown-table .header-row {
+          border-bottom: 1px solid var(--pm-grey-color-dark);
+        }
+        account-upgrade-view-content .feature-breakdown-table .header-row h4 {
+          margin: 0;
+        }
+        account-upgrade-view-content .feature-breakdown-table .header-row span {
+          font-size: var(--lumo-font-size-s);
+        }
+        account-upgrade-view-content .feature-breakdown-table h3 {
+          margin: 0;
+        }
+        account-upgrade-view-content .feature-breakdown-table .section-row {
+          margin: var(--lumo-space-l) 0 var(--lumo-space-xs);
+        }
+        account-upgrade-view-content iron-icon {
+          --iron-icon-width: var(--lumo-font-size-l);
+          --iron-icon-height: var(--lumo-font-size-l);
+        }
+        account-upgrade-view-content iron-icon[icon="vaadin:close"] {
+          color: var(--pm-danger-color);
+        }
+        account-upgrade-view-content iron-icon[icon="vaadin:check"] {
+          color: var(--pm-friendly-color);
+        }
+        account-upgrade-view-content .feature-breakdown-table a {
+          text-decoration: underline;
+        }
+        account-upgrade-view-content .feature-breakdown-table a:hover {
+          text-decoration: none;
+        }
+        @media screen and (max-width: 767px) {
+          account-upgrade-view-content {
+            padding: var(--lumo-space-m) 0 var(--lumo-space-l);
+          }
+          account-upgrade-view-content .feature-breakdown-table {
+            max-width: 1000px;
+            width: 100%;
+            font-size: var(--lumo-font-size-xs);
+            margin: var(--lumo-space-l) auto;
+          }
+          account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout {
+            padding: var(--lumo-space-xxs);
+          }
+          account-upgrade-view-content .feature-breakdown-table vaadin-horizontal-layout div:not(:first-child) {
+            flex: 0 0 18%;
+          }
+          account-upgrade-view-content .pro-service-wrapper {
+            margin: calc(var(--lumo-space-xxl) * 1.25) var(--lumo-space-m);
+          }
         }
       </style>
     <div class="header">
@@ -318,12 +399,165 @@ class AccountUpgradeViewContent extends LitElement {
             </a>` : null}
         </vaadin-vertical-layout>
     </vaadin-horizontal-layout>
+    <vaadin-vertical-layout class="feature-breakdown-wrapper">
+      <h2>Feature Breakdown</h2>
+      <vaadin-vertical-layout class="feature-breakdown-table">
+        <vaadin-horizontal-layout class="header-row">
+          <div></div>
+          <div><h4>Trial</h4><span>$0/mo</span></div>
+          <div><h4>Academic</h4><span>$99/mo</span></div>
+          <div><h4>Pro</h4><span>$499/mo</span></div>
+          <div><h4>Enterprise</h4><span>$999/mo</span></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout class="section-row">
+          <h3>Policy Training</h3>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Concurrent Experiments</div>
+          <div>1</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Policy File Export</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Share Experiments Publicly</div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Bulk Export Policies</div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Experiment Tracker</div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Action Masking</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Policy Freezing</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Longer Trainings</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Simulation Parameters</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Customize Neural Network Layers/Nodes</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Premium Technical Support</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+          <div><iron-icon icon="vaadin:check"></iron-icon></div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout class="section-row">
+          <div><h3>Policy Serving</h3>(Add-On)</div>
+          <div>+ $0/mo</div>
+          <div>+ $99/mo</div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Additional Seats (Policy Serving Only)</div>
+          <div>0</div>
+          <div>0</div>
+          <div>3</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Offline Exported Policies</div>
+          <div>0</div>
+          <div>1</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Online Concurrent Policy Servers</div>
+          <div>1</div>
+          <div>1</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Online API Calls</div>
+          <div>10/mo</div>
+          <div>1,000/mo</div>
+          <div>Unlimited</div>
+          <div>Unlimited</div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>Integration Support</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+        </vaadin-horizontal-layout>
+        <vaadin-horizontal-layout>
+          <div>SLA</div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div><iron-icon icon="vaadin:close"></iron-icon></div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+          <div>
+            <a href="${this.contactLink}">Contact Us</a>
+          </div>
+        </vaadin-horizontal-layout>
+      </vaadin-vertical-layout>
+    </vaadin-vertical-layout>
     <vaadin-vertical-layout class="pro-service-wrapper">
-        <h2>Professional Services</h2>
-        <p>Don’t have a simulation model? Pathmind can build a simulation for your real-world use case. Our team is also available for proof of concepts to showcase reinforcement learning to your organization.</p>
-        <a href="${this.contactLink}">
-          <vaadin-button id="proServicesBtn" theme="primary">Contact Us</vaadin-button>
-        </a>
+      <h2>Professional Services</h2>
+      <p>Don’t have a simulation model? Pathmind can build a simulation for your real-world use case. Our team is also available for proof of concepts to showcase reinforcement learning to your organization.</p>
+      <a href="${this.contactLink}">
+        <vaadin-button id="proServicesBtn" theme="primary">Contact Us</vaadin-button>
+      </a>
     </vaadin-vertical-layout>
     `;
   }
