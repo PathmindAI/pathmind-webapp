@@ -77,7 +77,7 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true)
                 .setSortable(false);
-        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
+        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false))
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
                 .setFlexGrow(1)
