@@ -40,6 +40,7 @@ public class ExecutionEnvironment {
     private int numWorker;
     private int trainBatchSize;
     private int rewardBalancePeriod;
+    private boolean useAutoNorm;
 
     public int getPBT_RUN_ITERATIONS() {
         return PBT_RUN_ITERATIONS == 0 ? RunConstants.PBT_RUN_ITERATIONS : PBT_RUN_ITERATIONS;

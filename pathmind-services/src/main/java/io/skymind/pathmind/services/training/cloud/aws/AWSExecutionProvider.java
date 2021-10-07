@@ -420,6 +420,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_8_7_4:
             case VERSION_8_7_5:
             case VERSION_8_7_6:
+            case VERSION_8_7_7:
                 instructions.addAll(Arrays.asList(
                         "unzip baseEnv.zip > /dev/null",
                         "rm baseEnv.zip",
@@ -566,7 +567,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
-                var("REWARD_SNIPPET", job.getReward()),
                 var("REWARD_TERMS_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("SIMULATION_PARAMETER_SNIPPET", "file:" + SIM_PARAM_SNIPPET_FILE),
@@ -598,7 +598,9 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("TRAIN_BATCH_MODE", job.getEnv().getBatchMode().toString()),
                 var("ROLLOUT_FRAGMENT_LENGTH", String.valueOf(job.getEnv().getRolloutFragmentLength())),
                 var("NUM_WORKERS", String.valueOf(job.getEnv().getNumWorker())),
-                var("NUM_CPUS", String.valueOf(2))
+                var("NUM_CPUS", String.valueOf(2)),
+                var("USE_AUTO_NORM", String.valueOf(job.getEnv().isUseAutoNorm())),
+                var("REWARD_BALANCE_PERIOD", String.valueOf(job.getEnv().getRewardBalancePeriod()))
         ));
 
         if (StringUtils.isNotEmpty(job.getTermsWeight())) {
@@ -607,11 +609,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
         }
 
         if (job.getEnv().getTrainBatchSize() != 0) {
+            // this condition is used because train_batch_size is optional in nativerl
+            // it is also used for a null check condition in python
+            // https://github.com/SkymindIO/nativerl/pull/378/files
             instructions.add(var("TRAIN_BATCH_SIZE", String.valueOf(job.getEnv().getTrainBatchSize())));
-        }
-
-        if (job.getEnv().getRewardBalancePeriod() != 1) {
-            instructions.add(var("REWARD_BALANCE_PERIOD", String.valueOf(job.getEnv().getRewardBalancePeriod())));
         }
 
         if (job.getEnv().isLongerTraining()) {
