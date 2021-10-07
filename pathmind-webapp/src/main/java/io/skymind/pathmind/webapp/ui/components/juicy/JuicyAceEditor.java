@@ -26,6 +26,7 @@ import io.skymind.pathmind.webapp.ui.components.juicy.theme.JuicyAceTheme;
 @JavaScript("./src/juicy-ace-editor/ace/theme/theme-pathmind.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-npm.min.js")
 @JsModule("./src/juicy-ace-editor/juicy-ace-editor-autocomplete.js")
+@JsModule("./src/juicy-ace-editor/juicy-ace-editor-placeholder.js")
 public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, String> implements HasSize, Focusable<JuicyAceEditor> {
     public JuicyAceEditor() {
         super("value", "", false);
@@ -37,6 +38,10 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
 
     public void setTheme(JuicyAceTheme theme) {
         this.getElement().setAttribute("theme", "ace/theme/" + theme);
+    }
+
+    public void setPlaceholder(String placeholder) {
+        getElement().executeJs("window.Pathmind.placeholder.setPlaceholder($0, $1)", getElement(), placeholder);
     }
 
     public void setAutoComplete(List<RewardVariable> rewardVariables) {
@@ -110,7 +115,6 @@ public class JuicyAceEditor extends AbstractSinglePropertyField<JuicyAceEditor, 
         JsonObject autocompleteOption = Json.createObject();
         autocompleteOption.put("caption", variable);
         autocompleteOption.put("value", variable);
-//        autocompleteOption.put("meta", "");
         return autocompleteOption;
     }
 }
