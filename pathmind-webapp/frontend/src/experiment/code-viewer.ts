@@ -12,10 +12,6 @@ class CodeViewer extends LitElement {
   comparisonCodeSnippet;
   @property({type: Boolean, reflect: true, attribute: "show-copy-button"})
   showCopyButton = true;
-  @property({type: Boolean, reflect: true, attribute: "show-border"})
-  showBorder = true;
-  @property({type: String})
-  rewardVariables = "";
 
   updated(changedProperties) {
     changedProperties.forEach((oldValue, name) => {
@@ -117,9 +113,6 @@ class CodeViewer extends LitElement {
             flex: 1;
             width: 100%;
             font-size: 0.8125rem;
-        }
-        :host([show-border]) {
-            border: 1px solid var(--pm-grey-color);
         }
         code {
             box-sizing: border-box;
