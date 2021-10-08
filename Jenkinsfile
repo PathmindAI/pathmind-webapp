@@ -27,6 +27,13 @@ def buildDockerImageMA(image_name, dockerfile, basedir, docker_tag) {
     //Dont quit if there is an error
     sh """
     set +x
+    #make sure the libraries for model analyzer are ready
+    if [ "${docker_tag}" == "prod" ]; then export namespace="default"; else export namespace="${docker_tag}"; fi
+    if [ "${docker_tag}" == "prod" ]; then export subdomain=""; else export subdomain="${docker_tag}."; fi
+    if [ "${docker_tag}" == "prod" ]; then export domain="app.pathmind.com"; else export domain="devpathmind.com"; fi
+    export apiuser="api"
+    export apipassword=`kubectl get secret apipassword -o=jsonpath='{.data.APIPASSWORD}' -n ${namespace} | base64 --decode`
+    curl -X PUT -u "${apiuser}:${apipassword}" https://${subdomain}${domain}/api/MAlib/${docker_tag}
     docker image ls | grep pathmind-ma | awk '{print \$3}' | xargs -I {} docker rmi {} -f
     docker build -t ${image_name} -f ${basedir}/${dockerfile} --build-arg S3BUCKET='${docker_tag}-model-analyzer-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${basedir}/
     """
