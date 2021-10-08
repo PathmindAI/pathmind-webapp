@@ -125,7 +125,9 @@ public class VersionController {
             .pathmindHelper(execEnv.getPathmindHelperVersion())
             .build();
 
-        if (oldLibVersion == null || !oldLibVersion.equals(libVersion)) {
+        // TODO - this updates all the libraries each time as a workaround for the issue here:
+        // https://github.com/SkymindIO/pathmind-webapp/discussions/3587
+        if (true || oldLibVersion == null || !oldLibVersion.equals(libVersion)) {
             SimpleDateFormat format = new SimpleDateFormat("MMddyyyy");
             String backupPath = libS3Path + "/backup_" + format.format(new Date());
             backupIfNecessary(libS3Path, VERSION_FILE, backupPath, VERSION_FILE);
