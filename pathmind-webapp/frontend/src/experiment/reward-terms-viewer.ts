@@ -10,8 +10,6 @@ class RewardTermsViewer extends LitElement {
   codeSnippet = "";
   @property({type: String})
   comparisonCodeSnippet;
-  @property({type: Boolean})
-  hideHeaderRow = false;
   @property({type: Array})
   rewardTermsList = [];
 
@@ -36,11 +34,11 @@ class RewardTermsViewer extends LitElement {
     const codeElement = this.shadowRoot.querySelector("code");
     let codeSnippet = "";
     this.rewardTermsList.forEach((rewardTerm, index) => {
-      codeSnippet += "Reward Term " + rewardTerm.index + ": ";
+      codeSnippet += "Reward Term " + index + ": ";
       if (rewardTerm.rewardSnippet.length <= 0) {
         // reward variable
         const goalText = rewardTerm.goalCondition === "LTE" ? "Minimize" : "Maximize";
-        codeSnippet += rewardTerm.rewardVariableIndex + goalText + " x " + rewardTerm.weight+"\n";
+        codeSnippet += rewardTerm.rewardVariable + goalText + " x " + rewardTerm.weight+"\n";
       } else {
         // custom input through editor row
         codeSnippet += rewardTerm.rewardSnippet;
@@ -48,6 +46,40 @@ class RewardTermsViewer extends LitElement {
     });
     this.codeSnippet = codeSnippet;
     codeElement.innerHTML = codeSnippet;
+  }
+
+  colorCode(snippet) {
+    const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
+    const numberRe = /[0-9]+/g;
+    let codeSnippet = snippet;
+
+    if (this.comparisonCodeSnippet) {
+        this.classList.add("comparison");
+    } else {
+        this.classList.remove("comparison");
+    }
+
+    if (this.codeSnippet && this.comparisonCodeSnippet && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
+      const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
+      let processedCodeSnippet = "";
+      codeDiff.forEach(part => {
+        if (part.removed) {
+          processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
+        } else if (!part.added) {
+          processedCodeSnippet += part.value;
+        }
+      });
+      codeSnippet = processedCodeSnippet;
+    }
+
+    codeSnippet = renderToken(codeSnippet, commentRe, "comment");
+    codeSnippet = renderToken(codeSnippet, numberRe, "number");
+    return document.createRange().createContextualFragment(codeSnippet);
+
+    function renderToken(target, regexCondition, className) {
+      return target.replace(regexCondition, `<span class="token-${className}">$&</span>`);
+    }
   }
 
   renderCode() {
@@ -91,67 +123,21 @@ class RewardTermsViewer extends LitElement {
       return css`
         /* Customized Scrollbar for WebKit Browsers */
         ::-webkit-scrollbar {
-            width: 6px;
+          width: 6px;
         }
-        
         ::-webkit-scrollbar-track {
-        background-color: var(--pm-app-bg-color);
+          background-color: var(--pm-app-bg-color);
         }
-        
         ::-webkit-scrollbar-thumb {
-        background-color: var(--pm-grey-color-light);
+          background-color: var(--pm-grey-color-light);
         }
         :host {
-            position: relative;
-            box-sizing: border-box;
-            flex: 1;
-            width: 100%;
-            font-size: 0.8125rem;
-        }
-        :host([show-border]) {
-            border: 1px solid var(--pm-grey-color);
-        }
-        code {
-            box-sizing: border-box;
-            display: block;
-            width: 100%;
-            height: 100%;
-            white-space: pre-wrap;
-            font-family: var(--code-font-family);
-            line-height: 1.8;
-            padding: var(--lumo-space-xs) var(--lumo-space-s);
-            margin: 0;
-        }
-        :host(.comparison) code {
-            height: 16rem;
-        }
-        vaadin-button {
-            display: none;
-            position: absolute;
-            width: 28px;
-            min-width: auto;
-            height: 28px;
-            top: -1px;
-            right: -1px;
-            padding: 0;
-            background-color: rgba(200,200,200,0.6);
-            border-radius: 0;
-            margin: 0;
-        }
-        :host([show-copy-button]) vaadin-button {
-            display: block;
-        }
-        iron-icon {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            top: 2px;
-            left: 2px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        iron-icon[active] {
-            opacity: 1;
+          position: relative;
+          box-sizing: border-box;
+          flex: 1 1 0%;
+          width: 100%;
+          font-size: var(--lumo-font-size-s);
+          overflow: auto;
         }
         .token-operator {
             color: rgb(127, 0, 85);
@@ -166,38 +152,52 @@ class RewardTermsViewer extends LitElement {
         .highlight-label {
             background-color: var(--pm-yellow-color);
         }
-        .header-row {
-          position: sticky;
-          top: 0;
-          width: calc(100% - var(--lumo-space-xs) * 2);
-          line-height: 1;
+        .reward-terms-wrapper vaadin-horizontal-layout {
+          counter-increment: number;
+          width: 100%;
+          line-height: 1.3;
+          padding: var(--lumo-space-xxs);
+        }
+        .reward-terms-wrapper vaadin-horizontal-layout::before {
+          content: counter(number);
           font-size: var(--lumo-font-size-s);
-          color: var(--pm-secondary-text-color);
-          background-color: white;
-          padding: var(--lumo-space-xs);
-          border-bottom: 1px solid var(--pm-grey-color-lightest);
+          color: var(--pm-grey-color);
+          margin: 0 var(--lumo-space-xs) 0 var(--lumo-space-xxs);
+        }
+        .reward-terms-wrapper vaadin-horizontal-layout span {
           margin: 0 var(--lumo-space-xs);
-          z-index: 100;
         }
-        .header-row span:nth-child(1) {
+        .reward-terms-wrapper vaadin-horizontal-layout span:first-child {
           flex: 1 0 auto;
-          padding-left: 1.1rem;
+          margin-left: 0;
         }
-        .header-row span {
-          width: calc(var(--lumo-font-size-s) * 12);
+        .reward-terms-wrapper vaadin-horizontal-layout .code-wrapper {
+          flex: 1 0 auto;
+          white-space: pre-wrap;
         }
       `;
   }
 
   render() {
     return html`
-      <vaadin-horizontal-layout class="header-row" ?hidden="${this.hideHeaderRow}">
-        <span>Metric</span>
-        <span>Goal</span>
-        <span>Weight</span>
-      </vaadin-horizontal-layout>
-      <code>
-      </code>
+      <vaadin-vertical-layout class="reward-terms-wrapper">
+        ${this.rewardTermsList.map(rewardTerm => {
+          if (rewardTerm.rewardSnippet.length <= 0) {
+            // reward variable
+            const goalText = rewardTerm.goalCondition === "LTE" ? "Minimize" : "Maximize";
+            return html`
+              <vaadin-horizontal-layout>
+                <span>${rewardTerm.rewardVariable}</span><span>${goalText}</span><span>x</span><span>${rewardTerm.weight}</span>
+              </vaadin-horizontal-layout>`
+          } else {
+            // custom input through editor row
+            return html`
+              <vaadin-horizontal-layout>
+                <div class="code-wrapper">${this.colorCode(rewardTerm.rewardSnippet)}</div><span>x</span><span>${rewardTerm.weight}</span>
+              </vaadin-horizontal-layout>`
+          }
+        })}
+      </vaadin-vertical-layout>
     `;
   }
 }
