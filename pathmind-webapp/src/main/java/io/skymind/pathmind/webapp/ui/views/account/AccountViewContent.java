@@ -90,7 +90,7 @@ public class AccountViewContent extends LitTemplate {
     private void initBtns() {
         editInfoBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(AccountEditView.class)));
         changePasswordBtn.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate(ChangePasswordView.class)));
-        upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && user.isBasicPlanUser());
+        upgradeBtn.setVisible(featureManager.isEnabled(Feature.ACCOUNT_UPGRADE) && subscription == null && user.isTrialPlanUser());
         cancelSubscriptionBtn.setVisible(subscription != null);
         cancelSubscriptionBtn.setEnabled(subscription != null && !subscription.getCancelAtPeriodEnd());
         rotateApiKeyBtn.addClickListener(e -> {
