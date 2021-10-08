@@ -25,10 +25,10 @@ def buildDockerImage(image_name, dockerfile, basedir) {
 def buildDockerImageMA(image_name, dockerfile, basedir, docker_tag) {
     echo "Building the pathmind Docker Image"
     script {
-       namespace = ${docker_tag}
+       namespace = docker_tag
        subdomain = "${docker_tag}."
        domain = "devpathmind.com"
-       if ( ${docker_tag} == 'prod') {
+       if ( docker_tag == 'prod') {
            namespace = "default"
            subdomain = ""
            domain = "app.pathmind.com"
