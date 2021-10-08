@@ -43,7 +43,8 @@ public class ExecutionEnvironmentManager {
                 200,
                 4,
                 0,
-                1);
+                1,
+                true);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

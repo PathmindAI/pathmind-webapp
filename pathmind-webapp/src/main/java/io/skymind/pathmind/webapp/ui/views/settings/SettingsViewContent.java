@@ -110,6 +110,9 @@ public class SettingsViewContent extends LitTemplate {
     @Id("batchSizeCB")
     private Select<String> batchSize;
 
+    @Id("useAutoNormCB")
+    private Select<String> useAutoNorm;
+
     @Id("rewardBalancePeriodField")
     private IntegerField rewardBalancePeriodField;
 
@@ -174,6 +177,7 @@ public class SettingsViewContent extends LitTemplate {
         settingsList.put(rolloutFragmentLength, "Rollout Fragment Length");
         settingsList.put(batchMode, "Train Batch Mode");
         settingsList.put(batchSize, "Train Batch Size");
+        settingsList.put(useAutoNorm, "Use Auto Norm");
     }
 
     private void initBtns() {
@@ -347,6 +351,12 @@ public class SettingsViewContent extends LitTemplate {
         batchSize.setLabel(settingsList.get(batchSize));
         batchSize.setValue(env.getTrainBatchSize() == 0 ? "no selection" : String.valueOf(env.getTrainBatchSize()));
 
+        // init use auto norm
+        List<String> useAutoNorms = List.of("TRUE", "FALSE");
+        useAutoNorm.setItems(useAutoNorms);
+        useAutoNorm.setLabel(settingsList.get(useAutoNorm));
+        useAutoNorm.setValue(String.valueOf(env.isUseAutoNorm()).toUpperCase());
+
         // init reward balance period
         rewardBalancePeriodField.setLabel("Reward Balance Period");
         rewardBalancePeriodField.setValue(env.getRewardBalancePeriod());
@@ -380,6 +390,7 @@ public class SettingsViewContent extends LitTemplate {
         env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
         env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
         env.setTrainBatchSize(batchSize.getValue().equals("no selection") ? 0 : Integer.valueOf(batchSize.getValue()));
+        env.setUseAutoNorm(Boolean.valueOf(useAutoNorm.getValue()));
         env.setRewardBalancePeriod(rewardBalancePeriodField.getValue() != null ? rewardBalancePeriodField.getValue() : 1);
     }
 
@@ -392,8 +403,10 @@ public class SettingsViewContent extends LitTemplate {
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
                 .sorted()
                 .collect(Collectors.toList());
-        settingsStrings.add("Reward Balance Period: " + env.getRewardBalancePeriod());
-        settingsStrings.sort(StringUtils::compareIgnoreCase);
+        if (isInternalUser) {
+            settingsStrings.add("Reward Balance Period: " + env.getRewardBalancePeriod());
+            settingsStrings.sort(StringUtils::compareIgnoreCase);
+        }
         return String.join(", ", settingsStrings);
     }
 }
