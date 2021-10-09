@@ -57,3 +57,6 @@ kubectl create configmap canary \
 	-n ${namespace} \
 	-o yaml \
 	--dry-run | kubectl replace -f -
+
+#make sure the libraries for model analyzer are ready
+curl -X PUT -u "${apiuser}:${apipassword}" https://${subdomain}${domain}/api/MAlib/${environment}
