@@ -42,21 +42,31 @@ public class RewardTermsViewer extends LitTemplate implements ExperimentComponen
     }
 
     public void setValue(List<RewardTerm> rewardTerms, Boolean isWithRewardTerms) {
-        JsonArray rewardTermsArray = Json.createArray();
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
+        getElement().callJsFunction("setRewardTerms", getArrayFromRewardTermsList(rewardTerms));
+        getElement().setProperty("isWithRewardTerms", isWithRewardTerms);
+    }
+
+    public void setComparisonModeTheOtherRewardTerms(List<RewardTerm> rewardTerms, Boolean comparisonIsWithRewardTerms) {
+        rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
+        getElement().callJsFunction("setComparisonRewardTerms", getArrayFromRewardTermsList(rewardTerms));
+        getElement().setProperty("comparisonIsWithRewardTerms", comparisonIsWithRewardTerms);
+    }
+
+    private JsonArray getArrayFromRewardTermsList(List<RewardTerm> rewardTerms) {
+        JsonArray rewardTermsArray = Json.createArray();
         for (RewardTerm rewardTerm : rewardTerms) {
             int index = rewardTermsArray.length();
             JsonObject rewardTermItem = Json.createObject();
             rewardTermItem.put("index", rewardTerm.getIndex().toString());
             rewardTermItem.put("weight", rewardTerm.getWeight().toString());
-            rewardTermItem.put("rewardVariable", rewardTerm.getRewardVariableIndex() != null ? rewardVariables.get(rewardTerm.getRewardVariableIndex()).getName() : "");
+            rewardTermItem.put("rewardVariable", rewardTerm.getRewardVariableIndex() != null && rewardVariables != null ? rewardVariables.get(rewardTerm.getRewardVariableIndex()).getName() : "");
             rewardTermItem.put("goalCondition", rewardTerm.getGoalCondition() != null ? rewardTerm.getGoalCondition().getCode() : "undefined");
             rewardTermItem.put("rewardSnippet", rewardTerm.getRewardSnippet() != null ? rewardTerm.getRewardSnippet() : "");
 
             rewardTermsArray.set(index, rewardTermItem);
         }
-        getElement().callJsFunction("setRewardTerms", rewardTermsArray);
-        getElement().setProperty("isWithRewardTerms", isWithRewardTerms);
+        return rewardTermsArray;
     }
 
     private void setRewardVariables(List<RewardVariable> rewardVariables) {

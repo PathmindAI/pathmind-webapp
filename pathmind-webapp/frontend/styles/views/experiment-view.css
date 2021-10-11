@@ -236,8 +236,10 @@
     border-radius: 0;
 }
 
-.experiment-view.comparison-mode code-viewer {
-    height: 16rem;
+.experiment-view.comparison-mode code-viewer,
+.experiment-view.comparison-mode reward-terms-viewer {
+  flex: 0 0 auto;
+  height: 16rem;
 }
 
 .experiment-view .observations-panel {

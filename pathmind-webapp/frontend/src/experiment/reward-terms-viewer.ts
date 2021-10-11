@@ -6,61 +6,34 @@ class RewardTermsViewer extends LitElement {
   isWithRewardTerms = false;
   @property({type: Boolean})
   comparisonIsWithRewardTerms = false;
-  @property({type: String})
-  codeSnippet = "";
-  @property({type: String})
-  comparisonCodeSnippet;
   @property({type: Array})
   rewardTermsList = [];
-
-  updated(changedProperties) {
-    changedProperties.forEach((oldValue, name) => {
-        if (name === "rewardTermsList") {
-            this.renderRewardTerms();
-        }
-        // if (name === "codeSnippet" || name === "comparisonCodeSnippet" ||
-        //     name === "isWithRewardTerms" || name === "comparisonIsWithRewardTerms") {
-        //     this.renderCode();
-        // }
-    });
-  }
+  @property({type: Array})
+  comparisonRewardTermsList = [];
 
   setRewardTerms(rewardTermsList) {
     this.rewardTermsList = rewardTermsList;
-    console.log("rewardTermsList: "+rewardTermsList)
   }
 
-  renderRewardTerms() {
-    const codeElement = this.shadowRoot.querySelector("code");
-    let codeSnippet = "";
-    this.rewardTermsList.forEach((rewardTerm, index) => {
-      codeSnippet += "Reward Term " + index + ": ";
-      if (rewardTerm.rewardSnippet.length <= 0) {
-        // reward variable
-        const goalText = rewardTerm.goalCondition === "LTE" ? "Minimize" : "Maximize";
-        codeSnippet += rewardTerm.rewardVariable + goalText + " x " + rewardTerm.weight+"\n";
-      } else {
-        // custom input through editor row
-        codeSnippet += rewardTerm.rewardSnippet;
-      }
-    });
-    this.codeSnippet = codeSnippet;
-    codeElement.innerHTML = codeSnippet;
+  setComparisonRewardTerms(comparisonRewardTermsList) {
+    this.comparisonRewardTermsList = comparisonRewardTermsList;
   }
 
-  colorCode(snippet) {
+  colorCode(snippet, index) {
     const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
     const numberRe = /[0-9]+/g;
     let codeSnippet = snippet;
 
-    if (this.comparisonCodeSnippet) {
+    if (this.comparisonRewardTermsList) {
         this.classList.add("comparison");
     } else {
         this.classList.remove("comparison");
     }
 
-    if (this.codeSnippet && this.comparisonCodeSnippet && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-      const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
+    if (this.rewardTermsList && this.comparisonRewardTermsList && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      const comparisonCodeSnippet = this.comparisonRewardTermsList[index] ?
+                                        this.comparisonRewardTermsList[index].rewardSnippet.replaceAll("\r\n", "\n")
+                                    : "";
       const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
       let processedCodeSnippet = "";
       codeDiff.forEach(part => {
@@ -82,41 +55,68 @@ class RewardTermsViewer extends LitElement {
     }
   }
 
-  renderCode() {
-    const codeElement = this.shadowRoot.querySelector("code");
-    if (codeElement) {
-        const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
-        const numberRe = /[0-9]+/g;
-        let codeSnippet = this.codeSnippet;
-    
-        if (this.comparisonCodeSnippet) {
-            this.classList.add("comparison");
-        } else {
-            this.classList.remove("comparison");
+  highlightGoalDiff(text, index) {
+    let finalText = text;
+    if (this.rewardTermsList && this.comparisonRewardTermsList && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      let comparisonGoalText = "";
+      if (this.comparisonRewardTermsList[index]) {
+        comparisonGoalText = this.comparisonRewardTermsList[index].goalCondition === "LTE" ? "Minimize" : "Maximize";
+      }
+      const textDiff = diff.diffWordsWithSpace(text.replaceAll("\r\n", "\n"), comparisonGoalText);
+      let processedText = "";
+      textDiff.forEach(part => {
+        if (part.removed) {
+          processedText += `<span class="highlight-label">${part.value}</span>`;
+        } else if (!part.added) {
+          processedText += part.value;
         }
-    
-        if (this.codeSnippet && this.comparisonCodeSnippet && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-          const comparisonCodeSnippet = this.comparisonCodeSnippet.replaceAll("\r\n", "\n");
-          const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
-          let processedCodeSnippet = "";
-          codeDiff.forEach(part => {
-            if (part.removed) {
-              processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
-            } else if (!part.added) {
-              processedCodeSnippet += part.value;
-            }
-          });
-          codeSnippet = processedCodeSnippet;
-        }
-    
-        codeSnippet = renderToken(codeSnippet, commentRe, "comment");
-        codeSnippet = renderToken(codeSnippet, numberRe, "number");
-        codeElement.innerHTML = codeSnippet;
+      });
+      finalText = processedText;
     }
+    return document.createRange().createContextualFragment(finalText);
+  }
 
-    function renderToken(target, regexCondition, className) {
-      return target.replace(regexCondition, `<span class="token-${className}">$&</span>`);
+  highlightWeightDiff(text, index) {
+    let finalText = text;
+    if (this.rewardTermsList.length > 1 && this.comparisonRewardTermsList.length > 1 && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      let comparisonWeightText = "";
+      if (this.comparisonRewardTermsList[index]) {
+        comparisonWeightText = this.comparisonRewardTermsList[index].weight;
+      }
+      const textDiff = diff.diffWordsWithSpace(text.replaceAll("\r\n", "\n"), comparisonWeightText);
+      let processedText = "";
+      textDiff.forEach(part => {
+        if (part.removed) {
+          processedText += `<span class="highlight-label">${part.value}</span>`;
+        } else if (!part.added) {
+          processedText += part.value;
+        }
+      });
+      finalText = processedText;
     }
+    return document.createRange().createContextualFragment(finalText);
+  }
+
+  highlightNameDiff(text, comparisonRewardTermsList, index) {
+    let finalText = text;
+    if (this.rewardTermsList.length > 1 && this.comparisonRewardTermsList.length > 1 && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      let comparisonNameText = "";
+      if (this.comparisonRewardTermsList[index]) {
+        comparisonNameText = this.comparisonRewardTermsList[index].rewardVariable;
+      }
+      console.log(text, comparisonNameText, text === comparisonNameText)
+      const textDiff = diff.diffWordsWithSpace(text, comparisonNameText);
+      let processedText = "";
+      textDiff.forEach(part => {
+        if (part.removed) {
+          processedText += `<span class="highlight-label">${part.value}</span>`;
+        } else if (!part.added) {
+          processedText += part.value;
+        }
+      });
+      finalText = processedText;
+    }
+    return document.createRange().createContextualFragment(finalText);
   }
 
   static get styles() {
@@ -173,7 +173,7 @@ class RewardTermsViewer extends LitElement {
           margin-left: 0;
         }
         .reward-terms-wrapper vaadin-horizontal-layout .code-wrapper {
-          flex: 1 0 auto;
+          flex: 1 1 auto;
           white-space: pre-wrap;
         }
       `;
@@ -182,19 +182,19 @@ class RewardTermsViewer extends LitElement {
   render() {
     return html`
       <vaadin-vertical-layout class="reward-terms-wrapper">
-        ${this.rewardTermsList.map(rewardTerm => {
+        ${this.rewardTermsList.map((rewardTerm, index) => {
           if (rewardTerm.rewardSnippet.length <= 0) {
             // reward variable
             const goalText = rewardTerm.goalCondition === "LTE" ? "Minimize" : "Maximize";
             return html`
               <vaadin-horizontal-layout>
-                <span>${rewardTerm.rewardVariable}</span><span>${goalText}</span><span>x</span><span>${rewardTerm.weight}</span>
+                <span>${this.highlightNameDiff(rewardTerm.rewardVariable, this.comparisonRewardTermsList, index)}</span><span>${this.highlightGoalDiff(goalText, index)}</span><span>x</span><span>${this.highlightWeightDiff(rewardTerm.weight, index)}</span>
               </vaadin-horizontal-layout>`
           } else {
             // custom input through editor row
             return html`
               <vaadin-horizontal-layout>
-                <div class="code-wrapper">${this.colorCode(rewardTerm.rewardSnippet)}</div><span>x</span><span>${rewardTerm.weight}</span>
+                <div class="code-wrapper">${this.colorCode(rewardTerm.rewardSnippet, index)}</div><span>x</span><span>${rewardTerm.weight}</span>
               </vaadin-horizontal-layout>`
           }
         })}

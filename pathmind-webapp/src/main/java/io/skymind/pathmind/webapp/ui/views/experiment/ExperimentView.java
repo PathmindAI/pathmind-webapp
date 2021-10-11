@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
@@ -135,6 +136,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
                 comparisonExperiment.getRewardFunction(), comparisonExperiment.getRewardFunctionFromTerms(), comparisonExperiment.isWithRewardTerms());
+        experimentRewardTermsViewer.setComparisonModeTheOtherRewardTerms(comparisonExperiment.getRewardTerms(), comparisonExperiment.isWithRewardTerms());
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
                 comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
@@ -152,6 +154,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null, null, false);
+        experimentRewardTermsViewer.setComparisonModeTheOtherRewardTerms(Collections.emptyList(), false);
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -362,6 +365,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentsNavbar.setVisible(!experiment.isArchived());
         comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(experiment.getSelectedObservations());
         comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(experiment.getRewardFunction(), experiment.getRewardFunctionFromTerms(), experiment.isWithRewardTerms());
+        comparisonRewardTermsViewer.setComparisonModeTheOtherRewardTerms(experiment.getRewardTerms(), experiment.isWithRewardTerms());
         comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(experiment.getSimulationParameters());
     }
 
