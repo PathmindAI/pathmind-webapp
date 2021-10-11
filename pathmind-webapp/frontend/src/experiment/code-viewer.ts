@@ -97,7 +97,8 @@ class CodeViewer extends LitElement {
       return css`
         /* Customized Scrollbar for WebKit Browsers */
         ::-webkit-scrollbar {
-            width: 6px;
+          width: 6px;
+          height: 6px;
         }
         
         ::-webkit-scrollbar-track {

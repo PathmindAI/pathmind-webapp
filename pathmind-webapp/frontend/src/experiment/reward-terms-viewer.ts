@@ -124,6 +124,7 @@ class RewardTermsViewer extends LitElement {
         /* Customized Scrollbar for WebKit Browsers */
         ::-webkit-scrollbar {
           width: 6px;
+          height: 6px;
         }
         ::-webkit-scrollbar-track {
           background-color: var(--pm-app-bg-color);
@@ -164,10 +165,10 @@ class RewardTermsViewer extends LitElement {
           color: var(--pm-grey-color);
           margin: 0 var(--lumo-space-xs) 0 var(--lumo-space-xxs);
         }
-        .reward-terms-wrapper vaadin-horizontal-layout span {
+        .reward-terms-wrapper vaadin-horizontal-layout > span {
           margin: 0 var(--lumo-space-xs);
         }
-        .reward-terms-wrapper vaadin-horizontal-layout span:first-child {
+        .reward-terms-wrapper vaadin-horizontal-layout > span:first-child {
           flex: 1 0 auto;
           margin-left: 0;
         }
