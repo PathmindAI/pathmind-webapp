@@ -48,8 +48,8 @@ public class PathmindUser extends Data implements DeepCloneableInterface<Pathmin
         return UserRole.getEnumFromId(this.accountType);
     }
 
-    public boolean isBasicPlanUser() {
-        return UserRole.Basic.equals(getAccountType());
+    public boolean isTrialPlanUser() {
+        return UserRole.Trial.equals(getAccountType());
     }
 
     public boolean isSupportAccountType() {
