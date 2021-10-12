@@ -14,6 +14,6 @@ RUN apt-get update && \
 
 RUN chmod +x entrypoint.sh
 
-RUN mvn package -Pproduction
+RUN ./mvnw -ntp package -Pproduction
 
 EXPOSE 80
