@@ -24,7 +24,7 @@ public class PathmindNumberUtils {
     public static String calculateUncertainty(double avg, double variance) {
         double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
         double uncertainty = 2 * sd;
-        return addThousandsSeparatorToNumber(setSigFigBasedOnAnotherDouble(avg, uncertainty, 2)) + "\u2800\u00B1\u2800" + addThousandsSeparatorToNumber(formatToSigFig(uncertainty, 2));
+        return addThousandsSeparatorToNumber(setSigFigBasedOnAnotherDouble(avg, uncertainty, 2)) + "\u0020\u00B1\u0020" + addThousandsSeparatorToNumber(formatToSigFig(uncertainty, 2));
     }
 
     /**

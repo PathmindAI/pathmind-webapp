@@ -146,7 +146,7 @@ public class ExperimentGridService {
     }
 
     static Double parseRewardVariableValue(String valueWithUncertainty) {
-        return Double.parseDouble(removeThousandsSeparatorFromNumber(valueWithUncertainty).split("\u2800\u00B1\u2800")[0]);
+        return Double.parseDouble(removeThousandsSeparatorFromNumber(valueWithUncertainty).split("\u0020\u00B1\u0020")[0]);
     }
 
 }

@@ -106,7 +106,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
                     .map(Experiment::getBestPolicy)
                     .map(Policy::getMetricDisplayValues)
                     .map(List::stream)
-                    .flatMap(stream -> stream.filter(s -> s.contains("\u2800\u00B1\u2800")).findAny())
+                    .flatMap(stream -> stream.filter(s -> s.contains("\u0020\u00B1\u0020")).findAny())
                     .isPresent();
             histogramsWrapper.setVisible(!isBestPolicyUncertaintyEmpty);
         } else {
