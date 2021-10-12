@@ -22,29 +22,8 @@ class RewardTermsViewer extends LitElement {
   colorCode(snippet, index) {
     const commentRe = /\/\*(.|[\r\n])*?\*\/|(\/\/((?!\<span)(?!\<\/span\>).)+)|\/\//g;
     const numberRe = /[0-9]+/g;
-    let codeSnippet = snippet;
 
-    if (this.comparisonRewardTermsList) {
-        this.classList.add("comparison");
-    } else {
-        this.classList.remove("comparison");
-    }
-
-    if (this.rewardTermsList && this.comparisonRewardTermsList && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-      const comparisonCodeSnippet = this.comparisonRewardTermsList[index] ?
-                                        this.comparisonRewardTermsList[index].rewardSnippet.replaceAll("\r\n", "\n")
-                                    : "";
-      const codeDiff = diff.diffWordsWithSpace(codeSnippet.replaceAll("\r\n", "\n"), comparisonCodeSnippet);
-      let processedCodeSnippet = "";
-      codeDiff.forEach(part => {
-        if (part.removed) {
-          processedCodeSnippet += `<span class="highlight-label">${part.value}</span>`;
-        } else if (!part.added) {
-          processedCodeSnippet += part.value;
-        }
-      });
-      codeSnippet = processedCodeSnippet;
-    }
+    let codeSnippet = this.highlightDiff("rewardSnippet", snippet, index);
 
     codeSnippet = renderToken(codeSnippet, commentRe, "comment");
     codeSnippet = renderToken(codeSnippet, numberRe, "number");
@@ -55,14 +34,34 @@ class RewardTermsViewer extends LitElement {
     }
   }
 
-  highlightGoalDiff(text, index) {
+  highlightDiff(type, text, index) {
+    let prop = "";
+    switch (type) {
+      case "weight":
+        prop = "weight";
+        break;
+      case "goal":
+        prop = "goalCondition";
+        break;
+      case "rewardSnippet":
+        prop = "rewardSnippet";
+        break;
+      case "name":
+      default:
+        prop = "rewardVariable";
+    }
     let finalText = text;
-    if (this.rewardTermsList && this.comparisonRewardTermsList && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-      let comparisonGoalText = "";
+    if (this.rewardTermsList.length > 1 && this.comparisonRewardTermsList.length > 1 && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
+      let comparisonText = "";
       if (this.comparisonRewardTermsList[index]) {
-        comparisonGoalText = this.comparisonRewardTermsList[index].goalCondition === "LTE" ? "Minimize" : "Maximize";
+        if (type === "goal") {
+          comparisonText = this.comparisonRewardTermsList[index][prop] === "LTE" ? "Minimize" : "Maximize";
+        } else {
+          comparisonText = this.comparisonRewardTermsList[index][prop].replaceAll("\r\n", "\n");
+        }
       }
-      const textDiff = diff.diffWordsWithSpace(text.replaceAll("\r\n", "\n"), comparisonGoalText);
+      console.log(`%c${finalText} ${comparisonText}`, "background: yellow")
+      const textDiff = diff.diffWordsWithSpace(text.replaceAll("\r\n", "\n"), comparisonText);
       let processedText = "";
       textDiff.forEach(part => {
         if (part.removed) {
@@ -73,50 +72,22 @@ class RewardTermsViewer extends LitElement {
       });
       finalText = processedText;
     }
+    if (type == "rewardSnippet") {
+      return finalText;
+    }
     return document.createRange().createContextualFragment(finalText);
+  }
+
+  highlightGoalDiff(text, index) {
+    return this.highlightDiff("goal", text, index);
   }
 
   highlightWeightDiff(text, index) {
-    let finalText = text;
-    if (this.rewardTermsList.length > 1 && this.comparisonRewardTermsList.length > 1 && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-      let comparisonWeightText = "";
-      if (this.comparisonRewardTermsList[index]) {
-        comparisonWeightText = this.comparisonRewardTermsList[index].weight;
-      }
-      const textDiff = diff.diffWordsWithSpace(text.replaceAll("\r\n", "\n"), comparisonWeightText);
-      let processedText = "";
-      textDiff.forEach(part => {
-        if (part.removed) {
-          processedText += `<span class="highlight-label">${part.value}</span>`;
-        } else if (!part.added) {
-          processedText += part.value;
-        }
-      });
-      finalText = processedText;
-    }
-    return document.createRange().createContextualFragment(finalText);
+    return this.highlightDiff("weight", text, index);
   }
 
-  highlightNameDiff(text, comparisonRewardTermsList, index) {
-    let finalText = text;
-    if (this.rewardTermsList.length > 1 && this.comparisonRewardTermsList.length > 1 && this.isWithRewardTerms === this.comparisonIsWithRewardTerms) {
-      let comparisonNameText = "";
-      if (this.comparisonRewardTermsList[index]) {
-        comparisonNameText = this.comparisonRewardTermsList[index].rewardVariable;
-      }
-      console.log(text, comparisonNameText, text === comparisonNameText)
-      const textDiff = diff.diffWordsWithSpace(text, comparisonNameText);
-      let processedText = "";
-      textDiff.forEach(part => {
-        if (part.removed) {
-          processedText += `<span class="highlight-label">${part.value}</span>`;
-        } else if (!part.added) {
-          processedText += part.value;
-        }
-      });
-      finalText = processedText;
-    }
-    return document.createRange().createContextualFragment(finalText);
+  highlightNameDiff(text, index) {
+    return this.highlightDiff("name", text, index);
   }
 
   static get styles() {
@@ -137,7 +108,8 @@ class RewardTermsViewer extends LitElement {
           box-sizing: border-box;
           flex: 1 1 0%;
           width: 100%;
-          font-size: var(--lumo-font-size-s);
+          font-size: var(--lumo-font-size-xs);
+          font-family: var(--code-font-family);
           overflow: auto;
         }
         .token-operator {
@@ -153,11 +125,14 @@ class RewardTermsViewer extends LitElement {
         .highlight-label {
             background-color: var(--pm-yellow-color);
         }
+        .reward-terms-wrapper {
+          padding: var(--lumo-space-xs) 0;
+        }
         .reward-terms-wrapper vaadin-horizontal-layout {
           counter-increment: number;
           width: 100%;
           line-height: 1.3;
-          padding: var(--lumo-space-xxs);
+          padding: var(--lumo-space-xxxs);
         }
         .reward-terms-wrapper vaadin-horizontal-layout::before {
           content: counter(number);
@@ -188,7 +163,7 @@ class RewardTermsViewer extends LitElement {
             const goalText = rewardTerm.goalCondition === "LTE" ? "Minimize" : "Maximize";
             return html`
               <vaadin-horizontal-layout>
-                <span>${this.highlightNameDiff(rewardTerm.rewardVariable, this.comparisonRewardTermsList, index)}</span><span>${this.highlightGoalDiff(goalText, index)}</span><span>x</span><span>${this.highlightWeightDiff(rewardTerm.weight, index)}</span>
+                <span>${this.highlightNameDiff(rewardTerm.rewardVariable, index)}</span><span>${this.highlightGoalDiff(goalText, index)}</span><span>x</span><span>${this.highlightWeightDiff(rewardTerm.weight, index)}</span>
               </vaadin-horizontal-layout>`
           } else {
             // custom input through editor row

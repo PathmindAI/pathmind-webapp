@@ -20,8 +20,6 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 @Tag("reward-terms-viewer")
 @JsModule("./src/experiment/reward-terms-viewer.ts")
 public class RewardTermsViewer extends LitTemplate implements ExperimentComponent {
-    private List<RewardVariable> rewardVariables;
-
     public RewardTermsViewer() {
         super();
     }
@@ -34,26 +32,27 @@ public class RewardTermsViewer extends LitTemplate implements ExperimentComponen
     public void setExperiment(Experiment experiment) {
         if (experiment.isWithRewardTerms()) {
             getElement().setVisible(true);
-            setRewardVariables(experiment.getRewardVariables());
-            setValue(experiment.getRewardTerms(), experiment.isWithRewardTerms());
+            setValue(experiment.getRewardTerms(), experiment.isWithRewardTerms(), experiment.getRewardVariables());
         } else {
             getElement().setVisible(false);
         }
     }
 
-    public void setValue(List<RewardTerm> rewardTerms, Boolean isWithRewardTerms) {
+    public void setValue(List<RewardTerm> rewardTerms, Boolean isWithRewardTerms, List<RewardVariable> rewardVariables) {
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
-        getElement().callJsFunction("setRewardTerms", getArrayFromRewardTermsList(rewardTerms));
+        getElement().callJsFunction("setRewardTerms", getArrayFromRewardTermsList(rewardTerms, rewardVariables));
         getElement().setProperty("isWithRewardTerms", isWithRewardTerms);
     }
 
-    public void setComparisonModeTheOtherRewardTerms(List<RewardTerm> rewardTerms, Boolean comparisonIsWithRewardTerms) {
+    public void setComparisonModeTheOtherRewardTerms(List<RewardTerm> rewardTerms, Boolean comparisonIsWithRewardTerms, List<RewardVariable> rewardVariables) {
         rewardTerms.sort(Comparator.comparing(RewardTerm::getIndex));
-        getElement().callJsFunction("setComparisonRewardTerms", getArrayFromRewardTermsList(rewardTerms));
+        getElement().callJsFunction("setComparisonRewardTerms", getArrayFromRewardTermsList(rewardTerms, rewardVariables));
         getElement().setProperty("comparisonIsWithRewardTerms", comparisonIsWithRewardTerms);
     }
 
-    private JsonArray getArrayFromRewardTermsList(List<RewardTerm> rewardTerms) {
+    private JsonArray getArrayFromRewardTermsList(List<RewardTerm> rewardTerms, List<RewardVariable> rewardVariables) {
+        List<RewardVariable> rewardVariablesList = ListUtils.emptyIfNull(rewardVariables);
+        rewardVariablesList.sort(Comparator.comparing(RewardVariable::getArrayIndex));
         JsonArray rewardTermsArray = Json.createArray();
         for (RewardTerm rewardTerm : rewardTerms) {
             int index = rewardTermsArray.length();
@@ -67,10 +66,5 @@ public class RewardTermsViewer extends LitTemplate implements ExperimentComponen
             rewardTermsArray.set(index, rewardTermItem);
         }
         return rewardTermsArray;
-    }
-
-    private void setRewardVariables(List<RewardVariable> rewardVariables) {
-        this.rewardVariables = ListUtils.emptyIfNull(rewardVariables);
-        this.rewardVariables.sort(Comparator.comparing(RewardVariable::getArrayIndex));
     }
 }
