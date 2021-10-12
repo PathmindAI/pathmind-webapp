@@ -136,7 +136,6 @@ class RewardTermsViewer extends LitElement {
         }
         .reward-terms-wrapper vaadin-horizontal-layout::before {
           content: counter(number);
-          font-size: var(--lumo-font-size-s);
           color: var(--pm-grey-color);
           margin: 0 var(--lumo-space-xs) 0 var(--lumo-space-xxs);
         }
