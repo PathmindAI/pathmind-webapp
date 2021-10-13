@@ -40,7 +40,7 @@ public class ExperimentPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//code-viewer")
+    @FindBy(xpath = "//reward-terms-viewer")
     private WebElement rewardFunction;
     @FindBy(xpath = "//*[text()='Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
     private WebElement experimentNotes;
