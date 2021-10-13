@@ -22,6 +22,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentCompo
 import io.skymind.pathmind.webapp.ui.views.experiment.components.SparklineChart;
 import lombok.extern.slf4j.Slf4j;
 
+import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.SPACED_PLUS_MINUS;
+
 @Slf4j
 public class SimulationMetricsPanel extends HorizontalLayout implements ExperimentComponent {
 
@@ -106,7 +108,7 @@ public class SimulationMetricsPanel extends HorizontalLayout implements Experime
                     .map(Experiment::getBestPolicy)
                     .map(Policy::getMetricDisplayValues)
                     .map(List::stream)
-                    .flatMap(stream -> stream.filter(s -> s.contains("\u0020\u00B1\u0020")).findAny())
+                    .flatMap(stream -> stream.filter(s -> s.contains(SPACED_PLUS_MINUS)).findAny())
                     .isPresent();
             histogramsWrapper.setVisible(!isBestPolicyUncertaintyEmpty);
         } else {
