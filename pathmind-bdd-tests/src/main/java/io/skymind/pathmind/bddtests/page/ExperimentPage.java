@@ -40,8 +40,10 @@ public class ExperimentPage extends PageObject {
 
     private Utils utils;
 
-    @FindBy(xpath = "//reward-terms-viewer")
+    @FindBy(xpath = "//code-viewer")
     private WebElement rewardFunction;
+    @FindBy(xpath = "//reward-terms-viewer")
+    private WebElement rewardFunctionNew;
     @FindBy(xpath = "//*[text()='Notes']/ancestor::*[@class='notes-field-wrapper']/descendant::vaadin-text-area")
     private WebElement experimentNotes;
     @FindBy(xpath = "//span[text()='Status']/following-sibling::span[1]")
@@ -53,6 +55,10 @@ public class ExperimentPage extends PageObject {
 
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
         assertThat(rewardFunction.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8).replaceAll("\r", "")));
+    }
+
+    public void checkExperimentPageRewardFunctionNew(String rewardFnFile) throws IOException {
+        assertThat(rewardFunctionNew.getText(), is(FileUtils.readFileToString(new File("models/" + rewardFnFile), StandardCharsets.UTF_8).replaceAll("\r", "")));
     }
 
     public void addNoteToTheExperimentPage(String note) {
