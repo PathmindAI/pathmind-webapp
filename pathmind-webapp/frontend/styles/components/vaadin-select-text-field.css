@@ -39,7 +39,6 @@
 
 :host([theme~="goals"]) [part="input-field"] {
     height: var(--lumo-text-field-size);
-    border-radius: var(--lumo-border-radius);
 }
 
 :host([theme~="goals"][theme~="not-none"]) [part="input-field"] {

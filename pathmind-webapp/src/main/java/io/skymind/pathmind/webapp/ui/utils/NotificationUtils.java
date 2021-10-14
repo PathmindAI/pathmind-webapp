@@ -14,9 +14,8 @@ import io.skymind.pathmind.webapp.ui.components.molecules.ConfirmPopup;
 
 public class NotificationUtils {
 
-    public static void showNotification(String html, NotificationVariant variant) {
+    public static void showNotification(String html) {
         CloseableNotification notification = new CloseableNotification(html);
-        notification.addThemeVariants(variant);
         notification.open();
     }
 

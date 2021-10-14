@@ -1,3 +1,7 @@
 :host {
     line-height: 1;
 }
+
+.inputs-wrapper {
+  height: 100%;
+}

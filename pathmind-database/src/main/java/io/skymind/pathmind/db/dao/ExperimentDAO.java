@@ -14,7 +14,14 @@ import io.skymind.pathmind.db.utils.GridSortOrder;
 import io.skymind.pathmind.db.utils.ModelExperimentsQueryParams;
 import io.skymind.pathmind.shared.aspects.MonitorExecutionTime;
 import io.skymind.pathmind.shared.constants.RunStatus;
-import io.skymind.pathmind.shared.data.*;
+import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.Observation;
+import io.skymind.pathmind.shared.data.PathmindUser;
+import io.skymind.pathmind.shared.data.Policy;
+import io.skymind.pathmind.shared.data.RewardScore;
+import io.skymind.pathmind.shared.data.RewardTerm;
+import io.skymind.pathmind.shared.data.Run;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.PathmindNumberUtils;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
@@ -107,6 +114,7 @@ public class ExperimentDAO {
         experiment.setRuns(RunRepository.getRunsForExperiment(ctx, experiment.getId()));
         experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, experiment.getModelId()));
         experiment.setSimulationParameters(SimulationParameterRepository.getSimulationParametersForExperiment(ctx, experiment.getId()));
+        experiment.setRewardTerms(RewardTermsRepository.getRewardTerms(ctx, experiment.getId()));
         ExperimentUtils.setupDefaultSelectedRewardVariables(experiment);
     }
 
@@ -202,8 +210,17 @@ public class ExperimentDAO {
         ExperimentRepository.updateRewardFunction(ctx, experiment);
     }
 
+    public void updateRewardFunctionFromTerms(Experiment experiment) {
+        RewardTermsRepository.flushAndSaveTerms(ctx, experiment.getId(), experiment.getRewardTerms());
+        ExperimentRepository.updateRewardFunctionFromTerms(ctx, experiment);
+    }
+
     public void updateTrainingStatus(DSLContext transactionCtx, Experiment experiment) {
         ExperimentRepository.updateTrainingStatus(transactionCtx, experiment);
+    }
+
+    public void updateWithRewardTerms(Experiment experiment) {
+        ExperimentRepository.updateWithRewardTerms(ctx, experiment);
     }
 
     public void archive(long experimentId, boolean isArchive) {
@@ -223,16 +240,35 @@ public class ExperimentDAO {
             DSLContext transactionCtx = DSL.using(conf);
             String experimentName = Integer.toString(ExperimentRepository.getExperimentCount(transactionCtx, modelId) + 1);
             Experiment lastExperiment = ExperimentRepository.getLastExperimentForModel(transactionCtx, modelId);
-            String rewardFunction = lastExperiment != null ? lastExperiment.getRewardFunction() : "";
-            boolean hasGoals = lastExperiment != null ? lastExperiment.isHasGoals() : false;
-            List<Observation> observations = lastExperiment != null ? ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId()) : Collections.emptyList();
-            Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, hasGoals);
+
+            String rewardFunction = "";
+            String rewardFunctionFromTerms = "";
+            boolean hasGoals = false;
+            boolean activateRewardTermsUI = true; // TODO: maybe we want to take if from user settings
+            List<Observation> observations = Collections.emptyList();
+            List<SimulationParameter> simulationParameters = Collections.emptyList();
+            List<RewardTerm> rewardTerms = Collections.emptyList();
+
+            if (lastExperiment != null) {
+                rewardFunction = lastExperiment.getRewardFunction();
+                hasGoals = lastExperiment.isHasGoals();
+                observations = ObservationRepository.getObservationsForExperiment(transactionCtx, lastExperiment.getId());
+                simulationParameters = SimulationParameterRepository.getSimulationParametersForExperiment(transactionCtx, lastExperiment.getId());
+                rewardTerms = RewardTermsRepository.getRewardTerms(transactionCtx, lastExperiment.getId());
+                activateRewardTermsUI = lastExperiment.isWithRewardTerms();
+            }
+
+            Experiment exp = ExperimentRepository.createNewExperiment(transactionCtx, modelId, experimentName, rewardFunction, rewardFunctionFromTerms, hasGoals, activateRewardTermsUI);
             ObservationRepository.insertExperimentObservations(transactionCtx, exp.getId(), observations);
             exp.setSelectedObservations(observations);
-            List<SimulationParameter> simulationParameters = SimulationParameterRepository.getSimulationParametersForExperiment(transactionCtx, lastExperiment.getId());
+
             simulationParameters.forEach(p -> p.setExperimentId(exp.getId()));
             SimulationParameterRepository.insertOrUpdateSimulationParameter(transactionCtx, simulationParameters);
             exp.setSimulationParameters(simulationParameters);
+
+            RewardTermsRepository.flushAndSaveTerms(transactionCtx, exp.getId(), rewardTerms);
+            exp.setRewardTerms(rewardTerms);
+
             return exp;
         });
     }
@@ -243,9 +279,7 @@ public class ExperimentDAO {
 
     public Optional<Experiment> getFullExperiment(long experimentId) {
         Optional<Experiment> optionalExperiment = getExperiment(experimentId);
-        optionalExperiment.ifPresent(experiment -> {
-            updateExperimentInternalValues(experiment);
-        });
+        optionalExperiment.ifPresent(this::updateExperimentInternalValues);
         return optionalExperiment;
     }
 
@@ -299,6 +333,8 @@ public class ExperimentDAO {
             ExperimentRepository.updateUserNotes(ctx, experiment.getId(), experiment.getUserNotes());
             ExperimentRepository.updateRewardFunction(ctx, experiment);
             SimulationParameterRepository.insertOrUpdateSimulationParameter(ctx, experiment.getSimulationParameters());
+            RewardTermsRepository.flushAndSaveTerms(ctx, experiment.getId(), experiment.getRewardTerms());
+            ExperimentRepository.updateRewardFunctionFromTerms(ctx, experiment);
         });
 
     }
