@@ -45,9 +45,9 @@ Feature: Broken Models tests
     And Check that error message in model check panel is "<Error Message>"
 
     Examples:
-      | Model File                               | Error Message                |
-      | problematic_models/ProblemModel#1480.zip | Unable to analyze the model. |
-      | problematic_models/NonTupleModel.zip     | Unable to analyze the model. |
+      | Model File                               | Error Message                                                                                          |
+      | problematic_models/ProblemModel#1480.zip | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
+      | problematic_models/NonTupleModel.zip     | Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support. |
 
   Scenario: Upload broken model few times
     Given Login to the pathmind
@@ -56,7 +56,7 @@ Feature: Broken Models tests
     When Input name of the new project AutotestProject and click Create project button
     When Upload model problematic_models/NonTupleModel.zip
     Then Wait for text "Checking your model" to disappear
-    And Check that error message in model check panel is "Unable to analyze the model."
+    And Check that error message in model check panel is "Model or Pathmind Helper may need to be updated. Please read this article or contact Pathmind support."
     When Upload model problematic_models/ABrokenModel.zip
     Then Wait for text "Checking your model" to disappear
     And Check that error message in model check panel is "You need to add PathmindHelper in your model."

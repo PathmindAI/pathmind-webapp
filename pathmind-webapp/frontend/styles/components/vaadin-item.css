@@ -1,11 +1,7 @@
-:host {
-  line-height: 1;
-}
-
 :host([value=""]:not([label="None"])) {
-  display: none;
+    display: none;
 }
 
 :host([disabled]) {
-  display: none;
+    display: none;
 }

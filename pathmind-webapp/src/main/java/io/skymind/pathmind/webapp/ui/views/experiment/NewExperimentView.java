@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -51,9 +50,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.newExperiment.Star
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
-import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionBuilder;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardFunctionEditor;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.NewExperimentViewFavoriteSubscriber;
-import io.skymind.pathmind.webapp.ui.views.settings.BetaFeatureSettingsView;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsViewContent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +62,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class NewExperimentView extends AbstractExperimentView implements BeforeLeaveObserver {
 
     protected ExperimentNotesField notesField;
-    private RewardFunctionBuilder rewardFunctionBuilder;
+    private RewardFunctionEditor rewardFunctionEditor;
     private RewardVariablesTable rewardVariablesTable;
     private SimulationParametersPanel simulationParametersPanel;
     private ObservationsPanel observationsPanel;
@@ -72,7 +70,6 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private FavoriteStar favoriteStar;
     private Div upgradeBannerExpCt;
     private Div upgradeBannerActMask;
-    private Button betaRewardTermsBanner;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
     private Button startRunButton;
@@ -82,7 +79,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private boolean isNeedsSaving = false;
     private boolean isPythonModel = false;
     private boolean hasRunningExperiments = false;
-    private boolean isTrialPlanUser = true;
+    private boolean isBasicPlanUser = true;
 
     private final int allowedRunsNoVerified;
 
@@ -108,6 +105,17 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     @Override
     protected Component getMainContent() {
+        HorizontalLayout mainContent = createMainPanel();
+        return mainContent;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
+    }
+
+    private HorizontalLayout createMainPanel() {
+
         createButtons();
 
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
@@ -115,12 +123,11 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // If in the future we allow navigation to experiments from other models, then we'll need to update the button accordingly on navigation
         downloadModelLink = new DownloadModelLink(experiment.getProject().getName(), experiment.getModel(), modelService, segmentIntegrator, false, isPythonModel);
 
-        VerticalLayout mainPanel = new VerticalLayout();
-        mainPanel.setPadding(false);
+        VerticalLayout mainPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
+        mainPanel.setSpacing(true);
         Span verifyEmailReminder = LabelFactory.createLabel("To run more experiments, please verify your email.", CssPathmindStyles.WARNING_LABEL);
         verifyEmailReminder.setVisible(!userService.isCurrentUserVerified() && runDAO.numberOfRunsByUser(userService.getCurrentUser().getId()) >= allowedRunsNoVerified);
         createUpgradeBanners();
-        createBetaRewardTermsBanner();
         favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
         HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
         titleWithStar.setSpacing(false);
@@ -135,39 +142,53 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 verifyEmailReminder,
                 upgradeBannerExpCt,
                 upgradeBannerActMask,
-                betaRewardTermsBanner,
-                titlePanel);
+                titlePanel,
+                LabelFactory.createLabel(
+                        "To judge if an action is a good one, we calculate a reward score. "
+                                + "The reward score is based on the reward function.",
+                        CssPathmindStyles.SECTION_SUBTITLE_LABEL));
         panelTitle.setClassName("panel-title");
 
+        Span errorDescriptionLabel = modelCheckerService.createInvalidErrorLabel(experiment.getModel());
+
+        VerticalLayout rewardVariablesPanel = WrapperUtils
+                .wrapVerticalWithNoPaddingOrSpacing(
+                        LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
+                        rewardVariablesTable);
+        rewardVariablesPanel.addClassName("reward-variables-panel");
+
+        SplitLayout rewardFunctionEditorWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardFunctionEditor,
+                rewardVariablesPanel,
+                70);
+        rewardFunctionEditorWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        
         SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationParametersPanel,
                 observationsPanel,
                 50);
+        simulationParametersAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
+        
+        SplitLayout rewardFunctionAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardFunctionEditorWrapper,
+                simulationParametersAndObservationsWrapper,
+                60);
+        rewardFunctionAndObservationsWrapper.setClassName("reward-function-wrapper");
+        rewardFunctionAndObservationsWrapper.addSplitterDragendListener(dragged -> rewardFunctionEditor.resize());
 
         settingsPanel = new SettingsViewContent(userService.getCurrentUser(), environmentManager, segmentIntegrator, true);
 
-        VerticalLayout rewardVariablesPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                LabelFactory.createLabel("Reward Variables", CssPathmindStyles.BOLD_LABEL),
-                rewardVariablesTable
-        );
-        rewardVariablesPanel.addClassName("reward-variables-panel");
-
-        SplitLayout notesAndSettings = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+        SplitLayout errorAndNotesContainer = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
+                rewardFunctionEditor.getRewardFunctionErrorPanel(),
                 notesField,
-                settingsPanel,
-                50);
+                70);
+        errorAndNotesContainer.setClassName("error-and-notes-container");
 
         SplitLayout bottomPanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-                rewardVariablesPanel,
-                notesAndSettings,
-                33);
+                errorAndNotesContainer,
+                settingsPanel,
+                75);
         bottomPanel.setClassName("bottom-panel");
-        
-        SplitLayout panelsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
-                simulationParametersAndObservationsWrapper,
-                bottomPanel,
-                50);
-        panelsWrapper.setClassName("panels-wrapper");
 
         splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
@@ -175,29 +196,22 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
 
-        SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
-            rewardFunctionBuilder,
-            panelsWrapper,
-            48);
-        splitWrapper.setClassName("split-wrapper");
-        splitWrapper.addSplitterDragendListener(dragged -> rewardFunctionBuilder.resize());
+        SplitLayout splitWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutVertical(
+            WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+                WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
+                errorDescriptionLabel,
+                rewardFunctionAndObservationsWrapper
+            ),
+            bottomPanel,
+            60);
+        splitWrapper.addSplitterDragendListener(event -> rewardFunctionEditor.resize());
 
-        VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            WrapperUtils.wrapWidthFullBetweenHorizontal(panelTitle, buttonsWrapper),
-            modelCheckerService.createInvalidErrorLabel(experiment.getModel()),
-            splitWrapper
-        );
+        mainPanel.add(splitWrapper);
+        mainPanel.setClassName("view-section");
 
-        viewSection.setClassName("view-section");
-
-        HorizontalLayout experimentViewWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, viewSection);
-        experimentViewWrapper.setSpacing(false);
-        return experimentViewWrapper;
-    }
-
-    @Override
-    protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
+        HorizontalLayout panelsWrapper = WrapperUtils.wrapWidthFullHorizontal(experimentsNavbar, mainPanel);
+        panelsWrapper.setSpacing(false);
+        return panelsWrapper;
     }
 
     private SplitButton createSplitButton() {
@@ -246,20 +260,12 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         upgradeBannerActMask.addClassName(CssPathmindStyles.WARNING_LABEL);
     }
 
-    private void createBetaRewardTermsBanner() {
-        betaRewardTermsBanner = new Button(new Div(new Span("Reward Terms UI"),
-            new Html("<sup>BETA</sup>"),
-            new Span("out now!")), click -> {
-                    segmentIntegrator.navigatedToBetaFeaturePageFromNewExpViewBanner();
-                    getUI().ifPresent(ui -> ui.navigate(BetaFeatureSettingsView.class));
-        });
-        betaRewardTermsBanner.addClassName("beta-feature-banner");
-    }
-
     private void createButtons() {
+        // The NewExperimentView doesn't need a lock on the archive because it can't be updated at the same time as an experiment is archived however to adhere to the action's requirement we just use the experiment.
         unarchiveExperimentButton = GuiUtils.getPrimaryButton("Unarchive", VaadinIcon.ARROW_BACKWARD.create(), click -> UnarchiveExperimentAction.unarchive(this, () -> getExperiment(), () -> getExperiment()));
-        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this));
-        saveDraftButton = new Button("Save Draft", click -> SaveDraftAction.saveDraft(this));
+        startRunButton = GuiUtils.getPrimaryButton("▶ Train Policy", click -> StartRunAction.startRun(this, rewardFunctionEditor));
+        saveDraftButton = new Button("Save Draft", click -> handleSaveDraftClicked(() -> {
+        }));
         archiveButton = GuiUtils.getPrimaryButton("Archive", click -> ArchiveExperimentAction.archive(experiment, this));
     }
 
@@ -271,9 +277,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         Model model = experiment.getModel();
         boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
         return ModelUtils.isValidModel(model)
-                && (!isTrialPlanUser || (isTrialPlanUser && !hasRunningExperiments))
-                && (!isTrialPlanUser || (isTrialPlanUser && !model.isActionmask()))
-                && (isPyModel || rewardFunctionBuilder.isValidForTraining())
+                && (!isBasicPlanUser || (isBasicPlanUser && !hasRunningExperiments))
+                && (!isBasicPlanUser || (isBasicPlanUser && !model.isActionmask()))
+                && (isPyModel || rewardFunctionEditor.isValidForTraining())
                 && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
                 && !experiment.isArchived()
                 && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
@@ -288,13 +294,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     public void setNeedsSaving() {
         isNeedsSaving = true;
-        setButtonsEnablement();
-    }
-
-    public void setButtonsEnablement() {
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
+    }
+
+    public Experiment getUpdatedExperiment() {
+        experiment.setRewardFunction(rewardFunctionEditor.getExperiment().getRewardFunction());
+        experiment.setSelectedObservations(observationsPanel.getSelectedObservations());
+        return experiment;
     }
 
     public void saveAdvancedSettings() {
@@ -313,17 +321,22 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     public void beforeLeave(BeforeLeaveEvent event) {
         ContinueNavigationAction action = event.postpone();
+        saveDraftExperiment(() -> action.proceed());
+    }
+
+    // STEPH -> TODO -> Clean this up so that it's consistent with the rest.
+    public void saveDraftExperiment(Command afterClickedCallback) {
         if (isNeedsSaving) {
-            handleSaveDraftClicked(action::proceed);
+            handleSaveDraftClicked(afterClickedCallback);
         } else {
-            action.proceed();
+            afterClickedCallback.execute();
         }
     }
 
     @Override
     public void updateComponents() {
         super.updateComponents();
-        isTrialPlanUser = userService.getCurrentUser().isTrialPlanUser();
+        isBasicPlanUser = userService.getCurrentUser().isBasicPlanUser();
         hasRunningExperiments = experimentDAO.getExperimentsWithRunStatusCountForUser(userService.getCurrentUserId(), RunStatus.RUNNING_STATES_CODES) > 0;
         splitButton.setVisible(!experiment.isArchived());
         favoriteStar.setValue(experiment.isFavorite());
@@ -331,16 +344,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         saveDraftButton.setEnabled(isNeedsSaving);
         startRunButton.setEnabled(canStartTraining());
         splitButton.enableMainButton(canStartTraining());
-        upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && hasRunningExperiments);
-        upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && experiment.getModel().isActionmask());
-        betaRewardTermsBanner.setVisible(!userService.getCurrentUser().isRewardTermsOn());
+        upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && hasRunningExperiments);
+        upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isBasicPlanUser && experiment.getModel().isActionmask());
     }
 
     @Override
     public void setExperiment(Experiment experiment) {
-        if (isNeedsSaving) {
-            SaveDraftAction.saveDraft(this);
-        }
+        saveDraftExperiment(() -> {
+        });
+        // We need to override this method so that we can reset the needs saving so that it doesn't retain the previous state.
         disableSaveNeeded();
         favoriteStar.setValue(experiment.isFavorite());
         super.setExperiment(experiment);
@@ -359,14 +371,16 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     protected boolean isValidViewForExperiment(BeforeEnterEvent event) {
         if (experiment.isDraft()) {
             return true;
+        } else {
+            // If incorrect then we need to both use the event.forwardTo rather than ui.navigate otherwise it will continue to process the view.
+            event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
+            return false;
         }
-        event.forwardTo(Routes.EXPERIMENT, ""+experimentId);
-        return false;
     }
 
     protected void createExperimentComponents() {
         createAndSetupNotesField();
-        rewardFunctionBuilder = new RewardFunctionBuilder(this, rewardValidationService, userService.getCurrentUser().isRewardTermsOn());
+        rewardFunctionEditor = new RewardFunctionEditor(this, rewardValidationService);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         observationsPanel = new ObservationsPanel(experiment.getModelObservations(), false, this);
         rewardVariablesTable = new RewardVariablesTable();
@@ -374,7 +388,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
         experimentComponentList.addAll(List.of(
                 notesField,
-                rewardFunctionBuilder,
+                rewardFunctionEditor,
                 observationsPanel,
                 rewardVariablesTable,
                 simulationParametersPanel));

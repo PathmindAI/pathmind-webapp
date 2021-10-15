@@ -46,7 +46,6 @@ Feature: New experiment page
     When Open projects page
     When Open project AutotestProject on projects page
     Then Click the experiment name 1
-    When Click new experiment reward terms beta switch
     Then Input reward function reward -= after.balked_customers - before.balked_customers; // Minimize balked customers test3
     When Click project save draft btn
     When Click back button

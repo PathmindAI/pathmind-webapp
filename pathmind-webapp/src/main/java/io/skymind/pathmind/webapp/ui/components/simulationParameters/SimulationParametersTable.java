@@ -35,10 +35,10 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
 
     private final List<SimulationParametersRowField> simulationParametersRowFields = new ArrayList<>();
     private final boolean isReadOnly;
-    private final boolean isTrialPlanUser;
+    private final boolean isBasicPlanUser;
 
     public SimulationParametersTable(boolean isReadOnly, PathmindUser currentUser, SegmentIntegrator segmentIntegrator) {
-        this.isTrialPlanUser = currentUser.isTrialPlanUser();
+        this.isBasicPlanUser = currentUser.isBasicPlanUser();
         this.isReadOnly = isReadOnly;
         this.segmentIntegrator = segmentIntegrator;
         container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
@@ -84,7 +84,7 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
 
             for (int i = 0; i < this.simulationParameters.size(); i++) {
                 SimulationParameter simulationParam = this.simulationParameters.get(i);
-                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam), isTrialPlanUser);
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam), isBasicPlanUser);
                 if (!this.modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
                     row.setIsDifferentFromDefault(true);
                 }
@@ -95,7 +95,7 @@ public class SimulationParametersTable extends CustomField<Collection<Simulation
                 simulationParametersRowFields.add(row);
             }
 
-            if (isTrialPlanUser && !isReadOnly) {
+            if (isBasicPlanUser && !isReadOnly) {
                 UpgradeCtaOverlay upgradeCtaOverlay = new UpgradeCtaOverlay("Simulation Parameters", segmentIntegrator);
                 getElement().addEventListener("click", event -> upgradeCtaOverlay.open());
                 container.add(upgradeCtaOverlay);

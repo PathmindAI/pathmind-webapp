@@ -1,6 +1,5 @@
 package io.skymind.pathmind.services;
 
-import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,23 +18,15 @@ import static io.skymind.pathmind.shared.utils.VariableParserUtils.removeArrayIn
 @Slf4j
 @Service
 public class RewardValidationService {
-    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables, Boolean isRewardFunction) {
+    public List<String> validateRewardFunction(String rewardFunction, List<RewardVariable> rewardVariables) {
         final ArrayList<String> errors = new ArrayList<>();
         final String invalidRewardFunctionText = "ERROR: Invalid reward function";
         if (rewardFunction.isEmpty() || rewardFunction.matches("[\\r\\n]*")) {
-            if (isRewardFunction) {
-                errors.add("Training cannot be started when the reward function is empty.");
-            }
+            errors.add("Training cannot be started when the reward function is empty.");
             return errors;
         }
         if (containsOnlyComments(rewardFunction)) {
-            if (isRewardFunction) {
-                errors.add("Training cannot be started when the reward function consists of only comments.");
-            }
-            return errors;
-        }
-        if (rewardFunction.length() > Experiment.REWARD_FUNCTION_MAX_LENGTH) {
-            errors.add("Max. "+Experiment.REWARD_FUNCTION_MAX_LENGTH+" characters.");
+            errors.add("Training cannot be started when the reward function consists of only comments.");
             return errors;
         }
         if (rewardFunction.indexOf("reward") < 0) {

@@ -131,7 +131,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentObservationsPanel.setComparisonModeTheOtherSelectedObservations(
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
-                comparisonExperiment.getRewardFunction(), comparisonExperiment.getRewardFunctionFromTerms(), comparisonExperiment.isWithRewardTerms());
+                comparisonExperiment.getRewardFunction());
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
                 comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
@@ -148,7 +148,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentObservationsPanel.unhighlight();
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
-        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null, null, false);
+        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -355,9 +355,12 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         experimentsNavbar.setVisible(!experiment.isArchived());
-        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(experiment.getSelectedObservations());
-        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(experiment.getRewardFunction(), experiment.getRewardFunctionFromTerms(), experiment.isWithRewardTerms());
-        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(experiment.getSimulationParameters());
+        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(
+                experiment.getSelectedObservations());
+        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(
+                experiment.getRewardFunction());
+        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(
+                experiment.getSimulationParameters());
     }
 
     @Override

@@ -124,7 +124,7 @@ public class SecurityConfiguration {
                             if (resultHasActiveSubscription.getResult()) {
                                 user.setAccountType(UserRole.Professional.getId());
                             } else {
-                                user.setAccountType(UserRole.Trial.getId());
+                                user.setAccountType(UserRole.Basic.getId());
                             }
                             if(initRole != user.getAccountType()) {
                                 log.info("Change userRole for user {} {} -> {}", user.getEmail(), initRole, user.getAccountType());

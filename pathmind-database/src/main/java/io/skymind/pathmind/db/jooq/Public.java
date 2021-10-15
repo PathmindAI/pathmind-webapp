@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
-import io.skymind.pathmind.db.jooq.tables.RewardTerm;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
@@ -95,11 +94,6 @@ public class Public extends SchemaImpl {
     public final RewardScore REWARD_SCORE = RewardScore.REWARD_SCORE;
 
     /**
-     * The table <code>public.reward_term</code>.
-     */
-    public final RewardTerm REWARD_TERM = RewardTerm.REWARD_TERM;
-
-    /**
      * The table <code>public.reward_variable</code>.
      */
     public final RewardVariable REWARD_VARIABLE = RewardVariable.REWARD_VARIABLE;
@@ -166,7 +160,6 @@ public class Public extends SchemaImpl {
             Policy.POLICY,
             Project.PROJECT,
             RewardScore.REWARD_SCORE,
-            RewardTerm.REWARD_TERM,
             RewardVariable.REWARD_VARIABLE,
             Run.RUN,
             RunAdminNote.RUN_ADMIN_NOTE,

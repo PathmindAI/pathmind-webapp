@@ -65,7 +65,7 @@ public class RewardVariablesTable extends VerticalLayout implements ExperimentCo
     }
 
     public void setRewardVariables(List<RewardVariable> rewardVariables) {
-        if (rewardVariableNameFields.isEmpty() && container.getComponentCount() == 0) {
+        if (rewardVariableNameFields.isEmpty()) {
             HorizontalLayout headerRow = WrapperUtils.wrapWidthFullHorizontal(new Span("Metric"), new Span("Goal"));
             headerRow.addClassName("header-row");
             GuiUtils.removeMarginsPaddingAndSpacing(headerRow);

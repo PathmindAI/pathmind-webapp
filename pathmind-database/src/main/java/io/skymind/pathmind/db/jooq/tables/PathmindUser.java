@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row20;
+import org.jooq.Row19;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -147,11 +147,6 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
      */
     public final TableField<PathmindUserRecord, LocalDateTime> API_KEY_CREATED_AT = createField(DSL.name("api_key_created_at"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("now()", SQLDataType.LOCALDATETIME)), this, "");
 
-    /**
-     * The column <code>public.pathmind_user.reward_terms_on</code>.
-     */
-    public final TableField<PathmindUserRecord, Boolean> REWARD_TERMS_ON = createField(DSL.name("reward_terms_on"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
-
     private PathmindUser(Name alias, Table<PathmindUserRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -237,11 +232,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row20 type methods
+    // Row19 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row20<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String, LocalDateTime, Boolean> fieldsRow() {
-        return (Row20) super.fieldsRow();
+    public Row19<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String, LocalDateTime> fieldsRow() {
+        return (Row19) super.fieldsRow();
     }
 }

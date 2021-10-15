@@ -3,7 +3,10 @@ package io.skymind.pathmind.bddtests.stepdefinitions;
 import java.util.Date;
 
 import cucumber.api.java.en.When;
-import io.skymind.pathmind.bddtests.steps.*;
+import io.skymind.pathmind.bddtests.steps.GenericPageSteps;
+import io.skymind.pathmind.bddtests.steps.HomePageSteps;
+import io.skymind.pathmind.bddtests.steps.NewExperimentSteps;
+import io.skymind.pathmind.bddtests.steps.ProjectsPageSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.ModelDetailsSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.ModelUploadSteps;
 import io.skymind.pathmind.bddtests.steps.wizard.NewProjectSteps;
@@ -29,8 +32,6 @@ public class CreateProjectStepDefinitions {
     private NewExperimentSteps newExperimentSteps;
     @Steps
     private RewardVariablesSteps rewardVariablesSteps;
-    @Steps
-    private NewExperimentV2Steps newExperimentV2Steps;
 
     @When("^Create new empty project$")
     public void createNewEmptyProject() {
@@ -60,18 +61,8 @@ public class CreateProjectStepDefinitions {
     @When("^Create new CoffeeShop project with single reward function$")
     public void createNewProjectWithModel() {
         createNewProjectWithModelAndDraftExperiment();
-        newExperimentV2Steps.enableBetaFeature();
-        newExperimentV2Steps.switchToRewardTermsBeta();
-        newExperimentV2Steps.addRewardTerm("kitchenCleanlinessLevel", "Maximize", "1");
-        newExperimentV2Steps.addRewardTerm("successfulCustomers", "Minimize", "2");
-        newExperimentV2Steps.addRewardTerm("balkedCustomers", "Maximize", "3");
-        newExperimentV2Steps.addRewardTerm("avgServiceTime", "Minimize", "4");
+        newExperimentSteps.inputRewardFunctionFile("CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt");
         newExperimentSteps.clickProjectSaveDraftBtn();
-    }
-
-    @When("^Click new experiment reward terms beta switch$")
-    public void switchToRewardTermsBeta() {
-        newExperimentV2Steps.switchToRewardTermsBeta();
     }
 
     @When("^Create new CoffeeShop project with 4 variables reward function$")

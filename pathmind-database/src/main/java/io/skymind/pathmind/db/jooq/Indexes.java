@@ -14,7 +14,6 @@ import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
-import io.skymind.pathmind.db.jooq.tables.RewardTerm;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.SimulationParameter;
@@ -46,7 +45,6 @@ public class Indexes {
     public static final Index POLICY_RUN_FK_INDEX = Internal.createIndex(DSL.name("policy_run_fk_index"), Policy.POLICY, new OrderField[] { Policy.POLICY.RUN_ID }, false);
     public static final Index PROJECT_PATHMIND_USER_FK_INDEX = Internal.createIndex(DSL.name("project_pathmind_user_fk_index"), Project.PROJECT, new OrderField[] { Project.PROJECT.PATHMIND_USER_ID }, false);
     public static final Index REWARD_SCORE_POLICY_ID_INDEX = Internal.createIndex(DSL.name("reward_score_policy_id_index"), RewardScore.REWARD_SCORE, new OrderField[] { RewardScore.REWARD_SCORE.POLICY_ID }, false);
-    public static final Index REWARD_TERM_EXPERIMENT_ID = Internal.createIndex(DSL.name("reward_term_experiment_id"), RewardTerm.REWARD_TERM, new OrderField[] { RewardTerm.REWARD_TERM.EXPERIMENT_ID }, false);
     public static final Index REWARD_VARIABLE_MODEL_FK_INDEX = Internal.createIndex(DSL.name("reward_variable_model_fk_index"), RewardVariable.REWARD_VARIABLE, new OrderField[] { RewardVariable.REWARD_VARIABLE.MODEL_ID }, false);
     public static final Index RUN_EXPERIMENT_FK_INDEX = Internal.createIndex(DSL.name("run_experiment_fk_index"), Run.RUN, new OrderField[] { Run.RUN.EXPERIMENT_ID }, false);
     public static final Index SIMULATION_PARAMETER_MODEL_ID_EXP_ID_INDEX = Internal.createIndex(DSL.name("simulation_parameter_model_id_exp_id_index"), SimulationParameter.SIMULATION_PARAMETER, new OrderField[] { SimulationParameter.SIMULATION_PARAMETER.MODEL_ID, SimulationParameter.SIMULATION_PARAMETER.EXPERIMENT_ID }, false);

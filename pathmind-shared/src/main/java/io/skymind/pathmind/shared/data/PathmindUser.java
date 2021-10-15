@@ -35,7 +35,6 @@ public class PathmindUser extends Data implements DeepCloneableInterface<Pathmin
     private String stripeCustomerId;
     private String newEmailToVerify;
 	private String apiKey;
-    private boolean rewardTermsOn;
 	private LocalDateTime apiKeyCreatedAt;
 
     private List<Project> projects;
@@ -48,8 +47,8 @@ public class PathmindUser extends Data implements DeepCloneableInterface<Pathmin
         return UserRole.getEnumFromId(this.accountType);
     }
 
-    public boolean isTrialPlanUser() {
-        return UserRole.Trial.equals(getAccountType());
+    public boolean isBasicPlanUser() {
+        return UserRole.Basic.equals(getAccountType());
     }
 
     public boolean isSupportAccountType() {
@@ -81,7 +80,6 @@ public class PathmindUser extends Data implements DeepCloneableInterface<Pathmin
                 .stripeCustomerId(stripeCustomerId)
                 .newEmailToVerify(newEmailToVerify)
                 .apiKey(apiKey)
-                .rewardTermsOn(rewardTermsOn)
                 .apiKeyCreatedAt(apiKeyCreatedAt)
                 .build();
     }

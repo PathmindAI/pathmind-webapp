@@ -40,7 +40,6 @@ public class Routes {
     public static final String PROJECTS = "projects";
 
     public static final String SETTINGS = "settings";
-    public static final String BETA_SETTINGS = "beta-settings";
 
     public static final String SEARCHRESULTS = "search-results";
 }

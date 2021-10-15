@@ -47,7 +47,6 @@ dependencies:
   lit-html: 1.4.1
   lodash: 4.17.21
   multiselect-combo-box: 2.4.2
-  sortablejs: 1.10.2
   timeago.js: 4.0.2
   to-string-loader: 1.1.6
 devDependencies:
@@ -10063,10 +10062,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-SpmVOVpdq0DJc0qArhF3E5xsxvaiqGNb73XfgBpK1y3UD5gs8DSo8aCTsuT5pX8rssdc2NDIzANwP9eCAiSdTA==
-  /sortablejs/1.10.2:
-    dev: false
-    resolution:
-      integrity: sha512-YkPGufevysvfwn5rfdlGyrGjt7/CRHwvRPogD/lC+TnvcN29jDpCifKP+rBqf+LRldfXSTh+0CGLcSg0VIxq3A==
   /source-list-map/2.0.1:
     dev: true
     resolution:
@@ -11433,7 +11428,6 @@ specifiers:
   multiselect-combo-box: 2.4.2
   polymer-webpack-loader: ^2.0.3
   raw-loader: 3.1.0
-  sortablejs: 1.10.2
   terser: 4.6.7
   timeago.js: 4.0.2
   to-string-loader: ^1.1.6

@@ -1,6 +1,4 @@
-rewardTermsRaw[0] += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchenCleanlinessLevel
-rewardTermsRaw[1] += -1*(after.successfulCustomers - before.successfulCustomers); // Minimize successfulCustomers
-rewardTermsRaw[2] += after.balkedCustomers - before.balkedCustomers; // Maximize balkedCustomers
-rewardTermsRaw[3] += -1*(after.avgServiceTime - before.avgServiceTime); // Minimize avgServiceTime
-
-reward_terms_weights=1.0, 2.0, 3.0, 4.0
+reward += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchen cleanliness test1
+reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2
+reward -= after.balkedCustomers - before.balkedCustomers; // Minimize balked customers test3
+reward -= after.avgServiceTime - before.avgServiceTime; // Minimize average service time test4
