@@ -58,8 +58,3 @@ kubectl create configmap canary \
 	-o yaml \
 	--dry-run | kubectl replace -f -
 
-#make sure the libraries for model analyzer are ready
-if [ "${environment}" != "staging" ]
-then
-	curl -X PUT -u "${apiuser}:${apipassword}" https://${subdomain}${domain}/api/MAlib/${environment}
-fi
