@@ -7,6 +7,9 @@ import java.util.Optional;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
+import org.jooq.UpdateConditionStep;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateWhereStep;
 
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
@@ -73,29 +76,6 @@ class ModelRepository {
         return mod.key().get(MODEL.ID);
     }
 
-
-    protected static void updateHasGoals(DSLContext ctx, long modelId, boolean hasGoals) {
-        ctx.update(MODEL)
-                .set(MODEL.HAS_GOALS, hasGoals)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
-    protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
-        ctx.update(MODEL)
-                .set(MODEL.USER_NOTES, userNotes)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
-    protected static void updateModel(DSLContext ctx, long modelId, boolean draft, String userNotes) {
-        ctx.update(MODEL)
-                .set(MODEL.DRAFT, draft)
-                .set(MODEL.USER_NOTES, userNotes)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
     public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
         return Optional.ofNullable(ctx
                 .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.PACKAGE_NAME, MODEL.ARCHIVED,
@@ -124,4 +104,12 @@ class ModelRepository {
                 .limit(1)
                 .fetchAnyInto(Model.class);
     }
+
+    protected static void update(DSLContext ctx, ModelUpdateRequest updateRequest) {
+        UpdateSetFirstStep update =  ctx.update(MODEL);
+        updateRequest.updates.forEach((f,v) -> update.set(f, v));
+        UpdateConditionStep<?> command = ((UpdateWhereStep<?>)update).where(MODEL.ID.eq(updateRequest.modelId));
+        command.execute();
+    }
+
 }
