@@ -4,6 +4,7 @@ import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import lombok.Getter;
 import org.jooq.TableField;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ public class ModelUpdateRequest {
 
     public ModelUpdateRequest projectId(long projectId) {
         updates.put(MODEL.PROJECT_ID, projectId);
+        updates.put(MODEL.PROJECT_CHANGED_AT, LocalDateTime.now());
         return this;
     }
 

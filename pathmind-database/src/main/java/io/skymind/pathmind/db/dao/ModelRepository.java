@@ -17,10 +17,10 @@ import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 class ModelRepository {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-                .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE, MODEL.MODEL_TYPE)
+                .select(MODEL.asterisk())
                 .from(MODEL)
                 .where(MODEL.PROJECT_ID.eq(projectId))
-                .orderBy(MODEL.ID.desc())
+                .orderBy(MODEL.PROJECT_CHANGED_AT.desc(), MODEL.ID.desc())
                 .fetchInto(Model.class);
     }
 
@@ -108,6 +108,7 @@ class ModelRepository {
     protected static void update(DSLContext ctx, ModelUpdateRequest updateRequest) {
         UpdateSetFirstStep update =  ctx.update(MODEL);
         updateRequest.updates.forEach((f,v) -> update.set(f, v));
+        update.set(MODEL.LAST_ACTIVITY_DATE, LocalDateTime.now());
         UpdateConditionStep<?> command = ((UpdateWhereStep<?>)update).where(MODEL.ID.eq(updateRequest.modelId));
         command.execute();
     }

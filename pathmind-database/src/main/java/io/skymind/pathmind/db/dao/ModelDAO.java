@@ -61,7 +61,7 @@ public class ModelDAO {
         ModelRepository.update(ctx, new ModelUpdateRequest(modelId).name(newName));
     }
 
-    public void assignProject(long modelId, long userId, long projectId) {
+    public void assignProject(long modelId, long projectId) {
         ModelRepository.update(ctx, new ModelUpdateRequest(modelId).projectId(projectId));
     }
 

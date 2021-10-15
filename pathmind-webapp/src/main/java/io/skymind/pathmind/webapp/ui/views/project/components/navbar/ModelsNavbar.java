@@ -1,7 +1,6 @@
 package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,6 +11,9 @@ import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
 
 public class ModelsNavbar extends VerticalLayout {
     private List<Model> models;
@@ -73,8 +75,11 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private void addModelsToNavbar() {
-        models.sort(Comparator.comparing(Model::getDateCreated, Comparator.reverseOrder()));
-        models.stream().forEach(model -> {
+        models.sort(
+                comparing(Model::getProjectChangedAt, reverseOrder())
+                        .thenComparing(Model::getDateCreated, reverseOrder())
+        );
+        models.forEach(model -> {
                 ModelsNavbarItem navBarItem = createModelsNavbarItem(model);
                 modelsNavbarItems.add(navBarItem);
                 if (model.equals(selectedModel)) {
