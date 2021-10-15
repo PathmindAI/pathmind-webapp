@@ -57,4 +57,3 @@ kubectl create configmap canary \
 	-n ${namespace} \
 	-o yaml \
 	--dry-run | kubectl replace -f -
-

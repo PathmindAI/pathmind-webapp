@@ -48,6 +48,7 @@
     "lit-html": "1.4.1",
     "lodash": "^4.17.20",
     "multiselect-combo-box": "2.4.2",
+    "sortablejs": "1.10.2",
     "timeago.js": "4.0.2",
     "to-string-loader": "^1.1.6"
   },
@@ -134,6 +135,7 @@
       "lit-element": "2.5.1",
       "lit-html": "1.4.1",
       "multiselect-combo-box": "2.4.2",
+      "sortablejs": "1.10.2",
       "timeago.js": "4.0.2"
     },
     "devDependencies": {
@@ -154,6 +156,6 @@
       "webpack-dev-server": "3.11.0",
       "webpack-merge": "4.2.2"
     },
-    "hash": "51ef74755b3ecc06f8532c463c8fe32b92511789b040fa9aca0e26c2cc6d89d2"
+    "hash": "aaa1c275c567aa69e11d2fc3143d0525f892e867dc61f1107afde31ab238683d"
   }
 }

@@ -95,6 +95,12 @@ border: 1px solid rgb(181, 213, 255);\
 }\
 .ace-eclipse .ace_indent-guide {\
 background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAE0lEQVQImWP4////f4bLly//BwAmVgd1/w11/gAAAABJRU5ErkJggg==") right repeat-y;\
+}\
+.ace_emptyMessage {\
+width: 100%;\
+height: 100%;\
+white-space: pre;\
+overflow: auto;\
 }';
 
     exports.cssClass = "ace-eclipse";

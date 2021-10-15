@@ -8,7 +8,6 @@ Feature: Experiment page compare feature
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click new experiment page observation checkbox 'collectQueueSize'
     When Click new experiment page observation checkbox 'kitchenCleanlinessLevel'
     When Click project start run button
@@ -40,7 +39,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
     Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt'
+    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check elements of two stopped experiments
     Given Login to the pathmind
@@ -52,7 +51,6 @@ Feature: Experiment page compare feature
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click new experiment page observation checkbox 'collectQueueSize'
     When Click new experiment page observation checkbox 'kitchenCleanlinessLevel'
     When Click project start run button
@@ -90,7 +88,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
     Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt'
+    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check elements of stopped and one running experiment
     Given Login to the pathmind
@@ -102,7 +100,6 @@ Feature: Experiment page compare feature
     When In confirmation dialog click in 'Share Training' button
     When Click pop-up dialog close btn
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click new experiment page observation checkbox 'collectQueueSize'
     When Click new experiment page observation checkbox 'kitchenCleanlinessLevel'
     When Click project start run button
@@ -137,7 +134,7 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
     Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt'
+    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check reward variables chosen
     Given Login to the pathmind
@@ -147,7 +144,6 @@ Feature: Experiment page compare feature
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click project start run button
     When Click experiment page share with support btn
     When In confirmation dialog click in 'Share Training' button
@@ -233,7 +229,6 @@ Feature: Experiment page compare feature
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
     When Click in 'New Experiment' button
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
     When Click project start run button
     When Click side nav 'Compare' button from navbarItemMenu for 'Experiment #1'
     When Experiment page click comparison floating close btn
@@ -241,7 +236,7 @@ Feature: Experiment page compare feature
   Scenario: Check experiments comparison diff
     Given Login to the pathmind
     When Create new CoffeeShop project with draft experiment
-    When Input from file reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    When Input from file reward function CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt
     When Click new experiment page observation checkbox 'orderQueueSize'
     When Click new experiment page observation checkbox 'timeOfDay'
     When Click project start run button
@@ -268,4 +263,3 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'primary' reward variable 'balkedCustomers' is highlighted 'true'
     Then Experiment page Check 'primary' reward variable 'avgServiceTime' is highlighted 'true'
     Then Experiment page Check 'secondary' reward variable 'kitchenCleanlinessLevel' is highlighted 'true'
-    Then Experiment page Check 'secondary' reward variable 'reward += after.successfulCustomers - before.successfulCustomers; // Maximize successful exits test2 reward -= after.balkedCustomers - before.balkedCustomers; // Minimize balked customers test3 reward -= after.avgServiceTime - before.avgServiceTime; // Minimize average service time test4' is highlighted 'true'

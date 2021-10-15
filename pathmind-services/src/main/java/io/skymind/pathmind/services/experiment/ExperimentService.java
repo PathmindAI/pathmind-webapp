@@ -125,14 +125,13 @@ public class ExperimentService {
                 String reqId = "project_" + model.getProjectId();
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
-                HyperparametersDTO analysisResult =
-                        projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
-                if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
-                    throw new ModelCheckException(analysisResult.getFailedSteps());
-                }
                 if (isPathmindSimulation) {
                     model.setModelType(ModelType.PM_SINGLE.getValue());
                 } else {
+                    HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
+                    if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
+                        throw new ModelCheckException(analysisResult.getFailedSteps());
+                    }
                     model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
                 }
                 model.setPackageName(String.join(";", environment, obsSelection, rewFctName));

@@ -29,14 +29,20 @@ public class AccountUpgradeViewContent extends LitTemplate {
                                      @Value("${pathmind.contact-support.address}") String contactLink,
                                      @Value("${pathmind.stripe.public.key}") String publicKey,
                                      SegmentIntegrator segmentIntegrator) {
+        Boolean isTrialPlanUser = currentUser.getUser().isTrialPlanUser();
         getElement().setProperty("contactLink", contactLink);
         getElement().setProperty("key", publicKey);
         getElement().setProperty("userApiKey", currentUser.getUser().getApiKey());
         getElement().setProperty("apiUrl", apiUrl);
+        getElement().setProperty("isTrialUser", isTrialPlanUser);
 
-        proBtn.addClickListener(e -> getUI().ifPresent(ui -> {
-            segmentIntegrator.upgradeToProPlanClicked();
-        }));
+        if (isTrialPlanUser) {
+            proBtn.addClickListener(e -> getUI().ifPresent(ui -> {
+                segmentIntegrator.upgradeToProPlanClicked();
+            }));
+        } else {
+            proBtn.setVisible(false);
+        }
     }
 
 }
