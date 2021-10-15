@@ -197,8 +197,6 @@ public class ExperimentPage extends PageObject {
         e.findElement(By.cssSelector("vaadin-button")).click();
         WebElement notesShadow = utils.expandRootElement(notesBlock);
         notesShadow.findElement(notesTextarea).click();
-        notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "A");
-        notesShadow.findElement(notesTextarea).sendKeys(Keys.BACK_SPACE);
         notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "V");
         notesShadow.findElement(notesSaveBtn).click();
     }

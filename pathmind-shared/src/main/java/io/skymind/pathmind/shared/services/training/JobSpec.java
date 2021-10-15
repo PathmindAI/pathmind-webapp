@@ -27,7 +27,6 @@ public class JobSpec {
     private final String variables;
     private final String reset;
     private final String reward;
-    private final String termsWeight;
     private final String metrics; // Disabled for now. Proper Metrics support will probably need a bit of
     // re-engineering across the webapp, Pathmind Helper and NativeRL
     private final List<Observation> selectedObservations;

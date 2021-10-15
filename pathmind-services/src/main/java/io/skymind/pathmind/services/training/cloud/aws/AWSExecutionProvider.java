@@ -389,8 +389,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
             case VERSION_1_6_2:
             case VERSION_1_7_0:
             case VERSION_1_7_1:
-            case VERSION_1_7_2:
-            case VERSION_1_8_0:
                 nativerlVersion.fileNames().forEach(filename -> {
                     instructions.addAll(Arrays.asList(
                         // Setup NativeRL
@@ -568,7 +566,7 @@ public class AWSExecutionProvider implements ExecutionProvider {
         instructions.addAll(Arrays.asList(
                 var("CLASS_SNIPPET", job.getVariables()),
                 var("RESET_SNIPPET", job.getReset()),
-                var("REWARD_TERMS_SNIPPET", job.getReward()),
+                var("REWARD_SNIPPET", job.getReward()),
                 var("OBSERVATION_SNIPPET", "file:" + OBS_SNIPPET_FILE),
                 var("SIMULATION_PARAMETER_SNIPPET", "file:" + SIM_PARAM_SNIPPET_FILE),
                 var("METRICS_SNIPPET", job.getMetrics()),
@@ -599,20 +597,10 @@ public class AWSExecutionProvider implements ExecutionProvider {
                 var("TRAIN_BATCH_MODE", job.getEnv().getBatchMode().toString()),
                 var("ROLLOUT_FRAGMENT_LENGTH", String.valueOf(job.getEnv().getRolloutFragmentLength())),
                 var("NUM_WORKERS", String.valueOf(job.getEnv().getNumWorker())),
-                var("NUM_CPUS", String.valueOf(2)),
-                var("USE_AUTO_NORM", String.valueOf(job.getEnv().isUseAutoNorm())),
-                var("REWARD_BALANCE_PERIOD", String.valueOf(job.getEnv().getRewardBalancePeriod()))
+                var("NUM_CPUS", String.valueOf(2))
         ));
 
-        if (StringUtils.isNotEmpty(job.getTermsWeight())) {
-            instructions.add(var("REWARD_TERMS_WEIGHTS", job.getTermsWeight()));
-            instructions.add(var("NUM_REWARD_TERMS", String.valueOf(job.getTermsWeight().split(",").length)));
-        }
-
         if (job.getEnv().getTrainBatchSize() != 0) {
-            // this condition is used because train_batch_size is optional in nativerl
-            // it is also used for a null check condition in python
-            // https://github.com/SkymindIO/nativerl/pull/378/files
             instructions.add(var("TRAIN_BATCH_SIZE", String.valueOf(job.getEnv().getTrainBatchSize())));
         }
 

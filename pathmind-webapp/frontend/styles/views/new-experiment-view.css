@@ -4,26 +4,28 @@
 }
 
 .new-experiment-view .view-section {
-    height: calc(100vh - 5rem) !important;
+    height: calc(100vh - 5rem);
     padding: 0;
     border-radius: 0;
     overflow: auto;
 }
 
-.new-experiment-view .view-section > vaadin-horizontal-layout:first-child {
-    flex: 0 0 auto;
+.new-experiment-view .view-section > vaadin-split-layout > vaadin-vertical-layout[slot~="primary"] {
+    overflow: visible;
 }
 
 .new-experiment-view .page-title + vaadin-horizontal-layout {
     flex: 1;
 }
 
-.new-experiment-view .panel-title > vaadin-horizontal-layout {
-  padding: var(--lumo-space-s);
+.new-experiment-view .panel-title .section-subtitle-label {
+    max-width: 460px;
+    padding: 0 var(--lumo-space-m) var(--lumo-space-m);
 }
 
 .new-experiment-view .panel-title + vaadin-horizontal-layout {
-    padding: var(--lumo-space-s) var(--lumo-space-s) 0 0;
+    height: 6.3rem;
+    padding: var(--lumo-space-m) var(--lumo-space-m) 0 0;
 }
 
 .new-experiment-view .warning-label {
@@ -31,8 +33,8 @@
     background: rgba(254, 193, 65, 0.7);
     padding: var(--lumo-space-xs);
     border: 1px solid var(--pm-gold-color);
-    border-radius: var(--lumo-border-radius-s);
-    margin: var(--lumo-space-s) var(--lumo-space-s) 0;
+    border-radius: var(--lumo-border-radius);
+    margin: var(--lumo-space-m) var(--lumo-space-m) 0;
 }
 
 .new-experiment-view .warning-label vaadin-button {
@@ -40,8 +42,7 @@
 }
 
 .new-experiment-view .section-title-label {
-  font-size: var(--lumo-font-size-l);
-  line-height: 1;
+    line-height: 1;
 }
 
 .new-experiment-view .bold-label {
@@ -61,18 +62,8 @@
 }
 
 .new-experiment-view .reward-function-wrapper {
-  flex: 1 1 auto;
-  max-height: calc(100% - 3.875rem);
-  margin-top: 0;
-}
-
-.new-experiment-view .reward-function-header {
-  background-color: var(--pm-app-bg-color);
-  padding-right: var(--lumo-space-xs);
-}
-
-.new-experiment-view .reward-function-header toggle-button {
-  width: 27rem;
+    flex: 1 1 auto;
+    margin-top: 0;
 }
 
 .new-experiment-view .reward-function-wrapper > vaadin-vertical-layout,
@@ -81,7 +72,7 @@
 }
 
 .new-experiment-view .reward-fn-panel-container {
-  flex: 2;
+    flex: 2;
 }
 
 .new-experiment-view .reward-variables-panel .reward-function-wrapper .reward-variables-table {
@@ -94,6 +85,10 @@
     line-height: 1;
     padding: 0 var(--lumo-space-xs) var(--lumo-space-xxxs);
     overflow-y: auto;
+}
+
+.new-experiment-view .reward-function-wrapper .reward-variables-table {
+    max-height: none;
 }
 
 .new-experiment-view .simulation-parameters-panel vaadin-custom-field {
@@ -129,6 +124,11 @@
 
 .new-experiment-view .observations-panel span {
     padding: var(--lumo-space-xs) 0;
+}
+
+.new-experiment-view .bottom-panel {
+    flex: 0 0 18rem;
+    overflow: auto;
 }
 
 .new-experiment-view .errors-wrapper {
@@ -236,11 +236,9 @@
     justify-content: space-between;
     grid-column-gap: var(--lumo-space-s);
     grid-row-gap: 0;
-    padding: 0 var(--lumo-space-s);
 }
 
-.new-experiment-view settings-view-content .grid-wrapper vaadin-select,
-.new-experiment-view settings-view-content .grid-wrapper vaadin-integer-field {
+.new-experiment-view settings-view-content .grid-wrapper vaadin-select {
     flex: 1 0 auto;
 }
 
@@ -265,145 +263,4 @@
 
 .new-experiment-view settings-view-content iron-icon {
     display: inline-block;
-}
-
-.new-experiment-view .reward-function-header + vaadin-vertical-layout {
-  overflow: auto;
-}
-
-.new-experiment-view .reward-terms-wrapper .header-row {
-  position: sticky;
-  top: 0;
-  width: calc(100% - var(--lumo-space-xs) * 2);
-  line-height: 1;
-  font-size: var(--lumo-font-size-s);
-  color: var(--pm-secondary-text-color);
-  background-color: white;
-  padding: var(--lumo-space-xs);
-  border-bottom: 1px solid var(--pm-grey-color-lightest);
-  margin: 0 var(--lumo-space-xs);
-  z-index: 100;
-}
-
-.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(1) {
-  flex: 1 0 auto;
-  padding-left: 1.1rem;
-}
-
-.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(2) {
-  width: calc(var(--lumo-font-size-s) * 12);
-}
-
-.new-experiment-view .reward-terms-wrapper .header-row span:nth-child(3) {
-  width: 8.6rem;
-}
-
-.new-experiment-view .reward-terms-wrapper sortable-row-wrapper {
-  counter-increment: number;
-  position: relative;
-  width: 100%;
-  padding: var(--lumo-space-xs);
-  overflow: auto;
-}
-
-.new-experiment-view .reward-terms-wrapper sortable-row-wrapper:nth-of-type(even) {
-  background-color: var(--pm-highlight-light);
-}
-
-.new-experiment-view .reward-terms-wrapper sortable-row-wrapper:hover {
-  background-color: var(--pm-highlight-medium);
-}
-
-.new-experiment-view .reward-terms-wrapper sortable-row-wrapper vaadin-custom-field > *:first-child::before {
-  content: counter(number);
-  position: absolute;
-  top: .75rem;
-  left: .6rem;
-  font-size: var(--lumo-font-size-s);
-  color: var(--pm-grey-color);
-}
-
-.new-experiment-view sortable-row-wrapper vaadin-custom-field {
-  justify-content: space-between;
-  width: 100%;
-}
-
-.new-experiment-view sortable-row-wrapper vaadin-custom-field > vaadin-horizontal-layout vaadin-select {
-  flex: 1 0 auto;
-}
-
-.new-experiment-view sortable-row-wrapper vaadin-custom-field > vaadin-horizontal-layout > vaadin-vertical-layout + span {
-  margin: 7px var(--lumo-space-s);
-}
-
-.new-experiment-view sortable-row-wrapper juicy-ace-editor {
-  box-sizing: border-box;
-  min-height: 8em;
-  border: 1px solid var(--pm-grey-color);
-  border-radius: var(--lumo-border-radius-m) var(--lumo-border-radius-m) 0 0;
-  overflow: hidden;
-}
-
-.new-experiment-view .goal-fields-wrapper {
-  justify-content: flex-end;
-  width: auto !important;
-  margin-left: var(--lumo-space-xxl);
-}
-
-.new-experiment-view .goal-fields-wrapper.ignore vaadin-number-field {
-  visibility: hidden;
-}
-
-.new-experiment-view .goal-fields-wrapper.ignore vaadin-select + span {
-  display: inline-block;
-  visibility: hidden;
-}
-
-.new-experiment-view .goal-fields-wrapper vaadin-select {
-  max-width: 8.5rem;
-}
-
-.new-experiment-view .goal-fields-wrapper vaadin-select + span {
-  margin: 0 var(--lumo-space-s);
-}
-
-.new-experiment-view .beta-feature-banner {
-  font-size: var(--lumo-font-size-s);
-  font-weight: normal;
-  letter-spacing: 0.02rem;
-  color: var(--pm-blue-color-dark);
-  background-image: linear-gradient(var(--pm-blue-color-light), #b5e0ff);
-  margin: var(--lumo-space-s) var(--lumo-space-s) 0;
-  border-color: var(--pm-blue-color-light);
-  border-radius: var(--lumo-border-radius-s);
-}
-
-.new-experiment-view .beta-feature-banner sup {
-  font-size: var(--lumo-font-size-xs);
-  font-weight: bold;
-  margin-right: var(--lumo-space-xs);
-}
-
-.new-experiment-view .reward-function-editor-wrapper {
-  flex: 1 0 auto;
-}
-
-.new-experiment-view .reward-function-editor-wrapper vaadin-custom-field {
-  flex: 1 0 auto;
-  width: 100%;
-}
-
-.new-experiment-view .reward-function-editor-wrapper vaadin-custom-field > vaadin-horizontal-layout {
-  height: 100%;
-}
-
-.new-experiment-view .reward-function-editor-wrapper vaadin-custom-field > vaadin-horizontal-layout > span,
-.new-experiment-view .reward-function-editor-wrapper vaadin-custom-field > vaadin-horizontal-layout vaadin-number-field {
-  display: none;
-}
-
-.new-experiment-view .reward-function-editor-wrapper reward-code-error-panel {
-  max-height: 25.9rem;
-  border: none;
-  border-radius: 0;
 }

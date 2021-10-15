@@ -209,14 +209,14 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
     public void verifyDeploy(Experiment experiment) throws NumberOfActivePolicyServersExceededException {
         final long userId = experiment.getProject().getPathmindUserId();
         final PathmindUser user = userDAO.findById(userId);
-        final boolean isTrialUser = user.isTrialPlanUser();
+        final boolean isBasicUser = user.isBasicPlanUser();
         List<ActivePolicyServerInfo> expWithDeployedServers =
                 runDAO.fetchExperimentIdWithActivePolicyServer(userId);
 
         List<ActivePolicyServerInfo> otherActiveDeployedServers = expWithDeployedServers.stream()
                 .filter(info -> info.getExperimentId() != experiment.getId()).collect(Collectors.toList());
 
-        if (isTrialUser && otherActiveDeployedServers.size() >= 1) {
+        if (isBasicUser && otherActiveDeployedServers.size() >= 1) {
             log.info("User {} has policy servers running: {}", userId, otherActiveDeployedServers);
             throw new NumberOfActivePolicyServersExceededException(otherActiveDeployedServers);
         }

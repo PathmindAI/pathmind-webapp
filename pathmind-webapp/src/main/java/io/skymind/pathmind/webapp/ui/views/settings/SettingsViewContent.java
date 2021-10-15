@@ -1,11 +1,9 @@
 package io.skymind.pathmind.webapp.ui.views.settings;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Tag;
@@ -15,7 +13,6 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
@@ -32,7 +29,6 @@ import io.skymind.pathmind.webapp.ui.components.CloseableNotification;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -110,12 +106,6 @@ public class SettingsViewContent extends LitTemplate {
     @Id("batchSizeCB")
     private Select<String> batchSize;
 
-    @Id("useAutoNormCB")
-    private Select<String> useAutoNorm;
-
-    @Id("rewardBalancePeriodField")
-    private IntegerField rewardBalancePeriodField;
-
     @Id("saveBtn")
     private Button saveBtn;
 
@@ -128,7 +118,7 @@ public class SettingsViewContent extends LitTemplate {
     private Boolean isPaidUser = false;
     private Boolean isInternalUser = false;
     private Boolean hideSaveButton = false;
-    private final Map<Select<String>, String> settingsList = new HashMap<>();
+    private Map<Select<String>, String> settingsList = new HashMap<Select<String>, String>();
 
     @Autowired
     public SettingsViewContent(CurrentUser currentUser, ExecutionEnvironmentManager environmentManager, SegmentIntegrator segmentIntegrator) {
@@ -177,7 +167,6 @@ public class SettingsViewContent extends LitTemplate {
         settingsList.put(rolloutFragmentLength, "Rollout Fragment Length");
         settingsList.put(batchMode, "Train Batch Mode");
         settingsList.put(batchSize, "Train Batch Size");
-        settingsList.put(useAutoNorm, "Use Auto Norm");
     }
 
     private void initBtns() {
@@ -350,16 +339,6 @@ public class SettingsViewContent extends LitTemplate {
         batchSize.setItems(batchSizes);
         batchSize.setLabel(settingsList.get(batchSize));
         batchSize.setValue(env.getTrainBatchSize() == 0 ? "no selection" : String.valueOf(env.getTrainBatchSize()));
-
-        // init use auto norm
-        List<String> useAutoNorms = List.of("TRUE", "FALSE");
-        useAutoNorm.setItems(useAutoNorms);
-        useAutoNorm.setLabel(settingsList.get(useAutoNorm));
-        useAutoNorm.setValue(String.valueOf(env.isUseAutoNorm()).toUpperCase());
-
-        // init reward balance period
-        rewardBalancePeriodField.setLabel("Reward Balance Period");
-        rewardBalancePeriodField.setValue(env.getRewardBalancePeriod());
     }
 
     public void saveSettings() {
@@ -390,23 +369,15 @@ public class SettingsViewContent extends LitTemplate {
         env.setRolloutFragmentLength(Integer.parseInt(rolloutFragmentLength.getValue()));
         env.setBatchMode(BatchMode.fromName(batchMode.getValue()));
         env.setTrainBatchSize(batchSize.getValue().equals("no selection") ? 0 : Integer.valueOf(batchSize.getValue()));
-        env.setUseAutoNorm(Boolean.valueOf(useAutoNorm.getValue()));
-        env.setRewardBalancePeriod(rewardBalancePeriodField.getValue() != null ? rewardBalancePeriodField.getValue() : 1);
     }
 
     public String getSettingsText() {
         if (!isPaidUser && !isInternalUser) {
             return "";
         }
-        List<String> settingsStrings = settingsList.entrySet().stream()
+        return settingsList.entrySet().stream()
                 .filter(e -> e.getKey().getValue() != null)
                 .map(e -> e.getValue() + ": " + e.getKey().getValue())
-                .sorted()
-                .collect(Collectors.toList());
-        if (isInternalUser) {
-            settingsStrings.add("Reward Balance Period: " + env.getRewardBalancePeriod());
-            settingsStrings.sort(StringUtils::compareIgnoreCase);
-        }
-        return String.join(", ", settingsStrings);
+                .collect(Collectors.joining(", "));
     }
 }

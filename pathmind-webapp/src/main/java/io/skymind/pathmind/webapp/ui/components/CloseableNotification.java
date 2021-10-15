@@ -13,7 +13,7 @@ public class CloseableNotification extends Notification {
     }
 
     public CloseableNotification(String html, Boolean isCloseable, Button actionButton) {
-        long durationBeforeClose = isCloseable ? 3000 : -1;
+        long durationBeforeClose = isCloseable ? 5000 : -1;
         Span contentLabel = LabelFactory.createLabel("", "closeable-notification-text-label");
         contentLabel.getElement().setProperty("innerHTML", html);
 

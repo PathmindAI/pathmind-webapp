@@ -32,7 +32,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
     public SimulationParametersRowField(SimulationParameter simulationParameter,
                                         Boolean isReadOnly,
                                         Boolean isSpecialType,
-                                        Boolean isTrialPlanUser) {
+                                        Boolean isBasicPlanUser) {
         this.isReadOnly = isReadOnly;
         setSimulationParameter(simulationParameter);
         nameSpan = LabelFactory.createLabel(simulationParameter.getKey(), "simulation-parameter-name");
@@ -41,7 +41,7 @@ public class SimulationParametersRowField extends HorizontalLayout {
         if (isReadOnly) {
             add(getReadonlySpan(dataType));
         } else {
-            if (isSpecialType || isTrialPlanUser) {
+            if (isSpecialType || isBasicPlanUser) {
                 this.isReadOnly = true;
             }
             inputField = getUserInputField(dataType);

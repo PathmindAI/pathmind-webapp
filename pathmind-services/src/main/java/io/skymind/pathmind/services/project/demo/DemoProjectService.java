@@ -52,8 +52,6 @@ public class DemoProjectService {
 
         // TODO: goals ...
 
-        // TODO: terms and reward function
-
         return experiment;
 
     }

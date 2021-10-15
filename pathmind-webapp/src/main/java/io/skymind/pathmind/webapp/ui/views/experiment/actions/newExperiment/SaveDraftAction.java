@@ -12,7 +12,7 @@ public class SaveDraftAction {
             newExperimentView.getExperimentDAO().saveExperiment(newExperimentView.getExperiment());
             newExperimentView.getSegmentIntegrator().draftSaved();
             newExperimentView.disableSaveNeeded();
-            NotificationUtils.showNotification("Draft successfully saved");
+            NotificationUtils.showSuccess("Draft successfully saved");
         }
     }
 }

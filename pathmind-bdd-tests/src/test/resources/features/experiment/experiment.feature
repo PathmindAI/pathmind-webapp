@@ -65,7 +65,7 @@ Feature: Experiment page
     Given Login to the pathmind
     When Create new CoffeeShop project with single reward function
     Then Click project start run button
-    Then Check experiment page reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    Then Check experiment page reward function CoffeeShop/CoffeeShopRewardFunctionOneFunction.txt
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button
@@ -76,7 +76,7 @@ Feature: Experiment page
     When Click project save draft btn
     When Click project start run button
     When Click copy reward function btn and paste text to the notes field
-    Then Check experiment page reward function CoffeeShop/CoffeeShopRewardFunction.txt
+    Then Check experiment notes is reward += after.kitchenCleanlinessLevel - before.kitchenCleanlinessLevel; // Maximize kitchen cleanliness test1
     When Click in 'Stop Training' button
     Then Check that the 'Stop Training' confirmation dialog is shown
     When In confirmation dialog click in 'Stop Training' button

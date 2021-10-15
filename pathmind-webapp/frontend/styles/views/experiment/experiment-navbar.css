@@ -3,14 +3,11 @@
     height: calc(100vh - 5rem);
     min-height: 100%;
     border-right: 1px solid var(--pm-grey-color-lightest);
-  }
-  
-  .experiments-navbar > vaadin-button {
-    min-width: 11rem;
-    width: 100%;
-    font-size: var(--lumo-font-size-s);
+}
+
+.experiments-navbar > vaadin-button {
+    border-radius: 0; /* TODO -> add a CSS class to the vaadin button after navbar refactoring */
     margin: 0;
-    border-radius: 0;
 }
 
 .experiments-navbar-items {

@@ -8,11 +8,10 @@ RUN apt-get update -y && \
         wget https://deb.nodesource.com/setup_14.x && \
         bash ./setup_14.x && \
         apt-get update -y && \
-        apt-get install nodejs -y
+        apt-get install nodejs -y && \
+        apt-get install maven -y
 
 COPY . .
 
-RUN ./mvnw -ntp dependency:go-offline --fail-never
-
-RUN rm -rf /app/*
+RUN mvn dependency:go-offline --fail-never
 

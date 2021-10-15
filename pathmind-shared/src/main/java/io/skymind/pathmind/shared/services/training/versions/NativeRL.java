@@ -19,9 +19,7 @@ public enum NativeRL implements VersionEnum {
     VERSION_1_6_1,
     VERSION_1_6_2,
     VERSION_1_7_0,
-    VERSION_1_7_1,
-    VERSION_1_7_2,
-    VERSION_1_8_0;
+    VERSION_1_7_1;
 
     private static final String baseFileName = "nativerl-%s-SNAPSHOT-bin.zip";
     public static final String simpleFileName = "nativerl-bin.zip";
