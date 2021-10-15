@@ -1,6 +1,8 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.services.ModelService;
@@ -11,6 +13,7 @@ import io.skymind.pathmind.shared.featureflag.FeatureManager;
 import io.skymind.pathmind.shared.services.training.ExecutionProvider;
 import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
+import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
@@ -56,7 +59,8 @@ public class AWSTrainingService extends TrainingService {
             rewFctName = !split[2].equals("null") ? split[2] : null;
         }
 
-        final JobSpec spec = JobSpec.builder()
+        final JobSpec.JobSpecBuilder spec = JobSpec.builder()
+                .reward(exp.getRewardFunctionFromTerms())
                 .userId(exp.getProject().getPathmindUserId())
                 .modelId(model.getId())
                 .experimentId(exp.getId())
@@ -65,7 +69,6 @@ public class AWSTrainingService extends TrainingService {
                 .checkpointFileId(null)
                 .variables("") // not collected via UI yet
                 .reset("") // not collected via UI yet
-                .reward(exp.getRewardFunction())
                 .metrics("")
                 .selectedObservations(observations)
                 .simulationParameters(simulationParameters)
@@ -87,9 +90,12 @@ public class AWSTrainingService extends TrainingService {
                 .environment(packageName)
                 .obsSelection(objSelection)
                 .rewFctName(rewFctName)
-                .actionMask(model.isActionmask())
-                .build();
+                .actionMask(model.isActionmask());
 
-        return executionProvider.execute(spec);
+        if (exp.isWithRewardTerms()) {
+            spec.termsWeight(ExperimentUtils.rewardTermsWeights(exp));
+        }
+
+        return executionProvider.execute(spec.build());
     }
 }
