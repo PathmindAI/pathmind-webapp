@@ -55,7 +55,7 @@ public class AccountPage extends PageObject {
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(2) .info div:nth-child(1)")).getText(), containsString("Password"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(3) .info div:nth-child(1)")).getText(), containsString("Access Token"));
         assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(1)")).getText(), containsString("Current Subscription"));
-        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Basic"));
+        assertThat(getDriver().findElement(By.cssSelector(".inner-content vaadin-horizontal-layout:nth-child(4) .info div:nth-child(2)")).getText(), containsString("Trial"));
         assertThat(accountInfoEditBtn.isDisplayed(), is(true));
         assertThat(accountInfoEditBtn.getText(), containsString("Edit"));
         assertThat(accountPasswordEditBtn.isDisplayed(), is(true));
@@ -116,8 +116,9 @@ public class AccountPage extends PageObject {
 
     public void clickAccessTokenRotateBtnAndCheckThatTokenChanged() {
         String beforeRefreshToken = accessToken.getText();
-        getDriver().findElement(By.id("small-menu")).click();
-        getDriver().findElement(By.xpath("//vaadin-item[normalize-space(text()='Rotate')]")).click();
+        getDriver().findElement(By.id("rotateApiKeyBtn")).click();
+        WebElement e = utils.expandRootElement(getDriver().findElement(By.cssSelector("confirm-popup")));
+        e.findElement(By.cssSelector("#confirm")).click();
         waitABit(2500);
         assertThat(beforeRefreshToken, is(not(accessToken.getText())));
     }
@@ -146,30 +147,32 @@ public class AccountPage extends PageObject {
 
     public void checkSubscriptionPlansPage() {
         assertThat(getDriver().findElement(By.xpath("//h1")).getText(), is("Subscription Plans"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::h2")).getText(), is("Basic"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='details']")).getText(), is("For Students and Hobbyists"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='price']")).getText(), is("Free"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='additional-info']")).getText(), is(" "));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::ul")).getText(), is("One Concurrent Experiment\nUnlimited Policy Export"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='header']/span")).getText(), is("Billed monthly per user"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::h2")).getText(), is("Trial"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='details']")).getText(), is("For Hobbyists"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::span[@class='price']")).getText(), is("$0"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::ul")).getText(), is("1 Concurrent Experiment\nUnlimited Policy File Export"));
         assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][1]/descendant::vaadin-button")).getText(), is("Current Plan"));
 
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::h2")).getText(), is("Professional"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='details']")).getText(), is("For Professional Simulation Engineers"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='popular-tag']")).getText(), is("POPULAR"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$499"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy Export\nTechnical Support Included"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::vaadin-button")).getText(), is("Choose Pro"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::h2")).getText(), is("Academic"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='details']")).getText(), is("For Students & Academics"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::span[@class='price']")).getText(), is("$99"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy File Export"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][2]/descendant::vaadin-button")).getText(), is("Contact Us"));
 
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::h2")).getText(), is("Enterprise"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='details']")).getText(), is("For Consultancies & Corporate Teams"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$999"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='additional-info']")).getText(), is("Billed month-to-month; price is per user"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy Export\nTechnical Support Included\nPolicy Serving Enabled\nRL Advisory and Training"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::vaadin-button")).getText(), is("Contact Us"));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::a")).getAttribute("href"), is("mailto:support@pathmind.com"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::h2")).getText(), is("Pro"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='details']")).getText(), is("For Simulation Engineers"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='popular-tag']")).getText(), is("POPULAR"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::span[@class='price']")).getText(), is("$499"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy File Export\nPremium Technical Support"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][3]/descendant::vaadin-button")).getText(), is("Upgrade Now"));
 
-        assertThat(getDriver().findElement(By.xpath("//p[@class='caption']")).getText(), is("Applicable taxes not included"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::h2")).getText(), is("Enterprise"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::span[@class='details']")).getText(), is("For Consultancies & Corporate Teams"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::span[@class='price']")).getText(), is("$999"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::ul")).getText(), is("Unlimited Concurrent Experiments\nUnlimited Policy File Export\nPremium Technical Support\nFull Deployment Options Available"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::vaadin-button")).getText(), is("Contact Us"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-vertical-layout[@class='inner-content'][4]/descendant::a")).getAttribute("href"), is("mailto:support@pathmind.com"));
     }
 
     public void checkSubscriptionPlansUpgradePage() {

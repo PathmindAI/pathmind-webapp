@@ -11,7 +11,6 @@ public class SegmentTrackingEvents {
     public static final String EVENT_OBSERVATIONS_SELECTED = "Observations Selected Different From Default";
     public static final String EVENT_ONBOARDING_TUTORIAL = "Onboarding Tutorial Link Clicked";
     public static final String EVENT_ONBOARDING_ZIP = "Onboarding Download Zip Link Clicked";
-    public static final String EVENT_ONBOARDING_SERVICE_PAID = "Onboarding Service Paid on Stripe";
     public static final String EVENT_CREATE_FIRST_PROJECT = "Create First Project Button Clicked";
     public static final String EVENT_CREATE_PROJECT = "Project Created";
     public static final String EVENT_CREATE_PROJECT_FROM_EXAMPLE = "Project Created from Example Project";
@@ -31,7 +30,9 @@ public class SegmentTrackingEvents {
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_ACCOUNT_VIEW = "Navigated to Pricing View from Account View";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_BANNER = "Navigated to Pricing View from New Experiment View Banner";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_SETTINGS = "Navigated to Pricing View from New Experiment View Settings";
+    public static final String EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_SIMULATION_PARAMETERS = "Navigated to Pricing View from New Experiment View Simulation Parameters";
     public static final String EVENT_NAVIGATED_TO_PRICING_FROM_POLICY_SERVER_LIMIT_POPUP = "Navigated to Pricing View from Policy Server limit popup";
+    public static final String EVENT_NAVIGATED_TO_BETA_FEATURE_PAGE_FROM_NEW_EXPERIMENT_VIEW_BANNER = "Navigated to Beta Feature Page from New Experiment View Banner";
     public static final String EVENT_CHOSE_PRO_PLAN = "Pro Plan Chosen on Pricing Page";
     public static final String EVENT_CANCEL_SUBSCRIPTION = "Subscription Cancelled";
     public static final String EVENT_UPDATED_NOTES_MODELS_VIEW = "Notes on Models View Updated";
@@ -50,5 +51,8 @@ public class SegmentTrackingEvents {
     public static final String EVENT_POLICY_SERVER_DEPLOYMENT_STARTED = "Policy Server Deployment Started";
     public static final String EVENT_POLICY_SERVER_REDEPLOYMENT_STARTED = "Policy Server Redeployment Started After Failure";
     public static final String EVENT_POLICY_SERVER_SHUT_DOWN = "Policy Server Deployment Shut Down";
+    public static final String EVENT_PAID = "Payment Made By User";
+    public static final String EVENT_ENABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS = "Enabled Reward Terms Toggle in Beta Feature Settings";
+    public static final String EVENT_DISABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS = "Disabled Reward Terms Toggle in Beta Feature Settings";
 
 }

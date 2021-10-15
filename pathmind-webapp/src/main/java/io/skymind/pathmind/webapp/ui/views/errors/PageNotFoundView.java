@@ -4,13 +4,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;
 import com.vaadin.flow.router.HasErrorParameter;
 import com.vaadin.flow.router.NotFoundException;
 import com.vaadin.flow.router.ParentLayout;
-import io.skymind.pathmind.webapp.ui.components.LabelFactory;
-import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -29,13 +29,14 @@ public class PageNotFoundView extends PathMindDefaultView implements HasErrorPar
 
     @Override
     protected Component getTitlePanel() {
-        return new ScreenTitlePanel("Page not found");
+        return null;
     }
 
     @Override
     protected Component getMainContent() {
         return WrapperUtils.wrapWidthFullCenterVertical(
-                LabelFactory.createLabel("The page you requested could not be found. Please contact Pathmind for assistance."),
+                new H3("Page not found"),
+                new Span("The page you requested could not be found. Please contact Pathmind for assistance."),
                 StatusPageMessage.getMessage()
         );
     }

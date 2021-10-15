@@ -4,7 +4,7 @@ Feature: Experiment page Simulation Metrics
   @smoke
   Scenario: Check reward variables on experiment page
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Check experiment page simulation metrics kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
     When Click in 'Stop Training' button
@@ -13,7 +13,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics block is shown
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Check that simulation metrics block is shown
     Then Check running experiment page reward variables is kitchenCleanlinessLevel,successfulCustomers,balkedCustomers,avgServiceTime
@@ -24,7 +24,7 @@ Feature: Experiment page Simulation Metrics
   @smoke
   Scenario: Check that simulation metrics block is shown when switch to other experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Click in 'New Experiment' button
     When Wait a bit 4000 ms
@@ -37,7 +37,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics block is shown for archived experiment
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     Then Click archive button for current experiment
     When In confirmation dialog click in 'Archive' button
@@ -51,7 +51,7 @@ Feature: Experiment page Simulation Metrics
 
   Scenario: Check that simulation metrics are clickable
     Given Login to the pathmind
-    When Create new CoffeeShop project with 4 variables reward function
+    When Create new CoffeeShop project with single reward function
     When Click project start run button
     When Experiment page 'primary' slot check reward variable 'kitchenCleanlinessLevel' is chosen 'true'
     When Experiment page 'primary' slot check reward variable 'successfulCustomers' is chosen 'false'

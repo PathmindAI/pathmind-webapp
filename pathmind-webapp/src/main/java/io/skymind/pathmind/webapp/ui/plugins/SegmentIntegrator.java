@@ -148,12 +148,28 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_SETTINGS);
     }
 
+    public void navigatedToPricingFromNewExpViewSimulationParameters() {
+        track(EVENT_NAVIGATED_TO_PRICING_FROM_NEW_EXPERIMENT_VIEW_SIMULATION_PARAMETERS);
+    }
+
     public void navigatedToPricingFromPolicyServerLimitPopup() {
         track(EVENT_NAVIGATED_TO_PRICING_FROM_POLICY_SERVER_LIMIT_POPUP);
     }
 
     public void navigatedToEditGoalsFromProjectView() {
         track(EVENT_NAVIGATED_TO_EDIT_GOALS_FROM_PROJECT_VIEW);
+    }
+
+    public void navigatedToBetaFeaturePageFromNewExpViewBanner() {
+        track(EVENT_NAVIGATED_TO_BETA_FEATURE_PAGE_FROM_NEW_EXPERIMENT_VIEW_BANNER);
+    }
+
+    public void enabledRewardTermsToggle() {
+        track(EVENT_ENABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS);
+    }
+
+    public void disabledRewardTermsToggle() {
+        track(EVENT_DISABLED_REWARD_TERMS_TOGGLE_IN_BETA_FEATURE_SETTINGS);
     }
 
     public void editGoals() {

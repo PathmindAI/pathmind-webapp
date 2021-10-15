@@ -3,10 +3,8 @@ package io.skymind.pathmind.webapp.ui.views.account;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
-import io.skymind.pathmind.services.billing.StripeService;
 import io.skymind.pathmind.shared.featureflag.Feature;
 import io.skymind.pathmind.shared.featureflag.FeatureManager;
-import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -20,23 +18,16 @@ public class AccountUpgradeView extends PathMindDefaultView {
 
     private final FeatureManager featureManager;
 
-    private StripeService stripeService;
-
     @Autowired
     public AccountUpgradeView(AccountUpgradeViewContent accountUpgradeViewContent,
-                              FeatureManager featureManager, StripeService stripeService) {
+                              FeatureManager featureManager) {
         this.accountUpgradeViewContent = accountUpgradeViewContent;
         this.featureManager = featureManager;
-        this.stripeService = stripeService;
     }
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         // if user has an ongoing subscription this view shouldn't be shown
-        if (stripeService.userHasActiveProfessionalSubscription(SecurityUtils.getUser().getEmail()).getResult()) {
-            event.rerouteTo(AccountView.class);
-        }
-
         if (!featureManager.isEnabled(Feature.ACCOUNT_UPGRADE)) {
             event.rerouteTo(AccountView.class);
         }

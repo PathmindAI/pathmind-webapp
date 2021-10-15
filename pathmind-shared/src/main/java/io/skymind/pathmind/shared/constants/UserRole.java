@@ -12,7 +12,7 @@ import static io.skymind.pathmind.shared.constants.ViewPermission.EXTENDED_READ;
 import static io.skymind.pathmind.shared.constants.ViewPermission.SETTINGS_READ;
 
 public enum UserRole {
-    Basic(0, "Basic", Set.of(BASIC_READ)),
+    Trial(0, "Trial", Set.of(BASIC_READ)),
     Professional(1, "Professional", Set.of(BASIC_READ)),
     Enterprise(2, "Enterprise", Set.of(BASIC_READ)),
     Admin(3, "Admin", Set.of(BASIC_READ, SETTINGS_READ)),
@@ -27,7 +27,7 @@ public enum UserRole {
     public static final EnumSet<UserRole> serviceRoles = EnumSet.of(Admin, Master, Support);
 
     public static boolean isInternalOrEnterpriseOrPartnerUser(UserRole role) {
-        return isPaidUser(role) || isInternalUser(role);
+        return isInternalUser(role) || role == Enterprise || role == Partner;
     }
 
     public static boolean isInternalUser(UserRole role) {

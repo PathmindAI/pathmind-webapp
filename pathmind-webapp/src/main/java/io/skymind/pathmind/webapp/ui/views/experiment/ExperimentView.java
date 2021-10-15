@@ -15,11 +15,13 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.Route;
+
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.EventBusSubscriber;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
@@ -91,6 +93,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     @Autowired
     private ModelCheckerService modelCheckerService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private UserDAO userDAO;
 
     @Value("${pathmind.early-stopping.url}")
@@ -127,7 +131,9 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentObservationsPanel.setComparisonModeTheOtherSelectedObservations(
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
-                comparisonExperiment.getRewardFunction());
+                comparisonExperiment.getRewardFunction(), comparisonExperiment.getRewardFunctionFromTerms(), comparisonExperiment.isWithRewardTerms());
+        experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
+                comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -142,7 +148,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentObservationsPanel.unhighlight();
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
-        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null);
+        experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null, null, false);
+        experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
     }
@@ -348,10 +355,9 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     public void updateComponents() {
         experimentComponentList.forEach(experimentComponent -> experimentComponent.setExperiment(this.experiment));
         experimentsNavbar.setVisible(!experiment.isArchived());
-        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(
-                experiment.getSelectedObservations());
-        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(
-                experiment.getRewardFunction());
+        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(experiment.getSelectedObservations());
+        comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(experiment.getRewardFunction(), experiment.getRewardFunctionFromTerms(), experiment.isWithRewardTerms());
+        comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(experiment.getSimulationParameters());
     }
 
     @Override
@@ -365,7 +371,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        experimentSimulationParametersPanel = new SimulationParametersPanel(true);
+        experimentSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         experimentComponentList.addAll(List.of(
@@ -392,7 +398,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
-        comparisonSimulationParametersPanel = new SimulationParametersPanel(true);
+        comparisonSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
         comparisonExperimentComponents.addAll(List.of(

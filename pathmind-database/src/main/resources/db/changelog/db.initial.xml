@@ -2,9 +2,7 @@
 <databaseChangeLog
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
-        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"
         logicalFilePath="db.initial.xml">
 
@@ -2091,5 +2089,53 @@
     <changeSet id="3410-02" author="daehyun@pathmind.com">
         <addUniqueConstraint tableName="SIMULATION_PARAMETER" columnNames="MODEL_ID, EXPERIMENT_ID, INDEX, KEY"/>
     </changeSet>
+
+    <changeSet id="2652-01" author="alexander.makarov@toptal.com">
+        <createTable tableName="REWARD_TERM">
+            <column name="EXPERIMENT_ID" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="FK_REWARD_TERMS_EXPERIMENT" references="EXPERIMENT(ID)"/>
+            </column>
+            <column name="INDEX" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WEIGHT" type="DOUBLE" defaultValue="1" defaultOnNull="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REWARD_VARIABLE_ARRAY_INDEX" type="INT"/>
+            <column name="GOAL_CONDITION_TYPE" type="VARCHAR(16)"/>
+            <column name="SNIPPET" type="TEXT"/>
+        </createTable>
+        <addUniqueConstraint tableName="REWARD_TERM" columnNames="EXPERIMENT_ID,INDEX"/>
+        <createIndex tableName="REWARD_TERM" indexName="REWARD_TERM_EXPERIMENT_ID">
+            <column name="EXPERIMENT_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2652-02" author="alexander.makarov@toptal.com">
+        <addColumn tableName="EXPERIMENT">
+            <column name="with_reward_terms" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2652-03" author="alexander.makarov@toptal.com">
+        <addColumn tableName="PATHMIND_USER">
+            <column name="reward_terms_on" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2652-04" author="alexander.makarov@toptal.com">
+        <dropNotNullConstraint tableName="EXPERIMENT" columnName="REWARD_FUNCTION" />
+        <addColumn tableName="EXPERIMENT">
+            <column name="REWARD_FUNCTION_FROM_TERMS" type="VARCHAR">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
 
 </databaseChangeLog>

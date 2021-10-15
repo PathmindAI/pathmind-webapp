@@ -22,6 +22,7 @@ import io.skymind.pathmind.webapp.ui.layouts.components.subscribers.AccountHeade
 import io.skymind.pathmind.webapp.ui.utils.VaadinUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountView;
+import io.skymind.pathmind.webapp.ui.views.settings.BetaFeatureSettingsView;
 import io.skymind.pathmind.webapp.ui.views.settings.SettingsView;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,6 +51,7 @@ public class AccountHeaderPanel extends HorizontalLayout {
         MenuItem account = menuBar.addItem(createItem(new Icon(VaadinIcon.USER)));
         account.getSubMenu().addItem("Account", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(AccountView.class)));
         account.getSubMenu().addItem("Access Token", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(AccountView.class)));
+        account.getSubMenu().addItem("Beta Features", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(BetaFeatureSettingsView.class)));
         if (VaadinSecurityUtils.isAuthorityGranted(SettingsView.class)) {
             account.getSubMenu().addItem("Settings", e -> getUISupplier.get().ifPresent(ui -> ui.navigate(SettingsView.class)));
         }

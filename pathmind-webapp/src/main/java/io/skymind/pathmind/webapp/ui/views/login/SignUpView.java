@@ -5,9 +5,9 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -20,7 +20,6 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.VaadinRequest;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletRequest;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.services.notificationservice.EmailNotificationService;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.security.Routes;
@@ -40,9 +39,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 @Tag("sign-up-view")
-@JsModule("./src/pages/account/sign-up-view.js")
+@JsModule("./src/pages/account/sign-up-view.ts")
 @Route(value = Routes.SIGN_UP)
-public class SignUpView extends PolymerTemplate<SignUpView.Model> implements PublicView, HasUrlParameter<String> {
+public class SignUpView extends LitTemplate implements PublicView, HasUrlParameter<String> {
     @Id("lastName")
     private TextField lastName;
 
@@ -80,7 +79,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
         this.emailNotificationService = emailNotificationService;
         this.segmentIntegrator = segmentIntegrator;
         this.authenticationManager = authenticationManager;
-        getModel().setContactLink(contactLink);
+        getElement().setProperty("contactLink", contactLink);
         user = new PathmindUser();
         initView();
         initBinder();
@@ -141,7 +140,7 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
     }
 
     private void processValidationStatusChange(boolean hasValidationErrors) {
-        getModel().setIsEmailUsed(hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null);
+        getElement().setProperty("isEmailUsed", hasValidationErrors && userService.findByEmailIgnoreCase(email.getValue()) != null);
     }
 
     @Override
@@ -156,11 +155,5 @@ public class SignUpView extends PolymerTemplate<SignUpView.Model> implements Pub
                 segmentIntegrator.marketingSiteLead(planParamList.get(0));
             }
         }
-    }
-
-    public interface Model extends TemplateModel {
-        void setIsEmailUsed(Boolean isEmailUsed);
-
-        void setContactLink(String contactLink);
     }
 }

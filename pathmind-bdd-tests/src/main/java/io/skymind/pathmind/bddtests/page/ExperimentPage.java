@@ -63,10 +63,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickCurrentExperimentArchiveButton() {
-        getDriver().findElement(By.xpath("//*[@theme='action-dropdown align-center']")).click();
-        WebElement archiveButton = getDriver().findElement(By.xpath("//vaadin-item[text()='Archive']"));
-        waitFor(ExpectedConditions.elementToBeClickable(archiveButton));
-        archiveButton.click();
+        getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:archive']/ancestor::vaadin-button")).click();
     }
 
     public void clickArchiveButtonForCurrentDraftExperiment() {
@@ -192,7 +189,7 @@ public class ExperimentPage extends PageObject {
 
     public void checkThatExperimentExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiments-navbar-item"), By.cssSelector(".experiment-name p:first-child")), hasItem(experiment));
     }
 
     public void clickCopyRewardFunctionBtn() {
@@ -200,13 +197,15 @@ public class ExperimentPage extends PageObject {
         e.findElement(By.cssSelector("vaadin-button")).click();
         WebElement notesShadow = utils.expandRootElement(notesBlock);
         notesShadow.findElement(notesTextarea).click();
+        notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "A");
+        notesShadow.findElement(notesTextarea).sendKeys(Keys.BACK_SPACE);
         notesShadow.findElement(notesTextarea).sendKeys(Keys.CONTROL + "V");
         notesShadow.findElement(notesSaveBtn).click();
     }
 
     public void checkThatExperimentNotExistOnTheExperimentPage(String experiment) {
         waitABit(4000);
-        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiment-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
+        assertThat(utils.getStringListFromShadowRootRepeatIfStaleException(By.xpath("//experiments-navbar-item"), By.cssSelector(".experiment-name p:first-child")), not(hasItem(experiment)));
     }
 
     public void checkThatExperimentStatusIconIs(String experimentName, String icon) {
@@ -241,7 +240,7 @@ public class ExperimentPage extends PageObject {
     public void checkSideBarExperimentsListExperiment(String commaSeparatedExperimentNames) {
         List<String> items = Arrays.asList(commaSeparatedExperimentNames.split("\\s*,\\s*"));
         List<String> actual = new ArrayList<>();
-        for (WebElement webElement : getDriver().findElements(By.xpath("//experiment-navbar-item"))) {
+        for (WebElement webElement : getDriver().findElements(By.xpath("//experiments-navbar-item"))) {
             WebElement experimentNavbarItemShadow = utils.expandRootElement(webElement);
             String experimentNameText = experimentNavbarItemShadow.findElement(By.cssSelector(".experiment-name p:first-child")).getText();
             actual.add(experimentNameText);
@@ -335,7 +334,7 @@ public class ExperimentPage extends PageObject {
     }
 
     public void checkNumberOfTheExperimentsIsInTheLeftSidebar(int experimentsNumber) {
-        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiment-navbar-item")).size(), is(experimentsNumber));
+        assertThat(getDriver().findElements(By.xpath("//*[@class='experiments-navbar-items']/experiments-navbar-item")).size(), is(experimentsNumber));
     }
 
     public void checkLearningProgressBlockTabs(String tabs) {
@@ -354,22 +353,26 @@ public class ExperimentPage extends PageObject {
     }
 
     public void clickExperimentPageShareWithSupportBtn() {
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='Share Experiment']")).click();
+        getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button")).click();
     }
 
     public void clickExperimentPageActionsBtn(String btn) {
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-vertical-layout[@slot='primary']/descendant::vaadin-select")).click();
-        waitABit(3000);
-        getDriver().findElement(By.xpath("//vaadin-item[text()='" + btn + "']")).click();
+        switch (btn){
+            case "Archive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:archive']/ancestor::vaadin-button")).click();
+                break;
+            case "Unarchive":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:arrow-backward']/ancestor::vaadin-button")).click();
+                break;
+            case "Share":
+                getDriver().findElement(By.xpath("//iron-icon[@icon='vaadin:share-square']/ancestor::vaadin-button")).click();
+                break;
+        }
     }
 
     public void experimentPageClickComparisonFloatingCloseBtn() {
         getDriver().findElement(By.xpath("//floating-close-button")).click();
-        assertThat(getDriver().findElements(By.xpath("//experiment-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
+        assertThat(getDriver().findElements(By.xpath("//experiments-navbar-item[@is-current-comparison-experiment]")).size(), is(0));
     }
 
     public void checkLearningProgressBlockHistogramXAxisIsShown() {

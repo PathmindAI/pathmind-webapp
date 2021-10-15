@@ -20,7 +20,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row19;
+import org.jooq.Row20;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -75,12 +75,12 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     /**
      * The column <code>public.pathmind_user.firstname</code>.
      */
-    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), SQLDataType.VARCHAR(250).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> FIRSTNAME = createField(DSL.name("firstname"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.lastname</code>.
      */
-    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), SQLDataType.VARCHAR(250).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
+    public final TableField<PathmindUserRecord, String> LASTNAME = createField(DSL.name("lastname"), SQLDataType.VARCHAR(255).nullable(false).defaultValue(DSL.field("''::character varying", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>public.pathmind_user.address</code>.
@@ -146,6 +146,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
      * The column <code>public.pathmind_user.api_key_created_at</code>.
      */
     public final TableField<PathmindUserRecord, LocalDateTime> API_KEY_CREATED_AT = createField(DSL.name("api_key_created_at"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("now()", SQLDataType.LOCALDATETIME)), this, "");
+
+    /**
+     * The column <code>public.pathmind_user.reward_terms_on</code>.
+     */
+    public final TableField<PathmindUserRecord, Boolean> REWARD_TERMS_ON = createField(DSL.name("reward_terms_on"), SQLDataType.BOOLEAN.nullable(false).defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
     private PathmindUser(Name alias, Table<PathmindUserRecord> aliased) {
         this(alias, aliased, null);
@@ -232,11 +237,11 @@ public class PathmindUser extends TableImpl<PathmindUserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row19 type methods
+    // Row20 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row19<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String, LocalDateTime> fieldsRow() {
-        return (Row19) super.fieldsRow();
+    public Row20<Long, String, String, Integer, String, String, String, String, String, String, String, LocalDateTime, LocalDateTime, UUID, LocalDateTime, String, String, String, LocalDateTime, Boolean> fieldsRow() {
+        return (Row20) super.fieldsRow();
     }
 }

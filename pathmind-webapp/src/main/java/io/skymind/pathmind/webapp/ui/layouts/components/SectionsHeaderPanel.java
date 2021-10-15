@@ -6,34 +6,32 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.RouterLink;
 
 import io.skymind.pathmind.webapp.security.CurrentUser;
-import io.skymind.pathmind.webapp.ui.views.header.components.RequestOnboardingServiceButton;
+import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
+import io.skymind.pathmind.webapp.ui.views.header.components.UpgradeToProButton;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout {
 
-    private String stripePublicKey;
-
-    private String pathmindApiUrl;
-
-    private CurrentUser currentUser;
-
-    public SectionsHeaderPanel(boolean hasLoginUser, CurrentUser currentUser, String stripePublicKey, String pathmindApiUrl) {
+    public SectionsHeaderPanel(boolean hasLoginUser, CurrentUser currentUser) {
         HorizontalLayout sectionsHorizontalLayout = new HorizontalLayout();
-        this.currentUser = currentUser;
-        this.stripePublicKey = stripePublicKey;
-        this.pathmindApiUrl = pathmindApiUrl;
         sectionsHorizontalLayout.add(linkedLogo());
         if (hasLoginUser) {
             RouterLink projectsLink = new RouterLink("Projects", ProjectsView.class);
             projectsLink.setHighlightCondition((link, event) ->
                 event.getLocation().getPath().equals(link.getHref()) || event.getLocation().getPath().equals(""));
+            
+            RouterLink pricingLink = new RouterLink("Pricing", AccountUpgradeView.class);
 
             sectionsHorizontalLayout.add(
                     projectsLink,
                     getTutorialsAnchor(),
+                    pricingLink,
                     getFAQAnchor(),
-                    getHelpAnchor(),
-                    getRequestOnboardingServiceButton());
+                    getHelpAnchor());
+
+            if (currentUser.getUser().isTrialPlanUser()) {
+                sectionsHorizontalLayout.add(new UpgradeToProButton());
+            }
         }
         add(sectionsHorizontalLayout);
 
@@ -57,10 +55,6 @@ public class SectionsHeaderPanel extends HorizontalLayout {
 
     private Anchor getHelpAnchor() {
         return getAnchor("https://help.pathmind.com/", "Help");
-    }
-
-    private RequestOnboardingServiceButton getRequestOnboardingServiceButton() {
-        return new RequestOnboardingServiceButton(currentUser, stripePublicKey, pathmindApiUrl);
     }
 
     private Anchor getAnchor(String url, String text) {

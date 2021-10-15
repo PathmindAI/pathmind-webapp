@@ -4,10 +4,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
-import com.vaadin.flow.component.polymertemplate.PolymerTemplate;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.templatemodel.TemplateModel;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
@@ -15,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 @Tag("verification-email-sent-view")
-@JsModule("./src/pages/account/verification-email-sent-view.js")
+@JsModule("./src/pages/account/verification-email-sent-view.ts")
 @Route(value = Routes.VERIFICATION_EMAIL_SENT)
-public class VerificationEmailSentView extends PolymerTemplate<VerificationEmailSentView.Model> implements PublicView {
+public class VerificationEmailSentView extends LitTemplate implements PublicView {
 
     @Id("backToLogin")
     private Button backToLogin;
@@ -26,7 +25,7 @@ public class VerificationEmailSentView extends PolymerTemplate<VerificationEmail
     private SegmentIntegrator segmentIntegrator;
 
     public VerificationEmailSentView(@Value("${pathmind.contact-support.address}") String contactLink) {
-        getModel().setContactLink(contactLink);
+        getElement().setProperty("contactLink", contactLink);
         backToLogin.addClickListener(evt -> getUI().ifPresent(ui -> ui.navigate(ProjectsView.class)));
     }
 
@@ -34,9 +33,5 @@ public class VerificationEmailSentView extends PolymerTemplate<VerificationEmail
     protected void onAttach(AttachEvent attachEvent) {
         getElement().appendChild(segmentIntegrator.getElement());
         segmentIntegrator.verificationEmailSent();
-    }
-
-    public interface Model extends TemplateModel {
-        void setContactLink(String contactLink);
     }
 }

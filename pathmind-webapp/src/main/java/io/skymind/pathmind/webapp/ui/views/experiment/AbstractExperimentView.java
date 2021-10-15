@@ -13,14 +13,18 @@ import com.vaadin.flow.router.Location;
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.db.dao.RunDAO;
+import io.skymind.pathmind.db.dao.SimulationParameterDAO;
 import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.services.TrainingService;
 import io.skymind.pathmind.shared.data.Experiment;
+import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.shared.data.user.UserCaps;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.webapp.data.utils.ExperimentGuiUtils;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
@@ -43,6 +47,8 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     @Autowired
     protected ModelService modelService;
     @Autowired
+    protected UserService userService;
+    @Autowired
     protected ExperimentDAO experimentDAO;
     @Autowired
     protected PolicyDAO policyDAO;
@@ -50,6 +56,8 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     protected PolicyFileService policyFileService;
     @Autowired
     protected RunDAO runDAO;
+    @Autowired
+    protected SimulationParameterDAO simulationParameterDAO;
     @Autowired
     protected TrainingService trainingService;
     @Autowired
@@ -89,10 +97,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
     }
 
     @Override
-    final protected void initLoadData() {
+    final protected void initLoadData(BeforeEnterEvent event) {
         // We still need to lock here on load in case there is an event part way through the page's initial load.
         synchronized (experimentLock) {
-            loadFullExperimentData();
+            loadFullExperimentData(event);
         }
     }
 
@@ -157,7 +165,7 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
       * from the database we just update the experiment instance with the latest data and then re-render the components.
      */
     public void updateExperimentFromComponents() {
-        experimentComponentList.forEach(experimentComponent -> experimentComponent.updateExperiment());
+        experimentComponentList.forEach(ExperimentComponent::updateExperiment);
     }
 
     public void updateComponents() {
@@ -165,15 +173,45 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
         experimentsNavbar.setVisible(!experiment.isArchived());
     }
 
+    private void loadFullExperimentData() {
+        experiment = getExperimentForUser(experimentId)
+                .orElseThrow(() -> dataExceptionMessage());
+    }
+
+    private InvalidDataException dataExceptionMessage() {
+        return new InvalidDataException("Attempted to access Experiment: " + experimentId);
+    }
+
     /**
      * This is separated from initLoadData() simply because it can also be called from within our code and it's not proper to call
      * initLoadData outside of the initial page/view load.
      */
-    private void loadFullExperimentData() {
+    private void loadFullExperimentData(BeforeEnterEvent event) {
         // Do a quick database check to see if the user is on the right experiment page, and if so forward them right away rather than load and render the
         // full experiment which can be expensive.
+        if (getClass().getName().equals(SharedExperimentView.class.getClass().getName())) {
+            // For Shared Experiment View
+            loadFullExperimentData();
+            return;
+        }
+        boolean isUsersExperiment = experimentDAO.getUserOfExperiment(experimentId).equals(userService.getCurrentUser());
+        boolean isExperimentShared = experimentDAO.getExperimentIsShared(experimentId);
+        if (!isUsersExperiment && isExperimentShared) {
+            event.forwardTo(Routes.SHARED_EXPERIMENT, ""+experimentId);
+            // After forwardTo, the BeforeEnterEvent code will not be run again
+            // so we need to call the code that's essentially loadFullExperimentData() here
+            experiment = experimentDAO.getExperimentForSupportIfAllowed(experimentId, SecurityUtils.getUserId())
+                    .orElseThrow(() -> dataExceptionMessage());
+            return;
+        }
         experiment = getExperimentForUser(experimentId)
-                .orElseThrow(() -> new InvalidDataException("Attempted to access Experiment: " + experimentId));
+                .orElseThrow(() -> {
+                    String errorMessage = "Attempted to access Experiment: ";
+                    if (!isUsersExperiment && !isExperimentShared) {
+                        errorMessage = "You don't have permission to access this experiment: ";
+                    }
+                    return new InvalidDataException(errorMessage + experimentId);
+                });
     }
 
     /**
@@ -222,6 +260,10 @@ public abstract class AbstractExperimentView extends PathMindDefaultView impleme
 
     public RunDAO getRunDAO() {
         return runDAO;
+    }
+
+    public List<SimulationParameter> getModelSimulationParameters() {
+        return simulationParameterDAO.getSimulationParametersForModel(experiment.getModelId());
     }
 
     public TrainingService getTrainingService() {

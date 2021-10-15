@@ -172,7 +172,7 @@ public class NewExperimentPage extends PageObject {
 
     public void checkSideBarStarBtnTooltipIsFavorite(String tooltip) {
         waitABit(3500);
-        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiment-navbar-item[@is-current]")));
+        WebElement experimentNavBarItemShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//experiments-navbar-item[@is-current]")));
         WebElement favoriteStarShadow = utils.expandRootElement(experimentNavBarItemShadow.findElement(By.cssSelector("favorite-star")));
         waitFor(ExpectedConditions.elementToBeClickable(favoriteStarShadow.findElement(By.cssSelector("vaadin-button"))));
         assertThat(favoriteStarShadow.findElement(By.cssSelector("vaadin-button")).getAttribute("title"), is(tooltip));

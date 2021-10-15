@@ -103,6 +103,12 @@
                                     <includeExpression>.*\.POLICY_SERVER_STATUS</includeExpression>
                                     <includeTypes>.*</includeTypes>
                                 </forcedType>
+                                <forcedType>
+                                    <userType>io.skymind.pathmind.shared.constants.ParamType</userType>
+                                    <enumConverter>true</enumConverter>
+                                    <includeExpression>.*\.SIMULATION_PARAMETER\.TYPE</includeExpression>
+                                    <includeTypes>.*</includeTypes>
+                                </forcedType>
                             </forcedTypes>
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>

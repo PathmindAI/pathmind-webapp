@@ -3,6 +3,7 @@ package io.skymind.pathmind.shared.services.training.environment;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.skymind.pathmind.shared.constants.BatchMode;
 import io.skymind.pathmind.shared.constants.EC2InstanceType;
 import io.skymind.pathmind.shared.services.training.versions.AnyLogic;
 import io.skymind.pathmind.shared.services.training.versions.Conda;
@@ -20,9 +21,9 @@ public class ExecutionEnvironmentManager {
     private ExecutionEnvironment defaultEnvironment() {
         return new ExecutionEnvironment(
                 false,
-                AnyLogic.VERSION_8_7_6,
+                AnyLogic.VERSION_8_7_7,
                 PathmindHelper.VERSION_1_7_0,
-                NativeRL.VERSION_1_7_1,
+                NativeRL.VERSION_1_8_0,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_3_0,
                 EC2InstanceType.IT_36CPU_72GB,
@@ -36,7 +37,14 @@ public class ExecutionEnvironmentManager {
                 false,
                 false,
                 false,
-                750);
+                750,
+                0.99,
+                BatchMode.COMPLETE_EPISODES,
+                200,
+                4,
+                0,
+                1,
+                true);
     }
 
     public ExecutionEnvironment getEnvironment(long userId) {

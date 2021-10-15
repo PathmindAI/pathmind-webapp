@@ -94,6 +94,7 @@ public class ObservationsViewOnlyPanel extends VerticalLayout implements Experim
     }
 
     public void unhighlight() {
+        this.comparisonModeTheOtherSelectedObservations = null;
         checkboxList.forEach(checkbox -> checkbox.removeClassName(highlightClassName));
     }
 

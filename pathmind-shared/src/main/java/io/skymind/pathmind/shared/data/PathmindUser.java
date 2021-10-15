@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
+public class PathmindUser extends Data implements DeepCloneableInterface<PathmindUser> {
     private long id;
     private String email;
     private String password;
@@ -35,6 +35,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
     private String stripeCustomerId;
     private String newEmailToVerify;
 	private String apiKey;
+    private boolean rewardTermsOn;
 	private LocalDateTime apiKeyCreatedAt;
 
     private List<Project> projects;
@@ -47,8 +48,8 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
         return UserRole.getEnumFromId(this.accountType);
     }
 
-    public boolean isBasicPlanUser() {
-        return UserRole.Basic.equals(getAccountType());
+    public boolean isTrialPlanUser() {
+        return UserRole.Trial.equals(getAccountType());
     }
 
     public boolean isSupportAccountType() {
@@ -80,6 +81,7 @@ public class PathmindUser implements DeepCloneableInterface<PathmindUser> {
                 .stripeCustomerId(stripeCustomerId)
                 .newEmailToVerify(newEmailToVerify)
                 .apiKey(apiKey)
+                .rewardTermsOn(rewardTermsOn)
                 .apiKeyCreatedAt(apiKeyCreatedAt)
                 .build();
     }

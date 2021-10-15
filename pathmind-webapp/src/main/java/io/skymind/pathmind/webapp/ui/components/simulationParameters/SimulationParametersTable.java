@@ -1,11 +1,9 @@
 package io.skymind.pathmind.webapp.ui.components.simulationParameters;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,32 +14,56 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import io.skymind.pathmind.shared.constants.ParamType;
+import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.data.SimulationParameter;
+import io.skymind.pathmind.webapp.ui.components.molecules.UpgradeCtaOverlay;
+import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 
 @CssImport(value = "./styles/components/simulation-parameters-table.css")
-public class SimulationParametersTable extends CustomField<Set<SimulationParameter>> {
+public class SimulationParametersTable extends CustomField<Collection<SimulationParameter>> {
 
-    private VerticalLayout container;
-    private Set<SimulationParameter> simulationParameters = new HashSet<SimulationParameter>();
-    private Boolean isReadOnly = false;
+    private final VerticalLayout container;
 
-    public SimulationParametersTable(Boolean isReadOnly) {
+    private final SegmentIntegrator segmentIntegrator;
+
+    private final List<SimulationParameter> simulationParameters = new ArrayList<>();
+    private final List<SimulationParameter> modelSimulationParameters = new ArrayList<>();
+    private final List<SimulationParameter> comparisonSimulationParameters = new ArrayList<>();
+
+    private final List<SimulationParametersRowField> simulationParametersRowFields = new ArrayList<>();
+    private final boolean isReadOnly;
+    private final boolean isTrialPlanUser;
+
+    public SimulationParametersTable(boolean isReadOnly, PathmindUser currentUser, SegmentIntegrator segmentIntegrator) {
+        this.isTrialPlanUser = currentUser.isTrialPlanUser();
         this.isReadOnly = isReadOnly;
+        this.segmentIntegrator = segmentIntegrator;
         container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         container.setClassName("simulation-parameters-table");
 
         add(container);
     }
 
-    public void setSimulationParameters(List<SimulationParameter> simulationParameters) {
-        Collections.sort(simulationParameters, Comparator.comparing(SimulationParameter::getIndex));
-        this.simulationParameters = new HashSet<SimulationParameter>(simulationParameters);
+    public void setSimulationParameters(Collection<SimulationParameter> experimentSimulationParameters, Collection<SimulationParameter> modelSimulationParameters) {
 
         container.removeAll();
+        simulationParametersRowFields.clear();
+
+        this.simulationParameters.clear();
+        this.modelSimulationParameters.clear();
+
+        if (experimentSimulationParameters != null) {
+            this.simulationParameters.addAll(experimentSimulationParameters);
+            this.simulationParameters.sort(Comparator.comparing(SimulationParameter::getIndex));
+        }
+
+        if (modelSimulationParameters != null) {
+            this.modelSimulationParameters.addAll(modelSimulationParameters);
+            this.modelSimulationParameters.sort(Comparator.comparing(SimulationParameter::getIndex));
+        }
 
         if (simulationParameters.isEmpty()) {
             Button readMoreButton = new Button("Learn More");
@@ -59,33 +81,61 @@ public class SimulationParametersTable extends CustomField<Set<SimulationParamet
             headerRow.addClassName("header-row");
             GuiUtils.removeMarginsPaddingAndSpacing(headerRow);
             container.add(headerRow);
-    
-            simulationParameters.forEach(simulationParam -> {
-                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly ? true : isReadOnly(simulationParam));
+
+            for (int i = 0; i < this.simulationParameters.size(); i++) {
+                SimulationParameter simulationParam = this.simulationParameters.get(i);
+                SimulationParametersRowField row = new SimulationParametersRowField(simulationParam, isReadOnly, isSpecialType(simulationParam), isTrialPlanUser);
+                if (!this.modelSimulationParameters.get(i).getValue().equals(simulationParam.getValue())) {
+                    row.setIsDifferentFromDefault(true);
+                }
+                if (!comparisonSimulationParameters.isEmpty()) {
+                    row.setComparisonParameter(comparisonSimulationParameters.get(i));
+                }
                 container.add(row);
-            });
+                simulationParametersRowFields.add(row);
+            }
+
+            if (isTrialPlanUser && !isReadOnly) {
+                UpgradeCtaOverlay upgradeCtaOverlay = new UpgradeCtaOverlay("Simulation Parameters", segmentIntegrator);
+                getElement().addEventListener("click", event -> upgradeCtaOverlay.open());
+                container.add(upgradeCtaOverlay);
+            }
         }
     }
 
-    public void setSimulationParameters(Set<SimulationParameter> simulationParameters) {
-        setSimulationParameters(new ArrayList<SimulationParameter>(simulationParameters));
+    public void setSimulationParameters(Collection<SimulationParameter> simulationParameters) {
+        setSimulationParameters(simulationParameters, modelSimulationParameters);
+    }
+
+    public void setComparisonParameters(Collection<SimulationParameter> comparisonSimulationParameters) {
+        this.comparisonSimulationParameters.clear();
+        if (comparisonSimulationParameters != null) {
+            this.comparisonSimulationParameters.addAll(comparisonSimulationParameters);
+            this.comparisonSimulationParameters.sort(Comparator.comparing(SimulationParameter::getIndex));
+        }
+
+        if (!simulationParametersRowFields.isEmpty()) {
+            for (int i = 0; i < simulationParametersRowFields.size(); i++) {
+                if (this.comparisonSimulationParameters.isEmpty()) {
+                    simulationParametersRowFields.get(i).setComparisonParameter(null);
+                } else {
+                    simulationParametersRowFields.get(i).setComparisonParameter(this.comparisonSimulationParameters.get(i));
+                }
+            }
+        }
     }
 
     @Override
-    protected Set<SimulationParameter> generateModelValue() {
+    protected Collection<SimulationParameter> generateModelValue() {
         return simulationParameters;
     }
 
     @Override
-    protected void setPresentationValue(Set<SimulationParameter> newPresentationValue) {
+    protected void setPresentationValue(Collection<SimulationParameter> newPresentationValue) {
         setSimulationParameters(newPresentationValue);
     }
 
-    private boolean isReadOnly(SimulationParameter simulationParameter) {
-        if (simulationParameter.getType().equals(ParamType.OTHERS.getValue()) ||
-            simulationParameter.getType().equals(ParamType.STRING.getValue()) && simulationParameter.getValue().equals("NULL_VALUE")) {
-            return true;
-        }
-        return false;
+    private boolean isSpecialType(SimulationParameter simulationParameter) {
+        return simulationParameter.getType().equals(ParamType.OTHERS.getValue()) || simulationParameter.isNullString();
     }
 }

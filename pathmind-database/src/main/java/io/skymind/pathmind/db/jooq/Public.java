@@ -14,6 +14,7 @@ import io.skymind.pathmind.db.jooq.tables.PathmindUser;
 import io.skymind.pathmind.db.jooq.tables.Policy;
 import io.skymind.pathmind.db.jooq.tables.Project;
 import io.skymind.pathmind.db.jooq.tables.RewardScore;
+import io.skymind.pathmind.db.jooq.tables.RewardTerm;
 import io.skymind.pathmind.db.jooq.tables.RewardVariable;
 import io.skymind.pathmind.db.jooq.tables.Run;
 import io.skymind.pathmind.db.jooq.tables.RunAdminNote;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jooq.Catalog;
+import org.jooq.Sequence;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 
@@ -93,6 +95,11 @@ public class Public extends SchemaImpl {
     public final RewardScore REWARD_SCORE = RewardScore.REWARD_SCORE;
 
     /**
+     * The table <code>public.reward_term</code>.
+     */
+    public final RewardTerm REWARD_TERM = RewardTerm.REWARD_TERM;
+
+    /**
      * The table <code>public.reward_variable</code>.
      */
     public final RewardVariable REWARD_VARIABLE = RewardVariable.REWARD_VARIABLE;
@@ -136,6 +143,17 @@ public class Public extends SchemaImpl {
     }
 
     @Override
+    public final List<Sequence<?>> getSequences() {
+        return Arrays.<Sequence<?>>asList(
+            Sequences.EXPERIMENT_ID_SEQ,
+            Sequences.MODEL_ID_SEQ,
+            Sequences.PATHMIND_USER_ID_SEQ,
+            Sequences.POLICY_ID_SEQ,
+            Sequences.PROJECT_ID_SEQ,
+            Sequences.RUN_ID_SEQ);
+    }
+
+    @Override
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
             Experiment.EXPERIMENT,
@@ -148,6 +166,7 @@ public class Public extends SchemaImpl {
             Policy.POLICY,
             Project.PROJECT,
             RewardScore.REWARD_SCORE,
+            RewardTerm.REWARD_TERM,
             RewardVariable.REWARD_VARIABLE,
             Run.RUN,
             RunAdminNote.RUN_ADMIN_NOTE,
