@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClientCallable;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -59,14 +61,17 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
     }
 
     private void setupProjectDropdown(List<Project> projects, Project project) {
+
         projectDropdown.setRequired(true);
         projectDropdown.setItemLabelGenerator(Project::getName);
         projectDropdown.setItems(projects);
+
+        projectDropdown.setValue(project);
+
         if (projects.size() == 1) {
             projectDropdown.setValue(projects.get(0));
             getElement().setProperty("isCreateNewProject", true);
         }
-        // TODO: set `project` as selected
     }
 
     @ClientCallable

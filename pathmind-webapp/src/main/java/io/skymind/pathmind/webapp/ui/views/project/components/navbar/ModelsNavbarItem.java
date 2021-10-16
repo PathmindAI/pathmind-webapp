@@ -6,6 +6,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
@@ -67,6 +68,11 @@ public class ModelsNavbarItem extends LitTemplate {
         getElement().setProperty("isArchived", isArchive);
         model.setArchived(isArchive);
         modelsNavbar.setCurrentCategory();
+    }
+
+    @ClientCallable
+    private void handleChangeProject() {
+        getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.CHOOSE_PROJECT_FOR_MODEL + "/" + model.getId()));
     }
 
     public void setAsCurrent() {

@@ -1,4 +1,4 @@
-import { LitElement, html, css, property } from "lit-element";
+import {css, html, LitElement, property} from "lit-element";
 
 class ModelsNavbarItem extends LitElement {
 
@@ -106,6 +106,15 @@ class ModelsNavbarItem extends LitElement {
             >
                 <iron-icon icon="vaadin:arrow-backward" slot="prefix"></iron-icon>
             </vaadin-button>
+            <vaadin-button
+              class="action-button"
+              theme="tertiary-inline icon"
+              title="Change Project"
+              style="margin-left: 0;"
+              @click="${event => this.handleChangeProject(event)}"
+            >
+              <iron-icon icon="vaadin:exchange" slot="prefix"></iron-icon>
+            </vaadin-button>
         </a>`;
     }
 
@@ -118,6 +127,12 @@ class ModelsNavbarItem extends LitElement {
         event.preventDefault();
         event.stopPropagation();
         (this as any).$server.archiveOrUnarchiveEventHandler(isArchive);
+    }
+
+    handleChangeProject(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        (this as any).$server.handleChangeProject();
     }
 }
 
