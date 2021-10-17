@@ -23,7 +23,7 @@ public class ExecutionEnvironmentManager {
                 false,
                 AnyLogic.VERSION_8_7_7,
                 PathmindHelper.VERSION_1_7_0,
-                NativeRL.VERSION_1_8_0,
+                NativeRL.VERSION_1_8_1,
                 JDK.VERSION_8_222,
                 Conda.VERSION_1_3_0,
                 EC2InstanceType.IT_36CPU_72GB,
