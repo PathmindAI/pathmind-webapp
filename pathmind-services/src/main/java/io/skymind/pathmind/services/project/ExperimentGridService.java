@@ -131,7 +131,8 @@ public class ExperimentGridService {
 
         MetricsComparator(int rewardVarIndex) {
             keyExtractor = experiment -> {
-                if (experiment.getBestPolicy() != null) {
+                Policy bestPolicy = experiment.getBestPolicy();
+                if (bestPolicy != null && bestPolicy.getMetricDisplayValues().size() > 0) {
                     return parseRewardVariableValue(experiment.getBestPolicy().getMetricDisplayValues().get(rewardVarIndex));
                 }
                 return Double.NEGATIVE_INFINITY;
