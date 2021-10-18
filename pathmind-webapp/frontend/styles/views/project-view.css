@@ -182,14 +182,16 @@
     margin-bottom: 0;
 }
 
+.project-view .model-wrapper .move-model-button,
 .project-view .model-wrapper .edit-goals-button,
 .project-view .model-wrapper .new-experiment-button,
 .project-view .model-wrapper .download-policies-button {
-    flex: 1 0 auto;
-    padding: 0 var(--lumo-space-s);
-    border-radius: 0;
-    margin: 0;
-    box-shadow: inset 0 -2px 0 0 var(--pm-grey-color-lighter);
+  flex: 1 0 auto;
+  font-size: var(--lumo-font-size-s);
+  padding: 0 var(--lumo-space-s);
+  border-radius: 0;
+  margin: 0;
+  box-shadow: inset 0 -2px 0 0 var(--pm-grey-color-lighter);
 }
 
 .project-view .observations-panel {
