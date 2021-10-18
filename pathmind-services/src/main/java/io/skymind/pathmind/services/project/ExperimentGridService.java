@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import static io.skymind.pathmind.shared.constants.GoalConditionType.LESS_THAN_OR_EQUAL;
+import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.SPACED_PLUS_MINUS;
 import static io.skymind.pathmind.shared.utils.PathmindNumberUtils.removeThousandsSeparatorFromNumber;
 
 @Service
@@ -147,7 +148,7 @@ public class ExperimentGridService {
     }
 
     static Double parseRewardVariableValue(String valueWithUncertainty) {
-        return Double.parseDouble(removeThousandsSeparatorFromNumber(valueWithUncertainty).split("\u2800\u00B1\u2800")[0]);
+        return Double.parseDouble(removeThousandsSeparatorFromNumber(valueWithUncertainty).split(SPACED_PLUS_MINUS)[0]);
     }
 
 }
