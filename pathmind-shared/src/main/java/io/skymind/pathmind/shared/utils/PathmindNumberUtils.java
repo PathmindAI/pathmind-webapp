@@ -8,6 +8,9 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 public class PathmindNumberUtils {
+
+    public static final String SPACED_PLUS_MINUS = "\u0020\u00B1\u0020";
+
     private PathmindNumberUtils() {
     }
 
@@ -24,7 +27,7 @@ public class PathmindNumberUtils {
     public static String calculateUncertainty(double avg, double variance) {
         double sd = Double.parseDouble(formatToSigFig(Math.sqrt(variance), 2));
         double uncertainty = 2 * sd;
-        return addThousandsSeparatorToNumber(setSigFigBasedOnAnotherDouble(avg, uncertainty, 2)) + "\u2800\u00B1\u2800" + addThousandsSeparatorToNumber(formatToSigFig(uncertainty, 2));
+        return addThousandsSeparatorToNumber(setSigFigBasedOnAnotherDouble(avg, uncertainty, 2)) + SPACED_PLUS_MINUS + addThousandsSeparatorToNumber(formatToSigFig(uncertainty, 2));
     }
 
     /**

@@ -414,11 +414,14 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .upload-model-view .view-section,
-.edit-goals-view .view-section {
+.edit-goals-view .view-section,
+.choose-project-view .view-section {
     max-width: 500px;
     flex: 0 0 auto;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
     margin: var(--lumo-space-xxl) auto;
+    border-radius: var(--lumo-border-radius);
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
 }
 
 .edit-goals-view h2 {
