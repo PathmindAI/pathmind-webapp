@@ -341,7 +341,10 @@ public class ExperimentUtils {
                 if (line.trim().startsWith("//") || StringUtils.trimToEmpty(line).isEmpty()) {
                     continue;
                 }
-                if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward+=")) {
+                if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward=")) {
+                    varName = String.format("rewardTermsRaw[%d] =", i);
+                    line = line.replaceFirst("reward[\\s\\t]*=", varName);
+                } else if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward+=")) {
                     line = line.replaceFirst("reward[\\s\\t]*\\+=", varName);
                 } else if (line.trim().replaceAll("[\\s\\t]*", "").startsWith("reward-=")) {
                     String start = line.substring(0, line.indexOf("reward"));
