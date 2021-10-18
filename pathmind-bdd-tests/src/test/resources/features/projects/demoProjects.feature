@@ -31,7 +31,7 @@ Feature: Demo projects
     When Wait a bit 5000 ms
     When Check experiment page observations list <experiment observations>
     Then Check experiment page simulation metrics <reward vars>
-    Then Check experiment page reward function <reward function>
+    Then Check experiment page reward function '<reward function>'
     Then Check that unexpected error alert is Not shown
 
     Examples:

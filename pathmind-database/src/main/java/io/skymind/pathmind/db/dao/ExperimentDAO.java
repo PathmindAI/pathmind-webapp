@@ -141,7 +141,24 @@ public class ExperimentDAO {
                 .descending(isDesc)
                 .build();
         List<Experiment> experiments = ExperimentRepository.getExperimentsInModelForUser(ctx, modelExperimentsQueryParams);
-        return setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+        experiments = setSelectedObservationsAndMetricsValues(ctx, experiments, modelId, userId);
+        experiments = setRewardVariables(ctx, experiments, modelId);
+        experiments = setRewardTerms(ctx, experiments);
+        return experiments;
+    }
+
+    private List<Experiment> setRewardVariables(DSLContext ctx, List<Experiment> experiments, Long modelId) {
+        CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
+            experiment.setRewardVariables(RewardVariableRepository.getRewardVariablesForModel(ctx, modelId));
+        });
+        return experiments;
+    }
+
+    private List<Experiment> setRewardTerms(DSLContext ctx, List<Experiment> experiments) {
+        CollectionUtils.emptyIfNull(experiments).forEach(experiment -> {
+            experiment.setRewardTerms(RewardTermsRepository.getRewardTerms(ctx, experiment.getId()));
+        });
+        return experiments;
     }
 
     private List<Experiment> setSelectedObservationsAndMetricsValues(DSLContext ctx, List<Experiment> experiments, Long modelId, Long userId) {

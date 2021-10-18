@@ -48,6 +48,11 @@ public class ExperimentViewStepDefinitions {
         experimentViewSteps.experimentPageCheckRewardFunction(slot, rewardFunctionFilePath);
     }
 
+    @Then("^Experiment page Check '(.*)' reward function new '(.*)'$")
+    public void experimentPageCheckRewardFunctionNew(String slot, String rewardFunctionFilePath) throws IOException {
+        experimentViewSteps.experimentPageCheckRewardFunctionNew(slot, rewardFunctionFilePath);
+    }
+
     @When("^Experiment page '(.*)' slot click reward variable '(.*)'$")
     public void experimentPageSlotClickRewardVariable(String slot, String rewardVar) {
         experimentViewSteps.experimentPageSlotClickRewardVariable(slot, rewardVar);

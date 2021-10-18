@@ -1,6 +1,7 @@
 package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
@@ -36,6 +37,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.components.chart.Experimen
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.experimentNotes.ExperimentNotesField;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.notification.StoppedTrainingNotification;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardTermsViewer;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simulationMetrics.SimulationMetricsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.trainingStatus.TrainingStatusDetailsPanel;
 import io.skymind.pathmind.webapp.ui.views.experiment.subscribers.ExperimentViewComparisonExperimentArchivedSubscriber;
@@ -73,6 +75,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private SplitLayout bottomPanel;
     protected ExperimentNotesField experimentNotesField;
     private CodeViewer experimentCodeViewer;
+    private RewardTermsViewer experimentRewardTermsViewer;
     private ExperimentChartsPanel experimentChartsPanel;
     private ObservationsViewOnlyPanel experimentObservationsPanel;
     private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
@@ -86,6 +89,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     protected ExperimentNotesField comparisonNotesField;
     private ObservationsViewOnlyPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
+    private RewardTermsViewer comparisonRewardTermsViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
     private SimulationParametersPanel comparisonSimulationParametersPanel;
     private FloatingCloseButton comparisonModeCloseButton;
@@ -132,6 +136,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonExperiment.getSelectedObservations());
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(
                 comparisonExperiment.getRewardFunction(), comparisonExperiment.getRewardFunctionFromTerms(), comparisonExperiment.isWithRewardTerms());
+        experimentRewardTermsViewer.setComparisonModeTheOtherRewardTerms(comparisonExperiment.getRewardTerms(), comparisonExperiment.isWithRewardTerms(), comparisonExperiment.getRewardVariables());
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(
                 comparisonExperiment.getSimulationParameters());
         updateComparisonComponents();
@@ -149,6 +154,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonObservationsPanel.unhighlight();
         experimentsNavbar.unpinExperiments();
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null, null, false);
+        experimentRewardTermsViewer.setComparisonModeTheOtherRewardTerms(Collections.emptyList(), false, experiment.getRewardVariables());
         experimentSimulationParametersPanel.setComparisonModeTheOtherParameters(null);
         showCompareExperimentComponents(isComparisonMode);
         resizeChart();
@@ -230,7 +236,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         simulationMetricsAndObservationsPanel.addSplitterDragendListener(resizeChartOnDrag());
         VerticalLayout comparisonComponents = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 simulationMetricsAndObservationsPanel,
-                generateRewardFunctionGroup(comparisonCodeViewer),
+                getRewardFunctionPanel(comparisonCodeViewer, comparisonRewardTermsViewer),
                 comparisonChartsPanel,
                 comparisonSimulationParametersPanel,
                 comparisonNotesField);
@@ -266,7 +272,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         });
         SplitLayout middlePanel = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationMetricsAndObservationsPanel,
-                generateRewardFunctionGroup(experimentCodeViewer),
+                getRewardFunctionPanel(experimentCodeViewer, experimentRewardTermsViewer),
                 40);
         middlePanel.addClassName("middle-panel");
         middlePanel.addSplitterDragendListener(dragend -> {
@@ -278,11 +284,13 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         return middlePanel;
     }
 
-    private VerticalLayout generateRewardFunctionGroup(CodeViewer codeViewer) {
-        return WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+    private VerticalLayout getRewardFunctionPanel(CodeViewer codeViewer, RewardTermsViewer rewardTermsViewer) {
+        VerticalLayout rewardFunctionPanel = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 LabelFactory.createLabel("Reward Function", BOLD_LABEL),
-                codeViewer
+                codeViewer,
+                rewardTermsViewer
         );
+        return rewardFunctionPanel;
     }
 
     private VerticalLayout generateSimulationsMetricsPanelGroup(SimulationMetricsPanel simulationMetricsPanel) {
@@ -357,6 +365,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentsNavbar.setVisible(!experiment.isArchived());
         comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(experiment.getSelectedObservations());
         comparisonCodeViewer.setComparisonModeTheOtherRewardFunction(experiment.getRewardFunction(), experiment.getRewardFunctionFromTerms(), experiment.isWithRewardTerms());
+        comparisonRewardTermsViewer.setComparisonModeTheOtherRewardTerms(experiment.getRewardTerms(), experiment.isWithRewardTerms(), experiment.getRewardVariables());
         comparisonSimulationParametersPanel.setComparisonModeTheOtherParameters(experiment.getSimulationParameters());
     }
 
@@ -368,6 +377,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentTrainingStatusDetailsPanel = new TrainingStatusDetailsPanel(getUISupplier());
         experimentChartsPanel = new ExperimentChartsPanel(this, false);
         experimentCodeViewer = new CodeViewer();
+        experimentRewardTermsViewer = new RewardTermsViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
@@ -380,6 +390,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 experimentTrainingStatusDetailsPanel,
                 experimentChartsPanel,
                 experimentCodeViewer,
+                experimentRewardTermsViewer,
                 experimentSimulationMetricsPanel,
                 experimentObservationsPanel,
                 experimentSimulationParametersPanel,
@@ -395,6 +406,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonNotesField.setSecondaryStyle(true);
         comparisonChartsPanel = new ExperimentChartsPanel(this, true);
         comparisonCodeViewer = new CodeViewer();
+        comparisonRewardTermsViewer = new RewardTermsViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
         comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
@@ -406,6 +418,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
                 comparisonNotesField,
                 comparisonChartsPanel,
                 comparisonCodeViewer,
+                comparisonRewardTermsViewer,
                 comparisonSimulationMetricsPanel,
                 comparisonObservationsPanel,
                 comparisonSimulationParametersPanel,

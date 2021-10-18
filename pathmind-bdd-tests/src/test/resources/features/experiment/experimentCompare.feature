@@ -38,8 +38,8 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'kitchenCleanlinessLevel' is checked 'true'
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
-    Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'primary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'secondary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check elements of two stopped experiments
     Given Login to the pathmind
@@ -87,8 +87,8 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'kitchenCleanlinessLevel' is checked 'true'
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
-    Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'primary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'secondary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check elements of stopped and one running experiment
     Given Login to the pathmind
@@ -133,8 +133,8 @@ Feature: Experiment page compare feature
     Then Experiment page Check 'secondary' observation 'kitchenCleanlinessLevel' is checked 'true'
     Then Experiment page Check 'secondary' observation 'timeOfDay' is checked 'false'
 
-    Then Experiment page Check 'primary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
-    Then Experiment page Check 'secondary' reward function 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'primary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
+    Then Experiment page Check 'secondary' reward function new 'CoffeeShop/CoffeeShopRewardFunction.txt'
 
   Scenario: Check compare feature check reward variables chosen
     Given Login to the pathmind
