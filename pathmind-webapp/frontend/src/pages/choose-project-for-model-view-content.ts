@@ -109,10 +109,11 @@ class ChooseProjectForModelViewContent extends LitElement {
           }
         }
         comboBox.addEventListener("value-changed", (event: CustomEvent) => {
+          this.projectNotes = "";
           if (event.detail.value == 2) { // Create a New Project
-              this.isCreateNewProject = true;
+            this.isCreateNewProject = true;
           } else {
-              this.isCreateNewProject = false;
+            this.isCreateNewProject = false;
           }
           (this as any).$server.selectedProjectChanged();
         });
