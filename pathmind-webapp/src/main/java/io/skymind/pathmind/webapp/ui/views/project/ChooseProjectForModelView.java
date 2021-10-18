@@ -14,8 +14,6 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
-
 @Route(value = Routes.CHOOSE_PROJECT_FOR_MODEL, layout = MainLayout.class)
 public class ChooseProjectForModelView extends PathMindDefaultView implements HasUrlParameter<String> {
 

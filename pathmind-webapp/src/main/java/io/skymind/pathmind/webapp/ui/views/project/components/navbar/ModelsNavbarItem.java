@@ -70,11 +70,6 @@ public class ModelsNavbarItem extends LitTemplate {
         modelsNavbar.setCurrentCategory();
     }
 
-    @ClientCallable
-    private void handleChangeProject() {
-        getUI().ifPresent(ui -> ui.getPage().setLocation(Routes.CHOOSE_PROJECT_FOR_MODEL + "/" + model.getId()));
-    }
-
     public void setAsCurrent() {
         getElement().setProperty("isCurrent", true);
     }

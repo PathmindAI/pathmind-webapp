@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClientCallable;
-import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.JsModule;
@@ -15,6 +13,7 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import com.vaadin.flow.component.polymertemplate.Id;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.server.Command;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.db.dao.ProjectDAO;
@@ -26,7 +25,6 @@ import io.skymind.pathmind.webapp.data.utils.ProjectUtils;
 import io.skymind.pathmind.webapp.ui.binders.ProjectBinders;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 
@@ -53,7 +51,8 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
 
     private Model model;
 
-    @Autowired
+    private Command submitButtonCallback = () -> {};
+
     public ChooseProjectForModelViewContent(ProjectDAO projectDAO, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
         this.projectDAO = projectDAO;
         this.modelDAO = modelDAO;
@@ -75,6 +74,12 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
     }
 
     @ClientCallable
+    private void selectedProjectChanged() {
+        String projectNotes = projectDropdown.getValue().getUserNotes();
+        getElement().setProperty("projectNotes", projectNotes);
+    }
+
+    @ClientCallable
     private void handleSubmitButtonClicked() {
 
         Project chosenProject = projectDropdown.getValue();
@@ -83,7 +88,6 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
             projectDropdown.setInvalid(true);
             return;
         }
-
 
         if (chosenProject.getId() == newProject.getId()) {
             projectNameTextField.setRequired(true);
@@ -98,15 +102,13 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
 
         if (chosenProject.getId() != model.getProjectId()) {
             modelDAO.assignProject(model.getId(), chosenProject.getId());
+
+            final Project tp = chosenProject;
+            getUI().ifPresent(ui -> ui.getPage().setLocation("project/" + tp.getId() + Routes.MODEL_PATH + model.getId()));
         }
 
-        final Project tp = chosenProject;
-        getUI().ifPresent(ui -> ui.getPage().setLocation("project/" + tp.getId() + Routes.MODEL_PATH + model.getId()));
+        submitButtonCallback.execute();
 
-    }
-
-    @ClientCallable
-    private void selectOnChange() {
     }
 
     private void initBinder() {
@@ -134,5 +136,13 @@ public class ChooseProjectForModelViewContent extends LitTemplate {
 
         setupProjectDropdown(projects, modelProject);
         initBinder();
+    }
+
+    public void setIsDialog(boolean isDialog) {
+        getElement().setProperty("isDialog", isDialog);
+    }
+
+    public void setSubmitButtonCallback(Command callback) {
+        this.submitButtonCallback = callback;
     }
 }
