@@ -52,24 +52,24 @@ public class ExperimentService {
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
         return createExperimentFromModelBytes(
                 modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC,
-            null, null, null, null, false
+            null, null, null, null, false, false
         );
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type,
             String environment, Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess
+            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
     ) throws Exception {
         return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment,
-            isPathmindSimulation, obsSelection, rewFctName, deployPolicyServerOnSuccess);
+            isPathmindSimulation, obsSelection, rewFctName, deployPolicyServerOnSuccess, isMultiAgent);
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
             Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type, String environment,
             Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess
+            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
     ) throws Exception {
         Model model = new Model();
 
@@ -126,7 +126,7 @@ public class ExperimentService {
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
                 if (isPathmindSimulation) {
-                    model.setModelType(ModelType.PM_SINGLE.getValue());
+                    model.setModelType(isMultiAgent ? ModelType.PM_MULTI.getValue() : ModelType.PM_SINGLE.getValue());
                 } else {
                     HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
                     if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
