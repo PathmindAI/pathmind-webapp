@@ -28,11 +28,11 @@ public class ApiService extends PageObject {
         try {
             System.out.println(PATHMIND_URL + "api/newVersionAvailable");
             SerenityRest.
-                    given().
-                    header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
-                    when().
-                    post(PATHMIND_URL + "api/newVersionAvailable").
-                    then().log().all().statusCode(200);
+                given().
+                header("Authorization", "Basic " + DatatypeConverter.printBase64Binary(("api:" + PATHMIND_API_KEY).getBytes("UTF-8"))).
+                when().
+                post(PATHMIND_URL + "api/newVersionAvailable").
+                then().log().all().statusCode(200);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,21 +67,16 @@ public class ApiService extends PageObject {
     }
 
     public void createExperiment(String modelFile, String experimentName) {
-        Path path = Paths.get("models/" + modelFile);
         SerenityRest.
             given().
             contentType("multipart/form-data").
-//            multiPart("file", new File("/C:/Users/xeon2995/IdeaProjects/pathmind-webapp/pathmind-bdd-tests/models/CoffeeShop/CoffeeShop.zip")).
-            multiPart("file", new File(path.toAbsolutePath().toString())).
+            multiPart("file", new File(Paths.get("models/" + modelFile).toAbsolutePath().toString())).
             multiPart("env", experimentName).
             multiPart("start", "TRUE").
             header("X-PM-API-TOKEN", Serenity.sessionVariableCalled("apiKey")).
-            log().all().
             when().
             post(PATHMIND_API_URL + "py/upload").
-            then().
-            log().all().
-            assertThat().
-            statusCode(HttpStatus.SC_CREATED);
+            then().log().ifError().
+            assertThat().statusCode(HttpStatus.SC_CREATED);
     }
 }
