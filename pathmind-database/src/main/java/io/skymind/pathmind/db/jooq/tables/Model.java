@@ -19,7 +19,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row21;
+import org.jooq.Row22;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -156,6 +156,11 @@ public class Model extends TableImpl<ModelRecord> {
      */
     public final TableField<ModelRecord, Boolean> ACTIONMASK = createField(DSL.name("actionmask"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
 
+    /**
+     * The column <code>public.model.project_changed_at</code>.
+     */
+    public final TableField<ModelRecord, LocalDateTime> PROJECT_CHANGED_AT = createField(DSL.name("project_changed_at"), SQLDataType.LOCALDATETIME(6).nullable(false).defaultValue(DSL.field("now()", SQLDataType.LOCALDATETIME)), this, "");
+
     private Model(Name alias, Table<ModelRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -255,11 +260,11 @@ public class Model extends TableImpl<ModelRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row21 type methods
+    // Row22 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row21<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String, Boolean> fieldsRow() {
-        return (Row21) super.fieldsRow();
+    public Row22<Long, Long, String, LocalDateTime, LocalDateTime, Integer, Boolean, String, Integer, Boolean, String, Integer, Integer, Boolean, Integer, Integer, String, String, String, String, Boolean, LocalDateTime> fieldsRow() {
+        return (Row22) super.fieldsRow();
     }
 }

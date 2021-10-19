@@ -6,6 +6,7 @@ import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
