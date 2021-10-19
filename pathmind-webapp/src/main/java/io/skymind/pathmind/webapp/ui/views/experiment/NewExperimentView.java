@@ -211,10 +211,26 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     private Select<Experiment> createDiffSelect() {
         Select<Experiment> select = new Select<>();
-        select.setItemLabelGenerator(item -> item != null ? "Experiment #" + item.getName() : "None");
+        select.setItemLabelGenerator(item -> {
+            if (item != null) {
+                if (item.getName() != "Model Default") {
+                    return "Experiment #"+item.getName();
+                }
+                return item.getName();
+            }
+            return "None";
+        });
         select.setEmptySelectionAllowed(true);
         select.setEmptySelectionCaption("None");
         select.getElement().setAttribute("theme", "small");
+        select.addValueChangeListener(valueChangedEvent -> {
+            Experiment selectedExp = valueChangedEvent.getValue();
+            if (selectedExp != null) {
+                simulationParametersPanel.setComparisonModeTheOtherParameters(selectedExp.getSimulationParameters());
+            } else {
+                simulationParametersPanel.setComparisonModeTheOtherParameters(null);
+            }
+        });
         return select;
     }
 
@@ -356,8 +372,15 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                                                         .stream()
                                                         .filter(exp -> exp != experiment)
                                                         .collect(Collectors.toList());
-            diffSelect.setItems(experimentsExcludingThisExp);
-        }
+        Experiment modelDefaultExperiment = new Experiment();
+        modelDefaultExperiment.setName("Model Default");
+        modelDefaultExperiment.setModelId(experiment.getModelId());
+        modelDefaultExperiment.setSimulationParameters(getModelSimulationParameters());
+        modelDefaultExperiment.setSelectedObservations(experiment.getModelObservations());
+        experimentsExcludingThisExp.add(modelDefaultExperiment);
+        diffSelect.setItems(experimentsExcludingThisExp);
+        diffSelect.setValue(modelDefaultExperiment);
+    }
 
     @Override
     public void setExperiment(Experiment experiment) {

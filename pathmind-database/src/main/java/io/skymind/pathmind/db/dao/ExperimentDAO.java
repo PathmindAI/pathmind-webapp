@@ -200,6 +200,7 @@ public class ExperimentDAO {
     public List<Experiment> getExperimentsForModel(long modelId, boolean isIncludeArchived) {
         List<Experiment> experiments = ExperimentRepository.getExperimentsForModel(ctx, modelId, isIncludeArchived);
         addRunsToExperiments(experiments);
+        experiments.stream().forEach(experiment -> loadExperimentData(experiment));
         return experiments;
     }
 

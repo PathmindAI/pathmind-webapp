@@ -33,13 +33,6 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     private boolean isEnableValueChangeListener = true;
 
     /**
-     * For ProjectView only
-      */
-    public ObservationsPanel(List<Observation> modelObservations) {
-        this(modelObservations, true, true, null);
-    }
-
-    /**
      * For ExperimentView only.
      */
     public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly) {
