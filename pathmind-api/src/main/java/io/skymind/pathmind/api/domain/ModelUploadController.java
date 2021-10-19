@@ -164,7 +164,7 @@ public class ModelUploadController {
                 .buildAndExpand(Map.of("modelId", experiment.getModelId()))
                 .toUri();
 
-            if (request.isStartOnUpload() && StringUtils.isNoneEmpty(request.getObsSelection()) && StringUtils.isNoneEmpty(request.getRewFctName())) {
+            if (request.isStartOnUpload()) {
                 trainingService.startRunAsync(experiment); // todo: should we do it synced. may request time out while running?
             }
 
