@@ -39,7 +39,7 @@ Feature: E2E
     Then Check experiment page observations list stateChartState
     #    ------------------------
     #Check reward function block
-    Then Check experiment page reward function <reward function file>
+    Then Check experiment page reward function '<reward function file>'
     #    ------------------------
     #Check ALP btn
     Then Check new experiment page model ALP btn simplestochasticmodel.alp

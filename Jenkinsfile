@@ -33,7 +33,7 @@ def buildDockerImageMA(image_name, dockerfile, basedir, docker_tag) {
         --build-arg S3BUCKET='${docker_tag}-training-static-files.pathmind.com' \
         --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` \
         --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${basedir}/ \
-        --build-arg NATIVERL_FOLDER='nativerl/1_8_0'
+        --build-arg NATIVERL_FOLDER='nativerl/1_8_1'
     """
 }
 

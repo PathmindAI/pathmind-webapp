@@ -40,6 +40,7 @@ public class Model extends ArchivableData implements DeepCloneableInterface<Mode
     private String experimentClass;
     private String experimentType;
     private boolean actionmask;
+    private LocalDateTime projectChangedAt;
 
     @Override
     public Model shallowClone() {

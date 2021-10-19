@@ -16,9 +16,14 @@ public class ExperimentStepDefinitions {
     @Steps
     private ProjectsPageSteps projectsPageSteps;
 
-    @Then("^Check experiment page reward function (.*)$")
+    @Then("^Check experiment page reward function '(.*)'$")
     public void checkExperimentPageRewardFunction(String rewardFnFile) throws IOException {
         experimentPageSteps.checkExperimentPageRewardFunction(rewardFnFile);
+    }
+
+    @Then("^Check experiment page reward function new '(.*)'$")
+    public void checkExperimentPageRewardFunctionNew(String rewardFnFile) throws IOException {
+        experimentPageSteps.checkExperimentPageRewardFunctionNew(rewardFnFile);
     }
 
     @Then("^Add note ([^\"]*) to the experiment page$")

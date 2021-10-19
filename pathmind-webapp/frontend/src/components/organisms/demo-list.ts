@@ -121,11 +121,6 @@ class DemoList extends LitElement {
         `;
     }
 
-    _getDataItem(index, key) {
-        if (this.demoDataList.length == 0) return "";
-        return this.demoDataList[index][key];
-    }
-
     setData(demoDataList) {
         this.demoDataList = demoDataList;
     }
