@@ -13,7 +13,6 @@ import org.apache.http.HttpStatus;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ApiService extends PageObject {
