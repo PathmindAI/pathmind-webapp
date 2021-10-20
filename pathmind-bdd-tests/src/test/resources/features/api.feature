@@ -30,3 +30,9 @@ Feature: Api tests
     Examples:
       | project name   |
       | ApiTestProject |
+@debug
+  Scenario: Check create python model
+    Given Login to the pathmind
+    When Open user account page
+    Then Save account page api key to the environment variable
+    When Create project throw API 'pythonExamples/python_examples.zip', 'examples.mouse.single_agent_mouse_env.MouseAndCheese;null;null'

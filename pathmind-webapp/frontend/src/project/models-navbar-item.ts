@@ -1,4 +1,4 @@
-import { LitElement, html, css, property } from "lit-element";
+import {css, html, LitElement, property} from "lit-element";
 
 class ModelsNavbarItem extends LitElement {
 

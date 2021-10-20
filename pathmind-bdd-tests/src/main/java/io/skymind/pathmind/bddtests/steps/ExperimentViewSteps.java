@@ -49,6 +49,11 @@ public class ExperimentViewSteps {
     }
 
     @Step
+    public void experimentPageCheckRewardFunctionNew(String slot, String rewardFunctionFilePath) throws IOException {
+        experimentViewBottomPanel.experimentPageCheckRewardFunctionNew(slot, rewardFunctionFilePath);
+    }
+
+    @Step
     public void experimentPageSlotClickRewardVariable(String slot, String rewardVar) {
         experimentViewMiddlePanel.experimentPageSlotClickRewardVariable(slot, rewardVar);
     }

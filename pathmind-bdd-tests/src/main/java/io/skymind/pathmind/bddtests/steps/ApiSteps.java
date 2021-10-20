@@ -25,4 +25,9 @@ public class ApiSteps {
     public void checkAPIProjectsIdArchivedTrue(String id, String archived) {
         assertThat(apiService.getProjectByProjectName(id).get("is_archived").getAsString(), is(archived));
     }
+
+    @Step
+    public void createProjectThrowAPI(String modelFile, String experimentName) {
+        apiService.createExperiment(modelFile, experimentName);
+    }
 }
