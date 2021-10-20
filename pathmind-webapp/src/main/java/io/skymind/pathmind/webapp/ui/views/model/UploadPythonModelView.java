@@ -13,7 +13,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -46,7 +45,6 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
-import io.skymind.pathmind.webapp.ui.components.buttons.ArchiveUnarchiveModelButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesPanel;
@@ -54,14 +52,10 @@ import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.PushUtils;
-import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.subscribers.UploadModelViewModelArchiveSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -75,11 +69,10 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_TITLE_LABEL_REGULAR_FONT_WEIGHT;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.WARNING_LABEL;
-import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
-@Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver {
+@Route(value = Routes.UPLOAD_PYTHON_MODEL, layout = MainLayout.class)
+public class UploadPythonModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver {
 
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int UPLOAD_MODE_SEGMENT = 1;
@@ -118,12 +111,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     private Binder<Model> modelBinder;
 
     private UploadModelWizardPanel uploadModelWizardPanel;
-    private UploadALPWizardPanel uploadALPWizardPanel;
     private ModelDetailsWizardPanel modelDetailsWizardPanel;
-    private RewardVariablesPanel rewardVariablesPanel;
-    private VerticalLayout rewardVariablesPanelWrapper;
-    private ArchiveUnarchiveModelButton archiveUnarchiveModelButton;
-    private Span archivedBanner;
 
     private List<Component> wizardPanels;
 
@@ -135,7 +123,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     private UploadMode uploadMode;
 
-    public UploadModelView() {
+    public UploadPythonModelView() {
         super();
     }
 
@@ -143,34 +131,23 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         modelBinder = new Binder<>(Model.class);
 
         uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
-        uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
-        rewardVariablesPanel = new RewardVariablesPanel(false);
-        rewardVariablesPanelWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-            LabelFactory.createLabel("Goals", NO_TOP_MARGIN_LABEL),
-            GuiUtils.getFullWidthHr(),
-            rewardVariablesPanel);
-        rewardVariablesPanelWrapper.setVisible(false);
 
         modelBinder.readBean(model);
 
         wizardPanels = Arrays.asList(
                 uploadModelWizardPanel,
-                uploadALPWizardPanel,
-                modelDetailsWizardPanel,
-                rewardVariablesPanelWrapper);
+                modelDetailsWizardPanel);
 
         if (isResumeUpload()) {
-            setVisibleWizardPanel(uploadALPWizardPanel);
+            setVisibleWizardPanel(modelDetailsWizardPanel);
         } else {
             setVisibleWizardPanel(uploadModelWizardPanel);
         }
 
         uploadModelWizardPanel.addFileUploadCompletedListener(this::handleUploadWizardClicked);
         uploadModelWizardPanel.addFileUploadFailedListener(this::handleUploadFailed);
-        uploadALPWizardPanel.addButtonClickListener(click -> handleUploadALPClicked());
         modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
-        rewardVariablesPanel.addButtonClickListener(click -> handleRewardVariablesClicked());
 
         Div sectionTitleWrapper = new Div();
 
@@ -185,22 +162,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
         List<Component> sections = new ArrayList<>();
-        archiveUnarchiveModelButton = new ArchiveUnarchiveModelButton(model, modelDAO, segmentIntegrator);
-        archivedBanner = LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL);
-        HorizontalLayout sectionHeader = WrapperUtils.wrapWidthFullBetweenHorizontal(sectionTitleWrapper);
-        if (isResumeUpload()) {
-            sections.add(archivedBanner);
-            archivedBanner.setVisible(model.isArchived());
-            sectionHeader.add(archiveUnarchiveModelButton);
+        if (isResumeUpload() && model.isArchived()) {
+            sections.add(
+                LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
+            );
         }
-        sections.add(sectionHeader);
+        sections.add(sectionTitleWrapper);
         sections.add(uploadModelWizardPanel);
         if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
             sections.add(invalidModelErrorLabel);
         }
-        sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
-        sections.add(rewardVariablesPanelWrapper);
         VerticalLayout wrapper = new VerticalLayout(
                 sections.toArray(new Component[0]));
 
@@ -266,13 +238,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return modelId != -1;
     }
 
-    private void handleRewardVariablesClicked() {
-        if (rewardVariablesPanel.canSaveChanges()) {
-            rewardVariablesDAO.updateModelAndRewardVariables(model, rewardVariables);
-            saveAndNavigateToNewExperiment();
-        }
-    }
-
     private void handleModelDetailsClicked() {
         if (!FormUtils.isValidForm(modelBinder, model)) {
             return;
@@ -282,12 +247,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         modelNotes = modelDetailsWizardPanel.getModelNotes();
 
         if (!modelNotes.isEmpty()) {
-            segmentIntegrator.addedNotesUploadModelView();
         }
 
         modelService.updateDraftModel(model, modelNotes);
-        rewardVariablesPanel.setupRewardVariables(rewardVariables);
-        setVisibleWizardPanel(rewardVariablesPanelWrapper);
+        saveAndNavigateToNewExperiment();
     }
 
     private void saveAndNavigateToNewExperiment() {
@@ -311,16 +274,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     private Breadcrumbs createBreadcrumbs() {
         return new Breadcrumbs(project, model);
-    }
-
-    public Span getArchivedBanner() {
-        return archivedBanner;
-    }
-
-    @Override
-    protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), 
-                List.of(new UploadModelViewModelArchiveSubscriber(this)));
     }
 
     @Override
@@ -358,7 +311,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     public void fileSuccessfullyVerified(AnylogicFileCheckResult result) {
         getUI().ifPresent(ui -> PushUtils.push(ui, () -> {
             uploadModelWizardPanel.setFileCheckStatusProgressBarValue(1.0);
-            setVisibleWizardPanel(uploadALPWizardPanel);
+            setVisibleWizardPanel(modelDetailsWizardPanel);
             List<Observation> observationList = new ArrayList<>();
             Hyperparams alResult = null;
             if (result != null) {
@@ -383,7 +336,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 model.setNumberOfAgents(alResult.getNumberOfAgents());
                 model.setActionmask(alResult.isActionMask());
             }
-            uploadALPWizardPanel.setIsValidModel(ModelUtils.isValidModel(model));
 
             modelBinder.readBean(model);
             modelService.addDraftModelToProject(model, project.getId(), "");
@@ -412,10 +364,6 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
             }
         }
-    }
-
-    public long getModelId() {
-        return modelId;
     }
 
     public static String createResumeUploadTarget(Project project, Model model) {

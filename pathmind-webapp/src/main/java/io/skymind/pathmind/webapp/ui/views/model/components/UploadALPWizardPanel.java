@@ -22,9 +22,9 @@ import com.vaadin.flow.dom.DomEventListener;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LABEL;
@@ -44,7 +44,7 @@ public class UploadALPWizardPanel extends VerticalLayout {
         this.model = model;
         this.maxFileSize = maxFileSize;
 
-        nextStepButton = UploadModelView.createNextStepButton();
+        nextStepButton = FormUtils.createNextStepButton();
         nextStepButton.setEnabled(isValidModel);
 
         setupLayout(isResumeUpload);

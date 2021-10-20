@@ -20,9 +20,11 @@ import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
+import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
+import io.skymind.pathmind.webapp.ui.views.model.UploadPythonModelView;
 import io.skymind.pathmind.webapp.utils.UploadUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +67,10 @@ public class UploadModelWizardPanel extends VerticalLayout {
         setupUploadPanel();
         setupFileCheckPanel();
 
-        add(LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
+        add(WrapperUtils.wrapWidthFullBetweenHorizontal(
+                    LabelFactory.createLabel("Upload Model", NO_TOP_MARGIN_LABEL),
+                    getToggleModelTypeButton()
+            ),
                 GuiUtils.getFullWidthHr(),
                 getInstructionsDiv(),
                 uploadModelPanel,
@@ -73,6 +78,23 @@ public class UploadModelWizardPanel extends VerticalLayout {
                 getUploadModeSwitchButton());
 
         fileCheckPanel.setVisible(false);
+    }
+
+    private ToggleButton getToggleModelTypeButton() {
+        ToggleButton toggleModelTypeButton = new ToggleButton("AnyLogic", "Python");
+        toggleModelTypeButton.setToggleButtonState(true);
+        toggleModelTypeButton.setToggleCallback(() -> {
+            boolean newButtonState = !toggleModelTypeButton.getToggleButtonState();
+            toggleModelTypeButton.setToggleButtonState(newButtonState);
+            if (newButtonState) {
+                // AnyLogic model
+            } else {
+                // Python model
+                getUISupplier.get().ifPresent(ui ->
+                    ui.navigate(UploadPythonModelView.class, ""+model.getProjectId()));
+            }
+        });
+        return toggleModelTypeButton;
     }
 
     private HorizontalLayout getUploadModeSwitchButton() {
