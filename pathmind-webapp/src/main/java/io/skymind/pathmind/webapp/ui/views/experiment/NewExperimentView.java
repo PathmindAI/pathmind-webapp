@@ -227,8 +227,10 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
             Experiment selectedExp = valueChangedEvent.getValue();
             if (selectedExp != null) {
                 simulationParametersPanel.setComparisonModeTheOtherParameters(selectedExp.getSimulationParameters());
+                observationsPanel.setComparisonModeTheOtherSelectedObservations(selectedExp.getSelectedObservations());
             } else {
                 simulationParametersPanel.setComparisonModeTheOtherParameters(null);
+                observationsPanel.setComparisonModeTheOtherSelectedObservations(null);
             }
         });
         return select;
