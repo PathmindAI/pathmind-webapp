@@ -122,7 +122,7 @@ class AwsPolicyServerServiceImpl implements PolicyServerService {
                                 .build()
                 );
 
-        schemaBuilder.observations(observationDAO.getObservationsForModel(run.getModel().getId()));
+        schemaBuilder.observations(observationDAO.getObservationsForExperiment(run.getExperimentId()));
 
         return schemaBuilder.build();
     }
