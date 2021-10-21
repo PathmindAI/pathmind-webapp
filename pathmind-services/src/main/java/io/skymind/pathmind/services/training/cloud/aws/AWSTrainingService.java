@@ -1,10 +1,13 @@
 package io.skymind.pathmind.services.training.cloud.aws;
 
-import java.util.Comparator;
-import java.util.LinkedHashMap;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -26,13 +29,11 @@ import io.skymind.pathmind.shared.services.training.JobSpec;
 import io.skymind.pathmind.shared.services.training.environment.ExecutionEnvironmentManager;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.shared.utils.ObservationUtils;
+import io.skymind.pathmind.shared.utils.ZipUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
 
 import static io.skymind.pathmind.shared.constants.RunType.DiscoveryRun;
 
@@ -78,13 +79,33 @@ public class AWSTrainingService extends TrainingService {
 
         String modelFileId = modelService.buildModelPath(modelId);
         if (ModelType.isPathmindModel(modelType)) {
-            // TODO: generate obs.yaml and replace it in model file
-//            String obsYaml = ObservationUtils.toYaml(observations);
-//            modelFileId = modelService.buildModelPath(modelId, exp.getId());
-//            byte[] originalModel = modelService.getModelFile(modelId);
-//            modelService.saveModelFile(modelId, exp.getId(), modifiedFile);
-        }
+            String obsYaml = ObservationUtils.toYaml(observations);
 
+            byte[] originalModel = modelService.getModelFile(modelId);
+            try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(originalModel))) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(baos);
+                ZipEntry entry = null;
+                while ((entry = zipStream.getNextEntry()) != null) {
+                    if (!entry.getName().equalsIgnoreCase("obs.yaml")) {
+                        zos.putNextEntry(entry);
+                        byte[] entryBytes = ZipUtils.entryContentExtractor().apply(zipStream, entry);
+                        zos.write(entryBytes);
+                        zos.closeEntry();
+                    }
+                    zipStream.closeEntry();
+                }
+                zos.putNextEntry(new ZipEntry("obs.yaml"));
+                zos.write(obsYaml.getBytes(Charset.defaultCharset()));
+                zos.closeEntry();
+                zos.close();
+                byte[] modifiedModel = baos.toByteArray();
+                modelFileId = modelService.buildModelPath(modelId, exp.getId());
+                modelService.saveModelFile(modelId, exp.getId(), modifiedModel);
+            } catch (IOException e) {
+                log.error("Not able to process entry", e);
+            }
+        }
 
         final JobSpec.JobSpecBuilder spec = JobSpec.builder()
                 .reward(exp.getRewardFunctionFromTerms())
