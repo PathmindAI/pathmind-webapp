@@ -31,6 +31,7 @@ import io.skymind.pathmind.shared.data.Project;
 import io.skymind.pathmind.shared.data.RewardVariable;
 import io.skymind.pathmind.shared.data.SimulationParameter;
 import io.skymind.pathmind.shared.utils.ModelUtils;
+import io.skymind.pathmind.shared.utils.ObservationUtils;
 import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import io.skymind.pathmind.shared.utils.ZipUtils;
 import lombok.RequiredArgsConstructor;
@@ -63,8 +64,6 @@ public class ExperimentService {
     private final ModelFileVerifier modelFileVerifier;
 
     private final ProjectFileCheckService projectFileCheckService;
-
-    private final Yaml yaml = new Yaml();
 
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
         return createExperimentFromModelBytes(
@@ -150,15 +149,7 @@ public class ExperimentService {
                                 modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
                                 entryContentExtractor()
                         );
-
-                        LinkedHashMap<String, List<String>> observations = yaml.load(new String(obsYaml));
-                        CollectionUtils.emptyIfNull(observations.get("observations")).forEach(name -> {
-                            Observation obs = new Observation();
-                            obs.setVariable(name);
-                            obs.setDataTypeEnum(ObservationDataType.NUMBER);
-                            obs.setArrayIndex(obss.size());
-                            obss.add(obs);
-                        });
+                        obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
                         model.setNumberOfObservations(obss.size());
                     } catch (Exception e) {
                         obss.clear();
