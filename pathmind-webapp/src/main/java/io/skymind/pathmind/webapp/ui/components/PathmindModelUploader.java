@@ -101,7 +101,7 @@ public class PathmindModelUploader extends Upload {
     }
 
     private Button createUploadButton() {
-        Button uploadButton = new Button(VaadinIcon.UPLOAD.create());
+        Button uploadButton = new Button(VaadinIcon.UPLOAD_ALT.create());
         uploadButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         uploadButton.setText(uploadMode == UploadMode.FOLDER ? "Upload exported folder" : "Upload zip file");
         return uploadButton;

@@ -1,6 +1,5 @@
 package io.skymind.pathmind.webapp.ui.views.model.components;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -12,11 +11,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
-import com.vaadin.flow.component.upload.Receiver;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import com.vaadin.flow.dom.DomEventListener;
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.PathmindModelUploader;
@@ -24,39 +18,36 @@ import io.skymind.pathmind.webapp.ui.components.atoms.ToggleButton;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.model.UploadMode;
-import io.skymind.pathmind.webapp.ui.views.model.UploadPythonModelView;
-import io.skymind.pathmind.webapp.utils.UploadUtils;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import lombok.extern.slf4j.Slf4j;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.ERROR_LABEL;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 @Slf4j
-public class UploadModelWizardPanel extends VerticalLayout {
+public class UploadPythonModelWizardPanel extends VerticalLayout {
     private final Model model;
-    private final int maxFileSize;
 
-    private VerticalLayout uploadModelPanel;
     private PathmindModelUploader upload;
 
     private ProgressBar fileCheckProgressBar = new ProgressBar();
     private VerticalLayout fileCheckPanel;
 
-    private Consumer<ModelBytes> checkModelConsumer;
-
     private HorizontalLayout checkingModelComponent;
     private Span errorMessage;
-    private UploadModeSwitcherButton uploadModeSwitcher;
 
     private UploadMode mode;
     private Consumer<Collection<String>> uploadFailedConsumer;
+    private String apiUrl;
+    private String apiToken;
 
     private Supplier<Optional<UI>> getUISupplier;
-    public UploadModelWizardPanel(Model model, UploadMode mode, int maxFileSize, Supplier<Optional<UI>> getUISupplier) {
+    public UploadPythonModelWizardPanel(Model model, UploadMode mode, Supplier<Optional<UI>> getUISupplier, String apiUrl, String apiToken) {
         this.model = model;
         this.mode = mode;
-        this.maxFileSize = maxFileSize;
         this.getUISupplier = getUISupplier;
+        this.apiUrl = apiUrl;
+        this.apiToken = apiToken;
 
         setupLayout();
         setPadding(false);
@@ -64,7 +55,6 @@ public class UploadModelWizardPanel extends VerticalLayout {
     }
 
     private void setupLayout() {
-        setupUploadPanel();
         setupFileCheckPanel();
 
         add(WrapperUtils.wrapWidthFullBetweenHorizontal(
@@ -73,38 +63,26 @@ public class UploadModelWizardPanel extends VerticalLayout {
             ),
                 GuiUtils.getFullWidthHr(),
                 getInstructionsDiv(),
-                uploadModelPanel,
-                fileCheckPanel,
-                getUploadModeSwitchButton());
+                fileCheckPanel);
 
         fileCheckPanel.setVisible(false);
     }
 
     private ToggleButton getToggleModelTypeButton() {
         ToggleButton toggleModelTypeButton = new ToggleButton("AnyLogic", "Python");
-        toggleModelTypeButton.setToggleButtonState(true);
+        toggleModelTypeButton.setToggleButtonState(false);
         toggleModelTypeButton.setToggleCallback(() -> {
             boolean newButtonState = !toggleModelTypeButton.getToggleButtonState();
             toggleModelTypeButton.setToggleButtonState(newButtonState);
             if (newButtonState) {
                 // AnyLogic model
+                getUISupplier.get().ifPresent(ui ->
+                    ui.navigate(UploadModelView.class, ""+model.getProjectId()));
             } else {
                 // Python model
-                getUISupplier.get().ifPresent(ui ->
-                    ui.navigate(UploadPythonModelView.class, ""+model.getProjectId()));
             }
         });
         return toggleModelTypeButton;
-    }
-
-    private HorizontalLayout getUploadModeSwitchButton() {
-        HorizontalLayout buttonWrapper = WrapperUtils.wrapWidthFullCenterHorizontal();
-        uploadModeSwitcher = new UploadModeSwitcherButton(mode, getUISupplier, model);
-        upload.isFolderUploadSupported(isFolderUploadSupported -> {
-            uploadModeSwitcher.setVisible(isFolderUploadSupported);
-        });
-        buttonWrapper.add(uploadModeSwitcher);
-        return buttonWrapper;
     }
 
     private void setupFileCheckPanel() {
@@ -119,66 +97,12 @@ public class UploadModelWizardPanel extends VerticalLayout {
         fileCheckPanel.addClassName("file-check-panel");
     }
 
-    private void setupUploadPanel() {
-        upload = new PathmindModelUploader(mode);
-
-        upload.setMaxFileSize(maxFileSize);
-
-        addUploadsFinishedListener();
-        addUploadRemoveFileListener();
-
-        uploadModelPanel = WrapperUtils.wrapWidthFullCenterVertical(upload);
-        uploadModelPanel.setPadding(false);
-    }
-
-    private void addUploadsFinishedListener() {
-        upload.addAllFilesUploadedListener((errors) -> {
-            log.info("Upload a model for project {}", model.getProjectId());
-
-            if (errors.size() > 0) {
-                uploadFailedConsumer.accept(errors);
-                return;
-            }
-            try {
-                Receiver receiver = upload.getReceiver();
-                byte[] data;
-                // In folder upload mode, receiver is MultiFileMemoryBuffer, so a zip file should be created
-                if (receiver instanceof MultiFileMemoryBuffer) {
-                    MultiFileMemoryBuffer buffer = (MultiFileMemoryBuffer) receiver;
-                    data = UploadUtils.createZipFileFromBuffer(buffer);
-                } else {
-                    MemoryBuffer buffer = (MemoryBuffer) receiver;
-                    data = buffer.getInputStream().readAllBytes();
-                }
-                ModelBytes modelBytes = ModelBytes.of(data);
-                checkModelConsumer.accept(modelBytes);
-                log.info("Upload completed");
-            } catch (IOException e) {
-                // TODO -> We need to do something if this fails.
-                log.error("Upload failed", e);
-            }
-        });
-    }
-
-    // Currently the only way this seems possible is by listening for the DOM event
-    // as explained at: https://vaadin.com/forum/thread/17336034/remove-file-uploaded-vaadin-upload
-    private void addUploadRemoveFileListener() {
-        upload.getElement().addEventListener("file-remove", (DomEventListener) event -> clearError());
-    }
-
-    public void addFileUploadCompletedListener(Consumer<ModelBytes> checkModelConsumer) {
-        this.checkModelConsumer = checkModelConsumer;
-    }
-
     public void addFileUploadFailedListener(Consumer<Collection<String>> consumer) {
         uploadFailedConsumer = consumer;
     }
 
-    private UploadModelInstructions getInstructionsDiv() {
-        UploadModelInstructions uploadModelInstructions = new UploadModelInstructions();
-        upload.isFolderUploadSupported(isFolderUploadSupported -> {
-            uploadModelInstructions.setIsZip(!(mode == UploadMode.FOLDER && isFolderUploadSupported));
-        });
+    private UploadPythonModelInstructions getInstructionsDiv() {
+        UploadPythonModelInstructions uploadModelInstructions = new UploadPythonModelInstructions(apiUrl, apiToken);
         return uploadModelInstructions;
     }
 

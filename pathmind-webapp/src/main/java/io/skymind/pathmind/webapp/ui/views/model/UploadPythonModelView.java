@@ -7,12 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -26,13 +22,9 @@ import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.db.dao.*;
 import io.skymind.pathmind.db.utils.RewardVariablesUtils;
 import io.skymind.pathmind.services.ModelService;
-import io.skymind.pathmind.services.model.analyze.ModelBytes;
-import io.skymind.pathmind.services.model.analyze.ModelFileVerifier;
 import io.skymind.pathmind.services.project.AnylogicFileCheckResult;
 import io.skymind.pathmind.services.project.Hyperparams;
-import io.skymind.pathmind.services.project.ProjectFileCheckService;
 import io.skymind.pathmind.services.project.StatusUpdater;
-import io.skymind.pathmind.services.project.rest.dto.AnalyzeRequestDTO;
 import io.skymind.pathmind.shared.constants.ModelType;
 import io.skymind.pathmind.shared.constants.ObservationDataType;
 import io.skymind.pathmind.shared.data.*;
@@ -43,11 +35,11 @@ import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
+import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
-import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.FormUtils;
@@ -55,14 +47,13 @@ import io.skymind.pathmind.webapp.ui.utils.PushUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
-import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.components.UploadPythonModelWizardPanel;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.unit.DataSize;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.PROJECT_TITLE;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_SUBTITLE_LABEL;
@@ -83,6 +74,8 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
     @Autowired
     private ModelService modelService;
     @Autowired
+    private UserService userService;
+    @Autowired
     private ModelDAO modelDAO;
     @Autowired
     private RewardVariableDAO rewardVariablesDAO;
@@ -91,18 +84,15 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
     @Autowired
     private SimulationParameterDAO simulationParameterDAO;
     @Autowired
-    private ModelFileVerifier modelFileVerifier;
-    @Autowired
-    private ProjectFileCheckService projectFileCheckService;
-    @Autowired
     private SegmentIntegrator segmentIntegrator;
     @Autowired
     private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
-    @Value(("${pathhmind.model.apl.max-size}"))
-    private String alpFileSizeAsStr;
+
+    @Value("${pathmind.pathmind-api.url}")
+    private String apiUrl;
 
     private Model model;
 
@@ -110,7 +100,7 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
 
     private Binder<Model> modelBinder;
 
-    private UploadModelWizardPanel uploadModelWizardPanel;
+    private UploadPythonModelWizardPanel uploadModelWizardPanel;
     private ModelDetailsWizardPanel modelDetailsWizardPanel;
 
     private List<Component> wizardPanels;
@@ -130,7 +120,11 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
 
-        uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
+        uploadModelWizardPanel = new UploadPythonModelWizardPanel(model,
+                                        uploadMode,
+                                        getUISupplier(),
+                                        apiUrl,
+                                        userService.getCurrentUser().getApiKey());
         modelDetailsWizardPanel = new ModelDetailsWizardPanel(modelBinder);
 
         modelBinder.readBean(model);
@@ -145,7 +139,6 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
             setVisibleWizardPanel(uploadModelWizardPanel);
         }
 
-        uploadModelWizardPanel.addFileUploadCompletedListener(this::handleUploadWizardClicked);
         uploadModelWizardPanel.addFileUploadFailedListener(this::handleUploadFailed);
         modelDetailsWizardPanel.addButtonClickListener(click -> handleModelDetailsClicked());
 
@@ -180,16 +173,6 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
         return wrapper;
-    }
-
-    private void handleUploadALPClicked() {
-        if (model.getAlpFile() != null && model.getAlpFile().length > 0) {
-            modelService.saveModelAlp(model);
-        } else {
-            // for the case we are resuming a model creation and we had already uploaded the alp file
-            modelService.removeModelAlp(model);
-        }
-        setVisibleWizardPanel(modelDetailsWizardPanel);
     }
 
     private void handleUploadFailed(Collection<String> errors) {
@@ -258,13 +241,6 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
         experimentId = experiment.getId();
         EventBus.post(new ExperimentCreatedBusEvent(experiment));
         getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, ""+experimentId));
-    }
-
-    private void handleUploadWizardClicked(ModelBytes modelBytes) {
-        byte[] file = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
-        model.setFile(file);
-        uploadModelWizardPanel.showFileCheckPanel();
-        projectFileCheckService.checkFile(this, model, AnalyzeRequestDTO.ModelType.ANY_LOGIC);
     }
 
     private void setVisibleWizardPanel(Component wizardPanel) {
@@ -353,13 +329,13 @@ public class UploadPythonModelView extends PathMindDefaultView implements Status
     @Override
     public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
         String[] segments = parameter.split("/");
-        uploadMode = UploadMode.FOLDER;
+        uploadMode = UploadMode.ZIP;
 
         if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
             this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
         }
         if (segments.length > 1) {
-            uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.FOLDER);
+            uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.ZIP);
             if (uploadMode == UploadMode.RESUME) {
                 modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
             }
