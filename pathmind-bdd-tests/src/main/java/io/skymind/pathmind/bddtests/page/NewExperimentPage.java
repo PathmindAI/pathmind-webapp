@@ -234,4 +234,41 @@ public class NewExperimentPage extends PageObject {
         }
         resetImplicitTimeout();
     }
+
+    public void changeSimulationParameterIntegerToOnTheNewExperimentPage(String simParameter, String value) {
+        WebElement simParameterElementShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/following-sibling::vaadin-integer-field")));
+        WebElement simParameterElement = simParameterElementShadow.findElement(By.cssSelector("input"));
+        simParameterElement.click();
+        simParameterElement.clear();
+        simParameterElement.sendKeys(value);
+        getDriver().findElement(By.cssSelector(".section-title-label")).click();
+    }
+
+    public void checkSimulationParameterHighlightedOnTheNewExperimentPage(String simParameter, Boolean highlighted) {
+        if (highlighted) {
+            assertThat(getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/parent::vaadin-horizontal-layout")).getAttribute("class"), containsString("different-from-comparison"));
+        } else {
+            assertThat(getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/parent::vaadin-horizontal-layout")).getAttribute("class"), not(containsString("different-from-comparison")));
+        }
+    }
+
+    public void changeSimulationParameterNumberMaxVzToOnTheNewExperimentPage(String simParameter, String value) {
+        WebElement simParameterElementShadow = utils.expandRootElement(getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/following-sibling::vaadin-number-field")));
+        WebElement simParameterElement = simParameterElementShadow.findElement(By.cssSelector("input"));
+        simParameterElement.click();
+        simParameterElement.clear();
+        simParameterElement.sendKeys(value);
+        getDriver().findElement(By.cssSelector(".section-title-label")).click();
+    }
+
+    public void changeHighlightDifferenceFromDropdownToOnTheNewExperimentPage(String experiment) {
+        getDriver().findElement(By.xpath("//span[text()='Highlight difference from']/following-sibling::vaadin-select")).click();
+        getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[@label='" + experiment + "']")).click();
+        waitABit(2000);
+    }
+
+    public void changeSimulationParameterBooleanToOnTheNewExperimentPage(String simParameter, String value) {
+        getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/following-sibling::vaadin-select")).click();
+        getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[text()='" + value.toUpperCase() + "']")).click();
+    }
 }

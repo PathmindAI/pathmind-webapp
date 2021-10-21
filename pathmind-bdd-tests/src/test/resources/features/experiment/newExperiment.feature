@@ -138,3 +138,91 @@ Feature: New experiment page
     When Open projects page
     When Create new CoffeeShop project with draft experiment
     When Check new experiment reward function 'after.' autocomplete is shown 'true'
+
+  Scenario Outline: Check highlight changed fields on New Experiment View
+    Given Login to the pathmind
+    When Open projects page
+    When Click create new project button
+    When Input name of the new project <project name> and click Create project button
+    When Upload model <model>
+    When Check that model successfully uploaded
+    When Click wizard upload ALP next btn
+    When Click wizard model details next btn
+    When Click wizard reward variables next btn
+    Then Check that new experiment <project name> page is opened
+    Then Input from file reward function <reward function file>
+    Then Click project save draft btn
+    When Click side bar new experiment btn
+    When Change simulation parameter integer 'recurrence' to '5' on the new experiment page
+    When Change simulation parameter integer 'powerZ' to '20' on the new experiment page
+    When Change simulation parameter number 'maxVz' to '51' on the new experiment page
+    When Change simulation parameter boolean 'display' to 'true' on the new experiment page
+    When Change simulation parameter boolean 'tutorial' to 'true' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    When Change highlight difference from dropdown to 'Experiment #2' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    When Change highlight difference from dropdown to 'Experiment #1' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Click project save draft btn
+    When Click side bar new experiment btn
+    When Change highlight difference from dropdown to 'Experiment #2' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'false' on the new experiment page
+    When Change highlight difference from dropdown to 'Experiment #1' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    When Change highlight difference from dropdown to 'Model Default' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    When Change highlight difference from dropdown to 'None' on the new experiment page
+    Then Check simulation parameter 'recurrence' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'powerZ' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVxy' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'maxVz' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'display' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
+    Then Check simulation parameter 'tutorial' highlighted 'false' on the new experiment page
+
+    Examples:
+      | project name    | model                       | reward function file                      |
+      | AutotestProject | MoonLanding/MoonLanding.zip | MoonLanding/MoonLandingRewardFunction.txt |
