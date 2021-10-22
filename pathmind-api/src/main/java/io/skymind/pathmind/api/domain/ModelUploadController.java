@@ -93,6 +93,7 @@ public class ModelUploadController {
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @RequestParam(value = "start", required = false) boolean startOnUpload,
                                                 @RequestParam(value = "deploy", required = false) boolean deployOnSuccess,
+                                                @RequestParam(value = "multiAgent", required = false) boolean isMultiAgent,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
         return handleFileUpload(
                 UploadRequest.builder()
@@ -106,6 +107,7 @@ public class ModelUploadController {
                         .rewFctName(rewFctName)
                         .startOnUpload(startOnUpload)
                         .startOnUpload(deployOnSuccess)
+                        .isMultiAgent(isMultiAgent)
                         .build()
         );
     }
@@ -153,7 +155,8 @@ public class ModelUploadController {
                         request.getIsPathmindSimulation(),
                         request.getObsSelection(),
                         request.getRewFctName(),
-                        request.isDeployOnSuccess()
+                        request.isDeployOnSuccess(),
+                        request.isMultiAgent()
                 );
 
             Long experimentId = experiment.getId();
@@ -164,7 +167,7 @@ public class ModelUploadController {
                 .buildAndExpand(Map.of("modelId", experiment.getModelId()))
                 .toUri();
 
-            if (request.isStartOnUpload() && StringUtils.isNoneEmpty(request.getObsSelection()) && StringUtils.isNoneEmpty(request.getRewFctName())) {
+            if (request.isStartOnUpload()) {
                 trainingService.startRunAsync(experiment); // todo: should we do it synced. may request time out while running?
             }
 
@@ -194,6 +197,7 @@ public class ModelUploadController {
         private final boolean startOnUpload;
         private final boolean deployOnSuccess;
         private final PathmindApiUser pmUser;
+        private final boolean isMultiAgent;
     }
 
 }

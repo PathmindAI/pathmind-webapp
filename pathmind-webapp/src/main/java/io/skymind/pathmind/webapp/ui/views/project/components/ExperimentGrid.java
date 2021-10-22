@@ -28,6 +28,7 @@ import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
 import io.skymind.pathmind.webapp.ui.components.atoms.StatusIcon;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.codeViewer.CodeViewer;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.rewardFunction.RewardTermsViewer;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class ExperimentGrid extends Grid<Experiment> {
@@ -77,7 +78,9 @@ public class ExperimentGrid extends Grid<Experiment> {
                 .setFlexGrow(0)
                 .setResizable(true)
                 .setSortable(false);
-        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> new CodeViewer(experiment, false, false))
+        Grid.Column<Experiment> rewardFunctionColumn = addComponentColumn(experiment -> {
+            return experiment.isWithRewardTerms() ? new RewardTermsViewer(experiment) : new CodeViewer(experiment, false);
+        })
                 .setClassNameGenerator(column -> "grid-reward-fn-column")
                 .setHeader("Reward Function")
                 .setFlexGrow(1)

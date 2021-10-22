@@ -1,7 +1,5 @@
 package io.skymind.pathmind.shared.constants;
 
-import io.skymind.pathmind.shared.data.Model;
-
 import java.util.Arrays;
 import java.util.EnumSet;
 

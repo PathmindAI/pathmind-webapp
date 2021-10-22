@@ -25,6 +25,7 @@ class RewardCodeErrorPanel extends LitElement {
             }
             ::-webkit-scrollbar {
               width: 8px;
+              height: 6px;
             }
             ::-webkit-scrollbar-track {
             background-color: var(--pm-app-bg-color);

@@ -29,6 +29,8 @@ public class ExperimentViewBottomPanel extends PageObject {
     private String learningProgressTabTwoLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[2]";
     private String learningProgressTabThreeLabelXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='row-2-of-3']/descendant::vaadin-tab[3]";
     private String rewardFunctionXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::code-viewer";
+    private String rewardFunctionNewXpath = "//vaadin-vertical-layout[@slot='%s']/descendant::*[@class='%s']/descendant::reward-terms-viewer";
+
 
     private static final String LEARNING_PROGRESS_LABEL = "Learning Progress";
     private static final String LEARNING_PROGRESS_TAB_ONE_LABEL = "Metrics";
@@ -52,5 +54,11 @@ public class ExperimentViewBottomPanel extends PageObject {
         assertThat(
                 getDriver().findElement(By.xpath(String.format(rewardFunctionXpath, slot, genericPage.definePanel(slot)))).getText().replaceAll("[\\r\\n]", ""),
                 is(FileUtils.readFileToString(new File("models/" + rewardFunctionFilePath), StandardCharsets.UTF_8).replaceAll("[\\r\\n]", "")));
+    }
+
+    public void experimentPageCheckRewardFunctionNew(String slot, String rewardFunctionFilePath) throws IOException {
+        assertThat(
+            getDriver().findElement(By.xpath(String.format(rewardFunctionNewXpath, slot, genericPage.definePanel(slot)))).getText().replaceAll("[\\r\\n]", ""),
+            is(FileUtils.readFileToString(new File("models/" + rewardFunctionFilePath), StandardCharsets.UTF_8).replaceAll("[\\r\\n]", "")));
     }
 }
