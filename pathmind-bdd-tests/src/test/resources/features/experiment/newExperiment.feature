@@ -158,6 +158,8 @@ Feature: New experiment page
     When Change simulation parameter number 'maxVz' to '51' on the new experiment page
     When Change simulation parameter boolean 'display' to 'true' on the new experiment page
     When Change simulation parameter boolean 'tutorial' to 'true' on the new experiment page
+    When Click new experiment observation btn 'powerXYZ'
+    When Click new experiment observation btn 'distanceXYZ'
     Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'powerZ' highlighted 'true' on the new experiment page
@@ -166,6 +168,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'true' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'true' on the new experiment page
     When Change highlight difference from dropdown to 'Experiment #2' on the new experiment page
     Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
@@ -175,6 +180,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'true' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'true' on the new experiment page
     When Change highlight difference from dropdown to 'Experiment #1' on the new experiment page
     Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
@@ -184,6 +192,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'true' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'true' on the new experiment page
     Then Click project save draft btn
     When Click side bar new experiment btn
     When Change highlight difference from dropdown to 'Experiment #2' on the new experiment page
@@ -195,6 +206,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'false' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'false' on the new experiment page
     When Change highlight difference from dropdown to 'Experiment #1' on the new experiment page
     Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
@@ -204,6 +218,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'true' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'true' on the new experiment page
     When Change highlight difference from dropdown to 'Model Default' on the new experiment page
     Then Check simulation parameter 'recurrence' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
@@ -213,6 +230,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'true' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'true' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'true' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'true' on the new experiment page
     When Change highlight difference from dropdown to 'None' on the new experiment page
     Then Check simulation parameter 'recurrence' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'powerXY' highlighted 'false' on the new experiment page
@@ -222,6 +242,9 @@ Feature: New experiment page
     Then Check simulation parameter 'display' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'onOffSwitch' highlighted 'false' on the new experiment page
     Then Check simulation parameter 'tutorial' highlighted 'false' on the new experiment page
+    Then Check observation 'powerXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'moduleXYZ' highlighted 'false' on the new experiment page
+    Then Check observation 'distanceXYZ' highlighted 'false' on the new experiment page
 
     Examples:
       | project name    | model                       | reward function file                      |

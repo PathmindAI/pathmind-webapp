@@ -152,4 +152,9 @@ public class NewExperimentSteps {
     public void changeSimulationParameterBooleanToOnTheNewExperimentPage(String simParameter, String value) {
         newExperimentPage.changeSimulationParameterBooleanToOnTheNewExperimentPage(simParameter, value);
     }
+
+    @Step
+    public void checkObservationHighlightedOnTheNewExperimentPage(String observation, Boolean highlighted) {
+        newExperimentPage.checkObservationHighlightedOnTheNewExperimentPage(observation, highlighted);
+    }
 }

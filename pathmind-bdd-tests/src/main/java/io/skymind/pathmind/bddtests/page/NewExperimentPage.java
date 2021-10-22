@@ -271,4 +271,12 @@ public class NewExperimentPage extends PageObject {
         getDriver().findElement(By.xpath("//span[@class='simulation-parameter-name' and text()='" + simParameter + "']/following-sibling::vaadin-select")).click();
         getDriver().findElement(By.xpath("//vaadin-list-box/vaadin-item[text()='" + value.toUpperCase() + "']")).click();
     }
+
+    public void checkObservationHighlightedOnTheNewExperimentPage(String observation, Boolean highlighted) {
+        if (highlighted) {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + observation + "']")).getAttribute("class"), containsString("highlight-label"));
+        } else {
+            assertThat(getDriver().findElement(By.xpath("//vaadin-checkbox[@role='checkbox' and text()='" + observation + "']")).getAttribute("class"), not(containsString("highlight-label")));
+        }
+    }
 }

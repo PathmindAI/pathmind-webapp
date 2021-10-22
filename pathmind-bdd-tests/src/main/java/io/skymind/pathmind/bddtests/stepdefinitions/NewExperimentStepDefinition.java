@@ -175,4 +175,9 @@ public class NewExperimentStepDefinition {
     public void changeSimulationParameterBooleanToOnTheNewExperimentPage(String simParameter, String value) {
         newExperimentSteps.changeSimulationParameterBooleanToOnTheNewExperimentPage(simParameter, value);
     }
+
+    @Then("^Check observation '(.*)' highlighted '(.*)' on the new experiment page$")
+    public void checkObservationHighlightedOnTheNewExperimentPage(String observation, Boolean highlighted) {
+        newExperimentSteps.checkObservationHighlightedOnTheNewExperimentPage(observation, highlighted);
+    }
 }
