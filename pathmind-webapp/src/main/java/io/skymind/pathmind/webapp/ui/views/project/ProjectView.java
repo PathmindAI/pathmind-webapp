@@ -44,6 +44,7 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.buttons.ArchiveUnarchiveModelButton;
 import io.skymind.pathmind.webapp.ui.components.buttons.EditGoalsButton;
 import io.skymind.pathmind.webapp.ui.components.buttons.MoveToProjectButton;
 import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
@@ -116,6 +117,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private ArchivesTabPanel<Experiment> archivesTabPanel;
     private NewExperimentButton newExperimentButton;
     private MoveToProjectButton moveToProjectButton;
+    private ArchiveUnarchiveModelButton archiveUnarchiveModelButton;
     private EditGoalsButton editGoalsButton;
     private ExportAllPoliciesButton exportAllPoliciesButton;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
@@ -156,6 +158,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
         moveToProjectButton = new MoveToProjectButton(modelId, ButtonVariant.LUMO_TERTIARY, projectDAO, modelDAO, segmentIntegrator);
+        archiveUnarchiveModelButton = new ArchiveUnarchiveModelButton(selectedModel, ButtonVariant.LUMO_TERTIARY, modelDAO, segmentIntegrator);
         editGoalsButton = new EditGoalsButton(modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
         exportAllPoliciesButton = new ExportAllPoliciesButton(policyFileService, experimentDAO);
         newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
@@ -182,7 +185,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, exportAllPoliciesButton, moveToProjectButton, editGoalsButton, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, exportAllPoliciesButton, moveToProjectButton, archiveUnarchiveModelButton, editGoalsButton, newExperimentButton);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -429,11 +432,12 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             // this is to get the most updated notes
             modelNotesField.setNotesText(model.getUserNotes());
         });
-        newExperimentButton.setModelId(selectedModel.getId());
-        moveToProjectButton.setModelId(selectedModel.getId());
-        editGoalsButton.setModelId(selectedModel.getId());
+        newExperimentButton.setModelId(modelId);
+        moveToProjectButton.setModelId(modelId);
+        editGoalsButton.setModelId(modelId);
         exportAllPoliciesButton.setModelId(modelId);
         experimentGridDataProvider.setModelId(modelId);
+        archiveUnarchiveModelButton.setModel(selectedModel);
         if (dataProvider == null) {
             dataProvider = experimentGridDataProvider.withConfigurableFilter();
         }
