@@ -372,7 +372,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         betaRewardTermsBanner.setVisible(!userService.getCurrentUser().isRewardTermsOn());
         List<Experiment> experimentsExcludingThisExp = experimentDAO.getExperimentsForModel(experiment.getModelId(), true)
                                                         .stream()
-                                                        .filter(exp -> exp != experiment)
+                                                        .filter(exp -> exp.getId() != experiment.getId())
                                                         .collect(Collectors.toList());
         Experiment modelDefaultExperiment = new Experiment();
         modelDefaultExperiment.setName("Model Default");
