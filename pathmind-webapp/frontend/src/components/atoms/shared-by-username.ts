@@ -10,16 +10,17 @@ class SharedByUsername extends LitElement {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                font-size: var(--lumo-font-size-s);
+                font-size: var(--lumo-font-size-xs);
                 color: var(--pm-grey-color-darker);
-                padding: 0 var(--lumo-space-xs);
+                line-height: 1;
+                padding: var(--lumo-space-xxs) var(--lumo-space-xs);
                 border: 1px solid;
                 border-radius: 30px;
                 margin-left: var(--lumo-space-xs);
             }
             iron-icon {
-                --iron-icon-width: .875rem;
-                --iron-icon-height: .875rem;
+                --iron-icon-width: .75rem;
+                --iron-icon-height: .75rem;
                 margin-right: var(--lumo-space-xxs);
             }
         `;

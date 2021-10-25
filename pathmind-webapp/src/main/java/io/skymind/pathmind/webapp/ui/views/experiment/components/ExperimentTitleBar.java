@@ -56,6 +56,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private TrainingStatusDetailsPanel trainingStatusDetailsPanel;
     private HorizontalLayout titleWithStar;
 
+    private SharedByUsername sharedByTag;
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
     private Button stopTrainingButton;
@@ -127,6 +128,10 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
         if (!isExportPolicyButtonOnly) {
             titleWithStar.add(shareButton, archiveButton, unarchiveButton);
+        }
+        if (experimentView.isReadOnly()) {
+            sharedByTag = new SharedByUsername("");
+            titleWithStar.add(sharedByTag);
         }
 
         sharedLabel.addClassName("shared-with-support-label");
@@ -212,8 +217,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         setExperimentForServePolicyButton(experiment);
         if (experimentView.isReadOnly()) {
             PathmindUser sharedByUser = experimentView.getExperimentDAO().getUserOfExperiment(experiment.getId());
-            SharedByUsername sharedByTag = new SharedByUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
-            titleWithStar.add(sharedByTag);
+            sharedByTag.setUsername(sharedByUser.getFirstname() + " " + sharedByUser.getLastname());
         }
         updateComponentEnablements();
     }
