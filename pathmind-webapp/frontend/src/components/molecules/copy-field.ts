@@ -125,8 +125,7 @@ class CopyField extends LitElement {
         const checkmarkIcon = copyButton.querySelector("span:last-child");
         const range = document.createRange();
         range.selectNode(this.shadowRoot.getElementById("textToCopy"));
-        const select = navigator.userAgent.toLowerCase().indexOf('firefox') > -1 
-                ? window.getSelection() : (this.shadowRoot as any).getSelection();
+        const select = window.getSelection();
         select.removeAllRanges();
         select.addRange(range);
         document.execCommand("copy");

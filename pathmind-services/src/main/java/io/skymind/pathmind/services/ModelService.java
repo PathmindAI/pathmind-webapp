@@ -18,7 +18,13 @@ public interface ModelService {
 
     String buildModelPath(long modelId);
 
+    String buildModelPath(long modelId, long experimentId);
+
     String buildModelAlpPath(long modelId);
+
+    void saveModelFile(long modelId, byte[] file);
+
+    void saveModelFile(long modelId, long experimentId, byte[] file);
 
     void saveModelAlp(Model model);
 
