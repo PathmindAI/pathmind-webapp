@@ -7,27 +7,63 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.webapp.bus.EventBus;
+import io.skymind.pathmind.webapp.bus.events.main.ModelArchivedBusEvent;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 
 public class ArchiveUnarchiveModelButton extends Button {
 
+    ModelDAO modelDAO;
     Model model;
     long modelId;
+    SegmentIntegrator segmentIntegrator;
 
     public ArchiveUnarchiveModelButton(Model model, ButtonVariant buttonVariant, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
-        super("Archive Model");
-        setIcon(new Icon(VaadinIcon.ARCHIVE));
+        super();
         setModel(model);
+        setButtonIcon();
+        setButtonText();
+        this.modelDAO = modelDAO;
+        this.segmentIntegrator = segmentIntegrator;
 
         addClickListener(evt -> {
-            Boolean newArchiveStatus = !model.isArchived();
-            modelDAO.archive(this.modelId, newArchiveStatus);
-            segmentIntegrator.archived(Model.class, newArchiveStatus);
-            model.setArchived(newArchiveStatus);
+            String modelName = "Model #"+model.getName()+" ("+model.getPackageName()+")";
+            if (model.isArchived()) {
+                ConfirmationUtils.unarchive(modelName, () -> archiveAction());
+            } else {
+                ConfirmationUtils.archive(modelName, () -> archiveAction());
+            }
         });
 
         addThemeVariants(buttonVariant);
         addClassName("archive-model-button");
+    }
+
+    private void archiveAction() {
+        Boolean newArchiveStatus = !model.isArchived();
+        modelDAO.archive(this.modelId, newArchiveStatus);
+        segmentIntegrator.archived(Model.class, newArchiveStatus);
+        model.setArchived(newArchiveStatus);
+        EventBus.post(new ModelArchivedBusEvent(model));
+        setButtonIcon();
+        setButtonText();
+    }
+
+    private void setButtonIcon() {
+        if (model.isArchived()) {
+            setIcon(new Icon(VaadinIcon.ARROW_BACKWARD));
+        } else {
+            setIcon(new Icon(VaadinIcon.ARCHIVE));
+        }
+    }
+
+    private void setButtonText() {
+        if (model.isArchived()) {
+            setText("Unarchive");
+        } else {
+            setText("Archive");
+        }
     }
 
     public void setModel(Model model) {

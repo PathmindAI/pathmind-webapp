@@ -61,12 +61,8 @@ public class ModelsNavbarItem extends LitTemplate {
         projectView.getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, target));
     }
 
-    @ClientCallable
-    private void archiveOrUnarchiveEventHandler(Boolean isArchive) {
-        modelDAO.archive(model.getId(), isArchive);
-        segmentIntegrator.archived(Model.class, isArchive);
+    public void setIsArchived(Boolean isArchive) {
         getElement().setProperty("isArchived", isArchive);
-        model.setArchived(isArchive);
         modelsNavbar.setCurrentCategory();
     }
 

@@ -63,6 +63,7 @@ import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProj
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ExperimentGridDataProvider;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewModelArchiveSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -483,7 +484,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), List.of(new ProjectViewFavoriteSubscriber(this)));
+        EventBus.subscribe(this, getUISupplier(), 
+                List.of(new ProjectViewFavoriteSubscriber(this),
+                        new ProjectViewModelArchiveSubscriber(this)));
     }
 
     @Override
