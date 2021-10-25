@@ -81,6 +81,8 @@ Feature: E2E
     When Click model breadcrumb btn
     When Click the model name 1
     Then Check that button 'Export Policies' exists
+    Then Click the experiment name 1
+    Then Click side bar experiment Experiment #2
     #    ------------------------
     #Check policy server deploying
     When Click in 'Start Policy Server' button
