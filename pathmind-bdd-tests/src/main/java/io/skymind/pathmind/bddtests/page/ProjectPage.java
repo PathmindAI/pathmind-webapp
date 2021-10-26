@@ -192,4 +192,8 @@ public class ProjectPage extends PageObject {
             actual.add(webElement.getText());        }
         assertThat(actual, hasItem(value));
     }
+
+    public void clickProjectPageArchiveModelBtn() {
+        getDriver().findElement(By.cssSelector(".archive-model-button")).click();
+    }
 }

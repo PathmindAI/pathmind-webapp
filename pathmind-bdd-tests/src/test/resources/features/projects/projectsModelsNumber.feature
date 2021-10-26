@@ -54,7 +54,8 @@ Feature: Projects page models number
     When Open projects page
     When Projects page check project 'AutotestProject' models number '1'
     When Open project AutotestProject on projects page
-    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Open projects page
     When Projects page check project 'AutotestProject' models number '1'
     When Open project AutotestProject on projects page
@@ -63,6 +64,7 @@ Feature: Projects page models number
     Then Check that model successfully uploaded
     When Click project/ breadcrumb btn
     When Change models sidebar list to 'Active'
-    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Open projects page
     When Projects page check project 'AutotestProject' models number '2'

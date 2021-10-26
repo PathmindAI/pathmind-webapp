@@ -92,4 +92,9 @@ public class ProjectPageSteps {
     public void checkProjectPageDropdown(String dropdown, String value) {
         projectPage.checkProjectPageDropdown(dropdown, value);
     }
+
+    @Step
+    public void clickProjectPageArchiveModelBtn() {
+        projectPage.clickProjectPageArchiveModelBtn();
+    }
 }
