@@ -151,7 +151,7 @@ public class PolicyChart extends DataChart {
         String vAxisTitle = "Mean Reward Score over All Episodes";
         Boolean curveLines = true;
         String seriesType = null;
-        Boolean stacked = null;
+        Boolean stacked = false;
         JsonObject viewWindow = null;
 
         setupChart(
@@ -165,7 +165,7 @@ public class PolicyChart extends DataChart {
                 stacked,
                 viewWindow
         );
-        getModel().setDimlines(true);
+        getElement().setProperty("dimlines", true);
         if (showEmptyChart) {
             setChartEmpty();
         } else {

@@ -142,7 +142,7 @@ public class CompareMetricsChart extends DataChart {
         String vAxisTitle = "Mean Metric Value per Iteration";
         Boolean curveLines = true;
         String seriesType = null;
-        Boolean stacked = null;
+        Boolean stacked = false;
         JsonObject viewWindow = null;
 
         setupChart(
