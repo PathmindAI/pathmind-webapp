@@ -30,7 +30,7 @@ Feature: Api tests
     Examples:
       | project name   |
       | ApiTestProject |
-@debug
+
   Scenario: Check create python model
     Given Login to the pathmind
     When Open user account page
