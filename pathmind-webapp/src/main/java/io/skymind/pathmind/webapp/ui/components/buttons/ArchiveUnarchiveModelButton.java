@@ -19,7 +19,7 @@ public class ArchiveUnarchiveModelButton extends Button {
     long modelId;
     SegmentIntegrator segmentIntegrator;
 
-    public ArchiveUnarchiveModelButton(Model model, ButtonVariant buttonVariant, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
+    public ArchiveUnarchiveModelButton(Model model, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
         super();
         setModel(model);
         setButtonIcon();
@@ -28,7 +28,7 @@ public class ArchiveUnarchiveModelButton extends Button {
         this.segmentIntegrator = segmentIntegrator;
 
         addClickListener(evt -> {
-            String modelName = "Model #"+model.getName()+" ("+model.getPackageName()+")";
+            String modelName = "Model #"+this.model.getName()+" ("+this.model.getPackageName()+")";
             if (model.isArchived()) {
                 ConfirmationUtils.unarchive(modelName, () -> archiveAction());
             } else {
@@ -36,7 +36,7 @@ public class ArchiveUnarchiveModelButton extends Button {
             }
         });
 
-        addThemeVariants(buttonVariant);
+        addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         addClassName("archive-model-button");
     }
 

@@ -99,7 +99,7 @@ public class ModelsNavbar extends VerticalLayout {
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, () -> getUI(), 
+        EventBus.subscribe(this, projectView.getUISupplier(), 
                 new NavBarModelArchivedSubscriber(this));
     }
 

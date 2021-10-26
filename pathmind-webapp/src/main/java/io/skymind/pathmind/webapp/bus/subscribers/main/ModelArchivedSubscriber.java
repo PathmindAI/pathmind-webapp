@@ -7,7 +7,7 @@ import io.skymind.pathmind.webapp.bus.events.main.ModelArchivedBusEvent;
 public abstract class ModelArchivedSubscriber extends EventBusSubscriber<ModelArchivedBusEvent> {
 
     public ModelArchivedSubscriber() {
-        super();
+        super(true);
     }
 
     @Override

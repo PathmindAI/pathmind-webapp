@@ -13,7 +13,6 @@ public class NavBarModelArchivedSubscriber extends ModelArchivedSubscriber {
         this.modelsNavBar = modelsNavBar;
     }
 
-    // We can ignore this code for archived Models since the navbar is not visible for archived Models.
     @Override
     public void handleBusEvent(ModelArchivedBusEvent event) {
         modelsNavBar.setModelIsArchived(event.getModel(), event.getModel().isArchived());
@@ -21,7 +20,6 @@ public class NavBarModelArchivedSubscriber extends ModelArchivedSubscriber {
 
     @Override
     public boolean filterBusEvent(ModelArchivedBusEvent event) {
-        // At this point the navbar only adds/removes elements when an Model is archived or unarchived.
         return event.getModel().getProjectId() == modelsNavBar.getProjectId();
     }
 }
