@@ -13,6 +13,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -45,6 +46,7 @@ import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
+import io.skymind.pathmind.webapp.ui.components.buttons.ArchiveUnarchiveModelButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.components.rewardVariables.RewardVariablesPanel;
@@ -59,6 +61,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.model.subscribers.UploadModelViewModelArchiveSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -129,6 +132,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     private ModelDetailsWizardPanel modelDetailsWizardPanel;
     private RewardVariablesPanel rewardVariablesPanel;
     private VerticalLayout rewardVariablesPanelWrapper;
+    private ArchiveUnarchiveModelButton archiveUnarchiveModelButton;
+    private Span archivedBanner;
 
     private List<Component> wizardPanels;
 
@@ -190,12 +195,15 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
         List<Component> sections = new ArrayList<>();
-        if (isResumeUpload() && model.isArchived()) {
-            sections.add(
-                LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL)
-            );
+        archiveUnarchiveModelButton = new ArchiveUnarchiveModelButton(model, modelDAO, segmentIntegrator);
+        archivedBanner = LabelFactory.createLabel("This draft model is archived.", WARNING_LABEL);
+        HorizontalLayout sectionHeader = WrapperUtils.wrapWidthFullBetweenHorizontal(sectionTitleWrapper);
+        if (isResumeUpload()) {
+            sections.add(archivedBanner);
+            archivedBanner.setVisible(model.isArchived());
+            sectionHeader.add(archiveUnarchiveModelButton);
         }
-        sections.add(sectionTitleWrapper);
+        sections.add(sectionHeader);
         sections.add(uploadModelWizardPanel);
         if (isResumeUpload() && !ModelUtils.isValidModel(model)) {
             sections.add(invalidModelErrorLabel);
@@ -315,6 +323,16 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         return new Breadcrumbs(project, model);
     }
 
+    public Span getArchivedBanner() {
+        return archivedBanner;
+    }
+
+    @Override
+    protected void addEventBusSubscribers() {
+        EventBus.subscribe(this, getUISupplier(), 
+                List.of(new UploadModelViewModelArchiveSubscriber(this)));
+    }
+
     @Override
     protected Component getTitlePanel() {
         return new ScreenTitlePanel(createBreadcrumbs());
@@ -404,6 +422,10 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
                 modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
             }
         }
+    }
+
+    public long getModelId() {
+        return modelId;
     }
 
     public static String createResumeUploadTarget(Project project, Model model) {

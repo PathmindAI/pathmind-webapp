@@ -21,6 +21,10 @@ public class ModelArchivedBusEvent implements PathmindBusEvent {
         return model;
     }
 
+    public boolean isArchived() {
+        return model.isArchived();
+    }
+
     @Override
     public ModelArchivedBusEvent cloneForEventBus() {
         return new ModelArchivedBusEvent(model.deepClone());
