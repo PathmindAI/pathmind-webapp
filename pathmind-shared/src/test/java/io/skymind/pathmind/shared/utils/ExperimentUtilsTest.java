@@ -27,7 +27,29 @@ class ExperimentUtilsTest {
         );
         assertThat(rewardFunction, is(
                 "rewardTermsRaw[0] = after.goalReached - 0.1;\n" +
-                "rewardTermsRaw[1] = after.goalReached - 0.1;"
+                        "rewardTermsRaw[1] = after.goalReached - 0.1;"
+        ));
+    }
+
+    @Test
+    void rewardTermsMixed() {
+        String rewardFunction = ExperimentUtils.collectRewardTermsToSnippet(
+                List.of(
+                        "reward = -after.makespan; \n" +
+                                "reward -= 500*Math.abs(after.workerpt[0]-after.workerpt[1]); \n" +
+                                "reward -= 500*Math.abs(after.workerpt[1]-after.workerpt[2]); \n" +
+                                "reward += 500*Math.abs(after.workerpt[1]-after.workerpt[2]); \n" +
+                                "reward -= 500*Math.abs(after.workerpt[0]-after.workerpt[2]);"
+
+
+                )
+        );
+        assertThat(rewardFunction, is(
+                "rewardTermsRaw[0] = -after.makespan; \n" +
+                        "rewardTermsRaw[0] += -1*(500*Math.abs(after.workerpt[0]-after.workerpt[1]));\n" +
+                        "rewardTermsRaw[0] += -1*(500*Math.abs(after.workerpt[1]-after.workerpt[2]));\n" +
+                        "rewardTermsRaw[0] += 500*Math.abs(after.workerpt[1]-after.workerpt[2]); \n" +
+                        "rewardTermsRaw[0] += -1*(500*Math.abs(after.workerpt[0]-after.workerpt[2]));"
         ));
     }
 
