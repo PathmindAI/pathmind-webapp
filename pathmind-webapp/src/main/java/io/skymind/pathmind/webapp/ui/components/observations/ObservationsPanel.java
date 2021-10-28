@@ -33,13 +33,6 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     private boolean isEnableValueChangeListener = true;
 
     /**
-     * For ProjectView only
-      */
-    public ObservationsPanel(List<Observation> modelObservations) {
-        this(modelObservations, true, true, null);
-    }
-
-    /**
      * For ExperimentView only.
      */
     public ObservationsPanel(List<Observation> modelObservations, Boolean isReadOnly) {
@@ -124,6 +117,10 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
         });
     }
 
+    public void setComparisonModeTheOtherSelectedObservations(List<Observation> comparisonModeTheOtherSelectedObservations) {
+        observationsTable.setComparisonModeTheOtherSelectedObservations(comparisonModeTheOtherSelectedObservations);
+    }
+
     private Component getObservationsPanel(Boolean isReadOnly) {
         VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         if (!isReadOnly) {
@@ -138,6 +135,7 @@ public class ObservationsPanel extends VerticalLayout implements ExperimentCompo
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
         setSelectedObservations(experiment.getSelectedObservations());
+        observationsTable.highlightDiff();
     }
 
     @Override

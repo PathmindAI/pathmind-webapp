@@ -26,7 +26,7 @@ import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.components.atoms.FloatingCloseButton;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
-import io.skymind.pathmind.webapp.ui.components.observations.ObservationsViewOnlyPanel;
+import io.skymind.pathmind.webapp.ui.components.observations.ObservationsPanel;
 import io.skymind.pathmind.webapp.ui.components.simulationParameters.SimulationParametersPanel;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
@@ -77,7 +77,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private CodeViewer experimentCodeViewer;
     private RewardTermsViewer experimentRewardTermsViewer;
     private ExperimentChartsPanel experimentChartsPanel;
-    private ObservationsViewOnlyPanel experimentObservationsPanel;
+    private ObservationsPanel experimentObservationsPanel;
     private TrainingStatusDetailsPanel experimentTrainingStatusDetailsPanel;
     private SimulationMetricsPanel experimentSimulationMetricsPanel;
     private SimulationParametersPanel experimentSimulationParametersPanel;
@@ -87,7 +87,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
     private ExperimentTitleBar comparisonTitleBar;
     private ExperimentChartsPanel comparisonChartsPanel;
     protected ExperimentNotesField comparisonNotesField;
-    private ObservationsViewOnlyPanel comparisonObservationsPanel;
+    private ObservationsPanel comparisonObservationsPanel;
     private CodeViewer comparisonCodeViewer;
     private RewardTermsViewer comparisonRewardTermsViewer;
     private SimulationMetricsPanel comparisonSimulationMetricsPanel;
@@ -150,8 +150,8 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         panelsSplitWrapper.removeThemeName("comparison-mode");
         middlePanel.removeThemeName("comparison-mode");
         bottomPanel.removeThemeName("comparison-mode");
-        experimentObservationsPanel.unhighlight();
-        comparisonObservationsPanel.unhighlight();
+        experimentObservationsPanel.setComparisonModeTheOtherSelectedObservations(null);
+        comparisonObservationsPanel.setComparisonModeTheOtherSelectedObservations(null);
         experimentsNavbar.unpinExperiments();
         experimentCodeViewer.setComparisonModeTheOtherRewardFunction(null, null, false);
         experimentRewardTermsViewer.setComparisonModeTheOtherRewardTerms(Collections.emptyList(), false, experiment.getRewardVariables());
@@ -380,7 +380,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         experimentRewardTermsViewer = new RewardTermsViewer();
         experimentSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
-        experimentObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
+        experimentObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
         experimentSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         stoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 
@@ -409,7 +409,7 @@ public class ExperimentView extends AbstractExperimentView implements AfterNavig
         comparisonRewardTermsViewer = new RewardTermsViewer();
         comparisonSimulationMetricsPanel = new SimulationMetricsPanel(this);
         // This is an exception because the modelObservations are the same for all experiments in the same group.
-        comparisonObservationsPanel = new ObservationsViewOnlyPanel(experiment.getModelObservations());
+        comparisonObservationsPanel = new ObservationsPanel(experiment.getModelObservations(), true);
         comparisonSimulationParametersPanel = new SimulationParametersPanel(this, true, userService.getCurrentUser(), segmentIntegrator);
         comparisonStoppedTrainingNotification = new StoppedTrainingNotification(earlyStoppingUrl);
 

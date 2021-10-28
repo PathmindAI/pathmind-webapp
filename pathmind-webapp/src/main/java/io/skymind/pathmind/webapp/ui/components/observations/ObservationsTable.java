@@ -1,6 +1,8 @@
 package io.skymind.pathmind.webapp.ui.components.observations;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.vaadin.flow.component.HasStyle;
@@ -17,7 +19,9 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 public class ObservationsTable extends CustomField<Set<Observation>> implements HasStyle {
 
     private Set<Observation> observationsList = new LinkedHashSet<>();
+    private List<Observation> comparisonModeTheOtherSelectedObservations;
     private CheckboxGroup<Observation> checkboxGroup = new CheckboxGroup<>();
+    private String highlightClassName = "highlight-label";
 
     public ObservationsTable(Boolean isReadOnly) {
         VerticalLayout container = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
@@ -37,6 +41,7 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
                 checkboxSelectAll.setIndeterminate(true);
             }
             setValue(event.getValue());
+            highlightDiff();
         });
         checkboxSelectAll.addValueChangeListener(event -> {
             if (checkboxSelectAll.getValue()) {
@@ -68,6 +73,47 @@ public class ObservationsTable extends CustomField<Set<Observation>> implements 
     @Override
     protected void setPresentationValue(Set<Observation> newPresentationValue) {
         checkboxGroup.setValue(newPresentationValue);
+    }
+
+    public void setComparisonModeTheOtherSelectedObservations(List<Observation> comparisonModeTheOtherSelectedObservations) {
+        this.comparisonModeTheOtherSelectedObservations = comparisonModeTheOtherSelectedObservations;
+        if (comparisonModeTheOtherSelectedObservations == null) {
+            unhighlight();
+        } else {
+            highlightDiff();
+        }
+    }
+
+    public void highlightDiff() {
+        List<Observation> selectedObservations = new ArrayList<Observation>();
+        selectedObservations.addAll(checkboxGroup.getSelectedItems());
+        if (selectedObservations != null && comparisonModeTheOtherSelectedObservations != null) {
+            List<Observation> differentStatusObs;
+            List<Observation> secondSelectedObsList;
+            if (selectedObservations.size() >= comparisonModeTheOtherSelectedObservations.size()) {
+                differentStatusObs = new ArrayList<>(selectedObservations);
+                secondSelectedObsList = new ArrayList<>(comparisonModeTheOtherSelectedObservations);
+                secondSelectedObsList.removeAll(differentStatusObs);
+                differentStatusObs.removeAll(comparisonModeTheOtherSelectedObservations);
+            } else {
+                differentStatusObs = new ArrayList<>(comparisonModeTheOtherSelectedObservations);
+                secondSelectedObsList = new ArrayList<>(selectedObservations);
+                secondSelectedObsList.removeAll(differentStatusObs);
+                differentStatusObs.removeAll(selectedObservations);
+            }
+            unhighlight();
+            differentStatusObs.addAll(secondSelectedObsList);
+            differentStatusObs.forEach(obs -> {
+                checkboxGroup.getChildren()
+                    .filter(checkbox -> checkbox.getElement().getText().equals(obs.getVariable()))
+                    .findFirst()
+                    .ifPresent(checkbox -> checkbox.getElement().getClassList().add(highlightClassName));
+            });
+        }
+    }
+
+    public void unhighlight() {
+        checkboxGroup.getChildren().forEach(checkbox -> checkbox.getElement().getClassList().remove(highlightClassName));
     }
 
 }

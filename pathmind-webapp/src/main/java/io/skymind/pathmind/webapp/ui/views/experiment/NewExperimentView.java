@@ -2,6 +2,7 @@ package io.skymind.pathmind.webapp.ui.views.experiment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Html;
@@ -12,9 +13,9 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent;
@@ -72,6 +73,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     private FavoriteStar favoriteStar;
     private Div upgradeBannerExpCt;
     private Div upgradeBannerActMask;
+    private Select<Experiment> diffSelect;
     private Button betaRewardTermsBanner;
     private Button unarchiveExperimentButton;
     private Button saveDraftButton;
@@ -122,14 +124,12 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         createUpgradeBanners();
         createBetaRewardTermsBanner();
         favoriteStar = new FavoriteStar(false, newIsFavorite -> onFavoriteToggled(newIsFavorite, experiment));
-        HorizontalLayout titleWithStar = new HorizontalLayout(experimentPanelTitle, favoriteStar);
-        titleWithStar.setSpacing(false);
-        titleWithStar.setAlignItems(FlexComponent.Alignment.CENTER);
-        HorizontalLayout titlePanel = WrapperUtils.wrapWidthFullHorizontal(
-                titleWithStar,
+        HorizontalLayout titlePanel = new HorizontalLayout(
+                experimentPanelTitle,
+                favoriteStar,
                 downloadModelLink
         );
-        titlePanel.setPadding(true);
+        titlePanel.setSpacing(false);
 
         VerticalLayout panelTitle = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
                 verifyEmailReminder,
@@ -138,6 +138,7 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 betaRewardTermsBanner,
                 titlePanel);
         panelTitle.setClassName("panel-title");
+        panelTitle.setWidth(null);
 
         SplitLayout simulationParametersAndObservationsWrapper = WrapperUtils.wrapCenterAlignmentFullSplitLayoutHorizontal(
                 simulationParametersPanel,
@@ -169,8 +170,16 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
                 50);
         panelsWrapper.setClassName("panels-wrapper");
 
+        diffSelect = createDiffSelect();
+        HorizontalLayout diffToolWrapper = new HorizontalLayout(
+            new Span("Highlight difference from"),
+            diffSelect
+        );
+        diffToolWrapper.setClassName("diff-tool-wrapper");
+
         splitButton = createSplitButton();
         HorizontalLayout buttonsWrapper = new HorizontalLayout(
+                diffToolWrapper,
                 splitButton,
                 unarchiveExperimentButton);
         buttonsWrapper.setWidth(null);
@@ -198,6 +207,33 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
     @Override
     protected void addEventBusSubscribers() {
         EventBus.subscribe(this, getUISupplier(), new NewExperimentViewFavoriteSubscriber(this));
+    }
+
+    private Select<Experiment> createDiffSelect() {
+        Select<Experiment> select = new Select<>();
+        select.setItemLabelGenerator(item -> {
+            if (item != null) {
+                if (item.getName() != "Model Default") {
+                    return "Experiment #"+item.getName();
+                }
+                return item.getName();
+            }
+            return "None";
+        });
+        select.setEmptySelectionAllowed(true);
+        select.setEmptySelectionCaption("None");
+        select.getElement().setAttribute("theme", "small");
+        select.addValueChangeListener(valueChangedEvent -> {
+            Experiment selectedExp = valueChangedEvent.getValue();
+            if (selectedExp != null) {
+                simulationParametersPanel.setComparisonModeTheOtherParameters(selectedExp.getSimulationParameters());
+                observationsPanel.setComparisonModeTheOtherSelectedObservations(selectedExp.getSelectedObservations());
+            } else {
+                simulationParametersPanel.setComparisonModeTheOtherParameters(null);
+                observationsPanel.setComparisonModeTheOtherSelectedObservations(null);
+            }
+        });
+        return select;
     }
 
     private SplitButton createSplitButton() {
@@ -334,6 +370,18 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         upgradeBannerExpCt.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && hasRunningExperiments);
         upgradeBannerActMask.setVisible(userService.isCurrentUserVerified() && isTrialPlanUser && experiment.getModel().isActionmask());
         betaRewardTermsBanner.setVisible(!userService.getCurrentUser().isRewardTermsOn());
+        List<Experiment> experimentsExcludingThisExp = experimentDAO.getExperimentsForModel(experiment.getModelId(), true)
+                                                        .stream()
+                                                        .filter(exp -> exp.getId() != experiment.getId())
+                                                        .collect(Collectors.toList());
+        Experiment modelDefaultExperiment = new Experiment();
+        modelDefaultExperiment.setName("Model Default");
+        modelDefaultExperiment.setModelId(experiment.getModelId());
+        modelDefaultExperiment.setSimulationParameters(getModelSimulationParameters());
+        modelDefaultExperiment.setSelectedObservations(experiment.getModelObservations());
+        experimentsExcludingThisExp.add(modelDefaultExperiment);
+        diffSelect.setItems(experimentsExcludingThisExp);
+        diffSelect.setValue(modelDefaultExperiment);
     }
 
     @Override
