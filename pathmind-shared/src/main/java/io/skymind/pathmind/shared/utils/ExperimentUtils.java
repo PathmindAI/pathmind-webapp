@@ -336,8 +336,8 @@ public class ExperimentUtils {
         List<String> tempRewardTermsSnippet = new ArrayList<>();
 
         for (int i = 0; i < rewardSnippets.size(); i++) {
-            String varName = String.format("rewardTermsRaw[%d] +=", i);
             for(String line: rewardSnippets.get(i).split("\n")) {
+                String varName = String.format("rewardTermsRaw[%d] +=", i);
                 if (line.trim().startsWith("//") || StringUtils.trimToEmpty(line).isEmpty()) {
                     continue;
                 }

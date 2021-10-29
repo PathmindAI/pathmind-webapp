@@ -22,6 +22,7 @@ import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 public class SimulationParametersRowField extends HorizontalLayout {
 
     private SimulationParameter simulationParameter;
+    private SimulationParameter comparisonParameter;
 
     private Component inputField;
     private Span nameSpan;
@@ -58,7 +59,10 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 booleanSelect.setValue(simulationParameter.getValue().toUpperCase());
                 booleanSelect.getElement().setAttribute("theme", "small");
                 booleanSelect.setReadOnly(isReadOnly);
-                booleanSelect.addValueChangeListener(changeEvent -> simulationParameter.setValue(changeEvent.getValue()));
+                booleanSelect.addValueChangeListener(changeEvent -> {
+                    simulationParameter.setValue(changeEvent.getValue());
+                    runComparisonCheck();
+                });
                 return booleanSelect;
             case INTEGER:
                 IntegerField integerField = new IntegerField();
@@ -66,21 +70,30 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 integerField.setValue(Integer.parseInt(simulationParameter.getValue()));
                 integerField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
                 integerField.setReadOnly(isReadOnly);
-                integerField.addValueChangeListener(changeEvent -> simulationParameter.setValue("" + changeEvent.getValue()));
+                integerField.addValueChangeListener(changeEvent -> {
+                    simulationParameter.setValue("" + changeEvent.getValue());
+                    runComparisonCheck();
+                });
                 return integerField;
             case DOUBLE:
                 NumberField doubleField = new NumberField();
                 doubleField.setValue(Double.parseDouble(simulationParameter.getValue()));
                 doubleField.addThemeVariants(TextFieldVariant.LUMO_SMALL, TextFieldVariant.LUMO_ALIGN_CENTER);
                 doubleField.setReadOnly(isReadOnly);
-                doubleField.addValueChangeListener(changeEvent -> simulationParameter.setValue("" + changeEvent.getValue()));
+                doubleField.addValueChangeListener(changeEvent -> {
+                    simulationParameter.setValue("" + changeEvent.getValue());
+                    runComparisonCheck();
+                });
                 return doubleField;
             case STRING:
                 TextField stringField = new TextField();
                 stringField.setValue(simulationParameter.getValue());
                 stringField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
                 stringField.setReadOnly(isReadOnly);
-                stringField.addValueChangeListener(changeEvent -> simulationParameter.setValue(changeEvent.getValue()));
+                stringField.addValueChangeListener(changeEvent -> {
+                    simulationParameter.setValue(changeEvent.getValue());
+                    runComparisonCheck();
+                });
                 return stringField;
             case DATE:
                 DateTimePicker dateTimePicker = new DateTimePicker();
@@ -90,8 +103,10 @@ public class SimulationParametersRowField extends HorizontalLayout {
                 dateTimePicker.setValue(dateValue);
                 dateTimePicker.addThemeName("small");
                 dateTimePicker.setReadOnly(isReadOnly);
-                dateTimePicker.addValueChangeListener(changeEvent ->
-                        simulationParameter.setValue("" + changeEvent.getValue().atZone(ZoneId.of("Etc/GMT")).toInstant().toEpochMilli()));
+                dateTimePicker.addValueChangeListener(changeEvent -> {                    
+                    simulationParameter.setValue("" + changeEvent.getValue().atZone(ZoneId.of("Etc/GMT")).toInstant().toEpochMilli());
+                    runComparisonCheck();
+                });
                 return dateTimePicker;
             case OTHERS:
             default:
@@ -138,7 +153,12 @@ public class SimulationParametersRowField extends HorizontalLayout {
     }
 
     public void setComparisonParameter(SimulationParameter comparisonParameter) {
-        if (comparisonParameter == null || simulationParameter.getValue().equals(comparisonParameter.getValue())) {
+        this.comparisonParameter = comparisonParameter;
+        runComparisonCheck();
+    }
+
+    private void runComparisonCheck() {
+        if (comparisonParameter == null || simulationParameter.getValue().toLowerCase().equals(comparisonParameter.getValue().toLowerCase())) {
             unhighlight();
         } else {
             highlight();
