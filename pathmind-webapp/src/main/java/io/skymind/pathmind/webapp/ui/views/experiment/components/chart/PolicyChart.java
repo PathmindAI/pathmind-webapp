@@ -150,9 +150,9 @@ public class PolicyChart extends DataChart {
         String hAxisTitle = "Iteration";
         String vAxisTitle = "Mean Reward Score over All Episodes";
         Boolean curveLines = true;
-        String seriesType = null;
+        String seriesType = "";
         Boolean stacked = false;
-        JsonObject viewWindow = null;
+        JsonObject viewWindow = Json.createObject();
 
         setupChart(
                 type,

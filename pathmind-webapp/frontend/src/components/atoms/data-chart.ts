@@ -6,15 +6,15 @@ class DataChart extends LitElement {
   @property({type: String})
   type = "combo";
   @property({type: Boolean})
-  showtooltip;
+  showtooltip = false;
   @property({type: String})
-  haxistitle;
+  haxistitle = "";
   @property({type: String})
-  vaxistitle;
+  vaxistitle = "";
   @property({type: String})
-  metric1axistitle;
+  metric1axistitle = "";
   @property({type: String})
-  metric2axistitle;
+  metric2axistitle = "";
   @property({type: String})
   metric1color;
   @property({type: String})
@@ -22,25 +22,26 @@ class DataChart extends LitElement {
   @property({type: Boolean})
   curvelines;
   @property({type: String})
-  seriestype;
+  seriestype = "";
   @property({type: Boolean})
-  stacked;
+  stacked = false;
   @property({type: Array})
-  cols;
+  cols = [];
   @property({type: Array})
-  rows;
+  rows = [];
   @property({type: Object})
   series;
   @property({type: Object})
-  viewwindow;
+  viewwindow = {};
   @property({type: Boolean, reflect: true})
-  chartready;
+  chartready = false;
   @property({type: Boolean})
-  dimlines;
+  dimlines = false;
   @property({type: Object})
   options;
 
   updated(changedProperties) {
+    const chart : any = this.shadowRoot.getElementById("chart");
     changedProperties.forEach((oldValue, name) => {
       if (name === "showtooltip" || 
           name === "haxistitle" ||
@@ -56,12 +57,18 @@ class DataChart extends LitElement {
           name === "viewwindow") {
         this._computeOptions();
       }
+      if (name === "cols" || name === "rows" || name === "options") {
+          chart.cols = this.cols;
+          chart.rows = this.rows;
+          chart.options = this.options;
+          this.redraw();
+      }
     })
   }
 
   firstUpdated() {
     let isInit = true;
-    const chart = this.shadowRoot.getElementById("chart");
+    const chart = this.shadowRoot.getElementById("chart") as any;
     chart.addEventListener("google-chart-ready", event => {
       var style = document.createElement("style");
       style.innerHTML = `
@@ -109,7 +116,7 @@ class DataChart extends LitElement {
   }
 
   _computeOptions() {
-    return {
+    this.options = {
       "tooltip": this.showtooltip ? { "isHtml": true } : { "trigger": "none" },
       "curveType": this.curvelines ? "function" : null,
       "isStacked": this.stacked,
@@ -162,7 +169,13 @@ class DataChart extends LitElement {
   }
 
   redraw() {
-    (this.shadowRoot.getElementById("chart") as any).redraw();
+    const chart : any = this.shadowRoot.getElementById("chart");
+    if (chart != null) {
+      chart.cols = this.cols;
+      chart.rows = this.rows;
+      chart.options = this.options;
+      chart.redraw();
+    }
   }
   
   setData(cols, rows) {
@@ -172,14 +185,16 @@ class DataChart extends LitElement {
   }
     
   setChartEmpty() {
-    if (this.cols == undefined) {
-      this.cols = [
-        {"label":"Iteration", "type":"number"},
-        {"label":"line", "type":"number"},
-      ]
+    if (!this.cols) {
+        this.cols = [
+            {"label":"Iteration", "type":"number"},
+            {"label":"line", "type":"number"},
+        ]
+    } else {
+        this.cols = [{"label":"Metrics", "type":"number"}];
     }
+
     this.rows = [];
-    this.redraw();
   }
 
   setSeries(series) {
@@ -207,9 +222,6 @@ class DataChart extends LitElement {
       <google-chart 
           id="chart"
           type="${this.type}"
-          cols="${this.cols}"
-          rows="${this.rows}"
-          options="${this.options}"
       ></google-chart>
     `;
   }
