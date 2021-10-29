@@ -100,7 +100,9 @@ Feature: Wizard page
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
     When Click project/ breadcrumb btn
-    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Click the model name 2
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Archived'
     When Click the model name 2
     When Check wizard warning label 'This draft model is archived.' is shown 'true'

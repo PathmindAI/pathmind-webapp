@@ -453,6 +453,11 @@ vaadin-dialog-overlay .demo-view-content {
     padding: 0 var(--lumo-space-xxs);
 }
 
+.upload-model-view .project-title-label + .archive-model-button {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 /* Account Views */
 
 account-view {

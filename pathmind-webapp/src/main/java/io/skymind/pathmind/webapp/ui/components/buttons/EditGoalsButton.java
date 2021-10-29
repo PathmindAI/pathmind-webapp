@@ -12,10 +12,6 @@ public class EditGoalsButton extends Button {
     long modelId;
 
     public EditGoalsButton(long modelId, SegmentIntegrator segmentIntegrator) {
-        this(modelId, ButtonVariant.LUMO_PRIMARY, segmentIntegrator);
-    }
-
-    public EditGoalsButton(long modelId, ButtonVariant buttonVariant, SegmentIntegrator segmentIntegrator) {
         super("Edit Goals");
         setIcon(new Icon(VaadinIcon.EDIT));
         this.modelId = modelId;
@@ -25,7 +21,7 @@ public class EditGoalsButton extends Button {
             ui.navigate(EditGoalsView.class, this.modelId);
         }));
 
-        addThemeVariants(buttonVariant);
+        addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         addClassName("edit-goals-button");
     }
 

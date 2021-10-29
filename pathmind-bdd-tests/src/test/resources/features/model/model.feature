@@ -54,7 +54,8 @@ Feature: Model page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Archived'
     Then Check model title label tag is Archived
 
@@ -67,7 +68,8 @@ Feature: Model page
     When Upload model CoffeeShop/CoffeeShop.zip
     When Check that model successfully uploaded
     When Click project/ breadcrumb btn
-    When Click archive/unarchive btn model '2' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Archived'
     Then Check that models sidebar model '2' contains draft tag 'true'
 

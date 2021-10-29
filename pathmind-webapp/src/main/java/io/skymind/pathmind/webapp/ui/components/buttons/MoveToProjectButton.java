@@ -18,7 +18,7 @@ public class MoveToProjectButton extends Button {
 
     long modelId;
 
-    public MoveToProjectButton(long modelId, ButtonVariant buttonVariant, ProjectDAO projectDAO, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
+    public MoveToProjectButton(long modelId, ProjectDAO projectDAO, ModelDAO modelDAO, SegmentIntegrator segmentIntegrator) {
         super("Move Model");
         setIcon(new Icon(VaadinIcon.FILE_TREE));
         this.modelId = modelId;
@@ -39,7 +39,7 @@ public class MoveToProjectButton extends Button {
             dialog.open();
         }));
 
-        addThemeVariants(buttonVariant);
+        addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         addClassName("move-model-button");
     }
 
