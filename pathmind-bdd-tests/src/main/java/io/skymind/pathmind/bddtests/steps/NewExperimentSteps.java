@@ -127,4 +127,34 @@ public class NewExperimentSteps {
     public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
         newExperimentPage.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
     }
+
+    @Step
+    public void changeSimulationParameterIntegerToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentPage.changeSimulationParameterIntegerToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @Step
+    public void checkSimulationParameterHighlightedOnTheNewExperimentPage(String simParameter, Boolean highlighted) {
+        newExperimentPage.checkSimulationParameterHighlightedOnTheNewExperimentPage(simParameter, highlighted);
+    }
+
+    @Step
+    public void changeSimulationParameterNumberMaxVzToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentPage.changeSimulationParameterNumberMaxVzToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @Step
+    public void changeHighlightDifferenceFromDropdownToOnTheNewExperimentPage(String experiment) {
+        newExperimentPage.changeHighlightDifferenceFromDropdownToOnTheNewExperimentPage(experiment);
+    }
+
+    @Step
+    public void changeSimulationParameterBooleanToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentPage.changeSimulationParameterBooleanToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @Step
+    public void checkObservationHighlightedOnTheNewExperimentPage(String observation, Boolean highlighted) {
+        newExperimentPage.checkObservationHighlightedOnTheNewExperimentPage(observation, highlighted);
+    }
 }

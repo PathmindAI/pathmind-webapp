@@ -1,5 +1,7 @@
-reward += after.totalThroughput * 0.01;
-reward += ( after.machineUtil - before.machineUtil ) * 100;
-reward += after.essentialDelivery - before.essentialDelivery;
-reward -= after.fullConveyor - before.fullConveyor;
-reward += ( after.trips - before.trips ) * 0.01;
+reward += after.totalThroughput * 0.01; 
+reward += ( after.machineUtil - before.machineUtil ) * 100; 
+reward += (after.essentialDelivery - before.essentialDelivery) / 60 * 0.5; 
+reward -= (after.fullQueue - before.fullQueue); 
+reward -= after.fullConveyor - before.fullConveyor; 
+reward -= (after.emptyOrigins - before.emptyOrigins); 
+reward -= (after.tripDuration) / 140;
