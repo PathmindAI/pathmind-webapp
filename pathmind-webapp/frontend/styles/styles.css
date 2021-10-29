@@ -454,6 +454,7 @@ vaadin-dialog-overlay .demo-view-content {
 }
 
 .upload-model-view .project-title-label + .archive-model-button {
+  flex: 0 0 auto;
   margin: 0;
 }
 
