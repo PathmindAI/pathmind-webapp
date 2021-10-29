@@ -125,6 +125,7 @@ class CodeViewer extends LitElement {
             line-height: 1.8;
             padding: var(--lumo-space-xs) var(--lumo-space-s);
             margin: 0;
+            overflow-y: auto;
         }
         :host(.comparison) code {
             height: 16rem;
