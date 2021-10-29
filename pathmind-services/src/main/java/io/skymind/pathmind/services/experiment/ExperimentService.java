@@ -68,24 +68,23 @@ public class ExperimentService {
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
         return createExperimentFromModelBytes(
                 modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC,
-                null, null, null, null, false, false
+                null, null, null, false
         );
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type,
-            String environment, Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
+            String environment, String obsSelection, String rewFctName,
+            boolean deployPolicyServerOnSuccess
     ) throws Exception {
         return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment,
-                isPathmindSimulation, obsSelection, rewFctName, deployPolicyServerOnSuccess, isMultiAgent);
+                obsSelection, rewFctName, deployPolicyServerOnSuccess);
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
             Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type, String environment,
-            Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
+            String obsSelection, String rewFctName,boolean deployPolicyServerOnSuccess
     ) throws Exception {
         Model model = new Model();
 
@@ -141,26 +140,23 @@ public class ExperimentService {
                 String reqId = "project_" + model.getProjectId();
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
+                HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
+                if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
+                    throw new ModelCheckException(analysisResult.getFailedSteps());
+                }
+                model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
+
                 final List<Observation> obss = new ArrayList<>();
-                if (isPathmindSimulation) {
-                    model.setModelType(isMultiAgent ? ModelType.PM_MULTI.getValue() : ModelType.PM_SINGLE.getValue());
-                    try {
-                        byte[] obsYaml = ZipUtils.processZipEntryInFile(
-                                modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
-                                entryContentExtractor()
-                        );
-                        obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
-                        model.setNumberOfObservations(obss.size());
-                    } catch (Exception e) {
-                        obss.clear();
-                        log.error("Failed to extract observations for PM Model", e);
-                    }
-                } else {
-                    HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
-                    if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
-                        throw new ModelCheckException(analysisResult.getFailedSteps());
-                    }
-                    model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
+                try {
+                    byte[] obsYaml = ZipUtils.processZipEntryInFile(
+                            modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
+                            entryContentExtractor()
+                    );
+                    obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
+                    model.setNumberOfObservations(obss.size());
+                } catch (Exception e) {
+                    obss.clear();
+                    log.error("Failed to extract observations for PM Model", e);
                 }
                 model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
 
