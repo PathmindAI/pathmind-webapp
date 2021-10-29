@@ -105,8 +105,8 @@
 
 /* Split button */
 :host([theme~="split-button"]) {
-    height: 1.8rem;
-    margin: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+  height: 30px;
+  margin: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }

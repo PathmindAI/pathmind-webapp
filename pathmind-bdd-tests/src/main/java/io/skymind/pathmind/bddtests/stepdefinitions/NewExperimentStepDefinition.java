@@ -149,4 +149,35 @@ public class NewExperimentStepDefinition {
     public void checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(String reward, Boolean shown) {
         newExperimentSteps.checkNewExperimentRewardFunctionCommentedTextNotAutocompleted(reward, shown);
     }
+
+    @When("^Change simulation parameter integer '(.*)' to '(.*)' on the new experiment page$")
+    public void changeSimulationParameterIntegerToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentSteps.changeSimulationParameterIntegerToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @Then("^Check simulation parameter '(.*)' highlighted '(.*)' on the new experiment page$")
+    public void checkSimulationParameterHighlightedOnTheNewExperimentPage(String simParameter, Boolean highlighted) {
+        newExperimentSteps.checkSimulationParameterHighlightedOnTheNewExperimentPage(simParameter, highlighted);
+    }
+
+    @When("^Change simulation parameter number '(.*)' to '(.*)' on the new experiment page$")
+    public void changeSimulationParameterNumberMaxVzToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentSteps.changeSimulationParameterNumberMaxVzToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @When("^Change highlight difference from dropdown to '(.*)' on the new experiment page$")
+    public void changeHighlightDifferenceFromDropdownToOnTheNewExperimentPage(String experiment) {
+        newExperimentSteps.changeHighlightDifferenceFromDropdownToOnTheNewExperimentPage(experiment);
+
+    }
+
+    @When("^Change simulation parameter boolean '(.*)' to '(.*)' on the new experiment page$")
+    public void changeSimulationParameterBooleanToOnTheNewExperimentPage(String simParameter, String value) {
+        newExperimentSteps.changeSimulationParameterBooleanToOnTheNewExperimentPage(simParameter, value);
+    }
+
+    @Then("^Check observation '(.*)' highlighted '(.*)' on the new experiment page$")
+    public void checkObservationHighlightedOnTheNewExperimentPage(String observation, Boolean highlighted) {
+        newExperimentSteps.checkObservationHighlightedOnTheNewExperimentPage(observation, highlighted);
+    }
 }
