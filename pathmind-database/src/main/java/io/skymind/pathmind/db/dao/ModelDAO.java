@@ -7,6 +7,7 @@ import java.util.Optional;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.SimulationParameter;
+import liquibase.pro.packaged.M;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -53,7 +54,15 @@ public class ModelDAO {
     }
 
     public void updateUserNotes(long modelId, String userNotes) {
-        ModelRepository.updateUserNotes(ctx, modelId, userNotes);
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).userNotes(userNotes));
+    }
+
+    public void renameModel(long modelId, String newName) {
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).name(newName));
+    }
+
+    public void assignProject(long modelId, long projectId) {
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).projectId(projectId));
     }
 
     public Experiment resumeModelCreation(Model model, String modelNotes) {
@@ -61,7 +70,7 @@ public class ModelDAO {
         {
             DSLContext transactionCtx = DSL.using(configuration);
             model.setDraft(false);
-            ModelRepository.updateModel(transactionCtx, model.getId(), false, modelNotes);
+            ModelRepository.update(transactionCtx, new ModelUpdateRequest(model.getId()).isDraft( false).userNotes(modelNotes));
             Experiment experiment = ExperimentRepository.createNewExperiment(transactionCtx, model.getId(), model.isHasGoals());
             experiment.setSelectedObservations(ObservationRepository.getObservationsForModel(transactionCtx, model.getId()));
             ObservationRepository.insertExperimentObservations(transactionCtx, experiment.getId(), experiment.getSelectedObservations());

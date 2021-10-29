@@ -17,6 +17,11 @@ public class ExperimentPageSteps {
     }
 
     @Step
+    public void checkExperimentPageRewardFunctionNew(String rewardFnFile) throws IOException {
+        experimentPage.checkExperimentPageRewardFunctionNew(rewardFnFile);
+    }
+
+    @Step
     public void addNoteToTheExperimentPage(String note) {
         experimentPage.addNoteToTheExperimentPage(note);
     }

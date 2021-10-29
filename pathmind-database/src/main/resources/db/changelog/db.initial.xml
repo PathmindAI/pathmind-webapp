@@ -2136,6 +2136,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="2573-01" author="alexander.makarov@toptal.com">
+        <addColumn tableName="MODEL">
+            <column name="PROJECT_CHANGED_AT" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 
 </databaseChangeLog>

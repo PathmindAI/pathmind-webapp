@@ -21,7 +21,7 @@ public class RewardVariableDAO {
         model.setHasGoals(rewardVariables.stream().anyMatch(rv -> rv.getGoalConditionType() != null));
         ctx.transaction(conf -> {
             DSLContext transactionCtx = DSL.using(conf);
-            ModelRepository.updateHasGoals(transactionCtx, model.getId(), model.isHasGoals());
+            ModelRepository.update(transactionCtx, new ModelUpdateRequest(model.getId()).hasGoals(model.isHasGoals()));
             RewardVariableRepository.insertOrUpdateRewardVariables(transactionCtx, rewardVariables);
         });
     }

@@ -25,4 +25,9 @@ public class ApiStepDefinitions {
     public void checkAPIProjectsIdArchivedTrue(String projectName, String archived) {
         apiSteps.checkAPIProjectsIdArchivedTrue(projectName + Serenity.sessionVariableCalled("randomNumber"), archived);
     }
+
+    @When("^Create project throw API '(.*)', '(.*)'$")
+    public void createProjectThrowAPI(String modelFile, String experimentName) {
+        apiSteps.createProjectThrowAPI(modelFile, experimentName);
+    }
 }

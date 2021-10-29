@@ -5,13 +5,9 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.shared.data.Experiment;
-import io.skymind.pathmind.shared.data.RewardTerm;
 import io.skymind.pathmind.shared.utils.ExperimentUtils;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.ExperimentComponent;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @Tag("code-viewer")
 @JsModule("./src/experiment/code-viewer.ts")
@@ -21,11 +17,10 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
         super();
     }
 
-    public CodeViewer(Experiment experiment, Boolean showCopyButton, Boolean showBorder) {
+    public CodeViewer(Experiment experiment, Boolean showCopyButton) {
         super();
         setExperiment(experiment);
         getElement().setProperty("showCopyButton", showCopyButton);
-        getElement().setProperty("showBorder", showBorder);
         getElement().setProperty("isWithRewardTerms", experiment.isWithRewardTerms());
     }
 
@@ -39,6 +34,9 @@ public class CodeViewer extends LitTemplate implements HasStyle, ExperimentCompo
             if (StringUtils.isNotEmpty(weights)) {
                 snippet += "\n\n" + "reward_terms_weights=" + weights;
             }
+            getElement().setVisible(false);
+        } else {
+            getElement().setVisible(true);
         }
 
         setValue(snippet, experiment.isWithRewardTerms());

@@ -7,6 +7,9 @@ import java.util.Optional;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
+import org.jooq.UpdateConditionStep;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.UpdateWhereStep;
 
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
@@ -14,10 +17,10 @@ import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
 class ModelRepository {
     protected static List<Model> getModelsForProject(DSLContext ctx, long projectId) {
         return ctx
-                .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.PACKAGE_NAME, MODEL.DATE_CREATED, MODEL.LAST_ACTIVITY_DATE, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.ARCHIVED, MODEL.USER_NOTES, MODEL.HAS_GOALS, MODEL.DRAFT, MODEL.ACTION_TUPLE_SIZE, MODEL.MODEL_TYPE)
+                .select(MODEL.asterisk())
                 .from(MODEL)
                 .where(MODEL.PROJECT_ID.eq(projectId))
-                .orderBy(MODEL.ID.desc())
+                .orderBy(MODEL.PROJECT_CHANGED_AT.desc(), MODEL.ID.desc())
                 .fetchInto(Model.class);
     }
 
@@ -73,29 +76,6 @@ class ModelRepository {
         return mod.key().get(MODEL.ID);
     }
 
-
-    protected static void updateHasGoals(DSLContext ctx, long modelId, boolean hasGoals) {
-        ctx.update(MODEL)
-                .set(MODEL.HAS_GOALS, hasGoals)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
-    protected static void updateUserNotes(DSLContext ctx, long modelId, String userNotes) {
-        ctx.update(MODEL)
-                .set(MODEL.USER_NOTES, userNotes)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
-    protected static void updateModel(DSLContext ctx, long modelId, boolean draft, String userNotes) {
-        ctx.update(MODEL)
-                .set(MODEL.DRAFT, draft)
-                .set(MODEL.USER_NOTES, userNotes)
-                .where(MODEL.ID.eq(modelId))
-                .execute();
-    }
-
     public static Optional<Model> getModelIfAllowed(DSLContext ctx, long modelId, long userId) {
         return Optional.ofNullable(ctx
                 .select(MODEL.ID, MODEL.PROJECT_ID, MODEL.NAME, MODEL.DATE_CREATED, MODEL.NUMBER_OF_OBSERVATIONS, MODEL.PACKAGE_NAME, MODEL.ARCHIVED,
@@ -124,4 +104,13 @@ class ModelRepository {
                 .limit(1)
                 .fetchAnyInto(Model.class);
     }
+
+    protected static void update(DSLContext ctx, ModelUpdateRequest updateRequest) {
+        UpdateSetFirstStep update =  ctx.update(MODEL);
+        updateRequest.updates.forEach((f,v) -> update.set(f, v));
+        update.set(MODEL.LAST_ACTIVITY_DATE, LocalDateTime.now());
+        UpdateConditionStep<?> command = ((UpdateWhereStep<?>)update).where(MODEL.ID.eq(updateRequest.modelId));
+        command.execute();
+    }
+
 }
