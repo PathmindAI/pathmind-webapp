@@ -607,7 +607,6 @@ public class AWSExecutionProvider implements ExecutionProvider {
 
         if (StringUtils.isNotEmpty(job.getTermsWeight())) {
             instructions.add(var("REWARD_TERMS_WEIGHTS", job.getTermsWeight()));
-            instructions.add(var("NUM_REWARD_TERMS", String.valueOf(job.getTermsWeight().split(",").length)));
         }
 
         if (job.getEnv().getTrainBatchSize() != 0) {
