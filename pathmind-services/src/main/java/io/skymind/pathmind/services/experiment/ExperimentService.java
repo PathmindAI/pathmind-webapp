@@ -144,19 +144,22 @@ public class ExperimentService {
                 if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
                     throw new ModelCheckException(analysisResult.getFailedSteps());
                 }
-                model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
+                ModelType modelType = ModelType.fromName(analysisResult.getMode());
+                model.setModelType(modelType.getValue());
 
                 final List<Observation> obss = new ArrayList<>();
-                try {
-                    byte[] obsYaml = ZipUtils.processZipEntryInFile(
-                            modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
-                            entryContentExtractor()
-                    );
-                    obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
-                    model.setNumberOfObservations(obss.size());
-                } catch (Exception e) {
-                    obss.clear();
-                    log.error("Failed to extract observations for PM Model", e);
+                if (ModelType.isPathmindModel(modelType)) {
+                    try {
+                        byte[] obsYaml = ZipUtils.processZipEntryInFile(
+                                modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
+                                entryContentExtractor()
+                        );
+                        obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
+                        model.setNumberOfObservations(obss.size());
+                    } catch (Exception e) {
+                        obss.clear();
+                        log.error("Failed to extract observations for PM Model", e);
+                    }
                 }
                 model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
 
