@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -44,9 +43,6 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
-import io.skymind.pathmind.webapp.ui.components.buttons.EditGoalsButton;
-import io.skymind.pathmind.webapp.ui.components.buttons.MoveToProjectButton;
-import io.skymind.pathmind.webapp.ui.components.buttons.NewExperimentButton;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -58,10 +54,12 @@ import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.DownloadModelLink;
 import io.skymind.pathmind.webapp.ui.views.project.components.ExperimentGrid;
+import io.skymind.pathmind.webapp.ui.views.project.components.ModelActionBar;
 import io.skymind.pathmind.webapp.ui.views.project.components.dialogs.RenameProjectDialog;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.ui.views.project.dataprovider.ExperimentGridDataProvider;
 import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewFavoriteSubscriber;
+import io.skymind.pathmind.webapp.ui.views.project.subscribers.ProjectViewModelArchiveSubscriber;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import io.skymind.pathmind.webapp.utils.VaadinDateAndTimeUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -114,10 +112,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     private ConfigurableFilterDataProvider<Experiment, Void, Boolean> dataProvider;
     private ArchivesTabPanel<Experiment> archivesTabPanel;
-    private NewExperimentButton newExperimentButton;
-    private MoveToProjectButton moveToProjectButton;
-    private EditGoalsButton editGoalsButton;
-    private ExportAllPoliciesButton exportAllPoliciesButton;
+    private ModelActionBar modelActionBar;
     private MultiselectComboBox<RewardVariable> metricMultiSelect;
     private MultiselectComboBox<String> columnMultiSelect;
     private ExperimentGrid experimentGrid;
@@ -155,11 +150,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         experimentGrid = new ExperimentGrid(experimentDAO, rewardVariables);
         experimentGrid.setPageSize(5);
         setupArchivesTabPanel();
-        moveToProjectButton = new MoveToProjectButton(modelId, ButtonVariant.LUMO_TERTIARY, projectDAO, modelDAO, segmentIntegrator);
-        editGoalsButton = new EditGoalsButton(modelId, ButtonVariant.LUMO_TERTIARY, segmentIntegrator);
-        exportAllPoliciesButton = new ExportAllPoliciesButton(policyFileService, experimentDAO);
-        newExperimentButton = new NewExperimentButton(experimentDAO, modelId, ButtonVariant.LUMO_TERTIARY,
-                segmentIntegrator);
+        modelActionBar = new ModelActionBar(projectDAO, modelDAO, experimentDAO,
+                                            policyFileService, selectedModel, segmentIntegrator);
         modelNotesField = createModelNotesField();
         modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
 
@@ -182,7 +174,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
                         downloadLink), modelNotesField);
 
         HorizontalLayout experimentGridHeader = WrapperUtils
-                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, exportAllPoliciesButton, moveToProjectButton, editGoalsButton, newExperimentButton);
+                .wrapWidthFullHorizontalNoSpacingAlignCenter(archivesTabPanel, modelActionBar);
 
         metricMultiSelect = createMetricSelectionGroup();
         HorizontalLayout metricSelectionRow = WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(
@@ -396,10 +388,6 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         }
     }
 
-    public Object getModelLock() {
-        return modelLock;
-    }
-
     public void loadModelData() {
         modelId = selectedModel != null ? selectedModel.getId() : null;
 //        experiments = projectService.getExperiments(modelId, SecurityUtils.getUserId());
@@ -429,11 +417,8 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             // this is to get the most updated notes
             modelNotesField.setNotesText(model.getUserNotes());
         });
-        newExperimentButton.setModelId(selectedModel.getId());
-        moveToProjectButton.setModelId(selectedModel.getId());
-        editGoalsButton.setModelId(selectedModel.getId());
-        exportAllPoliciesButton.setModelId(modelId);
         experimentGridDataProvider.setModelId(modelId);
+        modelActionBar.setModel(selectedModel);
         if (dataProvider == null) {
             dataProvider = experimentGridDataProvider.withConfigurableFilter();
         }
@@ -479,7 +464,9 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
 
     @Override
     protected void addEventBusSubscribers() {
-        EventBus.subscribe(this, getUISupplier(), List.of(new ProjectViewFavoriteSubscriber(this)));
+        EventBus.subscribe(this, getUISupplier(), 
+                List.of(new ProjectViewFavoriteSubscriber(this),
+                        new ProjectViewModelArchiveSubscriber(this)));
     }
 
     @Override
