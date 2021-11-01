@@ -25,7 +25,7 @@ public class DataChart extends LitTemplate implements HasStyle {
             Boolean stacked,
             JsonObject viewWindow
     ) {
-        setupChart(type, showTooltip, hAxisTitle, vAxisTitle, null, null, null, null, curveLines, seriesType, series, stacked, viewWindow);
+        setupChart(type, showTooltip, hAxisTitle, vAxisTitle, null, null, curveLines, seriesType, series, stacked, viewWindow);
     }
 
     public void setupChart(
@@ -34,9 +34,7 @@ public class DataChart extends LitTemplate implements HasStyle {
             String hAxisTitle,
             String vAxisTitle,
             String metric1AxisTitle,
-            String metric2AxisTitle,
             String metric1Color,
-            String metric2Color,
             Boolean curveLines,
             String seriesType,
             JsonObject series,
@@ -48,9 +46,7 @@ public class DataChart extends LitTemplate implements HasStyle {
         getElement().setProperty("haxistitle", hAxisTitle);
         getElement().setProperty("vaxistitle", vAxisTitle);
         getElement().setProperty("metric1axistitle", metric1AxisTitle);
-        getElement().setProperty("metric2axistitle", metric2AxisTitle);
         getElement().setProperty("metric1color", metric1Color);
-        getElement().setProperty("metric2color", metric2Color);
         getElement().setProperty("curvelines", curveLines);
         getElement().setProperty("seriestype", seriesType);
         getElement().setProperty("stacked", stacked);

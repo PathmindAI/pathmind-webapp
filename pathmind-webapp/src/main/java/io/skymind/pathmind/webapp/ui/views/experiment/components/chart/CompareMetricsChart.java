@@ -18,9 +18,7 @@ public class CompareMetricsChart extends DataChart {
     // the size of the list. We also can't just dynamically get the RewardVariable at a certain index because other parts of the code rely on looping through the list.
     private RewardVariable[] rewardVariables;
     private String metric1AxisTitle;
-    private String metric2AxisTitle;
     private String metric1Color;
-    private String metric2Color;
     private List<String> colors = ChartUtils.colors();
 
     public CompareMetricsChart() {
@@ -50,16 +48,12 @@ public class CompareMetricsChart extends DataChart {
 
     private void createAxisTitlesAndColors() {
         metric1AxisTitle = null;
-        metric2AxisTitle = null;
         for (int i = 0; i < rewardVariables.length; i++) {
             if (rewardVariables[i] != null) {
                 Boolean isFirstNonNullVariable = Arrays.stream(rewardVariables).filter(rv -> rv != null).findFirst().get().equals(rewardVariables[i]);
                 if (isFirstNonNullVariable) {
                     metric1AxisTitle = rewardVariables[i].getName() + " mean";
                     metric1Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
-                } else {
-                    metric2AxisTitle = rewardVariables[i].getName() + " mean";
-                    metric2Color = colors.get(rewardVariables[i].getArrayIndex() % 10);
                 }
             }
         }
@@ -151,9 +145,7 @@ public class CompareMetricsChart extends DataChart {
                 hAxisTitle,
                 vAxisTitle,
                 metric1AxisTitle,
-                metric2AxisTitle,
                 metric1Color,
-                metric2Color,
                 curveLines,
                 seriesType,
                 series,

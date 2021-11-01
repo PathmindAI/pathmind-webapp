@@ -14,21 +14,17 @@ class DataChart extends LitElement {
   @property({type: String})
   metric1axistitle = "";
   @property({type: String})
-  metric2axistitle = "";
-  @property({type: String})
   metric1color;
-  @property({type: String})
-  metric2color;
   @property({type: Boolean})
   curvelines;
   @property({type: String})
-  seriestype = "";
+  seriestype;
   @property({type: Boolean})
-  stacked = false;
+  stacked;
   @property({type: Array})
-  cols = [];
+  cols;
   @property({type: Array})
-  rows = [];
+  rows;
   @property({type: Object})
   series;
   @property({type: Object})
@@ -40,35 +36,9 @@ class DataChart extends LitElement {
   @property({type: Object})
   options;
 
-  updated(changedProperties) {
-    const chart : any = this.shadowRoot.getElementById("chart");
-    changedProperties.forEach((oldValue, name) => {
-      if (name === "showtooltip" || 
-          name === "haxistitle" ||
-          name === "vaxistitle" ||
-          name === "curvelines" ||
-          name === "seriestype" ||
-          name === "series" ||
-          name === "metric1axistitle" ||
-          name === "metric2axistitle" ||
-          name === "metric1color" ||
-          name === "metric2color" ||
-          name === "stacked" ||
-          name === "viewwindow") {
-        this._computeOptions();
-      }
-      if (name === "cols" || name === "rows" || name === "options") {
-          chart.cols = this.cols;
-          chart.rows = this.rows;
-          chart.options = this.options;
-          this.redraw();
-      }
-    })
-  }
-
   firstUpdated() {
     let isInit = true;
-    const chart = this.shadowRoot.getElementById("chart") as any;
+    const chart : any = this.shadowRoot.getElementById("chart");
     chart.addEventListener("google-chart-ready", event => {
       var style = document.createElement("style");
       style.innerHTML = `
@@ -115,11 +85,40 @@ class DataChart extends LitElement {
     }, 300));
   }
 
+  updated(changedProperties) {
+    const chart : any = this.shadowRoot.getElementById("chart");
+    changedProperties.forEach((oldValue, name) => {
+      if (name === "showtooltip" || 
+          name === "haxistitle" ||
+          name === "vaxistitle" ||
+          name === "curvelines" ||
+          name === "seriestype" ||
+          name === "series" ||
+          name === "metric1axistitle" ||
+          name === "metric1color" ||
+          name === "stacked" ||
+          name === "viewwindow") {
+        this._computeOptions();
+      }
+      if (name === "cols" || name === "rows" || name === "options") {
+          chart.cols = this.cols;
+          chart.rows = this.rows;
+          chart.options = this.options;
+          this.redraw();
+      }
+    })
+  }
+  
+  setData(cols, rows) {
+    this.cols = cols;
+    this.rows = rows;
+  }
+
   _computeOptions() {
     this.options = {
       "tooltip": this.showtooltip ? { "isHtml": true } : { "trigger": "none" },
       "curveType": this.curvelines ? "function" : null,
-      "isStacked": this.stacked,
+      "isStacked": this.stacked === false ? null : true,
       "hAxis": {
         "title": this.haxistitle,
         "titleTextStyle": {"italic": false},
@@ -141,28 +140,15 @@ class DataChart extends LitElement {
           "baselineColor": this.vaxistitle ? "black" : "#FFF",
           "gridlineColor": this.vaxistitle ? "#CCC" : "#FFF"
         },
-        {
-          "title": this.metric2axistitle,
-          "titleTextStyle": {"italic": false, "color": this.metric2axistitle ? (this.metric2color == this.metric1color ? "black" : this.metric2color) : "black"},
-          "textStyle": {"color": this.metric2axistitle ? (this.metric2color == this.metric1color ? "black" : this.metric2color) : "black"},
-          "textPosition": this.vaxistitle ? "out" : "none",
-          "ticks": this.vaxistitle ? "auto" : [],
-          "viewWindow": this.viewwindow,
-          "viewWindowMode": this.viewwindow ? "pretty" : "maximized",
-          "baselineColor": "transparent",
-          "gridlineColor": "transparent",
-          "slantedText":true,
-          "slantedTextAngle":90 
-        }
       ],
       "interpolateNulls": true,
       "legend": {"position": "none"},  // true for all usages
-      "seriesType": this.seriestype,
+      "seriesType": this.seriestype === "" ? null : this.seriestype,
       "series": this.series,
       "chartArea": {
         "left": !this.vaxistitle && !this.haxistitle ? 0 : "10%", 
         "top": !this.vaxistitle && !this.haxistitle ? 0 : "5%", 
-        "width": !this.vaxistitle && !this.haxistitle ? "100%" : this.metric2axistitle ? "80%" : "88%", 
+        "width": !this.vaxistitle && !this.haxistitle ? "100%" : "88%", 
         "height": !this.vaxistitle && !this.haxistitle ? "100%" : "80%"
       }
     };
@@ -171,28 +157,16 @@ class DataChart extends LitElement {
   redraw() {
     const chart : any = this.shadowRoot.getElementById("chart");
     if (chart != null) {
-      chart.cols = this.cols;
-      chart.rows = this.rows;
-      chart.options = this.options;
       chart.redraw();
     }
   }
-  
-  setData(cols, rows) {
-    this.cols = cols;
-    this.rows = rows;
-    this.redraw();
-  }
     
   setChartEmpty() {
-    if (!this.cols) {
-        this.cols = [
-            {"label":"Iteration", "type":"number"},
-            {"label":"line", "type":"number"},
-        ]
-    } else {
-        this.cols = [{"label":"Metrics", "type":"number"}];
-    }
+    this.cols = [
+        {"label":"Iteration", "type":"number"},
+        {"label":"line", "type":"number"},
+    ];
+    this.metric1axistitle = "";
 
     this.rows = [];
   }
