@@ -35,7 +35,7 @@ Feature: Api tests
     Given Login to the pathmind
     When Open user account page
     Then Save account page api key to the environment variable
-    When Create project throw API 'pythonExamples/python_examples.zip', 'examples.mouse.single_agent_mouse_env.MouseAndCheese;null;null'
+    When Create project throw API 'pythonExamples/python_examples.zip', 'examples.mouse.single_agent_mouse_env.MouseAndCheese'
 
   Scenario Outline: Check observations are extracted correctly from python models
     Given Login to the pathmind
