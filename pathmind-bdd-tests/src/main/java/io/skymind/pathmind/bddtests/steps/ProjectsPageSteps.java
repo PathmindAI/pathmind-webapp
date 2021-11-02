@@ -66,4 +66,9 @@ public class ProjectsPageSteps {
     public void projectsPageCheckProjectModelsNumber(String projectName, String modelsNumber) {
         projectsPage.projectsPageCheckProjectModelsNumber(projectName, modelsNumber);
     }
+
+    @Step
+    public void openFirstProjectContainsOnProjectsPage(String project) {
+        projectsPage.openFirstProjectContainsOnProjectsPage(project);
+    }
 }
