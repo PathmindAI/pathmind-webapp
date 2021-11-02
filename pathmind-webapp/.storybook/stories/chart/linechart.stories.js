@@ -1,7 +1,7 @@
 import { storiesOf } from "@storybook/polymer";
 import { storyParamConfig } from "../../utils";
 
-import "../../../frontend/src/components/atoms/data-chart.js";
+import "../../../frontend/src/components/atoms/data-chart.ts";
 
 storiesOf('Charts', module)
 .addDecorator(storyFn => `<div class="story-wrapper">
