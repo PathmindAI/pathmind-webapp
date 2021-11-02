@@ -155,11 +155,16 @@ public class ModelUploadController {
 
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
-            URI experimentUri = builder
-                .path("editGoals").path("/{modelId}")
-                .queryParam("experiment", experimentId)
-                .buildAndExpand(Map.of("modelId", experiment.getModelId()))
-                .toUri();
+            URI experimentUri = request.getType() == AnalyzeRequestDTO.ModelType.ANY_LOGIC ?
+                    builder
+                            .path("editGoals").path("/{modelId}")
+                            .queryParam("experiment", experimentId)
+                            .buildAndExpand(Map.of("modelId", experiment.getModelId()))
+                            .toUri()
+                    :
+                    builder.path("newExperiment/{experimentId}")
+                            .buildAndExpand(Map.of("experimentId", experimentId))
+                            .toUri();
 
             if (request.isStartOnUpload()) {
                 trainingService.startRunAsync(experiment); // todo: should we do it synced. may request time out while running?
@@ -170,7 +175,7 @@ public class ModelUploadController {
             log.error("failed to get file from {}", request, e);
             builder.path("uploadModelError");
             if (e instanceof ModelCheckException) {
-                builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
+                builder.path("/" + StringUtils.trimToEmpty(e.getMessage()));
             }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
