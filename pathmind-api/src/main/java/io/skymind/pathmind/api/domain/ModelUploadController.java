@@ -87,13 +87,11 @@ public class ModelUploadController {
     @PostMapping("/py/upload")
     public ResponseEntity<?> handlePYFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("env") String environment,
-                                                @RequestParam(value = "isPathmindSimulation", required = false, defaultValue = "false") Boolean isPathmindSimulation,
                                                 @RequestParam(value = "obsSelection", required = false) String obsSelection,
                                                 @RequestParam(value = "rewFctName", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @RequestParam(value = "start", required = false) boolean startOnUpload,
                                                 @RequestParam(value = "deploy", required = false) boolean deployOnSuccess,
-                                                @RequestParam(value = "multiAgent", required = false) boolean isMultiAgent,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
         return handleFileUpload(
                 UploadRequest.builder()
@@ -102,12 +100,10 @@ public class ModelUploadController {
                         .pmUser(pmUser)
                         .type(AnalyzeRequestDTO.ModelType.PYTHON)
                         .environment(environment)
-                        .isPathmindSimulation(isPathmindSimulation)
                         .obsSelection(obsSelection)
                         .rewFctName(rewFctName)
                         .startOnUpload(startOnUpload)
                         .startOnUpload(deployOnSuccess)
-                        .isMultiAgent(isMultiAgent)
                         .build()
         );
     }
@@ -152,11 +148,9 @@ public class ModelUploadController {
                         projectSupplier,
                         request.getType(),
                         request.getEnvironment(),
-                        request.getIsPathmindSimulation(),
                         request.getObsSelection(),
                         request.getRewFctName(),
-                        request.isDeployOnSuccess(),
-                        request.isMultiAgent()
+                        request.isDeployOnSuccess()
                 );
 
             Long experimentId = experiment.getId();
@@ -190,14 +184,12 @@ public class ModelUploadController {
         private final MultipartFile file;
         private final String environment;
         private final AnalyzeRequestDTO.ModelType type;
-        private final Boolean isPathmindSimulation;
         private final String obsSelection;
         private final String rewFctName;
         private final Long projectId;
         private final boolean startOnUpload;
         private final boolean deployOnSuccess;
         private final PathmindApiUser pmUser;
-        private final boolean isMultiAgent;
     }
 
 }
