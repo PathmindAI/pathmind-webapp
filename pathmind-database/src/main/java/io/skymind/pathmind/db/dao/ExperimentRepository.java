@@ -278,13 +278,6 @@ class ExperimentRepository {
                 .fetchAnyInto(Experiment.class);
     }
 
-    protected static void updateLastActivityDate(DSLContext ctx, long experimentId) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
-                .execute();
-    }
-
     protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
         ctx.update(EXPERIMENT)
                 .set(EXPERIMENT.USER_NOTES, userNotes)
