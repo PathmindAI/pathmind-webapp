@@ -108,6 +108,10 @@ public class SegmentIntegrator extends PolymerTemplate<SegmentIntegrator.Model> 
         track(EVENT_EXPORT_POLICY);
     }
 
+    public void checkpointPolicyExported() {
+        track(EVENT_EXPORT_CHECKPOINT_POLICY);
+    }
+
     public void draftSaved() {
         track(EVENT_SAVE_EXPERIMENT_DRAFT);
     }
