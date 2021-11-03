@@ -35,6 +35,7 @@ import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.ShareEx
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.experiment.StopTrainingAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.ArchiveExperimentAction;
 import io.skymind.pathmind.webapp.ui.views.experiment.actions.shared.UnarchiveExperimentAction;
+import io.skymind.pathmind.webapp.ui.views.experiment.components.policy.ExportCheckpointPolicyButton;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.policy.ExportPolicyButton;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.policy.ServePolicyButton;
 import io.skymind.pathmind.webapp.ui.views.experiment.components.simple.shared.ExperimentPanelTitle;
@@ -59,6 +60,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
     private SharedByUsername sharedByTag;
     private ServePolicyButton servePolicyButton;
     private ExportPolicyButton exportPolicyButton;
+    private ExportCheckpointPolicyButton exportCheckpointPolicyButton;
     private Button stopTrainingButton;
     private Button archiveButton;
     private Button unarchiveButton;
@@ -157,6 +159,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         archiveButton = GuiUtils.getIconButton(new Icon(VaadinIcon.ARCHIVE), click -> ArchiveExperimentAction.archive(experiment, experimentView));
         unarchiveButton = GuiUtils.getIconButton(new Icon(VaadinIcon.ARROW_BACKWARD), click -> UnarchiveExperimentAction.unarchive(experimentView, getExperimentSupplier, getLockSupplier));
         exportPolicyButton = new ExportPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
+        exportCheckpointPolicyButton = new ExportCheckpointPolicyButton(experimentView.getSegmentIntegrator(), policyFileService, policyDAO, getExperimentSupplier);
         servePolicyButton = new ServePolicyButton(policyServerService, userDAO, runDAO, experimentView.getSegmentIntegrator());
         // It is the same for all experiments from the same model so it doesn't have to be updated as long
         // as the user is on the Experiment View (the nav bar only allows navigation to experiments from the same model)
@@ -165,9 +168,9 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
 
         // isExportPolicyButtonOnly is true for SharedExperimentView only
         if (isExportPolicyButtonOnly) {
-            return new Component[]{exportPolicyButton, servePolicyButton};
+            return new Component[]{exportCheckpointPolicyButton, exportPolicyButton, servePolicyButton};
         } else {
-            return new Component[]{stopTrainingButton, exportPolicyButton, servePolicyButton, downloadModelLink};
+            return new Component[]{stopTrainingButton, exportCheckpointPolicyButton, exportPolicyButton, servePolicyButton, downloadModelLink};
         }
     }
 
@@ -184,6 +187,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
                         && experiment.getBestPolicy() != null
                         && experiment.getBestPolicy().hasFile();
         exportPolicyButton.setVisible(isCompletedWithPolicy);
+        exportCheckpointPolicyButton.setVisible(!isCompletedWithPolicy);
         if (featureManager.isEnabled(Feature.POLICY_SERVING)) {
             servePolicyButton.setServePolicyButtonText(isCompletedWithPolicy);
         } else {
@@ -214,6 +218,7 @@ public class ExperimentTitleBar extends HorizontalLayout implements ExperimentCo
         trainingStatusDetailsPanel.setExperiment(experiment);
         downloadModelLink.setExperiment(experiment);
         exportPolicyButton.setExperiment(experiment);
+        exportCheckpointPolicyButton.setExperiment(experiment);
         setExperimentForServePolicyButton(experiment);
         if (experimentView.isReadOnly()) {
             PathmindUser sharedByUser = experimentView.getExperimentDAO().getUserOfExperiment(experiment.getId());

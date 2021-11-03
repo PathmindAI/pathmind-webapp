@@ -4,15 +4,18 @@ import java.io.ByteArrayInputStream;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.server.StreamRegistration;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinSession;
+
 import io.skymind.pathmind.db.dao.PolicyDAO;
 import io.skymind.pathmind.services.PolicyFileService;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Policy;
 import io.skymind.pathmind.shared.utils.PolicyUtils;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 
 import static io.skymind.pathmind.shared.utils.PathmindStringUtils.removeInvalidChars;
 
@@ -36,11 +39,25 @@ public class ExportCheckpointPolicyButton extends Anchor {
     }
 
     private void setup() {
-        exportButton = new Button("Export Policy");
-        exportButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        exportButton = new Button("Export Checkpoint Policy");
+        
         exportButton.addClickListener(evt -> {
+            System.out.println("policy?"+policy);
             if (policy != null) {
                 // TODO -> show dialog to tell user that this is a checkpoint policy and what to expect
+                ConfirmationUtils.confirmationPopupDialog(
+                    "Export Checkpoint Policy",
+                    "The policy you are trying to download is from an interim checkpoint. The final policy will be available after the training has ended.",
+                    "Download",
+                    () -> {
+                        StreamResource resource = getResourceStream(policyFilename);
+
+                        final StreamRegistration regn = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+                        getUI().ifPresent(ui -> 
+                            ui.getCurrent().getPage().setLocation(regn.getResourceUri())
+                        );
+                    }
+                );
                 segmentIntegrator.checkpointPolicyExported();
             }
         });
@@ -48,20 +65,19 @@ public class ExportCheckpointPolicyButton extends Anchor {
         add(exportButton);
     }
 
+    // TODO -> set policy using event bus subscriber
+
     public void setExperiment(Experiment experiment) {
-        boolean isCompletedWithPolicy = experiment.isTrainingCompleted() && experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile();
-        if (!isCompletedWithPolicy) {
+        boolean hasPolicy = experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile();
+        if (!hasPolicy) {
             setVisible(false);
             return;
         }
 
+        System.out.println("policy in set experiment:"+policy);
         policy = policyDAO.getPolicy(experiment.getBestPolicy().getId());
 
         policyFilename = PolicyUtils.generatePolicyFileName(policy);
-
-        // TODO -> download after clicking confirm on dialog
-        getElement().setAttribute("href", getResourceStream(policyFilename));
-        getElement().setAttribute("download", true);
     }
 
     public String getPolicyFilename() {
@@ -75,8 +91,7 @@ public class ExportCheckpointPolicyButton extends Anchor {
     private StreamResource getResourceStream(String filename) {
         return new StreamResource(removeInvalidChars(filename),
                 () -> {
-                    // TODO -> get checkpoint policy
-                    byte[] bytes = policyFileService.getFreezingOrPolicyFile(policy);
+                    byte[] bytes = policyFileService.getCheckpointPolicyFile(policy.getId());
                     return new ByteArrayInputStream(bytes);
                 });
     }

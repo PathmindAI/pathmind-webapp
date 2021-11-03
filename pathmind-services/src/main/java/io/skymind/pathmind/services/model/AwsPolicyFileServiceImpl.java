@@ -58,7 +58,7 @@ class AwsPolicyFileServiceImpl implements PolicyFileService {
     }
 
     @Override
-    public byte[] getSnapshotFile(long policyId) {
+    public byte[] getCheckpointPolicyFile(long policyId) {
         return awsApiClient.fileContents(POLICY_CHECKPOINT + policyId, true);
     }
 

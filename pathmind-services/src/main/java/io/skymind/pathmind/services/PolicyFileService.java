@@ -7,7 +7,7 @@ public interface PolicyFileService {
 
     boolean hasFreezingPolicyFile(long runId);
 
-    byte[] getSnapshotFile(long id);
+    byte[] getCheckpointPolicyFile(long id);
 
     byte[] getPolicyFile(long policyId);
 
