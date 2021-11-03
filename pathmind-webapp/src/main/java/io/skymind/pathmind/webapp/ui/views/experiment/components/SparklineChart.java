@@ -131,10 +131,10 @@ public class SparklineChart extends DataChart {
         }
 
         String type = "combo";
-        Boolean showTooltip = showDetails ? true : null;
-        String hAxisTitle = showDetails ? "Iteration" : null;
-        String vAxisTitle = showDetails ? "Mean Metric Value" : null;
-        Boolean curveLines = null;
+        Boolean showTooltip = showDetails ? true : false;
+        String hAxisTitle = showDetails ? "Iteration" : "";
+        String vAxisTitle = showDetails ? "Mean Metric Value" : "";
+        Boolean curveLines = false;
         String seriesType = "area";
         Boolean stacked = true;
         JsonObject viewWindow = calculateViewWindow(maxVal, minVal);

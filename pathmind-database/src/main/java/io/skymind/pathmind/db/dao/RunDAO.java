@@ -91,19 +91,13 @@ public class RunDAO {
 
     public void markAsStopping(DSLContext transactionCtx, Run run) {
         updateRun(run, ProviderJobStatus.STOPPING, transactionCtx);
-        updateExperiment(run, transactionCtx);
     }
 
     private void updateRun(DSLContext transactionCtx, Run run, ProviderJobStatus status, List<Policy> policies) {
         updateRun(run, status, transactionCtx);
-        updateExperiment(run, transactionCtx);
         if (!policies.isEmpty()) {
             updatePolicies(run, policies, transactionCtx);
         }
-    }
-
-    private void updateExperiment(Run run, DSLContext transactionCtx) {
-        ExperimentRepository.updateLastActivityDate(transactionCtx, run.getExperimentId());
     }
 
     private void updateRun(Run run, ProviderJobStatus jobStatus, DSLContext transactionCtx) {
