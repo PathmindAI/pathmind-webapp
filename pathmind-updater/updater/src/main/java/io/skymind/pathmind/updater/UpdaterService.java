@@ -309,34 +309,36 @@ public class UpdaterService {
     private List<PolicyUpdateInfo> getPoliciesUpdateInfo(List<String> stoppedPoliciesNames, Long runId,
                                                          String jobHandle, ProviderJobStatus providerJobStatus) {
         List<PolicyUpdateInfo> policiesInfo = new ArrayList<>();
-        if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
-            List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);
-            policiesInfo.addAll(
-                    stoppedPoliciesNames
-                            .stream()
-                            .filter(unfinishedPolicyIds::contains)
-                            .map(finishPolicyName -> {
+        List<String> unfinishedPolicyIds = runDAO.unfinishedPolicyIds(runId);
+        policiesInfo.addAll(
+                stoppedPoliciesNames
+                        .stream()
+                        .filter(unfinishedPolicyIds::contains)
+                        .map(finishPolicyName -> {
+                            PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
+                            policyUpdateInfo.setName(finishPolicyName);
+                            if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
                                 final byte[] policyFile = provider
                                         .policy(jobHandle, finishPolicyName); // don't update db nor aws
                                 if (policyFile == null) {
                                     return Optional.<PolicyUpdateInfo>empty();
                                 }
-                                PolicyUpdateInfo policyUpdateInfo = new PolicyUpdateInfo();
-                                policyUpdateInfo.setName(finishPolicyName);
                                 policyUpdateInfo.setPolicyFile(policyFile);
-                                Map.Entry<String, byte[]> checkpointInfo = provider
-                                        .snapshot(jobHandle, finishPolicyName);
-                                if (checkpointInfo != null) {
-                                    policyUpdateInfo.setCheckpointFileKey(checkpointInfo.getKey());
-                                    policyUpdateInfo.setCheckpointFile(checkpointInfo.getValue());
-                                }
-                                return Optional.of(policyUpdateInfo);
-                            })
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .collect(Collectors.toList())
-            );
+                            }
+                            Map.Entry<String, byte[]> checkpointInfo = provider
+                                    .snapshot(jobHandle, finishPolicyName);
+                            if (checkpointInfo != null) {
+                                policyUpdateInfo.setCheckpointFileKey(checkpointInfo.getKey());
+                                policyUpdateInfo.setCheckpointFile(checkpointInfo.getValue());
+                            }
+                            return Optional.of(policyUpdateInfo);
+                        })
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList())
+        );
 
+        if (RunStatus.isCompleting(providerJobStatus.getRunStatus())) {
             if (policiesInfo.size() > 0) {
                 final byte[] policyFile = provider.policy(jobHandle, "freezing");
                 if (policyFile != null) {

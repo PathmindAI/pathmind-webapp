@@ -42,7 +42,6 @@ public class ExportCheckpointPolicyButton extends Anchor {
         exportButton = new Button("Export Checkpoint Policy");
         
         exportButton.addClickListener(evt -> {
-            System.out.println("policy?"+policy);
             if (policy != null) {
                 // TODO -> show dialog to tell user that this is a checkpoint policy and what to expect
                 ConfirmationUtils.confirmationPopupDialog(
@@ -52,10 +51,13 @@ public class ExportCheckpointPolicyButton extends Anchor {
                     () -> {
                         StreamResource resource = getResourceStream(policyFilename);
 
-                        final StreamRegistration regn = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
-                        getUI().ifPresent(ui -> 
-                            ui.getCurrent().getPage().setLocation(regn.getResourceUri())
-                        );
+                        if (resource != null) {
+                            final StreamRegistration regn = VaadinSession.getCurrent().getResourceRegistry().registerResource(resource);
+                            getUI().ifPresent(ui -> 
+                                ui.getCurrent().getPage().setLocation(regn.getResourceUri())
+                            );
+                        }
+
                     }
                 );
                 segmentIntegrator.checkpointPolicyExported();
@@ -68,8 +70,9 @@ public class ExportCheckpointPolicyButton extends Anchor {
     // TODO -> set policy using event bus subscriber
 
     public void setExperiment(Experiment experiment) {
-        boolean hasPolicy = experiment.getBestPolicy() != null && experiment.getBestPolicy().hasFile();
-        if (!hasPolicy) {
+        policy = experiment.getBestPolicy();
+        // && experiment.getBestPolicy().hasFile();
+        if (policy != null) {
             setVisible(false);
             return;
         }
@@ -92,7 +95,7 @@ public class ExportCheckpointPolicyButton extends Anchor {
         return new StreamResource(removeInvalidChars(filename),
                 () -> {
                     byte[] bytes = policyFileService.getCheckpointPolicyFile(policy.getId());
-                    return new ByteArrayInputStream(bytes);
+                    return bytes != null ? new ByteArrayInputStream(bytes) : null;
                 });
     }
 

@@ -26,6 +26,7 @@ public class ExperimentViewRunUpdateSubscriber extends RunUpdateSubscriber {
             synchronized (experimentView.getExperimentLock()) {
                 updateExperimentInternalValues(event, experimentView.getExperiment());
                 experimentView.updateComponents();
+                System.out.println("best policy in run update subscriber: "+event.getExperiment().getBestPolicy());
             }
         } else {
             synchronized (experimentView.getComparisonExperimentLock()) {
