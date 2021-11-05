@@ -36,3 +36,21 @@ Feature: Api tests
     When Open user account page
     Then Save account page api key to the environment variable
     When Create project throw API 'pythonExamples/python_examples.zip', 'examples.mouse.single_agent_mouse_env.MouseAndCheese'
+
+  Scenario Outline: Check observations are extracted correctly from python models
+    Given Login to the pathmind
+    When Open user account page
+    Then Save account page api key to the environment variable
+    When Create project throw API '<model>', '<env>'
+    When Open projects page
+    When Open first project contains 'PY-Upload' on projects page
+    When Click the experiment name 1
+    When Check new experiment observations list contains 'mouse_row'
+    When Check new experiment observations list contains 'mouse_col'
+    When Check new experiment observations list contains 'mouse_row_dist'
+    When Check new experiment observations list contains 'mouse_col_dist'
+
+    Examples:
+      | model                              | env                                                         |
+      | pythonExamplesWithObs/examples.zip | examples.mouse.multi_mouse_env_pathmind.MultiMouseAndCheese |
+      | pythonExamplesWithObs/examples.zip | examples.mouse.mouse_env_pathmind.MouseAndCheese            |
