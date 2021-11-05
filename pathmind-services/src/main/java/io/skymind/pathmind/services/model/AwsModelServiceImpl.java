@@ -29,13 +29,13 @@ class AwsModelServiceImpl implements ModelService {
     }
 
     @Override
-    public void addDraftModelToProject(Model model, long id, String userNotes) {
+    public void addDraftModelToProject(Model model, long projectId, String userNotes) {
         Assert.notNull(model, "Model should be provided");
         model.setDraft(true);
         if (ModelType.isALModel(ModelType.fromValue(model.getModelType()))) {
             ModelUtils.extractAndSetPackageName(model);
         }
-        modelDAO.addDraftModelToProject(model, id, userNotes);
+        modelDAO.addDraftModelToProject(model, projectId, userNotes);
         saveModelFile(model.getId(), model.getFile());
     }
 

@@ -4,12 +4,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import io.skymind.pathmind.db.jooq.Tables;
 import io.skymind.pathmind.db.jooq.tables.records.ModelRecord;
 import io.skymind.pathmind.shared.data.Model;
 import org.jooq.DSLContext;
 import org.jooq.UpdateConditionStep;
 import org.jooq.UpdateSetFirstStep;
 import org.jooq.UpdateWhereStep;
+import org.jooq.impl.DSL;
 
 import static io.skymind.pathmind.db.jooq.tables.Model.MODEL;
 import static io.skymind.pathmind.db.jooq.tables.Project.PROJECT;
@@ -30,6 +32,14 @@ class ModelRepository {
                 .where(MODEL.ID.eq(modelId))
                 .execute();
     }
+
+    private static Long getProjectForModel(DSLContext ctx, Long modelId) {
+        return ctx.select()
+                .from(Tables.MODEL)
+                .where(Tables.MODEL.ID.eq(modelId))
+                .fetchOne(MODEL.PROJECT_ID);
+    }
+
 
     protected static int getModelCount(DSLContext ctx, long projectId) {
         return ctx.selectCount()
@@ -72,7 +82,10 @@ class ModelRepository {
         mod.setExperimentClass(model.getExperimentClass());
         mod.setExperimentType(model.getExperimentType());
         mod.setActionmask(model.isActionmask());
+        mod.setDateCreated(LocalDateTime.now());
+        mod.setLastActivityDate(mod.getDateCreated());
         mod.store();
+        ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).lastActivityDate(mod.getLastActivityDate()));
         return mod.key().get(MODEL.ID);
     }
 
@@ -105,12 +118,21 @@ class ModelRepository {
                 .fetchAnyInto(Model.class);
     }
 
-    protected static void update(DSLContext ctx, ModelUpdateRequest updateRequest) {
-        UpdateSetFirstStep update =  ctx.update(MODEL);
-        updateRequest.updates.forEach((f,v) -> update.set(f, v));
-        update.set(MODEL.LAST_ACTIVITY_DATE, LocalDateTime.now());
-        UpdateConditionStep<?> command = ((UpdateWhereStep<?>)update).where(MODEL.ID.eq(updateRequest.modelId));
-        command.execute();
+    protected static void update(DSLContext dslCtx, ModelUpdateRequest updateRequest) {
+        dslCtx.transaction(conf -> {
+            DSLContext ctx = DSL.using(conf);
+            UpdateSetFirstStep update =  ctx.update(MODEL);
+            LocalDateTime activityDate = Optional.ofNullable((LocalDateTime)updateRequest.updates.get(MODEL.LAST_ACTIVITY_DATE)).orElse(LocalDateTime.now());
+            updateRequest.updates.put(MODEL.LAST_ACTIVITY_DATE, activityDate);
+            updateRequest.updates.forEach((f,v) -> update.set(f, v));
+
+            UpdateConditionStep<?> command = ((UpdateWhereStep<?>)update).where(MODEL.ID.eq(updateRequest.modelId));
+            command.execute();
+
+            Long projectId = ModelRepository.getProjectForModel(ctx, updateRequest.modelId);
+            ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).lastActivityDate(activityDate));
+        });
+
     }
 
 }
