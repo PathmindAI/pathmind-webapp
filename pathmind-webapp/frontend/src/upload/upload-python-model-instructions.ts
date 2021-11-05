@@ -90,6 +90,7 @@ class UploadPythonModelInstructions extends LitElement {
 
   envValueChanged(event) {
     this.envValue = event.target.value;
+    this.error = "";
   }
 
   firstUpdated() {
@@ -120,6 +121,7 @@ class UploadPythonModelInstructions extends LitElement {
           if (response.status !== 201) {
             response.text().then(text => {
               this.error = text;
+              this.showTextOnNextButton();
             });
             return;
           }
@@ -127,6 +129,7 @@ class UploadPythonModelInstructions extends LitElement {
         })
         .catch(error => {
           this.error = error;
+          this.showTextOnNextButton();
           console.error('Error:', error);
         });
 
@@ -146,6 +149,12 @@ class UploadPythonModelInstructions extends LitElement {
         this.setAllowNextStep();
       });
     });
+  }
+
+  showTextOnNextButton() {
+    const uploadButton = document.querySelector('#nextButton');
+    uploadButton.querySelector("span").removeAttribute("hidden");
+    uploadButton.querySelector("loading-spinner").setAttribute("hidden", "true");
   }
 
   createRenderRoot() {
