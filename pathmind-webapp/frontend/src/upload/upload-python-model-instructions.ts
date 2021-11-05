@@ -33,6 +33,9 @@ class UploadPythonModelInstructions extends LitElement {
         .upload-model-view upload-python-model-instructions vaadin-upload {
           margin-top: var(--lumo-space-s);
         }
+        upload-python-model-instructions code {
+          word-break: break-word;
+        }
       </style>
       <ol>
         <div>

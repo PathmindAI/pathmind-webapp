@@ -30,12 +30,10 @@ public class UploadPythonModelInstructions extends LitTemplate {
     @ClientCallable
     private void uploadSuccessHandler() {
         // not used right now as everything is handled in .ts
-        System.out.println("UPLOAD SUCCESS");
     }
 
     @ClientCallable
     private void uploadErrorHandler() {
         // not used right now as everything is handled in .ts
-        System.out.println("UPLOAD ERROR");
     }
 }
