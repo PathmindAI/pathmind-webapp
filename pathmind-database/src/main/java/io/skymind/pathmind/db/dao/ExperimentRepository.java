@@ -258,8 +258,12 @@ class ExperimentRepository {
         ex.setRewardFunctionFromTerms(rewardFunctionFromTerms);
         ex.setWithRewardTerms(activateRewardTermsUI);
         ex.setHasGoals(hasGoals);
+        ex.setDateCreated(LocalDateTime.now());
+        ex.setLastActivityDate(ex.getDateCreated());
         ex.store();
-        return ex.into(EXPERIMENT).into(Experiment.class);
+        Experiment experiment = ex.into(EXPERIMENT).into(Experiment.class);
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).lastActivityDate(experiment.getLastActivityDate()));
+        return experiment;
     }
 
     protected static int getExperimentCount(DSLContext ctx, long modelId) {

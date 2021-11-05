@@ -7,7 +7,6 @@ import java.util.Optional;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.data.SimulationParameter;
-import liquibase.pro.packaged.M;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
@@ -27,7 +26,7 @@ public class ModelDAO {
     }
 
     public void archive(long modelId, boolean isArchive) {
-        ModelRepository.archive(ctx, modelId, isArchive);
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).isArchived(isArchive));
     }
 
     public Optional<Model> getModel(long modelId) {

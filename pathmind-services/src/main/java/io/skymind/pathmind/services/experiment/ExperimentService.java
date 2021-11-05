@@ -2,7 +2,6 @@ package io.skymind.pathmind.services.experiment;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -36,11 +35,9 @@ import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import io.skymind.pathmind.shared.utils.ZipUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.Yaml;
 
 import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 

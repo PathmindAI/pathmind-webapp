@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.is;
 
 public class EmailApi extends PageObject {
 
-    private static String emailApiUrl = "http://api.guerrillamail.com/ajax.php";
+    private static String emailApiUrl = "https://api.guerrillamail.com/ajax.php";
 
     public String getEmail() {
 
