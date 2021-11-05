@@ -102,7 +102,7 @@ public class UploadPythonModelWizardPanel extends VerticalLayout {
     }
 
     private UploadPythonModelInstructions getInstructionsDiv() {
-        UploadPythonModelInstructions uploadModelInstructions = new UploadPythonModelInstructions(apiUrl, apiToken);
+        UploadPythonModelInstructions uploadModelInstructions = new UploadPythonModelInstructions(apiUrl, apiToken, model.getProjectId());
         return uploadModelInstructions;
     }
 
