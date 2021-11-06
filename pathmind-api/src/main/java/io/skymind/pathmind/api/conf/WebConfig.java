@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         CorsRegistration corsRegistration = registry.addMapping("/**");
         corsRegistration.allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS", "PATCH");
         corsRegistration.allowedOrigins("*");
+        corsRegistration.exposedHeaders("Location");
         // TODO: do we need cookies?  corsRegistration.allowCredentials(true);
     }
 }

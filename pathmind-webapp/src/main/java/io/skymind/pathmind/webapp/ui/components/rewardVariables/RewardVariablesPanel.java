@@ -10,14 +10,14 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import io.skymind.pathmind.shared.data.RewardVariable;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
 public class RewardVariablesPanel extends VerticalLayout {
     private HorizontalLayout formPanel = WrapperUtils.wrapWidthFullHorizontal();
     private RewardVariablesTable rewardVariablesTable;
 
-    private Button nextStepButton = UploadModelView.createNextStepButton();
+    private Button nextStepButton = FormUtils.createNextStepButton();
     private Button saveButton;
     private Button pageButton;
 

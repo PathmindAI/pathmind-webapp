@@ -87,37 +87,27 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     @Autowired
     private ProjectDAO projectDAO;
-
     @Autowired
     private ModelService modelService;
-
     @Autowired
     private ModelDAO modelDAO;
-
     @Autowired
     private RewardVariableDAO rewardVariablesDAO;
-
     @Autowired
     private ObservationDAO observationDAO;
-
     @Autowired
     private SimulationParameterDAO simulationParameterDAO;
-
     @Autowired
     private ModelFileVerifier modelFileVerifier;
-
     @Autowired
     private ProjectFileCheckService projectFileCheckService;
-
     @Autowired
     private SegmentIntegrator segmentIntegrator;
-
     @Autowired
     private ModelCheckerService modelCheckerService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSizeAsStr;
-
     @Value(("${pathhmind.model.apl.max-size}"))
     private String alpFileSizeAsStr;
 
@@ -430,12 +420,5 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     public static String createResumeUploadTarget(Project project, Model model) {
         return PathmindUtils.getResumeUploadModelPath(project.getId(), model.getId());
-    }
-
-    public static Button createNextStepButton() {
-        Button nextStepButton = new Button("Next", new Icon(VaadinIcon.CHEVRON_RIGHT));
-        nextStepButton.setIconAfterText(true);
-        nextStepButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        return nextStepButton;
     }
 }

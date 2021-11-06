@@ -35,7 +35,7 @@ class UploadModelInstructions extends LitElement {
                     <li>Upload the exported folder.</li>
                 </div>
             </ol>
-            <p ?hidden="${!this.isZip}"">*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>
+            <p ?hidden="${!this.isZip}">*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead.</p>
         `;
     }
 
