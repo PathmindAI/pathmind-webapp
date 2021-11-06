@@ -81,7 +81,7 @@ public class ModelUploadPage extends PageObject {
         WebElement instructionsElement = utils.expandRootElement(uploadAlpInstructionsShadow);
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label']")).getText(), is("Project:"));
         assertThat(getDriver().findElement(By.xpath("//*[@class='section-title-label-regular-font-weight section-subtitle-label']")).getText(), is("AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(getDriver().findElement(By.xpath("//vaadin-horizontal-layout/*[@class='no-top-margin-label']")).getText(), is("Upload alp file"));
+        assertThat(getDriver().findElements(By.xpath("//vaadin-horizontal-layout/*[@class='no-top-margin-label']")).get(1).getText(), is("Upload alp file"));
         assertThat(getDriver().findElement(By.xpath("//tag-label")).getText(), is("Optional"));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(1)")).getText(), is("Upload your model's ALP file to keep track of its version used for running experiments."));
         assertThat(instructionsElement.findElement(By.cssSelector("p:nth-child(2)")).getText(), is("Your ALP file should be in the original AnyLogic Project folder on your computer."));
@@ -107,7 +107,7 @@ public class ModelUploadPage extends PageObject {
 
     public void wizardModelUploadCheckFolderUploadPage() {
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/vaadin-horizontal-layout/span")).getText(), is("Upload Model"));
         assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\nUpload the exported folder."));
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload exported folder"));
@@ -117,7 +117,7 @@ public class ModelUploadPage extends PageObject {
 
     public void wizardModelUploadCheckArchiveUploadPage() {
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
-        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/vaadin-horizontal-layout/span")).getText(), is("Upload Model"));
         assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\n*Using the exported folder, Create a zip file that contains:\nmodel.jar\nthe \"database\" and \"cache\" folder if they exist\nany excel sheets necessary for your AnyLogic simulation\nUpload the new zip file below.\n*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead."));
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload zip file"));
