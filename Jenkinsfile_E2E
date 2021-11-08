@@ -146,6 +146,7 @@ pipeline {
         HELM_FILE = "values_dev.yaml"
         HELM_FILE_UPDATER = "values_dev-updater.yaml"
         HELM_FILE_PUNCTUATOR = "values_dev-punctuator.yaml"
+        HELM_FILE_POLICY = "values_dev.yaml"
         DEPLOY_PROD = false
     }
 
@@ -256,7 +257,7 @@ pipeline {
                     echo "Installing punctuator ${RELEASE_ID}"
                     sh "helm upgrade --install ${RELEASE_ID}-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE_PUNCTUATOR} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.JOB_MOCK_MAX_MIN=5 --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue -n ${env.BUILD_NUMBER}"
 
-                    sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_dev.yaml --set env.SQS_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-policy-server --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
+                    sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE_POLICY} --set env.SQS_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-policy-server --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
 
 
                     sh "sleep 30"
