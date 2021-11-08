@@ -58,10 +58,12 @@ class ConfirmPopup extends LitElement {
                 box-shadow: 0 3px 5px var(--lumo-shade-10pct);
             }
             h3 {
-                margin: 0;
+              margin: 0;
+              word-break: break-word;
             }
             .message {
-                margin: var(--lumo-space-l) 0;
+              margin: var(--lumo-space-l) 0;
+              word-break: break-word;
             }
             .buttons-wrapper {
                 display: flex;
