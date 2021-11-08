@@ -2,7 +2,6 @@ package io.skymind.pathmind.services.experiment;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -36,11 +35,9 @@ import io.skymind.pathmind.shared.utils.SimulationParameterUtils;
 import io.skymind.pathmind.shared.utils.ZipUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.Yaml;
 
 import static io.skymind.pathmind.shared.utils.ZipUtils.entryContentExtractor;
 
@@ -68,24 +65,23 @@ public class ExperimentService {
     public Experiment createExperimentFromModelBytes(ModelBytes modelBytes, Supplier<Project> projectSupplier) throws Exception {
         return createExperimentFromModelBytes(
                 modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, AnalyzeRequestDTO.ModelType.ANY_LOGIC,
-                null, null, null, null, false, false
+                null, null, null, false
         );
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type,
-            String environment, Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
+            String environment, String obsSelection, String rewFctName,
+            boolean deployPolicyServerOnSuccess
     ) throws Exception {
         return createExperimentFromModelBytes(modelBytes, new NoOpStatusUpdaterImpl(), projectSupplier, type, environment,
-                isPathmindSimulation, obsSelection, rewFctName, deployPolicyServerOnSuccess, isMultiAgent);
+                obsSelection, rewFctName, deployPolicyServerOnSuccess);
     }
 
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
             Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type, String environment,
-            Boolean isPathmindSimulation, String obsSelection, String rewFctName,
-            boolean deployPolicyServerOnSuccess, boolean isMultiAgent
+            String obsSelection, String rewFctName,boolean deployPolicyServerOnSuccess
     ) throws Exception {
         Model model = new Model();
 
@@ -141,9 +137,15 @@ public class ExperimentService {
                 String reqId = "project_" + model.getProjectId();
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
+                HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
+                if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
+                    throw new ModelCheckException(analysisResult.getFailedSteps());
+                }
+                ModelType modelType = ModelType.fromName(analysisResult.getMode());
+                model.setModelType(modelType.getValue());
+
                 final List<Observation> obss = new ArrayList<>();
-                if (isPathmindSimulation) {
-                    model.setModelType(isMultiAgent ? ModelType.PM_MULTI.getValue() : ModelType.PM_SINGLE.getValue());
+                if (ModelType.isPathmindModel(modelType)) {
                     try {
                         byte[] obsYaml = ZipUtils.processZipEntryInFile(
                                 modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
@@ -155,12 +157,6 @@ public class ExperimentService {
                         obss.clear();
                         log.error("Failed to extract observations for PM Model", e);
                     }
-                } else {
-                    HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
-                    if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
-                        throw new ModelCheckException(analysisResult.getFailedSteps());
-                    }
-                    model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
                 }
                 model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
 

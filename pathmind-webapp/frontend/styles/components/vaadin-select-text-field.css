@@ -60,6 +60,14 @@
     background-color: var(--pm-grey-color-lightest);
 }
 
+:host([theme~="split-button"])::before {
+  height: 30px;
+  width: 1px;
+  background-color: var(--pm-grey-color-lighter);
+  border-top: 4px solid var(--lumo-primary-color);
+  border-bottom: 4px solid var(--lumo-primary-color);
+}
+
 :host([theme~="split-button"]) [part="input-field"] ::slotted([part="value"]) {
     display: none;
 }
@@ -74,12 +82,11 @@
 }
 
 :host([theme~="split-button"]) [part="input-field"] {
-    height: 1.8rem;
-    background: var(--lumo-primary-color);
-    border: none;
-    border-left: 1px solid var(--pm-grey-color-light);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+  height: 30px;
+  background: var(--lumo-primary-color);
+  border: none;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 :host([theme~="action-dropdown"]) [part~="value"],

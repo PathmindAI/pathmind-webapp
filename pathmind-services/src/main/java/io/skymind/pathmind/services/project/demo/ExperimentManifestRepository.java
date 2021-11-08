@@ -18,11 +18,13 @@ public class ExperimentManifestRepository {
                         .modelUrl(URI.create("https://s3.amazonaws.com/public-pathmind.com/preloaded_models/AGVPathmindDemoExport.zip"))
                         .rewardFunction(
                                 //@formatter:off
-                                "reward += after.totalThroughput * 0.01;\n" +
-                                "reward += ( after.machineUtil - before.machineUtil ) * 100;\n" +
-                                "reward += after.essentialDelivery - before.essentialDelivery;\n" +
-                                "reward -= after.fullConveyor - before.fullConveyor;\n" +
-                                "reward += ( after.trips - before.trips ) * 0.01;\n"
+                                "reward += after.totalThroughput * 0.01; \n" +
+                                "reward += ( after.machineUtil - before.machineUtil ) * 100; \n" +
+                                "reward += (after.essentialDelivery - before.essentialDelivery) / 60 * 0.5; \n" +
+                                "reward -= (after.fullQueue - before.fullQueue); \n" +
+                                "reward -= after.fullConveyor - before.fullConveyor; \n" +
+                                "reward -= (after.emptyOrigins - before.emptyOrigins); \n" +
+                                "reward -= (after.tripDuration) / 140;"
                                 //@formatter:on
                         )
                         .tutorialUrl(URI.create("https://help.pathmind.com/en/articles/4694248-automated-guided-vehicle-agv"))

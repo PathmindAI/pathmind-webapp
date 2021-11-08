@@ -91,4 +91,8 @@ public class ProjectsPage extends PageObject {
     public void projectsPageCheckProjectModelsNumber(String projectName, String modelsNumber) {
         assertThat(getDriver().findElement(By.xpath("//span[text()='" + projectName + "']/ancestor::vaadin-grid-cell-content/following-sibling::vaadin-grid-cell-content[1]")).getText(), is(modelsNumber));
     }
+
+    public void openFirstProjectContainsOnProjectsPage(String project) {
+        getDriver().findElement(By.xpath("//span[contains(text(),'" + project + "')]/ancestor::vaadin-grid-cell-content")).click();
+    }
 }

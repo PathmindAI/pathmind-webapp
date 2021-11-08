@@ -25,6 +25,10 @@ public class ModelUpdateRequest {
         return this;
     }
 
+    public ModelUpdateRequest isArchived(Boolean isArchived) {
+        updates.put(MODEL.ARCHIVED, isArchived);
+        return this;
+    }
 
     public ModelUpdateRequest userNotes(String userNotes) {
         updates.put(MODEL.USER_NOTES, userNotes);
@@ -44,6 +48,11 @@ public class ModelUpdateRequest {
     public ModelUpdateRequest projectId(long projectId) {
         updates.put(MODEL.PROJECT_ID, projectId);
         updates.put(MODEL.PROJECT_CHANGED_AT, LocalDateTime.now());
+        return this;
+    }
+
+    public ModelUpdateRequest lastActivityDate(LocalDateTime lastActivityDate) {
+        updates.put(MODEL.LAST_ACTIVITY_DATE, lastActivityDate);
         return this;
     }
 

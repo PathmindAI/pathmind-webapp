@@ -3,14 +3,18 @@ package io.skymind.pathmind.webapp.ui.views.project.components.navbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
+import io.skymind.pathmind.webapp.ui.views.project.components.navbar.subscribers.NavBarModelArchivedSubscriber;
 
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.reverseOrder;
@@ -71,7 +75,6 @@ public class ModelsNavbar extends VerticalLayout {
         } else {
             categorySelect.setValue(activeLabel);
         }
-        projectView.setModelArchiveLabelVisible();
     }
 
     private void addModelsToNavbar() {
@@ -94,6 +97,17 @@ public class ModelsNavbar extends VerticalLayout {
         return new ModelsNavbarItem(this, projectView, modelDAO, model, segmentIntegrator);
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        EventBus.subscribe(this, projectView.getUISupplier(), 
+                new NavBarModelArchivedSubscriber(this));
+    }
+
+    @Override
+    protected void onDetach(DetachEvent detachEvent) {
+        EventBus.unsubscribe(this);
+    }
+
     public void setCurrentModel(Model newCurrentModel) {
         selectedModel = newCurrentModel;
 
@@ -106,6 +120,17 @@ public class ModelsNavbar extends VerticalLayout {
             .filter(item -> item.getItemModel().equals(selectedModel))
             .findFirst()
             .ifPresent(item -> item.setAsCurrent());
+    }
+
+    public void setModelIsArchived(Model model, Boolean isArchived) {
+        modelsNavbarItems.stream()
+            .filter(item -> item.getItemModel().getId() == model.getId())
+            .findFirst()
+            .ifPresent(item -> item.setIsArchived(isArchived));
+    }
+
+    public long getProjectId() {
+        return projectView.getProjectId();
     }
 
 }

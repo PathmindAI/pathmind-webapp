@@ -87,13 +87,11 @@ public class ModelUploadController {
     @PostMapping("/py/upload")
     public ResponseEntity<?> handlePYFileUpload(@RequestParam("file") MultipartFile file,
                                                 @RequestParam("env") String environment,
-                                                @RequestParam(value = "isPathmindSimulation", required = false, defaultValue = "false") Boolean isPathmindSimulation,
                                                 @RequestParam(value = "obsSelection", required = false) String obsSelection,
                                                 @RequestParam(value = "rewFctName", required = false) String rewFctName,
                                                 @RequestParam(value = "projectId", required = false) Long projectId,
                                                 @RequestParam(value = "start", required = false) boolean startOnUpload,
                                                 @RequestParam(value = "deploy", required = false) boolean deployOnSuccess,
-                                                @RequestParam(value = "multiAgent", required = false) boolean isMultiAgent,
                                                 @AuthenticationPrincipal PathmindApiUser pmUser) {
         return handleFileUpload(
                 UploadRequest.builder()
@@ -102,12 +100,10 @@ public class ModelUploadController {
                         .pmUser(pmUser)
                         .type(AnalyzeRequestDTO.ModelType.PYTHON)
                         .environment(environment)
-                        .isPathmindSimulation(isPathmindSimulation)
                         .obsSelection(obsSelection)
                         .rewFctName(rewFctName)
                         .startOnUpload(startOnUpload)
                         .startOnUpload(deployOnSuccess)
-                        .isMultiAgent(isMultiAgent)
                         .build()
         );
     }
@@ -152,20 +148,23 @@ public class ModelUploadController {
                         projectSupplier,
                         request.getType(),
                         request.getEnvironment(),
-                        request.getIsPathmindSimulation(),
                         request.getObsSelection(),
                         request.getRewFctName(),
-                        request.isDeployOnSuccess(),
-                        request.isMultiAgent()
+                        request.isDeployOnSuccess()
                 );
 
             Long experimentId = experiment.getId();
             log.info("created experiment {}", experimentId);
-            URI experimentUri = builder
-                .path("editGoals").path("/{modelId}")
-                .queryParam("experiment", experimentId)
-                .buildAndExpand(Map.of("modelId", experiment.getModelId()))
-                .toUri();
+            URI experimentUri = request.getType() == AnalyzeRequestDTO.ModelType.ANY_LOGIC ?
+                    builder
+                            .path("editGoals").path("/{modelId}")
+                            .queryParam("experiment", experimentId)
+                            .buildAndExpand(Map.of("modelId", experiment.getModelId()))
+                            .toUri()
+                    :
+                    builder.path("newExperiment/{experimentId}")
+                            .buildAndExpand(Map.of("experimentId", experimentId))
+                            .toUri();
 
             if (request.isStartOnUpload()) {
                 trainingService.startRunAsync(experiment); // todo: should we do it synced. may request time out while running?
@@ -176,7 +175,7 @@ public class ModelUploadController {
             log.error("failed to get file from {}", request, e);
             builder.path("uploadModelError");
             if (e instanceof ModelCheckException) {
-                builder.path("/"+StringUtils.trimToEmpty(e.getMessage()));
+                builder.path("/" + StringUtils.trimToEmpty(e.getMessage()));
             }
             String errorMessage = StringUtils.trimToEmpty(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).header(HttpHeaders.LOCATION, builder.toUriString()).body(errorMessage);
@@ -190,14 +189,12 @@ public class ModelUploadController {
         private final MultipartFile file;
         private final String environment;
         private final AnalyzeRequestDTO.ModelType type;
-        private final Boolean isPathmindSimulation;
         private final String obsSelection;
         private final String rewFctName;
         private final Long projectId;
         private final boolean startOnUpload;
         private final boolean deployOnSuccess;
         private final PathmindApiUser pmUser;
-        private final boolean isMultiAgent;
     }
 
 }

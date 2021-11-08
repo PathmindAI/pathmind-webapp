@@ -76,7 +76,8 @@ Feature: Project page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Archived'
     Then Check project page model '1' package name is coffeeshop
     When Change models sidebar list to 'Active'
@@ -87,12 +88,14 @@ Feature: Project page
     When Create new CoffeeShop project with draft experiment
     When Open projects page
     When Open project AutotestProject on projects page
-    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Active'
     When Check project page model '1' not exist in the sidebar list
     When Change models sidebar list to 'Archived'
     Then Check project page model '1' package name is coffeeshop
-    When Click archive/unarchive btn model '1' with package name 'coffeeshop' from left sidebar
+    When Click project page archive model btn
+    When Click pop-up dialog id 'confirm'
     When Change models sidebar list to 'Archived'
     When Check project page model '1' not exist in the sidebar list
     When Change models sidebar list to 'Active'

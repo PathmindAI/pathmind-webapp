@@ -7,9 +7,8 @@ import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
 public class SimulationRewardVariableSelectedAction {
 
     public static void selectRewardVariable(RewardVariable rewardVariable, RewardVariablesRowField rewardVariablesRowField, ExperimentView experimentView) {
-        if (rewardVariablesRowField.isSelected() && canDeselect(experimentView)) {
-            toggleRow(rewardVariable, experimentView);
-        } else if (!rewardVariablesRowField.isSelected() && canSelect(experimentView)){
+        if ((rewardVariablesRowField.isSelected() && canDeselect(experimentView)) ||
+            (!rewardVariablesRowField.isSelected() && canSelect(experimentView))) {
             toggleRow(rewardVariable, experimentView);
         }
     }

@@ -99,4 +99,9 @@ public class ProjectPageStepDefinition {
     public void checkProjectPageDropdown(String dropdown, String value) {
         projectPageSteps.checkProjectPageDropdown(dropdown, value);
     }
+
+    @When("^Click project page archive model btn$")
+    public void clickProjectPageArchiveModelBtn() {
+        projectPageSteps.clickProjectPageArchiveModelBtn();
+    }
 }

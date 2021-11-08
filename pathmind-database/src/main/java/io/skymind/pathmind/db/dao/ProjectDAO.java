@@ -18,11 +18,6 @@ public class ProjectDAO {
         this.ctx = ctx;
     }
 
-    /**
-     * Returns the projectId
-     *
-     * @return The projectId
-     */
     public long createNewProject(Project project) {
         return ctx.transactionResult(configuration ->
         {
@@ -30,22 +25,6 @@ public class ProjectDAO {
             LocalDateTime dateCreated = LocalDateTime.now();
             return ProjectRepository.insertProject(transactionCtx, project, dateCreated);
         });
-    }
-
-    public void archive(long projectId, boolean isArchive) {
-        ProjectRepository.archive(ctx, projectId, isArchive);
-    }
-
-    public void updateProjectName(long projectId, String projectName) {
-        ProjectRepository.updateProjectName(ctx, projectId, projectName);
-    }
-
-    public void updateUserNotes(long projectId, String userNotes) {
-        ProjectRepository.updateUserNotes(ctx, projectId, userNotes);
-    }
-
-    public List<Project> getProjectsForUser(long userId) {
-        return ProjectRepository.getProjectsForUser(ctx, userId);
     }
 
     public List<Project> getFilteredProjectsForUser(long userId, boolean isArchived, int offset, int limit, List<GridSortOrder> sortOrders) {
@@ -60,6 +39,10 @@ public class ProjectDAO {
                     isDesc);
     }
 
+    public List<Project> getProjectsForUser(long userId) {
+        return ProjectRepository.getProjectsForUser(ctx, userId);
+    }
+
     public Optional<Project> getProjectIfAllowed(long projectId, long userId) {
         return ProjectRepository.getProjectIfAllowed(ctx, projectId, userId);
     }
@@ -70,6 +53,22 @@ public class ProjectDAO {
 
     public int countProjects(long userId) {
         return ProjectRepository.getProjectCount(ctx, userId);
+    }
+
+    public void archive(long projectId, boolean isArchive) {
+        ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).isArchived(isArchive));
+    }
+
+    public void updateProjectName(long projectId, String projectName) {
+        ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).name(projectName));
+    }
+
+    public void updateUserNotes(long projectId, String userNotes) {
+        ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).userNotes(userNotes));
+    }
+
+    public void updateLastActivityDate(long projectId, LocalDateTime activityDate) {
+        ProjectRepository.update(ctx, new ProjectUpdateRequest(projectId).lastActivityDate(activityDate));
     }
 
 }

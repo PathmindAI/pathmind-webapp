@@ -16,9 +16,9 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.ui.binders.ModelBinders;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
+import io.skymind.pathmind.webapp.ui.utils.FormUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
@@ -33,7 +33,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout {
         setupFields();
         setupForm();
         setupNotesFieldTextArea();
-        nextStepButton = UploadModelView.createNextStepButton();
+        nextStepButton = FormUtils.createNextStepButton();
 
         HorizontalLayout modelDetailsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL));

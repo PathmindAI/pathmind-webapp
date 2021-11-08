@@ -258,8 +258,12 @@ class ExperimentRepository {
         ex.setRewardFunctionFromTerms(rewardFunctionFromTerms);
         ex.setWithRewardTerms(activateRewardTermsUI);
         ex.setHasGoals(hasGoals);
+        ex.setDateCreated(LocalDateTime.now());
+        ex.setLastActivityDate(ex.getDateCreated());
         ex.store();
-        return ex.into(EXPERIMENT).into(Experiment.class);
+        Experiment experiment = ex.into(EXPERIMENT).into(Experiment.class);
+        ModelRepository.update(ctx, new ModelUpdateRequest(modelId).lastActivityDate(experiment.getLastActivityDate()));
+        return experiment;
     }
 
     protected static int getExperimentCount(DSLContext ctx, long modelId) {
@@ -276,13 +280,6 @@ class ExperimentRepository {
                 .orderBy(EXPERIMENT.ID.desc())
                 .limit(1)
                 .fetchAnyInto(Experiment.class);
-    }
-
-    protected static void updateLastActivityDate(DSLContext ctx, long experimentId) {
-        ctx.update(Tables.EXPERIMENT)
-                .set(Tables.EXPERIMENT.LAST_ACTIVITY_DATE, LocalDateTime.now())
-                .where(Tables.EXPERIMENT.ID.eq(experimentId))
-                .execute();
     }
 
     protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {

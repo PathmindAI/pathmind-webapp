@@ -63,4 +63,9 @@ public class ProjectsPageStepDefinitions {
     public void projectsPageCheckProjectModelsNumber(String projectName, String modelsNumber) {
         projectsPageSteps.projectsPageCheckProjectModelsNumber(projectName + Serenity.sessionVariableCalled("randomNumber"), modelsNumber);
     }
+
+    @When("^Open first project contains '(.*)' on projects page$")
+    public void openFirstProjectContainsOnProjectsPage(String project) {
+        projectsPageSteps.openFirstProjectContainsOnProjectsPage(project);
+    }
 }

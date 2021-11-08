@@ -12,15 +12,27 @@ public class ToggleButton extends LitTemplate {
 
     private Command toggleCallback = () -> {};
 
+    public ToggleButton(String trueText, String falseText) {
+        this(trueText, falseText, () -> {});
+    }
+
     public ToggleButton(String trueText, String falseText, Command callback) {
         super();
-        this.toggleCallback = callback;
         getElement().setProperty("trueText", trueText);
         getElement().setProperty("falseText", falseText);
+        setToggleCallback(callback);
     }
 
     public void setToggleButtonState(boolean state) {
         getElement().setProperty("state", state);
+    }
+
+    public boolean getToggleButtonState() {
+        return Boolean.parseBoolean(getElement().getProperty("state"));
+    }
+
+    public void setToggleCallback(Command callback) {
+        this.toggleCallback = callback;
     }
 
     @ClientCallable

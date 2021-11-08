@@ -150,9 +150,9 @@ public class PolicyChart extends DataChart {
         String hAxisTitle = "Iteration";
         String vAxisTitle = "Mean Reward Score over All Episodes";
         Boolean curveLines = true;
-        String seriesType = null;
-        Boolean stacked = null;
-        JsonObject viewWindow = null;
+        String seriesType = "";
+        Boolean stacked = false;
+        JsonObject viewWindow = Json.createObject();
 
         setupChart(
                 type,
@@ -165,7 +165,7 @@ public class PolicyChart extends DataChart {
                 stacked,
                 viewWindow
         );
-        getModel().setDimlines(true);
+        getElement().setProperty("dimlines", true);
         if (showEmptyChart) {
             setChartEmpty();
         } else {
