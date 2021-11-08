@@ -236,6 +236,8 @@ pipeline {
                     sh "aws sqs set-queue-attributes --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue --attributes file:///tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "rm /tmp/${env.BUILD_NUMBER}-sqs_policy.json"
                     sh "aws sns subscribe --topic-arn arn:aws:sns:us-east-1:839270835622:dev-updater-topic --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue --attributes \"{\\\"RawMessageDelivery\\\":\\\"true\\\"}\""
+                    echo "Creating poilicy deployer resources"
+                    sh "aws sqs create-queue --queue-name ${env.BUILD_ID}-policy-server --attributes \"{\\\"MessageRetentionPeriod\\\":\\\"60\\\"}\""
                     
                     echo "Creating punctuator resources"
                     sh "aws sqs create-queue --queue-name ${env.BUILD_ID}-punctuator-queue --attributes \"{\\\"MessageRetentionPeriod\\\":\\\"60\\\"}\""
@@ -246,13 +248,17 @@ pipeline {
                 runMigrations()
                 script {
                     echo "Installing ${RELEASE_ID}"
-                    sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
+                    sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest --set env.SQS_POLICY_SERVER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-policy-server -n ${env.BUILD_NUMBER}"
                     echo "Waiting for webapp to come up"
                     sh "timeout 300 bash -c 'while ! curl http://${RELEASE_ID}; do sleep 5; done'"
                     echo "Installing updater ${RELEASE_ID}"
                     sh "helm upgrade --install ${RELEASE_ID}-updater ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE_UPDATER} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.JOB_MOCK_MAX_MIN=5 --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
                     echo "Installing punctuator ${RELEASE_ID}"
                     sh "helm upgrade --install ${RELEASE_ID}-punctuator ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE_PUNCTUATOR} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.JOB_MOCK_MAX_MIN=5 --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue -n ${env.BUILD_NUMBER}"
+
+                    sh "helm upgrade --install policy-deployer ${WORKSPACE}/infra/helm/policy-deployer -f ${WORKSPACE}/infra/helm/policy-deployer/values_dev.yaml --set env.SQS_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-policy-server --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
+
+
                     sh "sleep 30"
 
                 }
@@ -315,9 +321,11 @@ pipeline {
             sh "helm delete selenium-hub -n ${env.BUILD_NUMBER} || true"
             sh "helm delete selenium-node -n ${env.BUILD_NUMBER} || true"
             sh "helm delete ${RELEASE_ID}-punctuator -n ${env.BUILD_NUMBER} || true"
+            sh "helm delete policy-deployer -n ${env.BUILD_NUMBER} || true"
             sh "kubectl delete namespace ${env.BUILD_NUMBER} || true"
             sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-punctuator-queue || true"
             sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-updater-queue || true"
+            sh "aws sqs delete-queue --queue-url https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_NUMBER}-policy-deployer || true"
             sh "aws sns unsubscribe --subscription-arn `aws sns list-subscriptions | jq -r \".[] | .[] |  select(.Endpoint ==\\\"arn:aws:sqs:us-east-1:839270835622:${env.BUILD_ID}-updater-queue\\\").SubscriptionArn\"` || true"
             sh "/usr/bin/clean_test_s3.sh ${env.BUILD_NUMBER} || true"
         }
