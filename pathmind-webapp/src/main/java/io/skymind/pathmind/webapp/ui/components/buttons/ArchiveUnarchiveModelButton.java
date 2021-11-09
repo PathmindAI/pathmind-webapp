@@ -69,6 +69,8 @@ public class ArchiveUnarchiveModelButton extends Button {
     public void setModel(Model model) {
         this.model = model;
         this.modelId = model.getId();
+        setButtonIcon();
+        setButtonText();
     }
 
 }
