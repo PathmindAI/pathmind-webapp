@@ -28,7 +28,7 @@
     width: auto;
 }
 
-.project-view .section-title-label + vaadin-button {
+.project-view .section-title-label ~ vaadin-button {
     min-width: var(--lumo-button-size);
     height: 1.4rem;
     line-height: calc(1.4rem - 2px);
