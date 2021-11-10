@@ -4,15 +4,14 @@ import io.skymind.pathmind.bddtests.Utils;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.pages.PageObject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.Matchers.*;
 
 public class ModelUploadPage extends PageObject {
 
@@ -108,6 +107,7 @@ public class ModelUploadPage extends PageObject {
     public void wizardModelUploadCheckFolderUploadPage() {
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/vaadin-horizontal-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElements(By.xpath("//toggle-button")).size(), is(not(0)));
         assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\nUpload the exported folder."));
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload exported folder"));
@@ -118,10 +118,37 @@ public class ModelUploadPage extends PageObject {
     public void wizardModelUploadCheckArchiveUploadPage() {
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
         assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/parent::vaadin-horizontal-layout/following-sibling::vaadin-vertical-layout/vaadin-horizontal-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElements(By.xpath("//toggle-button")).size(), is(not(0)));
         assertThat(getDriver().findElement(By.xpath("//upload-model-instructions")).getText(), is("Export your model as a standalone Java application.\n*Using the exported folder, Create a zip file that contains:\nmodel.jar\nthe \"database\" and \"cache\" folder if they exist\nany excel sheets necessary for your AnyLogic simulation\nUpload the new zip file below.\n*Note: If your AnyLogic simulation is composed of multiple .alp files, please upload the exported folder instead."));
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Upload zip file"));
         waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@theme='tertiary']")));
         assertThat(getDriver().findElement(By.xpath("//vaadin-button[@theme='tertiary']")).getText(), is("Upload Folder"));
+    }
+
+    public void wizardModelUploadSwitchModelTypeTo() {
+        getDriver().findElement(By.xpath("//toggle-button")).click();
+    }
+
+    public void wizardModelUploadCheckPythonArchiveUploadPage() {
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']")).getText(), is("Project: AutotestProject" + Serenity.sessionVariableCalled("randomNumber")));
+        assertThat(getDriver().findElement(By.xpath("//div[@class='project-title-label']/following-sibling::vaadin-vertical-layout/vaadin-horizontal-layout/span")).getText(), is("Upload Model"));
+        assertThat(getDriver().findElements(By.xpath("//toggle-button")).size(), is(not(0)));
+        assertThat(getDriver().findElement(By.xpath("//upload-python-model-instructions")).getText(), is("Create a zip file that contains:\nyour .py model files\nrequirements.txt that contains a list of the extra Python packages\nEnter the environment in the text field below. The first few parts of the name is the file structure, followed by the function name in the .py file.\nFor example, simulation.zip/examples/mouse/mouse_env_pathmind.py with the function MouseAndCheese has an env name of examples.mouse.mouse_env_pathmind.MouseAndCheese\nUpload the new zip file below.\nenv\nAdd zip file\nNext"));
+        waitFor(ExpectedConditions.visibilityOfElementLocated(By.xpath("//vaadin-button[@slot='add-button']")));
+        assertThat(getDriver().findElement(By.id("env")).getAttribute("placeholder"), is("examples.mouse.mouse_env_pathmind.MouseAndCheese"));
+        assertThat(getDriver().findElement(By.xpath("//vaadin-button[@slot='add-button']")).getText(), is("Add zip file"));
+        assertThat(getDriver().findElement(By.id("nextButton")).getText(), is("Next"));
+    }
+
+    public void wizardModelUploadInputEnv(String env) {
+        WebElement envShadow = utils.expandRootElement(getDriver().findElement(By.id("env")));
+        envShadow.findElement(By.cssSelector("input")).sendKeys(env);
+        getDriver().findElement(By.cssSelector(".project-title-label")).click();
+    }
+
+    public void clickPythonUploadModelNextBtn() {
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].scrollIntoView(true);", getDriver().findElement(By.xpath("//*[@id='nextButton' and not(@aria-disabled='true')]")));
+        getDriver().findElement(By.xpath("//*[@id='nextButton' and not(@aria-disabled='true')]")).click();
     }
 }

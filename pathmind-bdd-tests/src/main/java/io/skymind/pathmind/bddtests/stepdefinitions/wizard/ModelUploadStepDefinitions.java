@@ -67,4 +67,24 @@ public class ModelUploadStepDefinitions {
     public void wizardModelUploadCheckArchiveUploadPage() {
         modelUploadSteps.wizardModelUploadCheckArchiveUploadPage();
     }
+
+    @When("^Wizard model upload click model type switch$")
+    public void wizardModelUploadSwitchModelTypeTo() {
+        modelUploadSteps.wizardModelUploadSwitchModelTypeTo();
+    }
+
+    @When("^Wizard model upload check python archive upload page$")
+    public void wizardModelUploadCheckPythonArchiveUploadPage() {
+        modelUploadSteps.wizardModelUploadCheckPythonArchiveUploadPage();
+    }
+
+    @When("^Wizard model upload input env '(.*)'$")
+    public void wizardModelUploadInputEnv(String env) {
+        modelUploadSteps.wizardModelUploadInputEnv(env);
+    }
+
+    @When("^Click python upload model next btn$")
+    public void clickPythonUploadModelNextBtn() {
+        modelUploadSteps.clickPythonUploadModelNextBtn();
+    }
 }

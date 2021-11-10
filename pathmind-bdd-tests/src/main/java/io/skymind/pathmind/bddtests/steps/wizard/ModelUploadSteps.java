@@ -61,4 +61,24 @@ public class ModelUploadSteps {
     public void wizardModelUploadCheckArchiveUploadPage() {
         modelUploadPage.wizardModelUploadCheckArchiveUploadPage();
     }
+
+    @Step
+    public void wizardModelUploadSwitchModelTypeTo() {
+        modelUploadPage.wizardModelUploadSwitchModelTypeTo();
+    }
+
+    @Step
+    public void wizardModelUploadCheckPythonArchiveUploadPage() {
+        modelUploadPage.wizardModelUploadCheckPythonArchiveUploadPage();
+    }
+
+    @Step
+    public void wizardModelUploadInputEnv(String env) {
+        modelUploadPage.wizardModelUploadInputEnv(env);
+    }
+
+    @Step
+    public void clickPythonUploadModelNextBtn() {
+        modelUploadPage.clickPythonUploadModelNextBtn();
+    }
 }
