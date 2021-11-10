@@ -68,11 +68,11 @@ public class AWSTrainingService extends TrainingService {
 
         String packageName = model.getPackageName();
         String[] split = packageName.split(";");
-        String objSelection = null;
+        String obsSelection = null;
         String rewFctName = null;
         if (split.length == 3) {
             packageName = split[0];
-            objSelection = !split[1].equals("null") ? split[1] : null;
+            obsSelection = !split[1].equals("null") ? split[1] : null;
             rewFctName = !split[2].equals("null") ? split[2] : null;
         }
 
@@ -136,7 +136,7 @@ public class AWSTrainingService extends TrainingService {
                 .expClassType(StringUtils.defaultString(model.getExperimentType()))
                 // doesn't need to pass package name for AL model, only need for PY model
                 .environment(packageName)
-                .obsSelection(objSelection)
+                .obsSelection(obsSelection)
                 .rewFctName(rewFctName)
                 .actionMask(model.isActionmask());
 
