@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import io.skymind.pathmind.db.dao.ExperimentDAO;
 import io.skymind.pathmind.db.dao.ModelDAO;
@@ -85,6 +86,8 @@ public class ExperimentService {
     ) throws Exception {
         Model model = new Model();
 
+        final List<Observation> obssFromYaml = new ArrayList<>();
+
         switch (type) {
             case ANY_LOGIC: {
                 byte[] bytes = modelFileVerifier.assureModelBytes(modelBytes).getBytes();
@@ -141,20 +144,54 @@ public class ExperimentService {
                 if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
                     throw new ModelCheckException(analysisResult.getFailedSteps());
                 }
+
+                List<RewardVariable> rewardVariables = new ArrayList<>();
+                List<Observation> observationList = new ArrayList<>();
+
+                Hyperparams alResult = Hyperparams.builder()
+                        .numAction(Integer.parseInt(analysisResult.getActions()))
+                        .numObservation(Integer.parseInt(analysisResult.getObservations()))
+                        .rewardVariableFunction(analysisResult.getRewardFunction())
+                        .rewardVariableNames(analysisResult.getRewardVariableNames())
+                        .rewardVariableTypes(analysisResult.getRewardVariableTypes())
+                        .observationNames(analysisResult.getObservationNames())
+                        .observationTypes(analysisResult.getObservationTypes())
+                        .modelType(analysisResult.getMode())
+                        .actionMask(analysisResult.isActionMask())
+                        .simulationParams(analysisResult.getAgentParams())
+                        .numberOfAgents(Integer.parseInt(analysisResult.getAgents())).build();
+
+                // this is for policy server to support action masking model
+                Observation actionMasking = null;
+                if (alResult.isActionMask()) {
+                    actionMasking = new Observation();
+                    actionMasking.setVariable(Observation.ACTION_MASKING);
+                    actionMasking.setDataTypeEnum(ObservationDataType.BOOLEAN_ARRAY);
+                    actionMasking.setArrayIndex(0);
+                    actionMasking.setMaxItems(alResult.getNumAction());
+                }
+
+                rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
+                observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes(), actionMasking);
+
                 ModelType modelType = ModelType.fromName(analysisResult.getMode());
                 model.setModelType(modelType.getValue());
+                model.setNumberOfObservations(alResult.getNumObservation());
+                model.setRewardVariablesCount(rewardVariables.size());
+                model.setNumberOfAgents(alResult.getNumberOfAgents());
+                model.setActionmask(alResult.isActionMask());
 
-                final List<Observation> obss = new ArrayList<>();
+
                 if (ModelType.isPathmindModel(modelType)) {
                     try {
                         byte[] obsYaml = ZipUtils.processZipEntryInFile(
                                 modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
                                 entryContentExtractor()
                         );
-                        obss.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
-                        model.setNumberOfObservations(obss.size());
+                        obssFromYaml.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
+//                        model.setNumberOfObservations(obss.size());
                     } catch (Exception e) {
-                        obss.clear();
+                        obssFromYaml.clear();
                         log.error("Failed to extract observations for PM Model", e);
                     }
                 }
@@ -162,9 +199,12 @@ public class ExperimentService {
 
                 modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
                 log.info("created model {}", model.getId());
-                if (obss.size() > 0) {
-                    observationDAO.updateModelObservations(model.getId(), obss);
-                }
+                RewardVariablesUtils.copyGoalsFromPreviousModel(rewardVariableDAO, modelDAO, model.getProjectId(), model.getId(), rewardVariables);
+                rewardVariableDAO.updateModelAndRewardVariables(model, rewardVariables);
+                observationDAO.updateModelObservations(model.getId(), observationList);
+
+//                List<SimulationParameter> simulationParameterList = SimulationParameterUtils.makeValidSimulationParameter(model.getId(), null, alResult.getSimulationParams());
+//                simulationParameterDAO.insertSimulationParameters(simulationParameterList);
                 break;
             }
             default: {
@@ -177,6 +217,15 @@ public class ExperimentService {
             experimentDAO.setDeployPolicyOnSuccess(experiment.getId(), true);
             experiment.setDeployPolicyOnSuccess(true);
         }
+
+        if (obssFromYaml.size() > 0) {
+            List<Observation> modelObservation = observationDAO.getObservationsForModel(model.getId());
+            List<String> selectedObsNames = obssFromYaml.stream().map(Observation::getVariable).collect(Collectors.toList());
+            List<Observation> selectedObss = modelObservation.stream().filter(o -> selectedObsNames.contains(o.getVariable())).collect(Collectors.toList());
+            experiment.setSelectedObservations(selectedObss);
+        }
+
+        experimentDAO.saveExperiment(experiment);
         return experiment;
     }
 

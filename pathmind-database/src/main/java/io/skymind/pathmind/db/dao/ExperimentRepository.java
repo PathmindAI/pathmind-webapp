@@ -284,7 +284,7 @@ class ExperimentRepository {
 
     protected static void updateUserNotes(DSLContext ctx, long experimentId, String userNotes) {
         ctx.update(EXPERIMENT)
-                .set(EXPERIMENT.USER_NOTES, userNotes)
+                .set(EXPERIMENT.USER_NOTES, userNotes == null ? "" : userNotes)
                 .where(EXPERIMENT.ID.eq(experimentId))
                 .execute();
     }
