@@ -23,6 +23,12 @@ import static io.skymind.pathmind.webapp.security.constants.VaadinSessionInfo.IS
 public class ConfigureUIServiceInitListener implements VaadinServiceInitListener {
     @Override
     public void serviceInit(ServiceInitEvent event) {
+        // https://vaadin.com/docs/v14/flow/advanced/tutorial-service-init-listener
+        event.addBootstrapListener(response -> {
+            // BoostrapListener to change the bootstrap page
+            CustomBootstrapListener customBootstrapListener = new CustomBootstrapListener();
+            customBootstrapListener.modifyBootstrapPage(response);
+        });
         event.getSource().addUIInitListener(uiEvent -> {
             final UI ui = uiEvent.getUI();
             Object isOldVersion = ui.getSession().getAttribute(IS_OLD_VERSION);
