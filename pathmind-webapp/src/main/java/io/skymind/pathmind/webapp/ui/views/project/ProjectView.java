@@ -43,6 +43,7 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.ViewSection;
 import io.skymind.pathmind.webapp.ui.components.archive.ArchivesTabPanel;
 import io.skymind.pathmind.webapp.ui.components.atoms.TagLabel;
+import io.skymind.pathmind.webapp.ui.components.buttons.ArchiveUnarchiveProjectButton;
 import io.skymind.pathmind.webapp.ui.components.molecules.NotesField;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles;
@@ -120,6 +121,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
     private Breadcrumbs pageBreadcrumbs;
     private Span projectName;
     private Span createdDate;
+    private ArchiveUnarchiveProjectButton projectArchiveButton;
     private TagLabel archivedLabel = new TagLabel("Archived", false, "small");
     private Span modelName;
     private Span modelCreatedDate;
@@ -155,9 +157,11 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelNotesField = createModelNotesField();
         modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
 
+        projectArchiveButton = new ArchiveUnarchiveProjectButton(projectDAO, segmentIntegrator);
+
         HorizontalLayout headerWrapper = WrapperUtils.wrapWidthFullHorizontal(
                 WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
-                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(projectName, edit),
+                        WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(projectName, edit, projectArchiveButton),
                         WrapperUtils.wrapWidthFullHorizontalNoSpacingAlignCenter(createdDate, archivedLabel)),
                 projectNotesField);
         headerWrapper.addClassName("page-content-header");
@@ -410,6 +414,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         pageBreadcrumbs.setText(2, modelNameText);
         modelArchivedLabel.setVisible(selectedModel.isArchived());
         projectName.setText(project.getName());
+        projectArchiveButton.setProject(project);
         archivedLabel.setVisible(project.isArchived());
         modelName.setText(modelNameText);
         modelDAO.getModelIfAllowed(modelId, SecurityUtils.getUserId()).ifPresent(model -> {
