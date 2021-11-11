@@ -4,11 +4,8 @@ import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
-import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
@@ -16,18 +13,14 @@ import io.skymind.pathmind.webapp.utils.PathmindUtils;
 @Tag("models-navbar-item")
 @JsModule("./src/project/models-navbar-item.ts")
 public class ModelsNavbarItem extends LitTemplate {
-    private ModelDAO modelDAO;
     private Model model;
     private ModelsNavbar modelsNavbar;
-    private SegmentIntegrator segmentIntegrator;
     private ProjectView projectView;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ProjectView projectView, ModelDAO modelDAO, Model model, SegmentIntegrator segmentIntegrator) {
-        this.modelDAO = modelDAO;
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ProjectView projectView, Model model) {
         this.model = model;
         this.modelsNavbar = modelsNavbar;
         this.projectView = projectView;
-        this.segmentIntegrator = segmentIntegrator;
 
         setModelDetails(model);
     }

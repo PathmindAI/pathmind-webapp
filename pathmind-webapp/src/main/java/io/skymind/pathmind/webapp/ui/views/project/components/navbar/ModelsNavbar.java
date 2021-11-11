@@ -7,11 +7,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
-import io.skymind.pathmind.db.dao.ModelDAO;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.subscribers.NavBarModelArchivedSubscriber;
@@ -29,17 +27,12 @@ public class ModelsNavbar extends VerticalLayout {
     private Select<String> categorySelect;
     private VerticalLayout rowsWrapper;
     private UploadModelButton newModelButton;
-    private SegmentIntegrator segmentIntegrator;
     private ProjectView projectView;
 
-    private ModelDAO modelDAO;
-
-    public ModelsNavbar(ProjectView projectView, ModelDAO modelDAO, Model selectedModel, List<Model> models, SegmentIntegrator segmentIntegrator) {
-        this.modelDAO = modelDAO;
+    public ModelsNavbar(ProjectView projectView, Model selectedModel, List<Model> models) {
         this.models = models;
         this.selectedModel = selectedModel;
         this.projectView = projectView;
-        this.segmentIntegrator = segmentIntegrator;
 
         rowsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         rowsWrapper.addClassName("models-navbar-items");
@@ -94,7 +87,7 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, projectView, modelDAO, model, segmentIntegrator);
+        return new ModelsNavbarItem(this, projectView, model);
     }
 
     @Override

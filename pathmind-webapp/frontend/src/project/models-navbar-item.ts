@@ -73,7 +73,7 @@ class ModelsNavbarItem extends LitElement {
 
   render() {
     return html`
-      <a @click="${this.handleRowClicked}">
+      <a @click="${this.handleRowClicked}" href="${this.modelLink}">
         <div class="model-name">
           <tag-label text="${this.isDraft ? "Draft" : ""}" size="small" outline="true"></tag-label>
           <p>Model #${this.modelName} ${this.modelPackageName ? `(${this.modelPackageName})` : ""}</p>

@@ -155,7 +155,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
         modelActionBar = new ModelActionBar(projectDAO, modelDAO, experimentDAO,
                                             policyFileService, selectedModel, segmentIntegrator);
         modelNotesField = createModelNotesField();
-        modelsNavbar = new ModelsNavbar(this, modelDAO, selectedModel, models, segmentIntegrator);
+        modelsNavbar = new ModelsNavbar(this, selectedModel, models);
 
         projectArchiveButton = new ArchiveUnarchiveProjectButton(projectDAO, segmentIntegrator);
 
