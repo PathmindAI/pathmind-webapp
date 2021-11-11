@@ -57,6 +57,8 @@ import io.skymind.pathmind.webapp.ui.views.model.components.ModelDetailsWizardPa
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadALPWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadModelWizardPanel;
 import io.skymind.pathmind.webapp.ui.views.model.subscribers.UploadModelViewModelArchiveSubscriber;
+import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
+import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.NotImplementedException;
@@ -74,7 +76,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_M
 
 @Slf4j
 @Route(value = Routes.UPLOAD_MODEL, layout = MainLayout.class)
-public class UploadModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver {
+public class UploadModelView extends PathMindDefaultView implements StatusUpdater<AnylogicFileCheckResult>, HasUrlParameter<String>, BeforeLeaveObserver, ModelViewInterface {
 
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int UPLOAD_MODE_SEGMENT = 1;
@@ -112,6 +114,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     private Binder<Model> modelBinder;
 
+    private ModelsNavbar modelsNavbar;
     private UploadModelWizardPanel uploadModelWizardPanel;
     private UploadALPWizardPanel uploadALPWizardPanel;
     private ModelDetailsWizardPanel modelDetailsWizardPanel;
@@ -127,6 +130,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
     private long experimentId;
     private String modelNotes;
     private Project project;
+    private List<Model> models;
 
     private UploadMode uploadMode;
 
@@ -136,6 +140,8 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
+
+        modelsNavbar = new ModelsNavbar(this, model, models);
 
         uploadModelWizardPanel = new UploadModelWizardPanel(model, uploadMode, (int) DataSize.parse(maxFileSizeAsStr).toBytes(), getUISupplier());
         uploadALPWizardPanel = new UploadALPWizardPanel(model, isResumeUpload(), ModelUtils.isValidModel(model), (int) DataSize.parse(alpFileSizeAsStr).toBytes());
@@ -196,10 +202,13 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanelWrapper);
-        VerticalLayout wrapper = new VerticalLayout(
-                sections.toArray(new Component[0]));
-
-        wrapper.addClassName("view-section");
+        VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            sections.toArray(new Component[0])
+        );
+        viewSection.setClassName("view-section");
+        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
+            modelsNavbar, viewSection
+        );
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
         return wrapper;
@@ -400,6 +409,7 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
 
         if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
             this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+            models = modelDAO.getModelsForProject(projectId);
         }
         if (segments.length > 1) {
             uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.FOLDER);

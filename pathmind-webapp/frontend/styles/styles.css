@@ -425,6 +425,14 @@ vaadin-dialog-overlay .demo-view-content {
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
 }
 
+.upload-model-view > .page-title + vaadin-horizontal-layout {
+  flex: 1 0 auto;
+}
+
+.upload-model-view > .page-title + vaadin-horizontal-layout .models-navbar {
+  height: calc(100vh - 5rem);
+}
+
 .edit-goals-view h2 {
     margin-top: 0;
 }

@@ -11,6 +11,8 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
+import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.subscribers.NavBarModelArchivedSubscriber;
 
@@ -27,12 +29,13 @@ public class ModelsNavbar extends VerticalLayout {
     private Select<String> categorySelect;
     private VerticalLayout rowsWrapper;
     private UploadModelButton newModelButton;
-    private ProjectView projectView;
 
-    public ModelsNavbar(ProjectView projectView, Model selectedModel, List<Model> models) {
+    private ModelViewInterface currentView;
+
+    public ModelsNavbar(ModelViewInterface currentView, Model selectedModel, List<Model> models) {
         this.models = models;
         this.selectedModel = selectedModel;
-        this.projectView = projectView;
+        this.currentView = currentView;
 
         rowsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         rowsWrapper.addClassName("models-navbar-items");
@@ -87,12 +90,12 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, projectView, model);
+        return new ModelsNavbarItem(this, currentView, model);
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
-        EventBus.subscribe(this, projectView.getUISupplier(), 
+        EventBus.subscribe(this, currentView.getUISupplier(), 
                 new NavBarModelArchivedSubscriber(this));
     }
 
@@ -123,7 +126,7 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     public long getProjectId() {
-        return projectView.getProjectId();
+        return selectedModel.getProjectId();
     }
 
 }

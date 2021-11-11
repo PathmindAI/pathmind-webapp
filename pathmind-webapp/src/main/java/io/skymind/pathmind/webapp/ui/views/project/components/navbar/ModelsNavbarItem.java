@@ -5,8 +5,11 @@ import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.shared.data.Model;
+import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
+import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
+import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
@@ -16,11 +19,17 @@ public class ModelsNavbarItem extends LitTemplate {
     private Model model;
     private ModelsNavbar modelsNavbar;
     private ProjectView projectView;
+    private UploadModelView uploadModelView;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ProjectView projectView, Model model) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ModelViewInterface currentView, Model model) {
         this.model = model;
         this.modelsNavbar = modelsNavbar;
-        this.projectView = projectView;
+        if (currentView instanceof ProjectView) {
+            this.projectView = (ProjectView) currentView;
+        }
+        if (currentView instanceof UploadModelView) {
+            this.uploadModelView = (UploadModelView) currentView;
+        }
 
         setModelDetails(model);
     }
@@ -46,12 +55,16 @@ public class ModelsNavbarItem extends LitTemplate {
             navigateToUploadModelView();
         }
         modelsNavbar.setCurrentModel(model);
-        NavBarItemSelectModelAction.selectModel(model, projectView);
+        
+        getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.PROJECT + "/" + model.getProjectId() + "/model/" + model.getId()));
+        if (projectView != null) {
+            projectView.setModel(model);
+        }
     }
 
     private void navigateToUploadModelView() {
-        String target = PathmindUtils.getResumeUploadModelPath(projectView.getProjectId(), model.getId());
-        projectView.getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, target));
+        String target = PathmindUtils.getResumeUploadModelPath(model.getProjectId(), model.getId());
+        getUI().ifPresent(ui -> ui.navigate(UploadModelView.class, target));
     }
 
     public void setIsArchived(Boolean isArchive) {

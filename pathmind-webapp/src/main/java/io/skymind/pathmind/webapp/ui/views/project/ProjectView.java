@@ -75,7 +75,7 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.BOLD_LAB
 
 @Slf4j
 @Route(value = Routes.PROJECT, layout = MainLayout.class)
-public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver {
+public class ProjectView extends PathMindDefaultView implements HasUrlParameter<String>, AfterNavigationObserver, ModelViewInterface {
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int MODEL_ID_SEGMENT = 2;
 
