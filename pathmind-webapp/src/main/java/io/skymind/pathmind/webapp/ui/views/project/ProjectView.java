@@ -485,7 +485,7 @@ public class ProjectView extends PathMindDefaultView implements HasUrlParameter<
             
             if (models.size() > 0) {
                 selectedModel = models.stream()
-                    .filter(model -> modelId == null ? !model.isDraft() : modelId.equals(model.getId()))
+                    .filter(model -> modelId == null ? !model.isDraft() && !model.isArchived() : modelId.equals(model.getId()))
                     .findFirst()
                     .orElse(models.get(0));
                 loadModelData();
