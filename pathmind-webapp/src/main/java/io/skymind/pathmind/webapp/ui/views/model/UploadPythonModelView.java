@@ -1,13 +1,13 @@
 package io.skymind.pathmind.webapp.ui.views.model;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -16,13 +16,10 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.WildcardParameter;
 import io.skymind.pathmind.db.dao.*;
-import io.skymind.pathmind.services.ModelService;
 import io.skymind.pathmind.shared.data.*;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.shared.security.SecurityUtils;
 import io.skymind.pathmind.shared.utils.ModelUtils;
-import io.skymind.pathmind.webapp.bus.EventBus;
-import io.skymind.pathmind.webapp.bus.events.main.ExperimentCreatedBusEvent;
 import io.skymind.pathmind.webapp.exception.InvalidDataException;
 import io.skymind.pathmind.webapp.security.UserService;
 import io.skymind.pathmind.webapp.ui.components.LabelFactory;
@@ -30,10 +27,11 @@ import io.skymind.pathmind.webapp.ui.components.ScreenTitlePanel;
 import io.skymind.pathmind.webapp.ui.components.modelChecker.ModelCheckerService;
 import io.skymind.pathmind.webapp.ui.components.navigation.Breadcrumbs;
 import io.skymind.pathmind.webapp.ui.layouts.MainLayout;
-import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
+import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
-import io.skymind.pathmind.webapp.ui.views.experiment.NewExperimentView;
 import io.skymind.pathmind.webapp.ui.views.model.components.UploadPythonModelWizardPanel;
+import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
+import io.skymind.pathmind.webapp.ui.views.project.components.navbar.ModelsNavbar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,25 +44,19 @@ import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.SECTION_
 
 @Slf4j
 @Route(value = Routes.UPLOAD_PYTHON_MODEL, layout = MainLayout.class)
-public class UploadPythonModelView extends PathMindDefaultView implements HasUrlParameter<String> {
+public class UploadPythonModelView extends PathMindDefaultView implements HasUrlParameter<String>, ModelViewInterface {
 
     private static final int PROJECT_ID_SEGMENT = 0;
     private static final int UPLOAD_MODE_SEGMENT = 1;
-    private static final int MODEL_ID_SEGMENT = 2;
 
     @Autowired
     private ProjectDAO projectDAO;
     @Autowired
-    private ModelService modelService;
+    private ModelDAO modelDAO;
     @Autowired
     private UserService userService;
     @Autowired
-    private SegmentIntegrator segmentIntegrator;
-    @Autowired
     private ModelCheckerService modelCheckerService;
-
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSizeAsStr;
 
     @Value("${pathmind.pathmind-api.url}")
     private String apiUrl;
@@ -73,15 +65,14 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
 
     private Binder<Model> modelBinder;
 
+    private ModelsNavbar modelsNavbar;
     private UploadPythonModelWizardPanel uploadModelWizardPanel;
 
     private List<Component> wizardPanels;
 
     private long projectId;
-    private long modelId = -1;
-    private long experimentId;
-    private String modelNotes;
     private Project project;
+    private List<Model> models;
 
     private UploadMode uploadMode;
 
@@ -91,6 +82,8 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
 
     protected Component getMainContent() {
         modelBinder = new Binder<>(Model.class);
+
+        modelsNavbar = new ModelsNavbar(this, model, models);
 
         uploadModelWizardPanel = new UploadPythonModelWizardPanel(model,
                                         uploadMode,
@@ -117,13 +110,18 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
         invalidModelErrorLabel.getStyle().set("margin-top", "10px");
         invalidModelErrorLabel.getStyle().set("margin-bottom", "10px");
 
-        List<Component> sections = new ArrayList<>();
-        sections.add(sectionTitleWrapper);
-        sections.add(uploadModelWizardPanel);
-        VerticalLayout wrapper = new VerticalLayout(
-                sections.toArray(new Component[0]));
+        VerticalLayout innerContent = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
+            sectionTitleWrapper, uploadModelWizardPanel
+        );
+        innerContent.addClassName("upload-panel");
 
-        wrapper.addClassName("view-section");
+        VerticalLayout contentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            innerContent
+        );
+        contentWrapper.setClassName("content-wrapper");
+        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
+            modelsNavbar, contentWrapper
+        );
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
         return wrapper;
@@ -135,13 +133,6 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
         model.setProjectId(projectId);
         project = projectDAO.getProjectIfAllowed(projectId, SecurityUtils.getUserId())
                 .orElseThrow(() -> new InvalidDataException("Attempted to access project: " + projectId));
-    }
-
-    private void saveAndNavigateToNewExperiment() {
-        Experiment experiment = modelService.resumeModelCreation(model, modelNotes);
-        experimentId = experiment.getId();
-        EventBus.post(new ExperimentCreatedBusEvent(experiment));
-        getUI().ifPresent(ui -> ui.navigate(NewExperimentView.class, ""+experimentId));
     }
 
     private void setVisibleWizardPanel(Component wizardPanel) {
@@ -165,12 +156,10 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
 
         if (NumberUtils.isDigits(segments[PROJECT_ID_SEGMENT])) {
             this.projectId = Long.parseLong(segments[PROJECT_ID_SEGMENT]);
+            models = modelDAO.getModelsForProject(projectId);
         }
         if (segments.length > 1) {
             uploadMode = UploadMode.getEnumFromValue(segments[UPLOAD_MODE_SEGMENT]).orElse(UploadMode.ZIP);
-            if (uploadMode == UploadMode.RESUME) {
-                modelId = Long.parseLong(segments[MODEL_ID_SEGMENT]);
-            }
         }
     }
 }
