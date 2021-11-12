@@ -23,36 +23,23 @@ import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import static io.skymind.pathmind.webapp.ui.constants.CssPathmindStyles.NO_TOP_MARGIN_LABEL;
 
 public class ModelDetailsWizardPanel extends VerticalLayout {
-    private VerticalLayout formPanel = new VerticalLayout();
-
     private TextArea notesFieldTextArea;
 
     private Button nextStepButton;
 
     public ModelDetailsWizardPanel(Binder<Model> binder) {
         setupFields();
-        setupForm();
-        setupNotesFieldTextArea();
         nextStepButton = FormUtils.createNextStepButton();
 
         HorizontalLayout modelDetailsLine = WrapperUtils.wrapWidthFullBetweenHorizontal(
                 LabelFactory.createLabel("Model Details", NO_TOP_MARGIN_LABEL));
         modelDetailsLine.getStyle().set("align-items", "center");
 
-        List<Component> items = new ArrayList<>(
-                Arrays.asList(
-                        modelDetailsLine,
-                        GuiUtils.getFullWidthHr()
-                )
+        add(modelDetailsLine,
+            GuiUtils.getFullWidthHr(),
+            getNotesFieldPanel(),
+            WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)
         );
-        items.addAll(
-                Arrays.asList(
-                        formPanel,
-                        WrapperUtils.wrapWidthFullCenterHorizontal(nextStepButton)
-                )
-        );
-
-        add(items.toArray(new Component[0]));
 
         bindFields(binder);
 
@@ -64,6 +51,7 @@ public class ModelDetailsWizardPanel extends VerticalLayout {
     private void setupFields() {
         notesFieldTextArea = new TextArea();
         notesFieldTextArea.setPlaceholder("Add your notes here");
+        notesFieldTextArea.setHeight("200px");
     }
 
     private void bindFields(Binder<Model> binder) {
@@ -78,21 +66,12 @@ public class ModelDetailsWizardPanel extends VerticalLayout {
         nextStepButton.addClickListener(listener);
     }
 
-    private void setupNotesFieldTextArea() {
-        notesFieldTextArea.setWidthFull();
-        notesFieldTextArea.setHeight("200px");
-    }
-
-    private void setupForm() {
-        formPanel.add(getNotesFieldPanel());
-        formPanel.setPadding(false);
-    }
-
     private Component getNotesFieldPanel() {
         VerticalLayout wrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
                 LabelFactory.createLabel("Notes", CssPathmindStyles.BOLD_LABEL),
                 LabelFactory.createLabel("Add any notes for yourself about the model you're uploading."),
                 notesFieldTextArea);
+        wrapper.setWidthFull();
         return wrapper;
     }
 }

@@ -90,7 +90,10 @@ public class ModelsNavbar extends VerticalLayout {
     }
 
     private ModelsNavbarItem createModelsNavbarItem(Model model) {
-        return new ModelsNavbarItem(this, currentView, model);
+        if (currentView instanceof ProjectView) {
+            return new ModelsNavbarItem(this, (ProjectView) currentView, model);
+        }
+        return new ModelsNavbarItem(this, model);
     }
 
     @Override

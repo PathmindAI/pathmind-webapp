@@ -7,9 +7,7 @@ import com.vaadin.flow.component.littemplate.LitTemplate;
 import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.shared.security.Routes;
 import io.skymind.pathmind.webapp.ui.components.atoms.DatetimeDisplay;
-import io.skymind.pathmind.webapp.ui.views.PathMindDefaultView;
 import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
-import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.utils.PathmindUtils;
 
@@ -19,17 +17,15 @@ public class ModelsNavbarItem extends LitTemplate {
     private Model model;
     private ModelsNavbar modelsNavbar;
     private ProjectView projectView;
-    private UploadModelView uploadModelView;
 
-    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ModelViewInterface currentView, Model model) {
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, Model model) {
+        this(modelsNavbar, null, model);
+    }
+
+    public ModelsNavbarItem(ModelsNavbar modelsNavbar, ProjectView projectView, Model model) {
         this.model = model;
         this.modelsNavbar = modelsNavbar;
-        if (currentView instanceof ProjectView) {
-            this.projectView = (ProjectView) currentView;
-        }
-        if (currentView instanceof UploadModelView) {
-            this.uploadModelView = (UploadModelView) currentView;
-        }
+        this.projectView = projectView;
 
         setModelDetails(model);
     }
@@ -56,9 +52,11 @@ public class ModelsNavbarItem extends LitTemplate {
         }
         modelsNavbar.setCurrentModel(model);
         
-        getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.PROJECT + "/" + model.getProjectId() + "/model/" + model.getId()));
         if (projectView != null) {
+            getUI().ifPresent(ui -> ui.getPage().getHistory().pushState(null, Routes.PROJECT + "/" + model.getProjectId() + "/model/" + model.getId()));
             projectView.setModel(model);
+        } else {
+            getUI().ifPresent(ui -> ui.navigate(Routes.PROJECT + "/" + model.getProjectId() + "/model/" + model.getId()));
         }
     }
 
