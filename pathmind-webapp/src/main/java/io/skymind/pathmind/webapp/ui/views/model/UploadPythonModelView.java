@@ -114,7 +114,6 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
             sectionTitleWrapper, uploadModelWizardPanel
         );
         innerContent.addClassName("upload-panel");
-
         VerticalLayout contentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
             innerContent
         );

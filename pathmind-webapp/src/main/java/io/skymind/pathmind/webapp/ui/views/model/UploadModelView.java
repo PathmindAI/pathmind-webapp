@@ -202,12 +202,17 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
         sections.add(uploadALPWizardPanel);
         sections.add(modelDetailsWizardPanel);
         sections.add(rewardVariablesPanelWrapper);
-        VerticalLayout viewSection = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+
+        VerticalLayout innerContent = WrapperUtils.wrapVerticalWithNoPaddingOrSpacingAndWidthAuto(
             sections.toArray(new Component[0])
         );
-        viewSection.setClassName("view-section");
+        innerContent.addClassName("upload-panel");
+        VerticalLayout contentWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing(
+            innerContent
+        );
+        contentWrapper.setClassName("content-wrapper");
         HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
-            modelsNavbar, viewSection
+            modelsNavbar, contentWrapper
         );
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
