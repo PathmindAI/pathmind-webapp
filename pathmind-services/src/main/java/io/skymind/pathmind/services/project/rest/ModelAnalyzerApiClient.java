@@ -73,8 +73,8 @@ public class ModelAnalyzerApiClient {
         return analyze(file, type, "", "", "", "", "");
     }
 
-    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO.ModelType type, String message, String environment) {
-        AnalyzeRequestDTO req = new AnalyzeRequestDTO(buildMsgId(message), type, environment);
+    public HyperparametersDTO analyze(File file, AnalyzeRequestDTO.ModelType type, String message, String environment, String obsSelection, String rewFctName) {
+        AnalyzeRequestDTO req = new AnalyzeRequestDTO(buildMsgId(message), type, environment, obsSelection, rewFctName);
         return analyze(file, req);
     }
 

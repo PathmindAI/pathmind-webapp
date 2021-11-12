@@ -82,7 +82,7 @@ public class ExperimentService {
     public Experiment createExperimentFromModelBytes(
             ModelBytes modelBytes, StatusUpdater<AnylogicFileCheckResult> status, // todo: get rid of status updater
             Supplier<Project> projectSupplier, AnalyzeRequestDTO.ModelType type, String environment,
-            String obsSelection, String rewFctName,boolean deployPolicyServerOnSuccess
+            String obsSelection, String rewFctName, boolean deployPolicyServerOnSuccess
     ) throws Exception {
         Model model = new Model();
 
@@ -140,7 +140,7 @@ public class ExperimentService {
                 String reqId = "project_" + model.getProjectId();
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
-                HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment);
+                HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment, obsSelection, rewFctName);
                 if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
                     throw new ModelCheckException(analysisResult.getFailedSteps());
                 }

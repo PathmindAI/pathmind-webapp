@@ -20,6 +20,8 @@ public class AnalyzeRequestDTO {
     private String experimentType;
     private String pathmindHelperClass;
     private String environment;
+    private String obsSelection;
+    private String rewFctName;
 
     public AnalyzeRequestDTO(String id, ModelType type, String mainAgent, String experimentClass, String experimentType, String pathmindHelperClass) {
         this.id = id;
@@ -30,9 +32,11 @@ public class AnalyzeRequestDTO {
         this.pathmindHelperClass = pathmindHelperClass;
     }
 
-    public AnalyzeRequestDTO(String id, ModelType type, String environment) {
+    public AnalyzeRequestDTO(String id, ModelType type, String environment, String obsSelection, String rewFctName) {
         this.id = id;
         this.type = type;
         this.environment = environment;
+        this.obsSelection = obsSelection;
+        this.rewFctName = rewFctName;
     }
 }
