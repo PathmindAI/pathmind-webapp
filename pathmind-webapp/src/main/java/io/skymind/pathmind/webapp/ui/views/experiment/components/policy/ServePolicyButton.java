@@ -3,7 +3,6 @@ package io.skymind.pathmind.webapp.ui.views.experiment.components.policy;
 import com.vaadin.flow.component.Html;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
@@ -11,21 +10,16 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
-import io.skymind.pathmind.db.dao.RunDAO;
 import io.skymind.pathmind.db.dao.UserDAO;
 import io.skymind.pathmind.shared.data.Experiment;
 import io.skymind.pathmind.shared.data.PathmindUser;
 import io.skymind.pathmind.shared.services.PolicyServerService;
-import io.skymind.pathmind.webapp.ui.components.molecules.CopyField;
 import io.skymind.pathmind.webapp.ui.plugins.SegmentIntegrator;
 import io.skymind.pathmind.webapp.ui.utils.ConfirmationUtils;
 import io.skymind.pathmind.webapp.ui.utils.GuiUtils;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
 import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import io.skymind.pathmind.webapp.ui.views.experiment.ExperimentView;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServePolicyButton extends Button {
 
@@ -34,14 +28,12 @@ public class ServePolicyButton extends Button {
     private Dialog dialog;
     private Button closeButton;
     private UserDAO userDAO;
-    private RunDAO runDAO;
     private SegmentIntegrator segmentIntegrator;
 
-    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, RunDAO runDAO, SegmentIntegrator segmentIntegrator) {
+    public ServePolicyButton(PolicyServerService policyServerService, UserDAO userDAO, SegmentIntegrator segmentIntegrator) {
         super();
         this.policyServerService = policyServerService;
         this.userDAO = userDAO;
-        this.runDAO = runDAO;
         this.segmentIntegrator = segmentIntegrator;
         closeButton = new Button(VaadinIcon.CLOSE_SMALL.create());
         addClickListener(click -> {
