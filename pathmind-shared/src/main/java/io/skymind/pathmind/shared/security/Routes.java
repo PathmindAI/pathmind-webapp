@@ -40,6 +40,7 @@ public class Routes {
     public static final String EXPORT_POLICY = "exportPolicy";
     public static final String PROJECT = "project";
     public static final String PROJECTS = "projects";
+    public static final String POLICY_SERVERS = "policyServers";
 
     public static final String SETTINGS = "settings";
     public static final String BETA_SETTINGS = "beta-settings";

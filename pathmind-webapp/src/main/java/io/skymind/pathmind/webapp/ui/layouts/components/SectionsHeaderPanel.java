@@ -8,6 +8,7 @@ import com.vaadin.flow.router.RouterLink;
 import io.skymind.pathmind.webapp.security.CurrentUser;
 import io.skymind.pathmind.webapp.ui.views.account.AccountUpgradeView;
 import io.skymind.pathmind.webapp.ui.views.header.components.UpgradeToProButton;
+import io.skymind.pathmind.webapp.ui.views.policyServer.PolicyServersView;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectsView;
 
 public class SectionsHeaderPanel extends HorizontalLayout {
@@ -20,10 +21,12 @@ public class SectionsHeaderPanel extends HorizontalLayout {
             projectsLink.setHighlightCondition((link, event) ->
                 event.getLocation().getPath().equals(link.getHref()) || event.getLocation().getPath().equals(""));
             
+            RouterLink policyServersLink = new RouterLink("Policy Servers", PolicyServersView.class);
             RouterLink pricingLink = new RouterLink("Pricing", AccountUpgradeView.class);
 
             sectionsHorizontalLayout.add(
                     projectsLink,
+                    policyServersLink,
                     getTutorialsAnchor(),
                     pricingLink,
                     getFAQAnchor(),
