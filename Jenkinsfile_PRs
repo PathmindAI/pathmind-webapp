@@ -300,7 +300,7 @@ pipeline {
                 runMigrations()
                 script {
                     echo "Installing ${RELEASE_ID}"
-                    sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.JOB_MOCK_MAX_MIN=5 --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest -n ${env.BUILD_NUMBER}"
+                    sh "helm upgrade --install ${RELEASE_ID} ${WORKSPACE}/infra/helm/pathmind -f ${WORKSPACE}/infra/helm/pathmind/${HELM_FILE} --set image.repository=${DOCKER_REG}/${RELEASE_ID} --set image.tag=latest --set env.APPLICATION_URL=http://${RELEASE_ID} --set namespace=${env.BUILD_NUMBER} --set env.JOB_MOCK_CYCLE=3 --set env.JOB_MOCK_MAX_MIN=5 --set env.SQS_UPDATER_URL=https://sqs.us-east-1.amazonaws.com/839270835622/${env.BUILD_ID}-updater-queue --set env.S3_BUCKET=${env.BUILD_ID}-training-dynamic-files.pathmind.com --set env.SNS_UPDATER_SQS_FILTER_ATTR=${env.BUILD_NUMBER}prtest --set env.PATHMIND_API_URL=http://${RELEASE_ID}-api:8081 -n ${env.BUILD_NUMBER}"
                     echo "Waiting for webapp to come up"
                     sh "timeout 300 bash -c 'while ! curl http://${RELEASE_ID}; do sleep 5; done'"
                     echo "Installing updater ${RELEASE_ID}"
