@@ -3,6 +3,8 @@ package io.skymind.pathmind.shared.utils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
@@ -16,6 +18,23 @@ public class ZipUtils {
     @FunctionalInterface
     public interface ZipStreamEntryConsumeFunction<T> {
         T apply(ZipInputStream zipInputStream, ZipEntry zipEntry) throws IOException;
+    }
+
+    public static <T> Map<String, T> processZipEntryInFileAsMap(byte[] zipFile, Predicate<String> entryNameCriteria, ZipStreamEntryConsumeFunction<T> consumeEntry) {
+        Map<String, T> result = new HashMap<>();
+        try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(zipFile))) {
+            ZipEntry entry = null;
+            while ((entry = zipStream.getNextEntry()) != null) {
+                String entryName = entry.getName();
+                if (entryNameCriteria.test(entryName)) {
+                    result.put(entryName, consumeEntry.apply(zipStream, entry));
+                }
+                zipStream.closeEntry();
+            }
+        } catch (IOException e) {
+            log.error("Not able to process entry", e);
+        }
+        return result;
     }
 
     public static <T> T processZipEntryInFile(byte[] zipFile, Predicate<String> entryNameCriteria, ZipStreamEntryConsumeFunction<T> consumeEntry) {

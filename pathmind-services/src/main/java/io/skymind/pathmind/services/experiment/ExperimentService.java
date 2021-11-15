@@ -3,6 +3,7 @@ package io.skymind.pathmind.services.experiment;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -140,6 +141,35 @@ public class ExperimentService {
                 String reqId = "project_" + model.getProjectId();
                 File tempFile = File.createTempFile("pathmind", UUID.randomUUID().toString());
                 FileUtils.writeByteArrayToFile(tempFile, model.getFile());
+
+                // obsSelection is not specified
+                if (StringUtils.isEmpty(obsSelection)) {
+                    try {
+                        Map<String, byte[]> obsYamls = ZipUtils.processZipEntryInFileAsMap(
+                                modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
+                                entryContentExtractor()
+                        );
+
+                        if (obsYamls.size() == 0) {
+                            log.warn("no obs.yaml file is detected in the model.");
+                        } else if (obsYamls.size() > 1) {
+                            String msg = "Multiple obs.yaml files are detected:" + obsYamls.keySet() + ", " +
+                                    "please do either of specify obs.yaml path via `obsSelection` or leave only one obs.yaml in the model.";
+                            throw new ModelCheckException(msg);
+                        } else {
+                            String obsYamlPath = obsYamls.keySet().iterator().next();
+                            obssFromYaml.addAll(ObservationUtils.fromYaml(new String(obsYamls.get(obsYamlPath))));
+                            obsSelection = obsYamlPath;
+                        }
+                    } catch (ModelCheckException e) {
+                        throw e;
+                    } catch (Exception e) {
+                        log.error("Failed to extract observations for PM Model", e);
+                    } finally {
+                        obssFromYaml.clear();
+                    }
+                }
+
                 HyperparametersDTO analysisResult = projectFileCheckService.getClient().analyze(tempFile, type, reqId, environment, obsSelection, rewFctName);
                 if (StringUtils.isNotEmpty(analysisResult.getFailedSteps())) {
                     throw new ModelCheckException(analysisResult.getFailedSteps());
@@ -174,27 +204,12 @@ public class ExperimentService {
                 rewardVariables = ModelUtils.convertToRewardVariables(model.getId(), alResult.getRewardVariableNames(), alResult.getRewardVariableTypes());
                 observationList = ModelUtils.convertToObservations(alResult.getObservationNames(), alResult.getObservationTypes(), actionMasking);
 
-                ModelType modelType = ModelType.fromName(analysisResult.getMode());
-                model.setModelType(modelType.getValue());
+                model.setModelType(ModelType.fromName(analysisResult.getMode()).getValue());
                 model.setNumberOfObservations(alResult.getNumObservation());
                 model.setRewardVariablesCount(rewardVariables.size());
                 model.setNumberOfAgents(alResult.getNumberOfAgents());
                 model.setActionmask(alResult.isActionMask());
 
-
-                if (ModelType.isPathmindModel(modelType)) {
-                    try {
-                        byte[] obsYaml = ZipUtils.processZipEntryInFile(
-                                modelBytes.getBytes(), s -> s.endsWith("obs.yaml"),
-                                entryContentExtractor()
-                        );
-                        obssFromYaml.addAll(ObservationUtils.fromYaml(new String(obsYaml)));
-//                        model.setNumberOfObservations(obss.size());
-                    } catch (Exception e) {
-                        obssFromYaml.clear();
-                        log.error("Failed to extract observations for PM Model", e);
-                    }
-                }
                 model.setPackageName(String.join(";", environment, obsSelection, rewFctName));
 
                 modelService.addDraftModelToProject(model, projectSupplier.get().getId(), "");
@@ -218,7 +233,7 @@ public class ExperimentService {
             experiment.setDeployPolicyOnSuccess(true);
         }
 
-        if (obssFromYaml.size() > 0) {
+        if (obssFromYaml.size() > 0 && ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()))) {
             List<Observation> modelObservation = observationDAO.getObservationsForModel(model.getId());
             List<String> selectedObsNames = obssFromYaml.stream().map(Observation::getVariable).collect(Collectors.toList());
             List<Observation> selectedObss = modelObservation.stream().filter(o -> selectedObsNames.contains(o.getVariable())).collect(Collectors.toList());
