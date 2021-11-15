@@ -118,9 +118,11 @@ public class UploadPythonModelView extends PathMindDefaultView implements HasUrl
             innerContent
         );
         contentWrapper.setClassName("content-wrapper");
-        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
-            modelsNavbar, contentWrapper
-        );
+        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal();
+        if (!models.isEmpty()) {
+            wrapper.add(modelsNavbar);
+        }
+        wrapper.add(contentWrapper);
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
         return wrapper;

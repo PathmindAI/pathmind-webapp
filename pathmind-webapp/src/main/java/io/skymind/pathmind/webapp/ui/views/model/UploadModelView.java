@@ -211,9 +211,11 @@ public class UploadModelView extends PathMindDefaultView implements StatusUpdate
             innerContent
         );
         contentWrapper.setClassName("content-wrapper");
-        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal(
-            modelsNavbar, contentWrapper
-        );
+        HorizontalLayout wrapper = WrapperUtils.wrapSizeFullBetweenHorizontal();
+        if (!models.isEmpty()) {
+            wrapper.add(modelsNavbar);
+        }
+        wrapper.add(contentWrapper);
         wrapper.setSpacing(false);
         addClassName("upload-model-view");
         return wrapper;

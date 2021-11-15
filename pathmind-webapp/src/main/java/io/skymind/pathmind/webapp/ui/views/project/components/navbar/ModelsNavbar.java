@@ -11,7 +11,6 @@ import io.skymind.pathmind.shared.data.Model;
 import io.skymind.pathmind.webapp.bus.EventBus;
 import io.skymind.pathmind.webapp.ui.components.buttons.UploadModelButton;
 import io.skymind.pathmind.webapp.ui.utils.WrapperUtils;
-import io.skymind.pathmind.webapp.ui.views.model.UploadModelView;
 import io.skymind.pathmind.webapp.ui.views.project.ModelViewInterface;
 import io.skymind.pathmind.webapp.ui.views.project.ProjectView;
 import io.skymind.pathmind.webapp.ui.views.project.components.navbar.subscribers.NavBarModelArchivedSubscriber;
@@ -37,9 +36,12 @@ public class ModelsNavbar extends VerticalLayout {
         this.selectedModel = selectedModel;
         this.currentView = currentView;
 
+        if (models.isEmpty()) {
+            return;
+        }
+
         rowsWrapper = WrapperUtils.wrapVerticalWithNoPaddingOrSpacing();
         rowsWrapper.addClassName("models-navbar-items");
-
         newModelButton = new UploadModelButton(models.get(0).getProjectId());
 
         createCategorySelect();
