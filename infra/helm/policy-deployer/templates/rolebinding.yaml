@@ -5,7 +5,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: {{ include "policy-deployer.fullname" . }}
-  namespace: {{.Release.Namespace}}
+  namespace: "{{.Release.Namespace}}"
 roleRef:
   kind: Role
   name: {{ include "policy-deployer.fullname" . }}
