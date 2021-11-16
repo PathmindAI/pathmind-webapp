@@ -329,7 +329,76 @@ class AccountUpgradeViewContent extends LitElement {
       <h1>Subscription Plans</h1>
       <span>Billed monthly per user</span>
     </div>
-   
+    <vaadin-horizontal-layout>
+        <vaadin-vertical-layout class="inner-content">
+            <vaadin-vertical-layout class="card-header">
+                <h2 class="title">Trial</h2>
+                <span class="details">For Hobbyists</span>
+            </vaadin-vertical-layout>
+            <span class="price-cont">
+                <span class="price">$0</span>
+                <span class="price-period">per month</span>
+            </span>
+            <ul class="features">
+                <li>1 Concurrent Experiment</li>
+                <li>Unlimited Policy File Export</li>
+            </ul>
+            ${this.isTrialUser ? html`<vaadin-button id="freeBtn" theme="tertiary" disabled>Current Plan</vaadin-button>` : null}
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout class="inner-content">
+            <vaadin-vertical-layout class="card-header">
+                <h2 class="title">Academic</h2>
+                <span class="details">For Students & Academics</span>
+            </vaadin-vertical-layout>
+            <span class="price-cont">
+                <span class="price">$99</span>
+                <span class="price-period">per month</span>
+            </span>
+            <ul class="features">
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
+            </ul>
+            ${this.isTrialUser ? html`<a href="${this.contactLink}">
+                <vaadin-button id="studentBtn" theme="primary">Contact Us</vaadin-button>
+            </a>` : null}
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout class="inner-content">
+            <vaadin-vertical-layout class="card-header">
+                <h2 class="title">Pro</h2>
+                <span class="details">For Simulation Engineers</span>
+                <span class="popular-tag">POPULAR</span>
+            </vaadin-vertical-layout>
+            <span class="price-cont">
+              <span class="price">$499</span>
+              <span class="price-period">per month</span>
+            </span>
+            <ul class="features">
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
+                <li>Premium Technical Support</li>
+            </ul>
+            <vaadin-button id="proBtn" theme="primary" @click="${this.handleProClick}">Upgrade Now</vaadin-button>
+        </vaadin-vertical-layout>
+        <vaadin-vertical-layout class="inner-content">
+            <vaadin-vertical-layout class="card-header">
+                <h2 class="title">Enterprise</h2>
+                <span class="details">For Consultancies & Corporate Teams</span>
+            </vaadin-vertical-layout>
+            <span class="price-cont">
+                <span class="price">$999</span>
+                <span class="price-period">per month</span>
+            </span>
+            <ul class="features">
+                <li>Unlimited Concurrent Experiments</li>
+                <li>Unlimited Policy File Export</li>
+                <li>Premium Technical Support</li>
+                <li>Full Deployment Options Available</li>
+            </ul>
+            ${this.isTrialUser ? html`<a href="${this.contactLink}">
+                <vaadin-button id="enterpriseBtn" theme="primary">Contact Us</vaadin-button>
+            </a>` : null}
+        </vaadin-vertical-layout>
+    </vaadin-horizontal-layout>
     <vaadin-vertical-layout class="feature-breakdown-wrapper">
       <h2>Feature Breakdown</h2>
       <vaadin-vertical-layout class="feature-breakdown-table">
