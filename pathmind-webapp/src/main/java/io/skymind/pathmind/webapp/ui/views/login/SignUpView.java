@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 
 @Tag("sign-up-view")
 @JsModule("./src/pages/account/sign-up-view.ts")
-@Route(value = Routes.SIGN_UP)
 public class SignUpView extends LitTemplate implements PublicView, HasUrlParameter<String> {
     @Id("lastName")
     private TextField lastName;
