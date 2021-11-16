@@ -132,68 +132,6 @@ class SignUpView extends LitElement {
                   <li>Apply AI to your simulation and beat your heuristic</li>
               </ul>
           </vaadin-vertical-layout>
-          <vaadin-vertical-layout class="inner-content" id="emailPart">
-              <h3>Make Better Decisions With AI</h3>
-              <vaadin-horizontal-layout class="names-wrapper">
-                <vaadin-text-field
-                  id="firstName"
-                  label="First Name"
-                  ></vaadin-text-field>
-                <vaadin-text-field
-                  id="lastName"
-                  label="Last Name"
-                  ></vaadin-text-field>
-              </vaadin-horizontal-layout>
-              <vaadin-text-field id="email" label="Work Email"></vaadin-text-field>
-              <p class="notes" ?hidden="${this.isEmailUsed}">
-              The email will be used as the User Email during sign in
-              </p>
-              <vaadin-vertical-layout
-                class="passwords-wrapper"
-                ?hidden="${this.isEmailUsed}">
-                <vaadin-password-field
-                    id="newPassword"
-                    label="Create Password"
-                    @keyup="${this.onCreatePasswordInput}"
-                ></vaadin-password-field>
-                <vaadin-vertical-layout
-                    id="newPassNotes"
-                    class="notes"
-                    style="width: 100%;"
-                ></vaadin-vertical-layout>
-                <vaadin-password-field
-                    id="confirmNewPassword"
-                    label="Confirm Password"
-                    ?hidden="${!this.hasCreatedPassword}"
-                ></vaadin-password-field>
-              </vaadin-vertical-layout>
-              <vaadin-button
-                id="forgotPasswordBtn"
-                theme="tertiary small"
-                ?hidden="${!this.isEmailUsed}"
-                onclick="window.location.href='/reset-password'"
-              >Want to reset password?</vaadin-button>
-              <vaadin-vertical-layout id="buttonsCont">
-                <vaadin-button id="signIn" theme="primary">
-                  Create Free Account
-                </vaadin-button>
-              </vaadin-vertical-layout>
-              <vaadin-button
-                id="alreadyHaveAccount"
-                theme="tertiary small"
-                onclick="window.location.href='/sign-in'"
-                >Already have an account?
-              </vaadin-button>
-              <div class="policy" id="policyText">
-                <span>By submitting the form, you agree to our </span>
-                <a href="https://pathmind.com/subscription-agreement" target="_blank"
-                  >Terms of Use</a
-                ><span> and </span>
-                <a href="https://pathmind.com/privacy" target="_blank"
-                  >Privacy Policy</a
-                ><span>.</span>
-              </div>
-          </vaadin-vertical-layout>
       </div>
     </vaadin-horizontal-layout>`;
   }
