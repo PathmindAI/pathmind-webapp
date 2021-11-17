@@ -306,16 +306,16 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
         // SLIN -> I am disabling new trainings as we wind down the product.
         return false;
 
-        PathmindUser currentUser = userService.getCurrentUser();
-        Model model = experiment.getModel();
-        boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
-        return ModelUtils.isValidModel(model)
-                && (!isTrialPlanUser || (isTrialPlanUser && !hasRunningExperiments))
-                && (!isTrialPlanUser || (isTrialPlanUser && !model.isActionmask()))
-                && (isPyModel || rewardFunctionBuilder.isValidForTraining())
-                && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
-                && !experiment.isArchived()
-                && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
+        // PathmindUser currentUser = userService.getCurrentUser();
+        // Model model = experiment.getModel();
+        // boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
+        // return ModelUtils.isValidModel(model)
+        //         && (!isTrialPlanUser || (isTrialPlanUser && !hasRunningExperiments))
+        //         && (!isTrialPlanUser || (isTrialPlanUser && !model.isActionmask()))
+        //         && (isPyModel || rewardFunctionBuilder.isValidForTraining())
+        //         && (isPyModel || (observationsPanel.getSelectedObservations() != null && !observationsPanel.getSelectedObservations().isEmpty()))
+        //         && !experiment.isArchived()
+        //         && (currentUser.getEmailVerifiedAt() != null || runDAO.numberOfRunsByUser(currentUser.getId()) < allowedRunsNoVerified);
     }
 
     /**
