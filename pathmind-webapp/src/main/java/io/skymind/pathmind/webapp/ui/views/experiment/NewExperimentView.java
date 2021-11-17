@@ -303,6 +303,9 @@ public class NewExperimentView extends AbstractExperimentView implements BeforeL
 
     // REFACTOR -> The logic should really be in ExperimentUtils because it's business logic rather than GUI logic but for now we'll just leave it here.
     private boolean canStartTraining() {
+        // SLIN -> I am disabling new trainings as we wind down the product.
+        return false;
+
         PathmindUser currentUser = userService.getCurrentUser();
         Model model = experiment.getModel();
         boolean isPyModel = ModelType.isPythonModel(ModelType.fromValue(model.getModelType())) || ModelType.isPathmindModel(ModelType.fromValue(model.getModelType()));
