@@ -145,6 +145,8 @@ public class SignUpView extends LitTemplate implements PublicView, HasUrlParamet
 
     @Override
     public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+        // send all users away from sign-up
+        event.forwardTo(LoginView.class);
         Location location = event.getLocation();
         QueryParameters queryParameters = location.getQueryParameters();
 
