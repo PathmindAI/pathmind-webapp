@@ -28,9 +28,11 @@ public class AccountUpgradeView extends PathMindDefaultView {
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         // if user has an ongoing subscription this view shouldn't be shown
-        if (!featureManager.isEnabled(Feature.ACCOUNT_UPGRADE)) {
-            event.rerouteTo(AccountView.class);
-        }
+
+        // reroute all users - slin
+        // if (!featureManager.isEnabled(Feature.ACCOUNT_UPGRADE)) {
+        event.rerouteTo(AccountView.class);
+        // }
 
         super.beforeEnter(event);
     }

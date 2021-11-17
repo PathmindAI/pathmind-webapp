@@ -91,8 +91,9 @@ public class LoginView extends HorizontalLayout
         Div innerContent = new Div();
         innerContent.setClassName("inner-content");
         // Allow new users to sign up for free trials: https://github.com/SkymindIO/pathmind-webapp/issues/2199
-        innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm(), createSignUp());
-        // innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
+        // innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm(), createSignUp());
+        // Removing links to sign up page
+        innerContent.add(title, badCredentials, emailNotVerified, sessionExpired, createLoginForm());
 
         Anchor termsLink = new Anchor(termsOfUseUrl, "Terms of Use");
         termsLink.setTarget("_blank");
@@ -174,10 +175,10 @@ public class LoginView extends HorizontalLayout
             event.forwardTo(ProjectsView.class);
             return;
         }
-        if (CookieUtils.getCookie("isFirstTimeVisit") == null) {
-            CookieUtils.setNotFirstTimeVisitCookie();
-            event.forwardTo(SignUpView.class);
-        }
+        // if (CookieUtils.getCookie("isFirstTimeVisit") == null) {
+        //     CookieUtils.setNotFirstTimeVisitCookie();
+        //     event.forwardTo(SignUpView.class);
+        // }
         add(segmentIntegrator);
     }
 
